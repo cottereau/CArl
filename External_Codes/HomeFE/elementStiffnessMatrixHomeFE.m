@@ -1,4 +1,4 @@
-function [Ke,fe] = elementStiffnessMatrixHomeFE( Xe, Ee, numberOfNodes, ...
+function [Ke,fe] = elementStiffnessMatrixHomeFE( Xe, Epg, numberOfNodes, ...
                            pospg, pespg, N, Nxi, Neta, load ) 
 % [Ke,fe] = elementStiffnessMatrixHomeFE( Xe, numberOfNodes, pospg, pespg, ...
 %   N, Nxi, Neta ) 
@@ -21,8 +21,6 @@ numberOfGaussPoints = size( pospg, 1 );
 
 Ke = zeros( numberOfNodes, numberOfNodes );
 fe = zeros( numberOfNodes, size(load,2) );
-
-Epg = N * Ee;
 
 if d==1
     for igaus = 1:numberOfGaussPoints

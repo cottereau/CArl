@@ -1,4 +1,4 @@
-function [ Int, Rep] = MeshIntersect( model1, model2, levelSet1, levelSet2 )
+function [ Int, Rep] = MeshIntersect( mesh1, mesh2, LSet1, LSet2 )
 % MESHINTERSECT to create the mesh at the intersection between two meshes,
 % both in terms of support (for the definition of the interpolation
 % functions) and for integration purposes
@@ -29,110 +29,67 @@ function [ Int, Rep] = MeshIntersect( model1, model2, levelSet1, levelSet2 )
 % R. Cottereau 04/2010
 
 % constants
-X1 = model1.mesh.X;
-T1 = model1.mesh.T;
-X2 = model2.mesh.X;
-T2 = model2.mesh.T;
+X1 = mesh1.X;
+T1 = mesh1.T;
+X2 = mesh2.X;
+T2 = mesh2.T;
 
-switch model1.mesh.type
-    
-    % model 1 is of FE type
-    case 'FE'
-        
-        switch model2.mesh.type
-            
-            % model1 and model2 are both of FE type
-            case 'FE'
-                % coupling zone for representation purposes
-                indT1 = NonConstantAlpha( model1, levelSet1 );
-                [ Xr1, Tr1, Xrg1 ] = ReduceMesh( X1, T1(indT1,:) );
-                indT2 = NonConstantAlpha( model2, levelSet2 );
-                [ Xr2, Tr2, Xrg2 ] = ReduceMesh( X2, T2(indT2,:) );
+% coupling zone for representation purposes
+indT1 = DefineCouplingElements( T1, LSet1.int.*LSet1.ext );
+[ Xr1, Tr1, Xrg1 ] = ReduceMesh( X1, T1(indT1,:) );
+indT2 = DefineCouplingElements( T2, LSet2.int.*LSet2.ext );
+[ Xr2, Tr2, Xrg2 ] = ReduceMesh( X2, T2(indT2,:) );
 
-                % intersect the meshes to get the integration mesh
-                disp('warning: model2 is supposed embedded in model1');
-                Xi = X2;
-                Ti = T2(indT2,:);
-                [ Xi, Ti ] = ReduceMesh( Xi, Ti );
-                
-                % compute the passage matrices in terms of elements
-                Tr2Ti1 = TR2TI( Tr1, Xr1, Xi, Ti );
-                Tr2Ti2 = TR2TI( Tr2, Xr2, Xi, Ti );
-                
-                % compute the passage matrices in terms of nodes
-                % = get the values of the basis functions in the
-                % representation meshes at the nodes of the integration
-                % mesh
-                [Xr2Xi1,val1] = XR2XI( Xr1, Tr1, Xi, Ti, Tr2Ti1 );
-                [Xr2Xi2,val2] = XR2XI( Xr2, Tr2, Xi, Ti, Tr2Ti2 );
-                
-                % construction of passage matrices from the integration
-                % meshes to the representation meshes
-                M1 = sparse( size(Xi,1), size(X1,1) );
-                for i1 = 1:size(Xr1,1)
-                    M1( Xr2Xi1{i1}, Xrg1(i1) ) = val1{i1};
-                end
-                M2 = sparse( size(Xi,1), size(X2,1) );
-                for i1 = 1:size(Xr2,1)
-                    M2( Xr2Xi2{i1}, Xrg2(i1) ) = val2{i1};
-                end
-                
-                % construction
-                
-            % model1 is FE and model2 is discrete
-            case 'discrete'
-                error('not implemented yet')
-                
-            % unknown type for model 2
-            otherwise
-                error('unknown type for model 2')
-        end
-        
-    % model 1 is of discrete type
-    case 'discrete'
-        error('not implemented yet')
-        
-    % unknown type for model 2
-    otherwise
-        error('unknown type for model 1');
+% intersect the meshes to get the integration mesh
+disp('warning: model2 is supposed embedded in model1');
+Xi = X2;
+Ti = T2(indT2,:);
+[ Xi, Ti ] = ReduceMesh( Xi, Ti );
+
+% compute the passage matrices in terms of elements
+Tr2Ti1 = TR2TI( Tr1, Xr1, Xi, Ti );
+Tr2Ti2 = TR2TI( Tr2, Xr2, Xi, Ti );
+
+% compute the passage matrices in terms of nodes
+% = get the values of the basis functions in the
+% representation meshes at the nodes of the integration
+% mesh
+[Xr2Xi1,val1] = XR2XI( Xr1, Tr1, Xi, Ti, Tr2Ti1 );
+[Xr2Xi2,val2] = XR2XI( Xr2, Tr2, Xi, Ti, Tr2Ti2 );
+
+% construction of passage matrices from the integration
+% meshes to the representation meshes
+M1 = sparse( size(Xi,1), size(X1,1) );
+for i1 = 1:size(Xr1,1)
+    M1( Xr2Xi1{i1}, Xrg1(i1) ) = val1{i1};
 end
-
+M2 = sparse( size(Xi,1), size(X2,1) );
+for i1 = 1:size(Xr2,1)
+    M2( Xr2Xi2{i1}, Xrg2(i1) ) = val2{i1};
+end            
+        
 % output
 Int = struct( 'X', Xi, 'T', Ti );
-Rep{1} = struct( 'type', model1.mesh.type,...
-             'X', Xr1, ...
-             'T', Tr1, ...
-             'M', M1, ...
-             'value', {val1}, ...
-             'Xr2Xi', {Xr2Xi1}, ...
-             'Xrg', Xrg1 );
-Rep{2} = struct( 'type', model2.mesh.type,...
-             'X', Xr2, ...
-             'T', Tr2, ...
-             'M', M2, ...
-             'value', {val2}, ...
-             'Xr2Xi', {Xr2Xi2}, ...
-             'Xrg', Xrg2 );
+Rep{1} = struct( 'X', Xr1, ...
+                 'T', Tr1, ...
+                 'M', M1, ...
+                 'value', {val1}, ...
+                 'Xr2Xi', {Xr2Xi1}, ...
+                 'Xrg', Xrg1 );
+Rep{2} = struct( 'X', Xr2, ...
+                 'T', Tr2, ...
+                 'M', M2, ...
+                 'value', {val2}, ...
+                 'Xr2Xi', {Xr2Xi2}, ...
+                 'Xrg', Xrg2 );
 
 
 %==========================================================================
-function ind = NonConstantAlpha( model, alpha )
-% to extract a submesh of model.mesh where the alpha function is not 
-% constant
-d = size( model.mesh.X, 2 );
-T = model.mesh.T;
-ind = ( abs(alpha(T(:,1)) - alpha(T(:,2))) > 1e-9 );
-if d>1
-    ind = ( abs(alpha(T(:,1)) - alpha(T(:,2))) > 1e-9 )...
-        | ( abs(alpha(T(:,1)) - alpha(T(:,3))) > 1e-9 )...
-        | ( abs(alpha(T(:,2)) - alpha(T(:,3))) > 1e-9 ) ;
-end
-if d>2
-    error('not implemented yet')
-end
-ind = find( ind );
-
-%==========================================================================
+function ind = DefineCouplingElements( T, LSp )
+% to extract a submesh of model.mesh where the product of level set
+% functions is negative (ie elements in the coupling zone)
+ind0 = abs(LSp) <= 1e-9;
+ind = find( all( (LSp(T)>=1e-9) | ind0(T), 2 ) );
 
 %==========================================================================
 function indT = TR2TI( Tr, Xr, Xi, Ti )

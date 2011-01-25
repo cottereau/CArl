@@ -5,47 +5,41 @@ function [ sol, out ] = CArl( model, coupling, solver )
 %
 %  model: cell of structured arrays containing the information relative to
 %         the different models, in particular:
-%       - 'code': code to be used to construct the stiffness matrices.
-%                 Implemented: {'Comsol' 'HomeFE' 'ZacFE'}
-%       - 'mesh': array with the field 'type' = 'FE' or 'discrete'
-%                 In the case 'FE' it also contains fields 'X' and 'T',
-%                   containing respectively the nodal coordinates and
-%                   connectivity matrix.
-%                 In the case 'discrete', it also contains fields 'X' and 
-%                   'T', containing respectively the nodes of the grid and
-%                   the closest nodes.
-%       - other fields may be present depending on the type of code used
+%       -'code': code to be used to construct the stiffness matrices.
+%                Implemented: {'Comsol' 'HomeFE' 'ZacFE'}
+%       - other fields should be in format appropriate for the code used
 %
 %  coupling: cell of structured array describing the coupling options, 
-%       - 'models': 1*2 vector naming the models to be coupled (the number
-%                   k indicates model{k}
-%       - 'weight': structured array indicating the coupling domain and the
-%                   way the weights should be computed. The arrays are
-%             --'interior' and 'exterior', each with the fields
-%                   * 'levelSet': set of points creating a closed surface
-%                   (the last point is linked to the first one : it 
-%                   has to be the same point). The dimension of the closed
-%                   space has to be big enough
-%                   * 'value' is the value of the weight for the FIRST
-%                   model in coupling.models inside or outside 'levelSet',
-%                   as indicated below. The 'value' corresponding to the
-%                   SECOND model in that area is 1-'value'
-%                'interior' means that the 'value' should be set for the
-%                first model inside the 'levelSet' indicated, while
-%                'exterior' sets the 'value' outside the model indicated.
-%             --'type': 'linear' or 'constant' indicates how the weights
-%               evolve between the values set inside the interior levelSet
-%               and outside the exterior levelSet.
-%             --'value': value at which the weight is set when
-%               'type'='constant'
-%       - 'mediator': structured array for the definition of the mediator 
-%                     space. The fields are
-%             --'type': 'deterministic' or 'stochastic' ('determinstic by
+%       -'models': 1*2 vector naming the models to be coupled (the number
+%                  k indicates model{k}
+%       -'weight1': structured array defining the relevant information for
+%                 model{coupling.models(1)} and containing the fields
+%            --'ext': external geometrical limit of the coupling zone given 
+%                 as a mesh in (X,T) format, with one dimension less than 
+%                 the volume mesh model{coupling.models(1)}.mesh
+%            --'int': internal geometrical limit of the coupling zone given
+%                 in the same format as ext. The curve int should be 
+%                 located inside the curve ext.
+%              NB: in 1D, the level sets should include +/-Inf to give
+%              sense to 'interior' and 'exterior' definitions
+%            --'value': value of the weight function inside the coupling
+%                       zone, given as a vector of coefficients of a
+%                       polynomial (a scalar for a constant weight, a 2*1
+%                       vector for a linear weight, etc ...)
+%            --'extvalue': value of the weight outside the exterior curve
+%            --'intvalue': value of the weight inside the interior curve
+%       -'weight2': same as 'weight1' for the other model. When not
+%                   defined, weight2=weight1, except for the values that
+%                   are taken such that (value2+value1=1), and int and ext
+%                   that are inversed.
+%       -'mediator': structured array for the definition of the mediator 
+%                    space. The fields are
+%             --'type': 'deterministic' or 'stochastic' ('deterministic by
 %                     default)
 %             --'support': 1 or 2. indicates which model should be used as
 %                     the support for the physical basis functions. Note
 %                     that usually the coarser support should be used.
-%       - 'operator': type of coupling operator used 'H1' or 'L2'.
+%       -'operator': type of coupling operator used ('H1' or 'L2').
 %
 %  solver: 'direct', 'FETI', 'MonteCarlo'
 %
@@ -53,7 +47,11 @@ function [ sol, out ] = CArl( model, coupling, solver )
 %       - 'models': cell of structured array containing the solution
 %                   respective to each model independently
 %
-% copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
+% developed at 
+% Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579, 
+% grande voie des vignes
+% F-92295 Chatenay-Malabry
+% FRANCE
 % contact: regis.cottereau@ecp.fr
 
 % R. Cottereau 04/2010
@@ -67,41 +65,36 @@ K = cell(Nm,1);
 F = cell(Nm,1);
 C1 = cell(Nc,1);
 C2 = cell(Nc,1);
-alpha = cell(Nc,2);
-levelSet = cell(Nc,2);
+alpha1 = cell(Nc,1);
+alpha2 = cell(Nc,1);
 c2m = zeros(Nc,2);
 
-% reading the mesh in CArl format from exterior model
-if  strcmp (model{1}.code,'Comsol')
-        Tint1 = model{1}.femcomsol.mesh.t' ;
-        Tint2 = model{2}.femcomsol.mesh.t' ;
-        model{1}.mesh.X = model{1}.femcomsol.mesh.p' ;
-        model{1}.mesh.T = Tint1(:,1:end-1) ;
-        model{2}.mesh.X = model{2}.femcomsol.mesh.p' ;
-        model{2}.mesh.T = Tint2(:,1:end-1) ;   
+% reading the code-dependant mesh into CArl format
+for i1 = 1:Nm
+    model{i1}.mesh = ReadCodeMesh( model{i1} );
 end
 
 % construction of coupling operators
 disp('Creating coupling matrices ...')
 for i1 = 1:Nc
-
     % definition of models for this coupling
     couple = coupling{i1};
     c2m( i1, : ) = couple.models;
     model1 = model{ couple.models(1) };
     model2 = model{ couple.models(2) };
     
+    % define level sets
+    LSet1 = DefineLevelSet( model1.mesh.X, couple.weight1 );
+    LSet2 = DefineLevelSet( model2.mesh.X, couple.weight2 );
+
     % compute weights for each model
-    [alpha{i1,1}, levelSet{i1,1}.ext, levelSet{i1,1}.int] = ...
-                           ArlequinWeight( model1.mesh, couple.weight, 1 );
-    [alpha{i1,2}, levelSet{i1,2}.ext, levelSet{i1,2}.int] = ...
-                           ArlequinWeight( model2.mesh, couple.weight, 2 );
-    
+    alpha1{i1} = ArlequinWeight( model1.mesh, couple.weight1, LSet1 );
+    alpha2{i1} = ArlequinWeight( model2.mesh, couple.weight2, LSet2 );
+
     % create intersection of meshes (for both representation and 
     % integration purposes)
-    [ Int, Rep ] = MeshIntersect( model1, model2, levelSet{i1,1}, ...
-                                                          levelSet{i1,2} );
-    
+    [ Int, Rep ] = MeshIntersect( model1.mesh, model2.mesh, LSet1, LSet2 );
+
     % definition of the mediator space
     Int.M = MediatorSpace( couple.mediator, Int, Rep ); 
     
@@ -113,8 +106,11 @@ end
 % construct stiffness and force matrices
 disp('Creating stiffness matrices ...')
 for i1 = 1:Nm
-    model{i1}.alpha = prod( cat( 2, alpha{ find( c2m(:) == i1 ) } ), 2 );
-    [ K{i1}, F{i1} ] = StiffnessMatrix( model{i1} );
+    % condensate alpha functions for each model
+    alpha = CondensateAlpha( i1, model{i1}, c2m, [alpha1 alpha2] );
+
+    % compute stiffness and force matrices
+    [ K{i1}, F{i1} ] = StiffnessMatrix( model{i1}, alpha );
 end
 
 % assemble sparse matrix system

@@ -1,4 +1,4 @@
-function [ K, F ] = StiffnessMatrix( model )
+function [ K, F ] = StiffnessMatrix( model, alpha )
 % STIFFNESSMATRIX to construct the basic stiffness matrix and force vector
 % by calling an external code
 %
@@ -24,19 +24,16 @@ function [ K, F ] = StiffnessMatrix( model )
 
 % R. Cottereau 04/2010
 
-% compute the modified value of the model property values
-if numel(model.property)>1
-    model.property = diag(model.alpha) * model.property;
-else
-    model.property = model.alpha * model.property;
-end    
-model.load = model.alpha .* model.load;
-
 % switch on the external code
 switch model.code
     
     % HOMEFE
     case 'HomeFE'
+        % modify the properties in each element according to alpha
+        alpha = polyvalN( alpha, model.mesh.X(model.mesh.T(:,1)), ...
+                                 model.mesh.X(model.mesh.T(:,2)));
+        model.property = model.property .* alpha;
+        model.load = model.load .* model.load;
         % compute the modified value of the model property values
         [ x, y, K, z, F, k ] = StiffnessMatrixHomeFE( model );
         
@@ -83,4 +80,19 @@ K = struct( 'x', x, 'y', y, 'val', K );
 F = struct( 'x', z, 'y', k, 'val', F );
 if exist( 'Ktot', 'var' )
     K.MC = Ktot;
+end
+
+% polyval for matrices
+function y = polyvalN(varargin)
+% P is an [N*Np matrix] of N polynomials of order Np-1
+% xi is an N*d matrix of coordinates
+P = varargin{1};
+Nx = nargin-1;
+Np = size(P,2)-1;
+y = repmat( P(:,end), [1 Nx] );
+for i1=1:Nx
+    x = varargin{i1+1};
+    for i2=1:Np
+        y(:,i1) = y(:,i1) + (P(:,Np+1-i2) .* x.^i2);
+    end
 end

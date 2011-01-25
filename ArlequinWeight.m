@@ -1,101 +1,49 @@
-function [ alpha, distExt, distInt ] = ArlequinWeight( mesh, weight, n )
+function alpha = ArlequinWeight( mesh, weight, LSet )
 % ARLEQUINWEIGHT to compute the weight functions associated to the
 % partition of models
 %
-% syntax: alpha = ArlequinWeight( model, coupling, n )
+% syntax: alpha = ArlequinWeight( mesh, weight, LSet )
 %
-%  model: structured array containing the information relative to the 
-%         model, in particular:
-%       - 'type': describes the type of representation used for the
-%                 geometry. This is used for all interpolation purposes,
-%                 in particular for the definition of weight functions
-%                 Implemented: {'FE' 'discrete'}
-%       - 'mesh': array dependent on 'type'.
-%  coupling: structured array describing the coupling options, in
-%            particular:
-%       - 'exteriorLevelSet': description of the outer boundary of the 
-%                     coupling domain
-%       - 'exteriorValue': 1*2 vector of the values of the weight function
-%                     outside the exteriorLevelSet for each model. The sum
-%                     of the values should be 1.
-%       - 'interiorLevelSet': description of the inner boundary of the 
-%                     coupling domain
-%       - 'interiorValue': 1*2 vector of the values of the weight function
-%                     inside the interiorLevelSet for each model. The sum
-%                     of the values should be 1.
-%       - 'weight': 'constant', 'linear'
+%  mesh: structured array containing the fields 'X' and 'T'
+%  weight: structured array containing the fields
+%          -'value': value of the weight function between LSet.int and 
+%                    LSet.ext, given as a vector of coefficients of a
+%                    polynomial (a scalar for a constant weight, a 2*1
+%                    vector for a linear weight, etc ...)
+%          -'extvalue': value of the weight outside LSet.ext
+%          -'intvalue': value of the weight inside the interior curve
 %  n: indicates what model is being considered [1 or 2]
 %
-%  alpha: value of the weight function with the following format
-%       - model.type='FE' vector of the same size as the number of lines in
-%                    model.mesh.X
-%       - model.type='discrete' not implemented yet
+%  alpha: value of the weight function, given as a polynomial on each
+%         element of the mesh [same size as T]
 %
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
 
 % R. Cottereau 04/2010
 
-% constants
-int = weight.interior;
-ext = weight.exterior;
+% warning
+disp( [ 'for now, it is assumed that the boundary of the coupling zone' ...
+        ' does not cross any element of any mesh' ] );
 
-% test on the type of geometrical representation
-switch mesh.type
-    
-    % FE representation
-    case 'FE'
-        
-        % check coherency of weights
-        int.value = [ int.value 1-int.value ];
-        ext.value = [ ext.value 1-ext.value ];
-        
-        % intialization
-        alpha = zeros( size(mesh.X,1), 1 );
-        
-        % computation of distances to interior and exterior
-        distExt = DistanceMesh2LevelSet( mesh.X, ext.levelSet );
-        distInt = - DistanceMesh2LevelSet( mesh.X, int.levelSet );
-           
-        % indices for the coupling domain
-        ind = (distExt.*distInt) >= 0;
+% intialization
+alpha = zeros( size(mesh.T,1), size(weight.value,2) );
 
-        % choice of the weight function
-        switch weight.type
-            
-            
-            % constant weight function
-            case 'constant'
-                alpha( ind ) = 1/2;
-                
-            % linear weight function
-            case 'linear'
-                a = abs(distInt(ind)) ./ (abs(distInt(ind))+abs(distExt(ind)));
-                bInt = int.value(n);
-                bExt = ext.value(n);
-                alpha( ind ) = bInt + a*(bExt-bInt);
-        
-            % unknown weight function
-            otherwise
-                error( 'unknown type of weight function' )
-        end
+% value of level set function product at all nodes of elements
 
-        % weight functions outside the coupling domain
-        ind = ( distExt > 0 );
-        alpha( ind ) = ext.value(n);
-        ind = ( distInt > 0 );
-        alpha( ind ) = int.value(n);
+% alpha in the coupling domain
+prodLS = LSet.ext.*LSet.int;
+ind = any( prodLS( mesh.T )>= 1e-9, 2) | all( prodLS(mesh.T)==0, 2);
+alpha(ind,:) = repmat( weight.value, [sum(ind) 1] );
 
-    % discrete representation
-    case 'discrete'
-        
-        error( [ 'discrete representation for weight computation not ' ...
-                 'implemented yet' ] );
-             
-    % unknown representation
-    otherwise
-        
-        error( [ 'this type of representation for weight computation ' ...
-                 'has not been implemented yet' ] );
-end
+% weight functions outside the coupling domain
+ind = any( LSet.ext( mesh.T )>= 1e-9, 2);
+alpha( ind, end ) = weight.extvalue;
+ind = any( LSet.int( mesh.T )>= 1e-9, 2);
+alpha( ind, end ) = weight.intvalue;
 
+%         % linear weight function
+%         a = abs(LSet.ext(ind)) ./ (abs(LSet.int(ind))+abs(LSet.ext(ind)));
+%         bInt = weight.intvalue;
+%         bExt = weight.extvalue;
+%         alpha( ind ) = bInt + a*(bExt-bInt);

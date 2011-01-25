@@ -35,14 +35,21 @@ function [ x, y, C ] = CouplingOperatorHomeFE( operator, Int )
 
 % constants
 Nni = size(Int.X,1);
+[Nne,ne] = size(Int.T);
 
 % loop on the columns of the matrix and creation of a set of forces
-load = eye(Nni);
+load = zeros(Nne,ne,Nni);
+for i1=1:Nni
+    for i2 = 1:ne
+        load( Int.T(:,i2) == i1,i2,i1 ) = 1;
+    end
+end
 m = struct( 'mesh', Int, ...
+            'property', ones(Nne,1), ...
             'load', load, ...
-            'property', ones(Nni,1), ...
             'BC', [] );
 [ x, y, K, z, F, k ] = StiffnessMatrixHomeFE( m );
+
 
 % choice of the coupling operator
 switch operator
