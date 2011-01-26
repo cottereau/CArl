@@ -10,7 +10,7 @@ function mesh = ReadCodeMesh( model )
 switch model.code
     
     % HOMEFE
-    case 'HomeFE'
+    case {'HomeFE','MonteCarloHomeFE'}
         mesh = model.mesh;
 
     % COMSOL

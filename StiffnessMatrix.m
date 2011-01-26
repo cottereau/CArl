@@ -30,10 +30,11 @@ switch model.code
     % HOMEFE
     case 'HomeFE'
         % modify the properties in each element according to alpha
-        alpha = polyvalN( alpha, model.mesh.X(model.mesh.T(:,1)), ...
-                                 model.mesh.X(model.mesh.T(:,2)));
+        alpha1 = polyvalN( alpha, model.mesh.X(model.mesh.T(:,1)) );
+        alpha2 = polyvalN( alpha, model.mesh.X(model.mesh.T(:,2)) );
+        alpha = [alpha1 alpha2];
         model.property = model.property .* alpha;
-        model.load = model.load .* model.load;
+        model.load = model.load .* alpha;
         % compute the modified value of the model property values
         [ x, y, K, z, F, k ] = StiffnessMatrixHomeFE( model );
         
@@ -45,11 +46,15 @@ switch model.code
         
     % MONTE CARLO VERSION OF HOME FE
     case 'MonteCarloHomeFE'
-        Nmc = size( model.property, 2 );
+        alpha1 = polyvalN( alpha, model.mesh.X(model.mesh.T(:,1)) );
+        alpha2 = polyvalN( alpha, model.mesh.X(model.mesh.T(:,2)) );
+        alpha = [alpha1 alpha2];
+        model.load = model.load .* alpha;
+        Nmc = size( model.property, 3 );
         Ktot = cell( Nmc, 1 );
         property = model.property;
         for i1 = 1:Nmc
-            model.property = property(:,i1);
+            model.property = property(:,:,i1) .* alpha;
             [ x, y, Ktot{i1}, z, F, k ] = StiffnessMatrixHomeFE( model );
         end
         K = Ktot{1};
@@ -80,19 +85,4 @@ K = struct( 'x', x, 'y', y, 'val', K );
 F = struct( 'x', z, 'y', k, 'val', F );
 if exist( 'Ktot', 'var' )
     K.MC = Ktot;
-end
-
-% polyval for matrices
-function y = polyvalN(varargin)
-% P is an [N*Np matrix] of N polynomials of order Np-1
-% xi is an N*d matrix of coordinates
-P = varargin{1};
-Nx = nargin-1;
-Np = size(P,2)-1;
-y = repmat( P(:,end), [1 Nx] );
-for i1=1:Nx
-    x = varargin{i1+1};
-    for i2=1:Np
-        y(:,i1) = y(:,i1) + (P(:,Np+1-i2) .* x.^i2);
-    end
 end

@@ -72,9 +72,8 @@ F = F(:);
 % add boundary conditions
 if ~isempty( model.BC )
     Nbc = length( model.BC.type );
-    disp('warning: only dirichlet boundary conditions implemented');
     Nx = max(x);
-    Nf = size(model.load,2);
+    Nf = size(model.load,3);
     x = [ x ; Nx+(1:Nbc)'; model.BC.nodes' ];
     y = [ y ; model.BC.nodes'; Nx+(1:Nbc)' ];
     K = [ K ; ones( 2*Nbc, 1 ) ];

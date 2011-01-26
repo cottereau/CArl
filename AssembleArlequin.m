@@ -122,7 +122,7 @@ for i1 = 1:Nc
                    -Csto.Ctheta; -Csto.Ctheta; 
                    Cdet.BCpsi; Cdet.BCpsi ];
         K = sparse( x0, y0, K0 );
-        
+
         % increase the size of the force matrix
         [ x, y, F ] = find( F );
         F = sparse( x, y, F, size(K,1), 1 );
