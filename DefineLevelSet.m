@@ -66,7 +66,7 @@ switch d
 
     % 2D case
     case 2
-        poli = LSet.X( [LSet.T(1,:); LSet.T(end,2) ], : );
+        poli = LSet.X( [LSet.T(:,1); LSet.T(end,2) ], : );
         
         % loop on nodes
         for i1 = 1:Nn

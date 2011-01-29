@@ -6,11 +6,11 @@ clear all
 % load Tests/Coarse1D.mat
 % load Tests/Medium1D.mat
 % load Tests/Large1D.mat
-load Tests/MonteCarloCoarse1D.mat
-% load Tests/MonteCarloMedium1D.mat
+% load Tests/MonteCarloCoarse1D.mat
+load Tests/MonteCarloMedium1D.mat
 
 % coupling{1}.mediator.support = 2;
-% model{2}.property = model{2}.property(:,:,1:10000);
+model{2}.property = model{2}.property(:,:,1:100);
 
 % start computation
 [ sol, out ] = CArl( model, coupling, solver );

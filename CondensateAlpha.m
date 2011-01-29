@@ -21,6 +21,7 @@ switch model.code
         [i1,j1] = find( c2m==n );
         alpha = alpha0{ i1(1), j1(1) };
         for i2 = 2:length(i1)
+            error('change this: alpha is now defined at nodes!!!')
             alpha = convvec( alpha, alpha0{ i1(i2), j1(i2) } );
         end
        
@@ -37,9 +38,6 @@ switch model.code
                 a = model.random.min;
                 b = model.random.max;
                 alpha = alpha0{ 1, find(c2m==n) };
-                alpha1 = polyvalN( alpha, model.mesh.X(model.mesh.T(:,1)) );
-                alpha2 = polyvalN( alpha, model.mesh.X(model.mesh.T(:,2)) );
-                alpha = [alpha1 alpha2];
                 for i1=1:size(alpha,1)
                     alpha(i1,1)=fzero(@(x) ...
                  (exp((b-a)*x)-1)*((1-alpha(i1,1))+a*x)-(b-a)*x,alpha(i1,1));
@@ -48,7 +46,6 @@ switch model.code
                 end
                 alpha(alpha>1)=1;
                 alpha(alpha<0)=0;
-                alpha = valpolyN( alpha, model.mesh.X(model.mesh.T) );
                 
             otherwise
                 error('unknown random field law')

@@ -27,23 +27,20 @@ disp( [ 'for now, it is assumed that the boundary of the coupling zone' ...
         ' does not cross any element of any mesh' ] );
 
 % intialization
-alpha = zeros( size(mesh.T,1), size(weight.value,2) );
-
-% value of level set function product at all nodes of elements
+alpha = zeros( size(mesh.T) );
 
 % alpha in the coupling domain
 prodLS = LSet.ext.*LSet.int;
-ind = any( prodLS( mesh.T )>= 1e-9, 2) | all( prodLS(mesh.T)==0, 2);
-alpha(ind,:) = repmat( weight.value, [sum(ind) 1] );
+indT = any( prodLS( mesh.T )>= 1e-9, 2) | all( prodLS(mesh.T)==0, 2);
+[indX,j1,j2] = unique(mesh.T(indT,:));
+a = abs(LSet.int(indX)) ./ (abs(LSet.ext(indX))+abs(LSet.int(indX)));
+a = max(weight.value) - a*abs(diff(weight.value));
+alpha( indT,: ) = reshape( a(j2), sum(indT), size(mesh.T,2) );
 
-% weight functions outside the coupling domain
+% weight functions outside the coupling domain (outside exterior LSet)
 ind = any( LSet.ext( mesh.T )>= 1e-9, 2);
-alpha( ind, end ) = weight.extvalue;
-ind = any( LSet.int( mesh.T )>= 1e-9, 2);
-alpha( ind, end ) = weight.intvalue;
+alpha( ind, : ) = weight.extvalue;
 
-%         % linear weight function
-%         a = abs(LSet.ext(ind)) ./ (abs(LSet.int(ind))+abs(LSet.ext(ind)));
-%         bInt = weight.intvalue;
-%         bExt = weight.extvalue;
-%         alpha( ind ) = bInt + a*(bExt-bInt);
+% weight functions outside the coupling domain (inside interior LSet)
+ind = any( LSet.int( mesh.T )>= 1e-9, 2);
+alpha( ind, : ) = weight.intvalue;
