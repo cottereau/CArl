@@ -22,14 +22,14 @@ Nc = size(opt.Cy,1);
 sol = cell(Nm,1);
 out = struct( 'BC', {cell(Nm,1)}, 'C', {cell(Nc,1)} );
 
-    switch solver
+    switch lower(solver)
 
         % direct solver
         case 'direct'
             u = K \ F;
 
         % Monte Carlo solver
-        case 'MonteCarlo'
+        case 'montecarlo'
             Nmc = length( opt.MC.Ks );
             disp('warning: this has only been tested with one stochastic model')
             
@@ -73,7 +73,7 @@ out = struct( 'BC', {cell(Nm,1)}, 'C', {cell(Nc,1)} );
                   u( (length(ind1)+1):end ) ];
         
         % FETI solver
-        case 'FETI'
+        case 'feti'
             error( 'not implemented yet' )
 
         % unknown solver
