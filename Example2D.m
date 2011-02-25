@@ -9,7 +9,7 @@ clear all
 load Tests/MonteCarloMedium2D.mat
 
 % coupling{1}.mediator.support = 2;
-% model{2}.property = model{2}.property(:,:,1:2);
+model{2}.property = model{2}.property(:,:,1:50);
 
 % start computation
 [ sol, out ] = CArl( model, coupling, solver );

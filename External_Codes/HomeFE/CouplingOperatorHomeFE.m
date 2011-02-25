@@ -55,16 +55,19 @@ m = struct( 'mesh', Int, ...
 switch operator
     
     % L2 coupling
-    case 'L2'            
+    case 'L2'
+        k0 = 1;
         x = z;
         y = k;
-        C = F;
+        C = k0*F;
         
     % H1 coupling
     case 'H1'
+        k0 = 1;
+        k1 = 1e-3;
         x = [ x; z ];
         y = [ y; k ];
-        C = [ K; F ];
+        C = [ k1*K; k0*F ];
         
     % unknown coupling operator
     otherwise

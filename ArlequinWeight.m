@@ -37,10 +37,23 @@ a = abs(LSet.int(indX)) ./ (abs(LSet.ext(indX))+abs(LSet.int(indX)));
 a = max(weight.value) - a*abs(diff(weight.value));
 alpha( indT,: ) = reshape( a(j2), sum(indT), size(mesh.T,2) );
 
+% is the interior level set inside or outside the exterior level set ?
+extINint = sum( LSet.int + LSet.ext )>0;
+
 % weight functions outside the coupling domain (outside exterior LSet)
-ind = any( LSet.ext( mesh.T )>= 1e-9, 2);
-alpha( ind, : ) = weight.extvalue;
+if extINint
+    ind = any( LSet.ext( mesh.T )<= -1e-9, 2);
+    alpha( ind, : ) = weight.extvalue;
+else
+    ind = any( LSet.ext( mesh.T )>= 1e-9, 2);
+    alpha( ind, : ) = weight.extvalue;
+end
 
 % weight functions outside the coupling domain (inside interior LSet)
-ind = any( LSet.int( mesh.T )>= 1e-9, 2);
-alpha( ind, : ) = weight.intvalue;
+if extINint
+    ind = any( LSet.int( mesh.T )<= -1e-9, 2);
+    alpha( ind, : ) = weight.intvalue;
+else
+    ind = any( LSet.int( mesh.T )>= 1e-9, 2);
+    alpha( ind, : ) = weight.intvalue;
+end
