@@ -1,16 +1,26 @@
 CArl
 
+PRESENTATION
+============
 This project is focused on the development of a software based on the Arlequin multi-model coupling method. The main interest of this software is to allow, by its specific structure, the easy interfacing of different third-party softwares (developed and maintained outside of this project), and adapted to each of the models appearing in the coupling.
  
 Two scientific references for the theory are (the second paper is concerned only with the stochastic coupling)
-[1] H. Ben Dhia, G. Rateau, The Arlequin method as a flexible engineering design tool, Int. J. Numer. Meths. Engr. 62 (2005) 1442–1462.
-[2] R. Cottereau, H. Ben Dhia, D. Clouteau, Localized modeling of uncertainty in the Arlequin framework, in: R. Langley, A. Belyaev (Eds.), Vibration Analysis of Structures with Uncertainties, IUTAM Bookseries, Springer, 2010, pp. 477–488.
+[1] H. Ben Dhia, G. Rateau, The Arlequin method as a flexible engineering design tool, Int. J. Numer. Meths. Engr. 62 (2005) 1442-1462.
+[2] R. Cottereau, H. Ben Dhia, D. Clouteau, Localized modeling of uncertainty in the Arlequin framework, in: R. Langley, A. Belyaev (Eds.), Vibration Analysis of Structures with Uncertainties, IUTAM Bookseries, Springer, 2010, pp. 477-488.
 
 This software is mainly developed at laboratoire MSSMat (Ecole Centrale Paris - CNRS).
 contact : Regis Cottereau (regis.cottereau@ecp.fr)
 
 It is developed for MATLAB, with some routines directly in C++. This may however evolve in future versions.
 
+INSTALLATION
+============
+Before using the software, you should make sure that you update the matlab path with the appropriate directories. In matlab, run
+>> addpath( genpath('install_dir_CArl/'));
+Additionally, you might want to write this line in the startup file (generally located in ~/matlab/startup.m)
+
+USE
+============
 The main calling routine is CArl.m
 
 Some examples (in 1D and 2D) can be launched with the routines Examples1D.m et Examples2D.m. Just select, at the top of the files, the appropriate test file to be loaded (they are saved as .mat files in the directory Tests/).
