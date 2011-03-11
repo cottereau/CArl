@@ -17,10 +17,14 @@ INSTALLATION
 ============
 Before using the software, you should make sure that you update the matlab path with the appropriate directories. In matlab, run
 >> addpath( genpath('install_dir_CArl/'));
+where you replace install_dir_CArl by the full path to the directory CArl/
+
 Additionally, you might want to write this line in the startup file (generally located in ~/matlab/startup.m)
+
+This code has not been extensively tested, but should run on Matlab versions R2007a and newer.
 
 USE
 ============
 The main calling routine is CArl.m
 
-Some examples (in 1D and 2D) can be launched with the routines Examples1D.m et Examples2D.m. Just select, at the top of the files, the appropriate test file to be loaded (they are saved as .mat files in the directory Tests/).
+Some examples (in 1D and 2D) can be launched with the routines Examples1D.m et Examples2D.m. Just select, at the top of the files, the appropriate test file to be loaded (they are saved as .mat files in the directory Tests/). Do not worry if there are lots of warnings at execution. The tests should run without any problem on computers with around 2Go.
