@@ -108,7 +108,6 @@ disp('Creating stiffness matrices ...')
 for i1 = 1:Nm
     % condensate alpha functions for each model
     alpha = CondensateAlpha( i1, model{i1}, c2m, [alpha1 alpha2] );
-
     % compute stiffness and force matrices
     [ K{i1}, F{i1} ] = StiffnessMatrix( model{i1}, alpha );
 end

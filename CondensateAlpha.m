@@ -21,10 +21,9 @@ switch model.code
         [i1,j1] = find( c2m==n );
         alpha = alpha0{ i1(1), j1(1) };
         for i2 = 2:length(i1)
-            error('change this: alpha is now defined at nodes!!!')
-            alpha = convvec( alpha, alpha0{ i1(i2), j1(i2) } );
+            error('Several coupling not implemented yet')
         end
-       
+
     % "random" FE case: the alpha must be corrected 
     case {'MonteCarloHomeFE'}
         if size(c2m,1)>1

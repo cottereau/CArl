@@ -10,9 +10,10 @@ function alpha = ArlequinWeight( mesh, weight, LSet )
 %                    LSet.ext, given as a vector of coefficients of a
 %                    polynomial (a scalar for a constant weight, a 2*1
 %                    vector for a linear weight, etc ...)
+%                    For linear : give the value as :
+%              [related to interior domain , related to exterior domain]
 %          -'extvalue': value of the weight outside LSet.ext
 %          -'intvalue': value of the weight inside the interior curve
-%  n: indicates what model is being considered [1 or 2]
 %
 %  alpha: value of the weight function, given as a polynomial on each
 %         element of the mesh [same size as T]
@@ -21,39 +22,36 @@ function alpha = ArlequinWeight( mesh, weight, LSet )
 % contact: regis.cottereau@ecp.fr
 
 % R. Cottereau 04/2010
-
-% warning
-disp( [ 'for now, it is assumed that the boundary of the coupling zone' ...
-        ' does not cross any element of any mesh' ] );
-
+% C. Zaccardi 04/2011
+        
 % intialization
 alpha = zeros( size(mesh.T) );
+
+% weight functions outside the coupling domain (outside exterior LSet)
+ind = any( LSet.ext( mesh.T )<= -1e-9, 2);
+alpha( ind,: ) = weight.intvalue ;
+ind = any( LSet.ext( mesh.T )>= 1e-9, 2);
+alpha( ind,: ) = weight.extvalue ;
+
+% weight functions outside the coupling domain (inside exterior LSet)
+ind = any( LSet.int( mesh.T )<= -1e-9, 2);
+alpha( ind,: ) = weight.extvalue ;
+ind = any( LSet.int( mesh.T )>= 1e-9, 2);
+alpha( ind,: ) = weight.intvalue ;
 
 % alpha in the coupling domain
 prodLS = LSet.ext.*LSet.int;
 indT = any( prodLS( mesh.T )>= 1e-9, 2) | all( prodLS(mesh.T)==0, 2);
 [indX,j1,j2] = unique(mesh.T(indT,:));
 a = abs(LSet.int(indX)) ./ (abs(LSet.ext(indX))+abs(LSet.int(indX)));
-a = max(weight.value) - a*abs(diff(weight.value));
+if size(weight.value,2)==2
+    a = weight.value(1) + a*(weight.value(2)-weight.value(1));
+else
+    error('Not implemented yet')
+end
 alpha( indT,: ) = reshape( a(j2), sum(indT), size(mesh.T,2) );
 
-% is the interior level set inside or outside the exterior level set ?
-extINint = sum( LSet.int + LSet.ext )>0;
 
-% weight functions outside the coupling domain (outside exterior LSet)
-if extINint
-    ind = any( LSet.ext( mesh.T )<= -1e-9, 2);
-    alpha( ind, : ) = weight.extvalue;
-else
-    ind = any( LSet.ext( mesh.T )>= 1e-9, 2);
-    alpha( ind, : ) = weight.extvalue;
-end
 
-% weight functions outside the coupling domain (inside interior LSet)
-if extINint
-    ind = any( LSet.int( mesh.T )<= -1e-9, 2);
-    alpha( ind, : ) = weight.intvalue;
-else
-    ind = any( LSet.int( mesh.T )>= 1e-9, 2);
-    alpha( ind, : ) = weight.intvalue;
-end
+
+
