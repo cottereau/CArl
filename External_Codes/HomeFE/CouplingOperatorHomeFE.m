@@ -44,30 +44,27 @@ for i1=1:Nni
         load( Int.T(:,i2) == i1,i2,i1 ) = 1;
     end
 end
+
 m = struct( 'mesh', Int, ...
             'property', ones(Nne,ne), ...
             'load', load, ...
             'BC', [] );
 [ x, y, K, z, F, k ] = StiffnessMatrixHomeFE( m );
 
-
 % choice of the coupling operator
 switch operator
     
     % L2 coupling
-    case 'L2'
-        k0 = 1;
+    case 'L2'            
         x = z;
         y = k;
-        C = k0*F;
+        C = F;
         
     % H1 coupling
     case 'H1'
-        k0 = 1;
-        k1 = 1e-3;
         x = [ x; z ];
         y = [ y; k ];
-        C = [ k1*K; k0*F ];
+        C = [ K; F ];
         
     % unknown coupling operator
     otherwise

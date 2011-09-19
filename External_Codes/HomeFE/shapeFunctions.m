@@ -1,4 +1,4 @@
-function [N,Nxi,Neta] = shapeFunction( elem, nen, pospg ) 
+function [N,Nxi,Neta] = shapeFunctions( elem, nen, pospg ) 
 % [N,Nxi,Neta] = shapeFunction( elem, nen, pospg ) 
 %
 % Evaluate the shape functions in the gauss points 
