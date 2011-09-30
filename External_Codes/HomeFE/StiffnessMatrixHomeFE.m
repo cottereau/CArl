@@ -54,7 +54,7 @@ k = k(:);
 
 % gauss weights and shape functions
 [ gaussX, gaussW ] = simplexquad( d+2, d );
-[ N, Nxi, Neta ] = shapeFunction( d-1, nnode, gaussX );
+[ N, Nxi, Neta ] = shapeFunctions( d-1, nnode, gaussX );
 
 % loop on elements
 for i1 = 1:Ne

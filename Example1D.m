@@ -2,6 +2,7 @@ close all
 clear all
 % profile on
 
+<<<<<<< HEAD
 %load Tests/Coarse1D.mat
 %load Tests/Medium1D.mat
 %load Tests/Medium1D_substitution.mat
@@ -12,6 +13,17 @@ load Tests/MonteCarloMedium1D_substitution.mat
 
 %coupling{1}.mediator.support = 1;
 %model{2}.property = model{2}.property(:,:,1:50);
+=======
+% load models
+load Tests/Coarse1D.mat
+% load Tests/Medium1D.mat
+% load Tests/Large1D.mat
+% load Tests/MonteCarloCoarse1D.mat
+% load Tests/MonteCarloMedium1D.mat
+
+% coupling{1}.mediator.support = 2;
+% model{2}.property = model{2}.property(:,:,1:100);
+>>>>>>> bc5e3c1d2e49765fe6afad96cd0e1f614e0f6639
 
 % start computation
 [ sol, out ] = CArl( model, coupling, solver );
