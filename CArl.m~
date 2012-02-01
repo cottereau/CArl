@@ -8,8 +8,8 @@ function [ sol, out ] = CArl( model, coupling, solver )
 %       -'code': code to be used to construct the stiffness matrices.
 %                Implemented: {'Comsol' 'HomeFE' 'ZacFE'}
 %       - other fields should be in format appropriate for the code used
-%  coupling : cell of structured array containing the description of each
-%        of the couplings, with the fields
+%  coupling : cell of structured array containing the description of eachof the
+%        coupling, with the fields
 %       -'type' : either 'zoom' or 'join'
 %       -'models' : 1*2 vector naming the models to be coupled (the number
 %                  k indicates model{k}). When 'zoom' is used, the first
@@ -22,10 +22,6 @@ function [ sol, out ] = CArl( model, coupling, solver )
 %                     the support for the physical basis functions. Note
 %                     that usually the coarser support should be used.
 %       -'operator' : type of coupling operator used ('H1' or 'L2').
-%       -'LevelSet1'; 'LevelSet2' : definition of level-sets bounding the
-%             coupling zone, given as a mesh in (X,T) format, with the
-%             appropriate dimension
-%       -'epsilon' : residual value of the non-proeminent model
 %  solver: 'direct', 'MonteCarlo', 'FETI' (not implemented)
 %
 %  NB: more complex coupling can be implemented 

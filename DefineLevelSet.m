@@ -25,11 +25,19 @@ function LSet = DefineLevelSet( X, weight )
 % R. Cottereau 01/2011
 
 % construct the level set
-LSet = struct( 'int', -DistanceMesh2LevelSet( X, weight.int ), ...
-               'ext', DistanceMesh2LevelSet( X, weight.ext ) );
+dint = DistanceMesh2LevelSet( X, weight.int );
+dext = DistanceMesh2LevelSet( X, weight.ext );
 
-% in 1D, the Level set function cannot close so the sign has got to be
-% taken care of by hand
+% change the sign if need be when exterior boundary is fully contained
+% inside the interior boundary
+if LSinLS( weight.ext, weight.int )
+    dint = -dint;
+    dext = -dext;
+end
+
+% store level set function
+LSet = struct( 'int', -dint, ...
+               'ext', dext );
 
 %==========================================================================
 function dist = DistanceMesh2LevelSet( X, LSet )
