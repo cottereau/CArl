@@ -58,7 +58,7 @@ switch c.type
         
     case 'join'
         w1ext = 0;
-        l = MDinLS( m1, c.LevelSet1 );
+        l = MDinLS( m1.mesh.X, c.LevelSet1 );
 end
 if l
     w1LSint = c.LevelSet2;
@@ -84,7 +84,7 @@ function l = MDinLS( X, LS )
 % MDINLS to indicate, in the case of join, whether points X are all inside 
 % levelset LS or not
 l = true;
-switch size(LS1.T,2)
+switch size(LS.T,2)
     
     case 0 % 1D problem - 0D level set
         if any((X-eps)>max(LS.X))||any((X+eps)<min(LS.X))

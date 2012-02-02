@@ -28,28 +28,25 @@ function alpha = ArlequinWeight( mesh, weight, LSet )
 alpha = zeros( size(mesh.T) );
 
 % weight functions outside the coupling domain (outside exterior LSet)
-ind = any( LSet.ext( mesh.T )<= -1e-9, 2);
-alpha( ind,: ) = weight.intvalue ;
 ind = any( LSet.ext( mesh.T )>= 1e-9, 2);
 alpha( ind,: ) = weight.extvalue ;
 
-% weight functions outside the coupling domain (inside exterior LSet)
-ind = any( LSet.int( mesh.T )<= -1e-9, 2);
-alpha( ind,: ) = weight.extvalue ;
+% weight functions outside the coupling domain (inside interior LSet)
 ind = any( LSet.int( mesh.T )>= 1e-9, 2);
 alpha( ind,: ) = weight.intvalue ;
 
 % alpha in the coupling domain
-prodLS = LSet.ext.*LSet.int;
-indT = any( prodLS( mesh.T )>= 1e-9, 2) | all( prodLS(mesh.T)==0, 2);
-[indX,j1,j2] = unique(mesh.T(indT,:));
-a = abs(LSet.int(indX)) ./ (abs(LSet.ext(indX))+abs(LSet.int(indX)));
-if size(weight.value,2)==2
-    a = weight.value(1) + a*(weight.value(2)-weight.value(1));
+indT = all( (LSet.int(mesh.T).*LSet.ext(mesh.T))>=0, 2 );
+indX = mesh.T(indT,:);
+if size(weight.value,2)==1 % constant alpha function
+    a = weight.value;
+elseif size(weight.value,2)==2 % linear alpha function
+    a = abs(LSet.int(indX)) ./ (abs(LSet.ext(indX))+abs(LSet.int(indX)));
+    a = max(weight.value) + a*(min(weight.value)-max(weight.value));
 else
     error('Not implemented yet')
 end
-alpha( indT,: ) = reshape( a(j2), sum(indT), size(mesh.T,2) );
+alpha( indT,: ) = a;
 
 
 

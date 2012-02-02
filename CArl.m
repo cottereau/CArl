@@ -26,7 +26,7 @@ function [ sol, out ] = CArl( model, coupling, solver )
 %             coupling zone, given as a mesh in (X,T) format, with the
 %             appropriate dimension
 %       -'epsilon' : residual value of the non-proeminent model
-%  solver: 'direct', 'MonteCarlo', 'FETI' (not implemented)
+%  solver: 'direct' or 'MonteCarlo'
 %
 %  NB: more complex coupling can be implemented 
 %     (see function DefineClassicalCoupling.m)
@@ -71,9 +71,9 @@ for i1 = 1:Nc
     c2m( i1, : ) = couple.models;
     model1 = model{ couple.models(1) };
     model2 = model{ couple.models(2) };
-    couple = DefineClassicalCoupling( couple, model1 );
     
     % define level sets
+    couple = DefineClassicalCoupling( couple, model1 );
     LSet1 = DefineLevelSet( model1.mesh.X, couple.weight1 );
     LSet2 = DefineLevelSet( model2.mesh.X, couple.weight2 );
 

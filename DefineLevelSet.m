@@ -30,13 +30,14 @@ dext = DistanceMesh2LevelSet( X, weight.ext );
 
 % change the sign if need be when exterior boundary is fully contained
 % inside the interior boundary
-if LSinLS( weight.ext, weight.int )
-    dint = -dint;
+if LSinLS( weight.ext, weight.int ) % case 'zoom': coarse model
     dext = -dext;
+elseif LSinLS( weight.int, weight.ext ) % case 'zoom': fine model
+    dint = -dint;
 end
 
 % store level set function
-LSet = struct( 'int', -dint, ...
+LSet = struct( 'int', dint, ...
                'ext', dext );
 
 %==========================================================================
