@@ -35,13 +35,7 @@ switch model.code
 
         % compute the modified value of the model property values
         [ x, y, K, z, F, k ] = StiffnessMatrixHomeFE( model );
-        
-    % ZacFE
-    % based on the Rasmus Anthin Finite Element toolbox
-    case 'ZacFE'
-        % compute the modified value of the model property values
-        [ x, y, K, z, F, k ] = StiffnessMatrixZacFE( model );
-        
+                
     % MONTE CARLO VERSION OF HOME FE
     case 'MonteCarloHomeFE'
         % modify the properties in each element according to alpha
@@ -56,18 +50,7 @@ switch model.code
             [ x, y, Ktot{i1}, z, F, k ] = StiffnessMatrixHomeFE( model );
         end
         K = Ktot{1};
-        
-    % MONTE CARLO VERSION OF ZAC FE
-    case 'MonteCarloZacFE'
-        Nmc = size( model.property, 2 );
-        Ktot = cell( Nmc, 1 );
-        property = model.property;
-        for i1 = 1:Nmc
-            model.property = property(:,i1);
-            [ x, y, Ktot{i1}, z, F, k ] = StiffnessMatrixZacFE( model );
-        end
-        K = Ktot{1};
-        
+                
     % COMSOL
     case 'Comsol'
         error( 'COMSOL is not supported yet' );

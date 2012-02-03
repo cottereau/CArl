@@ -52,23 +52,6 @@ switch code
             C.Ctheta = Ctheta;
         end
         
-    % ZACFE
-    case { 'ZacFE', 'MonteCarloZacFE' }
-        [ x, y, C ] = CouplingOperatorZacFE( couple.operator, Int );
-        [ x, y, C ] = find( Rep.M' * sparse( x, y, C ) * Int.M );
-        C = struct( 'x', x, 'y', y, 'val', C );
-
-        if strcmp( couple.mediator.type, 'stochastic' )
-            [ x, y, Cs ] = CouplingOperatorZacFE( 'L2', Int );
-            Cs = Rep.M' * sparse( x , y, Cs );
-            [ xtheta, ytheta, Ctheta ] = find( sum( Cs, 2 ) );
-            [ xpsi, ypsi, Cpsi ] = find( sum( Cs * Int.M, 1 )' );
-            C.xBCpsi = xpsi;
-            C.BCpsi = Cpsi;
-            C.xtheta = xtheta;
-            C.Ctheta = Ctheta;
-        end
-
     % COMSOL
     case 'Comsol'
         [ x, y, C ] = CouplingOperatorComsol( couple.operator, Int );
