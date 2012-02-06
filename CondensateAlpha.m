@@ -34,17 +34,18 @@ switch model.code
             
             % uniform first-order marginal law
             case 'uniform'
+            disp('im in')
                 a = model.random.min;
                 b = model.random.max;
-                alpha = alpha0{ 1, find(c2m==n) };
-                for i1=1:size(alpha,1)
-                    alpha(i1,1)=fzero(@(x) ...
-                 (exp((b-a)*x)-1)*((1-alpha(i1,1))+a*x)-(b-a)*x,alpha(i1,1));
-                    alpha(i1,2)=fzero(@(x) ...
-                 (exp((b-a)*x)-1)*((1-alpha(i1,2))+a*x)-(b-a)*x,alpha(i1,2));
-                end
-                alpha(alpha>1)=1;
-                alpha(alpha<0)=0;
+                alpha = alpha0{ 1, c2m==n };
+%                 for i1=1:size(alpha,1)
+%                     alpha(i1,1)=fzero(@(x) ...
+%                  (exp((b-a)*x)-1)*((1-alpha(i1,1))+a*x)-(b-a)*x,alpha(i1,1));
+%                     alpha(i1,2)=fzero(@(x) ...
+%                  (exp((b-a)*x)-1)*((1-alpha(i1,2))+a*x)-(b-a)*x,alpha(i1,2));
+%                 end
+%                 alpha(alpha>1)=1;
+%                 alpha(alpha<0)=0;
                 
             otherwise
                 error('unknown random field law')
@@ -55,18 +56,18 @@ switch model.code
         
 end
 
-% convolution of matrices
-function a = convvec( a, b )
-Na = size(a);
-Nb = size(b);
-a = fft( [a zeros(Na(1),Nb(2)-1)], [], 2 );
-b = fft( [b zeros(Nb(1),Na(2)-1)], [], 2 );
-a = ifft( a .* b, [], 2 );
-
-% polynomial value to coefficients
-function a = valpolyN( y, x )
-y1 = y(:,1);
-y2 = y(:,2);
-x1 = x(:,1);
-x2 = x(:,2);
-a = [ (y1-y2)'./(x1-x2)';(x1.*y2-x2.*y1)'./(x1-x2)']';
+% % convolution of matrices
+% function a = convvec( a, b )
+% Na = size(a);
+% Nb = size(b);
+% a = fft( [a zeros(Na(1),Nb(2)-1)], [], 2 );
+% b = fft( [b zeros(Nb(1),Na(2)-1)], [], 2 );
+% a = ifft( a .* b, [], 2 );
+% 
+% % polynomial value to coefficients
+% function a = valpolyN( y, x )
+% y1 = y(:,1);
+% y2 = y(:,2);
+% x1 = x(:,1);
+% x2 = x(:,2);
+% a = [ (y1-y2)'./(x1-x2)';(x1.*y2-x2.*y1)'./(x1-x2)']';
