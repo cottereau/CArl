@@ -8,13 +8,13 @@ switch size(LS1.T,2)
             l = true;
         end
         
-    case 1 % 2D problem - 1D level set
+    case 2 % 2D problem - 1D level set
         x1 = LS1.X(LS1.T(:,1),1);
         y1 = LS1.X(LS1.T(:,1),2);
         x2 = LS2.X(LS2.T(:,1),1);
         y2 = LS2.X(LS2.T(:,1),2);
         if all(inpolygon( x1, y1, x2, y2 ))
-            l = false;
+            l = true;
         end
         
 end

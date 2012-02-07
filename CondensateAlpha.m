@@ -34,7 +34,6 @@ switch model.code
             
             % uniform first-order marginal law
             case 'uniform'
-            disp('im in')
                 a = model.random.min;
                 b = model.random.max;
                 alpha = alpha0{ 1, c2m==n };

@@ -22,17 +22,17 @@ end
 % selection of type of test
 switch type
     
-    case {'zoom1D','join1D','join1D_fine'}
+    case {'zoom1D', 'join1D', 'join1D_fine'}
         load(['Tests/' type '.mat']);
         sol = CArl( model, coupling, solver );
         plottest1D( model, sol );
         
-    case {'join2D','join2D_fine'}
+    case {'join2D', 'zoom2D', 'join2D_fine'}
         load(['Tests/' type '.mat']);
         sol = CArl( model, coupling, solver );
         plottest2D( model, sol );
 
-    case {'MC1D','MC1D_fine'}
+    case {'MC1D', 'MC1D_fine'}
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
         plotteststochastic( model, sol, out );
@@ -47,6 +47,9 @@ switch type
         Test('short');
         Test('join1D_fine');
         Test('MC1D_fine');
+        
+    otherwise
+        error('unknown test case')
 
 end
 
