@@ -96,7 +96,7 @@ opt = struct( 'K', indK, ...
 for i1 = 1:Nc
     if strcmp( coupling{i1}.mediator.type, 'stochastic' )
         
-        disp('warning: this was only checked for a single stochastic model');
+        % warning: this was only checked for a single stochastic model
         
         % constants
         isto = c2m( i1, 1+isfield( Ki{c2m(i1,2)}, 'MC' ) );

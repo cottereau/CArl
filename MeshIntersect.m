@@ -41,7 +41,7 @@ indT2 = DefineCouplingElements( T2, LSet2.int.*LSet2.ext );
 [ Xr2, Tr2, Xrg2 ] = ReduceMesh( X2, T2(indT2,:) );
 
 % intersect the meshes to get the integration mesh
-disp('warning: model2 is supposed embedded in model1');
+% warning: model2 is supposed embedded in model1;
 Xi = X2;
 Ti = T2(indT2,:);
 [ Xi, Ti ] = ReduceMesh( Xi, Ti );
@@ -138,7 +138,7 @@ function [Xr2Xi,val] = XR2XI( Xr, Tr, Xi, Ti, Tr2Ti )
 % for each node in Xr, find the nodes in Xi that are inside the elements
 % that touch it, and the value of the linear FE basis function centered on
 % Xr
-disp('warning: this has only been checked in 1D');
+% warning: this has only been checked in 1D
 
 % constants
 [ Nnr d ] = size(Xr); 

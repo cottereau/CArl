@@ -31,7 +31,7 @@ out = struct( 'BC', {cell(Nm,1)}, 'C', {cell(Nc,1)} );
         % Monte Carlo solver
         case 'montecarlo'
             Nmc = length( opt.MC.Ks );
-            disp('warning: this has only been tested with one stochastic model')
+            % warning: this has only been tested with one stochastic model
             
             % index vectors
             ind0 = opt.K(opt.MC.i,1) : opt.BC(opt.MC.i,2);
