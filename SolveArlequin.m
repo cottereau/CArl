@@ -47,7 +47,12 @@ out = struct( 'BC', {cell(Nm,1)}, 'C', {cell(Nc,1)} );
             F1 = F( ind );
             F2 = F( ind2 );
             invK1 = pinv( K1 );
-            R = null( K1 );
+            [K1x,K1y,K1val] = find(invK1) ;
+            invK1 = sparse(K1x,K1y,K1val) ;
+            R = null( full(K1) );
+            [Rx,Ry,Rval] = find(R) ;
+            R = sparse(Rx,Ry,Rval,size(R,1), size(R,2)) ;
+            clear Rx Ry Rval K1x K1y K1val
             f = [F2-C'*invK1*F1; R'*F1];
             c = C'*R;
             
@@ -87,6 +92,7 @@ out = struct( 'BC', {cell(Nm,1)}, 'C', {cell(Nc,1)} );
         sol{i1} = u( opt.K(i1,1):opt.K(i1,2) );
         out.BC{i1} = u( opt.BC(i1,1):opt.BC(i1,2) );
     end
+    %disp('out.C not computed')
     for i1 = 1:Nc
         out.C{i1} = u( opt.Cy(i1,1):opt.Cy(i1,2) );
     end
