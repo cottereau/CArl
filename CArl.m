@@ -62,35 +62,54 @@ for i1 = 1:Nm
     model{i1}.mesh = ReadCodeMesh( model{i1} );
 end
 
-% construction of coupling operators
-disp('Creating coupling matrices ...')
-for i1 = 1:Nc
-    
-    % definition of models for this coupling
-    couple = coupling{i1};
-    c2m( i1, : ) = couple.models;
-    model1 = model{ couple.models(1) };
-    model2 = model{ couple.models(2) };
-    
-    % define level sets
-    couple = DefineClassicalCoupling( couple, model1 );
-    LSet1 = DefineLevelSet( model1.mesh.X, couple.weight1 );
-    LSet2 = DefineLevelSet( model2.mesh.X, couple.weight2 );
-
-    % compute weights for each model
-    alpha1{i1} = ArlequinWeight( model1.mesh, couple.weight1, LSet1 );
-    alpha2{i1} = ArlequinWeight( model2.mesh, couple.weight2, LSet2 );
-
-    % create intersection of meshes (for both representation and 
-    % integration purposes)
-    [ Int, Rep ] = MeshIntersect( model1.mesh, model2.mesh, LSet1, LSet2 );
-
-    % definition of the mediator space
-    Int.M = MediatorSpace( couple.mediator, Int, Rep ); 
-    
+if ~isfield( coupling{1}, 'c2m' )
     % construction of coupling operators
-    C1{i1} = CouplingOperator( couple, model1.code, Int, Rep{1} );
-    C2{i1} = CouplingOperator( couple, model2.code, Int, Rep{2} );
+    disp('Creating coupling matrices ...')
+    for i1 = 1:Nc
+        
+        % definition of models for this coupling
+        couple = coupling{i1};
+        c2m( i1, : ) = couple.models;
+        model1 = model{ couple.models(1) };
+        model2 = model{ couple.models(2) };
+        
+        % define level sets
+        couple = DefineClassicalCoupling( couple, model1 );
+        LSet1 = DefineLevelSet( model1.mesh.X, couple.weight1 );
+        LSet2 = DefineLevelSet( model2.mesh.X, couple.weight2 );
+        
+        % compute weights for each model
+        alpha1{i1} = ArlequinWeight( model1.mesh, couple.weight1, LSet1 );
+        alpha2{i1} = ArlequinWeight( model2.mesh, couple.weight2, LSet2 );
+        
+        % create intersection of meshes (for both representation and
+        % integration purposes)
+        [Int,Rep] = MeshIntersect( model1.mesh, model2.mesh, LSet1, LSet2 );
+        
+        % definition of the mediator space
+        Int.M = MediatorSpace( couple.mediator, Int, Rep );
+        
+        % construction of coupling operators
+        C1{i1} = CouplingOperator( couple, model1.code, Int, Rep{1} );
+        C2{i1} = CouplingOperator( couple, model2.code, Int, Rep{2} );
+        
+        % storing information for further use
+        coupling{i1}.C1 = C1{i1};
+        coupling{i1}.C2 = C2{i1};
+        coupling{i1}.alpha1 = alpha1{i1};
+        coupling{i1}.alpha2 = alpha2{i1};
+        coupling{i1}.c2m = c2m(i1,:);
+    end
+else
+    % construction of coupling operators
+    disp('Loading coupling matrices ...')
+    for i1=1:Nc
+        C1{i1} = coupling{i1}.C1;
+        C2{i1} = coupling{i1}.C2;
+        alpha1{i1} = coupling{i1}.alpha1;
+        alpha2{i1} = coupling{i1}.alpha2;
+        c2m(i1,:) = coupling{i1}.c2m;
+    end
 end
 
 % construct stiffness and force matrices
@@ -113,7 +132,7 @@ disp('Inverting system ...')
 
 % preparing output
 out = struct( 'models', {model}, ...
-              'coupling', coupling, ...
+              'coupling', {coupling}, ...
               'K', K, ...
               'F', F, ...
               'u', out, ...
