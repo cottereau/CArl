@@ -7,7 +7,7 @@ function Test(type)
 %  'join2D' for  a junction case in 2D (deterministic continuum-continuum)
 %
 % the possible series are
-%  'short' for only the short tests
+%  'short' for only the short tests: zoom1D, join1D, MC1D, join2D
 %  'long' for the longer tests
 
 % R. Cottereau 05/2010
@@ -70,7 +70,6 @@ figure;
 trimesh( model{1}.mesh.T, model{1}.mesh.X(:,1), model{1}.mesh.X(:,2), sol{1});
 hold on ;
 trisurf( model{2}.mesh.T, model{2}.mesh.X(:,1), model{2}.mesh.X(:,2), sol{2});
-
 
 % FUNCTION PLOTTESTSTOCHASTIC
 function plotteststochastic( model, sol, out )

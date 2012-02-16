@@ -27,4 +27,4 @@ USE
 ============
 The main calling routine is CArl.m
 
-Some examples (in 1D and 2D) can be launched with the routines Examples1D.m et Examples2D.m. Just select, at the top of the files, the appropriate test file to be loaded (they are saved as .mat files in the directory Tests/). Do not worry if there are lots of warnings at execution. The tests should run without any problem on computers with around 2Go.
+Some examples (in 1D and 2D) can be launched through use of the routine Test.m (see the corresponding help). The tests should run without any problem on computers with around 2Go.
