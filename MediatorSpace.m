@@ -26,8 +26,8 @@ function M = MediatorSpace( mediator, Int, Rep )
 Rep = Rep{ mediator.support };
 
 % constants
-Ndof = size( Int.X, 1 );
-Nrep = length( Rep.X );
+Ndof = size( Int.mesh.X, 1 );
+Nrep = length( Rep.mesh.X );
 
 % initialization
 M = sparse( Ndof, Nrep );

@@ -29,7 +29,7 @@ function [ x, y, K, z, F, k ] = StiffnessMatrixHomeFE( model )
 
 % description of the model
 X = model.mesh.X;
-T = model.mesh.T;
+T = model.mesh.Triangulation;
 E = model.property;
 
 % constants

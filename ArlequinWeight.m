@@ -25,19 +25,20 @@ function alpha = ArlequinWeight( mesh, weight, LSet )
 % C. Zaccardi 04/2011
         
 % intialization
-alpha = zeros( size(mesh.T) );
+T = mesh.Triangulation;
+alpha = zeros( size(T) );
 
 % weight functions outside the coupling domain (outside exterior LSet)
-ind = any( LSet.ext( mesh.T )>= 1e-9, 2);
+ind = any( LSet.ext( T )>= 1e-9, 2);
 alpha( ind,: ) = weight.extvalue ;
 
 % weight functions outside the coupling domain (inside interior LSet)
-ind = any( LSet.int( mesh.T )>= 1e-9, 2);
+ind = any( LSet.int( T )>= 1e-9, 2);
 alpha( ind,: ) = weight.intvalue ;
 
 % alpha in the coupling domain
-indT = all( (LSet.int(mesh.T).*LSet.ext(mesh.T))>=0, 2 );
-indX = mesh.T(indT,:);
+indT = all( (LSet.int(T).*LSet.ext(T))>=0, 2 );
+indX = T(indT,:);
 if size(weight.value,2)==1 % constant alpha function
     a = weight.value;
 elseif size(weight.value,2)==2 % linear alpha function

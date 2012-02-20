@@ -34,21 +34,22 @@ function [ x, y, C ] = CouplingOperatorHomeFE( operator, Int )
 % R. Cottereau 04/2010
 
 % constants
-Nni = size(Int.X,1);
-[Nne,ne] = size(Int.T);
+Nni = size(Int.mesh.X,1);
+[Nne,ne] = size(Int.mesh.Triangulation);
 
 % loop on the columns of the matrix and creation of a set of forces
 load = zeros(Nne,ne,Nni);
 for i1=1:Nni
     for i2 = 1:ne
-        load( Int.T(:,i2) == i1,i2,i1 ) = 1;
+        load( Int.mesh.Triangulation(:,i2) == i1,i2,i1 ) = 1;
     end
 end
 
-m = struct( 'mesh', Int, ...
+m = struct( 'mesh', Int.mesh, ...
             'property', ones(Nne,ne), ...
             'load', load, ...
             'BC', [] );
+
 [ x, y, K, z, F, k ] = StiffnessMatrixHomeFE( m );
 
 % choice of the coupling operator

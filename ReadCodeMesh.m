@@ -11,7 +11,15 @@ switch model.code
     
     % HOMEFE
     case {'HomeFE','MonteCarloHomeFE'}
-        mesh = model.mesh;
+        X = model.mesh.X;
+        d = size( X, 2 );
+        if d==1
+            mesh = struct( 'Triangulation', model.mesh.T, 'X', X );
+        elseif d==2
+            mesh = TriRep( model.mesh.T, X(:,1), X(:,2) );
+        else
+            error('not implemented yet')
+        end
 
     % COMSOL
     case 'Comsol'

@@ -30,9 +30,10 @@ function [ Int, Rep] = MeshIntersect( mesh1, mesh2, LSet1, LSet2 )
 
 % constants
 X1 = mesh1.X;
-T1 = mesh1.T;
+T1 = mesh1.Triangulation;
 X2 = mesh2.X;
-T2 = mesh2.T;
+T2 = mesh2.Triangulation;
+d = size( X1, 2 );
 
 % coupling zone for representation purposes
 indT1 = DefineCouplingElements( T1, LSet1.int.*LSet1.ext );
@@ -69,20 +70,25 @@ for i1 = 1:size(Xr2,1)
 end            
         
 % output
-Int = struct( 'X', Xi, 'T', Ti );
-Rep{1} = struct( 'X', Xr1, ...
-                 'T', Tr1, ...
+if d==1
+    Int.mesh = struct( 'Triangulation', Ti, 'X', Xi );
+    mesh1 = struct( 'Triangulation', Tr1, 'X', Xr1 );
+    mesh2 = struct( 'Triangulation', Tr2, 'X', Xr2 );
+elseif d==2
+    Int.mesh = TriRep( Ti, Xi(:,1), Xi(:,2) );
+    mesh1 = TriRep( Tr1, Xr1(:,1), Xr1(:,2) );
+    mesh2 = TriRep( Tr2, Xr2(:,1), Xr2(:,2) );
+end
+Rep{1} = struct( 'mesh', mesh1, ...
                  'M', M1, ...
                  'value', {val1}, ...
                  'Xr2Xi', {Xr2Xi1}, ...
                  'Xrg', Xrg1 );
-Rep{2} = struct( 'X', Xr2, ...
-                 'T', Tr2, ...
+Rep{2} = struct( 'mesh', mesh2, ...
                  'M', M2, ...
                  'value', {val2}, ...
                  'Xr2Xi', {Xr2Xi2}, ...
                  'Xrg', Xrg2 );
-
 
 %==========================================================================
 function ind = DefineCouplingElements( T, LSp )
