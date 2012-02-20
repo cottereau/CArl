@@ -60,14 +60,35 @@ Tr2Ti2 = TR2TI( Tr2, Xr2, Xi, Ti );
 
 % construction of passage matrices from the integration
 % meshes to the representation meshes
-M1 = sparse( size(Xi,1), size(X1,1) );
+Ni = size(Xi,1);
+m1x = zeros(Ni,1); m1y = zeros(Ni,1); m1v = zeros(Ni,1);
 for i1 = 1:size(Xr1,1)
-    M1( Xr2Xi1{i1}, Xrg1(i1) ) = val1{i1};
+    Ni1 = length(Xr2Xi1{i1});
+    ind = (i1-1)*Ni + (1:Ni1);
+    m1x(ind) = Xr2Xi1{i1};
+    m1y(ind) = ones(Ni1,1)*Xrg1(i1);
+    m1v(ind) = val1{i1};
 end
-M2 = sparse( size(Xi,1), size(X2,1) );
+ind = (m1x~=0);
+M1 = sparse( m1x(ind), m1y(ind), m1v(ind), Ni, size(X1,1) );
+m2x = zeros(Ni,1); m2y = zeros(Ni,1); m2v = zeros(Ni,1);
 for i1 = 1:size(Xr2,1)
-    M2( Xr2Xi2{i1}, Xrg2(i1) ) = val2{i1};
-end            
+    Ni2 = length(Xr2Xi2{i1});
+    ind = (i1-1)*Ni + (1:Ni2);
+    m2x(ind) = Xr2Xi2{i1};
+    m2y(ind) = ones(Ni2,1)*Xrg2(i1);
+    m2v(ind) = val2{i1};
+end
+ind = (m2x~=0);
+M2 = sparse( m2x(ind), m2y(ind), m2v(ind), Ni, size(X2,1) );
+% M1 = sparse( size(Xi,1), size(X1,1) );
+% for i1 = 1:size(Xr1,1)
+%     M1( Xr2Xi1{i1}, Xrg1(i1) ) = val1{i1};
+% end
+% M2 = sparse( size(Xi,1), size(X2,1) );
+% for i1 = 1:size(Xr2,1)
+%     M2( Xr2Xi2{i1}, Xrg2(i1) ) = val2{i1};
+% end            
         
 % output
 if d==1
