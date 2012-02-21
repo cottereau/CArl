@@ -20,19 +20,19 @@ if nargin==0
 end
 
 % selection of type of test
-switch type
+switch lower(type)
     
-    case {'zoom1D', 'join1D', 'join1D_fine'}
+    case {'zoom1d', 'join1d', 'join1d_fine'}
         load(['Tests/' type '.mat']);
         sol = CArl( model, coupling, solver );
         plottest1D( model, sol );
         
-    case {'join2D', 'zoom2D', 'join2D_fine'}
+    case {'join2d', 'zoom2d', 'join2d_fine'}
         load(['Tests/' type '.mat']);
         sol = CArl( model, coupling, solver );
         plottest2D( model, sol );
 
-    case {'MC1D', 'MC1D_fine'}
+    case {'mc1d', 'mc1d_fine'}
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
         plotteststochastic( model, sol, out );
@@ -42,6 +42,7 @@ switch type
         Test('join1D');
         Test('MC1D');
         Test('join2D');
+        Test('zoom2D')
         
     case 'full'
         Test('short');
