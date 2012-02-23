@@ -27,7 +27,7 @@ switch lower(type)
         sol = CArl( model, coupling, solver );
         plottest1D( model, sol );
         
-    case {'join2d', 'zoom2d', 'join2d_fine'}
+    case {'join2d', 'zoom2d', 'join2d_fine', 'comsol2d', 'nonembedded2d_1'}
         load(['Tests/' type '.mat']);
         sol = CArl( model, coupling, solver );
         plottest2D( model, sol );

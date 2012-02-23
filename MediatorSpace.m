@@ -22,17 +22,6 @@ function M = MediatorSpace( mediator, Int, Rep )
 
 % R. Cottereau 05/2010
 
-% choice of representation mesh
-Rep = Rep{ mediator.support };
-
-% constants
-Ndof = size( Int.mesh.X, 1 );
-Nrep = length( Rep.mesh.X );
-
-% initialization
-M = sparse( Ndof, Nrep );
-
-% loop on elements of the representation mesh
-for i1 = 1:Nrep
-    M( Rep.Xr2Xi{i1}, i1 ) = Rep.value{i1};
-end
+[ x, y, val ] = find( Rep{mediator.support}.M );
+[~,~,x]=unique(x);
+M = sparse( x, y, val );

@@ -38,7 +38,9 @@ end
 
 % store level set function
 LSet = struct( 'int', dint, ...
-               'ext', dext );
+               'ext', dext, ...
+               'meshint', weight.int, ...
+               'meshext', weight.ext );
 
 %==========================================================================
 function dist = DistanceMesh2LevelSet( X, LSet )

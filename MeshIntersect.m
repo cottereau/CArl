@@ -28,201 +28,116 @@ function [ Int, Rep] = MeshIntersect( mesh1, mesh2, LSet1, LSet2 )
 
 % R. Cottereau 04/2010
 
-% constants
-X1 = mesh1.X;
-T1 = mesh1.Triangulation;
-X2 = mesh2.X;
-T2 = mesh2.Triangulation;
-d = size( X1, 2 );
+% % constants
+[N1,d] = size(mesh1.X);
+N2 = size(mesh2.X,1);
 
 % coupling zone for representation purposes
-indT1 = DefineCouplingElements( T1, LSet1.int.*LSet1.ext );
-[ Xr1, Tr1, Xrg1 ] = ReduceMesh( X1, T1(indT1,:) );
-indT2 = DefineCouplingElements( T2, LSet2.int.*LSet2.ext );
-[ Xr2, Tr2, Xrg2 ] = ReduceMesh( X2, T2(indT2,:) );
+[meshr1,Xrg1] = DefineCouplingMesh( mesh1, LSet1.int.*LSet1.ext );
+[meshr2,Xrg2] = DefineCouplingMesh( mesh2, LSet2.int.*LSet2.ext );
 
-% intersect the meshes to get the integration mesh
-% warning: model2 is supposed embedded in model1;
-Xi = X2;
-Ti = T2(indT2,:);
-[ Xi, Ti ] = ReduceMesh( Xi, Ti );
+% intersect the two meshes to get a first draft of the integration mesh
+X = [ meshr1.X ; meshr2.X ];
+T = [ meshr1.Triangulation ; meshr2.Triangulation+size(meshr1.X,1) ];
+meshr = DelaunayTri( X, [T(:,1:2); T(:,2:3); T(:,[3 1])] );
 
-% compute the passage matrices in terms of elements
-Tr2Ti1 = TR2TI( Tr1, Xr1, Xi, Ti );
-Tr2Ti2 = TR2TI( Tr2, Xr2, Xi, Ti );
+% create a mesh for the coupling area
+X = [ LSet1.meshint.X; LSet1.meshext.X ];
+C1 = LSet1.meshint.T;
+C2 = LSet1.meshext.T+size(LSet1.meshint.X,1);
+int = DelaunayTri( X, C1 );
+ext = DelaunayTri( X, C2 );
+area = DelaunayTri( X, [C1;C2] );
+if all(inOutStatus(int))||all(inOutStatus(ext))
+    ind = inOutStatus(area);
+else
+    ind = ~inOutStatus(area);
+end
+area = TriRep( area.Triangulation(ind,:), area.X );
+
+% delimitate meshi by the level sets area
+X = [ area.X ; meshr.X ];
+C = [ freeBoundary(area); meshr.Constraints+size(area.X,1) ];
+meshi = DelaunayTri( X, C );
+meshi = MergeDoubleNodes( meshi );
+meshi = BoundedMesh( meshi, area );
+meshi = BoundedMesh( meshi, meshr );
 
 % compute the passage matrices in terms of nodes
 % = get the values of the basis functions in the
 % representation meshes at the nodes of the integration
 % mesh
-[Xr2Xi1,val1] = XR2XI( Xr1, Tr1, Xi, Ti, Tr2Ti1 );
-[Xr2Xi2,val2] = XR2XI( Xr2, Tr2, Xi, Ti, Tr2Ti2 );
+[ Mx1, My1, Mval1 ] = XR2XI( meshr1, meshi );
+[ Mx2, My2, Mval2 ] = XR2XI( meshr2, meshi );
 
-% construction of passage matrices from the integration
-% meshes to the representation meshes
-Ni = size(Xi,1);
-m1x = zeros(Ni,1); m1y = zeros(Ni,1); m1v = zeros(Ni,1);
-for i1 = 1:size(Xr1,1)
-    Ni1 = length(Xr2Xi1{i1});
-    ind = (i1-1)*Ni + (1:Ni1);
-    m1x(ind) = Xr2Xi1{i1};
-    m1y(ind) = ones(Ni1,1)*Xrg1(i1);
-    m1v(ind) = val1{i1};
-end
-ind = (m1x~=0);
-M1 = sparse( m1x(ind), m1y(ind), m1v(ind), Ni, size(X1,1) );
-m2x = zeros(Ni,1); m2y = zeros(Ni,1); m2v = zeros(Ni,1);
-for i1 = 1:size(Xr2,1)
-    Ni2 = length(Xr2Xi2{i1});
-    ind = (i1-1)*Ni + (1:Ni2);
-    m2x(ind) = Xr2Xi2{i1};
-    m2y(ind) = ones(Ni2,1)*Xrg2(i1);
-    m2v(ind) = val2{i1};
-end
-ind = (m2x~=0);
-M2 = sparse( m2x(ind), m2y(ind), m2v(ind), Ni, size(X2,1) );
-% M1 = sparse( size(Xi,1), size(X1,1) );
-% for i1 = 1:size(Xr1,1)
-%     M1( Xr2Xi1{i1}, Xrg1(i1) ) = val1{i1};
-% end
-% M2 = sparse( size(Xi,1), size(X2,1) );
-% for i1 = 1:size(Xr2,1)
-%     M2( Xr2Xi2{i1}, Xrg2(i1) ) = val2{i1};
-% end            
-        
 % output
-if d==1
-    Int.mesh = struct( 'Triangulation', Ti, 'X', Xi );
-    mesh1 = struct( 'Triangulation', Tr1, 'X', Xr1 );
-    mesh2 = struct( 'Triangulation', Tr2, 'X', Xr2 );
-elseif d==2
-    Int.mesh = TriRep( Ti, Xi(:,1), Xi(:,2) );
-    mesh1 = TriRep( Tr1, Xr1(:,1), Xr1(:,2) );
-    mesh2 = TriRep( Tr2, Xr2(:,1), Xr2(:,2) );
-end
-Rep{1} = struct( 'mesh', mesh1, ...
-                 'M', M1, ...
-                 'value', {val1}, ...
-                 'Xr2Xi', {Xr2Xi1}, ...
-                 'Xrg', Xrg1 );
-Rep{2} = struct( 'mesh', mesh2, ...
-                 'M', M2, ...
-                 'value', {val2}, ...
-                 'Xr2Xi', {Xr2Xi2}, ...
-                 'Xrg', Xrg2 );
+Int.mesh = meshi;
+Ni = size(meshi.X,1);
+Rep{1} = struct( 'mesh', meshr1, ...
+                 'M', sparse(Xrg1(Mx1),My1,Mval1,N1,Ni) );
+Rep{2} = struct( 'mesh', meshr2, ...
+                 'M', sparse(Xrg2(Mx2),My2,Mval2,N2,Ni) );
 
 %==========================================================================
-function ind = DefineCouplingElements( T, LSp )
-% to extract a submesh of model.mesh where the product of level set
-% functions is negative (ie elements in the coupling zone)
-ind0 = abs(LSp) <= 1e-9;
-ind = find( all( (LSp(T)>=1e-9) | ind0(T), 2 ) );
+function mesh = MergeDoubleNodes( mesh )
+% merge nodes that are too close to each other
+gerr = 1e-8;
+x = mesh.X(:,1);
+y = mesh.X(:,2);
+T = mesh.Triangulation;
 
-%==========================================================================
-function indT = TR2TI( Tr, Xr, Xi, Ti )
-% for each element in Tr, finds the elements of Ti that are inside
+% compute elements of zero area
+S = polyarea( x(T'), y(T') );
 
-% constants
-Ne = size(Tr,1);
-d = size(Xr,2);
+% select candidate nodes for repeated
+ind = unique(T(S<gerr,:));
+[ X1, X2 ] = ndgrid( x(ind), x(ind) );
+[ Y1, Y2 ] = ndgrid( y(ind), y(ind) );
 
-% initialization
-indT = cell(Ne,1);
+% compute distance between all the points
+d = sqrt((X1-X2).^2+(Y1-Y2).^2) + triu( ones(length(ind)), 0 );
+[ indx, indy ] = find( d < gerr );
+ind = sort( [ind(indx) ind(indy)], 2 );
 
-% loop on representation elements
-for i1 = 1:Ne
-
-    % 1D case
-    if d==1
-        ind = find( (( Xi - Xr(Tr(i1,1)) > -eps ) ) ...
-                  & (( Xi - Xr(Tr(i1,2)) <  eps ) ) );
-        
-    % 2D case
-    elseif d==2
-        Xv = Xr( Tr(i1,:), 1 );
-        Yv = Xr( Tr(i1,:), 2 );
-        % parameter 1e-6
-        param = 1e-6;
-        in1 = inpolygon(Xi(:,1),Xi(:,2),Xv+param,Yv) ;
-        in2 = inpolygon(Xi(:,1),Xi(:,2),Xv-param,Yv) ;
-        in3 = inpolygon(Xi(:,1),Xi(:,2),Xv,Yv+param) ;
-        in4 = inpolygon(Xi(:,1),Xi(:,2),Xv,Yv-param) ;
-        in5 = inpolygon(Xi(:,1),Xi(:,2),Xv,Yv) ;
-        in = in1 | in2 | in3 | in4 | in5 ;  
-        ind = find(in) ;
-        
-    % not implemented for 3D
-    else
-        error('not implemented for 3D')
-    end
-
-    indT{i1} = find( all( ismember(Ti,ind), 2 ) );
-    
+% merge repeated nodes
+for i1=1:size(ind,1)
+    T( T==ind(i1,2) ) = ind(i1,1);
 end
 
+% erase flat elements
+T = T( S>gerr, : );
+
+% erase unnecessary nodes
+[ X, T ] = ReduceMesh( mesh.X, T );
+mesh = TriRep( T, X );
 %==========================================================================
-function [Xr2Xi,val] = XR2XI( Xr, Tr, Xi, Ti, Tr2Ti )
-% for each node in Xr, find the nodes in Xi that are inside the elements
+function mesh = BoundedMesh( mesh, Bnd )
+% to extract the submesh bounded by the free boundary of other meshes
+indT = inpoly( mesh.incenters, Bnd.X, Bnd.freeBoundary );
+[ X, T ] = ReduceMesh( mesh.X, mesh.Triangulation(indT,:) );
+mesh = TriRep( T, X );
+
+%==========================================================================
+function [mesh,indX] = DefineCouplingMesh( mesh, LSp )
+% to extract the submesh where the product of level set
+% functions is positive (ie the coupling zone)
+gerr = 1e-9;
+T = mesh.Triangulation;
+%indX = (abs(LSp) <= gerr) | (LSp >= gerr) ;
+ind0 = abs(LSp) <= gerr;
+indT = all( (LSp(T)>=gerr) | ind0(T), 2 );
+[ X, T, indX ] = ReduceMesh( mesh.X, T(indT,:) );
+mesh = DelaunayTri( X, [T(:,1:2); T(:,2:3); T(:,[1 3])] );
+
+%==========================================================================
+function [ Mx, My, Mval ] = XR2XI( meshr, meshi )
+% for each node in meshi, find the nodes that are inside the elements
 % that touch it, and the value of the linear FE basis function centered on
-% Xr
-% warning: this has only been checked in 1D
-
-% constants
-[ Nnr d ] = size(Xr); 
-
-% initialization
-val = cell( Nnr, 1 );
-Xr2Xi = cell( Nnr, 1 );
-
-% loop on the nodes in Xr
-for i1 = 1:Nnr
-    
-    % find the elements in contact with this node
-    [ind,indj] = find( Tr == i1 );
-    
-    % constants and initialization
-    Nind = length( ind );
-    vali = cell(Nind,1);
-    Xr2Xii = cell(Nind,1);
-    
-    % loop on these elements to get the corresponding nodes and their
-    % position in the unit element
-    for i2 = 1:Nind
-        tmp = unique( Ti( Tr2Ti{ind(i2)}, : ) );
-        Xr2Xii{i2} = tmp(:);
-        Xloci = Xi( Xr2Xii{i2}, : );
-        Xrloc = Xr(Tr(ind(i2),:),:);
-        Xloc = GetLocalCoordinates( Xloci, Xrloc );
-        if d == 1
-            N = [ 1-Xloc Xloc ];
-        elseif d == 2
-            N = [ 1-Xloc(:,1)-Xloc(:,2) Xloc ];
-        else
-            error( 'not implemented yet' )
-        end
-        vali{i2} = N(:,indj(i2));
-    end
-    
-    % get rid of repeated nodes
-    [ Xr2Xi{i1}, indk ] = unique( cat( 1, Xr2Xii{:} ) );
-    vali = cat( 1, vali{:} );
-    val{i1} = vali( indk );
-    
-end
-
-%==========================================================================
-function Xl = GetLocalCoordinates( X, Xe )
-% to compute the coordinates of X in the local reference element given by
-% Xe;
-
-% constants
-d = size(X,2);
-
-if d==1
-    Xl = (X-Xe(1))/(Xe(2)-Xe(1));
-elseif d==2
-    X = [ X(:,1)-Xe(1,1) X(:,2)-Xe(1,2) ];
-    P = [-1 1 0; -1 0 1] * Xe;
-    Xl = X/P;
-end
+% Xr (=local barycentric coordinate of that node in the element)
+% return a matrix in sparse format
+[ indx, Mval ] = pointLocation( meshr, meshi.X );
+indx = meshr.Triangulation(indx,:);
+Mx = indx(:);
+My = repmat( (1:size(Mval,1))', [3 1] );
+Mval = Mval(:);
 

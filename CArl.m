@@ -77,7 +77,7 @@ if ~isfield( coupling{1}, 'c2m' )
         couple = DefineClassicalCoupling( couple, model1 );
         LSet1 = DefineLevelSet( model1.mesh.X, couple.weight1 );
         LSet2 = DefineLevelSet( model2.mesh.X, couple.weight2 );
-        
+
         % compute weights for each model
         alpha1{i1} = ArlequinWeight( model1.mesh, couple.weight1, LSet1 );
         alpha2{i1} = ArlequinWeight( model2.mesh, couple.weight2, LSet2 );
@@ -88,7 +88,7 @@ if ~isfield( coupling{1}, 'c2m' )
         
         % definition of the mediator space
         Int.M = MediatorSpace( couple.mediator, Int, Rep );
-        
+
         % construction of coupling operators
         C1{i1} = CouplingOperator( couple, model1.code, Int, Rep{1} );
         C2{i1} = CouplingOperator( couple, model2.code, Int, Rep{2} );
