@@ -6,8 +6,9 @@ function [ sol, out ] = CArl( model, coupling, solver )
 %  model: cell of structured arrays containing the information relative to
 %         the different models, in particular:
 %       -'code': code to be used to construct the stiffness matrices.
-%                Implemented: {'Comsol' 'HomeFE' 'ZacFE'}
-%       - other fields should be in format appropriate for the code used
+%               Implemented: {'Comsol' 'HomeFE' 'MonteCarloHomeFE}
+%       - other fields should be in a format appropriate for the code used
+%               to a return stiffness matrix
 %  coupling : cell of structured array containing the description of each
 %        of the couplings, with the fields
 %       -'type' : either 'zoom' or 'join'
@@ -31,9 +32,8 @@ function [ sol, out ] = CArl( model, coupling, solver )
 %  NB: more complex coupling can be implemented 
 %     (see function DefineClassicalCoupling.m)
 %
-%  sol: structured array containing the solution, including
-%       - 'models': cell of structured array containing the solution
-%                   respective to each model independently
+%  sol: cell containing (a part of) the solution for each model
+%  out: structured array containing information on the computation
 %
 % developed at 
 % Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579, 
