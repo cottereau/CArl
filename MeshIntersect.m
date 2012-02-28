@@ -37,31 +37,13 @@ N2 = size(mesh2.X,1);
 [meshr2,Xrg2] = DefineCouplingMesh( mesh2, LSet2.int.*LSet2.ext );
 
 % intersect the two meshes to get a first draft of the integration mesh
-X = [ meshr1.X ; meshr2.X ];
-T = [ meshr1.Triangulation ; meshr2.Triangulation+size(meshr1.X,1) ];
-meshr = DelaunayTri( X, [T(:,1:2); T(:,2:3); T(:,[3 1])] );
+meshr = MergeMeshes( meshr1, meshr2 );
 
 % create a mesh for the coupling area
-X = [ LSet1.meshint.X; LSet1.meshext.X ];
-C1 = LSet1.meshint.T;
-C2 = LSet1.meshext.T+size(LSet1.meshint.X,1);
-int = DelaunayTri( X, C1 );
-ext = DelaunayTri( X, C2 );
-area = DelaunayTri( X, [C1;C2] );
-if all(inOutStatus(int))||all(inOutStatus(ext))
-    ind = inOutStatus(area);
-else
-    ind = ~inOutStatus(area);
-end
-area = TriRep( area.Triangulation(ind,:), area.X );
+area = LevelSetMesh( LSet1 );
 
 % delimitate meshi by the level sets area
-X = [ area.X ; meshr.X ];
-C = [ freeBoundary(area); meshr.Constraints+size(area.X,1) ];
-meshi = DelaunayTri( X, C );
-meshi = MergeDoubleNodes( meshi );
-meshi = BoundedMesh( meshi, area );
-meshi = BoundedMesh( meshi, meshr );
+meshi = ElagateMesh( area, meshr );
 
 % compute the passage matrices in terms of nodes
 % = get the values of the basis functions in the
@@ -82,34 +64,126 @@ Rep{2} = struct( 'mesh', meshr2, ...
 function mesh = MergeDoubleNodes( mesh )
 % merge nodes that are too close to each other
 gerr = 1e-8;
+d = size(mesh.X,2);
 x = mesh.X(:,1);
-y = mesh.X(:,2);
 T = mesh.Triangulation;
 
-% compute elements of zero area
-S = polyarea( x(T'), y(T') );
-
-% select candidate nodes for repeated
-ind = unique(T(S<gerr,:));
-[ X1, X2 ] = ndgrid( x(ind), x(ind) );
-[ Y1, Y2 ] = ndgrid( y(ind), y(ind) );
-
-% compute distance between all the points
-d = sqrt((X1-X2).^2+(Y1-Y2).^2) + triu( ones(length(ind)), 0 );
-[ indx, indy ] = find( d < gerr );
-ind = sort( [ind(indx) ind(indy)], 2 );
-
-% merge repeated nodes
-for i1=1:size(ind,1)
-    T( T==ind(i1,2) ) = ind(i1,1);
+if d==1
+    d = abs( X(T(:,1)) - X(T(:,2)) );
+    T = T( d > gerr, : );
+    mesh = struct( 'X', X, 'Triangulation', T );
+    
+elseif d==2
+    
+    y = mesh.X(:,2);
+    
+    % compute elements of zero area
+    S = polyarea( x(T'), y(T') );
+    
+    % select candidate nodes for repeated
+    ind = unique(T(S<gerr,:));
+    [ X1, X2 ] = ndgrid( x(ind), x(ind) );
+    [ Y1, Y2 ] = ndgrid( y(ind), y(ind) );
+    
+    % compute distance between all the points
+    d = sqrt((X1-X2).^2+(Y1-Y2).^2) + triu( ones(length(ind)), 0 );
+    [ indx, indy ] = find( d < gerr );
+    ind = sort( [ind(indx) ind(indy)], 2 );
+    
+    % merge repeated nodes
+    for i1=1:size(ind,1)
+        T( T==ind(i1,2) ) = ind(i1,1);
+    end
+    
+    % erase flat elements
+    T = T( S>gerr, : );
+    
+    % erase unnecessary nodes
+    [ X, T ] = ReduceMesh( mesh.X, T );
+    mesh = TriRep( T, X );
 end
 
-% erase flat elements
-T = T( S>gerr, : );
+%==========================================================================
+function mesh = ElagateMesh( area, meshr )
+[N,d]=size(area.X);
+Nr = size(meshr.X,1);
 
-% erase unnecessary nodes
-[ X, T ] = ReduceMesh( mesh.X, T );
-mesh = TriRep( T, X );
+if d==1
+    X = meshr.X;
+    T = meshr.Triangulation;
+    xt1 = area.X(area.Triangulation(1,:));
+    ind1 = find(X<=max(xt1) & X>=min(xt1));
+    if size(area.Triangulation,1)>1
+        xt2 = area.X(area.Triangulation(2,:));
+        ind2 = find(X<max(xt2) & X>min(xt2));
+    else
+        ind2=[];
+    end
+    ind1 = all( ismember( T, ind1 ), 2 );
+    m1 = find( X==min(min(X(T(ind1,:)))) );
+    M1 = find( X==max(max(X(T(ind1,:)))) );
+    keyboard
+    T = [ T([ind1;ind2],:); Nr+1 m1;M1 Nr+2];
+    if ~isempty(ind2)
+        ind2 = all( ismember( T, ind2 ), 2 );
+        m2 = [ Nr+3 find( X==min(min(X(T(ind2,:)))),1 ) ];
+        M2 = [ find( X==max(max(X(T(ind2,:)))),1 ) Nr+4];
+        T = [ T; m2; M2 ];
+    end
+    keyboard
+    X = [ X; sort(area.X) ];
+    mesh = struct( 'X', X, 'Triangulation', T );
+    mesh = MergeDoubleNodes( mesh );
+    
+elseif d==2
+    X = [ area.X ; meshr.X ];
+    C = [ freeBoundary(area); meshr.Constraints+N ];
+    mesh = DelaunayTri( X, C );
+    mesh = MergeDoubleNodes( mesh );
+    mesh = BoundedMesh( mesh, area );
+    mesh = BoundedMesh( mesh, meshr );
+    
+end
+
+%==========================================================================
+function area = LevelSetMesh( LSet )
+[N,d] = size(LSet.meshint.X);
+
+if d==1 || N==1
+    X = [ sort(LSet.meshint.X(:)); sort(LSet.meshext.X(:))];
+    if ~any(isinf(LSet.meshint.X))
+        T = [1 3;2 4];
+    else
+        X = X(~isnan(X));
+        T = [1 2];
+    end
+    area = struct( 'X', X, 'Triangulation', T );
+    
+elseif d==2
+    X = [ LSet.meshint.X; LSet.meshext.X ];
+    int = DelaunayTri( X, LSet.meshint.T );
+    ext = DelaunayTri( X, LSet.meshext.T+N );
+    area = DelaunayTri( X, [LSet.meshint.T;LSet.meshext.T+N] );
+    if all(inOutStatus(int))||all(inOutStatus(ext))
+        ind = inOutStatus(area);
+    else
+        ind = ~inOutStatus(area);
+    end
+    area = TriRep( area.Triangulation(ind,:), area.X );
+    
+end
+
+%==========================================================================
+function mesh = MergeMeshes( mesh1, mesh2 )
+[N,d] = size(mesh1.X);
+X = [ mesh1.X ; mesh2.X ];
+T = [ mesh1.Triangulation ; mesh2.Triangulation+N ];
+if d==1
+    mesh = struct( 'X', X, 'Triangulation', T );
+elseif d==2
+    mesh = DelaunayTri( X, [T(:,1:2); T(:,2:3); T(:,[3 1])] );
+end
+
 %==========================================================================
 function mesh = BoundedMesh( mesh, Bnd )
 % to extract the submesh bounded by the free boundary of other meshes
@@ -122,12 +196,17 @@ function [mesh,indX] = DefineCouplingMesh( mesh, LSp )
 % to extract the submesh where the product of level set
 % functions is positive (ie the coupling zone)
 gerr = 1e-9;
+d = size(mesh.X,2);
 T = mesh.Triangulation;
 %indX = (abs(LSp) <= gerr) | (LSp >= gerr) ;
 ind0 = abs(LSp) <= gerr;
 indT = all( (LSp(T)>=gerr) | ind0(T), 2 );
 [ X, T, indX ] = ReduceMesh( mesh.X, T(indT,:) );
-mesh = DelaunayTri( X, [T(:,1:2); T(:,2:3); T(:,[1 3])] );
+if d==1
+    mesh = struct( 'X', X, 'Triangulation', T );
+elseif d==2
+    mesh = DelaunayTri( X, [T(:,1:2); T(:,2:3); T(:,[1 3])] );
+end
 
 %==========================================================================
 function [ Mx, My, Mval ] = XR2XI( meshr, meshi )
