@@ -69,8 +69,9 @@ x = mesh.X(:,1);
 T = mesh.Triangulation;
 
 if d==1
-    d = abs( X(T(:,1)) - X(T(:,2)) );
+    d = abs( x(T(:,1)) - x(T(:,2)) );
     T = T( d > gerr, : );
+    [ X, T ] = ReduceMesh( x, T );
     mesh = struct( 'X', X, 'Triangulation', T );
     
 elseif d==2
@@ -106,33 +107,16 @@ end
 %==========================================================================
 function mesh = ElagateMesh( area, meshr )
 [N,d]=size(area.X);
-Nr = size(meshr.X,1);
 
 if d==1
-    X = meshr.X;
+    T = area.Triangulation;
+    ind = false( size(meshr.X) );
+    for i1 = 1:size(T,1)
+        ind = ind | ( meshr.X>=area.X(T(i1,1)) & meshr.X<=area.X(T(i1,2)) );
+    end
     T = meshr.Triangulation;
-    xt1 = area.X(area.Triangulation(1,:));
-    ind1 = find(X<=max(xt1) & X>=min(xt1));
-    if size(area.Triangulation,1)>1
-        xt2 = area.X(area.Triangulation(2,:));
-        ind2 = find(X<max(xt2) & X>min(xt2));
-    else
-        ind2=[];
-    end
-    ind1 = all( ismember( T, ind1 ), 2 );
-    m1 = find( X==min(min(X(T(ind1,:)))) );
-    M1 = find( X==max(max(X(T(ind1,:)))) );
-    keyboard
-    T = [ T([ind1;ind2],:); Nr+1 m1;M1 Nr+2];
-    if ~isempty(ind2)
-        ind2 = all( ismember( T, ind2 ), 2 );
-        m2 = [ Nr+3 find( X==min(min(X(T(ind2,:)))),1 ) ];
-        M2 = [ find( X==max(max(X(T(ind2,:)))),1 ) Nr+4];
-        T = [ T; m2; M2 ];
-    end
-    keyboard
-    X = [ X; sort(area.X) ];
-    mesh = struct( 'X', X, 'Triangulation', T );
+    T = T( all(ismember(T,find(ind)),2), : );
+    mesh = struct( 'X', meshr.X, 'Triangulation', T );
     mesh = MergeDoubleNodes( mesh );
     
 elseif d==2
@@ -150,11 +134,11 @@ function area = LevelSetMesh( LSet )
 [N,d] = size(LSet.meshint.X);
 
 if d==1 || N==1
-    X = [ sort(LSet.meshint.X(:)); sort(LSet.meshext.X(:))];
-    if ~any(isinf(LSet.meshint.X))
-        T = [1 3;2 4];
+    X = sort( [ LSet.meshint.X(:); LSet.meshext.X(:)]);
+    if ~any(isinf(X))
+        T = [1 2;3 4];
     else
-        X = X(~isnan(X));
+        X = X(~isinf(X));
         T = [1 2];
     end
     area = struct( 'X', X, 'Triangulation', T );
@@ -179,6 +163,17 @@ function mesh = MergeMeshes( mesh1, mesh2 )
 X = [ mesh1.X ; mesh2.X ];
 T = [ mesh1.Triangulation ; mesh2.Triangulation+N ];
 if d==1
+    T1 = mesh1.Triangulation;
+    X = []; T = [];
+    ind = [0; find(diff(T1(:,1))>1); size(T1,1) ]+1;
+    for i1=1:length(ind)-1
+        x1 = mesh1.X(T1(ind(i1),1):T1(ind(i1+1)-1,2));
+        ind2 = mesh2.X>=x1(1) & mesh2.X<=x1(end);
+        x1 = unique( [x1; mesh2.X(ind2)] );
+        N1 = length(x1);
+        T = [T; [(1:N1-1)' (2:N1)']+size(X,1)];
+        X = [X; x1];
+    end
     mesh = struct( 'X', X, 'Triangulation', T );
 elseif d==2
     mesh = DelaunayTri( X, [T(:,1:2); T(:,2:3); T(:,[3 1])] );
@@ -214,12 +209,28 @@ function [ Mx, My, Mval ] = XR2XI( meshr, meshi )
 % that touch it, and the value of the linear FE basis function centered on
 % Xr (=local barycentric coordinate of that node in the element)
 % return a matrix in sparse format
-[ indx, Mval ] = pointLocation( meshr, meshi.X );
-indx = meshr.Triangulation(indx,:);
-Mx = indx(:);
-My = repmat( (1:size(Mval,1))', [3 1] );
-Mval = Mval(:);
+d = size(meshr.X,2);
+Ni = size(meshi.X,1);
 
+if d==1
+    indx = zeros(Ni,1);
+    X1 = meshr.X(meshr.Triangulation(:,1));
+    for i1 = 1:Ni
+        indx(i1) = find( X1<=meshi.X(i1), 1, 'last' );
+    end
+    indx = meshr.Triangulation(indx,:);
+    My = repmat( (1:size(indx,1))', [2 1] );
+    Mx = indx(:);
+    Mval = (meshi.X-meshr.X(indx(:,1)))./diff(meshr.X(indx),1,2);
+    Mval = [1-Mval ; Mval];
+    
+elseif d==2
+    [ indx, Mval ] = pointLocation( meshr, meshi.X );
+    indx = meshr.Triangulation(indx,:);
+    Mx = indx(:);
+    My = repmat( (1:size(Mval,1))', [3 1] );
+    Mval = Mval(:);
+end
 %==========================================================================
 function [ X, T, Xn ] = ReduceMesh( X, T )
 % REDUCEMESH to get rid of unused nodes and renumber the connectivity
