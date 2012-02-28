@@ -1,4 +1,4 @@
-function C = CouplingOperator( couple, code, Int, Rep )
+function C = CouplingOperator( couple, Int, Rep )
 % COUPLINGOPERATOR to construct the coupling operator
 % 
 % syntax: [ x, y, C ] = CouplingOperator( model, coupling, n )
@@ -9,8 +9,6 @@ function C = CouplingOperator( couple, code, Int, Rep )
 %                 geometry. This is used for all interpolation purposes,
 %                 in particular for the definition of weight functions
 %                 Implemented: {'FE' 'discrete'}
-%       - 'code': code to be used to construct the stiffness matrices.
-%                 Implemented: {'Comsol' 'HomeFE'}
 %       - 'mesh': array dependent on 'type'.
 %  coupling: cell of structured array describing the coupling options, in
 %            particular
@@ -32,31 +30,22 @@ function C = CouplingOperator( couple, code, Int, Rep )
 
 % R. Cottereau 04/2010
 
-% switch on the external code
-switch code
 
-    % HOMEFE
-    case { 'HomeFE' }
-        [ x, y, C ] = CouplingOperatorHomeFE( couple.operator, Int.mesh );
-        [ x, y, C ] = find( Rep.M * sparse( x, y, C ) * Int.M' );
-        C = struct( 'x', x, 'y', y, 'val', C );
+[ x, y, C ] = CouplingOperatorHomeFE( couple.operator, Int.mesh );
+[ x, y, C ] = find( Rep.M * sparse( x, y, C ) * Int.M' );
+C = struct( 'x', x, 'y', y, 'val', C );
 
-        if strcmp( couple.mediator.type, 'stochastic' )
-            [ x, y, Cs ] = CouplingOperatorHomeFE( 'L2', Int );
-            Cs = Rep.M * sparse( x , y, Cs );
-            [ xtheta, ~, Ctheta ] = find( sum( Cs, 2 ) );
-            [ xpsi, ~, Cpsi ] = find( sum( Cs * Int.M', 1 )' );
-            C.xBCpsi = xpsi;
-            C.BCpsi = Cpsi;
-            C.xtheta = xtheta;
-            C.Ctheta = Ctheta;
-        end
-        
-    % unknown case
-    otherwise
-        error('this external code is not supported')
-
+if strcmp( couple.mediator.type, 'stochastic' )
+    [ x, y, Cs ] = CouplingOperatorHomeFE( 'L2', Int.mesh );
+    Cs = Rep.M * sparse( x , y, Cs );
+    [ xtheta, ~, Ctheta ] = find( sum( Cs, 2 ) );
+    [ xpsi, ~, Cpsi ] = find( sum( Cs * Int.M', 1 )' );
+    C.xBCpsi = xpsi;
+    C.BCpsi = Cpsi;
+    C.xtheta = xtheta;
+    C.Ctheta = Ctheta;
 end
+
 
 
 

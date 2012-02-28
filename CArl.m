@@ -90,8 +90,8 @@ if ~isfield( coupling{1}, 'c2m' )
         Int.M = MediatorSpace( couple.mediator, Int, Rep );
 
         % construction of coupling operators
-        C1{i1} = CouplingOperator( couple, model1.code, Int, Rep{1} );
-        C2{i1} = CouplingOperator( couple, model2.code, Int, Rep{2} );
+        C1{i1} = CouplingOperator( couple, Int, Rep{1} );
+        C2{i1} = CouplingOperator( couple, Int, Rep{2} );
         
         % storing information for further use
         coupling{i1}.C1 = C1{i1};
