@@ -1,4 +1,4 @@
-function [ Int, Rep] = MeshIntersect( mesh1, mesh2, LSet1, LSet2 )
+function [ Int, Rep] = MeshIntersect( mesh1, mesh2, LSet1, LSet2, opt )
 % MESHINTERSECT to create the mesh at the intersection between two meshes,
 % both in terms of support (for the definition of the interpolation
 % functions) and for integration purposes
@@ -33,8 +33,8 @@ function [ Int, Rep] = MeshIntersect( mesh1, mesh2, LSet1, LSet2 )
 N2 = size(mesh2.X,1);
 
 % coupling zone for representation purposes
-[meshr1,Xrg1] = DefineCouplingMesh( mesh1, LSet1.int.*LSet1.ext );
-[meshr2,Xrg2] = DefineCouplingMesh( mesh2, LSet2.int.*LSet2.ext );
+[meshr1,Xrg1] = DefineCouplingMesh( mesh1, LSet1.int.*LSet1.ext, opt );
+[meshr2,Xrg2] = DefineCouplingMesh( mesh2, LSet2.int.*LSet2.ext, opt );
 
 % intersect the two meshes to get a first draft of the integration mesh
 meshr = MergeMeshes( meshr1, meshr2 );
@@ -43,7 +43,7 @@ meshr = MergeMeshes( meshr1, meshr2 );
 area = LevelSetMesh( LSet1 );
 
 % delimitate meshi by the level sets area
-meshi = ElagateMesh( area, meshr );
+meshi = ElagateMesh( area, meshr, opt );
 
 % compute the passage matrices in terms of nodes
 % = get the values of the basis functions in the
@@ -61,16 +61,15 @@ Rep{2} = struct( 'mesh', meshr2, ...
                  'M', sparse(Xrg2(Mx2),My2,Mval2,N2,Ni) );
 
 %==========================================================================
-function mesh = MergeDoubleNodes( mesh )
+function mesh = MergeDoubleNodes( mesh, opt )
 % merge nodes that are too close to each other
-gerr = 1e-8;
 d = size(mesh.X,2);
 x = mesh.X(:,1);
 T = mesh.Triangulation;
 
 if d==1
     d = abs( x(T(:,1)) - x(T(:,2)) );
-    T = T( d > gerr, : );
+    T = T( d > 10*opt.gerr, : );
     [ X, T ] = ReduceMesh( x, T );
     mesh = struct( 'X', X, 'Triangulation', T );
     
@@ -82,13 +81,13 @@ elseif d==2
     S = polyarea( x(T'), y(T') );
     
     % select candidate nodes for repeated
-    ind = unique(T(S<gerr,:));
+    ind = unique(T(S<10*opt.gerr,:));
     [ X1, X2 ] = ndgrid( x(ind), x(ind) );
     [ Y1, Y2 ] = ndgrid( y(ind), y(ind) );
     
     % compute distance between all the points
     d = sqrt((X1-X2).^2+(Y1-Y2).^2) + triu( ones(length(ind)), 0 );
-    [ indx, indy ] = find( d < gerr );
+    [ indx, indy ] = find( d < 10*opt.gerr );
     ind = sort( [ind(indx) ind(indy)], 2 );
     
     % merge repeated nodes
@@ -97,7 +96,7 @@ elseif d==2
     end
     
     % erase flat elements
-    T = T( S>gerr, : );
+    T = T( S>10*opt.gerr, : );
     
     % erase unnecessary nodes
     [ X, T ] = ReduceMesh( mesh.X, T );
@@ -105,7 +104,7 @@ elseif d==2
 end
 
 %==========================================================================
-function mesh = ElagateMesh( area, meshr )
+function mesh = ElagateMesh( area, meshr, opt )
 [N,d]=size(area.X);
 
 if d==1
@@ -117,13 +116,13 @@ if d==1
     T = meshr.Triangulation;
     T = T( all(ismember(T,find(ind)),2), : );
     mesh = struct( 'X', meshr.X, 'Triangulation', T );
-    mesh = MergeDoubleNodes( mesh );
+    mesh = MergeDoubleNodes( mesh, opt );
     
 elseif d==2
     X = [ area.X ; meshr.X ];
     C = [ freeBoundary(area); meshr.Constraints+N ];
     mesh = DelaunayTri( X, C );
-    mesh = MergeDoubleNodes( mesh );
+    mesh = MergeDoubleNodes( mesh, opt );
     mesh = BoundedMesh( mesh, area );
     mesh = BoundedMesh( mesh, meshr );
     
@@ -187,15 +186,14 @@ indT = inpoly( mesh.incenters, Bnd.X, Bnd.freeBoundary );
 mesh = TriRep( T, X );
 
 %==========================================================================
-function [mesh,indX] = DefineCouplingMesh( mesh, LSp )
+function [mesh,indX] = DefineCouplingMesh( mesh, LSp, opt )
 % to extract the submesh where the product of level set
 % functions is positive (ie the coupling zone)
-gerr = 1e-9;
 d = size(mesh.X,2);
 T = mesh.Triangulation;
-%indX = (abs(LSp) <= gerr) | (LSp >= gerr) ;
-ind0 = abs(LSp) <= gerr;
-indT = all( (LSp(T)>=gerr) | ind0(T), 2 );
+%indX = (abs(LSp) <= opt.gerr) | (LSp >= opt.gerr) ;
+ind0 = abs(LSp) <= opt.gerr;
+indT = all( (LSp(T)>=opt.gerr) | ind0(T), 2 );
 [ X, T, indX ] = ReduceMesh( mesh.X, T(indT,:) );
 if d==1
     mesh = struct( 'X', X, 'Triangulation', T );

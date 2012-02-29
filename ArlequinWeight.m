@@ -1,4 +1,4 @@
-function alpha = ArlequinWeight( mesh, weight, LSet )
+function alpha = ArlequinWeight( mesh, weight, LSet, opt )
 % ARLEQUINWEIGHT to compute the weight functions associated to the
 % partition of models
 %
@@ -29,11 +29,11 @@ T = mesh.Triangulation;
 alpha = zeros( size(T) );
 
 % weight functions outside the coupling domain (outside exterior LSet)
-ind = any( LSet.ext( T )>= 1e-9, 2);
+ind = any( LSet.ext( T )>= opt.gerr, 2);
 alpha( ind,: ) = weight.extvalue ;
 
 % weight functions outside the coupling domain (inside interior LSet)
-ind = any( LSet.int( T )>= 1e-9, 2);
+ind = any( LSet.int( T )>= opt.gerr, 2);
 alpha( ind,: ) = weight.intvalue ;
 
 % alpha in the coupling domain
