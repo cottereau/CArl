@@ -44,18 +44,8 @@ function [ sol, out ] = CArl( model, coupling, solver )
 
 % R. Cottereau 04/2010
 
-% constants
-Nm = length( model );    % number of models
-Nc = length( coupling ); % number of coupling operations
-
 % initialization
-K = cell(Nm,1);
-F = cell(Nm,1);
-C1 = cell(Nc,1);
-C2 = cell(Nc,1);
-alpha1 = cell(Nc,1);
-alpha2 = cell(Nc,1);
-c2m = zeros(Nc,2);
+[Nm,Nc,K,F,C1,C2,alpha1,alpha2,c2m,opt] = Initiatevalues(model,coupling) ;
 
 % reading the code-dependant mesh into CArl format
 for i1 = 1:Nm
@@ -79,19 +69,19 @@ if ~isfield( coupling{1}, 'c2m' )
         LSet2 = DefineLevelSet( model2.mesh.X, couple.weight2 );
 
         % compute weights for each model
-        alpha1{i1} = ArlequinWeight( model1.mesh, couple.weight1, LSet1 );
-        alpha2{i1} = ArlequinWeight( model2.mesh, couple.weight2, LSet2 );
+        alpha1{i1} = ArlequinWeight( model1.mesh, couple.weight1, LSet1, opt );
+        alpha2{i1} = ArlequinWeight( model2.mesh, couple.weight2, LSet2, opt );
         
         % create intersection of meshes (for both representation and
         % integration purposes)
-        [Int,Rep] = MeshIntersect( model1.mesh, model2.mesh, LSet1, LSet2 );
+        [Int,Rep] = MeshIntersect( model1.mesh, model2.mesh, LSet1, LSet2, opt );
         
         % definition of the mediator space
         Int.M = MediatorSpace( couple.mediator, Int, Rep );
 
         % construction of coupling operators
-        C1{i1} = CouplingOperator( couple, Int, Rep{1} );
-        C2{i1} = CouplingOperator( couple, Int, Rep{2} );
+        C1{i1} = CouplingOperator( couple, Int, Rep{1}, opt );
+        C2{i1} = CouplingOperator( couple, Int, Rep{2}, opt );
         
         % storing information for further use
         coupling{i1}.C1 = C1{i1};
