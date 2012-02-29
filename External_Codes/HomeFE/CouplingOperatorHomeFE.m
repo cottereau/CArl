@@ -1,4 +1,4 @@
-function [ x, y, C ] = CouplingOperatorHomeFE( operator, mesh )
+function [ x, y, C ] = CouplingOperatorHomeFE( operator, mesh, opt )
 % COUPLINGOPERATORHOMEFE to construct the Arlequin coupling matrix 
 % by calling a home-made FE code
 %
@@ -65,7 +65,7 @@ switch operator
     case 'H1'
         x = [ x; z ];
         y = [ y; k ];
-        C = [ K; F ];
+        C = [ opt.kappa*K; F ];
         
     % unknown coupling operator
     otherwise
