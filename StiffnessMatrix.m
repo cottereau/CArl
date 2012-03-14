@@ -53,12 +53,21 @@ switch model.code
                 
     % COMSOL
     case 'Comsol'
-        error( 'COMSOL is not supported yet' );
+        wd = pwd;
+        eval( ['cd ' model.meshpath ';' ]);
+        eval( ['out = ' model.meshfile ';' ]);
+        eval( ['out = ' model.solvefile '(out);' ] );
+        eval( ['cd ' wd ';' ]);
+        K = mphmatrix( out, 'sol1', 'Out', {'L','K'} );
+        info = mphxmeshinfo( out,'solname', 'sol1' );
+        ind = double( info.dofs.nodes+1 );
+        [ z, k, F ] = find( K.L ); z = ind(z);
+        [ x, y, K ] = find( K.K ); x = ind(x); y = ind(y);
         
     % unknown case
     otherwise
         error('this external code is not supported')
-        
+ 
 end
 
 % output

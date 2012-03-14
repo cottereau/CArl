@@ -29,8 +29,8 @@ switch lower(type)
         
     case {'join2d', 'zoom2d', 'join2d_fine', 'comsol2d', 'nonembedded2d_1'}
         load(['Tests/' type '.mat']);
-        sol = CArl( model, coupling, solver );
-        plottest2D( model, sol );
+        [ sol, out ] = CArl( model, coupling, solver );
+        plottest2D( out.models, sol );
 
     case {'mc1d', 'mc1d_fine'}
         load(['Tests/' type '.mat']);
@@ -48,6 +48,9 @@ switch lower(type)
         Test('short');
         Test('join1D_fine');
         Test('MC1D_fine');
+        
+    case 'comsol'
+        Test('comsol2d');
         
     otherwise
         error('unknown test case')
@@ -67,10 +70,12 @@ figure; plot( x1, s1, 'bx-', x2, s2, 'ro--' );
 
 % FUNCTION PLOTTEST 2D
 function plottest2D( model, sol )
+T1 = model{1}.mesh.Triangulation;
+T2 = model{2}.mesh.Triangulation;
 figure;
-trimesh( model{1}.mesh.T, model{1}.mesh.X(:,1), model{1}.mesh.X(:,2), sol{1});
+trimesh( T1, model{1}.mesh.X(:,1), model{1}.mesh.X(:,2), sol{1});
 hold on ;
-trisurf( model{2}.mesh.T, model{2}.mesh.X(:,1), model{2}.mesh.X(:,2), sol{2});
+trisurf( T2, model{2}.mesh.X(:,1), model{2}.mesh.X(:,2), sol{2});
 
 % FUNCTION PLOTTESTSTOCHASTIC
 function plotteststochastic( model, sol, out )
