@@ -4,9 +4,16 @@ PRESENTATION
 ============
 This project is focused on the development of a software based on the Arlequin multi-model coupling method. The main interest of this software is to allow, by its specific structure, the easy interfacing of different third-party softwares (developed and maintained outside of this project), and adapted to each of the models appearing in the coupling.
  
-Two scientific references for the theory are (the second paper is concerned only with the stochastic coupling)
-[1] H. Ben Dhia, G. Rateau, The Arlequin method as a flexible engineering design tool, Int. J. Numer. Meths. Engr. 62 (2005) 1442-1462.
-[2] R. Cottereau, H. Ben Dhia, D. Clouteau, Localized modeling of uncertainty in the Arlequin framework, in: R. Langley, A. Belyaev (Eds.), Vibration Analysis of Structures with Uncertainties, IUTAM Bookseries, Springer, 2010, pp. 477-488.
+REFERENCES
+============
+Original references for the theory are
+[1] H. Ben Dhia. Multiscale mechanical problems: the Arlequin method, Comptes Rendus de l'Académie des Sciences - Series IIB 326 (1998), pp. 899-904.
+[2] H. Ben Dhia, G. Rateau. The Arlequin method as a flexible engineering design tool, Int. J. Numer. Meths. Engr. 62 (2005), pp. 1442-1462.
+
+Many other papers make use of the method or describe specific aspects and implementation details.
+
+A non-exhaustive list of papers that make use of the software includes
+[3] R. Cottereau, D. Clouteau, H. Ben Dhia, C. Zaccardi. A stochastic-deterministic coupling method for continuum mechanics, Comp. Meth. Appl. Mech. Engr. 200 (2011), pp. 3280-3288.
 
 This software is mainly developed at laboratoire MSSMat (Ecole Centrale Paris - CNRS).
 contact : Regis Cottereau (regis.cottereau@ecp.fr)
@@ -21,7 +28,7 @@ where you replace install_dir_CArl by the full path to the directory CArl/
 
 Additionally, you might want to write this line in the startup file (generally located in ~/matlab/startup.m)
 
-This code has not been extensively tested, but should run on Matlab versions R2007a and newer.
+This code has not been extensively tested, but should run on Matlab versions R2011a and newer (mainly because the objects TriRep and DelaunayTri are required)
 
 USE
 ============
