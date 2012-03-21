@@ -18,7 +18,7 @@ A non-exhaustive list of papers that make use of the software includes
 This software is mainly developed at laboratoire MSSMat (Ecole Centrale Paris - CNRS).
 contact : Regis Cottereau (regis.cottereau@ecp.fr)
 
-It is developed for MATLAB, with some routines directly in C++. This may however evolve in future versions.
+It is developed for MATLAB. This may however evolve in future versions.
 
 INSTALLATION
 ============
