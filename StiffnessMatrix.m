@@ -24,6 +24,14 @@ function [ K, F ] = StiffnessMatrix( model, alpha )
 
 % R. Cottereau 04/2010
 
+% obtain previously mounted matrices
+if isfield( model, 'stiffness' )
+    disp('reading stiffness matrices from file')
+    K = model.stiffness.K;
+    F = model.stiffness.F;
+    return
+end
+
 % switch on the external code
 switch model.code
     

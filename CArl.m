@@ -109,6 +109,8 @@ for i1 = 1:Nm
     alpha = CondensateAlpha( i1, model{i1}, c2m, [alpha1 alpha2] );
     % compute stiffness and force matrices
     [ K{i1}, F{i1} ] = StiffnessMatrix( model{i1}, alpha );
+    model{i1}.K = K{i1};
+    model{i1}.F = F{i1};
 end
 
 % assemble sparse matrix system
