@@ -92,24 +92,21 @@ for i1 = 1:Nm
     % condensate alpha functions for each model
     Mdl{i1}.alpha = CondensateAlpha( i1, Mdl{i1}, Cpl );
     
-    % compute stiffness and force matrices
+    % construct stiffness and force matrices
     [ Mdl{i1}.K, Mdl{i1}.F ] = StiffnessMatrix( Mdl{i1} );
     
 end
 
 % assemble sparse matrix system
-disp('Assembling system ...')
+disp('Assembling and inverting system ...')
 [ K, F, opt ] = AssembleArlequin( Mdl, Cpl );
-clear C1 C2;
 
-% solve the Arlequin system
-disp('Inverting system ...')
-[ sol, out ] = SolveArlequin( K, F, solver, opt );
+% solving system
+[ sol, Mdl, Cpl ] = SolveArlequin( K, F, Mdl, Cpl, solver, opt );
 
 % preparing output
 out = struct( 'model', {Mdl}, ...
               'coupling', {Cpl}, ...
               'K', K, ...
               'F', F, ...
-              'u', out, ...
               'opt', opt );

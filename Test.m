@@ -84,9 +84,9 @@ s1 = diff( sol{1} ) ./ diff(X1); s1 = [s1 s1]'; s1 = s1(:);
 x1 = [X1(1:(end-1)) X1(2:end)]'; x1 = x1(:);
 X2 = model{2}.mesh.X;
 x2 = [X2(1:(end-1)) X2(2:end)]'; x2 = x2(:);
-s2 = zeros( length(x2), size(out.u.MC.u,2));
-s2(1:2:end,:) = diff( out.u.MC.u(1:length(X2),:), 1, 1 ) ./ ...
-          repmat(diff(X2),[1 size(out.u.MC.u,2)]);
+s2 = zeros( length(x2), size(out.model{2}.uMC,2));
+s2(1:2:end,:) = diff( out.model{2}.uMC(1:length(X2),:), 1, 1 ) ./ ...
+          repmat(diff(X2),[1 size(out.model{2}.uMC,2)]);
 s2(2:2:end,:) = s2(1:2:end,:);
 ms2 = mean(s2,2);
 ss2 = std(s2,[],2);
