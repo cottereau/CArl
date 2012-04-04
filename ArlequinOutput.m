@@ -30,12 +30,11 @@ for i1 = 1:Nm
     % additional reconstruction for Monte Carlo solutions
     if isfield( model{i1}, 'uMC' );
         Nmc = size(model{i1}.uMC,2);
-        mc = zeros( [size(T) Nmc] );
+        model{i1}.auMC = zeros( [size(T) Nmc] );
         for i2 = 1:Nmc
             tmp = model{i1}.uMC(:,i2);
-            mc(:,:,i2) = alpha .* tmp(T);
+            model{i1}.auMC(:,:,i2) = alpha .* tmp(T);
         end
-        model{i1}.uMC = mc;
     end
 end
 

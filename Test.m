@@ -88,8 +88,8 @@ x2 = model{2}.mesh.X( model{2}.mesh.T )';
 dx2 = diff(x2);
 u1 = sol{1}';
 s1 = diff(u1) ./ diff(x1); s1 = [s1; s1];
-s2 = squeeze(diff(out.model{2}.uMC,[],2)) ...
-           ./ repmat(dx2',[1 size(out.model{2}.uMC,3)]);
+s2 = squeeze(diff(out.model{2}.auMC,[],2)) ...
+           ./ repmat(dx2',[1 size(out.model{2}.auMC,3)]);
 ms2 = mean(s2,2); ms2 = [ms2 ms2]'; ms2 = ms2(:);
 ss2 = std(s2,[],2); ss2 = [ss2 ss2]'; ss2 = ss2(:);
 pms2 = [ ms2+ss2/sqrt(1-pc); ms2(end:-1:1)-ss2(end:-1:1)/sqrt(1-pc) ];
