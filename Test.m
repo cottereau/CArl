@@ -59,39 +59,42 @@ end
 
 % FUNCTION PLOTTEST 1D
 function plottest1D( model, sol )
-figure; plot(model{1}.mesh.X,sol{1}, 'bx-', model{2}.mesh.X,sol{2},'ro--')
-X1 = model{1}.mesh.X;
-s1 = diff( sol{1} ) ./ diff(X1); s1 = [s1 s1]'; s1 = s1(:);
-x1 = [X1(1:(end-1)) X1(2:end)]'; x1 = x1(:);
-X2 = model{2}.mesh.X;
-s2 = diff( sol{2} ) ./ diff(X2); s2 = [s2 s2]'; s2 = s2(:);
-x2 = [X2(1:(end-1)) X2(2:end)]'; x2 = x2(:);
+x1 = model{1}.mesh.X( model{1}.mesh.T )';
+x2 = model{2}.mesh.X( model{2}.mesh.T )';
+u1 = sol{1}';
+u2 = sol{2}';
+figure; plot( x1, u1, 'bx-', x2, u2, 'ro--' )
+s1 = diff(u1) ./ diff(x1); s1 = [s1; s1];
+s2 = diff(u2) ./ diff(x2); s2 = [s2; s2];
 figure; plot( x1, s1, 'bx-', x2, s2, 'ro--' );
 
 % FUNCTION PLOTTEST 2D
 function plottest2D( model, sol )
 T1 = model{1}.mesh.Triangulation;
 T2 = model{2}.mesh.Triangulation;
-figure;
-trimesh( T1, model{1}.mesh.X(:,1), model{1}.mesh.X(:,2), sol{1});
-hold on ;
-trisurf( T2, model{2}.mesh.X(:,1), model{2}.mesh.X(:,2), sol{2});
+x1 = model{1}.mesh.X(:,1); x1 = x1(T1);
+y1 = model{1}.mesh.X(:,2); y1 = y1(T1);
+x2 = model{2}.mesh.X(:,1); x2 = x2(T2);
+y2 = model{2}.mesh.X(:,2); y2 = y2(T2);
+figure; patch(x1',y1',sol{1}',sol{1}')
+hold on; patch(x2',y2',sol{2}',sol{2}')
+view(3)
 
 % FUNCTION PLOTTESTSTOCHASTIC
 function plotteststochastic( model, sol, out )
-X1 = model{1}.mesh.X;
-s1 = diff( sol{1} ) ./ diff(X1); s1 = [s1 s1]'; s1 = s1(:);
-x1 = [X1(1:(end-1)) X1(2:end)]'; x1 = x1(:);
-X2 = model{2}.mesh.X;
-x2 = [X2(1:(end-1)) X2(2:end)]'; x2 = x2(:);
-s2 = zeros( length(x2), size(out.model{2}.uMC,2));
-s2(1:2:end,:) = diff( out.model{2}.uMC(1:length(X2),:), 1, 1 ) ./ ...
-          repmat(diff(X2),[1 size(out.model{2}.uMC,2)]);
-s2(2:2:end,:) = s2(1:2:end,:);
-ms2 = mean(s2,2);
-ss2 = std(s2,[],2);
-pms2 = [ ms2+ss2/sqrt(1-0.9); ms2(end:-1:1)-ss2(end:-1:1)/sqrt(1-0.9) ];
-figure; fill( [x2;x2(end:-1:1)], pms2, 'y' )
+pc = 0.9;
+x1 = model{1}.mesh.X( model{1}.mesh.T )';
+x2 = model{2}.mesh.X( model{2}.mesh.T )';
+dx2 = diff(x2);
+u1 = sol{1}';
+s1 = diff(u1) ./ diff(x1); s1 = [s1; s1];
+s2 = squeeze(diff(out.model{2}.uMC,[],2)) ...
+           ./ repmat(dx2',[1 size(out.model{2}.uMC,3)]);
+ms2 = mean(s2,2); ms2 = [ms2 ms2]'; ms2 = ms2(:);
+ss2 = std(s2,[],2); ss2 = [ss2 ss2]'; ss2 = ss2(:);
+pms2 = [ ms2+ss2/sqrt(1-pc); ms2(end:-1:1)-ss2(end:-1:1)/sqrt(1-pc) ];
+xx2 = x2(:); xx2 = [ xx2; xx2(end:-1:1) ];
+figure; fill( xx2, pms2, 'y' )
 hold on; 
-plot( x1, s1, 'bx-', x2, ms2, 'ro--' );
+plot( x1, s1, 'bx-', x2(:), ms2, 'ro--' );
 
