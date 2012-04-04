@@ -45,6 +45,7 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 % R. Cottereau 04/2010
 
 % initialization
+if nargin<4; opt = []; end
 [ Nm, Nc, opt ] = Initiatevalues( Mdl, Cpl, opt ) ;
 
 % reading the code-dependant mesh into CArl format
@@ -52,12 +53,14 @@ for i1 = 1:Nm
     Mdl{i1}.mesh = ReadCodeMesh( Mdl{i1} );
 end
 
-if ~isfield( Cpl{1}, 'C1' )
     
-    % construction of coupling operators
-    disp('Creating coupling matrices ...')
-    for i1 = 1:Nc
-        
+% construction of coupling operators
+disp('Creating coupling matrices ...')
+for i1 = 1:Nc
+    
+    % check for recomputing
+    if opt.recomputeC(i1)
+    
         % definition of models for this coupling
         m1 = Mdl{ Cpl{i1}.models(1) };
         m2 = Mdl{ Cpl{i1}.models(2) };
@@ -66,7 +69,7 @@ if ~isfield( Cpl{1}, 'C1' )
         Cpl{i1} = DefineClassicalCoupling( Cpl{i1}, m1 );
         LSet1 = DefineLevelSet( m1.mesh.X, Cpl{i1}.weight1 );
         LSet2 = DefineLevelSet( m2.mesh.X, Cpl{i1}.weight2 );
-
+        
         % compute weights for each model
         Cpl{i1}.alpha1 = ArlequinWeight( m1.mesh, Cpl{i1}.weight1, LSet1, opt );
         Cpl{i1}.alpha2 = ArlequinWeight( m2.mesh, Cpl{i1}.weight2, LSet2, opt );
@@ -77,11 +80,11 @@ if ~isfield( Cpl{1}, 'C1' )
         
         % definition of the mediator space
         Int.M = MediatorSpace( Cpl{i1}.mediator, Int, Rep );
-
+        
         % construction of coupling operators
         Cpl{i1}.C1 = CouplingOperator( Cpl{i1}, Int, Rep{1}, opt );
         Cpl{i1}.C2 = CouplingOperator( Cpl{i1}, Int, Rep{2}, opt );
-                
+    
     end
 end
 
@@ -89,12 +92,16 @@ end
 disp('Creating stiffness matrices ...')
 for i1 = 1:Nm
     
-    % condensate alpha functions for each model
-    Mdl{i1}.alpha = CondensateAlpha( i1, Mdl{i1}, Cpl );
-    
-    % construct stiffness and force matrices
-    [ Mdl{i1}.K, Mdl{i1}.F ] = StiffnessMatrix( Mdl{i1} );
-    
+    % check for recomputing
+    if opt.recomputeK(i1)
+        
+        % condensate alpha functions for each model
+        Mdl{i1}.alpha = CondensateAlpha( i1, Mdl{i1}, Cpl );
+        
+        % construct stiffness and force matrices
+        [ Mdl{i1}.K, Mdl{i1}.F ] = StiffnessMatrix( Mdl{i1} );
+        
+    end
 end
 
 % assemble sparse matrix system
