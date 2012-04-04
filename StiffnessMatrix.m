@@ -1,4 +1,4 @@
-function [ K, F ] = StiffnessMatrix( model, alpha )
+function [ K, F ] = StiffnessMatrix( model )
 % STIFFNESSMATRIX to construct the basic stiffness matrix and force vector
 % by calling an external code
 %
@@ -24,22 +24,14 @@ function [ K, F ] = StiffnessMatrix( model, alpha )
 
 % R. Cottereau 04/2010
 
-% obtain previously mounted matrices
-if isfield( model, 'stiffness' )
-    disp('reading stiffness matrices from file')
-    K = model.stiffness.K;
-    F = model.stiffness.F;
-    return
-end
-
 % switch on the external code
 switch model.code
     
     % HOMEFE
     case 'HomeFE'
         % modify the properties in each element according to alpha
-        model.property = model.property .* alpha;
-        model.load = model.load .* alpha;
+        model.property = model.property .* model.alpha;
+        model.load = model.load .* model.alpha;
 
         % compute the modified value of the model property values
         [ x, y, K, z, F, k ] = StiffnessMatrixHomeFE( model );
@@ -47,14 +39,14 @@ switch model.code
     % MONTE CARLO VERSION OF HOME FE
     case 'MonteCarloHomeFE'
         % modify the properties in each element according to alpha
-        model.load = model.load .* alpha;
+        model.load = model.load .* model.alpha;
         property = model.property;
 
         % compute the modified value of the model property values
         Nmc = size( model.property, 3 );
         Ktot = cell( Nmc, 1 );
         for i1 = 1:Nmc
-            model.property = property(:,:,i1) .* alpha;
+            model.property = property(:,:,i1) .* model.alpha;
             [ x, y, Ktot{i1}, z, F, k ] = StiffnessMatrixHomeFE( model );
         end
         K = Ktot{1};

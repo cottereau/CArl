@@ -53,6 +53,7 @@ for i1 = 1:Nm
 end
 
 if ~isfield( Cpl{1}, 'C1' )
+    
     % construction of coupling operators
     disp('Creating coupling matrices ...')
     for i1 = 1:Nc
@@ -87,10 +88,13 @@ end
 % construct stiffness and force matrices
 disp('Creating stiffness matrices ...')
 for i1 = 1:Nm
+    
     % condensate alpha functions for each model
-    alpha = CondensateAlpha( i1, Mdl{i1}, Cpl );
+    Mdl{i1}.alpha = CondensateAlpha( i1, Mdl{i1}, Cpl );
+    
     % compute stiffness and force matrices
-    [ Mdl{i1}.K, Mdl{i1}.F ] = StiffnessMatrix( Mdl{i1}, alpha );
+    [ Mdl{i1}.K, Mdl{i1}.F ] = StiffnessMatrix( Mdl{i1} );
+    
 end
 
 % assemble sparse matrix system
