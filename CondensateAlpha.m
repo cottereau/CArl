@@ -1,4 +1,4 @@
-function alpha = CondensateAlpha( n, model, c2m, alpha0 )
+function alpha = CondensateAlpha( n, model, Cpl )
 % CONDENSATE to take the alpha functions computed independently for
 % each coupling, and construct the corresponding alpha function for model
 % n, taking into account all the couplings with different modesl
@@ -13,20 +13,27 @@ function alpha = CondensateAlpha( n, model, c2m, alpha0 )
 
 % R. Cottereau 01/2011
 
+% constant
+Nc = length(Cpl);
+
 % switch on the different possible codes
 switch model.code
     
     % "classical" FE case: multiply the alpha for each coupling
     case {'HomeFE', 'Comsol'}
-        [i1,j1] = find( c2m==n );
-        alpha = alpha0{ i1(1), j1(1) };
-        for i2 = 2:length(i1)
+        [i1,j1] = find( Cpl{1}.models==n );
+        if j1==1
+            alpha = Cpl{i1}.alpha1;
+        else
+            alpha = Cpl{i1}.alpha2;
+        end
+        for i2 = 2:Nc
             error('Several coupling not implemented yet')
         end
 
     % "random" FE case: the alpha must be corrected 
     case {'MonteCarloHomeFE'}
-        if size(c2m,1)>1
+        if Nc>1
             error(['this coupling has not been looked at for more' ...
                    ' than one coupling' ]);
         end
@@ -34,9 +41,17 @@ switch model.code
             
             % uniform first-order marginal law
             case 'uniform'
-                a = model.random.min;
-                b = model.random.max;
-                alpha = alpha0{ 1, c2m==n };
+%                a = model.random.min;
+%                b = model.random.max;
+        [i1,j1] = find( Cpl{1}.models==n );
+        if j1==1
+            alpha = Cpl{i1}.alpha1;
+        else
+            alpha = Cpl{i1}.alpha2;
+        end
+        for i2 = 2:Nc
+            error('Several coupling not implemented yet')
+        end
 %                 for i1=1:size(alpha,1)
 %                     alpha(i1,1)=fzero(@(x) ...
 %                  (exp((b-a)*x)-1)*((1-alpha(i1,1))+a*x)-(b-a)*x,alpha(i1,1));

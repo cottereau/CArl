@@ -30,7 +30,7 @@ switch lower(type)
     case {'join2d', 'zoom2d', 'join2d_fine', 'comsol2d', 'nonembedded2d_1'}
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
-        plottest2D( out.models, sol );
+        plottest2D( out.model, sol );
 
     case {'mc1d', 'mc1d_fine'}
         load(['Tests/' type '.mat']);
