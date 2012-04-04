@@ -1,4 +1,4 @@
-function [ sol, out ] = CArl( Mdl, Cpl, solver )
+function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 % CARL to solve a system of models coupled in the Arlequin way
 %
 %  syntax: sol = CArl( model, coupling, solver )
@@ -45,7 +45,7 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver )
 % R. Cottereau 04/2010
 
 % initialization
-[ Nm, Nc, opt ] = Initiatevalues( Mdl, Cpl ) ;
+[ Nm, Nc, opt ] = Initiatevalues( Mdl, Cpl, opt ) ;
 
 % reading the code-dependant mesh into CArl format
 for i1 = 1:Nm

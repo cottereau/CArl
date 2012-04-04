@@ -1,11 +1,27 @@
-function [Nm,Nc,opt] = Initiatevalues(model,coupling)
-% function [Nm,Nc,mat,alpha1,alpha2,c2m,opt] = initialevalue(model,coupling)
-% Set the initiale values for CArl and define opt (option) value.
+function [ Nm, Nc, opt ] = Initiatevalues( model, coupling, opt )
+% function [ Nm, Nc, opt ] = Initiatevalues( model, coupling, opt )
+% Set the initiale values and default options.
 
 % constants
 Nm = length( model );    % number of models
 Nc = length( coupling ); % number of coupling operations
 
-% defaut values for option
-opt.gerr = 1e-9 ; % error tolerance for geometry functions
-opt.kappa = 1e-3 ; % kappa parameter for the coupling operator
+% error tolerance for geometry functions
+if ~isfield( opt, 'gerr' )
+    opt.gerr = 1e-9 ; 
+end
+
+% kappa parameter for the coupling operator
+if ~isfield( opt, 'kappa' )
+    opt.kappa = 1e-3;
+end
+
+% recompute coupling operator and matrices
+if ~isfield( opt, 'recomputeC' )
+    opt.recomputeC = true(Nc,1);
+end
+
+% recompute stiffness matrices (the logicals correspond to each model
+if ~isfield( opt, 'recomputeK' )
+    opt.recomputeK = true(Nm,1);
+end
