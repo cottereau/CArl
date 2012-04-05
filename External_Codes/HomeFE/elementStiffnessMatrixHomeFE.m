@@ -30,7 +30,9 @@ if d==1
         res = jacob \ dN;
         Nx = res(1,:);
         Ke = Ke + ( Nx'*Nx ) * dvolu * Epg(igaus);
-        fe = fe + N(igaus,:)' * load(igaus,:) * dvolu;
+        if any(load(:)~=0)
+            fe = fe + N(igaus,:)' * load(igaus,:) * dvolu;
+        end
     end
 
 elseif d==2
