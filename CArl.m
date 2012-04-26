@@ -1,7 +1,7 @@
 function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 % CARL to solve a system of models coupled in the Arlequin way
 %
-%  syntax: sol = CArl( model, coupling, solver )
+%  syntax: sol = CArl( model, coupling, solver, opt )
 %
 %  model: cell of structured arrays containing the information relative to
 %         the different models, in particular:
@@ -9,6 +9,7 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %               Implemented: {'Comsol' 'HomeFE' 'MonteCarloHomeFE}
 %       - other fields should be in a format appropriate for the code used
 %               to return a stiffness matrix in sparse format
+%
 %  coupling : cell of structured arrays containing the description of each
 %        of the couplings, with the fields
 %       -'type' : either 'zoom' or 'join'
@@ -27,7 +28,26 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %             coupling zone, given as a mesh in (X,T) format, with the
 %             appropriate dimension
 %       -'epsilon' : residual value of the non-proeminent model
+%
 %  solver: 'direct' or 'MonteCarlo'
+%
+%  opt: structured array with options. Possible options include
+%       -'recomputeK' logical array of size Nm*1 where Nm is the number of
+%             models. Indicates, for each model, whether the stiffness
+%             matrix should be recomputed. If .false. the fields 'K' and 
+%             'F' should be defined in corresponding cell of input 
+%             structured array 'model'. Default is .true.
+%       -'recomputeC' logical array of size Nc*1 where Nc is the number of
+%             couplings. Indicates, for each coupling, whether the
+%             corresponding elements should be recomputed. If .false. the
+%             fields 'C1', 'C2', 'alpha1', and 'alpha2' should be defined
+%             in the corresponding cell of input structured array 
+%             'coupling'. Default is .true.
+%       -'gerr' to set a threshold distance for points to be considered
+%             geometrically equal for some of the meshing operations.
+%             Default is 1e-9
+%       -'kappa' to set a value or the ratio between H1 and L2 elements of
+%             the H1 norm for the coupling operator. Default is 1e-3
 %
 %  NB: more complex coupling can be implemented 
 %     (see function DefineClassicalCoupling.m)
