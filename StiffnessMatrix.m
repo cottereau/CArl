@@ -34,7 +34,7 @@ switch model.code
         model.load = model.load .* model.alpha;
 
         % compute the modified value of the model property values
-        [ x, y, K, z, F, k ] = StiffnessMatrixHomeFE( model );
+        [ x, y, K, z, F ] = StiffnessMatrixHomeFE( model );
                 
     % MONTE CARLO VERSION OF HOME FE
     case 'MonteCarloHomeFE'
@@ -47,7 +47,7 @@ switch model.code
         Ktot = cell( Nmc, 1 );
         for i1 = 1:Nmc
             model.property = property(:,:,i1) .* model.alpha;
-            [ x, y, Ktot{i1}, z, F, k ] = StiffnessMatrixHomeFE( model );
+            [ x, y, Ktot{i1}, z, F ] = StiffnessMatrixHomeFE( model );
         end
         K = Ktot{1};
                 
@@ -61,7 +61,7 @@ switch model.code
         K = mphmatrix( out, 'sol1', 'Out', {'L','K'} );
         info = mphxmeshinfo( out,'solname', 'sol1' );
         ind = double( info.dofs.nodes+1 );
-        [ z, k, F ] = find( K.L ); z = ind(z);
+        [ z, ~, F ] = find( K.L ); z = ind(z);
         [ x, y, K ] = find( K.K ); x = ind(x); y = ind(y);
         
     % unknown case
@@ -72,7 +72,7 @@ end
 
 % output
 K = struct( 'x', x, 'y', y, 'val', K );
-F = struct( 'x', z, 'y', k, 'val', F );
+F = struct( 'x', z, 'y', ones(size(z)), 'val', F );
 if exist( 'Ktot', 'var' )
     K.MC = Ktot;
 end

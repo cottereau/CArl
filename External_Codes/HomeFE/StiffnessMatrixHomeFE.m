@@ -1,4 +1,4 @@
-function [ x, y, K, z, F, k ] = StiffnessMatrixHomeFE( model )
+function [ x, y, K, z, F ] = StiffnessMatrixHomeFE( model )
 % STIFFNESSMATRIXHOMEFE to construct the basic stiffness matrix and force 
 % vector by calling a home-made FE code in 1D
 %
@@ -45,29 +45,36 @@ y = reshape( repmat( reshape(T',Nt,1)', [nnode 1] ), Nt2, 1 );
 
 % initialization of force matrix
 K = zeros( Nt2, 1 );
-Nf = size(model.load,3);
-F = zeros( Nt, Nf );
+F = zeros( Nt, 1 );
 z = reshape( T', Nt, 1 );
-[z,k] = ndgrid( z, (1:Nf)');
-z = z(:);
-k = k(:);
 
 % gauss weights and shape functions
 [ gaussX, gaussW ] = simplexquad( d+2, d );
 [ N, Nxi, Neta ] = shapeFunctions( d-1, nnode, gaussX );
 
-% loop on elements
-for i1 = 1:Ne
-    Te = T( i1, : );
-    Xe = X( Te, : );
-    Ee = N * E( i1, : )';
-    Fe = N * reshape(model.load( i1, :, : ),nnode,Nf);
-    [ Ke, fe ] = elementStiffnessMatrixHomeFE( Xe, Ee, nnode, ...
-                                        gaussX, gaussW, N, Nxi, Neta, Fe );
-    K( (i1-1)*Nn2 + (1:Nn2) ) = Ke( : );
-    F( (i1-1)*nnode + (1:nnode),: ) = fe;
-end
-F = F(:);
+% loop on elements - case without load
+if all( model.load(:)==0 )
+    for i1 = 1:Ne
+        Te = T( i1, : );
+        Xe = X( Te, : );
+        Ee = N * E( i1, : )';
+        Ke = elementStiffnessMatrixHomeFENoLoad( Xe, Ee, nnode, ...
+            gaussX, gaussW, Nxi, Neta );
+        K( (i1-1)*Nn2 + (1:Nn2) ) = Ke( : );
+    end
+% loop on elements - case with load
+else
+    for i1 = 1:Ne
+        Te = T( i1, : );
+        Xe = X( Te, : );
+        Ee = N * E( i1, : )';
+        Fe = N * model.load( i1, : )';
+        [ Ke, fe ] = elementStiffnessMatrixHomeFE( Xe, Ee, nnode, ...
+            gaussX, gaussW, N, Nxi, Neta, Fe );
+        K( (i1-1)*Nn2 + (1:Nn2) ) = Ke( : );
+        F( (i1-1)*nnode + (1:nnode) ) = fe;
+    end
+end    
 
 % add boundary conditions
 if ~isempty( model.BC )
@@ -78,6 +85,105 @@ if ~isempty( model.BC )
     y = [ y ; model.BC.nodes'; Nx+(1:Nbc)' ];
     K = [ K ; ones( 2*Nbc, 1 ) ];
     z = [ z; reshape(repmat(Nx+(1:Nbc)',[1 Nf]),Nbc*Nf,1) ];
-    k = [ k; reshape(repmat(1:Nf,[Nbc 1]),Nbc*Nf,1) ];
     F = [ F; reshape(repmat(model.BC.value',[1 Nf]),Nbc*Nf,1) ];
 end
+%==========================================================================
+% ELEMENTSTIFFNESSMATRIXHOMEFENOLOAD
+%==========================================================================
+function Ke = elementStiffnessMatrixHomeFENoLoad( Xe, Epg, numberOfNodes, ...
+                           pospg, pespg, Nxi, Neta ) 
+% Ke = elementStiffnessMatrixHomeFENoLoad( Xe, numberOfNodes, pospg, pespg, ...
+%   Nxi, Neta ) 
+%
+% creates an elemental matrix
+%
+% INPUT
+%   Xe             nodal coords
+%   numberOfNodes  number of element nodes
+%   pospg,pespg   position and weigth of gauss points 
+%   N,Nxi,Neta    shape functions and its derivetives
+%
+% OUTPUT
+%   K
+%
+
+d = size(Xe,2);
+numberOfGaussPoints = size( pospg, 1 );
+
+Ke = zeros( numberOfNodes );
+
+if d==1
+    for igaus = 1:numberOfGaussPoints
+        dN = Nxi(igaus,:);
+        jacob = dN*Xe ;
+        dvolu = pespg(igaus) * det( jacob );
+        res = jacob \ dN;
+        Nx = res(1,:);
+        Ke = Ke + ( Nx'*Nx ) * dvolu * Epg(igaus);
+    end
+
+elseif d==2
+    for igaus = 1:numberOfGaussPoints
+        dN = [ Nxi(igaus,:) ; Neta(igaus,:) ];
+        jacob = dN*Xe ;
+        dvolu = pespg(igaus) * det( jacob );
+        res = jacob \ dN;
+        Nx = res(1,:);
+        Ny = res(2,:);
+        Ke = Ke + ( Nx'*Nx + Ny'*Ny ) * dvolu * Epg(igaus);
+    end
+end
+
+%==========================================================================
+% ELEMENTSTIFFNESSMATRIXHOMEFE
+%==========================================================================
+function [Ke,fe] = elementStiffnessMatrixHomeFE( Xe, Epg, numberOfNodes, ...
+                           pospg, pespg, N, Nxi, Neta, load ) 
+% [Ke,fe] = elementStiffnessMatrixHomeFE( Xe, numberOfNodes, pospg, pespg, ...
+%   N, Nxi, Neta ) 
+%
+% creates an elemental matrix
+%
+% INPUT
+%   Xe             nodal coords
+%   numberOfNodes  number of element nodes
+%   pospg,pespg   position and weigth of gauss points 
+%   N,Nxi,Neta    shape functions and its derivetives
+%
+% OUTPUT
+%   K
+%   f
+%
+
+d = size(Xe,2);
+numberOfGaussPoints = size( pospg, 1 );
+
+Ke = zeros( numberOfNodes );
+fe = zeros( numberOfNodes, 1 );
+
+if d==1
+    for igaus = 1:numberOfGaussPoints
+        dN = Nxi(igaus,:);
+        jacob = dN*Xe ;
+        dvolu = pespg(igaus) * det( jacob );
+        res = jacob \ dN;
+        Nx = res(1,:);
+        Ke = Ke + ( Nx'*Nx ) * dvolu * Epg(igaus);
+        fe = fe + N(igaus,:)' * load(igaus) * dvolu;
+    end
+
+elseif d==2
+    for igaus = 1:numberOfGaussPoints
+        dN = [ Nxi(igaus,:) ; Neta(igaus,:) ];
+        jacob = dN*Xe ;
+        dvolu = pespg(igaus) * det( jacob );
+        res = jacob \ dN;
+        Nx = res(1,:);
+        Ny = res(2,:);
+        Ke = Ke + ( Nx'*Nx + Ny'*Ny ) * dvolu * Epg(igaus);
+        fe = fe + N(igaus,:)' * load(igaus) * dvolu;
+    end
+end
+
+
+

@@ -34,38 +34,27 @@ function [ x, y, C ] = CouplingOperatorHomeFE( operator, mesh, opt )
 % R. Cottereau 04/2010
 
 % constants
-Nni = size(mesh.X,1);
 [Nne,ne] = size(mesh.Triangulation);
 
-% loop on the columns of the matrix and creation of a set of forces
-f = zeros(Nne,ne,Nni);
-for i1=1:Nni
-    for i2 = 1:ne
-        f( mesh.Triangulation(:,i2) == i1,i2,i1 ) = 1;
-    end
-end
-
+% computation of MassMatrix
 m = struct( 'mesh', mesh, ...
             'property', ones(Nne,ne), ...
-            'load', f, ...
+            'load', zeros(Nne,ne), ...
             'BC', [] );
-
-[ x, y, K, z, F, k ] = StiffnessMatrixHomeFE( m );
+[ x, y, C ] = MassMatrixHomeFE( m );
 
 % choice of the coupling operator
 switch operator
     
     % L2 coupling
     case 'L2'            
-        x = z;
-        y = k;
-        C = F;
         
     % H1 coupling
     case 'H1'
-        x = [ x; z ];
-        y = [ y; k ];
-        C = [ opt.kappa*K; F ];
+        [ z, k, K ] = StiffnessMatrixHomeFE( m );
+        x = [ z; x ];
+        y = [ k; y ];
+        C = [ opt.kappa*K; C ];
         
     % unknown coupling operator
     otherwise
