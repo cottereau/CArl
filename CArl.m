@@ -8,8 +8,8 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %       -'code': code to be used to construct the stiffness matrices.
 %               Implemented: {'Comsol' 'HomeFE' 'MonteCarloHomeFE}
 %       - other fields should be in a format appropriate for the code used
-%               to a return stiffness matrix
-%  coupling : cell of structured array containing the description of each
+%               to return a stiffness matrix in sparse format
+%  coupling : cell of structured arrays containing the description of each
 %        of the couplings, with the fields
 %       -'type' : either 'zoom' or 'join'
 %       -'models' : 1*2 vector naming the models to be coupled (the number
