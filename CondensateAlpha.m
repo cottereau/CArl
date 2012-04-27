@@ -51,18 +51,16 @@ switch model.code
             case 'lognormal'
                 % variance of the underlying gaussian distribution
                 Nmc = 1e4;
+                Nx = 30;
                 sig2 = model.random.sig2;
                 k = exp(randn(Nmc,1)*sqrt(sig2)+sig2/2);
-                ind = alpha(:,1)~=1;
-                for i1=1:length(ind)
-                    a = alpha(ind(i1),1);
-                    alpha(ind(i1),1) = fzero(@(b)mean(1./(b/(1-a)+k))-(1-a),a);
+                a = linspace( 0, 1, Nx );
+                b = 1-a;
+                for i1 = 2:Nx-1
+                    a(i1) = fzero(@(a)mean(1./(b(i1)+a*k))-1,a(i1));
                 end
-                ind = alpha(:,2)~=1;
-                for i1=1:length(ind)
-                    a = alpha(ind(i1),2);
-                    alpha(ind(i1),2) = fzero(@(b)mean(1./(b/(1-a)+k))-(1-a),a);
-                end
+                alpha(:,1) = interp1( 1-b, a, alpha(:,1) );
+                alpha(:,2) = interp1( 1-b, a, alpha(:,2) );
                 
             otherwise
                 error('unknown random field law')
