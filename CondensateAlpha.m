@@ -16,72 +16,56 @@ function alpha = CondensateAlpha( n, model, Cpl )
 % constant
 Nc = length(Cpl);
 
+% "classical" FE case: multiply the alpha for each coupling
+[i1,j1] = find( Cpl{1}.models==n );
+if j1==1
+    alpha = Cpl{i1}.alpha1;
+else
+    alpha = Cpl{i1}.alpha2;
+end
+for i2 = 2:Nc
+    error('Several coupling not implemented yet')
+end
+
 % switch on the different possible codes
 switch model.code
     
-    % "classical" FE case: multiply the alpha for each coupling
-    case {'HomeFE', 'Comsol'}
-        [i1,j1] = find( Cpl{1}.models==n );
-        if j1==1
-            alpha = Cpl{i1}.alpha1;
-        else
-            alpha = Cpl{i1}.alpha2;
-        end
-        for i2 = 2:Nc
-            error('Several coupling not implemented yet')
-        end
-
     % "random" FE case: the alpha must be corrected 
     case {'MonteCarloHomeFE'}
-        if Nc>1
-            error(['this coupling has not been looked at for more' ...
-                   ' than one coupling' ]);
-        end
         switch model.random.law
             
             % uniform first-order marginal law
             case 'uniform'
-%                 a = model.random.min;
-%                 b = model.random.max;
-                [i1,j1] = find( Cpl{1}.models==n );
-                if j1==1
-                    alpha = Cpl{i1}.alpha1;
-                else
-                    alpha = Cpl{i1}.alpha2;
+                % bounds of the uniform distribution
+                a = model.random.min;
+                b = model.random.max;
+                for i1=1:size(alpha,1)
+                    alpha(i1,1)=fzero(@(x) ...
+                 (exp((b-a)*x)-1)*((1-alpha(i1,1))+a*x)-(b-a)*x,alpha(i1,1));
+                    alpha(i1,2)=fzero(@(x) ...
+                 (exp((b-a)*x)-1)*((1-alpha(i1,2))+a*x)-(b-a)*x,alpha(i1,2));
                 end
-                for i2 = 2:Nc
-                    error('Several coupling not implemented yet')
+                alpha(alpha>1)=1;
+                alpha(alpha<0)=0;
+                
+            case 'lognormal'
+                % variance of the underlying gaussian distribution
+                Nmc = 1e4;
+                sig2 = model.random.sig2;
+                k = exp(randn(Nmc,1)*sqrt(sig2)+sig2/2);
+                ind = alpha(:,1)~=1;
+                for i1=1:length(ind)
+                    a = alpha(ind(i1),1);
+                    alpha(ind(i1),1) = fzero(@(b)mean(1./(b/(1-a)+k))-(1-a),a);
                 end
-%                 for i1=1:size(alpha,1)
-%                     alpha(i1,1)=fzero(@(x) ...
-%                  (exp((b-a)*x)-1)*((1-alpha(i1,1))+a*x)-(b-a)*x,alpha(i1,1));
-%                     alpha(i1,2)=fzero(@(x) ...
-%                  (exp((b-a)*x)-1)*((1-alpha(i1,2))+a*x)-(b-a)*x,alpha(i1,2));
-%                 end
-%                 alpha(alpha>1)=1;
-%                 alpha(alpha<0)=0;
+                ind = alpha(:,2)~=1;
+                for i1=1:length(ind)
+                    a = alpha(ind(i1),2);
+                    alpha(ind(i1),2) = fzero(@(b)mean(1./(b/(1-a)+k))-(1-a),a);
+                end
                 
             otherwise
                 error('unknown random field law')
         end
         
-    otherwise
-        error( 'not implemented yet' )
-        
 end
-
-% % convolution of matrices
-% function a = convvec( a, b )
-% Na = size(a);
-% Nb = size(b);
-% a = fft( [a zeros(Na(1),Nb(2)-1)], [], 2 );
-% b = fft( [b zeros(Nb(1),Na(2)-1)], [], 2 );
-% a = ifft( a .* b, [], 2 );
-% 
-% % polynomial value to coefficients
-% function a = valpolyN( y, x )
-% y1 = y(:,1);
-% y2 = y(:,2);
-% x1 = x(:,1);
-% x2 = x(:,2);
-% a = [ (y1-y2)'./(x1-x2)';(x1.*y2-x2.*y1)'./(x1-x2)']';
