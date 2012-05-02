@@ -73,7 +73,6 @@ for i1 = 1:Nm
     Mdl{i1}.mesh = ReadCodeMesh( Mdl{i1} );
 end
 
-    
 % construction of coupling operators
 disp('Creating coupling matrices ...')
 for i1 = 1:Nc

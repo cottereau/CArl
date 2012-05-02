@@ -37,7 +37,7 @@ ind = any( LSet.int( T )>= opt.gerr, 2);
 alpha( ind,: ) = weight.intvalue ;
 
 % alpha in the coupling domain
-indT = all( (LSet.int(T).*LSet.ext(T))>=0, 2 );
+indT = all( (LSet.int(T).*LSet.ext(T))>=-opt.gerr, 2 );
 indX = T(indT,:);
 if size(weight.value,2)==1 % constant alpha function
     a = weight.value;

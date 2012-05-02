@@ -79,7 +79,8 @@ c.weight1 = struct( 'value', [1-c.epsilon c.epsilon], ...
 c.weight2 = c.weight1;
 c.weight2.int = c.weight1.ext;
 c.weight2.ext = c.weight1.int;
-c.weight2.intvalue = 1-w1ext;
+c.weight2.intvalue = 1-c.weight1.extvalue;
+c.weight2.extvalue = 1-c.weight1.intvalue;
 
 function l = MDinLS( X, LS )
 % MDINLS to indicate, in the case of join, whether points X are all inside 
