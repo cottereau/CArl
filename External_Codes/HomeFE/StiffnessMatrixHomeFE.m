@@ -78,14 +78,21 @@ end
 
 % add boundary conditions
 if ~isempty( model.BC )
-    Nbc = length( model.BC.type );
+    % Dirichlet Boundary Conditions
+    ind = find( model.BC.type == 'U' );
+    Nbc = length( ind );
     Nx = max(x);
     Nf = size(model.load,3);
-    x = [ x ; Nx+(1:Nbc)'; model.BC.nodes' ];
-    y = [ y ; model.BC.nodes'; Nx+(1:Nbc)' ];
+    x = [ x ; Nx+(1:Nbc)'; model.BC.nodes(ind)' ];
+    y = [ y ; model.BC.nodes(ind)'; Nx+(1:Nbc)' ];
     K = [ K ; ones( 2*Nbc, 1 ) ];
     z = [ z; reshape(repmat(Nx+(1:Nbc)',[1 Nf]),Nbc*Nf,1) ];
-    F = [ F; reshape(repmat(model.BC.value',[1 Nf]),Nbc*Nf,1) ];
+    F = [ F; reshape(repmat(model.BC.value(ind)',[1 Nf]),Nbc*Nf,1) ];
+    % Neumann Boundary Conditions
+    ind = find( model.BC.type == 'F' );
+    Nbc = length( ind );
+    z = [ z; reshape(repmat(model.BC.nodes(ind)',[1 Nf]),Nbc*Nf,1) ];
+    F = [ F; reshape(repmat(model.BC.value(ind)',[1 Nf]),Nbc*Nf,1) ];
 end
 %==========================================================================
 % ELEMENTSTIFFNESSMATRIXHOMEFENOLOAD
