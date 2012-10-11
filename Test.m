@@ -32,7 +32,7 @@ switch lower(type)
         [ sol, out ] = CArl( model, coupling, solver );
         plottest2D( out.model, sol );
 
-    case {'mc1d'}
+    case {'mc1d','mc1d_bc_u10'}
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
         plotteststochastic( model, sol, out, ref );
@@ -42,12 +42,13 @@ switch lower(type)
         Test('join1D');
         Test('force1D');
         Test('MC1D');
+        Test('MC1D_BC_u10') ;
         Test('join2D');
         Test('force2D');
         Test('zoom2D')
         
     case 'comsol'
-        Test('comsol2d');
+        Test('comsol2D');
         
     otherwise
         error('unknown test case')
