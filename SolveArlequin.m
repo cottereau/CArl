@@ -47,7 +47,7 @@ switch lower(solver)
         invK1 = pinv( K1 );
         [K1x,K1y,K1val] = find(invK1) ;
         invK1 = sparse(K1x,K1y,K1val) ;
-        R = null( full(K1) );
+        R = null( K1 );
         [Rx,Ry,Rval] = find(R) ;
         R = sparse(Rx,Ry,Rval,size(R,1), size(R,2)) ;
         clear Rx Ry Rval K1x K1y K1val
@@ -60,7 +60,9 @@ switch lower(solver)
         theta = zeros( 1, Nmc );
         alpha = zeros( size(R,2), Nmc );
         for i1= 1:Nmc
-            Ks = [ opt.MC.Ks{i1} zeros(Nmi,1); zeros(1,Nmi+1) ];
+            Ksp = spalloc(Nmi,Nmi,Nmi^2) ;
+            Ksp(1:Nmki,1:Nmki) = opt.MC.Ks{i1}(1:Nmki,1:Nmki) ;
+            Ks = [ Ksp zeros(Nmi,1); zeros(1,Nmi+1) ];
             k = K2 + Ks - C'*invK1*C;
             u = [k c;c' zeros(size(c,2))]\f;
             u2(:,i1) = u(1:Nmi);
