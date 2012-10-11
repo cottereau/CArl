@@ -39,11 +39,12 @@ switch model.code
                 % bounds of the uniform distribution
                 a = model.random.min;
                 b = model.random.max;
+                Eh = (b-a)/(log(b)-log(a)) ; % homogenized modulus
                 for i1=1:size(alpha,1)
                     alpha(i1,1)=fzero(@(x) ...
-                 (exp((b-a)*x)-1)*((1-alpha(i1,1))+a*x)-(b-a)*x,alpha(i1,1));
+                 (exp((b-a)*x/Eh)-1)*((1-alpha(i1,1))*Eh+a*x)-(b-a)*x,alpha(i1,1));
                     alpha(i1,2)=fzero(@(x) ...
-                 (exp((b-a)*x)-1)*((1-alpha(i1,2))+a*x)-(b-a)*x,alpha(i1,2));
+                 (exp((b-a)*x/Eh)-1)*((1-alpha(i1,2))*Eh+a*x)-(b-a)*x,alpha(i1,2));
                 end
                 alpha(alpha>1)=1;
                 alpha(alpha<0)=0;
