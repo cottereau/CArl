@@ -7,7 +7,7 @@ function [ x, y, K, z, F ] = StiffnessMatrixHomeFE( model )
 %  model: cell of structured arrays containing the information relative to
 %         the different models, in particular:
 %       - 'mesh': .X = matrix of coordinates of nodes [Nn*d matrix]
-%                 .T = connectivity matrix [Ne*e matrix]
+%                 .Triangulation = connectivity matrix [Ne*e matrix]
 %       - 'property': vector of mechanical property [Ne*e matrix] of the
 %                     value of the property at each node of each element
 %       - 'BC': in 1D: .type = list of 'U' and 'G' for displacement and
@@ -33,7 +33,7 @@ T = model.mesh.Triangulation;
 E = model.property;
 
 % constants
-[ Ne nnode ] = size( T );
+[ Ne, nnode ] = size( T );
 Nn2 = nnode^2;
 Nt2 = Ne*Nn2;
 d = size( X, 2 );
@@ -53,7 +53,7 @@ z = reshape( T', Nt, 1 );
 [ N, Nxi, Neta ] = shapeFunctions( d-1, nnode, gaussX );
 
 % loop on elements - case without load
-if all( model.load(:)==0 )
+if ~isfield(model,'load')||all( model.load(:)==0 )
     for i1 = 1:Ne
         Te = T( i1, : );
         Xe = X( Te, : );
@@ -77,7 +77,7 @@ else
 end    
 
 % add boundary conditions
-if ~isempty( model.BC )
+if isfield(model,'BC')&&~isempty( model.BC )
     % Dirichlet Boundary Conditions
     ind = find( model.BC.type == 'U' );
     Nbc = length( ind );
