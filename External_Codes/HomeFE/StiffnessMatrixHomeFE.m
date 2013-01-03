@@ -1,5 +1,5 @@
 function [ x, y, K, z, F ] = StiffnessMatrixHomeFE( model )
-% STIFFNESSMATRIXHOMEFE to construct the basic stiffness matrix and force 
+% STIFFNESSMATRIXHOMEFE to construct the basic stiffness matrix and force
 % vector by calling a home-made FE code in 1D
 %
 % syntax: [ x, y, K, z, F ] = StiffnessMatrixHomeFE( model )
@@ -31,166 +31,101 @@ function [ x, y, K, z, F ] = StiffnessMatrixHomeFE( model )
 X = model.mesh.X;
 T = model.mesh.Triangulation;
 E = model.property;
+if ~isfield(model,'load')
+    load = [];
+else 
+    load = model.load;
+end
 
 % constants
 [ Ne, nnode ] = size( T );
-Nn2 = nnode^2;
-Nt2 = Ne*Nn2;
 d = size( X, 2 );
-Nt = Ne*nnode;
 
 % initializations
-x = reshape( repmat( T, [1 nnode] )', Nt2, 1 );
-y = reshape( repmat( reshape(T',Nt,1)', [nnode 1] ), Nt2, 1 );
-
-% initialization of force matrix
-K = zeros( Nt2, 1 );
-F = zeros( Nt, 1 );
-z = reshape( T', Nt, 1 );
+x = reshape( repmat( T, [nnode 1] ), Ne*nnode^2, 1 );
+y = reshape( repmat( T, [1 nnode] ), Ne*nnode^2, 1 );
+z = reshape( T', Ne*nnode, 1 );
 
 % gauss weights and shape functions
-[ gaussX, gaussW ] = simplexquad( d+2, d );
-[ N, Nxi, Neta ] = shapeFunctions( d-1, nnode, gaussX );
+[ xg, wg ] = simplexquad( 2, d );
+[ N, Nxi, Neta ] = shapeFunctions( d-1, nnode, xg );
 
-% loop on elements - case without load
-if ~isfield(model,'load')||all( model.load(:)==0 )
-    for i1 = 1:Ne
-        Te = T( i1, : );
-        Xe = X( Te, : );
-        Ee = N * E( i1, : )';
-        Ke = elementStiffnessMatrixHomeFENoLoad( Xe, Ee, nnode, ...
-            gaussX, gaussW, Nxi, Neta );
-        K( (i1-1)*Nn2 + (1:Nn2) ) = Ke( : );
-    end
-% loop on elements - case with load
-else
-    for i1 = 1:Ne
-        Te = T( i1, : );
-        Xe = X( Te, : );
-        Ee = N * E( i1, : )';
-        Fe = N * model.load( i1, : )';
-        [ Ke, fe ] = elementStiffnessMatrixHomeFE( Xe, Ee, nnode, ...
-            gaussX, gaussW, N, Nxi, Neta, Fe );
-        K( (i1-1)*Nn2 + (1:Nn2) ) = Ke( : );
-        F( (i1-1)*nnode + (1:nnode) ) = fe;
-    end
-end    
+% constructing stiffness matrix without boundary conditions
+[ K, F ] = BaseStiffness( X, T, E, wg, N, Nxi, Neta, load );
 
 % add boundary conditions
 if isfield(model,'BC')&&~isempty( model.BC )
+    
     % Dirichlet Boundary Conditions
     ind = find( model.BC.type == 'U' );
     Nbc = length( ind );
     Nx = max(x);
-    Nf = size(model.load,3);
+    Nf = size(load,3);
     x = [ x ; Nx+(1:Nbc)'; model.BC.nodes(ind)' ];
     y = [ y ; model.BC.nodes(ind)'; Nx+(1:Nbc)' ];
     K = [ K ; ones( 2*Nbc, 1 ) ];
     z = [ z; reshape(repmat(Nx+(1:Nbc)',[1 Nf]),Nbc*Nf,1) ];
     F = [ F; reshape(repmat(model.BC.value(ind)',[1 Nf]),Nbc*Nf,1) ];
+    
     % Neumann Boundary Conditions
     ind = find( model.BC.type == 'F' );
     Nbc = length( ind );
     z = [ z; reshape(repmat(model.BC.nodes(ind)',[1 Nf]),Nbc*Nf,1) ];
     F = [ F; reshape(repmat(model.BC.value(ind)',[1 Nf]),Nbc*Nf,1) ];
-end
-%==========================================================================
-% ELEMENTSTIFFNESSMATRIXHOMEFENOLOAD
-%==========================================================================
-function Ke = elementStiffnessMatrixHomeFENoLoad( Xe, Epg, numberOfNodes, ...
-                           pospg, pespg, Nxi, Neta ) 
-% Ke = elementStiffnessMatrixHomeFENoLoad( Xe, numberOfNodes, pospg, pespg, ...
-%   Nxi, Neta ) 
-%
-% creates an elemental matrix
-%
-% INPUT
-%   Xe             nodal coords
-%   numberOfNodes  number of element nodes
-%   pospg,pespg   position and weigth of gauss points 
-%   N,Nxi,Neta    shape functions and its derivetives
-%
-% OUTPUT
-%   K
-%
-
-d = size(Xe,2);
-numberOfGaussPoints = size( pospg, 1 );
-
-Ke = zeros( numberOfNodes );
-
-if d==1
-    for igaus = 1:numberOfGaussPoints
-        dN = Nxi(igaus,:);
-        jacob = dN*Xe ;
-        dvolu = pespg(igaus) * det( jacob );
-        res = jacob \ dN;
-        Nx = res(1,:);
-        Ke = Ke + ( Nx'*Nx ) * dvolu * Epg(igaus);
-    end
-
-elseif d==2
-    for igaus = 1:numberOfGaussPoints
-        dN = [ Nxi(igaus,:) ; Neta(igaus,:) ];
-        jacob = dN*Xe ;
-        dvolu = pespg(igaus) * det( jacob );
-        res = jacob \ dN;
-        Nx = res(1,:);
-        Ny = res(2,:);
-        Ke = Ke + ( Nx'*Nx + Ny'*Ny ) * dvolu * Epg(igaus);
-    end
+    
 end
 
 %==========================================================================
-% ELEMENTSTIFFNESSMATRIXHOMEFE
+% BASESTIFFNESSMATRIXHOMEFE
 %==========================================================================
-function [Ke,fe] = elementStiffnessMatrixHomeFE( Xe, Epg, numberOfNodes, ...
-                           pospg, pespg, N, Nxi, Neta, load ) 
-% [Ke,fe] = elementStiffnessMatrixHomeFE( Xe, numberOfNodes, pospg, pespg, ...
-%   N, Nxi, Neta ) 
-%
-% creates an elemental matrix
-%
-% INPUT
-%   Xe             nodal coords
-%   numberOfNodes  number of element nodes
-%   pospg,pespg   position and weigth of gauss points 
-%   N,Nxi,Neta    shape functions and its derivetives
-%
-% OUTPUT
-%   K
-%   f
-%
+function [K,F] = BaseStiffness( X, T, E, pespg, N, Nxi, Neta, load )
 
-d = size(Xe,2);
-numberOfGaussPoints = size( pospg, 1 );
+% constants
+d = size(X,2);
+[Ne,nnode] = size(T);
 
-Ke = zeros( numberOfNodes );
-fe = zeros( numberOfNodes, 1 );
+% initialization
+K = zeros( Ne*nnode, nnode );
+F = zeros( nnode, Ne );
 
-if d==1
-    for igaus = 1:numberOfGaussPoints
-        dN = Nxi(igaus,:);
-        jacob = dN*Xe ;
-        dvolu = pespg(igaus) * det( jacob );
-        res = jacob \ dN;
-        Nx = res(1,:);
-        Ke = Ke + ( Nx'*Nx ) * dvolu * Epg(igaus);
-        fe = fe + N(igaus,:)' * load(igaus) * dvolu;
+% loop on virtual fields
+for i1 = 1:nnode
+    
+    % initialization
+    lload = (i1==1) && ~(isempty(load)||all(load(:)==0));
+    Ke = zeros( nnode, Ne );
+    
+    % loop on gauss points
+    for ipg = 1:length(pespg)
+        
+        if d==1
+            dN = Nxi(ipg,:);
+            jac = dN*reshape( X(T'), nnode, Ne );
+            dvol = ((N(ipg,:)*E')./jac)*pespg(ipg);
+            Ke = Ke + dN'*dvol*dN(i1);
+            
+        elseif d==2
+            dN = [Nxi(ipg,:);Neta(ipg,:)];
+            jacx = dN*reshape( X(T',1), nnode, Ne );
+            jacy = dN*reshape( X(T',2), nnode, Ne );
+            jac = jacx(1,:).*jacy(2,:)-jacx(2,:).*jacy(1,:);
+            Nx = dN(1,:)'*jacy(2,:)-dN(2,:)'*jacy(1,:);
+            Ny = dN(2,:)'*jacx(1,:)-dN(1,:)'*jacx(2,:);
+            dvol = ((pespg(ipg)*N(ipg,:))*E')./jac;
+            Ke = Ke + repmat(Nx(i1,:).*dvol,[nnode 1]).*Nx ...
+                + repmat(Ny(i1,:).*dvol,[nnode 1]).*Ny;
+        end
+        
+        if lload
+            F = F +  N(ipg,:)'*(N(ipg,:)*load'.*jac*pespg(ipg));
+        end
+        
     end
+    % storing value of stiffness
+    K( :, i1 ) = reshape(Ke',nnode*Ne,1);
 
-elseif d==2
-    for igaus = 1:numberOfGaussPoints
-        dN = [ Nxi(igaus,:) ; Neta(igaus,:) ];
-        jacob = dN*Xe ;
-        dvolu = pespg(igaus) * det( jacob );
-        res = jacob \ dN;
-        Nx = res(1,:);
-        Ny = res(2,:);
-        Ke = Ke + ( Nx'*Nx + Ny'*Ny ) * dvolu * Epg(igaus);
-        fe = fe + N(igaus,:)' * load(igaus) * dvolu;
-    end
 end
 
-
-
+% reshaping
+K = K(:);
+F = reshape(F,nnode*Ne,1);
