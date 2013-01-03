@@ -1,14 +1,24 @@
 function Test(type)
 % launch a test or a series of tests
 % The existing tests are the following
+%
+% ONE-DIMENSIONAL TESTS
 %  'zoom1D' for a zoom case in 1D (deterministic continuum-continuum)
 %  'join1D' for a junction case in 1D (deterministic continuum-continuum)
+%  'force1D'
 %  'MC1D' for a joint case in 1D (stochastic continuum-continuum)
+%  'MC1D_BC_u10'
+%
+% TWO-DIMENSIONAL TESTS
 %  'join2D' for  a junction case in 2D (deterministic continuum-continuum)
+%  'zoom2D'
+%  'force2D'
+%  'comsol2D'
+%  'nonembedded2D_1'
 %
 % the possible series are
-%  'short' for only the short tests: zoom1D, join1D, MC1D, join2D
-%  'long' for the longer tests
+%  'short' for only the short tests
+%  'comsol' for the comsol tests
 
 % R. Cottereau 05/2010
 % TO DO
