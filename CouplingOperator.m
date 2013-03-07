@@ -35,7 +35,7 @@ function C = CouplingOperator( couple, Int, Rep, opt )
 [ x, y, C ] = find( Rep.M * sparse( x, y, C ) * Int.M' );
 C = struct( 'x', x, 'y', y, 'val', C );
 
-if strcmp( couple.mediator.type, 'stochastic' )
+if or(strcmp( couple.mediator.type, 'stochastic' ),strcmp(couple.mediator.type, 'mesomicro'))
     [ x, y, Cs ] = CouplingOperatorHomeFE( 'L2', Int.mesh, opt );
     Cs = Rep.M * sparse( x , y, Cs );
     [ xtheta, ~, Ctheta ] = find( sum( Cs, 2 ) );
