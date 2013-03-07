@@ -18,7 +18,7 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %                  model of this vector should be the coarse one.
 %       -'mediator' : structured array for the definition of the mediator 
 %                  space. The fields are
-%             --'type': 'deterministic' or 'stochastic' ('deterministic by
+%             --'type': 'deterministic', 'stochastic' or 'mesomicro' ('deterministic by
 %                     default)
 %             --'support': 1 or 2. indicates which model should be used as
 %                     the support for the physical basis functions. Note
@@ -29,7 +29,7 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %             appropriate dimension
 %       -'epsilon' : residual value of the non-proeminent model
 %
-%  solver: 'direct' or 'MonteCarlo'
+%  solver: 'direct', 'MonteCarlo' or 'dmc' (MonteCarlo2 for the condensate version)
 %
 %  opt: structured array with options. Possible options include
 %       -'recomputeK' logical array of size Nm*1 where Nm is the number of
