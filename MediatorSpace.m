@@ -1,4 +1,4 @@
-function M = MediatorSpace( mediator, Int, Rep )
+function M = MediatorSpace( mediator, Rep )
 % MEDIATORSPACE defines the weight matrix that projects the coupling
 % matrices defined over the integration mesh onto the representation mesh
 % chosen by the user
