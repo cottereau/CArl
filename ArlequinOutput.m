@@ -24,7 +24,7 @@ for i1 = 1:Nm
     
     % reconstruction of alpha.u
     alpha = model{i1}.alpha;
-    T = model{i1}.mesh.Triangulation;
+    T = model{i1}.mesh.tri3.Triangulation;
     sol{i1} = alpha .* model{i1}.u(T);
     
     % additional reconstruction for Monte Carlo solutions

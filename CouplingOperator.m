@@ -31,12 +31,12 @@ function C = CouplingOperator( couple, Int, Rep, opt )
 % R. Cottereau 04/2010
 
 
-[ x, y, C ] = CouplingOperatorHomeFE( couple.operator, Int.mesh, opt );
+[ x, y, C ] = CouplingOperatorHomeFE( couple.operator, Int.mesh.tri3, opt );
 [ x, y, C ] = find( Rep.M * sparse( x, y, C ) * Int.M' );
 C = struct( 'x', x, 'y', y, 'val', C );
 
 if or(strcmp( couple.mediator.type, 'stochastic' ),strcmp(couple.mediator.type, 'mesomicro'))
-    [ x, y, Cs ] = CouplingOperatorHomeFE( 'L2', Int.mesh, opt );
+    [ x, y, Cs ] = CouplingOperatorHomeFE( 'L2', Int.mesh.tri3, opt );
     Cs = Rep.M * sparse( x , y, Cs );
     [ xtheta, ~, Ctheta ] = find( sum( Cs, 2 ) );
     [ xpsi, ~, Cpsi ] = find( sum( Cs * Int.M', 1 )' );

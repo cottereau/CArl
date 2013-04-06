@@ -45,7 +45,7 @@ F = [];
 % get sizes and correspondence between coupling and models
 for i1 = 1:Nm
     Nmi(i1) = max(model{i1}.K.x);
-    BCi(i1) = size(model{i1}.mesh.X,1);
+    BCi(i1) = size(model{i1}.mesh.tri3.X,1);
 end
 indK = [0 ; cumsum(Nmi(1:Nm)) ];
 indBC = indK(1:Nm) + BCi;
@@ -151,12 +151,12 @@ for i1 = 1:Nc
         opt.MC={};
         for ijk=1:length(c2m)
             if(isfield( model{c2m(i1,ijk)}.K, 'MC' ))
-                isto = [ c2m( i1, ijk )];
-                Csto = [ eval( [ 'coupling{i1}.C' num2str(isto(end)) ] )];
-                indCstox = [ eval( [ 'indC' num2str(isto(end)) 'x' ] )];
-                idet = [ setdiff( c2m(i1,:), isto(end) )];
-                Cdet = [ eval( [ 'coupling{i1}.C' num2str(idet(end)) ] )];
-                indCdetx = [ eval( [ 'indC' num2str(idet(end)) 'x' ] )];
+                isto = c2m( i1, ijk );
+                Csto = eval( [ 'coupling{i1}.C' num2str(isto(end)) ] );
+                indCstox = eval( [ 'indC' num2str(isto(end)) 'x' ] );
+                idet = setdiff( c2m(i1,:), isto(end) );
+                Cdet = eval( [ 'coupling{i1}.C' num2str(idet(end)) ] );
+                indCdetx = eval( [ 'indC' num2str(idet(end)) 'x' ] );
                 
                 
                 

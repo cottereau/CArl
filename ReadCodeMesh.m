@@ -1,4 +1,4 @@
-function mesh = ReadCodeMesh( model )
+function model = ReadCodeMesh( model )
 % READCODEMESH reads a mesh in a code-dependant format, and transforms it
 % into a CArl format.
 %
@@ -26,12 +26,19 @@ switch model.code
     
     % HOMEFE
     case {'HomeFE','MonteCarloHomeFE'}
-        X = model.mesh.X;
+        if ~isfield(model,'tri3')
+            X = model.mesh.X;
+            T = model.mesh.T;
+            model.tri3 = struct('X',X,'Triangulation',T);
+        else
+            X = model.tri3.X;
+            T = model.tri3.T;
+        end
         d = size( X, 2 );
         if d==1
-            mesh = struct( 'Triangulation', model.mesh.T, 'X', X );
+            model.mesh = struct( 'Triangulation', model.mesh.T, 'X', X );
         elseif d==2
-            mesh = TriRep( model.mesh.T, X );
+            model.mesh = TRI6( T, X );
         else
             error('not implemented yet')
         end
@@ -39,11 +46,12 @@ switch model.code
     % COMSOL
     case 'Comsol'
         wd = pwd;
-        eval( ['cd ' model.meshpath ';' ]);
+        cd(model.meshpath);
+%        eval( ['cd ' model.meshpath ';' ]);
         eval( ['mesh = ' model.meshfile ';' ]);
         X = mesh.mesh('mesh1').getVertex';
         T = double( mesh.mesh('mesh1').getElem('tri')' +1 );
-        mesh = TriRep( T, X );
+        mesh = TRI6( T, X );
         eval( ['cd ' wd ';' ]);
     
     % error

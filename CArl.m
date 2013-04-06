@@ -9,6 +9,8 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %               Implemented: {'Comsol' 'HomeFE' 'MonteCarloHomeFE}
 %       - other fields should be in a format appropriate for the code used
 %               to return a stiffness matrix in sparse format
+%       NB: fields 'mesh', 'alpha' should not be used because they are used
+%           by the program
 %
 %  coupling : cell of structured arrays containing the description of each
 %        of the couplings, with the fields
@@ -68,9 +70,9 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 if nargin<4; opt = []; end
 [ Nm, Nc, opt ] = Initiatevalues( Mdl, Cpl, opt ) ;
 
-% reading the code-dependant mesh into CArl format
+% reading the code-dependant mesh into CArl format (TRI6)
 for i1 = 1:Nm
-    Mdl{i1}.mesh = ReadCodeMesh( Mdl{i1} );
+    Mdl{i1} = ReadCodeMesh( Mdl{i1} );
 end
 
 % construction of coupling operators
@@ -89,6 +91,8 @@ for i1 = 1:Nc
         LSet1 = DefineLevelSet( m1.mesh.X, Cpl{i1}.weight1 );
         LSet2 = DefineLevelSet( m2.mesh.X, Cpl{i1}.weight2 );
         
+        % CREATE A NON-CONVEX COUPLING AREA THROUGH THE TWO LEVEL-SETS
+        
         % compute weights for each model
         Cpl{i1}.alpha1 = ArlequinWeight( m1.mesh, Cpl{i1}.weight1, LSet1, opt );
         Cpl{i1}.alpha2 = ArlequinWeight( m2.mesh, Cpl{i1}.weight2, LSet2, opt );
@@ -98,7 +102,7 @@ for i1 = 1:Nc
         [Int,Rep] = MeshIntersect( m1.mesh, m2.mesh, LSet1, LSet2, opt );
         
         % definition of the mediator space
-        Int.M = MediatorSpace( Cpl{i1}.mediator, Int, Rep );
+        Int.M = MediatorSpace( Cpl{i1}.mediator, Rep );
         
         % construction of coupling operators
         Cpl{i1}.C1 = CouplingOperator( Cpl{i1}, Int, Rep{1}, opt );

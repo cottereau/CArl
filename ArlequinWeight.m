@@ -25,7 +25,7 @@ function alpha = ArlequinWeight( mesh, weight, LSet, opt )
 % C. Zaccardi 04/2011
         
 % intialization
-T = mesh.Triangulation;
+T = mesh.tri3.Triangulation;
 alpha = zeros( size(T) );
 
 % weight functions outside the coupling domain (outside exterior LSet)
