@@ -21,7 +21,7 @@ classdef TRI6
 %               2               2
 %
 %  TRI6 methods:
-%     TRI6plot           - Plot the TRI6 mesh with nodes and vertices
+%     plot               - Plot the TRI6 mesh with nodes and vertices
 %     nodes              - Returns the list of nodes that are not vertices
 %     vertex             - Returns the list of vertices
 %     freeBoundary       - Returns the facets referenced by only one simplex
@@ -126,7 +126,7 @@ classdef TRI6
         function v = vertex(obj)
             v = unique(obj.T(:,1:3));
         end
-        function TRI6plot(obj)
+        function plot(obj)
             figure; triplot(obj.tri3,'color','k')
             hold on; scatter(obj.X(:,1),obj.X(:,2),50,'r','full');
         end
