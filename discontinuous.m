@@ -27,7 +27,7 @@ classdef discontinuous
 %  discontinuous methods:
 %     interp    - Returns the values of the function at a series of points
 %     plot      - plot the function over data set X
-%     addRegion - plot the function over data set X
+%     addRegion - define a new subdomain and corresponding function
 %
 % see levelSet
 

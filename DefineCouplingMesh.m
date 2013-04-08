@@ -27,7 +27,6 @@ bnd1 = levelSet( Tbnd, Xbnd );
 bnd2 = levelSet( Tbnd, Xbnd );
 
 % definition of coupling area
-%mesh = LSet;
 mesh = LSintersect( LSintersect( bnd1, bnd2 ), LSet );
 
 % determination of common free area

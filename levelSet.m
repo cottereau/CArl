@@ -34,6 +34,7 @@ classdef levelSet
 %                    points that were in the first LS and not the second)
 %     plot         - plot the distance function and interface
 %     inside       - check whether points are inside the level-set
+%     normal       - normal vectors to edges in the level-set
 
 % NB: the structure of the class should be changed based on operational
 % functions Union and Intersection ... for now, it is not robust at all for
@@ -248,6 +249,7 @@ classdef levelSet
                 disp('empty level-set')
             end
         end
+        % normal vectors to edges in the level-set
         function [n,c] = normal( varargin )
             obj = varargin{1};
             n = cell(obj.N,1);
