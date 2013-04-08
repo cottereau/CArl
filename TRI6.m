@@ -30,6 +30,7 @@ classdef TRI6
 %     cartToBary         - Converts the coordinates of a point from 
 %                          cartesian to barycentric
 %     size               - Returns the size of the Triangulation matrix
+%     clean              - Removes unused X and repeated X and T
 %
 %  TRI6 inherited methods:
 %     TRI6 does not inherits the methods of TriRep in a classical sense.
@@ -151,7 +152,8 @@ classdef TRI6
         function N = size(obj)
             N = size(obj.tri3);
         end
-        function obj = clean(obj)
+        % get rid of nodes that are not used in T, and of repeated elements
+        function obj = cleanT(obj)
             ind = unique(obj.T);
             n3 = length(ind);
             for i1 = 1:n3
@@ -160,6 +162,21 @@ classdef TRI6
             obj.X = obj.X(ind,:);
             [~,ind] = unique( sort(obj.T,2) ,'rows' );
             obj.T = obj.T(ind,:);
+        end
+        % get rid of nodes that are repeated
+        function obj = cleanX(obj)
+            xrnd = round(obj.X/obj.gerr)*obj.gerr;
+            [~,indx,indu] = unique( xrnd, 'rows', 'stable' );
+            Nx = size(obj.X,1);
+            if length(indx)<Nx
+                obj.X = obj.X(indx,:);
+                obj.T = indu(obj.T);
+            end
+        end
+        % clean X of unused nodes and repeated nodes and elements
+        function obj = clean(obj)
+            obj = cleanX(obj);
+            obj = cleanT(obj);
         end
     end
     

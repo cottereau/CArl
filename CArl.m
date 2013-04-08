@@ -95,7 +95,7 @@ for i1 = 1:Nc
         
         % create intersection of meshes (for both representation and
         % integration purposes)
-        [Int,Rep] = MeshIntersect( m1.mesh, m2.mesh, Cpl{i1}.mesh, opt );
+        [Int,Rep] = MeshIntersect( m1.mesh, m2.mesh, Cpl{i1}.mesh );
         
         % definition of the mediator space
         Int.M = MediatorSpace( Cpl{i1}.mediator, Rep );
