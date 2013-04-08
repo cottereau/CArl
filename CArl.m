@@ -28,7 +28,7 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %       -'operator' : type of coupling operator used ('H1' or 'L2').
 %       -'LevelSet1'; 'LevelSet2' : definition of level-sets bounding the
 %             coupling zone, given as a mesh in (X,T) format, with the
-%             appropriate dimension
+%             appropriate dimension TO BE MODIFIED !!!
 %       -'epsilon' : residual value of the non-proeminent model
 %
 %  solver: 'direct', 'MonteCarlo' or 'dmc' (MonteCarlo2 for the condensate version)
@@ -86,20 +86,16 @@ for i1 = 1:Nc
         m1 = Mdl{ Cpl{i1}.models(1) };
         m2 = Mdl{ Cpl{i1}.models(2) };
         
-        % define level sets
-        Cpl{i1} = DefineClassicalCoupling( Cpl{i1}, m1 );
-        LSet1 = DefineLevelSet( m1.mesh.X, Cpl{i1}.weight1 );
-        LSet2 = DefineLevelSet( m2.mesh.X, Cpl{i1}.weight2 );
-        
-        % CREATE A NON-CONVEX COUPLING AREA THROUGH THE TWO LEVEL-SETS
+        % define coupling and free volumes
+        [Cpl{i1}.mesh, Cpl{i1}.free12, Cpl{i1}.free] = ...
+               DefineCouplingMesh( Cpl{i1}.levelSet, m1.mesh, m2.mesh );
         
         % compute weights for each model
-        Cpl{i1}.alpha1 = ArlequinWeight( m1.mesh, Cpl{i1}.weight1, LSet1, opt );
-        Cpl{i1}.alpha2 = ArlequinWeight( m2.mesh, Cpl{i1}.weight2, LSet2, opt );
+        Cpl{i1}.alpha = ArlequinWeight( Cpl{i1}, m1.mesh, m2.mesh );
         
         % create intersection of meshes (for both representation and
         % integration purposes)
-        [Int,Rep] = MeshIntersect( m1.mesh, m2.mesh, LSet1, LSet2, opt );
+        [Int,Rep] = MeshIntersect( m1.mesh, m2.mesh, Cpl{i1}.mesh, opt );
         
         % definition of the mediator space
         Int.M = MediatorSpace( Cpl{i1}.mediator, Rep );

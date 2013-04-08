@@ -30,8 +30,9 @@ switch model.code
     % HOMEFE
     case 'HomeFE'
         % modify the properties in each element according to alpha
-        model.property = model.property .* model.alpha;
-        model.load = model.load .* model.alpha;
+        alpha = repmat(interp( model.alpha, model.mesh.incenters),[1 3]);
+        model.property = model.property .* alpha;
+        model.load = model.load .* alpha;
 
         % compute the modified value of the model property values
         [ x, y, K, z, F ] = StiffnessMatrixHomeFE( model );
@@ -39,14 +40,15 @@ switch model.code
     % MONTE CARLO VERSION OF HOME FE
     case 'MonteCarloHomeFE'
         % modify the properties in each element according to alpha
-        model.load = model.load .* model.alpha;
+        alpha = repmat(interp( model.alpha, model.mesh.incenters),[1 3]);
+        model.load = model.load .* alpha;
         property = model.property;
 
         % compute the modified value of the model property values
         Nmc = size( model.property, 3 );
         Ktot = cell( Nmc, 1 );
         for i1 = 1:Nmc
-            model.property = property(:,:,i1) .* model.alpha;
+            model.property = property(:,:,i1) .* alpha;
             [ x, y, Ktot{i1}, z, F ] = StiffnessMatrixHomeFE( model );
         end
         K = Ktot{1};
