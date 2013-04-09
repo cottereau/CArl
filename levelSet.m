@@ -2,27 +2,26 @@ classdef levelSet
 % definition of a levelSet class for implicit definition of boundaries of
 % complex convex or concave domains
 %
-% LS = levelSet(T,X) creates a level-set object based on the interface
-% defined by the [Ne*2] connectivity matrix T and [Nn*2] coordinate matrix 
-% X.
+% LS = levelSet(T,X) creates a level-set object considering a domain inside
+% the interface defined by the [Ne*2] connectivity matrix T and [Nn*2] 
+% coordinate matrix X.
 %
-% LS = levelSet('circle',Xc,R) creates a level-set object based on a
-% circular interface centered on Xc, with radius R.
+% LS = levelSet('circle',Xc,R) creates a level-set object considering a
+% domain inside a circular interface centered on Xc, with radius R.
 %
-% LS = levelSet('square',Xc,L) creates a level-set object based on a square
-% interface with corner Xc and side length L.
+% LS = levelSet('square',Xc,L) creates a level-set object considering a 
+% domain inside a square interface with corner Xc and side length L.
 %
-% By default, the domain of interest is considered inside the interface
-% controlled by the interface, but it is possible to consider the unbounded
-% domain outside the interface by using LS = levelSet( ....,1)
+% LS = levelSet(...,in) considers the interior of the level-set if in==true
+% (default) and the outside of the level-set if in==false.
 %
 %  levelSet properties:
 %     X  - N*1 cell of Nn*2 coordinate matrix of nodes of the polygonal 
 %          interfaces
 %     T  - N*1 cell of Ne*2 connectivity matrices of polygonal interfaces
-%     N  - number of disjoint level-sets
 %     in - N*1 vector of logicals indicating the considered domains are 
 %          inside (true) or outside (false) the different level-sets
+%     N  - number of disjoint level-sets
 %     sign - sign of the distance function inside the level-set
 %
 %  levelSet methods:
@@ -133,49 +132,49 @@ classdef levelSet
             lsi = levelSet( obj.T{i1}, obj.X{i1}, obj.in(i1) );
         end
         % add an interface without checking for intersections
-        function obj = addInterface( obj, T, X, in )
-            n = obj.N+1;
-            obj.X{n} = X;
-            obj.T{n} = T;
-            obj.in(n) = in;
+        function obj = addInterface( varargin )
+            obj = varargin{1};
+            if nargin==4
+                n = obj.N+1;
+                obj.X{n} = varargin{3};
+                obj.T{n} = varargin{2};
+                obj.in(n) = varargin{4};
+            elseif nargin==2
+                obj1 = varargin{2};
+                obj = addInterface( obj, obj1.T{1}, obj1.X{1}, obj1.in );
+            else
+                error('leveSet/addInterface: incorrect number of arguments');
+            end
         end
         % intersecting two domains
-        function obj = LSintersect( obj, obj1 )
-            for i1 = 1:obj.N
-                for i2 = 1:obj1.N
-                    x1 = obj.X{i1};
-                    x2 = round(obj1.X{i2}/obj.gerr)*obj.gerr;
-                    t1 = obj.T{i1};
-                    t2 = obj1.T{i2};
-                    nx = size(x1,1);
-                    [in1,on1] = inpolygon( x1(:,1), x1(:,2), x2(:,1),x2(:,2) );
-                    [in2,on2] = inpolygon( x2(:,1), x2(:,2), x1(:,1),x1(:,2) );
-                    % normal case with two intersections
-                    if ~all(in1&~on1)&&~all(in2&~on2)
-                        t = [t1;t2+nx];
-                        x = [x1;x2];
-                        dt = DelaunayTri(x,t);
-                        xc = dt.X(:,1); xc = mean(xc(dt.Triangulation),2);
-                        yc = dt.X(:,2); yc = mean(yc(dt.Triangulation),2);
-                        ind1 = inpolygon( xc, yc, x1(:,1), x1(:,2) );
-                        if ~obj.in(i1)
-                            ind1 = ~ind1;
+        function obj = LSintersect( obj1, obj2 )
+            if obj1.N==1 && obj2.N==1
+                l12 = inside( obj1, obj2.X{1}, false );
+                l21 = inside( obj2, obj1.X{1}, false );
+                % normal case with two intersections
+                if ~all(l12)&&~all(l21)
+                    [dt,ind1,ind2] = CrossLS( obj1, obj2 );
+                    dt = subSet( dt, ind1&ind2 );
+                    obj = freeBoundary(dt);
+                else
+                    obj = addInterface( obj1, obj2 );
+                end
+            elseif obj1.N==1
+                obj = obj1;
+                for i1 = 1:obj2.N
+                    ls2 = interfaceI( obj2, i1 );
+                    obj = LSintersect( ls2, obj );
+                end
+            else
+                for i1 = 1:obj1.N
+                    for i2 = 1:obj2.N
+                        ls1 = interfaceI( obj1, i1 );
+                        ls2 = interfaceI( obj2, i2 );
+                        if i1==1&&i2==1
+                            obj = LSintersect( ls2, ls1 );
+                        else
+                            obj = addInterface( obj, LSintersect( ls2, ls1 ));
                         end
-                        ind2 = inpolygon( xc, yc, x2(:,1), x2(:,2) );
-                        if ~obj1.in(i2)
-                            ind2 = ~ind2;
-                        end
-                        xi = dt.X(:,1); yi = dt.X(:,2);
-                        area = polyarea( xi(dt.Triangulation)', ...
-                                               yi(dt.Triangulation)')'>eps;
-                        ind = ind1&ind2&area;
-                        dt = TriRep( dt.Triangulation(ind,:), dt.X );
-                        [ff,xf] = freeBoundary(dt);
-                        obj.T{i1} = ff;
-                        obj.X{i1} = xf;
-                        obj.in(i1) = true;
-                    elseif i2==obj1.N
-                        obj = addInterface( obj, t2, x2, obj1.in(i2) );
                     end
                 end
             end
@@ -232,8 +231,12 @@ classdef levelSet
             obj.in = obj.in(~empty);
         end
         % check whether points are inside the level-set
-        function l = inside( obj, X )
-            l = distance( obj, X, true )<=obj.gerr;
+        function l = inside( obj, X, lon )
+            if nargin<3 || lon
+                l = distance( obj, X, true )<=obj.gerr;
+            else
+                l = distance( obj, X, true )<=-obj.gerr;
+            end
         end
         % plot function
         function  plot( obj, xv, yv )
@@ -269,6 +272,60 @@ classdef levelSet
                 n{i1} = [dy./nn -dx./nn];
                 c{i1} = -n{i1}(:,1).*x(obj.T{i1}(ind,1)) ...
                         -n{i1}(:,2).*y(obj.T{i1}(ind,1));
+            end
+        end
+        % create a Delaunay triangulation constrained by two level-sets
+        % (always convex) and indicates which elements are in/out 
+        function [dt,ind1,ind2] = CrossLS( obj1, obj2, i1, i2 )
+            if nargin<4 || isempty(i2);
+                i2 = 1;
+            end
+            if nargin<3 || isempty(i1);
+                i1 = 1;
+            end
+            C = [ obj1.T{i1}; obj2.T{i2}+size(obj1.X{i1},1) ];
+            Xdt = [ obj1.X{i1}; obj2.X{i2} ];
+            dt = DelaunayTri( Xdt, C );
+            dt = TRI6( dt.Triangulation, dt.X );
+            ind1 = inside( obj1, dt.X, true );
+            ind1 = all( ind1(dt.T), 2 );
+            ind2 = inside( obj2, dt.X, true );
+            ind2 = all( ind2(dt.T), 2 );
+        end
+        % get rid of nodes that are not used in T, and of repeated elements
+        function obj = cleanT(obj)
+            % get rid of elements that are repeated
+            [~,ind] = unique( sort(obj.T{1},2) ,'rows' );
+            obj.T{1} = obj.T{1}(ind,:);
+            % get rid of elements that join the same nodes
+            ind = diff(obj.T{1},[],2)==0;
+            obj.T{1} = obj.T{1}(~ind,:);
+            % get rid of nodes that are not used in T
+            ind = unique(obj.T{1});
+            n3 = length(ind);
+            for i1 = 1:n3
+                obj.T{1}( obj.T{1}==ind(i1) ) = i1;
+            end
+            obj.X{1} = obj.X{1}(ind,:);
+        end
+        % get rid of nodes that are repeated
+        function obj = cleanX(obj)
+            xrnd = round(obj.X{1}/obj.gerr)*obj.gerr;
+            [~,indx,indu] = unique( xrnd, 'rows', 'stable' );
+            Nx = size(obj.X{1},1);
+            if length(indx)<Nx
+                obj.X{1} = obj.X{1}(indx,:);
+                obj.T{1} = indu(obj.T{1});
+            end
+        end
+        % clean X of unused nodes and repeated nodes and elements
+        function obj = clean(obj)
+            for i1 = obj.N
+                obji = interfaceI( obj, i1 );
+                obji = cleanX(obji);
+                obji = cleanT(obji);
+                obj.X{i1} = obji.X{1};
+                obj.T{i1} = obji.T{1};
             end
         end
     end

@@ -71,6 +71,7 @@ classdef TRI6
     end
 
     methods
+        % define the TRI6 object
         function obj = TRI6(T,X)
             if size(T,2)==3
                 ne = size(T,1);
@@ -93,6 +94,7 @@ classdef TRI6
                 error('incorrect size of connectivity matrix T')
             end
         end
+        % set the element list of the underlying TriRep representation
         function T = get.T3(obj)
             T = obj.T(:,1:3);
             n3 = length(obj.ind3v6);
@@ -100,68 +102,78 @@ classdef TRI6
                 T( T==obj.ind3v6(i1) ) = i1;
             end
         end
+        % set the indices list of nodes in the TRI6 representation
         function ind = get.ind3v6(obj)
             ind = unique( obj.T(:,1:3) );
         end
+        % set the nodes of the TriRep representation
         function X = get.X3(obj)
             X = obj.X(obj.ind3v6,:);
         end
+        % set the TriRep representation
         function tri3 = get.tri3(obj)
             tri3 = TriRep(obj.T3,obj.X3);
         end
+        % set the number of elements
         function Ne = get.Ne(obj)
             Ne = size(obj.T,1);
         end
+        % set the number of nodes
         function Nn = get.Nn(obj)
             Nn = size(obj.X,1);
         end
+        % set the space dimension
         function d = get.d(obj)
             d = size(obj.X,2);
         end
-        function X = incenters(obj)
-            X = incenters(obj.tri3);
-        end
+        % returns a list of nodes that are not vertices
         function n = nodes(obj)
             n = unique(obj.T(:,4:6));
         end
+        % returns a list of vertices of the mesh
         function v = vertex(obj)
             v = unique(obj.T(:,1:3));
         end
+        % plot the mesh and the nodes
         function plot(obj)
             figure; triplot(obj.tri3,'color','k')
             hold on; scatter(obj.X(:,1),obj.X(:,2),50,'r','full');
         end
-        function varargout = freeBoundary(obj)
-            if nargout==1
-                bnd = freeBoundary(obj.tri3);
-                bnd = obj.ind3v6(bnd);
-                varargout{1} = bnd;
-            elseif nargout==2
-                [varargout{1},varargout{2}] = freeBoundary(obj.tri3);
+        % Selects the elements of obj inside a given boundary
+        function ind = elementsInBoundary(varargin)
+            obj = varargin{1};
+            if nargin==3
+                bndX = varargin{3};
+                bndT = varargin{2};
+                xp = bndX(:,1);
+                yp = bndX(:,2);
+                ind = inpolygon( obj.X(:,1), obj.X(:,2), xp(bndT(:)), yp(bndT(:)) );
+                ind = all( ind(obj.T), 2 );
+            elseif nargin==2
+                lin = inside( varargin{2}, obj.X, lon );
+                ind = all( lin(obj.T), 2 );
             end
         end
-        function ind = elementsInBoundary(obj,bndT,bndX)
-            xp = bndX(:,1);
-            yp = bndX(:,2);
-            ind = inpolygon( obj.X(:,1), obj.X(:,2), xp(bndT(:)), yp(bndT(:)) );
-            ind = all( ind(obj.T), 2 );
-        end
+        % returns a TRI6 object using only a selected list of elements
         function obj2 = subSet(obj,indT)
             obj2 = TRI6( obj.T(indT,:), obj.X );
         end
-        function N = size(obj)
-            N = size(obj.tri3);
-        end
         % get rid of nodes that are not used in T, and of repeated elements
         function obj = cleanT(obj)
+            % get rid of elements that are repeated
+            [~,ind] = unique( sort(obj.T,2) ,'rows' );
+            obj.T = obj.T(ind,:);
+            % get rid of elements that have area zero
+            xi = obj.X(:,1); yi = obj.X(:,2);
+            ind = polyarea( xi(obj.T)', yi(obj.T)')'>(obj.gerr)^2;
+            obj.T = obj.T(ind,:);
+            % get rid of nodes that are not used in T
             ind = unique(obj.T);
             n3 = length(ind);
             for i1 = 1:n3
                 obj.T( obj.T==ind(i1) ) = i1;
             end
             obj.X = obj.X(ind,:);
-            [~,ind] = unique( sort(obj.T,2) ,'rows' );
-            obj.T = obj.T(ind,:);
         end
         % get rid of nodes that are repeated
         function obj = cleanX(obj)
@@ -177,6 +189,19 @@ classdef TRI6
         function obj = clean(obj)
             obj = cleanX(obj);
             obj = cleanT(obj);
+        end
+        % inherited from TriRep/size
+        function N = size(obj)
+            N = size(obj.tri3);
+        end
+        % inherited from TriRep/incenters
+        function X = incenters(obj)
+            X = incenters(obj.tri3);
+        end
+        % inherited from TriRep/freeBoundary
+        function ls = freeBoundary(obj)
+            [bnd,xf] = freeBoundary(obj.tri3);
+            ls = levelSet( bnd, xf );
         end
     end
     

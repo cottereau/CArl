@@ -81,11 +81,11 @@ elseif d==2
     end
     mesh = DelaunayTri( X, C );
     mesh = TRI6( mesh.Triangulation, mesh.X );
-    [bnd1,Xbnd1] = freeBoundary(mesh1);
-    [bnd2,Xbnd2] = freeBoundary(mesh2);
+    bnd1 = freeBoundary(mesh1);
+    bnd2 = freeBoundary(mesh2);
     ind = inside(LSet,mesh.X);
-    ind = elementsInBoundary(mesh,bnd1,Xbnd1) & ...
-          elementsInBoundary(mesh,bnd2,Xbnd2) & ...
+    ind = elementsInBoundary(mesh,bnd1.T{1},bnd1.X{1}) & ...
+          elementsInBoundary(mesh,bnd2.T{1},bnd2.X{1}) & ...
           all(ind(mesh.T),2);
     mesh = subSet( mesh, ind );
 end
