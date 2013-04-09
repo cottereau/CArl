@@ -21,10 +21,6 @@ function [mesh,free12,free] = DefineCouplingMesh( LSet, mesh1, mesh2 )
 % contact: regis.cottereau@ecp.fr
 
 % definition of a level-set from boundary of the mesh
-% [Tbnd,Xbnd] = freeBoundary(mesh1);
-% bnd1 = levelSet( Tbnd, Xbnd );
-% [Tbnd,Xbnd] = freeBoundary(mesh2);
-% bnd2 = levelSet( Tbnd, Xbnd );
 bnd1 = freeBoundary(mesh1);
 bnd2 = freeBoundary(mesh2);
 
