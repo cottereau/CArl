@@ -178,9 +178,15 @@ classdef TRI6
         % get rid of nodes that are repeated
         function obj = cleanX(obj)
             xrnd = round(obj.X/obj.gerr)*obj.gerr;
-            [~,indx,indu] = unique( xrnd, 'rows', 'stable' );
+            [aa,indx,indu] = unique( xrnd, 'rows' ,'first' );
+            [indx iix] = sort(indx);
+            aa=aa(iix,:);
             Nx = size(obj.X,1);
             if length(indx)<Nx
+                indu=[];
+                for ijk=1:length(xrnd)
+                    indu = [indu;find(xrnd(ijk,1)-aa(:,1)==0 & xrnd(ijk,2)-aa(:,2)==0)];
+                end
                 obj.X = obj.X(indx,:);
                 obj.T = indu(obj.T);
             end
