@@ -34,8 +34,12 @@ N2 = size(mesh2.tri3.X,1);
 
 % coupling zone for representation purposes (including elements of the
 % original meshes that are cut by the level-set)
-[meshr1,Xrg1] = ReduceCouplingArea( mesh1, LSet );
-[meshr2,Xrg2] = ReduceCouplingArea( mesh2, LSet );
+%[meshr1,Xrg1] = ReduceCouplingArea( mesh1, LSet );
+%[meshr2,Xrg2] = ReduceCouplingArea( mesh2, LSet );
+meshr1 = mesh1;
+meshr2 = mesh2;
+Xrg1 = 1:size(mesh1.X3,1);
+Xrg2 = 1:size(mesh2.X3,1);
 
 % intersect the two meshes to get a first draft of the integration mesh
 meshi = MergeMeshes( meshr1, meshr2, LSet );
@@ -74,15 +78,17 @@ if d==1
 elseif d==2
     X = [ mesh1.tri3.X ; mesh2.tri3.X ];
     T = [ mesh1.tri3.Triangulation ; mesh2.tri3.Triangulation+N ];
-    C = unique(sort([T(:,1:2); T(:,2:3); T(:,[3 1])],2), 'rows');
+    C = [T(:,1:2); T(:,2:3); T(:,[3 1])];
     for i1=1:LSet.N
         C = [C;LSet.T{i1}+size(X,1)];
         X = [X;LSet.X{i1}];
     end
-    mesh = DelaunayTri( X, C );
+    ldt = clean( levelSet( C, X ) );
+    mesh = DelaunayTri( ldt.X{1}, ldt.T{1} );
     mesh = TRI6( mesh.Triangulation, mesh.X );
     bnd1 = freeBoundary(mesh1);
     bnd2 = freeBoundary(mesh2);
+    keyboard
     ind = inside(LSet,mesh.X);
     ind = elementsInBoundary(mesh,bnd1.T{1},bnd1.X{1}) & ...
           elementsInBoundary(mesh,bnd2.T{1},bnd2.X{1}) & ...
@@ -97,22 +103,24 @@ function [mesh,indX] = ReduceCouplingArea( mesh, meshCpl )
 %
 % output mesh is a TRI6 (possibly non-convex) mesh
 
-% constants
-d = size(mesh.X,2);
-T = mesh.T;
+% % constants
+% d = size(mesh.X,2);
+% T = mesh.T;
 
 % selection of elements inside the coupling area (positive product of
 % level-sets)
-indX = inside( meshCpl, mesh.X );
-indT = any( indX(T), 2 );
+indT = elementsInBoundary( mesh, meshCpl );
+mesh = subSet( mesh, indT );
+indX = [];
+keyboard
 
-% creation of output structure
-[ X, T, indX ] = ReduceMesh( mesh.X, T(indT,:) );
-if d==1
-    mesh = struct( 'X', X, 'Triangulation', T );
-elseif d==2
-    mesh = TRI6( T, X );
-end
+% % creation of output structure
+% [ X, T, indX ] = ReduceMesh( mesh.X, T(indT,:) );
+% if d==1
+%     mesh = struct( 'X', X, 'Triangulation', T );
+% elseif d==2
+%     mesh = TRI6( T, X );
+% end
 
 %==========================================================================
 function [ Mx, My, Mval ] = XR2XI( meshr, meshi )
