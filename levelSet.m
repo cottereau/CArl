@@ -29,10 +29,10 @@ classdef levelSet
 %
 %  levelSet methods:
 %     distance     - distance from interface to a set of points
-%     interfaceI   - Returns a level-set made of only one closed surface
-%     LSintersect  - intersecting two levelsets (new negative points are
+%     getInterface   - Returns a level-set made of only one closed surface
+%     intersection  - intersecting two levelsets (new negative points are
 %                    points that were formarly negative for both level-sets)
-%     LScomplement - complement of two levelsets (new negative points are
+%     complement - complement of two levelsets (new negative points are
 %                    points that were in the first LS and not the second)
 %     plot         - plot the distance function and interface
 %     inside       - check whether points are inside the level-set
@@ -349,7 +349,8 @@ classdef levelSet
             end
             C = [ obj1.T{i1}; obj2.T{i2}+size(obj1.X{i1},1) ];
             Xdt = [ obj1.X{i1}; obj2.X{i2} ];
-            dt = DelaunayTri( Xdt, C );
+            ldt = clean( levelSet( C, Xdt ) );
+            dt = DelaunayTri( ldt.X{1}, ldt.T{1} );
             dt = TRI6( dt.Triangulation, dt.X );
             ind1 = inside( obj1, dt.X, true );
             ind1 = all( ind1(dt.T), 2 );
@@ -386,7 +387,7 @@ classdef levelSet
         % clean X of unused nodes and repeated nodes and elements
         function obj = clean(obj)
             for i1 = obj.N
-                obji = interfaceI( obj, i1 );
+                obji = getInterface( obj, i1 );
                 obji = cleanX(obji);
                 obji = cleanT(obji);
                 obj.X{i1} = obji.X{1};
