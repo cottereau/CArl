@@ -26,7 +26,6 @@ bnd2 = freeBoundary(mesh2);
 
 % definition of coupling area
 mesh = intersection( intersection( bnd1, bnd2 ), LSet );
-keyboard
 
 % determination of common free area
 free12 = complement( intersection( bnd1, bnd2 ), mesh );
