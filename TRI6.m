@@ -150,7 +150,7 @@ classdef TRI6
                 ind = inpolygon( obj.X(:,1), obj.X(:,2), xp(bndT(:)), yp(bndT(:)) );
                 ind = all( ind(obj.T), 2 );
             elseif nargin==2
-                lin = inside( varargin{2}, obj.X, lon );
+                lin = inside( varargin{2}, obj.X, true );
                 ind = all( lin(obj.T), 2 );
             end
         end
