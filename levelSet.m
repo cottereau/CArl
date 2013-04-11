@@ -138,6 +138,7 @@ classdef levelSet
         function lsi = getInterface( obj, i1 )
             lsi = levelSet( obj.T{i1}, obj.X{i1}, obj.in(i1) );
         end
+        % erase an interface of a levelSet structure
         function obj = rmInterface( obj, i1 )
             ind = [1:(i1-1) (i1+1):obj.N];
             obj.X = obj.X(ind);
