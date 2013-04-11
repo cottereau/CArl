@@ -102,7 +102,7 @@ classdef levelSet
             else
                 error('unknown arguments')
             end
-            if ~obj.in(1)
+            if ~obj.in(1)&&obj.N>0
                 obj.T{1} = obj.T{1}(end:-1:1,[2 1]);
             end
         end
@@ -138,25 +138,27 @@ classdef levelSet
         function lsi = getInterface( obj, i1 )
             lsi = levelSet( obj.T{i1}, obj.X{i1}, obj.in(i1) );
         end
+        function obj = rmInterface( obj, i1 )
+            ind = [1:(i1-1) (i1+1):obj.N];
+            obj.X = obj.X(ind);
+            obj.T = obj.T(ind);
+            obj.in = obj.in(ind);
+        end
         % replace the interface number i by another one
         function obj = setInterface( obj, obji, i1 )
             obj.X{i1} = obji.X{1};
             obj.T{i1} = obji.T{1};
             obj.in(i1) = obji.in(1);
         end
-        % add an interface without checking for intersections
-        function obj = addInterface( varargin )
-            obj = varargin{1};
-            if nargin==4
-                n = obj.N+1;
-                obj.X{n} = varargin{3};
-                obj.T{n} = varargin{2};
-                obj.in(n) = varargin{4};
-            elseif nargin==2
-                obj1 = varargin{2};
-                obj = addInterface( obj, obj1.T{1}, obj1.X{1}, obj1.in );
-            else
-                error('leveSet/addInterface: incorrect number of arguments');
+        % complement of obj2 in obj1
+        function obj = complement( obj1, obj2 )
+            obj = levelSet(true);
+            obj2.in = ~obj2.in;
+            for i1 = 1:obj2.N
+                ls12 = intersection( obj1, getInterface(obj2,i1) );
+                if ls12.N>0
+                    obj = union( obj, ls12 );
+                end
             end
         end
         % intersecting two domains composed of several level-sets
@@ -173,18 +175,23 @@ classdef levelSet
                 obj = obj1;
                 return
             end
-            ls1 = getInterface( obj1, 1 );
-            ls2 = getInterface( obj2, 1 );
-            obj = LSintersection( ls1, ls2 );
-            if obj1.N>1||obj2.N>1
-                for i1 = 1:obj1.N
-                    for i2 = 1:obj2.N
-                        ls1 = getInterface( obj1, i1 );
-                        ls2 = getInterface( obj2, i2 );
-                        obj = addInterface( obj, LSintersection( ls2, ls1 ));
+            obj = levelSet(false);
+            for i1 = 1:obj1.N
+                for i2 = 1:obj2.N
+                    ls1 = getInterface( obj1, i1 );
+                    ls2 = getInterface( obj2, i2 );
+                    ls12 = LSintersection( ls2, ls1 );
+                    if ls12.N==1
+                        obj = setInterface( obj, ls12, obj.N+1 );
+                    elseif ls12.N==2
+                        obj = setInterface( obj, getInterface(ls12,1), obj.N+1 );
+                        obj = setInterface( obj, getInterface(ls12,2), obj.N+1 );
                     end
                 end
-                obj = collapseIntersection( obj );
+            end
+            obj = collapseIntersection( obj );
+            if obj.N==0
+                obj = levelSet(true);
             end
         end
         % union of two domains composed of several level-sets
@@ -216,26 +223,35 @@ classdef levelSet
         end
         % returns the intersection of all the level-sets in one object
         function obj = collapseIntersection(obj)
+            if obj.N<2
+                return
+            end
             for i1 = obj.N:-1:2
                 for i2 = obj.N-1:-1:1
                     ls1 = getInterface( obj, i1 );
                     ls2 = getInterface( obj, i2 );
                     ls12 = LSintersection( ls2, ls1 );
                     if ls12.N<2
-                        obj = setInterface( obj, ls12, i1 );
+                        obj = setInterface( obj, ls12, i2 );
+                        obj = rmInterface( obj, i1 );
+                        break
                     end
                 end
             end
         end
         % returns the union of all the level-sets in one object
         function obj = collapseUnion(obj)
+            if obj.N<2
+                return
+            end
             for i1 = obj.N:-1:2
                 for i2 = obj.N-1:-1:1
                     ls1 = getInterface( obj, i1 );
                     ls2 = getInterface( obj, i2 );
                     ls12 = LSunion( ls2, ls1 );
                     if ls12.N<2
-                        obj = setInterface( obj, ls12, i1 );
+                        obj = setInterface( obj, ls12, i2 );
+                        obj = rmInterface( obj, i1 );
                     end
                 end
             end
@@ -247,9 +263,13 @@ classdef levelSet
             if ~all(l12)&&~all(l21)
                 [dt,ind1,ind2] = CrossLS( obj1, obj2 );
                 dt = subSet( dt, ind1&ind2 );
-                obj = freeBoundary(dt);
+                if dt.Ne>0
+                    obj = freeBoundary(dt);
+                else
+                    obj = levelSet(true);
+                end
             elseif all(l12)&&all(l21)
-                obj = addInterface( obj1, obj2 );
+                obj = setInterface( obj1, obj2, obj1.N+1 );
             elseif all(l21)
                 obj = obj1;
             elseif all(l12)
@@ -273,57 +293,6 @@ classdef levelSet
             else
                 obj = levelSet(false);
             end
-        end
-        % creating a levelset as a complement of one level-set with respect
-        % to another (points in the first LS and not the second)
-        function obj = LScomplement( obj, obj1 )
-            empty = false(obj.N,1);
-            for i1 = 1:obj.N
-                for i2 = 1:obj1.N
-                    x1 = obj.X{i1};
-                    x2 = round(obj1.X{i2}/obj.gerr)*obj.gerr;
-                    t1 = obj.T{i1};
-                    t2 = obj1.T{i2};
-                    nx = size(x1,1);
-                    [in1,on1] = inpolygon( x1(:,1), x1(:,2), x2(:,1),x2(:,2) );
-                    [in2,on2] = inpolygon( x2(:,1), x2(:,2), x1(:,1),x1(:,2) );
-                    % normal case
-                    if ~all(in1&~on1)&&~all(in2&~on2)
-                        t = [t1;t2+nx];
-                        x = [x1;x2];
-                        dt = DelaunayTri(x,t);
-                        xc = dt.X(:,1); xc = mean(xc(dt.Triangulation),2);
-                        yc = dt.X(:,2); yc = mean(yc(dt.Triangulation),2);
-                        ind1 = inpolygon( xc, yc, x1(:,1), x1(:,2) );
-                        if ~obj.in(i1)
-                            ind1 = ~ind1;
-                        end
-                        ind2 = inpolygon( xc, yc, x2(:,1), x2(:,2) );
-                        if ~obj1.in(i2)
-                            ind2 = ~ind2;
-                        end
-                        xi = dt.X(:,1); yi = dt.X(:,2);
-                        area = polyarea( xi(dt.Triangulation)', ...
-                                               yi(dt.Triangulation)')'>eps;
-                        ind = ind1&~ind2&area;
-                        if all(~ind) && i2==obj1.N
-                            empty(i1) = true;
-                            break
-                        elseif any(ind)
-                            dt = TriRep( dt.Triangulation(ind,:), dt.X );
-                            [ff,xf] = freeBoundary(dt);
-                            obj.T{i1} = ff;
-                            obj.X{i1} = xf;
-                            obj.in(i1) = true;
-                        end
-                    elseif i2==obj1.N
-                        obj = addInterface( obj, t2, x2, obj1.in(i2) );
-                    end
-                end
-            end
-            obj.T = obj.T(~empty);
-            obj.X = obj.X(~empty);
-            obj.in = obj.in(~empty);
         end
         % check whether points are inside the level-set
         function l = inside( obj, X, lon )
