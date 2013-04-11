@@ -194,10 +194,10 @@ switch lower(solver)
 end
 
 % prepare output
-% for i1 = 1:Nm
-%     Mdl{i1}.u = full( u( opt.K(i1,1):opt.K(i1,2) ) );
-%     Mdl{i1}.lambdaBC = full( u( opt.BC(i1,1):opt.BC(i1,2) ) );
-% end
-% for i1 = 1:Nc
-%     Cpl{i1}.lambda = full( u( opt.Cy(i1,1):opt.Cy(i1,2) ) );
-% end
+for i1 = 1:Nm
+    Mdl{i1}.u = full( u( opt.K(i1,1):opt.K(i1,2) ) );
+    Mdl{i1}.lambdaBC = full( u( opt.BC(i1,1):opt.BC(i1,2) ) );
+end
+for i1 = 1:Nc
+    Cpl{i1}.lambda = full( u( opt.Cy(i1,1):opt.Cy(i1,2) ) );
+end
