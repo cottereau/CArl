@@ -94,6 +94,10 @@ classdef TRI6
                 error('incorrect size of connectivity matrix T')
             end
         end
+        % set the indices list of nodes in the TRI6 representation
+        function ind = get.ind3v6(obj)
+            ind = unique( obj.T(:,1:3), 'legacy' );
+        end
         % set the element list of the underlying TriRep representation
         function T = get.T3(obj)
             T = obj.T(:,1:3);
@@ -101,10 +105,6 @@ classdef TRI6
             for i1 = 1:n3
                 T( T==obj.ind3v6(i1) ) = i1;
             end
-        end
-        % set the indices list of nodes in the TRI6 representation
-        function ind = get.ind3v6(obj)
-            ind = unique( obj.T(:,1:3) );
         end
         % set the nodes of the TriRep representation
         function X = get.X3(obj)
@@ -128,11 +128,11 @@ classdef TRI6
         end
         % returns a list of nodes that are not vertices
         function n = nodes(obj)
-            n = unique(obj.T(:,4:6));
+            n = unique( obj.T(:,4:6), 'legacy' );
         end
         % returns a list of vertices of the mesh
         function v = vertex(obj)
-            v = unique(obj.T(:,1:3));
+            v = unique( obj.T(:,1:3), 'legacy' );
         end
         % plot the mesh and the nodes
         function plot(obj)
@@ -161,14 +161,14 @@ classdef TRI6
         % get rid of nodes that are not used in T, and of repeated elements
         function obj = cleanT(obj)
             % get rid of elements that are repeated
-            [~,ind] = unique( sort(obj.T,2) ,'rows' );
+            [~,ind] = unique( sort(obj.T,2) ,'rows', 'first', 'legacy' );
             obj.T = obj.T(ind,:);
             % get rid of elements that have area zero
             xi = obj.X(:,1); yi = obj.X(:,2);
-            ind = polyarea( xi(obj.T)', yi(obj.T)')'>(obj.gerr)^2;
+            ind = polyarea( xi(obj.T)', yi(obj.T)')'>obj.gerr;
             obj.T = obj.T(ind,:);
             % get rid of nodes that are not used in T
-            ind = unique(obj.T);
+            ind = unique( obj.T, 'legacy' );
             n3 = length(ind);
             for i1 = 1:n3
                 obj.T( obj.T==ind(i1) ) = i1;
@@ -178,23 +178,13 @@ classdef TRI6
         % get rid of nodes that are repeated
         function obj = cleanX(obj)
             xrnd = round(obj.X/obj.gerr)*obj.gerr;
-            [aa,indx,indu] = unique( xrnd, 'rows' ,'first' );
-            [indx iix] = sort(indx);
-            aa=aa(iix,:);
-            Nx = size(obj.X,1);
-            if length(indx)<Nx
-                indu=[];
-                for ijk=1:length(xrnd)
-                    indu = [indu;find(xrnd(ijk,1)-aa(:,1)==0 & xrnd(ijk,2)-aa(:,2)==0)];
-                end
-                obj.X = obj.X(indx,:);
-                obj.T = indu(obj.T);
-            end
+            [obj.X,~,indu] = unique( xrnd, 'rows' ,'first', 'legacy' );
+            obj.T = indu(obj.T);
         end
         % clean X of unused nodes and repeated nodes and elements
         function obj = clean(obj)
-            obj = cleanX(obj);
             obj = cleanT(obj);
+            obj = cleanX(obj);
         end
         % inherited from TriRep/size
         function N = size(obj)
