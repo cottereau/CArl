@@ -153,10 +153,14 @@ elseif d==2
         indx(i1) = find( all(cci>=-gerr,2) & all(cci<=1+gerr,2), 1, 'first' );
     end
     Mval = cartToBary( meshr, indx, meshi.X );
-    indx = meshr.Triangulation(indx,:);
-    Mx = indx(:);
     My = repmat( (1:size(Mval,1))', [3 1] );
-    Mval = Mval(:);
+    indx = meshr.Triangulation(indx,:);
+    %  alleluiah !!
+    ind = abs(Mval(:))>gerr;
+    %  alleluiah !!
+    Mx = indx(ind);
+    Mval = Mval(ind);
+    My = My(ind);
 end
 %==========================================================================
 function [ X, T, Xn ] = ReduceMesh( X, T )
