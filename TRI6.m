@@ -145,26 +145,24 @@ classdef TRI6
             hold on; scatter(obj.X(:,1),obj.X(:,2),50,'r','full');
         end
         % Selects the elements of obj inside a given boundary
-        function ind = elementsInBoundary(varargin)
-            obj = varargin{1};
-            if nargin==3
-                bndX = varargin{3};
-                bndT = varargin{2};
-                xp = bndX(:,1);
-                yp = bndX(:,2);
-                ind = inpolygon( obj.X(:,1), obj.X(:,2), xp(bndT(:)), yp(bndT(:)) );
+        function ind = elementsInBoundary(obj,ls,lall)
+            if nargin<3
+                lall = true;
+            end
+            ind = inside( ls, obj.X, true );
+            if lall
                 ind = all( ind(obj.T), 2 );
-            elseif nargin==2
-                lin = inside( varargin{2}, obj.X, true );
-                ind = all( lin(obj.T), 2 );
+            else
+                ind = any( ind(obj.T), 2 );
             end
         end
         % returns a TRI6 object using only a selected list of elements
-        function obj2 = subSet(obj,indT)
-            obj2 = TRI6( obj.T(indT,:), obj.X );
+        function [obj,indX] = subSet(obj,indT)
+            obj = TRI6( obj.T(indT,:), obj.X, false );
+            [obj,indX] = clean(obj);
         end
         % get rid of nodes that are not used in T, and of repeated elements
-        function obj = cleanT(obj)
+        function [obj,indX] = cleanT(obj)
             % get rid of elements that are repeated
             [~,ind] = unique( sort(obj.T,2) ,'rows', 'first', 'legacy' );
             obj.T = obj.T(ind,:);
@@ -173,12 +171,11 @@ classdef TRI6
             ind = polyarea( xi(obj.T)', yi(obj.T)')'>obj.gerr;
             obj.T = obj.T(ind,:);
             % get rid of nodes that are not used in T
-            ind = unique( obj.T, 'legacy' );
-            n3 = length(ind);
-            for i1 = 1:n3
-                obj.T( obj.T==ind(i1) ) = i1;
+            indX = unique( obj.T, 'legacy' );
+            for i1 = 1:length(indX)
+                obj.T( obj.T==indX(i1) ) = i1;
             end
-            obj.X = obj.X(ind,:);
+            obj.X = obj.X(indX,:);
         end
         % get rid of nodes that are repeated
         function obj = cleanX(obj)
@@ -187,8 +184,8 @@ classdef TRI6
             obj.T = indu(obj.T);
         end
         % clean X of unused nodes and repeated nodes and elements
-        function obj = clean(obj)
-            obj = cleanT(obj);
+        function [obj,indX] = clean(obj)
+            [obj,indX] = cleanT(obj);
             obj = cleanX(obj);
         end
         % inherited from TriRep/size

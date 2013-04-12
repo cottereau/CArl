@@ -34,12 +34,14 @@ N2 = size(mesh2.tri3.X,1);
 
 % coupling zone for representation purposes (including elements of the
 % original meshes that are cut by the level-set)
-%[meshr1,Xrg1] = ReduceCouplingArea( mesh1, LSet );
-%[meshr2,Xrg2] = ReduceCouplingArea( mesh2, LSet );
-meshr1 = mesh1;
-meshr2 = mesh2;
-Xrg1 = 1:size(mesh1.X3,1);
-Xrg2 = 1:size(mesh2.X3,1);
+[meshr1,Xrg1] = subSet( mesh1, elementsInBoundary(mesh1,LSet,false) );
+Xrg1 = Xrg1( ismember(Xrg1,mesh1.ind3v6) );
+[meshr2,Xrg2] = subSet( mesh2, elementsInBoundary(mesh2,LSet,false) );
+Xrg2 = Xrg2( ismember(Xrg2,mesh2.ind3v6) );
+ %meshr1 = mesh1;
+ %meshr2 = mesh2;
+ %Xrg1 = 1:size(mesh1.X3,1);
+ %Xrg2 = 1:size(mesh2.X3,1);
 
 % intersect the two meshes to get a first draft of the integration mesh
 meshi = MergeMeshes( meshr1, meshr2, LSet );
@@ -89,37 +91,35 @@ elseif d==2
     bnd1 = freeBoundary(mesh1);
     bnd2 = freeBoundary(mesh2);
     ind = inside(LSet,mesh.X);
-    ind = elementsInBoundary(mesh,bnd1.T{1},bnd1.X{1}) & ...
-          elementsInBoundary(mesh,bnd2.T{1},bnd2.X{1}) & ...
+    ind = elementsInBoundary(mesh,levelSet(bnd1.T{1},bnd1.X{1})) & ...
+          elementsInBoundary(mesh,levelSet(bnd2.T{1},bnd2.X{1})) & ...
           all(ind(mesh.T),2);
     mesh = subSet( mesh, ind );
 end
 
-%==========================================================================
-function [mesh,indX] = ReduceCouplingArea( mesh, meshCpl )
-% to extract the submesh where the product of level set
-% functions is positive or null for at least one node
-%
-% output mesh is a TRI6 (possibly non-convex) mesh
-
-% % constants
-% d = size(mesh.X,2);
-% T = mesh.T;
-
-% selection of elements inside the coupling area (positive product of
-% level-sets)
-indT = elementsInBoundary( mesh, meshCpl );
-mesh = subSet( mesh, indT );
-indX = [];
-keyboard
-
-% % creation of output structure
-% [ X, T, indX ] = ReduceMesh( mesh.X, T(indT,:) );
-% if d==1
-%     mesh = struct( 'X', X, 'Triangulation', T );
-% elseif d==2
-%     mesh = TRI6( T, X );
-% end
+% %==========================================================================
+% function [mesh,indX] = ReduceCouplingArea( mesh, bndCoupling )
+% % to extract the submesh where the product of level set
+% % functions is positive or null for at least one node
+% %
+% % output mesh is a TRI6 (possibly non-convex) mesh
+% 
+% % % constants
+% % d = size(mesh.X,2);
+% % T = mesh.T;
+% 
+% % selection of elements inside the coupling area (positive product of
+% % level-sets)
+% indT = elementsInBoundary( mesh, bndCoupling, false );
+% [mesh,indX] = subSet( mesh, indT );
+% 
+% % % creation of output structure
+% % [ X, T, indX ] = ReduceMesh( mesh.X, T(indT,:) );
+% % if d==1
+% %     mesh = struct( 'X', X, 'Triangulation', T );
+% % elseif d==2
+% %     mesh = TRI6( T, X );
+% % end
 
 %==========================================================================
 function [ Mx, My, Mval ] = XR2XI( meshr, meshi )
@@ -162,19 +162,19 @@ elseif d==2
     Mval = Mval(ind);
     My = My(ind);
 end
-%==========================================================================
-function [ X, T, Xn ] = ReduceMesh( X, T )
-% REDUCEMESH to get rid of unused nodes and renumber the connectivity
-% matrix
-%
-% syntax: [ X, T, Xn ] = ReduceMesh( X, T )
-%
-%  T,X: connectivity matrices and nodal coordinates [Ne*3 matrix] and 
-%       [Nn*2 matrix]
-%  Xn: indices into the input connectivity matrix
-Xn = unique( T(:) );
-Nn = size(Xn,1);
-for i1 = 1:Nn
-    T( T(:)==Xn(i1) ) = i1;
-end
-X = X(Xn,:);
+% %==========================================================================
+% function [ X, T, Xn ] = ReduceMesh( X, T )
+% % REDUCEMESH to get rid of unused nodes and renumber the connectivity
+% % matrix
+% %
+% % syntax: [ X, T, Xn ] = ReduceMesh( X, T )
+% %
+% %  T,X: connectivity matrices and nodal coordinates [Ne*3 matrix] and 
+% %       [Nn*2 matrix]
+% %  Xn: indices into the input connectivity matrix
+% Xn = unique( T(:) );
+% Nn = size(Xn,1);
+% for i1 = 1:Nn
+%     T( T(:)==Xn(i1) ) = i1;
+% end
+% X = X(Xn,:);
