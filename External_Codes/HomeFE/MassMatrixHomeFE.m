@@ -19,8 +19,8 @@ function [ x, y, M ] = MassMatrixHomeFE( model )
 % R. Cottereau 04/2012
 
 % description of the model
-X = model.tri3.X;
-T = model.tri3.Triangulation;
+X = model.mesh.X;
+T = model.mesh.Triangulation;
 
 % constants
 [ Ne, nnode ] = size( T );

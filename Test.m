@@ -102,15 +102,13 @@ end
 
 % FUNCTION PLOTTEST 2D
 function plottest2D( model, sol )
-T1 = model{1}.mesh.Triangulation;
-T2 = model{2}.mesh.Triangulation;
-x1 = model{1}.mesh.X(:,1); x1 = x1(T1);
-y1 = model{1}.mesh.X(:,2); y1 = y1(T1);
-x2 = model{2}.mesh.X(:,1); x2 = x2(T2);
-y2 = model{2}.mesh.X(:,2); y2 = y2(T2);
-figure; patch(x1',y1',sol{1}',sol{1}')
-hold on; patch(x2',y2',sol{2}',sol{2}')
-view(3)
+T1 = model{1}.mesh.T3;
+T2 = model{2}.mesh.T3;
+X1 = model{1}.mesh.X3;
+X2 = model{2}.mesh.X3;
+figure; trimesh( T1, X1(:,1), X1(:,2), sol{1} ); 
+hold on; trisurf( T2, X2(:,1), X2(:,2), sol{2} ); 
+colorbar; view(3)
 
 
 % FUNCTION PLOTTESTSTOCHASTIC

@@ -21,9 +21,10 @@ sol = cell(Nm,1);
 for i1 = 1:Nm
     
     % reconstruction of alpha.u
-    alpha = interp( model{i1}.alpha, model{i1}.mesh.tri3.X );
-    sol{i1} = alpha .* model{i1}.u;
+%    alpha = interp( model{i1}.alpha, model{i1}.mesh.tri3.X );
+%    sol{i1} = alpha .* model{i1}.u;
 %    sol{i1} = alpha .* model{i1}.uMC(:,1);
+sol{i1} = model{i1}.u;
     
     % additional reconstruction for Monte Carlo solutions
     if isfield( model{i1}, 'uMC' );

@@ -9,8 +9,8 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %               Implemented: {'Comsol' 'HomeFE' 'MonteCarloHomeFE}
 %       - other fields should be in a format appropriate for the code used
 %               to return a stiffness matrix in sparse format
-%       NB: fields 'mesh', 'alpha' should not be used because they are used
-%           by the program
+%       NB: fields 'mesh', 'alpha' should not be used because they are 
+%           internally used by the program
 %
 %  coupling : cell of structured arrays containing the description of each
 %        of the couplings, with the fields

@@ -30,7 +30,6 @@ function C = CouplingOperator( couple, Int, Rep, opt )
 
 % R. Cottereau 04/2010
 
-
 [ x, y, C ] = CouplingOperatorHomeFE( couple.operator, Int.mesh.tri3, opt );
 [ x, y, C ] = find( Rep.M * sparse( x, y, C ) * Int.M' );
 C = struct( 'x', x, 'y', y, 'val', C );
