@@ -88,7 +88,6 @@ elseif d==2
     mesh = TRI6( mesh.Triangulation, mesh.X );
     bnd1 = freeBoundary(mesh1);
     bnd2 = freeBoundary(mesh2);
-    keyboard
     ind = inside(LSet,mesh.X);
     ind = elementsInBoundary(mesh,bnd1.T{1},bnd1.X{1}) & ...
           elementsInBoundary(mesh,bnd2.T{1},bnd2.X{1}) & ...
@@ -151,7 +150,7 @@ elseif d==2
              repmat(meshi.X,[Nr(1) 1]) ), [Ni Nr(1) 3]);
     for i1 = 1:Ni
         cci = squeeze(cc(i1,:,:));
-        indx(i1) = find( all(cci>=-gerr,2) & all(cci<=1+gerr,2), 1, 'last' );
+        indx(i1) = find( all(cci>=-gerr,2) & all(cci<=1+gerr,2), 1, 'first' );
     end
     Mval = cartToBary( meshr, indx, meshi.X );
     indx = meshr.Triangulation(indx,:);
