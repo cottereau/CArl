@@ -26,23 +26,8 @@ switch model.code
     
     % HOMEFE
     case {'HomeFE','MonteCarloHomeFE'}
-        if ~isfield(model,'tri3')
-            X = model.mesh.X;
-            T = model.mesh.T;
-            model.tri3 = struct('X',X,'Triangulation',T);
-        else
-            X = model.tri3.X;
-            T = model.tri3.T;
-        end
-        d = size( X, 2 );
-        if d==1
-            model.mesh = struct( 'Triangulation', model.mesh.T, 'X', X );
-        elseif d==2
-            model.mesh = TRI6( T, X );
-        else
-            error('not implemented yet')
-        end
-
+        model.mesh = TRI6( model.HomeFE.mesh.T, model.HomeFE.mesh.X, false );
+        
     % COMSOL
     case 'Comsol'
         wd = pwd;
@@ -51,7 +36,7 @@ switch model.code
         eval( ['mesh = ' model.meshfile ';' ]);
         X = mesh.mesh('mesh1').getVertex';
         T = double( mesh.mesh('mesh1').getElem('tri')' +1 );
-        mesh = TRI6( T, X );
+        mesh = TRI6( T, X, false );
         eval( ['cd ' wd ';' ]);
     
     % error

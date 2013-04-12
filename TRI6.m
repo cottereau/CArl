@@ -72,7 +72,10 @@ classdef TRI6
 
     methods
         % define the TRI6 object
-        function obj = TRI6(T,X)
+        function obj = TRI6( T, X, lclean )
+            if nargin<3
+                lclean = true;
+            end
             if size(T,2)==3
                 ne = size(T,1);
                 tri3 = TriRep(T,X);
@@ -85,11 +88,13 @@ classdef TRI6
                     [~,ind] = ismember( Xc, X, 'rows' );
                     T(:,i1+3) = ind;
                 end
-                obj = TRI6(T,X);
+                obj = TRI6(T,X,lclean);
             elseif size(T,2)==6
                 obj.X = X;
                 obj.T = T;
-                obj = clean(obj);
+                if lclean
+                    obj = clean(obj);
+                end
             else
                 error('incorrect size of connectivity matrix T')
             end
