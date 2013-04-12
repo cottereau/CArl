@@ -18,6 +18,7 @@ function Test(type)
 % 'force2D'
 % 'comsol2D'
 % 'nonembedded2D_1'
+% 'zoom2Dindent'
 %
 % the possible series are
 % 'short' for only the short tests
@@ -43,11 +44,10 @@ switch lower(type)
         sol = CArl( model, coupling, solver );
         plottest1D( model, sol, ref );
         
-    case {'join2d', 'force2d', 'zoom2d', 'comsol2d', 'nonembedded2d_1'}
+    case {'join2d', 'force2d', 'zoom2d', 'comsol2d', ...
+          'nonembedded2d_1', 'zoom2dindent'}
         load(['Tests/' type '.mat']);
-        
         [ sol, out ] = CArl( model, coupling, solver );
-
         plottest2D( out.model, sol );
 
     case {'mc1d','mc1d_bc_u10','mc1dstosto2','zoom1dstosto'}
