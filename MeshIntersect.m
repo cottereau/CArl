@@ -38,7 +38,6 @@ N2 = size(mesh2.tri3.X,1);
 Xrg1 = Xrg1( ismember(Xrg1,mesh1.ind3v6) );
 [meshr2,Xrg2] = subSet( mesh2, elementsInBoundary(mesh2,LSet,false) );
 Xrg2 = Xrg2( ismember(Xrg2,mesh2.ind3v6) );
-keyboard
 
 % intersect the two meshes to get a first draft of the integration mesh
 meshi = MergeMeshes( meshr1, meshr2, LSet );
