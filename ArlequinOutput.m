@@ -20,11 +20,13 @@ sol = cell(Nm,1);
 % construction of local solutions to each model
 for i1 = 1:Nm
     
+    % raw output
+    sol{i1} = model{i1}.u;
+    
     % reconstruction of alpha.u
-%    alpha = interp( model{i1}.alpha, model{i1}.mesh.tri3.X );
-%    sol{i1} = alpha .* model{i1}.u;
-%    sol{i1} = alpha .* model{i1}.uMC(:,1);
-sol{i1} = model{i1}.u;
+%     u = TriScatteredInterp( model{i1}.mesh.X3, model{i1}.u );
+%     u = discontinuous( freeBoundary( model{i1}.mesh ), u );
+%     model{i1}.alphaU = model{i1}.alpha.*u;
     
     % additional reconstruction for Monte Carlo solutions
     if isfield( model{i1}, 'uMC' );
