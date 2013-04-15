@@ -37,10 +37,13 @@ elseif numel(cpl.cplval{1})==2  % linear case
     d2 = distance( cpl.free12, Xi, true );
     d1 = distance( cpl.free{1}, Xi, true );
     if isempty(d1)
-        d1 = distance( cpl.free{1}, Xi, true );
-        f = max(cpl.cplval{2})*d1./(d1+d2);
+        d1 = distance( cpl.free{2}, Xi, true );
+        f = (max(cpl.cplval{1})*d1 + min(cpl.cplval{1})*d2)./(d1+d2);
+    elseif isempty(d2)
+        d2 = distance( cpl.free{2}, Xi, true );
+        f = (max(cpl.cplval{1})*d2 + min(cpl.cplval{1})*d1)./(d1+d2);
     else
-        f = max(cpl.cplval{1})*d2./(d1+d2) + min(cpl.cplval{1})*d1./(d1+d2);
+        f = (max(cpl.cplval{1})*d2 + min(cpl.cplval{1})*d1)./(d1+d2);
     end
     alpha{1} = addRegion( alpha{1}, cpl.mesh, Xi, f );
 end
@@ -53,9 +56,12 @@ elseif numel(cpl.cplval{2})==2  % linear case
     d1 = distance( cpl.free{2}, Xi, true );
     if isempty(d1)
         d1 = distance( cpl.free{1}, Xi, true );
-        f = max(cpl.cplval{2})*d1./(d1+d2);
+        f = (max(cpl.cplval{2})*d1 + min(cpl.cplval{2})*d2)./(d1+d2);
+    elseif isempty(d2)
+        d2 = distance( cpl.free{1}, Xi, true );
+        f = (max(cpl.cplval{2})*d2 + min(cpl.cplval{2})*d1)./(d1+d2);
     else
-        f = max(cpl.cplval{1})*d2./(d1+d2) + min(cpl.cplval{1})*d1./(d1+d2);
+        f = (max(cpl.cplval{2})*d2 + min(cpl.cplval{2})*d1)./(d1+d2);
     end
     alpha{2} = addRegion( alpha{2}, cpl.mesh, Xi, f );
 end 
