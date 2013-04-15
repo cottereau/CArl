@@ -1,4 +1,4 @@
-function alpha = ArlequinWeight( cpl, mesh1, mesh2 )
+function alpha = ArlequinWeight( cpl, i1, mesh )
 % ARLEQUINWEIGHT to compute the weight functions associated to the
 % partition of models
 %
@@ -22,46 +22,34 @@ function alpha = ArlequinWeight( cpl, mesh1, mesh2 )
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
 
+% define other element of the coupling
+i2 = setdiff(1:2,i1);
+val = cpl.cplval{i1};
+
 % alpha in constant zones
-alpha{1} = discontinuous( cpl.free{1}, mesh1.X, 1, ...
-                          cpl.free12, mesh1.X, cpl.freeval{1});
-alpha{2} = discontinuous( cpl.free{2}, mesh2.X, 1, ...
-                          cpl.free12, mesh2.X, cpl.freeval{2});
+alpha = discontinuous( cpl.free{i1}, mesh.X, 1, ...
+                                      cpl.free12, mesh.X, cpl.freeval{i1});
 
 % alpha in the transition zone
-if numel(cpl.cplval{1})==1      % constant case
-    alpha{1} = addRegion( alpha{1}, cpl.mesh, mesh1.X, cpl.cplval{1} );
-elseif numel(cpl.cplval{1})==2  % linear case
-    ind = inside( cpl.mesh, mesh1.X );
-    Xi = mesh1.X(ind,:);
+% CONSTANT CASE
+if numel(cpl.cplval{i1})==1
+    alpha = addRegion( alpha, cpl.mesh, mesh.X, cpl.cplval{i1} );
+
+% LINEAR CASE
+elseif numel(cpl.cplval{i1})==2
+    ind = inside( cpl.mesh, mesh.X );
+    Xi = mesh.X(ind,:);
     d2 = distance( cpl.free12, Xi, true );
-    d1 = distance( cpl.free{1}, Xi, true );
+    d1 = distance( cpl.free{i1}, Xi, true );
     if isempty(d1)
-        d1 = distance( cpl.free{2}, Xi, true );
-        f = (max(cpl.cplval{1})*d1 + min(cpl.cplval{1})*d2)./(d1+d2);
+        d1 = distance( cpl.free{i2}, Xi, true );
+        f = (max(val)*d1 + min(val)*d2)./(d1+d2);
     elseif isempty(d2)
-        d2 = distance( cpl.free{2}, Xi, true );
-        f = (max(cpl.cplval{1})*d2 + min(cpl.cplval{1})*d1)./(d1+d2);
+        d2 = distance( cpl.free{i2}, Xi, true );
+        f = (max(val)*d2 + min(val)*d1)./(d1+d2);
     else
-        f = (max(cpl.cplval{1})*d2 + min(cpl.cplval{1})*d1)./(d1+d2);
+        f = (max(val)*d2 + min(val)*d1)./(d1+d2);
     end
-    alpha{1} = addRegion( alpha{1}, cpl.mesh, Xi, f );
+    alpha = addRegion( alpha, cpl.mesh, Xi, f );
 end
-if numel(cpl.cplval{2})==1  % constant case
-    alpha{2} = addRegion( alpha{1}, cpl.mesh, mesh2.X, cpl.cplval{2} );
-elseif numel(cpl.cplval{2})==2  % linear case
-    ind = inside( cpl.mesh, mesh2.X );
-    Xi = mesh2.X(ind,:);
-    d2 = distance( cpl.free12, Xi, true );
-    d1 = distance( cpl.free{2}, Xi, true );
-    if isempty(d1)
-        d1 = distance( cpl.free{1}, Xi, true );
-        f = (max(cpl.cplval{2})*d1 + min(cpl.cplval{2})*d2)./(d1+d2);
-    elseif isempty(d2)
-        d2 = distance( cpl.free{1}, Xi, true );
-        f = (max(cpl.cplval{2})*d2 + min(cpl.cplval{2})*d1)./(d1+d2);
-    else
-        f = (max(cpl.cplval{2})*d2 + min(cpl.cplval{2})*d1)./(d1+d2);
-    end
-    alpha{2} = addRegion( alpha{2}, cpl.mesh, Xi, f );
-end 
+

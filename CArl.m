@@ -91,7 +91,8 @@ for i1 = 1:Nc
                DefineCouplingMesh( Cpl{i1}.levelSet, m1.mesh, m2.mesh );
         
         % compute weights for each model
-        Cpl{i1}.alpha = ArlequinWeight( Cpl{i1}, m1.mesh, m2.mesh );
+        Cpl{i1}.alpha{1} = ArlequinWeight( Cpl{i1}, 1, m1.mesh );
+        Cpl{i1}.alpha{2} = ArlequinWeight( Cpl{i1}, 2, m2.mesh );
         
         % create intersection of meshes (for both representation and
         % integration purposes)
