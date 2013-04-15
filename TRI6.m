@@ -178,15 +178,16 @@ classdef TRI6
             obj.X = obj.X(indX,:);
         end
         % get rid of nodes that are repeated
-        function obj = cleanX(obj)
+        function [obj,indX] = cleanX(obj)
             xrnd = round(obj.X/obj.gerr)*obj.gerr;
-            [obj.X,~,indu] = unique( xrnd, 'rows' ,'first', 'legacy' );
+            [obj.X,indX,indu] = unique( xrnd, 'rows' ,'first', 'legacy' );
             obj.T = indu(obj.T);
         end
         % clean X of unused nodes and repeated nodes and elements
         function [obj,indX] = clean(obj)
-            [obj,indX] = cleanT(obj);
-            obj = cleanX(obj);
+            [obj,indX1] = cleanT(obj);
+            [obj,indX2] = cleanX(obj);
+            indX = indX1(indX2);
         end
         % inherited from TriRep/size
         function N = size(obj)

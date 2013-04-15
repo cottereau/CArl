@@ -59,63 +59,20 @@ Rep{2} = struct( 'mesh', meshr2, ...
 
 %==========================================================================
 function mesh = MergeMeshes( mesh1, mesh2, LSet )
-[N,d] = size(mesh1.tri3.X);
-if d==1
-    T1 = mesh1.Triangulation;
-    X = []; T = [];
-    ind = [0; find(diff(T1(:,1))>1); size(T1,1) ]+1;
-    for i1=1:length(ind)-1
-        x1 = mesh1.X(T1(ind(i1),1):T1(ind(i1+1)-1,2));
-        ind2 = mesh2.X>=x1(1) & mesh2.X<=x1(end);
-        x1 = unique( [x1; mesh2.X(ind2)] );
-        N1 = length(x1);
-        T = [T; [(1:N1-1)' (2:N1)']+size(X,1)];
-        X = [X; x1];
-    end
-    mesh = struct( 'X', X, 'Triangulation', T );
-elseif d==2
-    X = [ mesh1.tri3.X ; mesh2.tri3.X ];
-    T = [ mesh1.tri3.Triangulation ; mesh2.tri3.Triangulation+N ];
-    C = [T(:,1:2); T(:,2:3); T(:,[3 1])];
-    for i1=1:LSet.N
-        C = [C;LSet.T{i1}+size(X,1)];
-        X = [X;LSet.X{i1}];
-    end
-    ldt = clean( levelSet( C, X ) );
-    mesh = DelaunayTri( ldt.X{1}, ldt.T{1} );
-    mesh = TRI6( mesh.Triangulation, mesh.X );
-    bnd1 = freeBoundary(mesh1);
-    bnd2 = freeBoundary(mesh2);
-    ind = inside(LSet,mesh.X);
-    ind = elementsInBoundary(mesh,levelSet(bnd1.T{1},bnd1.X{1})) & ...
-          elementsInBoundary(mesh,levelSet(bnd2.T{1},bnd2.X{1})) & ...
-          all(ind(mesh.T),2);
-    mesh = subSet( mesh, ind );
+N = size(mesh1.tri3.X,1);
+X = [ mesh1.tri3.X ; mesh2.tri3.X ];
+T = [ mesh1.tri3.Triangulation ; mesh2.tri3.Triangulation+N ];
+C = [T(:,1:2); T(:,2:3); T(:,[3 1])];
+for i1=1:LSet.N
+    C = [C;LSet.T{i1}+size(X,1)];
+    X = [X;LSet.X{i1}];
 end
-
-% %==========================================================================
-% function [mesh,indX] = ReduceCouplingArea( mesh, bndCoupling )
-% % to extract the submesh where the product of level set
-% % functions is positive or null for at least one node
-% %
-% % output mesh is a TRI6 (possibly non-convex) mesh
-% 
-% % % constants
-% % d = size(mesh.X,2);
-% % T = mesh.T;
-% 
-% % selection of elements inside the coupling area (positive product of
-% % level-sets)
-% indT = elementsInBoundary( mesh, bndCoupling, false );
-% [mesh,indX] = subSet( mesh, indT );
-% 
-% % % creation of output structure
-% % [ X, T, indX ] = ReduceMesh( mesh.X, T(indT,:) );
-% % if d==1
-% %     mesh = struct( 'X', X, 'Triangulation', T );
-% % elseif d==2
-% %     mesh = TRI6( T, X );
-% % end
+[~,ind] = unique( sort(C,2) ,'rows', 'first', 'legacy' );
+C = C(ind,:);
+ldt = clean( levelSet( C, X ) );
+mesh = DelaunayTri( ldt.X{1}, ldt.T{1} );
+mesh = TRI6( mesh.Triangulation, mesh.X );
+mesh = subSet( mesh, elementsInBoundary(mesh,LSet,true) );
 
 %==========================================================================
 function [ Mx, My, Mval ] = XR2XI( meshr, meshi )
@@ -123,54 +80,24 @@ function [ Mx, My, Mval ] = XR2XI( meshr, meshi )
 % that touch it, and the value of the linear FE basis function centered on
 % Xr (=local barycentric coordinate of that node in the element)
 % return a matrix in sparse format
-d = size(meshr.X,2);
 Ni = size(meshi.X,1);
 indx = zeros(Ni,1);
 gerr = 1e-9;
 
-if d==1
-    X1 = meshr.X(meshr.Triangulation(:,1));
-    for i1 = 1:Ni
-        indx(i1) = find( X1<=meshi.X(i1), 1, 'last' );
-    end
-    indx = meshr.Triangulation(indx,:);
-    My = repmat( (1:size(indx,1))', [2 1] );
-    Mx = indx(:);
-    Mval = (meshi.X-meshr.X(indx(:,1)))./diff(meshr.X(indx),1,2);
-    Mval = [1-Mval ; Mval];
-    
-elseif d==2
-    Nr = meshr.size;
-    ey = repmat((1:Nr(1)),[Ni 1]);
-    cc = reshape( cartToBary( meshr, ey(:), ...
-             repmat(meshi.X,[Nr(1) 1]) ), [Ni Nr(1) 3]);
-    for i1 = 1:Ni
-        cci = squeeze(cc(i1,:,:));
-        indx(i1) = find( all(cci>=-gerr,2) & all(cci<=1+gerr,2), 1, 'first' );
-    end
-    Mval = cartToBary( meshr, indx, meshi.X );
-    My = repmat( (1:size(Mval,1))', [3 1] );
-    indx = meshr.Triangulation(indx,:);
-    %  alleluiah !!
-    ind = abs(Mval(:))>gerr;
-    %  alleluiah !!
-    Mx = indx(ind);
-    Mval = Mval(ind);
-    My = My(ind);
+Nr = meshr.size;
+ey = repmat((1:Nr(1)),[Ni 1]);
+cc = reshape( cartToBary( meshr, ey(:), ...
+    repmat(meshi.X,[Nr(1) 1]) ), [Ni Nr(1) 3]);
+for i1 = 1:Ni
+    cci = squeeze(cc(i1,:,:));
+    indx(i1) = find( all(cci>=-gerr,2) & all(cci<=1+gerr,2), 1, 'first' );
 end
-% %==========================================================================
-% function [ X, T, Xn ] = ReduceMesh( X, T )
-% % REDUCEMESH to get rid of unused nodes and renumber the connectivity
-% % matrix
-% %
-% % syntax: [ X, T, Xn ] = ReduceMesh( X, T )
-% %
-% %  T,X: connectivity matrices and nodal coordinates [Ne*3 matrix] and 
-% %       [Nn*2 matrix]
-% %  Xn: indices into the input connectivity matrix
-% Xn = unique( T(:) );
-% Nn = size(Xn,1);
-% for i1 = 1:Nn
-%     T( T(:)==Xn(i1) ) = i1;
-% end
-% X = X(Xn,:);
+Mval = cartToBary( meshr, indx, meshi.X );
+My = repmat( (1:size(Mval,1))', [3 1] );
+indx = meshr.Triangulation(indx,:);
+%  alleluiah !!
+ind = abs(Mval(:))>gerr;
+%  alleluiah !!
+Mx = indx(ind);
+Mval = Mval(ind);
+My = My(ind);
