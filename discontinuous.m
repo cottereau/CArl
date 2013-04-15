@@ -110,5 +110,15 @@ classdef discontinuous
                 obj = addRegion( obj, obj1 );
             end
         end
+        % multiplication of two functions
+        function obj = times( obj, obj1 )
+           if isfloat(obj1)
+               for i1 = 1:obj.Ns
+                   obj.f{i1}.V = obj.f{i1}.V .* obj1;
+               end
+           else
+               error('discontinuous/times: not implemented yet')
+           end
+        end
     end
 end     
