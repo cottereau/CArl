@@ -32,11 +32,11 @@ alpha = discontinuous( cpl.free{i1}, mesh.X, 1, ...
 
 % alpha in the transition zone
 % CONSTANT CASE
-if numel(cpl.cplval{i1})==1
-    alpha = addRegion( alpha, cpl.mesh, mesh.X, cpl.cplval{i1} );
+if numel(val)==1
+    alpha = addRegion( alpha, cpl.mesh, mesh.X, val );
 
 % LINEAR CASE
-elseif numel(cpl.cplval{i1})==2
+elseif numel(val)==2
     ind = inside( cpl.mesh, mesh.X );
     Xi = mesh.X(ind,:);
     d2 = distance( cpl.free12, Xi, true );
