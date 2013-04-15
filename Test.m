@@ -54,7 +54,6 @@ switch lower(type)
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
         plotteststochastic2( model, sol, out, ref );
-
         
     case 'short'
         Test('zoom1D');
@@ -64,13 +63,17 @@ switch lower(type)
         Test('MC1D_BC_u10') ;
         Test('mc1dstosto2');
         Test('zoom1Dstosto');
-        Test('join2D');
-        Test('force2D');
-        Test('zoom2D');
-        Test('NonEmbedded2D_1');
+        Test('2d');
         
     case 'comsol'
         Test('comsol2D');
+        
+    case '2d'
+        Test('join2D');
+        Test('zoom2D');
+        Test('zoom2Dindent');
+        Test('NonEmbedded2D_1');
+        Test('force2D');
         
     otherwise
         error('unknown test case')
@@ -112,7 +115,7 @@ colorbar; view(3)
 
 
 % FUNCTION PLOTTESTSTOCHASTIC
-function plotteststochastic2( model, sol, out, ref )
+function plotteststochastic2( model, ~, out, ref )
 pc = 0.9;
 x1 = model{1}.mesh.X( model{1}.mesh.T )';
 x2 = model{2}.mesh.X( model{2}.mesh.T )';
@@ -127,8 +130,8 @@ if (strcmp(out.coupling{1}.mediator.type,'mesomicro'))
     fill( xxx1, probu1, 'y' )
 end
 hold on
-u1b = (sol{1})';
-u2b=(sol{2})';
+%u1b = (sol{1})';
+%u2b=(sol{2})';
 u2=mean(out.model{2}.auMC,3)';uu2=u2(:);%mean u2
 stdu2=std(out.model{2}.auMC,0,3)';stdu2=stdu2(:);%std u2
 probu2=[uu2+stdu2/sqrt(1-pc);uu2(end:-1:1)-stdu2(end:-1:1)/sqrt(1-pc)];
@@ -137,8 +140,8 @@ fill( xxx2(:), probu2(:), 'y' )
 plot(x1,u1,'bx-',x2,u2,'r--');
 
 
-s1b = diff(u1) ./ diff(x1); s1b = [s1b; s1b];
-s2b = diff(u2) ./ diff(x2); s2b = [s2b; s2b];
+%s1b = diff(u1) ./ diff(x1);% s1b = [s1b; s1b];
+%s2b = diff(u2) ./ diff(x2);% s2b = [s2b; s2b];
 
 s1 = squeeze(diff(out.model{1}.auMC,[],2)) ...
            ./ repmat(dx1',[1 size(out.model{1}.auMC,3)]);
