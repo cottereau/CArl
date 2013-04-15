@@ -7,13 +7,14 @@ This project is focused on the development of a software based on the Arlequin m
 REFERENCES
 ============
 Original references for the theory are
-[1] H. Ben Dhia. Multiscale mechanical problems: the Arlequin method, Comptes Rendus de l'Académie des Sciences - Series IIB 326 (1998), pp. 899-904.
+[1] H. Ben Dhia. Multiscale mechanical problems: the Arlequin method, Comptes Rendus de l'Academie des Sciences - Series IIB 326 (1998), pp. 899-904.
 [2] H. Ben Dhia, G. Rateau. The Arlequin method as a flexible engineering design tool, Int. J. Numer. Meths. Engr. 62 (2005), pp. 1442-1462.
 
 Many other papers make use of the method or describe specific aspects and implementation details.
 
 A non-exhaustive list of papers that make use of the software includes
 [3] R. Cottereau, D. Clouteau, H. Ben Dhia, C. Zaccardi. A stochastic-deterministic coupling method for continuum mechanics, Comp. Meth. Appl. Mech. Engr. 200 (2011), pp. 3280-3288.
+[4] R. Cottereau. Numerical strategy for the unbiased homogenization of random materials, Int. J. Numer. Meth. Engr. (2013).
 
 This software is mainly developed at laboratoire MSSMat (Ecole Centrale Paris - CNRS).
 contact : Regis Cottereau (regis.cottereau@ecp.fr)
