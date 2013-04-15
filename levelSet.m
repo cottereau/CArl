@@ -358,6 +358,36 @@ classdef levelSet
             ind2 = inside( obj2, dt.X, true );
             ind2 = all( ind2(dt.T), 2 );
         end
+        % check ordering of T and separation of different levelSets
+        % this routine should be checked before use
+        function obj = checkConnex( obj )
+            for i1 = obj.N
+                ind = (obj.T{i1}(1:end-1,2)-obj.T{i1}(2:end,1))~=0;
+                if any(ind)
+                    i0 = find(ind,1,'first');
+                    Te = obj.T{i1}(i0:end,:);
+                    for i2 = 2:size(Te,1)
+                        [i3,j3] = find(Te(i2:end,:)==Te(i2-1,2),1,'first');
+                        if ~isempty(i3)
+                            tmp = Te(i2,:);
+                            Te(i2,:) = Te(i3+i2-1,:);
+                            Te(i3+i2-1,:) = tmp;
+                            if j3==2
+                                Te(i2,:) = Te(i2,[2 1]);
+                            end
+                        else
+                            error('levelSet/checkConnex: check obj.in')
+                            ls = levelSet(Te(i2:end,:),obj.X{i1},obj.in);
+                            obj = setInterface( obj, ls, obj.N+1 );
+                            i2=i2-1;
+                            break
+                        end
+                    end
+                    obj.T{i1}(i0-1+(1:i2),:) = Te(1:i2,:);
+                    obj.T{i1} = obj.T{i1}(1:(i0-1+i2),:);
+                end
+            end
+        end
         % get rid of nodes that are not used in T, and of repeated elements
         function obj = cleanT(obj)
             % get rid of elements that are repeated
