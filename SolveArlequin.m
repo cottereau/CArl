@@ -139,49 +139,20 @@ switch lower(solver)
         toc
         
         
-    case 'dmc'
+    case 'dmc'  %Fusionner les deux pr?c?dent avec celui-ci en g?rante les champs MDL.K.MC si existant
         tic
-        %Si plusieurs couplages alors juste une boucle supl?mentaires sur
-        %les structures coupling est n?c?ssaire.
-        [Nmc imicro] = max([length( opt.MC{1}.Ks ),length(opt.MC{2}.Ks)]);
-        [Nmeso imeso] = min([length( opt.MC{1}.Ks ),length(opt.MC{2}.Ks)]);
-        
-        
-        indsto1=opt.K(imeso,1):opt.BC(imeso,2);
-        indsto1=[indsto1 opt.Cy(imeso,1):opt.Cy(imeso,2)];
-        indsto2=opt.K(imicro,1):opt.BC(imicro,2);
-        indu2=opt.K(imicro,1):opt.K(imicro,2);
-        indu1=opt.K(imeso,1):opt.K(imeso,2);
-        indtheta=opt.BC(imicro,1):opt.BC(imicro,2);
-        indlambda=opt.BC(imeso,1):opt.BC(imeso,2);
-        indPsi=opt.Cy(1,1):opt.Cy(1,2);
-        
-        C  = full(K(indsto1,indsto2));
-        K1 = full(K(indsto1,indsto1));
-        K2 = full(K(indsto2,indsto2));
-        F1 = F( indsto1 );
-        F2 = F( indsto2 );
-        Ftot=[F2;F1];
-        theta=[];
-        for i1= 1:Nmc
-            Ksp2(1:length(indsto2)-length(indtheta),1:length(indsto2)-length(indtheta)) = opt.MC{imicro}.Ks{i1}(1:length(indsto2)-length(indtheta),1:length(indsto2)-length(indtheta)) ;
-            Ks2 = [ Ksp2 zeros(length(indu2),length(indtheta)); zeros(length(indtheta),length(indsto2)) ];
-            Ksp1(1:length(indu1),1:length(indu1)) = opt.MC{imeso}.Ks{ceil(i1/(Nmc/Nmeso))}(1:length(indu1),1:length(indu1)) ;
-            Ks1 = [ Ksp1 zeros(length(indu1),length(indlambda)+length(indPsi)); zeros(length(indlambda)+length(indPsi),length(indsto1)) ];
-            k=[K2+Ks2 C';C K1+Ks1];
-            utot=k\Ftot;
-            u2(:,i1)=utot(1:length(indu2));
-            theta = [theta utot(length(indu2)+1:length(indu2)+length(indtheta))];
-            u1(:,i1)=utot(length(indsto2)+1:end);
-        end
-        Mdl{opt.MC{2}.i}.uMC = u2;
-        Mdl{opt.MC{1}.i}.uMC = u1(1:length(indu1),:);
-        Mdl{opt.MC{2}.i}.lambdaBCMC = u1(length(indu1)+1:end,:);
-        Mdl{opt.MC{2}.i}.lambdaThetaMC = theta;
-%         u=mean(u1,2);
-%         u = [ u( 1:length() );
-%             mean( u2, 2 )
-%             u( (length(indu1)+length(indlambda)+1):end ) ];
+          [Nmc imicro] = max([length(Mdl{1}.K.MC),length(Mdl{2}.K.MC)]);
+          [Nmeso imeso] = min([length(Mdl{1}.K.MC),length(Mdl{2}.K.MC)]);
+          for ijk = 1:Nmc
+        u(:,ijk)=(K+opt.MC{imeso,ceil(ijk/(Nmc/Nmeso))}+opt.MC{imicro,ijk})\F;
+          end
+for i1 = 1:Nm
+    Mdl{i1}.uMC = ( u( opt.K(i1,1):opt.K(i1,2),: ) );
+end
+%         Mdl{opt.MC{2}.i}.lambdaBCMC = u1(length(indu1)+1:end,:);
+%         Mdl{opt.MC{2}.i}.lambdaThetaMC = theta;
+        u=mean(u,2);
+       % u = u([opt.K(1,1):opt.K(1,2) opt.K(2,1):opt.K(2,2)])
         toc
         % FETI solver
     case 'feti'
@@ -195,9 +166,9 @@ end
 
 % prepare output
 for i1 = 1:Nm
-    Mdl{i1}.u = full( u( opt.K(i1,1):opt.K(i1,2) ) );
-    Mdl{i1}.lambdaBC = full( u( opt.BC(i1,1):opt.BC(i1,2) ) );
+    Mdl{i1}.u = ( u( opt.K(i1,1):opt.K(i1,2),: ) );
+    Mdl{i1}.lambdaBC = ( u( opt.BC(i1,1):opt.BC(i1,2),: ) );
 end
 for i1 = 1:Nc
-    Cpl{i1}.lambda = full( u( opt.Cy(i1,1):opt.Cy(i1,2) ) );
+    Cpl{i1}.lambda = ( u( opt.Cy(i1,1):opt.Cy(i1,2),: ) );
 end
