@@ -31,10 +31,10 @@ Nm = length(model);
 Nc = length(coupling);
 
 % initializations
-Nmi = zeros( Nm, 1 );
-BCi = zeros( Nm, 1 );
-Nci = zeros( Nc, 1 );
-c2m = zeros( Nc, 2 );
+Nmi = zeros( Nm, 1 );  %taille matrices de raideur
+BCi = zeros( Nm, 1 );  %indice debut ddl conditions aux limites -1
+Nci = zeros( Nc, 1 );  %taille ddl de couplage
+c2m = zeros( Nc, 2 );  %indice numero modeles
 x = [];
 y = [];
 K = [];
@@ -47,19 +47,23 @@ for i1 = 1:Nm
     Nmi(i1) = max(model{i1}.K.x);
     BCi(i1) = size(model{i1}.mesh.tri3.X,1);
 end
-indK = [0 ; cumsum(Nmi(1:Nm)) ];
-indBC = indK(1:Nm) + BCi;
+indKi = [ones(Nm,1) BCi];   %indice raideur dans les matrices
+indBCi = [indKi(:,end)+1 Nmi];  %indice BC dans les matrice
+indK =  indKi+ repmat(cumsum([0;indBCi(1:end-1,2)],1),1,2) ;    %indice raideur dans la matrice globale
+indBC =   indBCi+ repmat(cumsum([0;indBCi(1:end-1,2)],1),1,2)   ;     %indice BC dans la matrice globale
+%indK = [0 ; cumsum(Nmi(1:Nm)) ];    %
+%indBC = indK(1:Nm) + BCi;
 for i1 = 1:Nc
     Nci(i1) = max( coupling{i1}.C1.y );
 end
 for i1 = 1:Nc
     c2m( i1, : ) = coupling{i1}.models;
 end
-indBC = [ indBC+1  indK(2:end) ];
-indK = [ indK(1:end-1)+1 indBC(:,1)-1 ];
-indC1x = indK(c2m(:,1),:);
-indC = indBC(end,2) + [ [ 1 ; cumsum(Nci(1:end-1)) ] cumsum(Nci) ];
-indC2x = indK(c2m(:,2),:);
+%indBC = [ indBC+1  indK(2:end) ];
+%indK = [ indK(1:end-1)+1 indBC(:,1)-1 ];
+indC1x = indK(c2m(:,1),:);    %indice ligne couplage matrice globale modele 1
+indC = indBC(end,2) + [ [ 1 ; cumsum(Nci(1:end-1)) ] cumsum(Nci) ];   %indice ddl couplage matrice globale
+indC2x = indK(c2m(:,2),:);    %indice ligne couplage matrice globale modele 2
 
 % assemble the pure stiffness part
 for i1 = 1:Nm
@@ -82,10 +86,52 @@ for i1 = 1:Nc
     y = [ y ; indC(i1,1)-1 + C1.y; indC1x(i1,1)-1 + C1.x ...
         ; indC(i1,1)-1 + C2.y; indC2x(i1,1)-1 + C2.x];
     K = [ K ; C1.val ; C1.val ; -C2.val ; -C2.val ];
+    % warning: this was only checked for a single stochastic model
+    
+    %%%LAISSER LES CAS ET LES F regarder si ok avec det-sto%
+    if or(isfield( model{c2m(i1,1)}.K, 'MC' ),isfield( model{c2m(i1,2)}.K, 'MC' ))
+        opt.MC={};
+        for ijk=1:length(c2m(i1,:))
+            imod1 = c2m( i1, ijk );
+            Cmod1 = eval( [ 'coupling{i1}.C' num2str(imod1) ] );
+            indCtx(imod1,:) = indK(imod1,:);
+            indCt(i1) = indC(i1,end)+1;
+            indSc(i1,:) = indC(i1,:);
+            indScx(i1) = indC(i1,end)+2;
+            xCt=indCtx(imod1,1)-1+Cmod1.xtheta;
+            yCt=indCt(i1)*ones(length(xCt),1);
+            ySc=indSc(i1,1)-1+Cmod1.xBCpsi;
+            xSc=indScx(i1)*ones(length(ySc),1);
+            signe = 1*(ijk==1)-1*(ijk==2);
+            KCt=signe*Cmod1.Ctheta;
+            KSc=Cmod1.BCpsi;
+            if ijk==1
+                x=[x;xCt;yCt;xSc;ySc];
+                y=[y;yCt;xCt;ySc;xSc];
+                K=[K;KCt;KCt;KSc;KSc];
+            else
+                x=[x;xCt;yCt];
+                y=[y;yCt;xCt];
+                K=[K;KCt;KCt];
+            end
+            
+            if(isfield( model{imod1}.K, 'MC' ))
+                Nmc = size(model{imod1}.HomeFE.property,3);
+                xKs = model{imod1}.K.x + indK(imod1,1)-1;
+                yKs = model{imod1}.K.y + indK(imod1,1)-1;
+                Ksi = model{imod1}.K.MC;
+                for ijkl = 1:Nmc
+                    MC{imod1,ijkl} = sparse(  xKs, yKs, Ksi{ijkl},max(x),max(y));
+                end
+                
+                
+            end
+        end
+    end
 end
 
 % create sparse matrix
-K = sparse( x, y, K );
+%K = sparse( x, y, K );
 F = sparse( z, k, F, max(x), max(k) );
 
 % output
@@ -93,109 +139,12 @@ opt = struct( 'K', indK, ...
     'BC', indBC, ...
     'Cy', indC, ...
     'C1x', indC1x, ...
-    'C2x', indC2x  );
+    'C2x', indC2x);
+opt.MC = MC;
 
-% Monte Carlo case
-for i1 = 1:Nc
-    if strcmp( coupling{i1}.mediator.type, 'stochastic' )
-        
-        % warning: this was only checked for a single stochastic model
-        
-        % constants
-        isto = c2m( i1, 1+isfield( model{c2m(i1,2)}.K, 'MC' ) );
-        Csto = eval( [ 'coupling{i1}.C' num2str(isto) ] );
-        indCstox = eval( [ 'indC' num2str(isto) 'x' ] );
-        idet = setdiff( c2m(i1,:), isto );
-        Cdet = eval( [ 'coupling{i1}.C' num2str(idet) ] );
-        indCdetx = eval( [ 'indC' num2str(idet) 'x' ] );
-        
-        
-        % adding the additional constraints in the global stiffness matrix
-        [ x0, y0, K0 ] = find( K );
-        n = max(x0);
-        inddet = indCdetx(1) - 1 + Cdet.xtheta ;
-        indsto = indCstox(1) - 1 + Csto.xtheta ;
-        indy = indC(i1,1) - 1 + Cdet.xBCpsi;
-        ndet = (1+n) * ones( size(inddet) );
-        nsto = (1+n) * ones( size(indsto) );
-        ny = (2+n) * ones( size(indy) );
-        x0 = [ x0; inddet; ndet; indsto; nsto; indy; ny ];
-        y0 = [ y0; ndet; inddet; nsto; indsto; ny; indy ];
-        K0 = [ K0; Cdet.Ctheta; Cdet.Ctheta;
-            -Csto.Ctheta; -Csto.Ctheta;
-            Cdet.BCpsi; Cdet.BCpsi ];
-        K = sparse( x0, y0, K0 );
-        
-        % increase the size of the force matrix
-        [ x, y, F ] = find( F );
-        F = sparse( x, y, F, size(K,1), 1 );
-        
-        % erase the contribution of the stochastic model
-        ind = indK(isto,1) : indK(isto,2);
-        K( ind, ind ) = 0;
-        
-        % construction of stochastic matrices with indices
-        Ki = model{isto}.K;
-        Nmc = length( Ki.MC );
-        Ksi = cell( Nmc, 1 );
-        xKs = indK(isto,1) : indK(isto,2);
-        for i2 = 1:Nmc
-            Ksi{i2} = sparse( Ki.x, Ki.y, Ki.MC{i2} );
-        end
-        opt.MC = struct( 'i', isto, 'K0', K0, 'xKs', xKs, 'Ks', {Ksi} );
-        
-    elseif strcmp(coupling{i1}.mediator.type, 'mesomicro')
-        % warning: this was only checked for a single stochastic model
-        
-        
-        opt.MC={};
-        for ijk=1:length(c2m)
-            if(isfield( model{c2m(i1,ijk)}.K, 'MC' ))
-                isto = c2m( i1, ijk );
-                Csto = eval( [ 'coupling{i1}.C' num2str(isto(end)) ] );
-                indCstox = eval( [ 'indC' num2str(isto(end)) 'x' ] );
-                idet = setdiff( c2m(i1,:), isto(end) );
-                Cdet = eval( [ 'coupling{i1}.C' num2str(idet(end)) ] );
-                indCdetx = eval( [ 'indC' num2str(idet(end)) 'x' ] );
-                
-                
-                
-                % adding the additional constraints in the global stiffness matrix
-                [ x0, y0, K0 ] = find( K );
-                n = max(x0);
-                inddet = indCdetx(1) - 1 + Cdet.xtheta ;
-                indsto = indCstox(1) - 1 + Csto.xtheta ;
-                indy = indC(i1,1) - 1 + Cdet.xBCpsi;
-                ndet = (1+n) * ones( size(inddet) );
-                nsto = (1+n) * ones( size(indsto) );
-                ny = (2+n) * ones( size(indy) );
-                x0 = [ x0; inddet; ndet; indsto; nsto; indy; ny ];
-                y0 = [ y0; ndet; inddet; nsto; indsto; ny; indy ];
-                K0 = [ K0; Cdet.Ctheta; Cdet.Ctheta;
-                    -Csto.Ctheta; -Csto.Ctheta;
-                    Cdet.BCpsi; Cdet.BCpsi ];
-                K = sparse( x0, y0, K0 );
-                
-                % increase the size of the force matrix
-                [ x, y, F ] = find( F );
-                F = sparse( x, y, F, size(K,1), 1 );
-                
-                % erase the contribution of the stochastic model
-                ind = indK(isto,1) : indK(isto,2);
-                K( ind, ind ) = 0;
-                
-                % construction of stochastic matrices with indices
-                Ki = model{isto}.K;
-                Nmc = length( Ki.MC );
-                Ksi = cell( Nmc, 1 );
-                xKs = indK(isto,1) : indK(isto,2);
-                for i2 = 1:Nmc
-                    Ksi{i2} = sparse( Ki.x, Ki.y, Ki.MC{i2} );
-                end
-                opt.MC{end+1} = struct( 'i', isto, 'K0', K0, 'xKs', xKs, 'Ks', {Ksi});
-                
-            end
-        end
-        
-    end
+K=sparse(x,y,K,max(x),max(y));
+for ijk=1:Nm
+    K(indK(ijk,1):indBC(ijk,2),indK(ijk,1):indBC(ijk,2))=0;
 end
+[ xf, yf, F ] = find( F );
+F = sparse( xf, yf, F, max(x), max(k) );
