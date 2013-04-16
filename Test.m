@@ -74,7 +74,7 @@ switch lower(type)
         Test('zoom2Dindent');
         Test('NonEmbedded2D_1');
         Test('force2D');
-        
+        Test('zoom2dstosto');
     otherwise
         error('unknown test case')
 
