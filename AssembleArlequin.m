@@ -41,6 +41,7 @@ K = [];
 z = [];
 k = [];
 F = [];
+indsto = [];
 
 % get sizes and correspondence between coupling and models
 for i1 = 1:Nm
@@ -76,6 +77,14 @@ for i1 = 1:Nm
     k = [ k ; Fi.y ];
     F = [ F ; Fi.val ];
 end
+
+
+% output
+opt = struct( 'K', indK, ...
+    'BC', indBC, ...
+    'Cy', indC, ...
+    'C1x', indC1x, ...
+    'C2x', indC2x);
 
 % assemble the coupling parts (including transpose parts)
 for i1 = 1:Nc
@@ -116,12 +125,13 @@ for i1 = 1:Nc
             end
             
             if(isfield( model{imod1}.K, 'MC' ))
+                indsto(end+1)=imod1;
                 Nmc = size(model{imod1}.HomeFE.property,3);
                 xKs = model{imod1}.K.x + indK(imod1,1)-1;
                 yKs = model{imod1}.K.y + indK(imod1,1)-1;
                 Ksi = model{imod1}.K.MC;
                 for ijkl = 1:Nmc
-                    MC{imod1,ijkl} = sparse(  xKs, yKs, Ksi{ijkl},max(x),max(y));
+                    opt.MC{imod1,ijkl} = sparse(  xKs, yKs, Ksi{ijkl},max(x),max(y));
                 end
                 
                 
@@ -133,17 +143,10 @@ end
 % create sparse matrix
 %K = sparse( x, y, K );
 F = sparse( z, k, F, max(x), max(k) );
-
-% output
-opt = struct( 'K', indK, ...
-    'BC', indBC, ...
-    'Cy', indC, ...
-    'C1x', indC1x, ...
-    'C2x', indC2x);
-opt.MC = MC;
+opt.indsto=indsto;
 
 K=sparse(x,y,K,max(x),max(y));
-for ijk=1:Nm
+for ijk=indsto
     K(indK(ijk,1):indBC(ijk,2),indK(ijk,1):indBC(ijk,2))=0;
 end
 [ xf, yf, F ] = find( F );
