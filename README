@@ -2,7 +2,7 @@ CArl
 
 PRESENTATION
 ============
-This project is focused on the development of a software based on the Arlequin multi-model coupling method. The main interest of this software is to allow, by its specific structure, the easy interfacing of different third-party softwares (developed and maintained outside of this project), and adapted to each of the models appearing in the coupling.
+This project is focused on the development of a software based on the Arlequin multi-model coupling method. The main interest of this software is to allow, by its specific structure, the easy interfacing of different third-party softwares (developed and maintained outside of this project), and adapted to each of the models appearing in the coupling. Currently, the software to which CArl is interfaced are : (1) a 1D/2D FEM acoustic code, and (2) Comsol (http://www.comsol.com).
  
 REFERENCES
 ============
