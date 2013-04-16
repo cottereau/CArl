@@ -42,16 +42,16 @@ switch model.code
     % MONTE CARLO VERSION OF HOME FE
     case 'MonteCarloHomeFE'
 
-        % modify the properties in each element according to alpha
+         % modify the properties in each element according to alpha
         model.mesh = model.mesh.tri3;
         alpha = repmat(interp( model.alpha, model.mesh.incenters),[1 3]);
         model.load = model.HomeFE.load .* alpha;
         property = model.HomeFE.property;
         model.BC = model.HomeFE.BC;
-        model.property = [];
+      %  model.property = [];
 
         % compute the modified value of the model property values
-        Nmc = size( model.property, 3 );
+        Nmc = size( model.HomeFE.property, 3 );
         Ktot = cell( Nmc, 1 );
         for i1 = 1:Nmc
             model.property = property(:,:,i1) .* alpha;
