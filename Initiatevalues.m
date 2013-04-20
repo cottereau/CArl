@@ -2,6 +2,10 @@ function [ Nm, Nc, opt ] = Initiatevalues( model, coupling, opt )
 % function [ Nm, Nc, opt ] = Initiatevalues( model, coupling, opt )
 % Set the initiale values and default options.
 
+% disabling some warnings
+warning off MATLAB:DelaunayTri:ConsConsSplitWarnId;
+warning off MATLAB:DelaunayTri:ConsSplitPtWarnId;
+
 % constants
 Nm = length( model );    % number of models
 Nc = length( coupling ); % number of coupling operations
