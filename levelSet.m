@@ -28,8 +28,8 @@ classdef levelSet
 %     sign - sign of the distance function inside the level-set
 %
 %  levelSet methods:
-%     distance     - distance from interface to a set of points
-%     getInterface   - Returns a level-set made of only one closed surface
+%     distance      - distance from interface to a set of points
+%     getInterface  - Returns a level-set made of only one closed surface
 %     intersection  - intersecting two levelsets (new negative points are
 %                    points that were formarly negative for both level-sets)
 %     complement - complement of two levelsets (new negative points are
@@ -136,7 +136,11 @@ classdef levelSet
         end
         % get interface number i
         function lsi = getInterface( obj, i1 )
-            lsi = levelSet( obj.T{i1}, obj.X{i1}, obj.in(i1) );
+            if i1<=obj.N
+                lsi = levelSet( obj.T{i1}, obj.X{i1}, obj.in(i1) );
+            else
+                lsi = levelSet(true);
+            end
         end
         % erase an interface of a levelSet structure
         function obj = rmInterface( obj, i1 )
@@ -146,10 +150,15 @@ classdef levelSet
             obj.in = obj.in(ind);
         end
         % replace the interface number i by another one
-        function obj = setInterface( obj, obji, i1 )
-            obj.X{i1} = obji.X{1};
-            obj.T{i1} = obji.T{1};
-            obj.in(i1) = obji.in(1);
+        function obj = setInterface( obj, obji, ind )
+            if nargin<3
+                ind = obj.N+(1:obji.N);
+            end
+            for i1 = ind
+            obj.X{i1,1} = obji.X{1};
+            obj.T{i1,1} = obji.T{1};
+            obj.in(i1,1) = obji.in(1);
+            end
         end
         % complement of obj2 in obj1
         function obj = complement( obj1, obj2 )
@@ -209,16 +218,18 @@ classdef levelSet
                 obj = obj1;
                 return
             end
-            ls1 = getInterface( obj1, 1 );
-            ls2 = getInterface( obj2, 1 );
-            obj = LSunion( ls1, ls2 );
-            if obj1.N>1||obj2.N>1
-                for i1 = 1:obj1.N
-                    for i2 = 1:obj2.N
-                        ls1 = getInterface( obj1, i1 );
-                        ls2 = getInterface( obj2, i2 );
-                        obj = addInterface( obj, LSunion( ls2, ls1 ));
-                    end
+            obj = levelSet(true);
+            if obj2.N==1&&obj1.N==1
+                obj = LSunion( obj1, obj2 );
+            elseif obj1.N==1
+                for i1 = 1:max(obj2.N,1)
+                    ls12 = LSunion( getInterface( obj2, i1 ), obj1 );
+                    obj = setInterface( obj, ls12 );
+                end
+            else
+                for i1 = 1:max(obj2.N,1)
+                    ls12 = union( getInterface( obj2, i1 ), obj1 );
+                    obj = setInterface( obj, ls12 );
                 end
             end
         end
@@ -281,16 +292,21 @@ classdef levelSet
         end
         % union of two level-sets of size 1 each
         function obj = LSunion( obj1, obj2 )
-            l12 = inside( obj1, obj2.X{1}, false );
-            l21 = inside( obj2, obj1.X{1}, false );
-            if ~all(l12)&&~all(l21)
+            l12 = inside( obj1, obj2.X{1}, true );
+            l21 = inside( obj2, obj1.X{1}, true );
+            % two disjoint domains
+            if all(~l12) && all(~l21)
+                obj = setInterface( obj1, obj2 );
+            % obj1 included in obj2
+            elseif all(l21)
+                obj = obj2;
+            % obj2 included in obj1
+            elseif all(l12)
+                obj = obj1;
+            elseif ~all(l12)&&~all(l21)
                 [dt,ind1,ind2] = CrossLS( obj1, obj2 );
                 dt = subSet( dt, ind1|ind2 );
                 obj = freeBoundary(dt);
-            elseif all(l21)&&~all(l12)
-                obj = obj2;
-            elseif all(l12)&&~all(l21)
-                obj = obj1;
             else
                 obj = levelSet(false);
             end

@@ -39,7 +39,7 @@ classdef discontinuous
     end
     
     properties (Dependent)
-        Ns;  % number of subdomains
+        Ns;      % number of subdomains
     end
     
     methods
@@ -70,6 +70,11 @@ classdef discontinuous
         function N = get.Ns(obj)
             N = length(obj.x);
         end
+        % add a domain definition to a discontinuous function
+        function obj = addDomain( obj, x, val )
+            obj.f{obj.Ns+1,1} = val;
+            obj.x{obj.Ns+1,1} = x;
+        end
         % plotting discontinuous function
         function plot( obj, X )
             [fval,ind] = interp( obj, X );
@@ -77,6 +82,9 @@ classdef discontinuous
             figure; hold on;
             for i1 = 1:obj.Ns
                 if any(ind==i1)
+%                     C = [];
+%                     for i2 = 1:obj.x{i1}.N
+%                         C = [C obj.x{i1}
                     dt = DelaunayTri(X(ind==i1,:));
                     xi = dt.X(:,1); yi = dt.X(:,2);
                     Xc = [mean(xi(dt.Triangulation),2) ...
@@ -111,14 +119,94 @@ classdef discontinuous
             end
         end
         % multiplication of two functions
-        function obj = times( obj, obj1 )
-           if isfloat(obj1)
+        function obj = times( obj1, obj2 )
+           if isfloat(obj2)
+               obj = obj1;
                for i1 = 1:obj.Ns
-                   obj.f{i1}.V = obj.f{i1}.V .* obj1;
+                   obj.f{i1}.V = obj.f{i1}.V .* obj2;
+               end
+           elseif isa(obj2,'discontinuous')
+               obj = discontinuous;
+               for i1 = 1:obj1.Ns
+                   % only one domain defined
+                   xx = obj1.x{i1};
+                   for i2 = 1:obj2.Ns
+                       xx = complement( xx, obj2.x{i2} );
+                   end
+                   if xx.N>0
+                       obj = addDomain( obj, xx, obj1.f{i1} );
+                   end
+                   for i2 = 1:obj2.Ns
+                       % intersection of the two domains
+                       xx = intersection( obj1.x{i1}, obj2.x{i2} );
+                       if xx.N>0
+                           xval = unique( [obj1.f{i1}.X; obj2.f{i2}.X],'rows');
+                           val = obj1.f{i1}(xval) .* obj2.f{i2}(xval);
+                           val = TriScatteredInterp( xval, val );
+                           obj = addDomain( obj, xx, val );
+                       end
+                   end
+               end
+               for i1 = 1:obj2.Ns
+                   % only one domain defined
+                   xx = obj2.x{i1};
+                   for i2 = 1:obj1.Ns
+                       xx = complement( xx, obj1.x{i2} );
+                   end
+                   if xx.N>0
+                       obj = addDomain( obj, xx, obj2.f{i1} );
+                   end
                end
            else
                error('discontinuous/times: not implemented yet')
            end
+        end
+        % addition of two functions
+        function obj = plus( obj1, obj2 )
+           if isfloat(obj2)
+               obj = obj1;
+               for i1 = 1:obj.Ns
+                   obj.f{i1}.V = obj.f{i1}.V + obj2;
+               end
+           elseif isa(obj2,'discontinuous')
+               obj = discontinuous;
+               for i1 = 1:obj1.Ns
+                   % only one domain defined
+                   xx = obj1.x{i1};
+                   for i2 = 1:obj2.Ns
+                       xx = complement( xx, obj2.x{i2} );
+                   end
+                   if xx.N>0
+                       obj = addDomain( obj, xx, obj1.f{i1} );
+                   end
+                   for i2 = 1:obj2.Ns
+                       % intersection of the two domains
+                       xx = intersection( obj1.x{i1}, obj2.x{i2} );
+                       if xx.N>0
+                           xval = unique( [obj1.f{i1}.X; obj2.f{i2}.X],'rows');
+                           val = obj1.f{i1}(xval) + obj2.f{i2}(xval);
+                           val = TriScatteredInterp( xval, val );
+                           obj = addDomain( obj, xx, val );
+                       end
+                   end
+               end
+               for i1 = 1:obj2.Ns
+                   % only one domain defined
+                   xx = obj2.x{i1};
+                   for i2 = 1:obj1.Ns
+                       xx = complement( xx, obj1.x{i2} );
+                   end
+                   if xx.N>0
+                       obj = addDomain( obj, xx, obj2.f{i1} );
+                   end
+               end
+           else
+               error('discontinuous/times: not implemented yet')
+           end
+        end
+        % derivation over each subdomain
+        function obj = gradient( obj )
+            
         end
     end
 end     
