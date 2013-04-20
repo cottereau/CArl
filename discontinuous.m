@@ -205,8 +205,22 @@ classdef discontinuous
            end
         end
         % derivation over each subdomain
-        function obj = gradient( obj )
-            
+        function [objx,objy] = gradient( obj1 )
+            objx = discontinuous;
+            objy = discontinuous;
+            for i0 = 1:obj1.Ns
+                dt = DelaunayTri(obj1.f{i0}.X);
+                T = dt.Triangulation;
+                Xc = incenters( dt );
+                Fe = zeros(3,size(T,1));
+                for i1 = 1:size(T,1)
+                    Te = T(i1,:);
+                    Xe = [ ones(3,1)   dt.X( Te, : ) ];
+                    Fe(:,i1) = Xe \ obj1.f{i0}.V(Te);
+                end
+                objx = addRegion( objx, obj1.x{i0}, Xc, Fe(2,:)' );
+                objy = addRegion( objy, obj1.x{i0}, Xc, Fe(3,:)' );
+            end
         end
     end
 end     
