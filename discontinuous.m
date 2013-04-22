@@ -97,11 +97,11 @@ classdef discontinuous
             end
         end
         % interpolation: getting values of f inside each subdomain
-        function [fv,indg] = interp(obj,X)
+        function [fv,indg] = interp(obj,X,Xe)
             fv = zeros(size(X,1),1);
             indg = zeros(size(X,1),1);
             for i1 = 1:obj.Ns
-                ind = distance(obj.x{i1},X,true)<=0;
+                ind = distance(obj.x{i1},Xe,true)<=0;
                 indg(ind) = i1;
                 fv(ind) = obj.f{i1}(X(ind,:));
             end

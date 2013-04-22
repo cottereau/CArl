@@ -32,7 +32,13 @@ switch model.code
         % modify the properties in each element according to alpha
         model.mesh = model.mesh.tri3;
         model.BC = model.HomeFE.BC;
-        alpha = repmat(interp( model.alpha, model.mesh.incenters),[1 3]);
+        Ne = size(model.mesh.T3,1);
+        x = model.mesh.X3(:,1); y = model.mesh.X3(:,2);
+        X = [reshape(x(model.mesh.T3'),3*Ne,1) reshape(y(model.mesh.T3'),3*Ne,1)];
+        xe = repmat( model.mesh.incenters(:,1)', [3 1]);
+        ye = repmat( model.mesh.incenters(:,2)', [3 1]);
+        Xe = [xe(:) ye(:)];
+        alpha = interp(model.alpha,X,Xe);
         model.property = model.HomeFE.property .* alpha;
         model.load = model.HomeFE.load .* alpha;
 
