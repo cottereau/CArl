@@ -27,8 +27,10 @@ i2 = setdiff(1:2,i1);
 val = cpl.cplval{i1};
 
 % alpha in constant zones
-alpha = discontinuous( cpl.free{i1}, mesh.X, 1, ...
-                                      cpl.free12, mesh.X, cpl.freeval{i1});
+ind1 = inside( cpl.free{i1}, mesh.X );
+ind2 = inside( cpl.free12, mesh.X );
+alpha = discontinuous( cpl.free{i1}, mesh.X(ind1,:), 1, ...
+                                      cpl.free12, mesh.X(ind2,:), cpl.freeval{i1});
 
 % alpha in the transition zone
 % CONSTANT CASE
