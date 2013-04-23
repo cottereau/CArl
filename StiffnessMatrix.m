@@ -30,17 +30,20 @@ switch model.code
     % HOMEFE
     case 'HomeFE'
         % modify the properties in each element according to alpha
-        model.mesh = model.mesh.tri3;
-        model.BC = model.HomeFE.BC;
-        Ne = size(model.mesh.T3,1);
-        x = model.mesh.X3(:,1); y = model.mesh.X3(:,2);
-        X = [reshape(x(model.mesh.T3'),3*Ne,1) reshape(y(model.mesh.T3'),3*Ne,1)];
-        xe = repmat( model.mesh.incenters(:,1)', [3 1]);
-        ye = repmat( model.mesh.incenters(:,2)', [3 1]);
+       model.mesh = model.mesh.tri3;
+        x = model.mesh.X(:,1); y = model.mesh.X(:,2);
+        Ne = size(model.mesh.Triangulation,1);
+        X = [reshape(x(model.mesh.Triangulation'),3*Ne,1) reshape(y(model.mesh.Triangulation'),3*Ne,1)];
+        incenters = model.mesh.incenters;
+        xe = repmat( incenters(:,1)', [3 1]);
+        ye = repmat( incenters(:,2)', [3 1]);
         Xe = [xe(:) ye(:)];
         alpha = interp(model.alpha,X,Xe);
-        model.property = model.HomeFE.property .* alpha;
-        model.load = model.HomeFE.load .* alpha;
+%        alpha = (interp( model.alpha, model.mesh.X),[1 3]);
+        model.BC = model.HomeFE.BC;
+        %alpha = repmat(interp( model.alpha, model.mesh.incenters),[1 3]);
+        model.property = model.HomeFE.property .*reshape(alpha,3,Ne)';
+        model.load = model.HomeFE.load .*reshape(alpha,3,Ne)';
 
         % compute the modified value of the model property values
         [ x, y, K, z, F ] = StiffnessMatrixHomeFE( model );
@@ -50,8 +53,17 @@ switch model.code
 
          % modify the properties in each element according to alpha
         model.mesh = model.mesh.tri3;
-        alpha = repmat(interp( model.alpha, model.mesh.incenters),[1 3]);
-        model.load = model.HomeFE.load .* alpha;
+        x = model.mesh.X(:,1); y = model.mesh.X(:,2);
+        Ne = size(model.mesh.Triangulation,1);
+        X = [reshape(x(model.mesh.Triangulation'),3*Ne,1) reshape(y(model.mesh.Triangulation'),3*Ne,1)];
+        incenters = model.mesh.incenters;
+        xe = repmat( incenters(:,1)', [3 1]);
+        ye = repmat( incenters(:,2)', [3 1]);
+        Xe = [xe(:) ye(:)];
+        alpha = interp(model.alpha,X,Xe);
+     %   alpha = repmat(interp( model.alpha, model.mesh.incenters, model.mesh.incenters),[1 3]);
+%        alpha = (interp( model.alpha, model.mesh.X),[1 3]);
+        model.load = model.HomeFE.load .* reshape(alpha,3,Ne)';
         property = model.HomeFE.property;
         model.BC = model.HomeFE.BC;
       %  model.property = [];
@@ -60,7 +72,7 @@ switch model.code
         Nmc = size( model.HomeFE.property, 3 );
         Ktot = cell( Nmc, 1 );
         for i1 = 1:Nmc
-            model.property = property(:,:,i1) .* alpha;
+            model.property = property(:,:,i1) .* reshape(alpha,3,Ne)';
             [ x, y, Ktot{i1}, z, F ] = StiffnessMatrixHomeFE( model );
         end
         K = Ktot{1};
