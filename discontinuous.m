@@ -77,7 +77,7 @@ classdef discontinuous
         end
         % plotting discontinuous function
         function plot( obj, X )
-            [fval,ind] = interp( obj, X );
+            [fval,ind] = interp( obj, X ,X);
     %        fval = rand(size(fval))+fval;
             figure; hold on;
             for i1 = 1:obj.Ns
@@ -141,8 +141,9 @@ classdef discontinuous
                        xx = intersection( obj1.x{i1}, obj2.x{i2} );
                        if xx.N>0
                            xval = unique( [obj1.f{i1}.X; obj2.f{i2}.X],'rows');
-                           val = obj1.f{i1}(xval) .* obj2.f{i2}(xval);
-                           val = TriScatteredInterp( xval, val );
+                           l = inside( xx, xval);
+                           val = obj1.f{i1}(xval(l,:)) .* obj2.f{i2}(xval(l,:));
+                           val = TriScatteredInterp( xval(l,:), val );
                            obj = addDomain( obj, xx, val );
                        end
                    end
@@ -209,17 +210,26 @@ classdef discontinuous
             objx = discontinuous;
             objy = discontinuous;
             for i0 = 1:obj1.Ns
+                if ~isempty(obj1.x{i0}.X)
                 dt = DelaunayTri(obj1.f{i0}.X);
                 T = dt.Triangulation;
-                Xc = incenters( dt );
+               % Xc = incenters( dt );
+                x = dt.X(:,1);
+                x = x(dt.Triangulation);
+                x = (x(:));
+                y = dt.X(:,2);
+                y = y(dt.Triangulation);
+                y = (y(:));
+                X = [x y];
                 Fe = zeros(3,size(T,1));
                 for i1 = 1:size(T,1)
                     Te = T(i1,:);
                     Xe = [ ones(3,1)   dt.X( Te, : ) ];
                     Fe(:,i1) = Xe \ obj1.f{i0}.V(Te);
                 end
-                objx = addRegion( objx, obj1.x{i0}, Xc, Fe(2,:)' );
-                objy = addRegion( objy, obj1.x{i0}, Xc, Fe(3,:)' );
+                objx = addRegion( objx, obj1.x{i0}, X, repmat(Fe(2,:)',3,1) );
+                objy = addRegion( objy, obj1.x{i0}, X, repmat(Fe(3,:)',3,1) );
+                end
             end
         end
     end
