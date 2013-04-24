@@ -214,37 +214,5 @@ classdef discontinuous
                error('discontinuous/times: not implemented yet')
            end
         end
-        % derivation over each subdomain
-        function [objx,objy] = gradient( obj1 )
-            objx = discontinuous;
-            objy = discontinuous;
-            for i0 = 1:obj1.Ns
-                if ~isempty(obj1.x{i0}.X)
-                dt = DelaunayTri(obj1.f{i0}.X);
-%                constrains = nearestNeighbor(dt,obj1.x{i0}.X{1});
- %               constrains = constrains(obj1.x{i0}.T{1});
-  %              dt = DelaunayTri(obj1.f{i0}.X,constrains);
-                T = dt.Triangulation;
-   %             dedans = inOutStatus(dt);
-    %            T = T(dedans,:);
-               % Xc = incenters( dt );
-                x = dt.X(:,1);
-                x = x(T);
-                x = (x(:));
-                y = dt.X(:,2);
-                y = y(T);
-                y = (y(:));
-                X = [x y];
-                Fe = zeros(3,size(T,1));
-                for i1 = 1:size(T,1)
-                    Te = T(i1,:);
-                    Xe = [ ones(3,1)   dt.X( Te, : ) ];
-                    Fe(:,i1) = Xe \ obj1.f{i0}.V(Te);
-                end
-                objx = addRegion( objx, obj1.x{i0}, X, repmat(Fe(2,:)',3,1) );
-                objy = addRegion( objy, obj1.x{i0}, X, repmat(Fe(3,:)',3,1) );
-                end
-            end
-        end
     end
 end     
