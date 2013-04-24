@@ -92,7 +92,7 @@ classdef discontinuous
                     indT = distance( obj.x{i1}, Xc, true )<=0;
                     trisurf( dt.Triangulation(indT,:), dt.X(:,1), ...
                         dt.X(:,2), fval(ind==i1), fval(ind==i1) );
-                    shading flat; view(2); colorbar;
+                    shading interp; view(2); colorbar;
                 end
             end
         end
@@ -162,6 +162,14 @@ classdef discontinuous
                error('discontinuous/times: not implemented yet')
            end
         end
+        
+        function obj = power( obj1, n )
+               obj = obj1;
+               for ijk=1:obj.Ns
+               obj.f{ijk}.V = (obj.f{ijk}.V).^n;
+               end
+        end
+        
         % addition of two functions
         function obj = plus( obj1, obj2 )
            if isfloat(obj2)
@@ -185,8 +193,9 @@ classdef discontinuous
                        xx = intersection( obj1.x{i1}, obj2.x{i2} );
                        if xx.N>0
                            xval = unique( [obj1.f{i1}.X; obj2.f{i2}.X],'rows');
-                           val = obj1.f{i1}(xval) + obj2.f{i2}(xval);
-                           val = TriScatteredInterp( xval, val );
+                           l = inside( xx, xval);
+                           val = obj1.f{i1}(xval(l,:)) + obj2.f{i2}(xval(l,:));
+                           val = TriScatteredInterp( xval(l,:), val );
                            obj = addDomain( obj, xx, val );
                        end
                    end
@@ -212,13 +221,18 @@ classdef discontinuous
             for i0 = 1:obj1.Ns
                 if ~isempty(obj1.x{i0}.X)
                 dt = DelaunayTri(obj1.f{i0}.X);
+%                constrains = nearestNeighbor(dt,obj1.x{i0}.X{1});
+ %               constrains = constrains(obj1.x{i0}.T{1});
+  %              dt = DelaunayTri(obj1.f{i0}.X,constrains);
                 T = dt.Triangulation;
+   %             dedans = inOutStatus(dt);
+    %            T = T(dedans,:);
                % Xc = incenters( dt );
                 x = dt.X(:,1);
-                x = x(dt.Triangulation);
+                x = x(T);
                 x = (x(:));
                 y = dt.X(:,2);
-                y = y(dt.Triangulation);
+                y = y(T);
                 y = (y(:));
                 X = [x y];
                 Fe = zeros(3,size(T,1));
