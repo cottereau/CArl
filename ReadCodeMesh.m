@@ -25,9 +25,16 @@ function model = ReadCodeMesh( model )
 switch model.code
     
     % HOMEFE
-    case {'HomeFE','MonteCarloHomeFE'}
+    case {'HomeFE','MonteCarloHomeFE','FE2D'}
         model.mesh = TRI6( model.HomeFE.mesh.T, model.HomeFE.mesh.X, false );
-        
+    case  {'TimobeamFE'}
+        tmpX = model.HomeFE.mesh.X;
+        tmpY = [-model.HomeFE.L/2 0 model.HomeFE.L/2];
+        [tmpXX tmpYY] = meshgrid(tmpX,tmpY);
+        coordinates = [tmpXX(:) tmpYY(:)];
+        tmpmesh = DelaunayTri(coordinates);
+        elements3 = tmpmesh.Triangulation;
+        model.mesh = TRI6( elements3, coordinates, false );
     % COMSOL
     case 'Comsol'
         wd = pwd;
