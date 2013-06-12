@@ -76,7 +76,63 @@ switch model.code
             [ x, y, Ktot{i1}, z, F ] = StiffnessMatrixHomeFE( model );
         end
         K = Ktot{1};
-                
+    case 'TimobeamFE'
+                 % modify the properties in each element according to alpha
+        model1.mesh = model.HomeFE.mesh;
+        model2.mesh = model.mesh.tri3;
+                x = model2.mesh.X(:,1); y = model2.mesh.X(:,2);
+        Ne = size(model2.mesh.Triangulation,1);
+        X = [reshape(x(model2.mesh.Triangulation'),3*Ne,1) reshape(y(model2.mesh.Triangulation'),3*Ne,1)];
+        incenters = sum(model1.mesh.X(model1.mesh.T'),1)/2;
+        %xe = repmat( incenters(:,1)', [3 1]);
+        %ye = repmat( incenters(:,2)', [3 1]);
+        %Xe = [xe(:) ye(:)];
+        alpha = interp(model.alpha,[incenters;zeros(1,length(incenters))]',[incenters;zeros(1,length(incenters))]');%%%%%%%%%%%%%%%%%%%%%%%TO BE CHECKED (OK FOR SIMPLY LINEAR ALPHA)
+     %   alpha = repmat(interp( model.alpha, model.mesh.incenters, model.mesh.incenters),[1 3]);
+%        alpha = (interp( model.alpha, model.mesh.X),[1 3]);
+        model.load = model.HomeFE.load .* repmat(alpha,[1,2,3]);
+        property = model.HomeFE.property;
+       % model1.BC = model.HomeFE.BC;
+      %  model.property = [];
+
+        % compute the modified value of the model property values
+        Nmc = size( model.HomeFE.property, 3 );
+        Ktot = cell( Nmc, 1 );
+        for i1 = 1:Nmc
+            model.property = property(:,:,i1) .* repmat(alpha,1,2);
+            [ x, y, Ktot{i1}, z, F ] = Timostiff( model );
+        end
+                K = Ktot{1};
+    case 'FE2D'
+                  % modify the properties in each element according to alpha
+        model.mesh = model.mesh.tri3;
+        x = model.mesh.X(:,1); y = model.mesh.X(:,2);
+        Ne = size(model.mesh.Triangulation,1);
+        X = [reshape(x(model.mesh.Triangulation'),3*Ne,1) reshape(y(model.mesh.Triangulation'),3*Ne,1)];
+        incenters = model.mesh.incenters;
+        xe = repmat( incenters(:,1)', [3 1]);
+        ye = repmat( incenters(:,2)', [3 1]);
+        Xe = [xe(:) ye(:)];
+        alpha = interp(model.alpha,X,Xe);
+     %   alpha = repmat(interp( model.alpha, model.mesh.incenters, model.mesh.incenters),[1 3]);
+%        alpha = (interp( model.alpha, model.mesh.X),[1 3]);
+        model.load = model.HomeFE.load .* repmat(reshape(alpha,3,Ne)',[1,1,2]);
+        property = model.HomeFE.property;
+      %  model.BC = model.HomeFE.BC;
+      %  model.property = [];
+
+        % compute the modified value of the model property values
+        Nmc = size( model.HomeFE.property, 3 );
+        Ktot = cell( Nmc, 1 );
+        for i1 = 1:Nmc
+            model.property = property(:,:,i1) .* reshape(alpha,3,Ne)';
+            [ x, y, Ktot{i1}, z, F ] = K_2D_elasticity( model );
+        end
+                K = Ktot{1};
+        
+        
+        
+        
     % COMSOL
     case 'Comsol'
         wd = pwd;
