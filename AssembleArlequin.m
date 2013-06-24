@@ -46,7 +46,7 @@ indsto = [];
 % get sizes and correspondence between coupling and models
 for i1 = 1:Nm
     Nmi(i1) = max(model{i1}.K.x);
-    BCi(i1) = size(model{i1}.mesh.tri3.X,1);
+    BCi(i1) = size(model{i1}.mesh.tri3.X,1)*size(model{i1}.HomeFE.load,3);
 end
 indKi = [ones(Nm,1) BCi];   %indice raideur dans les matrices
 indBCi = [indKi(:,end)+1 Nmi];  %indice BC dans les matrice
@@ -99,6 +99,9 @@ for i1 = 1:Nc
     
     %%%LAISSER LES CAS ET LES F regarder si ok avec det-sto%
     if or(isfield( model{c2m(i1,1)}.K, 'MC' ),isfield( model{c2m(i1,2)}.K, 'MC' ))
+        
+
+        
         opt.MC={};
         for ijk=1:length(c2m(i1,:))
             imod1 = c2m( i1, ijk );
