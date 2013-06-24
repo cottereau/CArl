@@ -89,21 +89,25 @@ for i1 = 1:Nc
         % define coupling and free volumes
         [Cpl{i1}.mesh, Cpl{i1}.free12, Cpl{i1}.free] = ...
                DefineCouplingMesh( Cpl{i1}.levelSet, m1.mesh, m2.mesh );
-        
+
         % compute weights for each model
-        Cpl{i1}.alpha{1} = ArlequinWeight( Cpl{i1}, 1, m1.mesh );
-        Cpl{i1}.alpha{2} = ArlequinWeight( Cpl{i1}, 2, m2.mesh );
         
+        Cpl{i1}.alpha{1} = ArlequinWeight( Cpl{i1}, 1, m1.mesh, m1.code,m2.code );
+        Cpl{i1}.alpha{2} = ArlequinWeight( Cpl{i1}, 2, m2.mesh, m1.code,m2.code );
+        if ~strcmp(m1.code,m2.code)
+            m1 = ReadCodeMesh( Mdl{Cpl{i1}.models(1)} );
+            [Cpl{i1}.mesh, Cpl{i1}.free12, Cpl{i1}.free] = ...
+               DefineCouplingMesh( Cpl{i1}.levelSet, m1.mesh, m2.mesh );
+        end
         % create intersection of meshes (for both representation and
         % integration purposes)
-        [Int,Rep] = MeshIntersect( m1.mesh, m2.mesh, Cpl{i1}.mesh );
-        
+        [Int,Rep] = MeshIntersect( m1.mesh, m2.mesh, Cpl{i1}.mesh, m1.code,m2.code );
         % definition of the mediator space
         Int.M = MediatorSpace( Cpl{i1}.mediator, Rep );
         
         % construction of coupling operators
-        Cpl{i1}.C1 = CouplingOperator( Cpl{i1}, Int, Rep{1}, opt );
-        Cpl{i1}.C2 = CouplingOperator( Cpl{i1}, Int, Rep{2}, opt );
+        Cpl{i1}.C1 = CouplingOperator( Cpl{i1}, Int, Rep{1}, opt, m1.code );
+        Cpl{i1}.C2 = CouplingOperator( Cpl{i1}, Int, Rep{2}, opt, m2.code );
     
     end
 end
