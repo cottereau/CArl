@@ -1,4 +1,4 @@
-function alpha = ArlequinWeight( cpl, i1, mesh )
+function alpha = ArlequinWeight( cpl, i1, mesh ,code1,code2)
 % ARLEQUINWEIGHT to compute the weight functions associated to the
 % partition of models
 %
@@ -55,3 +55,22 @@ elseif numel(val)==2
     alpha = addRegion( alpha, cpl.mesh, Xi, f );
 end
 
+if strcmp(code1,code2)==0
+aa = cpl.levelSet.X{1};
+bb = cpl.levelSet.X{2};
+xx = alpha.f{3}.X(:,1);
+freeval = cpl.freeval;
+            p1 = (freeval{i1}-freeval{i2})/(min(aa(:,1))-min(bb(:,1)));
+            fval1 = freeval{i2}+(xx-min(bb(:,1)))*p1;
+            fval1(fval1<(0))=0;
+            fval1(fval1>(1))=0;
+          %  fval1(fval1<0)=val(i1);
+            p2 = (freeval{i2}-freeval{i1})/(max(bb(:,1))-max(aa(:,1)));
+            fval2 = freeval{i1}+(xx-max(aa(:,1)))*p2;
+            fval2(fval2<(0))=0;
+            fval2(fval2>(1))=0;         %   fval2(fval2<0)=val(i1);
+            fval = fval1+fval2;
+            fval(fval==0)=freeval{i1};
+            alpha.f{3}.V = fval;
+end
+          
