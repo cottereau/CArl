@@ -29,8 +29,13 @@ switch model.code
         model.mesh = TRI6( model.HomeFE.mesh.T, model.HomeFE.mesh.X, false );
     case  {'TimobeamFE'}
         tmpX = model.HomeFE.mesh.X;
-        tmpY = [-model.HomeFE.L/2 0 model.HomeFE.L/2];
-        [tmpXX tmpYY] = meshgrid(tmpX,tmpY);
+      %  tmpY = [-model.HomeFE.L/2 -3*model.HomeFE.L/8 -model.HomeFE.L/4 -model.HomeFE.L/8 0 model.HomeFE.L/8 model.HomeFE.L/4 3*model.HomeFE.L/8 model.HomeFE.L/2];
+      if isfield(model,'mesh')
+          tmpY = [-model.HomeFE.L/2 -model.HomeFE.L/4 0 model.HomeFE.L/4 model.HomeFE.L/2];
+      else
+      tmpY = [-3*model.HomeFE.L/4 -model.HomeFE.L/2 -model.HomeFE.L/4 0 model.HomeFE.L/4 model.HomeFE.L/2 3*model.HomeFE.L/4];
+      end
+ [tmpXX tmpYY] = meshgrid(tmpX,tmpY);
         coordinates = [tmpXX(:) tmpYY(:)];
         tmpmesh = DelaunayTri(coordinates);
         elements3 = tmpmesh.Triangulation;
