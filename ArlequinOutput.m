@@ -29,9 +29,9 @@ for i1 = 1:Nm
     end
     
     % reconstruction of alpha.u
-    alpha = model{i1}.alpha;
-    u = TriScatteredInterp( model{i1}.mesh.X3, sol{i1} );
-    u = discontinuous( freeBoundary(model{i1}.mesh), u );
+  %  alpha = model{i1}.alpha;
+  %  u = TriScatteredInterp( model{i1}.mesh.X3, sol{i1} );
+  %  u = discontinuous( freeBoundary(model{i1}.mesh), u );
 %    model{i1}.au = alpha.*u;
     
 end
