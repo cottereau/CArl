@@ -1,4 +1,4 @@
-function [ Int, Rep] = MeshIntersect( mesh1, mesh2, LSet )
+function [ Int, Rep] = MeshIntersect( mesh1, mesh2, LSet,code1,code2 )
 % MESHINTERSECT to create the mesh at the intersection between two meshes,
 % both in terms of support (for the definition of the interpolation
 % functions) and for integration purposes
@@ -32,6 +32,8 @@ function [ Int, Rep] = MeshIntersect( mesh1, mesh2, LSet )
 N1 = size(mesh1.tri3.X,1);
 N2 = size(mesh2.tri3.X,1);
 
+
+
 % coupling zone for representation purposes (including elements of the
 % original meshes that are cut by the level-set)
 [meshr1,Xrg1] = subSet( mesh1, elementsInBoundary(mesh1,LSet,false) );
@@ -40,23 +42,35 @@ Xrg1 = Xrg1( ismember(Xrg1,mesh1.ind3v6) );
 Xrg2 = Xrg2( ismember(Xrg2,mesh2.ind3v6) );
 
 % intersect the two meshes to get a first draft of the integration mesh
-meshi = MergeMeshes( meshr1, meshr2, LSet );
-
+            meshi = MergeMeshes( meshr1, meshr2, LSet );
 % compute the passage matrices in terms of nodes
 % = get the values of the basis functions in the
 % representation meshes at the nodes of the integration
 % mesh
 [ Mx1, My1, Mval1 ] = XR2XI( meshr1.tri3, meshi.tri3 );
+Ni = size(meshi.tri3.X,1);
+
 [ Mx2, My2, Mval2 ] = XR2XI( meshr2.tri3, meshi.tri3 );
+
+            
+                  if (strcmp(code1,code2)==0)
+
+              indx0m1 = find(mesh1.tri3.X(:,2)==0);
+             indx0m2 = find(meshi.tri3.X(:,2)==0);
+             Mtemp = sparse(Xrg1(Mx1),My1,Mval1,N1,Ni);
+             M1 = Mtemp(indx0m1,:);
+            % M1 = M1(:,indx0m2);
+                  end
 
 % output
 Int.mesh = meshi;
-Ni = size(meshi.tri3.X,1);
 Rep{1} = struct( 'mesh', meshr1, ...
-                 'M', sparse(Xrg1(Mx1),My1,Mval1,N1,Ni) );
+                 'M',  sparse(Xrg1(Mx1),My1,Mval1,N1,Ni) );
 Rep{2} = struct( 'mesh', meshr2, ...
                  'M', sparse(Xrg2(Mx2),My2,Mval2,N2,Ni) );
-
+                       if (strcmp(code1,code2)==0)        
+             Rep{1}.Mbeam=M1;
+end
 %==========================================================================
 function mesh = MergeMeshes( mesh1, mesh2, LSet )
 N = size(mesh1.tri3.X,1);
@@ -67,7 +81,7 @@ for i1=1:LSet.N
     C = [C;LSet.T{i1}+size(X,1)];
     X = [X;LSet.X{i1}];
 end
-[~,ind] = unique( sort(C,2) ,'rows', 'first', 'legacy' );
+[~,ind] = unique( sort(C,2) ,'rows', 'first');
 C = C(ind,:);
 ldt = clean( levelSet( C, X ) );
 mesh = DelaunayTri( ldt.X{1}, ldt.T{1} );
