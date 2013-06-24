@@ -155,6 +155,6 @@ end
 % output
 K = struct( 'x', x, 'y', y, 'val', K );
 F = struct( 'x', z, 'y', ones(size(z)), 'val', F );
-if exist( 'Ktot', 'var' )
+if exist( 'Ktot', 'var' ) && size(model.HomeFE.property,3)>1
     K.MC = Ktot;
 end
