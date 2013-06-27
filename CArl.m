@@ -102,8 +102,9 @@ for i1 = 1:Nc
         % create intersection of meshes (for both representation and
         % integration purposes)
         [Int,Rep] = MeshIntersect( m1.mesh, m2.mesh, Cpl{i1}.mesh, m1.code,m2.code );
+
         % definition of the mediator space
-        Int.M = MediatorSpace( Cpl{i1}.mediator, Rep );
+        [Int.M,Int.Mbeam] = MediatorSpace( Cpl{i1}.mediator, Rep );
         
         % construction of coupling operators
         Cpl{i1}.C1 = CouplingOperator( Cpl{i1}, Int, Rep{1}, opt, m1.code );
