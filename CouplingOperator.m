@@ -49,7 +49,7 @@ if find(strcmp('HomeFE',Nmod))
     end
     
 elseif find(strcmp('FE2D',Nmod))
-    [ x, y, C ] = CouplingOperatorTimotmp( couple.operator, Int.mesh.tri3, opt );
+    [ x, y, C ] = CouplingOperatorFE2D( couple.operator, Int.mesh.tri3, opt );
     C = (sparse( x, y, C ));
     RepM = zeros(2*size(Rep.M));
     RepM(1:2:end-1,1:2:end-1) = Rep.M;
