@@ -12,7 +12,7 @@ m = struct( 'mesh', mesh, ...
 elements = m.mesh.Triangulation;
 coordinates = m.mesh.X;
 
-[ Mass1,Mass2 ] = mass_coupling_Timo(elements,coordinates);
+[ Mass1,Mass2 ] = mass_coupling_FE2D(elements,coordinates);
 [x2,y2] = find(Mass2);
 indtemp = (find(Mass2));
 C = Mass2(indtemp);
@@ -30,7 +30,7 @@ switch operator
         
         % H1 coupling
     case 'H1'
-        [stiffC1,stiffC2] = stifness_coupling_Timo( elements,coordinates);
+        [stiffC1,stiffC2] = stifness_coupling_FE2D( elements,coordinates);
         [z2,k2] = find(stiffC2);
         indtemp= find(stiffC2);
         K2=(stiffC2(indtemp));
