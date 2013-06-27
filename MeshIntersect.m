@@ -33,7 +33,6 @@ N1 = size(mesh1.tri3.X,1);
 N2 = size(mesh2.tri3.X,1);
 
 
-
 % coupling zone for representation purposes (including elements of the
 % original meshes that are cut by the level-set)
 [meshr1,Xrg1] = subSet( mesh1, elementsInBoundary(mesh1,LSet,false) );
@@ -41,35 +40,57 @@ Xrg1 = Xrg1( ismember(Xrg1,mesh1.ind3v6) );
 [meshr2,Xrg2] = subSet( mesh2, elementsInBoundary(mesh2,LSet,false) );
 Xrg2 = Xrg2( ismember(Xrg2,mesh2.ind3v6) );
 
-% intersect the two meshes to get a first draft of the integration mesh
-            meshi = MergeMeshes( meshr1, meshr2, LSet );
+meshi = MergeMeshes( meshr1, meshr2, LSet );
 % compute the passage matrices in terms of nodes
 % = get the values of the basis functions in the
 % representation meshes at the nodes of the integration
-% mesh
 [ Mx1, My1, Mval1 ] = XR2XI( meshr1.tri3, meshi.tri3 );
 Ni = size(meshi.tri3.X,1);
 
 [ Mx2, My2, Mval2 ] = XR2XI( meshr2.tri3, meshi.tri3 );
 
-            
-                  if (strcmp(code1,code2)==0)
+M11 = sparse(Xrg1(Mx1),My1,Mval1,N1,Ni);
+M22 = sparse(Xrg2(Mx2),My2,Mval2,N2,Ni);
 
-              indx0m1 = find(mesh1.tri3.X(:,2)==0);
-             indx0m2 = find(meshi.tri3.X(:,2)==0);
-             Mtemp = sparse(Xrg1(Mx1),My1,Mval1,N1,Ni);
-             M1 = Mtemp(indx0m1,:);
-            % M1 = M1(:,indx0m2);
-                  end
+if (strcmp(code1,code2)==0)
+    indy0m1 = find(meshi.tri3.X(:,2)==0);
+    indx0m1 = find(mesh1.tri3.X(:,2)==0);
+    Mtemp1 = sparse(Xrg1(Mx1),My1,Mval1,N1,Ni);
+    M1 = Mtemp1(indx0m1,indy0m1);
+    
+    indy0m2 = find(meshi.tri3.X(:,2)==0);
+    indx0m2 = find(mesh2.tri3.X(:,2)==0);
+    Mtemp2 = sparse(Xrg2(Mx2),My2,Mval2,N2,Ni);
+    M2 = Mtemp2(indx0m2,indy0m2);
+    
+    M11 = zeros(length(indx0m1),size(Mtemp1,2));%Mtemp(indx0m1,:);
+    M22 = zeros(length(indx0m2),size(Mtemp2,2));%Mtemp(indx0m1,:);
+    pti = meshi.tri3.X;
+    pti2 = mesh1.tri3.X;
+    pti3 = mesh2.tri3.X;
+    for ijk=1:size(meshi.tri3.X,1)
+        [near,val] = knnsearch(pti2(indx0m1,1),pti(ijk,1),'K',2);
+        col = ijk;
+        M11(near,col) = val'/abs(diff(pti2(indx0m1(near),1)));
+        
+        [near,val] = knnsearch(pti3(indx0m2,1),pti(ijk,1),'K',2);
+        col = ijk;
+        M22(near,col) = val'/abs(diff(pti3(indx0m2(near),1)));
+    end
+    
+    
+    
+end
 
 % output
 Int.mesh = meshi;
 Rep{1} = struct( 'mesh', meshr1, ...
-                 'M',  sparse(Xrg1(Mx1),My1,Mval1,N1,Ni) );
+    'M',  M11 );
 Rep{2} = struct( 'mesh', meshr2, ...
-                 'M', sparse(Xrg2(Mx2),My2,Mval2,N2,Ni) );
-                       if (strcmp(code1,code2)==0)        
-             Rep{1}.Mbeam=M1;
+    'M', M22 );
+if (strcmp(code1,code2)==0)
+    Rep{1}.Mbeam=M1;
+    Rep{2}.Mbeam=M2;
 end
 %==========================================================================
 function mesh = MergeMeshes( mesh1, mesh2, LSet )
