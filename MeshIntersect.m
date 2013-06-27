@@ -53,39 +53,43 @@ M11 = sparse(Xrg1(Mx1),My1,Mval1,N1,Ni);
 M22 = sparse(Xrg2(Mx2),My2,Mval2,N2,Ni);
 
 if (strcmp(code1,code2)==0)
+    
+    
     indy0m1 = find(meshi.tri3.X(:,2)==0);
     indx0m1 = find(mesh1.tri3.X(:,2)==0);
+  %  M1 = zeros(size(M11,1),length(indy0m1));%Mtemp(indx0m1,:);
     Mtemp1 = sparse(Xrg1(Mx1),My1,Mval1,N1,Ni);
     M1 = Mtemp1(indx0m1,indy0m1);
     
     indy0m2 = find(meshi.tri3.X(:,2)==0);
     indx0m2 = find(mesh2.tri3.X(:,2)==0);
+  %  M2 = zeros(size(M22,1),length(indy0m2));%Mtemp(indx0m1,:);
     Mtemp2 = sparse(Xrg2(Mx2),My2,Mval2,N2,Ni);
     M2 = Mtemp2(indx0m2,indy0m2);
     
-    M11 = zeros(length(indx0m1),size(Mtemp1,2));%Mtemp(indx0m1,:);
-    M22 = zeros(length(indx0m2),size(Mtemp2,2));%Mtemp(indx0m1,:);
+    M11b = zeros(size(M11,1),size(Mtemp1,2));%Mtemp(indx0m1,:);
+    M22b = zeros(size(M11,1),size(Mtemp2,2));%Mtemp(indx0m1,:);
     pti = meshi.tri3.X;
     pti2 = mesh1.tri3.X;
     pti3 = mesh2.tri3.X;
     for ijk=1:size(meshi.tri3.X,1)
         aa = pti2(indx0m1,1)-pti(ijk,1);
-        [val1 near1] = min(aa);
+        [val1 near1] = min(abs(aa));
         val1 = abs(val1);
         aa(near1)=1000000000;
         [val2 near2] = min(aa);
         val2 = abs(val2);
         col = ijk;
-        M11([near1 near2],col) = [val1;val2]./abs(diff(pti2(indx0m1([near1;near2]),1)));
+        M11b([indx0m1(near1) indx0m1(near2)],col) = [val1;val2]./abs(diff(pti2(indx0m1([near1;near2]),1)));
         
-        aa = pti3(indx0m1,1)-pti(ijk,1);
-        [val1 near1] = min(aa);
+        aa = pti3(indx0m2,1)-pti(ijk,1);
+        [val1 near1] = min(abs(aa));
         val1 = abs(val1);
         aa(near1)=1000000000;
         [val2 near2] = min(aa);
         val2 = abs(val2);
         col = ijk;
-        M22([near1 near2],col) = [val1;val2]./abs(diff(pti3(indx0m1([near1;near2]),1)));
+        M22b([indx0m2(near1) indx0m2(near2)],col) = [val1;val2]./abs(diff(pti3(indx0m2([near1;near2]),1)));
     end
     
     
@@ -101,6 +105,8 @@ Rep{2} = struct( 'mesh', meshr2, ...
 if (strcmp(code1,code2)==0)
     Rep{1}.Mbeam=M1;
     Rep{2}.Mbeam=M2;
+        Rep{1}.Mbeam2D=M11b;
+    Rep{2}.Mbeam2D=M22b;
 end
 %==========================================================================
 function mesh = MergeMeshes( mesh1, mesh2, LSet )
