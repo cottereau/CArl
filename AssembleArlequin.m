@@ -46,7 +46,7 @@ indsto = [];
 % get sizes and correspondence between coupling and models
 for i1 = 1:Nm
     Nmi(i1) = max(model{i1}.K.x);
-    BCi(i1) = size(model{i1}.mesh.tri3.X,1)*size(model{i1}.HomeFE.load,3);
+    BCi(i1) = size(model{i1}.HomeFE.mesh.X,1)*size(model{i1}.HomeFE.load,3);
 end
 indKi = [ones(Nm,1) BCi];   %indice raideur dans les matrices
 indBCi = [indKi(:,end)+1 Nmi];  %indice BC dans les matrice
