@@ -69,13 +69,23 @@ if (strcmp(code1,code2)==0)
     pti2 = mesh1.tri3.X;
     pti3 = mesh2.tri3.X;
     for ijk=1:size(meshi.tri3.X,1)
-        [near,val] = knnsearch(pti2(indx0m1,1),pti(ijk,1),'K',2);
+        aa = pti2(indx0m1,1)-pti(ijk,1);
+        [val1 near1] = min(aa);
+        val1 = abs(val1);
+        aa(near1)=1000000000;
+        [val2 near2] = min(aa);
+        val2 = abs(val2);
         col = ijk;
-        M11(near,col) = val'/abs(diff(pti2(indx0m1(near),1)));
+        M11([near1 near2],col) = [val1;val2]./abs(diff(pti2(indx0m1([near1;near2]),1)));
         
-        [near,val] = knnsearch(pti3(indx0m2,1),pti(ijk,1),'K',2);
+        aa = pti3(indx0m1,1)-pti(ijk,1);
+        [val1 near1] = min(aa);
+        val1 = abs(val1);
+        aa(near1)=1000000000;
+        [val2 near2] = min(aa);
+        val2 = abs(val2);
         col = ijk;
-        M22(near,col) = val'/abs(diff(pti3(indx0m2(near),1)));
+        M22([near1 near2],col) = [val1;val2]./abs(diff(pti3(indx0m1([near1;near2]),1)));
     end
     
     
