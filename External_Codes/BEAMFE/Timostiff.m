@@ -34,9 +34,9 @@ for ijk = 1:numberElements
     C{ijk} = [ E(ijk,1)*I 0 0; 0 kapa*thickness*G(ijk,1) 0;0 0 thickness*E(ijk,1)];
 end
 % computation of the system stiffness matrix
-[stiffness,force]=...
-formStiffnessMassTimoshenkoBeam(GDof,numberElements,...
-elementNodes,numberNodes,xx,C,P,1,I,thickness);
+[stiffness,force,~]=...
+    formStiffnessMassTimoshenkoBeam(GDof,numberElements,...
+    elementNodes,numberNodes,xx,C,P,1,I,thickness);
 % boundary conditions (simply-supported at both bords)
 %fixedNodeW =[1 ; numberNodes];
 %fixedNodeTX=[];
@@ -63,7 +63,7 @@ if isfield(model.HomeFE,'BC')&&~isempty( model.HomeFE.BC )
     F = [ F; reshape(repmat(model.HomeFE.BC.value(ind,:),[1 Nf]),3*Nbc*Nf,1) ];
     
     % Neumann Boundary Conditions
-        ind = find( model.HomeFE.BC.type == 'F' );
+    ind = find( model.HomeFE.BC.type == 'F' );
     Nbc = length( ind );
     z = [ z; reshape(repmat(model.HomeFE.BC.nodes(ind)',[1 Nf]),Nbc*Nf,1) ];
     F = [ F; reshape(repmat(model.HomeFE.BC.value(ind,1),[1 Nf]),Nbc*Nf,1) ];
@@ -81,29 +81,9 @@ if isfield(model.HomeFE,'BC')&&~isempty( model.HomeFE.BC )
 end
 
 
-
-
-% fixedNodeW =[1 ; numberNodes];
-% fixedNodeTX=fixedNodeW;
-% % boundary conditions (cantilever)
-% fixedNodeW =[1];
-% fixedNodeTX=[1];
-% prescribedDof=[fixedNodeW; fixedNodeTX+numberNodes];
-% % solution
-% displacements=solution(GDof,prescribedDof,stiffness,force);
-% % output displacements/reactions
-% outputDisplacementsReactions(displacements,stiffness,...
-% GDof,prescribedDof)
-% U=displacements;
-% ws=1:numberNodes;
-% % max displacement
-% disp('max displacement')
-% min(U(ws))
-
-
 function [stiffness,force,mass]=...
-formStiffnessMassTimoshenkoBeam(GDof,numberElements,...
-elementNodes,numberNodes,xx,C,P,rho,I,thickness)
+    formStiffnessMassTimoshenkoBeam(GDof,numberElements,...
+    elementNodes,numberNodes,xx,C,P,rho,I,thickness)
 % computation of stiffness matrix and force vector
 % for Timoshenko beam element
 stiffness=zeros(GDof);
@@ -116,83 +96,83 @@ gaussWeights=ones(2,1);
 %gaussWeights=[2.];
 % bending contribution for stiffness matrix
 for e=1:numberElements
-indice=elementNodes(e,:);
-elementDof=[ indice+numberNodes indice+2*numberNodes];
-indiceMass=indice+numberNodes;
-ndof=length(indice);
-length_element=xx(indice(2))-xx(indice(1));
-detJacobian=length_element/2;invJacobian=1/detJacobian;
-Ce = C{e};
-for q=1:size(gaussWeights,1) ;
-pt=gaussLocations(q,:);
-[shape,naturalDerivatives]=shapeFunctionL2(pt(1));
-Xderivatives=naturalDerivatives*invJacobian;
-% B matrix
-B=zeros(2,2*ndof);
-B(1,ndof+1:2*ndof) = Xderivatives(:)';
-% K
-stiffness(elementDof,elementDof)=...
-stiffness(elementDof,elementDof)+...
-B'*B*gaussWeights(q)*detJacobian*Ce(1,1);
-force(indice+numberNodes)=force(indice+numberNodes)+...
-shape*P(e,q,2)*detJacobian*gaussWeights(q);                   %%%%%%%%%%%VALEUR A VERIFIER
-mass(indiceMass,indiceMass)=mass(indiceMass,indiceMass)+...
-shape*shape'*gaussWeights(q)*I*rho*detJacobian;
-mass(indice,indice)=mass(indice,indice)+shape*shape'*...
-gaussWeights(q)*thickness*rho*detJacobian;
-end
+    indice=elementNodes(e,:);
+    elementDof=[ indice+numberNodes indice+2*numberNodes];
+    indiceMass=indice+numberNodes;
+    ndof=length(indice);
+    length_element=xx(indice(2))-xx(indice(1));
+    detJacobian=length_element/2;invJacobian=1/detJacobian;
+    Ce = C{e};
+    for q=1:size(gaussWeights,1) ;
+        pt=gaussLocations(q,:);
+        [shape,naturalDerivatives]=shapeFunctionL2(pt(1));
+        Xderivatives=naturalDerivatives*invJacobian;
+        % B matrix
+        B=zeros(2,2*ndof);
+        B(1,ndof+1:2*ndof) = Xderivatives(:)';
+        % K
+        stiffness(elementDof,elementDof)=...
+            stiffness(elementDof,elementDof)+...
+            B'*B*gaussWeights(q)*detJacobian*Ce(1,1);
+        force(indice+numberNodes)=force(indice+numberNodes)+...
+            shape*P(e,q,2)*detJacobian*gaussWeights(q);                   %%%%%%%%%%%VALEUR A VERIFIER
+        mass(indiceMass,indiceMass)=mass(indiceMass,indiceMass)+...
+            shape*shape'*gaussWeights(q)*I*rho*detJacobian;
+        mass(indice,indice)=mass(indice,indice)+shape*shape'*...
+            gaussWeights(q)*thickness*rho*detJacobian;
+    end
 end
 % shear contribution for stiffness matrix
-gaussLocations=[0.];
+gaussLocations=[0.];                     %%%%%%%%%%%VALEUR A VERIFIER
 gaussWeights=[2.];
 for e=1:numberElements
-indice=elementNodes(e,:);
-elementDof=[ indice+numberNodes indice+2*numberNodes];
-ndof=length(indice);
-length_element=xx(indice(2))-xx(indice(1));
-detJ0=length_element/2;invJ0=1/detJ0;
-Ce = C{e};
-for q=1:size(gaussWeights,1) ;
-pt=gaussLocations(q,:);
-[shape,naturalDerivatives]=shapeFunctionL2(pt(1));
-Xderivatives=naturalDerivatives*invJacobian;
-% B
-B=zeros(2,2*ndof);
-B(2,1:ndof) = Xderivatives(:)';
-B(2,ndof+1:2*ndof) = shape;
-% K
-stiffness(elementDof,elementDof)=...
-stiffness(elementDof,elementDof)+...
-B'*B*gaussWeights(q)*detJacobian*Ce(2,2);
-force(indice+2*numberNodes)=force(indice+2*numberNodes)+...
-shape*P(e,q,3)*detJacobian*gaussWeights(q);                   %%%%%%%%%%%VALEUR A VERIFIER
-end
+    indice=elementNodes(e,:);
+    elementDof=[ indice+numberNodes indice+2*numberNodes];
+    ndof=length(indice);
+    length_element=xx(indice(2))-xx(indice(1));
+    detJ0=length_element/2;invJ0=1/detJ0;
+    Ce = C{e};
+    for q=1:size(gaussWeights,1) ;
+        pt=gaussLocations(q,:);
+        [shape,naturalDerivatives]=shapeFunctionL2(pt(1));
+        Xderivatives=naturalDerivatives*invJacobian;
+        % B
+        B=zeros(2,2*ndof);
+        B(2,1:ndof) = Xderivatives(:)';
+        B(2,ndof+1:2*ndof) = shape;
+        % K
+        stiffness(elementDof,elementDof)=...
+            stiffness(elementDof,elementDof)+...
+            B'*B*gaussWeights(q)*detJacobian*Ce(2,2);
+        force(indice+2*numberNodes)=force(indice+2*numberNodes)+...
+            shape*P(e,q,3)*detJacobian*gaussWeights(q);                   %%%%%%%%%%%VALEUR A VERIFIER
+    end
 end
 % compression contribution for stiffness matrix
 gaussLocations=[0.];
 gaussWeights=[2.];
 for e=1:numberElements
-indice=elementNodes(e,:);
-elementDof=[ indice];
-ndof=length(indice);
-length_element=xx(indice(2))-xx(indice(1));
-detJ0=length_element/2;invJ0=1/detJ0;
-Ce = C{e};
-for q=1:size(gaussWeights,1) ;
-pt=gaussLocations(q,:);
-[shape,naturalDerivatives]=shapeFunctionL2(pt(1));
-Xderivatives=naturalDerivatives*invJacobian;
-% B
-B=zeros(2,ndof);
-B(2,1:ndof) = Xderivatives(:)';
-%B(2,ndof+1:2*ndof) = shape;
-% K
-stiffness(elementDof,elementDof)=...
-stiffness(elementDof,elementDof)+...
-B'*B*gaussWeights(q)*detJacobian*Ce(3,3);
-force(indice)=force(indice)+...
-shape*P(e,q,1)*detJacobian*gaussWeights(q);                   %%%%%%%%%%%VALEUR A VERIFIER
-end
+    indice=elementNodes(e,:);
+    elementDof=[ indice];
+    ndof=length(indice);
+    length_element=xx(indice(2))-xx(indice(1));
+    detJ0=length_element/2;invJ0=1/detJ0;
+    Ce = C{e};
+    for q=1:size(gaussWeights,1) ;
+        pt=gaussLocations(q,:);
+        [shape,naturalDerivatives]=shapeFunctionL2(pt(1));
+        Xderivatives=naturalDerivatives*invJacobian;
+        % B
+        B=zeros(2,ndof);
+        B(2,1:ndof) = Xderivatives(:)';
+        %B(2,ndof+1:2*ndof) = shape;
+        % K
+        stiffness(elementDof,elementDof)=...
+            stiffness(elementDof,elementDof)+...
+            B'*B*gaussWeights(q)*detJacobian*Ce(3,3);
+        force(indice)=force(indice)+...
+            shape*P(e,q,1)*detJacobian*gaussWeights(q);                   %%%%%%%%%%%VALEUR A VERIFIER
+    end
 end
 
 function [shape,naturalDerivatives]=shapeFunctionL2(xi)
@@ -205,29 +185,4 @@ naturalDerivatives=[-1;1]/2;
 %end % end function shapeFunctionL2
 
 
-% function displacements=solution(GDof,prescribedDof,stiffness,force)
-% % function to find solution in terms of global displacements
-% activeDof=setdiff([1:GDof]', ...
-% [prescribedDof]);
-% U=stiffness(activeDof,activeDof)\force(activeDof);
-% displacements=zeros(GDof,1);
-% displacements(activeDof)=U;
-% 
-% 
-% function outputDisplacementsReactions...
-% (displacements,stiffness,GDof,prescribedDof)
-% % output of displacements and reactions in
-% % tabular form
-% % GDof: total number of degrees of freedom of
-% % the problem
-% % displacements
-% disp('Displacements')
-% %displacements=displacements1;
-% jj=1:GDof; format
-% [jj' displacements]
-% % reactions
-% F=stiffness*displacements;
-% reactions=F(prescribedDof);
-% disp('reactions')
-% [prescribedDof reactions]
 
