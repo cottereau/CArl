@@ -1,4 +1,4 @@
-function [M,Mbeam] = MediatorSpace( mediator, Rep )
+function [M,Mbeam,Mbeam2D] = MediatorSpace( mediator, Rep )
 % MEDIATORSPACE defines the weight matrix that projects the coupling
 % matrices defined over the integration mesh onto the representation mesh
 % chosen by the user
@@ -28,8 +28,19 @@ Nx=max(x);
 Ny=size(Rep{mediator.support}.M,2);
 M = sparse( x, y, val,Nx,Ny);
 
-[ x, y, val ] = find( Rep{mediator.support}.Mbeam );
-[~,~,x]=unique(x);
-Nx=max(x);
-Ny=size(Rep{mediator.support}.Mbeam,2);
-Mbeam = sparse( x, y, val,Nx,Ny);
+
+if (isfield(Rep{mediator.support},'Mbeam'))
+    [ x, y, val ] = find( Rep{mediator.support}.Mbeam );
+    [~,~,x]=unique(x);
+    Nx=max(x);
+    Ny=size(Rep{mediator.support}.Mbeam,2);
+    Mbeam = sparse( x, y, val,Nx,Ny);
+    
+    [ x, y, val ] = find( Rep{mediator.support}.Mbeam2D );
+    [~,~,x]=unique(x);
+    Nx=max(x);
+    Ny=size(Rep{mediator.support}.Mbeam2D,2);
+    Mbeam2D = sparse( x, y, val,Nx,Ny);
+else
+    Mbeam=[];
+end
