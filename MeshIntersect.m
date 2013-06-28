@@ -54,12 +54,12 @@ M22 = sparse(Xrg2(Mx2),My2,Mval2,N2,Ni);
 
 if (strcmp(code1,code2)==0)
     indy0m1 = find(meshi.tri3.X(:,2)==0);
-    indx0m1 = find(meshr1.tri3.X(:,2)==0);
+    indx0m1 = find(mesh1.tri3.X(:,2)==0);
     Mtemp1 = sparse(Xrg1(Mx1),My1,Mval1,N1,Ni);
     M1 = Mtemp1(indx0m1,indy0m1);
     
     indy0m2 = find(meshi.tri3.X(:,2)==0);
-    indx0m2 = find(meshr2.tri3.X(:,2)==0);
+    indx0m2 = find(mesh2.tri3.X(:,2)==0);
     Mtemp2 = sparse(Xrg2(Mx2),My2,Mval2,N2,Ni);
     M2 = Mtemp2(indx0m2,indy0m2);
     
