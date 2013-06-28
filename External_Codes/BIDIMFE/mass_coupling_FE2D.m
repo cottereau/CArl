@@ -1,4 +1,4 @@
-function [ M1,M2 ] = mass_coupling_Timo(elements,coordinates)
+function [ M1,M2 ] = mass_coupling_FE2D(elements,coordinates)
 
 NE=size(elements,1); %number of elements
 DIM=size(coordinates,2); %problem dimension
