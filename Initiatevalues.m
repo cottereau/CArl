@@ -20,12 +20,13 @@ if ~isfield( opt, 'kappa' )
     opt.kappa = 1e-3;
 end
 
-% recompute coupling operator and matrices
+% recompute coupling operator and matrices (the logicals correspond to each
+% coupling)
 if ~isfield( opt, 'recomputeC' )
     opt.recomputeC = true(Nc,1);
 end
 
-% recompute stiffness matrices (the logicals correspond to each model
+% recompute stiffness matrices (the logicals correspond to each model)
 if ~isfield( opt, 'recomputeK' )
     opt.recomputeK = true(Nm,1);
 end

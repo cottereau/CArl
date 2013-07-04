@@ -1,5 +1,5 @@
 function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
-% CARL to solve a system of models coupled in the Arlequin way
+% CARL to solve a system of models coupled in the Arlequin manner
 %
 %  syntax: sol = CArl( model, coupling, solver, opt )
 %
