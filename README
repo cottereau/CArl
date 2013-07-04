@@ -2,7 +2,7 @@ CArl
 
 PRESENTATION
 ============
-This project is focused on the development of a software based on the Arlequin multi-model coupling method. The main interest of this software is to allow, by its specific structure, the easy interfacing of different third-party softwares (developed and maintained outside of this project), and adapted to each of the models appearing in the coupling. Currently, the software to which CArl is interfaced are : (1) a 1D/2D FEM acoustic code, and (2) Comsol (http://www.comsol.com).
+This project is focused on the development of a software based on the Arlequin multi-model coupling method. The main interest of this software is to allow, by its specific structure, the easy interfacing of different third-party softwares (developed and maintained outside of this project), and adapted to each of the models appearing in the coupling. Currently, the software to which CArl is interfaced are : (1) a 1D/2D FEM acoustic code, (2) a Timoschenko beam code, (3) an elastic code, and (4) Comsol (http://www.comsol.com).
  
 REFERENCES
 ============
@@ -14,10 +14,13 @@ Many other papers make use of the method or describe specific aspects and implem
 
 A non-exhaustive list of papers that make use of the software includes
 [3] R. Cottereau, D. Clouteau, H. Ben Dhia, C. Zaccardi. A stochastic-deterministic coupling method for continuum mechanics, Comp. Meth. Appl. Mech. Engr. 200 (2011), pp. 3280-3288.
-[4] R. Cottereau. Numerical strategy for the unbiased homogenization of random materials, Int. J. Numer. Meth. Engr. (2013).
+[4] R. Cottereau. Numerical strategy for the unbiased homogenization of random materials, Int. J. Numer. Meth. Engr. 95 (2013), pp. 71-90.
+[5] C. Zaccardi, L. Chamoin, R. Cottereau, H. Ben Dhia. Error estimation and model adaptation for a stochastic-deterministic coupling method based on the Arlequin framework, Int. J. Numer. Meth. Engr. (2013).
+[6] Y. Le Guennec, R. Cottereau, D. Clouteau, C. Soize. A coupling method for stochastic continuum models at different scales. Submitted for publication in Prob. Engr. Mech. (2013).
 
 This software is mainly developed at laboratoire MSSMat (Ecole Centrale Paris - CNRS).
 contact : Regis Cottereau (regis.cottereau@ecp.fr)
+contributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec
 
 It is developed for MATLAB. This may however evolve in future versions.
 
