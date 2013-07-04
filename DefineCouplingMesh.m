@@ -1,4 +1,4 @@
-function [mesh,free12,free] = DefineCouplingMesh( LSet, mesh1, mesh2 )
+function [mesh,free12,free] = DefineCouplingMesh( LSet, m1, m2 )
 % DefineCoupling Create the different subdomain meshes used in the
 % Arlequin problem
 %
@@ -19,6 +19,17 @@ function [mesh,free12,free] = DefineCouplingMesh( LSet, mesh1, mesh2 )
 % R. Cottereau 04/2013
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
+
+% default meshes
+mesh1 = m1.mesh;
+mesh2 = m2.mesh;
+
+% choose meshes for incompatibles models
+if strcmp( mesh1.code, 'Beam')&&strcmp( mesh2.code, 'FE2D')
+    mesh1 = m1.virtualMesh2D;
+elseif strcmp( mesh1.code, 'FE2D')&&strcmp( mesh2.code, 'Beam')
+    mesh2 = m2.virtualMesh2D;
+end
 
 % definition of a level-set from boundary of the mesh
 bnd1 = freeBoundary(mesh1);
