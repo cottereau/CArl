@@ -27,28 +27,31 @@ switch model.code
     % HOMEFE
     case {'HomeFE','MonteCarloHomeFE','FE2D'}
         model.mesh = TRI6( model.HomeFE.mesh.T, model.HomeFE.mesh.X, false );
-    case  {'TimobeamFE'}
-        tmpX = model.HomeFE.mesh.X;
-      %  tmpY = [-model.HomeFE.L/2 -3*model.HomeFE.L/8 -model.HomeFE.L/4 -model.HomeFE.L/8 0 model.HomeFE.L/8 model.HomeFE.L/4 3*model.HomeFE.L/8 model.HomeFE.L/2];
-      if isfield(model,'mesh')
-          tmpY = [-model.HomeFE.L/2 -model.HomeFE.L/4 0 model.HomeFE.L/4 model.HomeFE.L/2];
-      else
-      tmpY = [-3*model.HomeFE.L/4 -model.HomeFE.L/2 -model.HomeFE.L/4 0 model.HomeFE.L/4 model.HomeFE.L/2 3*model.HomeFE.L/4];
-      end
- [tmpXX tmpYY] = meshgrid(tmpX,tmpY);
-        coordinates = [tmpXX(:) tmpYY(:)];
-        tmpmesh = DelaunayTri(coordinates);
-        elements3 = tmpmesh.Triangulation;
-        model.mesh = TRI6( elements3, coordinates, false );
+
+    % TIMOSCHENKO BEAM CODE
+    case  'Beam'
+        model.mesh = model.Beam.mesh;
+        L = model.Beam.L;
+        X = model.Beam.mesh.X;
+        if isfield( model, 'mesh' )
+            Y = [-L/2 -L/4 0 L/4 L/2];
+        else
+            Y = [-3*L/4 -L/2 -L/4 0 L/4 L/2 3*L/4];
+        end
+        [X,Y] = meshgrid( X, Y );
+        XY = [ X(:) Y(:) ];
+        dt = DelaunayTri( XY );
+        model.virtualMesh2D = TRI6( dt.Triangulation, XY, false );
+        
     % COMSOL
     case 'Comsol'
         wd = pwd;
-        cd(model.meshpath);
+        cd( model.meshpath );
 %        eval( ['cd ' model.meshpath ';' ]);
         eval( ['mesh = ' model.meshfile ';' ]);
         X = mesh.mesh('mesh1').getVertex';
         T = double( mesh.mesh('mesh1').getElem('tri')' +1 );
-        mesh = TRI6( T, X, false );
+        model.mesh = TRI6( T, X, false );
         eval( ['cd ' wd ';' ]);
     
     % error
