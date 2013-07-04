@@ -143,6 +143,8 @@ classdef TRI6
         function plot(obj)
             figure; triplot(obj.tri3,'color','k')
             hold on; scatter(obj.X(:,1),obj.X(:,2),50,'r','full');
+            bounds = max(obj.X)-min(obj.X);
+            set(gca,'PlotBoxAspectRatio', [bounds 1] );
         end
         % Selects the elements of obj inside a given boundary
         function ind = elementsInBoundary(obj,ls,lall)
