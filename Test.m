@@ -1,17 +1,18 @@
-function Test(type)
+function Test( type )
 % launch a test or a series of tests
-% The existing tests are the following
+% 
+%   syntax: Test(type)
 %
 % ONE-DIMENSIONAL TESTS
 %   ____________________ ____________ ____________ _____ ______________
 %  |                    |            |            |     |              |
-%  |   Name of test     |  Model 1   |  Model 2   | S/D |    remark    |
+%  |       type         |  Model 1   |  Model 2   | S/D |    remark    |
 %  |____________________|____________|____________|_____|______________|
 %  |                    |            |            |     |              |
 %  | 'zoom1D'           | acoustic   | acoustic   |  D  | zoom case    |
 %  | 'join1D'           | acoustic   | acoustic   |  D  | join case    |
 %  | 'force1D'          | acoustic   | acoustic   |  D  | bulk load    |
-%  | 'MC1D'             | acoustic   | acoustic   | S/D |              |
+%  | 'MC1D'             | acoustic   | acoustic   | D/S |              |
 %  | 'MC1Dstosto'       | acoustic   | acoustic   |  S  |              |
 %  | 'MC1D_BC_u10'      | acoustic   | acoustic   |  S  | ??           |
 %  | 'MC1Dstosto2'      | acoustic   | acoustic   |  S  | ??           |
@@ -21,23 +22,34 @@ function Test(type)
 % TWO-DIMENSIONAL TESTS
 %   ____________________ ____________ ____________ _____ ______________
 %  |                    |            |            |     |              |
-%  |   Name of test     |  Model 1   |  Model 2   | S/D |    remark    |
+%  |       type         |  Model 1   |  Model 2   | S/D |    remark    |
 %  |____________________|____________|____________|_____|______________|
 %  |                    |            |            |     |              |
 %  | 'zoom2D'           | acoustic   | acoustic   |  D  | zoom case    |
 %  | 'join2D'           | acoustic   | acoustic   |  D  | join case    |
 %  | 'force2D'          | acoustic   | acoustic   |  D  | bulk load    |
 %  | 'comsol2D'         | comsol     | comsol     |  D  | acoustic     |
-%  | 'nonembedded2D_1'  | acoustic   | acoustic   |  S  | mesh test    |
 %  | 'zoom2Dindent'     | acoustic   | acoustic   |  S  | ??           |
+%  | 'beam2D'           | beam       | elastic    | D/S |              |
 %  |____________________|____________|____________|_____|______________|
 %
 % D = deterministic
 % S = stochastic
 %
-% the possible series are
-% 'short' for only the short tests
-% 'comsol' for the comsol tests
+% TECHNICAL TESTS
+%   ____________________ ______________________________________________
+%  |                    |                                              |
+%  |       type         |                  remark                      |
+%  |____________________|______________________________________________|
+%  |                    |                                              |
+%  | 'nonembedded2D_1'  | Intersection of non-embedded meshes          |
+%  |____________________|______________________________________________|
+%
+% SERIES
+%  type='short' launches in series the following tests: 'zoom1D', 'join1D',
+%               'force1D', 'MC1D', 'MC1D_BC_u10', 'MC1D_stosto', 
+%               'zoom1Dstosto', 'join2D', 'zoom2D', 'zoom2Dindent', 
+%               'NonEmbedded2D_1', 'force2D', 'zoom2dstosto'
 
 % creation: R. Cottereau 05/2010
 % TO DO
@@ -60,33 +72,33 @@ switch lower(type)
           'nonembedded2d_1', 'zoom2dindent'}
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
-        plottest2D( out.model, sol,out );
+        plottest2D( out.model, sol );
 
     case {'mc1d','mc1d_bc_u10','mc1dstosto2','zoom1dstosto'}
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
         plotteststochastic2( model, sol, out, ref );
         
+    case {'beam2d'}
+        load(['Tests/' type '.mat']);
+        [ sol, out ] = CArl( model, coupling, solver );
+        plottest2D( out.model, sol );
+
     case 'short'
         Test('zoom1D');
         Test('join1D');
         Test('force1D');
         Test('MC1D');
         Test('MC1D_BC_u10') ;
-        Test('mc1dstosto2');
+        Test('MC1Dstosto2');
         Test('zoom1Dstosto');
-        Test('2d');
-        
-    case 'comsol'
-        Test('comsol2D');
-        
-    case '2d'
         Test('join2D');
         Test('zoom2D');
         Test('zoom2Dindent');
         Test('NonEmbedded2D_1');
         Test('force2D');
         Test('zoom2dstosto');
+        
     otherwise
         error('unknown test case')
 
@@ -116,7 +128,7 @@ if ~isempty(ref)
 end
 
 % FUNCTION PLOTTEST 2D
-function plottest2D( model, sol,out )
+function plottest2D( model, sol )
 T1 = model{1}.mesh.T3;
 T2 = model{2}.mesh.T3;
 X1 = model{1}.mesh.X3;
