@@ -3,33 +3,45 @@ function Test(type)
 % The existing tests are the following
 %
 % ONE-DIMENSIONAL TESTS
-% 'zoom1D' for a zoom case in 1D (deterministic continuum-continuum)
-% 'join1D' for a junction case in 1D (deterministic continuum-continuum)
-% 'force1D'
-% 'MC1D' for a joint case in 1D (stochastic continuum-continuum)
-% 'MC1Dstosto' for a joint case in 1D (stochastic-stochastic continuum)
-% 'MC1D_BC_u10'
-% 'MC1Dstosto2' for a joint case in 1D (stochastic-stochastic coupling)
-% 'zoom1Dstosto' for a zoom case in 1D (stochastic-stochastic coupling)
+%   ____________________ ____________ ____________ _____ ______________
+%  |                    |            |            |     |              |
+%  |   Name of test     |  Model 1   |  Model 2   | S/D |    remark    |
+%  |____________________|____________|____________|_____|______________|
+%  |                    |            |            |     |              |
+%  | 'zoom1D'           | acoustic   | acoustic   |  D  | zoom case    |
+%  | 'join1D'           | acoustic   | acoustic   |  D  | join case    |
+%  | 'force1D'          | acoustic   | acoustic   |  D  | bulk load    |
+%  | 'MC1D'             | acoustic   | acoustic   | S/D |              |
+%  | 'MC1Dstosto'       | acoustic   | acoustic   |  S  |              |
+%  | 'MC1D_BC_u10'      | acoustic   | acoustic   |  S  | ??           |
+%  | 'MC1Dstosto2'      | acoustic   | acoustic   |  S  | ??           |
+%  | 'zoom1Dstosto'     | acoustic   | acoustic   |  S  | zoom case    |
+%  |____________________|____________|____________|_____|______________|
 %
 % TWO-DIMENSIONAL TESTS
-% 'join2D' for a junction case in 2D (deterministic continuum-continuum)
-% 'zoom2D'
-% 'force2D'
-% 'comsol2D'
-% 'nonembedded2D_1'
-% 'zoom2Dindent'
+%   ____________________ ____________ ____________ _____ ______________
+%  |                    |            |            |     |              |
+%  |   Name of test     |  Model 1   |  Model 2   | S/D |    remark    |
+%  |____________________|____________|____________|_____|______________|
+%  |                    |            |            |     |              |
+%  | 'zoom2D'           | acoustic   | acoustic   |  D  | zoom case    |
+%  | 'join2D'           | acoustic   | acoustic   |  D  | join case    |
+%  | 'force2D'          | acoustic   | acoustic   |  D  | bulk load    |
+%  | 'comsol2D'         | comsol     | comsol     |  D  | acoustic     |
+%  | 'nonembedded2D_1'  | acoustic   | acoustic   |  S  | mesh test    |
+%  | 'zoom2Dindent'     | acoustic   | acoustic   |  S  | ??           |
+%  |____________________|____________|____________|_____|______________|
+%
+% D = deterministic
+% S = stochastic
 %
 % the possible series are
 % 'short' for only the short tests
 % 'comsol' for the comsol tests
 
-% R. Cottereau 05/2010
+% creation: R. Cottereau 05/2010
 % TO DO
 % - a test with three models and two couplings
-%
-% modif YLG 02/2013: add displacement plots for det-sto coupling
-% modif YLG 03/2013: add the meso-micro coupling
 
 % default
 if nargin==0
