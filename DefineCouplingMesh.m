@@ -25,9 +25,9 @@ mesh1 = m1.mesh;
 mesh2 = m2.mesh;
 
 % choose meshes for incompatibles models
-if strcmp( mesh1.code, 'Beam')&&strcmp( mesh2.code, 'FE2D')
+if strcmp( m1.code, 'Beam')&&strcmp( m2.code, 'FE2D')
     mesh1 = m1.virtualMesh2D;
-elseif strcmp( mesh1.code, 'FE2D')&&strcmp( mesh2.code, 'Beam')
+elseif strcmp( m1.code, 'FE2D')&&strcmp( m2.code, 'Beam')
     mesh2 = m2.virtualMesh2D;
 end
 
