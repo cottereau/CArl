@@ -50,7 +50,6 @@ switch model.code
             model.v2mT( all( XindT==model.mesh.T(i1,1) | ...
                              XindT==model.mesh.T(i1,2), 2 ) ) = i1;
         end
-        keyboard
     % error
     otherwise
         error( 'unknown code' );
