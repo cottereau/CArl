@@ -1,4 +1,4 @@
-function [mesh,free12,free] = DefineCouplingMesh( LSet, m1, m2 )
+function cpl = DefineCouplingMesh( cpl, m1, m2 )
 % DefineCoupling Create the different subdomain meshes used in the
 % Arlequin problem
 %
@@ -27,8 +27,10 @@ mesh2 = m2.mesh;
 % choose meshes for incompatibles models
 if strcmp( m1.code, 'Beam')&&strcmp( m2.code, 'FE2D')
     mesh1 = m1.virtualMesh2D;
+    ibeam = 1;
 elseif strcmp( m1.code, 'FE2D')&&strcmp( m2.code, 'Beam')
     mesh2 = m2.virtualMesh2D;
+    ibeam = 2;
 end
 
 % definition of a level-set from boundary of the mesh
@@ -36,11 +38,34 @@ bnd1 = freeBoundary(mesh1);
 bnd2 = freeBoundary(mesh2);
 
 % definition of coupling area
-mesh = intersection( intersection( bnd1, bnd2 ), LSet );
+cpl.mesh = intersection( intersection( bnd1, bnd2 ), cpl.levelSet );
 
 % determination of common free area
-free12 = complement( intersection( bnd1, bnd2 ), mesh );
+cpl.free12 = complement( intersection( bnd1, bnd2 ), cpl.mesh );
 
 % definition of free areas
-free{1} = complement( bnd1, bnd2 );
-free{2} = complement( bnd2, bnd1 );
+cpl.free{1} = complement( bnd1, bnd2 );
+cpl.free{2} = complement( bnd2, bnd1 );
+
+% choose coupling mesh for incompatibles models
+if strcmp( m1.code, 'Beam')&&strcmp( m2.code, 'FE2D') || ...
+                         strcmp( m1.code, 'FE2D')&&strcmp( m2.code, 'Beam')
+    cpl.virtual2D = cpl.mesh;
+    cpl.mesh = struct( 'X', project1D( cpl.virtual2D )' );
+    cpl.mesh.T = reshape( 1:(2*cpl.virtual2D.N), 2, cpl.virtual2D.N )';
+    cpl.virtual2Dfree12 = cpl.free12;
+    cpl.free12 = struct( 'X', project1D( cpl.virtual2Dfree12 )' );
+    cpl.free12.T = reshape( 1:(2*cpl.virtual2Dfree12.N), 2, ...
+                                                  cpl.virtual2Dfree12.N )';
+    cpl.free{ibeam} = struct( 'X', project1D( cpl.free{ibeam} )' );
+    N = size(cpl.free{ibeam}.X,1);
+    cpl.free{ibeam}.T = reshape( 1:(2*N), 2, N )';
+end
+
+% projecting a 2D domain onto a curve
+% we are assuming here that this curve is along x only
+function Bnd = project1D( LSet )
+    Bnd = zeros( LSet.N, 2 );
+    for i1 = 1:LSet.N
+        Bnd(i1,:) = [min(LSet.X{i1}(:,1)) max(LSet.X{i1}(:,1))];
+    end

@@ -30,7 +30,7 @@ val = cpl.cplval{i1};
 ind1 = inside( cpl.free{i1}, mesh.X );
 ind2 = inside( cpl.free12, mesh.X );
 alpha = discontinuous( cpl.free{i1}, mesh.X(ind1,:), 1, ...
-                                      cpl.free12, mesh.X(ind2,:), cpl.freeval{i1});
+                              cpl.free12, mesh.X(ind2,:), cpl.freeval{i1});
 
 % alpha in the transition zone
 % CONSTANT CASE
@@ -64,11 +64,10 @@ freeval = cpl.freeval;
             fval1 = freeval{i2}+(xx-min(bb(:,1)))*p1;
             fval1(fval1<(0))=0;
             fval1(fval1>(1))=0;
-          %  fval1(fval1<0)=val(i1);
             p2 = (freeval{i2}-freeval{i1})/(max(bb(:,1))-max(aa(:,1)));
             fval2 = freeval{i1}+(xx-max(aa(:,1)))*p2;
             fval2(fval2<(0))=0;
-            fval2(fval2>(1))=0;         %   fval2(fval2<0)=val(i1);
+            fval2(fval2>(1))=0;
             fval = fval1+fval2;
             fval(fval==0)=freeval{i1};
             alpha.f{3}.V = fval;

@@ -87,8 +87,7 @@ for i1 = 1:Nc
         m2 = Mdl{ Cpl{i1}.models(2) };
         
         % define coupling and free volumes
-        [Cpl{i1}.mesh, Cpl{i1}.free12, Cpl{i1}.free] = ...
-                            DefineCouplingMesh( Cpl{i1}.levelSet, m1, m2 );
+        Cpl{i1} = DefineCouplingMesh( Cpl{i1}, m1, m2 );
 
         % compute weights for each model
         
