@@ -4,20 +4,25 @@ function model = ReadCodeMesh( model )
 %
 % syntax: mesh = ReadCodeMesh( model )
 %
-% accepted values for model.code are: 'HomeFe', 'MonteCarloHomeFE', 'FE2D',
+%  model is a structured array that should contain a field 'code'
+%        indicating the exterior code that is being used. Other fields
+%        are code-dependent. Fields 'mesh' should not be used because they
+%        used internally by CArl.
+%
+% accepted values for model.code are: 'HomeFE', 'MonteCarloHomeFE', 'FE2D',
 % 'Comsol' and 'Beam'
 
 % creation: R. Cottereau 01/2010
 
 % switch on the type of code used
-switch model.code
+switch lowercase(model.code)
     
     % HOMEFE
-    case {'HomeFE','MonteCarloHomeFE','FE2D'}
+    case {'homefe','montecarlohomefe','fe2d'}
         model.mesh = TRI6( model.HomeFE.mesh.T, model.HomeFE.mesh.X, false );
 
     % COMSOL
-    case 'Comsol'
+    case 'comsol'
         wd = pwd;
         cd( model.meshpath );
         eval( ['mesh = ' model.meshfile ';' ]);
@@ -27,7 +32,7 @@ switch model.code
         eval( ['cd ' wd ';' ]);
     
     % TIMOSCHENKO BEAM CODE
-    case  'Beam'
+    case  'beam'
         model.mesh = model.Beam.mesh;
         L = model.Beam.L;
         Xb = model.Beam.mesh.X;
