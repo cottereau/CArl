@@ -90,7 +90,6 @@ for i1 = 1:Nc
         Cpl{i1} = DefineDomains( Cpl{i1}, m1, m2 );
 
         % compute weights for each model
-        
         Cpl{i1}.alpha{1} = ArlequinWeight( Cpl{i1}, 1, m1.mesh, m1.code, m2.code );
         Cpl{i1}.alpha{2} = ArlequinWeight( Cpl{i1}, 2, m2.mesh, m1.code, m2.code );
         for i2 = 1:Nm

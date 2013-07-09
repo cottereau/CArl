@@ -33,7 +33,7 @@ elseif strcmp( m1.code, 'FE2D')&&strcmp( m2.code, 'Beam')
     ibeam = 2;
 end
 
-% definition of a level-set from boundary of the mesh
+% definition of the domains covered by the meshes
 bnd1 = freeBoundary(mesh1);
 bnd2 = freeBoundary(mesh2);
 
@@ -50,22 +50,9 @@ cpl.free{2} = complement( bnd2, bnd1 );
 % choose coupling mesh for incompatibles models
 if strcmp( m1.code, 'Beam')&&strcmp( m2.code, 'FE2D') || ...
                          strcmp( m1.code, 'FE2D')&&strcmp( m2.code, 'Beam')
-    cpl.virtual2D = cpl.mesh;
-    cpl.mesh = struct( 'X', project1D( cpl.virtual2D )' );
-    cpl.mesh.T = reshape( 1:(2*cpl.virtual2D.N), 2, cpl.virtual2D.N )';
+    cpl.virtual2D = cpl.domain;
+    cpl.domain = projection( cpl.virtual2D, [1 0] );
     cpl.virtual2Dfree12 = cpl.free12;
-    cpl.free12 = struct( 'X', project1D( cpl.virtual2Dfree12 )' );
-    cpl.free12.T = reshape( 1:(2*cpl.virtual2Dfree12.N), 2, ...
-                                                  cpl.virtual2Dfree12.N )';
-    cpl.free{ibeam} = struct( 'X', project1D( cpl.free{ibeam} )' );
-    N = size(cpl.free{ibeam}.X,1);
-    cpl.free{ibeam}.T = reshape( 1:(2*N), 2, N )';
+    cpl.free12 = projection( cpl.virtual2Dfree12, [1 0] );
+    cpl.free{ibeam} = projection( cpl.free{ibeam}, [1 0] );
 end
-
-% projecting a 2D domain onto a curve
-% we are assuming here that this curve is along x only
-function Bnd = project1D( LSet )
-    Bnd = zeros( LSet.N, 2 );
-    for i1 = 1:LSet.N
-        Bnd(i1,:) = [min(LSet.X{i1}(:,1)) max(LSet.X{i1}(:,1))];
-    end

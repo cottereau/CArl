@@ -404,6 +404,20 @@ classdef levelSet
                 end
             end
         end
+        % project a 2D domain along a direction, and create a 1D levelSet
+        function ls = projection( obj, dir, x0 )
+            if size(dir,1)<size(dir,2)
+                dir = dir';
+            end
+            if nargin<3
+                x0 = [0 0];
+            end
+            ls = levelSet1D( false );
+            for i1 = 1:obj.N
+                x = obj.X{i1}*dir - x0*dir;
+                ls = union( ls, levelSet1D( min(x), max(x) ) );
+            end
+        end
         % get rid of nodes that are not used in T, and of repeated elements
         function obj = cleanT(obj)
             % get rid of elements that are repeated
