@@ -35,11 +35,11 @@ alpha = discontinuous( cpl.free{i1}, mesh.X(ind1,:), 1, ...
 % alpha in the transition zone
 % CONSTANT CASE
 if numel(val)==1
-    alpha = addRegion( alpha, cpl.mesh, mesh.X, val );
+    alpha = addRegion( alpha, cpl.domain, mesh.X, val );
 
 % LINEAR CASE
 elseif numel(val)==2
-    ind = inside( cpl.mesh, mesh.X );
+    ind = inside( cpl.domain, mesh.X );
     Xi = mesh.X(ind,:);
     d2 = distance( cpl.free12, Xi, true );
     d1 = distance( cpl.free{i1}, Xi, true );
@@ -52,7 +52,7 @@ elseif numel(val)==2
     else
         f = (max(val)*d2 + min(val)*d1)./(d1+d2);
     end
-    alpha = addRegion( alpha, cpl.mesh, Xi, f );
+    alpha = addRegion( alpha, cpl.domain, Xi, f );
 end
 
 if strcmp(code1,code2)==0

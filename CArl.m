@@ -87,7 +87,7 @@ for i1 = 1:Nc
         m2 = Mdl{ Cpl{i1}.models(2) };
         
         % define coupling and free volumes
-        Cpl{i1} = DefineCouplingMesh( Cpl{i1}, m1, m2 );
+        Cpl{i1} = DefineDomains( Cpl{i1}, m1, m2 );
 
         % compute weights for each model
         
@@ -104,7 +104,7 @@ for i1 = 1:Nc
                         
         % create intersection of meshes (for both representation and
         % integration purposes)
-        [Int,Rep] = MeshIntersect( m1.mesh, m2.mesh, Cpl{i1}.mesh, m1.code,m2.code );
+        [Int,Rep] = MeshIntersect( m1.mesh, m2.mesh, Cpl{i1}.domain, m1.code,m2.code );
 
         % definition of the mediator space
         [Int.M,Int.Mbeam,Int.Mbeam2D] = MediatorSpace( Cpl{i1}.mediator, Rep );

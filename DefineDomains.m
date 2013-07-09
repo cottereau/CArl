@@ -1,5 +1,5 @@
-function cpl = DefineCouplingMesh( cpl, m1, m2 )
-% DefineCoupling Create the different subdomain meshes used in the
+function cpl = DefineDomains( cpl, m1, m2 )
+% DefineDomains Create the different subdomain meshes used in the
 % Arlequin problem
 %
 % cplstruct = DefineCoupling( cplstruct, mesh1, mesh2 ) completes the
@@ -38,10 +38,10 @@ bnd1 = freeBoundary(mesh1);
 bnd2 = freeBoundary(mesh2);
 
 % definition of coupling area
-cpl.mesh = intersection( intersection( bnd1, bnd2 ), cpl.levelSet );
+cpl.domain = intersection( intersection( bnd1, bnd2 ), cpl.levelSet );
 
 % determination of common free area
-cpl.free12 = complement( intersection( bnd1, bnd2 ), cpl.mesh );
+cpl.free12 = complement( intersection( bnd1, bnd2 ), cpl.domain );
 
 % definition of free areas
 cpl.free{1} = complement( bnd1, bnd2 );
