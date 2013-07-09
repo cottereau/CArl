@@ -34,8 +34,8 @@ elseif strcmp( m1.code, 'FE2D')&&strcmp( m2.code, 'Beam')
 end
 
 % definition of the domains covered by the meshes
-bnd1 = freeBoundary(mesh1);
-bnd2 = freeBoundary(mesh2);
+bnd1 = domain(mesh1);
+bnd2 = domain(mesh2);
 
 % definition of coupling area
 cpl.domain = intersection( intersection( bnd1, bnd2 ), cpl.levelSet );

@@ -200,18 +200,13 @@ classdef TRI6
             X = incenters(obj.tri3);
         end
         % inherited from TriRep/freeBoundary
-        function ls = freeBoundary(obj)
+        function [bnd,xf] = freeBoundary(obj)
             [bnd,xf] = freeBoundary(obj.tri3);
+        end
+        % domain covered by the mesh
+        function ls = domain(obj)
+            [bnd,xf] = freeBoundary(obj);
             ls = levelSet( bnd, xf );
-%             [~,xf] = freeBoundary(obj.tri3);
-%             xf = [xf;xf(1,:)];
-%             L = mean( max(obj.X3)-min(obj.X3) );
-%             xm = min(obj.X3)-L/2;
-%             xM = max(obj.X3)+L/2;
-%             Xsup = [xm; [xm(1) xM(2)]; xM; [xM(1) xm(2)]];
-%             dt = delaunayTriangulation( [obj.X3;Xsup] );
-%             dt = TRI6( dt.ConnectivityList, dt.Points );
-%             ls = levelSet( 'interface', xf, dt.X );
         end
     end
     
