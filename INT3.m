@@ -21,6 +21,7 @@ classdef INT3
     %     domain             - Returns a vector of size of the elements
     %     parts              - domain covered by the elements
     %     clean              - Removes unused X and repeated X and T
+    %     size               - Number of elements
     %
     %  INT3 properties:
     %     T      - connectivity matrix [Ne*6]
@@ -87,6 +88,10 @@ classdef INT3
         % number of disjoint parts in the mesh
         function Np = get.Np(obj)
             Np = obj.Nv-obj.Ne;
+        end
+        % size
+        function Ne = size(obj)
+            Ne = size(obj.T);
         end
         % plot the mesh and the nodes
         function plot(obj)

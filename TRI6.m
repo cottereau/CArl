@@ -191,9 +191,9 @@ classdef TRI6
             [obj,indX2] = cleanX(obj);
             indX = indX1(indX2);
         end
-        % inherited from TriRep/size
+        % size of the triangulation matrix
         function N = size(obj)
-            N = size(obj.tri3);
+            N = size(obj.T);
         end
         % inherited from TriRep/incenters
         function X = incenters(obj)
