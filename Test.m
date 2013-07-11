@@ -14,8 +14,6 @@ function Test( type )
 %  | 'force1D'          | acoustic   | acoustic   |  D  | bulk load    |
 %  | 'MC1D'             | acoustic   | acoustic   | D/S |              |
 %  | 'MC1Dstosto'       | acoustic   | acoustic   |  S  |              |
-%  | 'MC1D_BC_u10'      | acoustic   | acoustic   |  S  | ??           |
-%  | 'MC1Dstosto2'      | acoustic   | acoustic   |  S  | ??           |
 %  | 'zoom1Dstosto'     | acoustic   | acoustic   |  S  | zoom case    |
 %  |____________________|____________|____________|_____|______________|
 %
@@ -74,7 +72,7 @@ switch lower(type)
         [ sol, out ] = CArl( model, coupling, solver );
         plottest2D( out.model, sol );
 
-    case {'mc1d','mc1d_bc_u10','mc1dstosto2','zoom1dstosto'}
+    case {'mc1d','zoom1dstosto'}
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
         plotteststochastic2( model, sol, out, ref );
@@ -89,8 +87,6 @@ switch lower(type)
         Test('join1D');
         Test('force1D');
         Test('MC1D');
-        Test('MC1D_BC_u10') ;
-        Test('MC1Dstosto2');
         Test('zoom1Dstosto');
         Test('join2D');
         Test('zoom2D');
