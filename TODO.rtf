@@ -18,4 +18,8 @@
 \
 - remove 'MonteCarloHomeFE' from the list of codes because it is really the code "HomeFE" ?\
 \
-- remove several of the properties of TRI6 because this is probably slowing the program as the properties are automatically computed even though they might not be used}
+- remove several of the properties of TRI6 because this is probably slowing the program as the properties are automatically computed even though they might not be used \'85 potentially transform these properties into methods\
+\
+- separate clearly the classes into "topology/domain" (currently the levelSet classes), "meshes" (TRI6, INT3 classes), and "functions" (discontinuous)\
+\
+- remove method "addDomain" from discontinuous and discontinuous1D classes because it is redundant with method addRegion}
