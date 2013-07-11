@@ -10,11 +10,7 @@
 \
 - change the name and calls to 'FE2D' into 'elastic2D' or something similar \'85 in order to stress the difference with HomeFE which is acoustic\
 \
-- in README, make a list of the codes (with links to webpages, etc ..) that are linked through CArl\
-\
 - clarify the definition of the alphas in StiffnessMatrix.m there seems to be a lot of repeated stuff between the different cases\
-\
-- beams are now defined only along x, as 1D problems \'85 this should be made more general\
 \
 - remove 'MonteCarloHomeFE' from the list of codes because it is really the code "HomeFE" ?\
 \
@@ -22,4 +18,10 @@
 \
 - separate clearly the classes into "topology/domain" (currently the levelSet classes), "meshes" (TRI6, INT3 classes), and "functions" (discontinuous)\
 \
-- remove method "addDomain" from discontinuous and discontinuous1D classes because it is redundant with method addRegion}
+- beams are now defined only along x, as 1D problems \'85 this should be made more general\
+\
+- remove method "addDomain" from discontinuous and discontinuous1D classes because it is redundant with method addRegion\
+\
+- in README, make a list of the codes (with links to webpages, etc ..) that are linked through CArl. Also, remove the exterior codes 'FE2D' and 'Beam' from the git repository and indicate in the README file how to download the codes \'85\
+\
+- implement distance function from [Elias, Martins & Coutinho, 2007]}
