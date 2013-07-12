@@ -63,7 +63,7 @@ classdef TRI6
     properties (Dependent)
         d;      % space dimension
         Ne;     % number of elements
-        Nn;     % number of nodes
+        Nn;     % number of nodes of the underlying TRI3 element
         T3;     % underlying TRI3 elements
         X3;     % nodes of the underlying TRI3 elements
         ind3v6; % indices of TRI3 nodes in TRI6 numeration
@@ -125,7 +125,7 @@ classdef TRI6
         end
         % set the number of nodes
         function Nn = get.Nn(obj)
-            Nn = size(obj.X,1);
+            Nn = size(obj.X3,1);
         end
         % set the space dimension
         function d = get.d(obj)
@@ -159,9 +159,10 @@ classdef TRI6
             end
         end
         % returns a TRI6 object using only a selected list of elements
-        function [obj,indX] = subSet(obj,indT)
+        function [obj,ind] = subSet(obj,indT)
             obj = TRI6( obj.T(indT,:), obj.X, false );
-            [obj,indX] = clean(obj);
+            [obj,ind] = clean(obj);
+            ind = ind( ismember(ind,obj.ind3v6) );
         end
         % get rid of nodes that are not used in T, and of repeated elements
         function [obj,indX] = cleanT(obj)
@@ -208,6 +209,47 @@ classdef TRI6
             [bnd,xf] = freeBoundary(obj);
             ls = levelSet( bnd, xf );
         end
+        % merge two meshes (find a mesh embedded in both obj1 and obj2
+        % and located within ls)
+        function obj = MergeMeshes( obj1, obj2, ls )
+            N = size(obj1.tri3.X,1);
+            Xm = [ obj1.tri3.X ; obj2.tri3.X ];
+            Tm = [ obj1.tri3.Triangulation ; obj2.tri3.Triangulation+N ];
+            C = [Tm(:,1:2); Tm(:,2:3); Tm(:,[3 1])];
+            for i1=1:ls.N
+                C = [C;LSet.T{i1}+size(Xm,1)];
+                Xm = [Xm;LSet.X{i1}];
+            end
+            [~,ind] = unique( sort(C,2) ,'rows', 'first');
+            C = C(ind,:);
+            ldt = clean( levelSet( C, Xm ) );
+            obj = DelaunayTri( ldt.X{1}, ldt.T{1} );
+            obj = TRI6( obj.Triangulation, obj.X );
+            obj = subSet( obj, elementsInBoundary(obj,LSet,true) );
+        end
+        % for each node in meshi, find nodes that are inside the elements
+        % that touch it, and the value of the linear FE basis function 
+        % centered on Xr (=local barycentric coordinate of that node in the
+        % element). Return a matrix in sparse format
+        function [ Mx, My, Mval ] = XR2XI( obj, obj1 )
+            Ni = size(obj1.X,1);
+            indx = zeros(Ni,1);
+            Nr = obj.size;
+            ey = repmat((1:Nr(1)),[Ni 1]);
+            cc = reshape( cartToBary( obj, ey(:), ...
+                repmat(obj1.X,[Nr(1) 1]) ), [Ni Nr(1) 3]);
+            for i1 = 1:Ni
+                cci = squeeze(cc(i1,:,:));
+                indx(i1) = find( all(cci>=-obj.gerr,2) & ...
+                                 all(cci<=1+obj.gerr,2), 1, 'first' );
+            end
+            Mval = cartToBary( obj, indx, obj1.X );
+            My = repmat( (1:size(Mval,1))', [3 1] );
+            indx = obj.Triangulation(indx,:);
+            ind = abs(Mval(:))>obj.gerr;
+            Mx = indx(ind);
+            Mval = Mval(ind);
+            My = My(ind);
+        end
     end
-    
 end
