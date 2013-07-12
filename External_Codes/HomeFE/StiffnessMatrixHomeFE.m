@@ -29,17 +29,19 @@ function [ x, y, K, z, F ] = StiffnessMatrixHomeFE( model )
 
 % description of the model
 X = model.mesh.X;
-T = model.mesh.Triangulation;
+d = size(X,2);
+if d==1
+    T = model.mesh.T;
+elseif d==2
+    T = model.mesh.Triangulation;
+end
+[ Ne, nnode ] = size( T );
 E = model.property;
 if ~isfield(model,'load')
     load = [];
 else 
     load = model.load;
 end
-
-% constants
-[ Ne, nnode ] = size( T );
-d = size( X, 2 );
 
 % initializations
 x = reshape( repmat( T, [nnode 1] ), Ne*nnode^2, 1 );

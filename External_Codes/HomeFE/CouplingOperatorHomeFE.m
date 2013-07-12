@@ -34,7 +34,9 @@ function [ x, y, C ] = CouplingOperatorHomeFE( operator, mesh, opt )
 % R. Cottereau 04/2010
 
 % constants
-[Nne,ne] = size(mesh.Triangulation);
+s = size(mesh);
+Nne = s(1);
+ne = s(2);
 
 % computation of MassMatrix
 m = struct( 'mesh', mesh, ...

@@ -20,7 +20,12 @@ function [ x, y, M ] = MassMatrixHomeFE( model )
 
 % description of the model
 X = model.mesh.X;
-T = model.mesh.Triangulation;
+d = size(X,2);
+if d==1
+    T = model.mesh.T;
+elseif d==2
+    T = model.mesh.Triangulation;
+end
 
 % constants
 [ Ne, nnode ] = size( T );
