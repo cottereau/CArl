@@ -245,9 +245,9 @@ classdef TRI6
             end
             Mval = cartToBary( obj, indx, obj1.X );
             My = repmat( (1:size(Mval,1))', [3 1] );
-            indx = obj.Triangulation(indx,:);
+            Mx = obj.Triangulation(indx,:);
             ind = abs(Mval(:))>obj.gerr;
-            Mx = indx(ind);
+            Mx = Mx(ind);
             Mval = Mval(ind);
             My = My(ind);
         end
