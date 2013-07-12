@@ -24,28 +24,31 @@ function [ K, F ] = StiffnessMatrix( model )
 
 % R. Cottereau 04/2010
 
+% description of the model
+X = model.mesh.X;
+d = size(X,2);
+if d==1
+    T = model.mesh.T;
+elseif d==2
+    T = model.mesh.Triangulation;
+end
+nnode = size( T, 2 );
+
 % switch on the external code
 switch model.code
     
     % HOMEFE
     case 'HomeFE'
+        stiff = model.HomeFE;
         % modify the properties in each element according to alpha
-       model.mesh = model.mesh.tri3;
-        x = model.mesh.X(:,1); y = model.mesh.X(:,2);
-        Ne = size(model.mesh.Triangulation,1);
-        X = [reshape(x(model.mesh.Triangulation'),3*Ne,1) reshape(y(model.mesh.Triangulation'),3*Ne,1)];
-        incenters = model.mesh.incenters;
-        xe = repmat( incenters(:,1)', [3 1]);
-        ye = repmat( incenters(:,2)', [3 1]);
-        Xe = [xe(:) ye(:)];
-        alpha = interp(model.alpha,X,Xe);
-        model.BC = model.HomeFE.BC;
-        model.property = model.HomeFE.property .*reshape(alpha,3,Ne)';
-        model.load = model.HomeFE.load .*reshape(alpha,3,Ne)';
-
+        alpha = interp(model.alpha,incenters(model.mesh));
+        alpha = repmat(alpha',nnode,1)';
+        stiff.property = stiff.property .* alpha;
+        stiff.load = stiff.load .* alpha;
+        
         % compute the modified value of the model property values
-        [ x, y, K, z, F ] = StiffnessMatrixHomeFE( model );
-                
+        [ x, y, K, z, F ] = StiffnessMatrixHomeFE( stiff );
+        
     % MONTE CARLO VERSION OF HOME FE
     case 'MonteCarloHomeFE'
 
@@ -54,9 +57,9 @@ switch model.code
         x = model.mesh.X(:,1); y = model.mesh.X(:,2);
         Ne = size(model.mesh.Triangulation,1);
         X = [reshape(x(model.mesh.Triangulation'),3*Ne,1) reshape(y(model.mesh.Triangulation'),3*Ne,1)];
-        incenters = model.mesh.incenters;
-        xe = repmat( incenters(:,1)', [3 1]);
-        ye = repmat( incenters(:,2)', [3 1]);
+        inc = model.mesh.incenters;
+        xe = repmat( inc(:,1)', [3 1]);
+        ye = repmat( inc(:,2)', [3 1]);
         Xe = [xe(:) ye(:)];
         alpha = interp(model.alpha,X,Xe);
         model.load = model.HomeFE.load .* reshape(alpha,3,Ne)';
@@ -76,10 +79,10 @@ switch model.code
     case 'Beam'
         keyboard
         % modify the properties in each element according to alpha
-        incenters = mean(model.mesh.X(model.mesh.T),2);
+        inc = mean(model.mesh.X(model.mesh.T),2);
         %%%%%%%%%%%%%%%%%%%%%%%TO BE CHECKED (OK FOR SIMPLY LINEAR ALPHA)
-        alpha = interp(model.alpha,[incenters;zeros(1,length(incenters))]', ...
-                                   [incenters;zeros(1,length(incenters))]');
+        alpha = interp(model.alpha,[inc;zeros(1,length(inc))]', ...
+                                   [inc;zeros(1,length(inc))]');
         model.load = model.HomeFE.load .* repmat(alpha,[1,2,3]);
         property = model.HomeFE.property;
 
@@ -99,9 +102,9 @@ switch model.code
         x = model.mesh.X(:,1); y = model.mesh.X(:,2);
         Ne = size(model.mesh.Triangulation,1);
         X = [reshape(x(model.mesh.Triangulation'),3*Ne,1) reshape(y(model.mesh.Triangulation'),3*Ne,1)];
-        incenters = model.mesh.incenters;
-        xe = repmat( incenters(:,1)', [3 1]);
-        ye = repmat( incenters(:,2)', [3 1]);
+        inc = model.mesh.incenters;
+        xe = repmat( inc(:,1)', [3 1]);
+        ye = repmat( inc(:,2)', [3 1]);
         Xe = [xe(:) ye(:)];
         alpha = interp(model.alpha,X,Xe);
         model.load = model.HomeFE.load .* repmat(reshape(alpha,3,Ne)',[1,1,2]);

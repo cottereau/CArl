@@ -78,27 +78,42 @@ classdef discontinuous1D
         function ind = inside( obj, X )
             ind = zeros( size(X,1), 1 );
             for i1 = 1:obj.Ns
-                ind( inside(obj.x{i1}, X ) = i1;
+                ind( inside(obj.x{i1}, X ) ) = i1;
             end            
         end
         % interpolation: getting values of f inside each subdomain
-        function [fv,ind] = f( obj, X )
+        function [fv,ind] = interp( obj, X )
             ind = inside( obj, X );
             fv = zeros( size(X,1), 1 );
             for i1 = 1:obj.Ns
-                fv(ind==i1) = interp1( obj.val{i1}.x, obj.val{i1}.f, ...
+                if obj.x{i1}.N>0
+                    fv(ind==i1) = interp1( obj.val{i1}.x, obj.val{i1}.f, ...
                                                              X(ind==i1,:));
+                end
             end
         end
         % addregion: define a new subdomain and corresponding function
         function obj = addRegion(varargin)
             obj = varargin{1};
             if nargin==2
-                obj.x = [obj.x;varargin{2}.x];
-                obj.val = [obj.val;varargin{2}.val];
+                obj1 = varargin{2};
+                if obj1.Ns==0 && obj.Ns==0
+                    obj = discontinuous;
+                elseif obj.Ns==0
+                    obj = obj1;
+                elseif obj1.Ns>0
+                    for i1 = 1:obj1.Ns
+                        if obj1.x{i1}.N>0
+                            obj.val{obj.Ns+1} = obj1.val{i1};
+                            obj.x{obj.Ns+1} = obj1.x{i1};
+                        end
+                    end
+                end
             elseif nargin==4
                 obj1 = discontinuous1D(varargin{2},varargin{3},varargin{4});
                 obj = addRegion( obj, obj1 );
+            else
+                error('incorrect number of arguments')
             end
         end
         % multiplication of two functions (where only one function is

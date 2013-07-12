@@ -63,8 +63,8 @@ switch lower(type)
     
     case {'zoom1d', 'force1d', 'join1d'}
         load(['Tests/' type '.mat']);
-        sol = CArl( model, coupling, solver );
-        plottest1D( model, sol, ref );
+        [sol,out] = CArl( model, coupling, solver );
+        plottest1D( out.model, sol );
         
     case {'join2d', 'force2d', 'zoom2d', 'zoom2dstosto', 'comsol2d', ...
           'nonembedded2d_1', 'zoom2dindent'}
@@ -102,11 +102,14 @@ end
 
 % FUNCTION PLOTTEST 1D
 function plottest1D( model, sol, ref )
+if nargin<3
+    ref = [];
+end
 x1 = model{1}.mesh.X( model{1}.mesh.T )';
 x2 = model{2}.mesh.X( model{2}.mesh.T )';
-u1 = sol{1}';
-u2 = sol{2}';
-figure; plot( x1, u1, 'bx-', x2, u2, 'ro--' )
+u1 = sol{1}( model{1}.mesh.T )';
+u2 = sol{2}( model{2}.mesh.T )';
+figure; plot( x1(:), u1(:), 'bx-', x2(:), u2(:), 'ro--' )
 if ~isempty(ref)
     hold on; plot(ref.X,ref.u,'k--')
 end

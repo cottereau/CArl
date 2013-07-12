@@ -66,6 +66,7 @@ classdef levelSet1D
                     end
                 end
             end
+            obj = clean(obj);
         end
         % get the number of disjoint level-sets
         function n = get.N(obj)
@@ -151,7 +152,7 @@ classdef levelSet1D
             x(~ind) = x1(~ind) + dx(~ind);
         end
         % remove unncessary segments (merge segments partially overlapping
-        % and fully included in another one)
+        % and fully included in another one). remove empty subdomains
         function obj = clean( obj )
             N = obj.N;
             for i1 = N:-1:2

@@ -19,6 +19,19 @@ switch lower(model.code)
     
     % HOMEFE
     case {'homefe','montecarlohomefe','fe2d'}
+        T = model.HomeFE.mesh.T;
+        X = model.HomeFE.mesh.X;
+        d = size(X,2);
+        if d==1
+            model.mesh = INT3( T, X, true );
+        elseif d==2
+            model.mesh = TRI6( T, X, true );
+        else
+            error('case not treated yet')
+        end
+
+    % FE2D
+    case 'fe2d'
         model.mesh = TRI6( model.HomeFE.mesh.T, model.HomeFE.mesh.X, false );
 
     % COMSOL
@@ -33,7 +46,7 @@ switch lower(model.code)
     
     % TIMOSCHENKO BEAM CODE
     % we are assuming here that the local referential of the beam is along 
-    % for a line in direction [1 0] and going through point [0 0]
+    % a line in direction [1 0] and going through point [0 0]
     case  'beam'
         % default values
         Xb = model.Beam.mesh.X;

@@ -115,12 +115,13 @@ classdef levelSet
             n = length(obj.X);
         end
         % Distance from a set of points to the level set
-        function d = distance( obj, X, val )
+        function d = distance( obj, X )
+%        function d = distance( obj, X, val )
             Nx = size(X,1);
             d = zeros(Nx,obj.N);
-            if nargin<3
-                val = false;
-            end
+%             if nargin<3
+%                 val = false;
+%             end
             for i1 = 1:obj.N
                 poli = obj.X{i1}( [obj.T{i1}(:,1); obj.T{i1}(end,2) ], : );
                 d(:,i1) = dppoli( X, poli );
@@ -130,9 +131,9 @@ classdef levelSet
                 d(~ind,i1) = -obj.sign(i1)*d(~ind,i1);
             end
             d = max(d,[],2);
-            if ~val
-                d = TriScatteredInterp( X, d );
-            end
+%             if ~val
+%                 d = TriScatteredInterp( X, d );
+%             end
         end
         % get interface number i
         function lsi = getInterface( obj, i1 )
