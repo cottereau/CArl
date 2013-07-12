@@ -133,12 +133,22 @@ classdef levelSet1D
             d(lind) = obj.sign .* d(lind);
         end
         % check whether points are inside the level-set
-        function l = inside( obj, X, lon )
+        function [in,on] = inside( obj, X, lon )
+            d = distance( obj, X );
+            on = abs(d)<= obj.gerr;
+            in = d <= -obj.gerr;
             if nargin<3 || lon
-                l = distance( obj, X ) <= obj.gerr;
-            else
-                l = distance( obj, X ) <= -obj.gerr;
+                in = in|on;
             end
+        end
+        % find the point on the boundary of the domain
+        function x = boundary( obj, x1, x2 )
+            d1 = distance( obj, x1 );
+            d2 = distance( obj, x2 );
+            dx = abs(d1.*(x2-x1)./(d2-d1));
+            ind = x1<x2;
+            x(ind) = x1(ind) + dx(ind);
+            x(~ind) = x1(~ind) + dx(~ind);
         end
         % remove unncessary segments (merge segments partially overlapping
         % and fully included in another one)
