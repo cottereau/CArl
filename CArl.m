@@ -90,20 +90,20 @@ for i1 = 1:Nc
         Cpl{i1} = DefineDomains( Cpl{i1}, m1, m2 );
 
         % compute weights for each model
-        Cpl{i1}.alpha{1} = ArlequinWeight( Cpl{i1}, 1, m1.mesh, m1.code, m2.code );
-        Cpl{i1}.alpha{2} = ArlequinWeight( Cpl{i1}, 2, m2.mesh, m1.code, m2.code );
-        for i2 = 1:Nm
-            if strcmp(eval(['m' num2str(i2) '.code']),'Beam')
-                Mdl{i2} = ReadCodeMesh( Mdl{i2} );
-                eval(['m' num2str(i2) '= Mdl{ Cpl{i1}.models(i2) }'] );
-                [Cpl{i1}.mesh, Cpl{i1}.free12, Cpl{i1}.free] = ...
-                    DefineCouplingMesh( Cpl{i1}.levelSet, m1.mesh, m2.mesh );
-            end
-        end
+        Cpl{i1}.alpha{1} = ArlequinWeight( Cpl{i1}, 1, m1 );
+        Cpl{i1}.alpha{2} = ArlequinWeight( Cpl{i1}, 2, m2 );
+%         for i2 = 1:Nm
+%             if strcmp(eval(['m' num2str(i2) '.code']),'Beam')
+%                 Mdl{i2} = ReadCodeMesh( Mdl{i2} );
+%                 eval(['m' num2str(i2) '= Mdl{ Cpl{i1}.models(i2) }'] );
+%                 [Cpl{i1}.mesh, Cpl{i1}.free12, Cpl{i1}.free] = ...
+%                     DefineCouplingMesh( Cpl{i1}.levelSet, m1.mesh, m2.mesh );
+%             end
+%         end
                         
         % create intersection of meshes (for both representation and
         % integration purposes)
-        [Int,Rep] = MeshIntersect( m1.mesh, m2.mesh, Cpl{i1}.domain, m1.code,m2.code );
+        [Int,Rep] = MeshIntersect( m1.mesh, m2.mesh, Cpl{i1}.domain );
 
         % definition of the mediator space
         [Int.M,Int.Mbeam,Int.Mbeam2D] = MediatorSpace( Cpl{i1}.mediator, Rep );
