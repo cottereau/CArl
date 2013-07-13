@@ -14,7 +14,7 @@
 \
 - remove 'MonteCarloHomeFE' from the list of codes because it is really the code "HomeFE" ?\
 \
-- remove several of the properties of TRI6 because this is probably slowing the program as the properties are automatically computed even though they might not be used \'85 potentially transform these properties into methods\
+- remove several of the properties of TRI6 because this is probably slowing the program as the properties are automatically computed even though they might not be used \'85 potentially transform these properties into methods \'85 maybe make at the same time the TRI6 a TRI3 ?\
 \
 - separate clearly the classes into "topology/domain" (currently the levelSet classes), "meshes" (TRI6, INT3 classes), and "functions" (discontinuous)\
 \
@@ -31,4 +31,7 @@
 - define the input coupling directly in terms of a discontinuous function alpha, rather than by entering the values of the functions ?\
 \
 - introduce reference solutions for all the cases and output the Test.m with logicals (depending on comparison with reference functions) rather than plots\
-}
+\
+- clarify the definition of the coupling operator and functional: the operator should be defined in terms of a code (with the same name as the codes for stiffness), and possibly 'H1' or 'L2', the mesh is defined by Int.mesh.\
+\
+- modify the coupling matrix C: instead of being a structured array, it should be a sparse matrix}
