@@ -102,7 +102,7 @@ classdef INT3
         end
         % returns a INT3 object using only a selected list of elements
         function [obj,ind] = subSet( obj, indT )
-            obj = INT3( obj.T(indT,:), obj.X );
+            obj = INT3( obj.T(indT,:), obj.X, false );
             [obj,ind] = clean(obj);
         end
         % physical size of the elements
@@ -213,7 +213,7 @@ classdef INT3
             f1 = cartesianToBarycentric( obj, ind, obj1.X );
             Mx = obj.T(ind,:);
             My = repmat((1:length(ind))',1,2);
-            Mval = [f1 1-f1];
+            Mval = [1-f1 f1];
             ind = Mval>=obj.gerr;
             Mx = Mx(ind(:));
             My = My(ind(:));

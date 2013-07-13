@@ -18,7 +18,7 @@ function model = ReadCodeMesh( model )
 switch lower(model.code)
     
     % HOMEFE
-    case {'homefe','montecarlohomefe','fe2d'}
+    case {'homefe','montecarlohomefe'}
         T = model.HomeFE.mesh.T;
         X = model.HomeFE.mesh.X;
         d = size(X,2);
@@ -32,7 +32,9 @@ switch lower(model.code)
 
     % FE2D
     case 'fe2d'
-        model.mesh = TRI6( model.HomeFE.mesh.T, model.HomeFE.mesh.X, false );
+        T = model.HomeFE.mesh.T;
+        X = model.HomeFE.mesh.X;
+        model.mesh = TRI6( T, X, false );
 
     % COMSOL
     case 'comsol'

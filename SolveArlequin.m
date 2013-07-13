@@ -12,10 +12,6 @@ function [ Mdl, Cpl ] = SolveArlequin( K, F, Mdl, Cpl, solver, opt )
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
 
-% R. Cottereau 04/2010
-%modif YLG 03/2013: remove condensation for stochastic solver, and add the
-%double Monte-Carlo solver
-
 % constants
 Nm = size(opt.K,1);
 Nc = size(opt.Cy,1);
@@ -28,7 +24,6 @@ switch lower(solver)
         u = K \ F;
         
         % Monte Carlo solvers
-        
     case 'montecarlo2'
         tic
         Nmc = length( opt.MC.Ks );

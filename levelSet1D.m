@@ -99,9 +99,13 @@ classdef levelSet1D
             if obj1.N==1 && obj2.N==1
                 x1 = max( obj1.X(1), obj2.X(1) );
                 x2 = min( obj1.X(2), obj2.X(2) );
-                obj = levelSet1D( x1, x2, true );
+                if ~isempty(x1) && abs(x1-x2)>obj1.gerr
+                    obj = levelSet1D( x1, x2, true );
+                else
+                    obj = levelSet1D( false );
+                end
             else
-                obj = levelSet1D(false);
+                obj = levelSet1D( false );
                 for i1 = 1:obj1.N
                     for i2 = 1:obj2.N
                         ls1 = getInterface( obj1, i1 );

@@ -92,7 +92,7 @@ for i1 = 1:Nc
         % compute weights for each model
         Cpl{i1}.alpha{1} = ArlequinWeight( Cpl{i1}, 1, m1 );
         Cpl{i1}.alpha{2} = ArlequinWeight( Cpl{i1}, 2, m2 );
-                        
+
         % create intersection of meshes (for both representation and
         % integration purposes)
         [Int,Rep] = MeshIntersect( m1.mesh, m2.mesh, Cpl{i1}.domain );
@@ -103,7 +103,7 @@ for i1 = 1:Nc
         % construction of coupling operators
         Cpl{i1}.C1 = CouplingOperator( Cpl{i1}, Int, Rep{1}, opt, m1.code );
         Cpl{i1}.C2 = CouplingOperator( Cpl{i1}, Int, Rep{2}, opt, m2.code );
-    
+
     end
 end
 
@@ -115,7 +115,7 @@ for i1 = 1:Nm
     if opt.recomputeK(i1)
         
         % condensate alpha functions for each model
-        Mdl{i1}.alpha = CondensateAlpha( i1, Mdl{i1}, Cpl );
+        Mdl{i1}.alpha = CondensateAlpha( i1, Cpl );
         
         % construct stiffness and force matrices
         [ Mdl{i1}.K, Mdl{i1}.F ] = StiffnessMatrix( Mdl{i1} );

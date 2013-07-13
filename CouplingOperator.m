@@ -34,7 +34,6 @@ if find(strcmp('HomeFE',Nmod))
     [ x, y, C ] = CouplingOperatorHomeFE( couple.operator, Int.mesh, opt );
     [ x, y, C ] = find( Rep.M * sparse( x, y, C ) * Int.M' );
     
-    
     C = struct( 'x', x, 'y', y, 'val', C );
     
     if (strcmp( couple.mediator.type, 'stochastic' ))

@@ -36,12 +36,13 @@ end
 % definition of the domains covered by the meshes
 bnd1 = domain(mesh1);
 bnd2 = domain(mesh2);
+overlap = intersection( bnd1, bnd2 );
 
 % definition of coupling area
-cpl.domain = intersection( intersection( bnd1, bnd2 ), cpl.levelSet );
+cpl.domain = intersection( overlap, cpl.levelSet );
 
 % determination of common free area
-cpl.free12 = complement( intersection( bnd1, bnd2 ), cpl.domain );
+cpl.free12 = complement( overlap, cpl.domain );
 
 % definition of free areas
 cpl.free{1} = complement( bnd1, bnd2 );

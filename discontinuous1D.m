@@ -39,7 +39,7 @@ classdef discontinuous1D
     methods
         % Definition of discontinuous function
         function obj = discontinuous1D(varargin)
-            if nargin==0
+            if nargin==0 || varargin{1}.N==0
                 obj.x = {};
                 obj.val = {};
             elseif nargin>=3

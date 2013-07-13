@@ -41,7 +41,6 @@ meshi = MergeMeshes( bounded(meshr1,LSet), bounded(meshr2,LSet) );
 % integration mesh
 [ Mx1, My1, Mval1 ] = XR2XI( meshr1, meshi );
 [ Mx2, My2, Mval2 ] = XR2XI( meshr2, meshi );
-
 M11 = sparse( ind1(Mx1), My1, Mval1, mesh1.Nn, meshi.Nn);
 M22 = sparse( ind2(Mx2), My2, Mval2, mesh2.Nn, meshi.Nn);
 
