@@ -1,4 +1,4 @@
-function C = CouplingOperator( couple, Int, Rep, opt, Nmod )
+function C = CouplingOperator( couple, Int, Rep, opt )
 % COUPLINGOPERATOR to construct the coupling operator
 %
 % syntax: [ x, y, C ] = CouplingOperator( model, coupling, n )
@@ -28,19 +28,20 @@ function C = CouplingOperator( couple, Int, Rep, opt, Nmod )
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
 
-switch lower(Nmod)
+switch lower(couple.code)
     
     % ACOUSTIC COUPLING
     case {'homefe','montecarlohomefe'}
         [ x, y, C ] = CouplingOperatorHomeFE( couple.operator, Int.mesh, opt );
         C = Rep.M * sparse( x, y, C ) * Int.M';
         
-        if (strcmp( couple.mediator.type, 'stochastic' ))
+        if strcmpi( couple.code, 'montecarlohomefe' )
             [ x, y, Cs ] = CouplingOperatorHomeFE( 'L2', Int.mesh, opt );
             Cs = Rep.M * sparse( x , y, Cs );
             Ns = size(Cs);
+            N = size(C,2);
             C = [ C sum( Cs, 2 ) sparse(Ns(1),1);
-                  zeros(Ns(2),Ns(2)+1) sum( Cs * Int.M', 1 )'];
+                  sparse(N,N+1) sum( Cs * Int.M', 1 )'];
         end
         
     % ELASTIC COUPLING
