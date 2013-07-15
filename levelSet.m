@@ -116,12 +116,8 @@ classdef levelSet
         end
         % Distance from a set of points to the level set
         function d = distance( obj, X )
-%        function d = distance( obj, X, val )
             Nx = size(X,1);
             d = zeros(Nx,obj.N);
-%             if nargin<3
-%                 val = false;
-%             end
             for i1 = 1:obj.N
                 poli = obj.X{i1}( [obj.T{i1}(:,1); obj.T{i1}(end,2) ], : );
                 d(:,i1) = dppoli( X, poli );
@@ -131,9 +127,6 @@ classdef levelSet
                 d(~ind,i1) = -obj.sign(i1)*d(~ind,i1);
             end
             d = max(d,[],2);
-%             if ~val
-%                 d = TriScatteredInterp( X, d );
-%             end
         end
         % get interface number i
         function lsi = getInterface( obj, i1 )
@@ -277,7 +270,8 @@ classdef levelSet
                 [dt,ind1,ind2] = CrossLS( obj1, obj2 );
                 dt = subSet( dt, ind1&ind2 );
                 if dt.Ne>0
-                    obj = freeBoundary(dt);
+                    [tt,xx] = freeBoundary(dt);
+                    obj = levelSet(tt,xx);
                 else
                     obj = levelSet(true);
                 end
@@ -313,17 +307,18 @@ classdef levelSet
             end
         end
         % check whether points are inside the level-set
-        function l = inside( obj, X, lon )
+        function in = inside( obj, X, lon )
+            d = distance( obj, X );
+            on = abs(d)<= obj.gerr;
+            in = d <= -obj.gerr;
             if nargin<3 || lon
-                l = distance( obj, X, true )<=obj.gerr;
-            else
-                l = distance( obj, X, true )<=-obj.gerr;
+                in = in|on;
             end
         end
         % plot function
         function  plot( obj, xv, yv )
             [x,y] = ndgrid(xv,yv);
-            d = distance( obj, [x(:) y(:)], true );
+            d = distance( obj, [x(:) y(:)] );
             if ~isempty(d)
                 figure; surf(xv,yv,reshape(d,length(xv),length(yv))')
                 shading flat; view(2); colorbar

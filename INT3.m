@@ -169,7 +169,7 @@ classdef INT3
         end
         % merge two meshes (find a mesh embedded in both obj1 and obj2)
         % it is not checked that both meshes are defined on same domain
-        function obj = MergeMeshes( obj1, obj2 )
+        function obj = MergeMeshes( obj1, obj2, ~ )
             x = unique( [ obj1.X; obj2.X ] );
             N = length(x);
             t = [ (1:N-1)' (2:N)'];

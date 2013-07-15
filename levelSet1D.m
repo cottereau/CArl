@@ -136,6 +136,9 @@ classdef levelSet1D
             lind = ind>0;
             d(~lind) = -obj.sign .* d(~lind);
             d(lind) = obj.sign .* d(lind);
+            if any(isinf(d))
+                d = [];
+            end
         end
         % check whether points are inside the level-set
         function [in,on] = inside( obj, X, lon )

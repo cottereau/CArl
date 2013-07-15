@@ -51,10 +51,10 @@ elseif numel(val)==2
     Xi = mesh.X(ind,:);
     d2 = distance( cpl.free12, Xi );
     d1 = distance( cpl.free{i1}, Xi );
-    if any(isinf(d1))
+    if isempty(d1)
         d1 = distance( cpl.free{i2}, Xi );
         f = (max(val)*d1 + min(val)*d2)./(d1+d2);
-    elseif any(isinf(d2))
+    elseif isempty(d2)
         d2 = distance( cpl.free{i2}, Xi );
         f = (max(val)*d2 + min(val)*d1)./(d1+d2);
     else
