@@ -22,6 +22,6 @@ function M = MediatorSpace( mediator, Rep )
 
 % R. Cottereau 05/2010
 
-[ x, y, val ] = find( Rep{mediator.support}.M );
+[ x, y, val ] = find( Rep{mediator}.M );
 [~,~,x]=unique(x);
 M = sparse( x, y, val );

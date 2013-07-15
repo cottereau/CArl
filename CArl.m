@@ -9,29 +9,30 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %               Implemented: {'Comsol' 'HomeFE' 'MonteCarloHomeFE}
 %       - other fields should be in a format appropriate for the code used
 %               to return a stiffness matrix in sparse format
-%       NB: fields 'mesh', 'alpha' should not be used because they are 
-%           internally used by the program
+%       NB: fields 'mesh', 'alpha', 'K', 'F', 'Kmc', 'u' should not be used
+%           because they are internally used by the program
 %
 %  coupling : cell of structured arrays containing the description of each
 %        of the couplings, with the fields
-%       -'type' : either 'zoom' or 'join'
 %       -'models' : 1*2 vector naming the models to be coupled (the number
-%                  k indicates model{k}). When 'zoom' is used, the first
-%                  model of this vector should be the coarse one.
-%       -'mediator' : structured array for the definition of the mediator 
-%                  space. The fields are
-%             --'type': 'deterministic', 'stochastic' or 'mesomicro' ('deterministic by
-%                     default)
-%             --'support': 1 or 2. indicates which model should be used as
-%                     the support for the physical basis functions. Note
-%                     that usually the coarser support should be used.
+%                  k indicates model{k}).
+%       -'code' : indicates the code that will compute the coupling
+%                 matrices 'HomeFE', 'FE2D' or 'Beam'
+%       -'mediator': 1 or 2. indicates which model should be used as the
+%                    support for the physical basis functions. Note that
+%                    usually the coarser support should be used.
 %       -'operator' : type of coupling operator used ('H1' or 'L2').
-%       -'LevelSet1'; 'LevelSet2' : definition of level-sets bounding the
-%             coupling zone, given as a mesh in (X,T) format, with the
-%             appropriate dimension TO BE MODIFIED !!!
-%       -'epsilon' : residual value of the non-proeminent model
+%       -'levelSet' : definition of the coupling zone, given as a
+%                     levelSet1D or levelSet object.
+%       -'cplval' : value of the weight function in the coupling zone (cell
+%                   of values for each model. When the value is a scalar, a
+%                   constant function is used in the coupling area. When
+%                   two values are given, the function is taken as linear
+%                   between the two values given.
+%       -'freeval' : cell of the (constant) value of the weight function
+%                    for each model outside the coupling zone.
 %
-%  solver: 'direct', 'MonteCarlo' or 'dmc' (MonteCarlo2 for the condensate version)
+%  solver: 'direct' (default) or 'FETI' (not implemented yet)
 %
 %  opt: structured array with options. Possible options include
 %       -'recomputeK' logical array of size Nm*1 where Nm is the number of
@@ -51,10 +52,7 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %       -'kappa' to set a value or the ratio between H1 and L2 elements of
 %             the H1 norm for the coupling operator. Default is 1e-3
 %
-%  NB: more complex coupling can be implemented 
-%     (see function DefineClassicalCoupling.m)
-%
-%  sol: cell containing (a part of) the solution for each model
+%  sol: cell containing the solution for each model
 %  out: structured array containing information on the computation
 %
 % developed at 
@@ -64,9 +62,8 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 % FRANCE
 % contact: regis.cottereau@ecp.fr
 
-% R. Cottereau 04/2010
-
 % initialization
+if nargin<3 || isempty(solver); solver = 'direct'; end
 if nargin<4; opt = []; end
 [ Nm, Nc, opt ] = Initiatevalues( Mdl, Cpl, opt ) ;
 
@@ -101,8 +98,8 @@ for i1 = 1:Nc
         Int.M = MediatorSpace( Cpl{i1}.mediator, Rep );
         
         % construction of coupling operators
-        Cpl{i1}.C1 = CouplingOperator( Cpl{i1}, Int, Rep{1}, opt, m1.code );
-        Cpl{i1}.C2 = CouplingOperator( Cpl{i1}, Int, Rep{2}, opt, m2.code );
+        Cpl{i1}.C1 = CouplingOperator( Cpl{i1}, Int, Rep{1}, opt );
+        Cpl{i1}.C2 = CouplingOperator( Cpl{i1}, Int, Rep{2}, opt );
 
     end
 end
