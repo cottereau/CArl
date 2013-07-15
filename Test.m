@@ -75,7 +75,7 @@ switch lower(type)
     case {'mc1d','zoom1dstosto'}
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
-        plotteststochastic2( model, sol, out, ref );
+        plotteststochastic2( model, sol );
         
     case {'beam2d'}
         load(['Tests/' type '.mat']);
@@ -136,59 +136,40 @@ figure; trimesh( T1, X1(:,1), X1(:,2), sol{1} );
 hold on; trisurf( T2, X2(:,1), X2(:,2), sol{2} ); 
 colorbar; view(3)
 
-  
-
 % FUNCTION PLOTTESTSTOCHASTIC
-function plotteststochastic2( model, ~, out, ref )
+function plotteststochastic2( model, sol )
 pc = 0.9;
-x1 = model{1}.mesh.X( model{1}.mesh.T )';
-x2 = model{2}.mesh.X( model{2}.mesh.T )';
+x1 = model{1}.HomeFE.mesh.X;
+x2 = model{2}.HomeFE.mesh.X;
+mu1 = mean(sol{1},2);
+stdu1 = std(sol{1},0,2);
+probu1=[mu1+stdu1/sqrt(1-pc);(mu1(end:-1:1)-stdu1(end:-1:1)/sqrt(1-pc))];
+xxx1 = [ x1;x1(end:-1:1)];
+fill( xxx1, probu1, 'y' )
+hold on
+mu2 = mean(sol{2},2);
+stdu2 = std(sol{2},0,2);
+probu2=[mu2+stdu2/sqrt(1-pc);mu2(end:-1:1)-stdu2(end:-1:1)/sqrt(1-pc)];
+xxx2 = [ x2;x2(end:-1:1)];
+fill( xxx2, probu2, 'y' )
+plot( x1, mu1, 'bx-', x2, mu2, 'r--' );
+
 dx2 = diff(x2);
 dx1 = diff(x1);
-u1=mean(out.model{1}.auMC,3)';uu1=u1(:);
-stdu1=std(out.model{1}.auMC,0,3)';stdu1=stdu1(:);
-probu1=[uu1+stdu1/sqrt(1-pc);(uu1(end:-1:1)-stdu1(end:-1:1)/sqrt(1-pc))];
-xxx1 = [ (x1(:));(x1(end:-1:1))'];
-figure;
-if (strcmp(out.coupling{1}.mediator.type,'mesomicro'))
-    fill( xxx1, probu1, 'y' )
-end
-hold on
-%u1b = (sol{1})';
-%u2b=(sol{2})';
-u2=mean(out.model{2}.auMC,3)';uu2=u2(:);%mean u2
-stdu2=std(out.model{2}.auMC,0,3)';stdu2=stdu2(:);%std u2
-probu2=[uu2+stdu2/sqrt(1-pc);uu2(end:-1:1)-stdu2(end:-1:1)/sqrt(1-pc)];
-xxx2 = [ x2(:);x2(end:-1:1)'];
-fill( xxx2(:), probu2(:), 'y' )
-plot(x1,u1,'bx-',x2,u2,'r--');
-
-
-%s1b = diff(u1) ./ diff(x1);% s1b = [s1b; s1b];
-%s2b = diff(u2) ./ diff(x2);% s2b = [s2b; s2b];
-
-s1 = squeeze(diff(out.model{1}.auMC,[],2)) ...
-           ./ repmat(dx1',[1 size(out.model{1}.auMC,3)]);
+s1 = diff(sol{1},[],1) ./ repmat(dx1,[1 size(sol{1},2)]);
 ms1 = mean(s1,2); ms1 = [ms1 ms1]'; ms1 = ms1(:);
 ss1 = std(s1,[],2); ss1 = [ss1 ss1]'; ss1 = ss1(:);
 pms1 = [ ms1+ss1/sqrt(1-pc); ms1(end:-1:1)-ss1(end:-1:1)/sqrt(1-pc) ];
+x1 = model{1}.HomeFE.mesh.X(model{1}.HomeFE.mesh.T)';
+x2 = model{2}.HomeFE.mesh.X(model{2}.HomeFE.mesh.T)';
 xx1 = x1(:); xx1 = [ xx1; xx1(end:-1:1) ];
-figure;
-if (strcmp(out.coupling{1}.mediator.type,'mesomicro'))
-fill( xx1, pms1, 'y' )
-end
+figure; fill( xx1, pms1, 'y' )
 hold on;
-s2 = squeeze(diff(out.model{2}.auMC,[],2)) ...
-           ./ repmat(dx2',[1 size(out.model{2}.auMC,3)]);
+s2 = diff(sol{2},[],1) ./ repmat(dx2,[1 size(sol{2},2)]);
 ms2 = mean(s2,2); ms2 = [ms2 ms2]'; ms2 = ms2(:);
 ss2 = std(s2,[],2); ss2 = [ss2 ss2]'; ss2 = ss2(:);
 pms2 = [ ms2+ss2/sqrt(1-pc); ms2(end:-1:1)-ss2(end:-1:1)/sqrt(1-pc) ];
 xx2 = x2(:); xx2 = [ xx2; xx2(end:-1:1) ];
 fill( xx2, pms2, 'y' )
 plot( x1(:), ms1, 'bx-', x2(:), ms2, 'ro--' );
-if ~isempty(ref)
-    xref = [ref.X(1:(end-1)) ref.X(2:end)]'; xref = xref(:);
-    sref = diff(ref.u) ./ diff(ref.X); sref = [sref; sref];
-    hold on; plot(xref,sref,'k--')
-end
 

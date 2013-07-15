@@ -40,38 +40,26 @@ switch model.code
     % HOMEFE
     case 'HomeFE'
         stiff = model.HomeFE;
-        % modify the properties in each element according to alpha
         alpha = interp(model.alpha,incenters(model.mesh));
         alpha = repmat(alpha',nnode,1)';
         stiff.property = stiff.property .* alpha;
-        stiff.load = stiff.load .* alpha;
-        
-        % compute the modified value of the model property values
+        stiff.load = stiff.load .* alpha;        
         [ x, y, K, z, F ] = StiffnessMatrixHomeFE( stiff );
         
     % MONTE CARLO VERSION OF HOME FE
     case 'MonteCarloHomeFE'
-
-         % modify the properties in each element according to alpha
-        model.mesh = model.mesh.tri3;
-        x = model.mesh.X(:,1); y = model.mesh.X(:,2);
-        Ne = size(model.mesh.Triangulation,1);
-        X = [reshape(x(model.mesh.Triangulation'),3*Ne,1) reshape(y(model.mesh.Triangulation'),3*Ne,1)];
-        inc = model.mesh.incenters;
-        xe = repmat( inc(:,1)', [3 1]);
-        ye = repmat( inc(:,2)', [3 1]);
-        Xe = [xe(:) ye(:)];
-        alpha = interp(model.alpha,X,Xe);
-        model.load = model.HomeFE.load .* reshape(alpha,3,Ne)';
-        property = model.HomeFE.property;
-        model.BC = model.HomeFE.BC;
-
-        % compute the modified value of the model property values
-        Nmc = size( model.HomeFE.property, 3 );
+        
+        % modify the properties in each element according to alpha
+        stiff = model.HomeFE;
+        property = stiff.property;
+        Nmc = size( property, 3 );
+        alpha = interp(model.alpha,incenters(model.mesh));
+        alpha = repmat(alpha',nnode,1)';
+        stiff.load = stiff.load .* alpha;
         Ktot = cell( Nmc, 1 );
         for i1 = 1:Nmc
-            model.property = property(:,:,i1) .* reshape(alpha,3,Ne)';
-            [ x, y, Ktot{i1}, z, F ] = StiffnessMatrixHomeFE( model );
+            stiff.property = property(:,:,i1) .* alpha;
+            [ x, y, Ktot{i1}, z, F ] = StiffnessMatrixHomeFE( stiff );
         end
         K = Ktot{1};
         
