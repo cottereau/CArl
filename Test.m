@@ -13,7 +13,6 @@ function Test( type )
 %  | 'join1D'           | acoustic   | acoustic   |  D  | join case    |
 %  | 'force1D'          | acoustic   | acoustic   |  D  | bulk load    |
 %  | 'MC1D'             | acoustic   | acoustic   | D/S |              |
-%  | 'MC1Dstosto'       | acoustic   | acoustic   |  S  |              |
 %  | 'zoom1Dstosto'     | acoustic   | acoustic   |  S  | zoom case    |
 %  |____________________|____________|____________|_____|______________|
 %
@@ -44,14 +43,11 @@ function Test( type )
 %  |____________________|______________________________________________|
 %
 % SERIES
-%  type='short' launches in series the following tests: 'zoom1D', 'join1D',
-%               'force1D', 'MC1D', 'MC1D_BC_u10', 'MC1D_stosto', 
-%               'zoom1Dstosto', 'join2D', 'zoom2D', 'zoom2Dindent', 
+%  type='short' launches in series the series '1D' and the tests :
+%               'join2D', 'zoom2D', 'zoom2Dindent', 
 %               'NonEmbedded2D_1', 'force2D', 'zoom2dstosto'
-
-% creation: R. Cottereau 05/2010
-% TO DO
-% - a test with three models and two couplings
+%  type='1D' launches in series the short 1D tests: 'zoom1D', 'join1D',
+%               'force1D', 'MC1D', 'zoom1Dstosto'
 
 % default
 if nargin==0
@@ -74,8 +70,8 @@ switch lower(type)
 
     case {'mc1d','zoom1dstosto'}
         load(['Tests/' type '.mat']);
-        [ sol, out ] = CArl( model, coupling, solver );
-        plotteststochastic2( model, sol );
+        sol = CArl( model, coupling, solver );
+        plotteststochastic( model, sol );
         
     case {'beam2d'}
         load(['Tests/' type '.mat']);
@@ -95,6 +91,13 @@ switch lower(type)
         Test('force2D');
         Test('zoom2dstosto');
         
+    case '1d'
+        Test('zoom1D');
+        Test('join1D');
+        Test('force1D');
+        Test('MC1D');
+        Test('zoom1Dstosto');
+
     otherwise
         error('unknown test case')
 
@@ -137,26 +140,28 @@ hold on; trisurf( T2, X2(:,1), X2(:,2), sol{2} );
 colorbar; view(3)
 
 % FUNCTION PLOTTESTSTOCHASTIC
-function plotteststochastic2( model, sol )
+function plotteststochastic( model, sol )
 pc = 0.9;
 x1 = model{1}.HomeFE.mesh.X;
-x2 = model{2}.HomeFE.mesh.X;
-mu1 = mean(sol{1},2);
-stdu1 = std(sol{1},0,2);
+N1 = length(x1);
+mu1 = mean(sol{1}(1:N1,:),2);
+stdu1 = std(sol{1}(1:N1,:),0,2);
 probu1=[mu1+stdu1/sqrt(1-pc);(mu1(end:-1:1)-stdu1(end:-1:1)/sqrt(1-pc))];
 xxx1 = [ x1;x1(end:-1:1)];
+figure
 fill( xxx1, probu1, 'y' )
-hold on
-mu2 = mean(sol{2},2);
-stdu2 = std(sol{2},0,2);
+x2 = model{2}.HomeFE.mesh.X;
+N2 = length(x2);
+mu2 = mean(sol{2}(1:N2,:),2);
+stdu2 = std(sol{2}(1:N2,:),0,2);
 probu2=[mu2+stdu2/sqrt(1-pc);mu2(end:-1:1)-stdu2(end:-1:1)/sqrt(1-pc)];
 xxx2 = [ x2;x2(end:-1:1)];
+hold on
 fill( xxx2, probu2, 'y' )
 plot( x1, mu1, 'bx-', x2, mu2, 'r--' );
-
 dx2 = diff(x2);
 dx1 = diff(x1);
-s1 = diff(sol{1},[],1) ./ repmat(dx1,[1 size(sol{1},2)]);
+s1 = diff(sol{1}(1:N1,:),[],1) ./ repmat(dx1,[1 size(sol{1},2)]);
 ms1 = mean(s1,2); ms1 = [ms1 ms1]'; ms1 = ms1(:);
 ss1 = std(s1,[],2); ss1 = [ss1 ss1]'; ss1 = ss1(:);
 pms1 = [ ms1+ss1/sqrt(1-pc); ms1(end:-1:1)-ss1(end:-1:1)/sqrt(1-pc) ];
@@ -164,12 +169,12 @@ x1 = model{1}.HomeFE.mesh.X(model{1}.HomeFE.mesh.T)';
 x2 = model{2}.HomeFE.mesh.X(model{2}.HomeFE.mesh.T)';
 xx1 = x1(:); xx1 = [ xx1; xx1(end:-1:1) ];
 figure; fill( xx1, pms1, 'y' )
-hold on;
-s2 = diff(sol{2},[],1) ./ repmat(dx2,[1 size(sol{2},2)]);
+s2 = diff(sol{2}(1:N2,:),[],1) ./ repmat(dx2,[1 size(sol{2},2)]);
 ms2 = mean(s2,2); ms2 = [ms2 ms2]'; ms2 = ms2(:);
 ss2 = std(s2,[],2); ss2 = [ss2 ss2]'; ss2 = ss2(:);
 pms2 = [ ms2+ss2/sqrt(1-pc); ms2(end:-1:1)-ss2(end:-1:1)/sqrt(1-pc) ];
 xx2 = x2(:); xx2 = [ xx2; xx2(end:-1:1) ];
+hold on;
 fill( xx2, pms2, 'y' )
 plot( x1(:), ms1, 'bx-', x2(:), ms2, 'ro--' );
 

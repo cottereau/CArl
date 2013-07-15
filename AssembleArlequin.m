@@ -30,13 +30,11 @@ Nc = length(coupling); % number of coupling pairs
 % size of the block matrices and global matrix
 Nki = zeros( Nm, 1 );  % size of stiffness matrices (including BC)
 Nci = zeros( Nc, 1 );  % size of coupling matrices
-c2m = zeros( Nc, 2 );  % numbering of coupling pairs
 for i1 = 1:Nm
     Nki(i1) = size(model{i1}.K,1);
 end
 for i1 = 1:Nc
     Nci(i1) = size( coupling{i1}.C1, 2 );
-    c2m(i1,:) = coupling{i1}.models;
 end
 N = sum(Nki) + sum(Nci);
 
@@ -74,7 +72,7 @@ Kmc = [];
 for i1 = 1:Nm
     if ~isempty( model{i1}.Kmc );
         Nmc = length(model{i1}.Kmc);
-        if ~exist( 'Kmc', 'var' )
+        if isempty(Kmc)
             Kmc = cell(Nmc,1);
             for i2 = 1:Nmc
                 Kmc{i2} = sparse( N, N );

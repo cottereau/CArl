@@ -38,12 +38,9 @@ switch lower(Nmod)
         if (strcmp( couple.mediator.type, 'stochastic' ))
             [ x, y, Cs ] = CouplingOperatorHomeFE( 'L2', Int.mesh, opt );
             Cs = Rep.M * sparse( x , y, Cs );
-            [ xtheta, ~, Ctheta ] = find( sum( Cs, 2 ) );
-            [ xpsi, ~, Cpsi ] = find( sum( Cs * Int.M', 1 )' );
-            C.xBCpsi = xpsi;
-            C.BCpsi = Cpsi;
-            C.xtheta = xtheta;
-            C.Ctheta = Ctheta;
+            Ns = size(Cs);
+            C = [ C sum( Cs, 2 ) sparse(Ns(1),1);
+                  zeros(Ns(2),Ns(2)+1) sum( Cs * Int.M', 1 )'];
         end
         
     % ELASTIC COUPLING

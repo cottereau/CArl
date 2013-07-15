@@ -65,7 +65,7 @@ switch model.code
             [ x, y, tmpK, z, F ] = StiffnessMatrixHomeFE( stiff );
             MC{i1} = sparse( x, y, tmpK );
         end
-        K = spalloc( max(x), max(y), 0 );
+        K = zeros(size(tmpK));
         
     % TIMOSCHENKO BEAM MODEL
     case 'Beam'
@@ -85,7 +85,7 @@ switch model.code
             [ x, y, tmpK, z, F ] = Timostiff( model );
             MC{i1} = sparse( x, y, tmpK );
         end
-        K = spalloc( max(x), max(y), 0 );
+        K = zeros(size(tmpK));
         
     % 2D ELASTIC MODEL
     case 'FE2D'
@@ -110,7 +110,7 @@ switch model.code
             [ x, y, tmpK, z, F ] = K_2D_elasticity( model );
             MC{i1} = sparse( x, y, tmpK );
         end
-        K = spalloc( max(x), max(y), 0 );
+        K = zeros(size(tmpK));
         
     % COMSOL
     case 'Comsol'

@@ -5,7 +5,7 @@ function [ Mdl, Cpl ] = SolveArlequin( K, F, Mdl, Cpl, solver, opt, Kmc )
 %
 %  K: sparse stiffness matrix
 %  F: sparse vector
-%  solver: 'direct', 'montecarlo', or 'FETI' (not implemented yet)
+%  solver: 'direct', or 'FETI' (not implemented yet)
 %
 %  sol: solution of the system
 %
@@ -17,21 +17,15 @@ switch lower(solver)
     
     % direct solver
     case 'direct'
-        u = K \ F;
-        
-    % monte carlo solver
-    case 'montecarlo'
-        tic
-        keyboard
-        N = size(K,1);
-        Nmc = length( opt.MC.Ks );
-        
-        % MC loop and computations of realizations of the patch solutions
-        u = zeros( N, Nmc );
-        for i1= 1:Nmc
-            u(:,i1) = (K+Kmc{i1}) \ F;
+        if isempty(Kmc)
+            u = K \ F;
+        else
+            Nmc = length( Kmc );
+            u = zeros( size(K,1), Nmc );
+            for i1= 1:Nmc
+                u(:,i1) = (K+Kmc{i1}) \ F;
+            end
         end
-        toc
 
     % FETI solver
     case 'feti'
