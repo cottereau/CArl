@@ -118,17 +118,17 @@ for i1 = 1:Nm
         Mdl{i1}.alpha = CondensateAlpha( i1, Cpl );
         
         % construct stiffness and force matrices
-        [ Mdl{i1}.K, Mdl{i1}.F ] = StiffnessMatrix( Mdl{i1} );
+        [ Mdl{i1}.K, Mdl{i1}.F, Mdl{i1}.Kmc ] = StiffnessMatrix( Mdl{i1} );
         
     end
 end
 
 % assemble sparse matrix system
 disp('Assembling and inverting system ...')
-[ K, F, opt ] = AssembleArlequin( Mdl, Cpl );
+[ K, F, opt, Kmc ] = AssembleArlequin( Mdl, Cpl );
 
 % solving system
-[ Mdl, Cpl ] = SolveArlequin( K, F, Mdl, Cpl, solver, opt );
+[ Mdl, Cpl ] = SolveArlequin( K, F, Mdl, Cpl, solver, opt, Kmc );
 
 % preparing output
 [ sol, Mdl ] = ArlequinOutput( Mdl );

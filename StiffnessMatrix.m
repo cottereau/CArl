@@ -1,4 +1,4 @@
-function [ K, F ] = StiffnessMatrix( model )
+function [ K, F, MC ] = StiffnessMatrix( model )
 % STIFFNESSMATRIX to construct the basic stiffness matrix and force vector
 % by calling an external code
 %
@@ -34,6 +34,9 @@ elseif d==2
 end
 nnode = size( T, 2 );
 
+% Initialization
+MC = [];
+
 % switch on the external code
 switch model.code
     
@@ -56,32 +59,33 @@ switch model.code
         alpha = interp(model.alpha,incenters(model.mesh));
         alpha = repmat(alpha',nnode,1)';
         stiff.load = stiff.load .* alpha;
-        Ktot = cell( Nmc, 1 );
+        MC = cell( Nmc, 1 );
         for i1 = 1:Nmc
             stiff.property = property(:,:,i1) .* alpha;
-            [ x, y, Ktot{i1}, z, F ] = StiffnessMatrixHomeFE( stiff );
+            [ x, y, tmpK, z, F ] = StiffnessMatrixHomeFE( stiff );
+            MC{i1} = sparse( x, y, tmpK );
         end
-        K = Ktot{1};
+        K = spalloc( max(x), max(y), 0 );
         
     % TIMOSCHENKO BEAM MODEL
     case 'Beam'
         keyboard
-        % modify the properties in each element according to alpha
         inc = mean(model.mesh.X(model.mesh.T),2);
-        %%%%%%%%%%%%%%%%%%%%%%%TO BE CHECKED (OK FOR SIMPLY LINEAR ALPHA)
         alpha = interp(model.alpha,[inc;zeros(1,length(inc))]', ...
                                    [inc;zeros(1,length(inc))]');
         model.load = model.HomeFE.load .* repmat(alpha,[1,2,3]);
-        property = model.HomeFE.property;
-
+        model.property = model.property .* repmat(alpha,1,2);
+        [ x, y, K, z, F ] = Timostiff( model );
+        
         % compute the modified value of the model property values
         Nmc = size( model.HomeFE.property, 3 );
-        Ktot = cell( Nmc, 1 );
+        MC = cell( Nmc, 1 );
         for i1 = 1:Nmc
             model.property = property(:,:,i1) .* repmat(alpha,1,2);
-            [ x, y, Ktot{i1}, z, F ] = Timostiff( model );
+            [ x, y, tmpK, z, F ] = Timostiff( model );
+            MC{i1} = sparse( x, y, tmpK );
         end
-        K = Ktot{1};
+        K = spalloc( max(x), max(y), 0 );
         
     % 2D ELASTIC MODEL
     case 'FE2D'
@@ -100,12 +104,13 @@ switch model.code
 
         % compute the modified value of the model property values
         Nmc = size( model.HomeFE.property, 3 );
-        Ktot = cell( Nmc, 1 );
+        MC = cell( Nmc, 1 );
         for i1 = 1:Nmc
             model.property = property(:,:,i1) .* reshape(alpha,3,Ne)';
-            [ x, y, Ktot{i1}, z, F ] = K_2D_elasticity( model );
+            [ x, y, tmpK, z, F ] = K_2D_elasticity( model );
+            MC{i1} = sparse( x, y, tmpK );
         end
-        K = Ktot{1};
+        K = spalloc( max(x), max(y), 0 );
         
     % COMSOL
     case 'Comsol'
@@ -127,8 +132,5 @@ switch model.code
 end
 
 % output
-K = struct( 'x', x, 'y', y, 'val', K );
-F = struct( 'x', z, 'y', ones(size(z)), 'val', F );
-if exist( 'Ktot', 'var' ) && size(model.HomeFE.property,3)>1
-    K.MC = Ktot;
-end
+K = sparse( x, y, K );
+F = sparse( z, 1, F );

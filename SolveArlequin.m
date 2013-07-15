@@ -1,11 +1,11 @@
-function [ Mdl, Cpl ] = SolveArlequin( K, F, Mdl, Cpl, solver, opt )
+function [ Mdl, Cpl ] = SolveArlequin( K, F, Mdl, Cpl, solver, opt, Kmc )
 % SOLVEARLEQUIN to solve the coupled system
 %
 % syntax: sol = SolveArlequin( K, F, coupling )
 %
 %  K: sparse stiffness matrix
 %  F: sparse vector
-%  solver: 'direct', 'montecarlo', 'dmc', or 'FETI' (not implemented yet)
+%  solver: 'direct', 'montecarlo', or 'FETI' (not implemented yet)
 %
 %  sol: solution of the system
 %
@@ -22,21 +22,14 @@ switch lower(solver)
     % monte carlo solver
     case 'montecarlo'
         tic
+        keyboard
+        N = size(K,1);
         Nmc = length( opt.MC.Ks );
         
-        % submatrices
-        indk = opt.K(1,1) : opt.BC(end,2);
-        indc = opt.Cy(1,1) : opt.Cy(end,2)+1;
-        C = K( indk, indc );
-        K = K( indk, indk );
-        nc = size(C,2);
-        nk = size(K,1);
-        O = spalloc( nc, nc, 0 );
-        
         % MC loop and computations of realizations of the patch solutions
-        u = zeros( nk+nc, Nmc );
+        u = zeros( N, Nmc );
         for i1= 1:Nmc
-            u(:,i1) = [K+opt.MC.Ks{i1} C;C' O] \ F;
+            u(:,i1) = (K+Kmc{i1}) \ F;
         end
         toc
 
@@ -51,9 +44,8 @@ end
 
 % prepare output
 for i1 = 1:length(Mdl)
-    Mdl{i1}.u = ( u( opt.K(i1,1):opt.K(i1,2), : ) );
-    Mdl{i1}.lambdaBC = ( u( opt.BC(i1,1):opt.BC(i1,2), : ) );
+    Mdl{i1}.u = ( u( (opt.iK(i1)+1):opt.iK(i1+1), : ) );
 end
 for i1 = 1:length(Cpl)
-    Cpl{i1}.lambda = ( u( opt.Cy(i1,1):opt.Cy(i1,2), : ) );
+    Cpl{i1}.lambda = ( u( (opt.iC(i1,3)+1):opt.iC(i1,3), : ) );
 end

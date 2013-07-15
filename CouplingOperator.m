@@ -33,8 +33,7 @@ switch lower(Nmod)
     % ACOUSTIC COUPLING
     case {'homefe','montecarlohomefe'}
         [ x, y, C ] = CouplingOperatorHomeFE( couple.operator, Int.mesh, opt );
-        [ x, y, C ] = find( Rep.M * sparse( x, y, C ) * Int.M' );
-        C = struct( 'x', x, 'y', y, 'val', C );
+        C = Rep.M * sparse( x, y, C ) * Int.M';
         
         if (strcmp( couple.mediator.type, 'stochastic' ))
             [ x, y, Cs ] = CouplingOperatorHomeFE( 'L2', Int.mesh, opt );
