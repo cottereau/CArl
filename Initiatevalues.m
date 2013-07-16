@@ -5,7 +5,7 @@ function [ Nm, Nc, opt ] = Initiatevalues( model, coupling, opt )
 % disabling some warnings
 warning off MATLAB:DelaunayTri:ConsConsSplitWarnId;
 warning off MATLAB:DelaunayTri:ConsSplitPtWarnId;
-
+warning off MATLAB:TriRep:PtsNotInTriWarnId;
 % constants
 Nm = length( model );    % number of models
 Nc = length( coupling ); % number of coupling operations

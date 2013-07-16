@@ -24,16 +24,6 @@ function [ K, F, MC ] = StiffnessMatrix( model )
 
 % R. Cottereau 04/2010
 
-% description of the model
-X = model.mesh.X;
-d = size(X,2);
-if d==1
-    T = model.mesh.T;
-elseif d==2
-    T = model.mesh.Triangulation;
-end
-nnode = size( T, 2 );
-
 % Initialization
 MC = [];
 
@@ -44,9 +34,10 @@ switch model.code
     case 'HomeFE'
         stiff = model.HomeFE;
         alpha = interp(model.alpha,incenters(model.mesh));
-        alpha = repmat(alpha',nnode,1)';
+        alpha = repmat(alpha',size(stiff.mesh.T,2),1)';
         stiff.property = stiff.property .* alpha;
-        stiff.load = stiff.load .* alpha;        
+        stiff.load = stiff.load .* alpha;   
+        keyboard
         [ x, y, K, z, F ] = StiffnessMatrixHomeFE( stiff );
         
     % MONTE CARLO VERSION OF HOME FE
@@ -57,7 +48,7 @@ switch model.code
         property = stiff.property;
         Nmc = size( property, 3 );
         alpha = interp(model.alpha,incenters(model.mesh));
-        alpha = repmat(alpha',nnode,1)';
+        alpha = repmat(alpha',size(stiff.mesh.T,2),1)';
         stiff.load = stiff.load .* alpha;
         MC = cell( Nmc, 1 );
         for i1 = 1:Nmc

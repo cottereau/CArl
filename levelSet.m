@@ -73,7 +73,7 @@ classdef levelSet
                 obj.X{1} = varargin{2};
                 obj.in = true;
                 if nargin>2
-                    obj.in = logical(varargin{3});
+                    obj.in = varargin{3};
                 end
             % special case of ellipse/circle
             elseif strcmp(varargin{1},'circle')
@@ -366,9 +366,9 @@ classdef levelSet
             dt = DelaunayTri( ldt.X{1}, ldt.T{1} );
             dt = TRI6( dt.Triangulation, dt.X );
             ind1 = inside( obj1, dt.X, true );
-            ind1 = all( ind1(dt.T), 2 );
+            ind1 = all( ind1(dt.Triangulation), 2 );
             ind2 = inside( obj2, dt.X, true );
-            ind2 = all( ind2(dt.T), 2 );
+            ind2 = all( ind2(dt.Triangulation), 2 );
         end
         % check ordering of T and separation of different levelSets
         % this routine should be checked before use

@@ -78,13 +78,9 @@ classdef discontinuous
         % plotting discontinuous function
         function plot( obj, X )
             [fval,ind] = interp( obj, X ,X);
-    %        fval = rand(size(fval))+fval;
             figure; hold on;
             for i1 = 1:obj.Ns
                 if any(ind==i1)
-%                     C = [];
-%                     for i2 = 1:obj.x{i1}.N
-%                         C = [C obj.x{i1}
                     dt = DelaunayTri(X(ind==i1,:));
                     xi = dt.X(:,1); yi = dt.X(:,2);
                     Xc = [mean(xi(dt.Triangulation),2) ...
@@ -97,13 +93,13 @@ classdef discontinuous
             end
         end
         % interpolation: getting values of f inside each subdomain
-        function [fv,indg] = interp(obj,X,Xe)
-            fv = zeros(size(X,1),1);
-            indg = zeros(size(X,1),1);
+        function [fv,indg] = interp(obj,Xe)
+            fv = zeros(size(Xe,1),1);
+            indg = zeros(size(Xe,1),1);
             for i1 = 1:obj.Ns
-                ind = distance(obj.x{i1},Xe,true)<=0;
+                ind = distance(obj.x{i1},Xe)<=0;
                 indg(ind) = i1;
-                fv(ind) = obj.f{i1}(X(ind,:));
+                fv(ind) = obj.f{i1}(Xe(ind,:));
             end
         end
         % addregion: define a new subdomain and corresponding function
