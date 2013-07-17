@@ -2,13 +2,9 @@ classdef levelSet
 % definition of a levelSet class for implicit definition of boundaries of
 % complex convex or concave domains
 %
-% LS = levelSet(f) creates a level-set object, from the data of a 
-% scatteredInterpolant function f, that is a distance function from an
-% interface.
-%
-% LS = levelSet(x,fx) creates a level-set object, from the data of a set of
-% nodes x and the value of the distance function fx evaluated at these 
-% nodes.
+% LS = levelSet(T,X) creates a level-set object considering a domain inside
+% the interface defined by the [Ne*2] connectivity matrix T and [Nn*2] 
+% coordinate matrix X.
 %
 % LS = levelSet('circle',Xc,R) creates a level-set object considering a
 % domain inside a circular interface centered on Xc, with radius R.
@@ -16,411 +12,444 @@ classdef levelSet
 % LS = levelSet('square',Xc,L) creates a level-set object considering a 
 % domain inside a square interface with corner Xc and side length L.
 %
-% LS = levelSet('interface',Xi,Xv) creates a level-set object considering a 
-% polygonal interface defined by nodes Xi, and evaluates the distance
-% function at points Xv.
-%
-% LS = levelSet(...,in) considers the exterior of the convex hull of the 
-% domain to be part of the domain if in==false, and the opposite if 
-% in==true (default).
+% LS = levelSet(...,in) considers the interior of the level-set if in==true
+% (default) and the outside of the level-set if in==false.
 %
 % LS = levelSet(true) corresponds to an empty domain and 
 % LS = levelSet(false) corresponds to the full space.
 %
 %  levelSet properties:
-%     dist - distance function from interface [scatteredInterpolant class]
-%     in   - indicates how the function is extrapolated outside the convex
-%            hull of dist [logical]
+%     X  - N*1 cell of Nn*2 coordinate matrix of nodes of the polygonal 
+%          interfaces
+%     T  - N*1 cell of Ne*2 connectivity matrices of polygonal interfaces
+%     in - N*1 vector of logicals indicating the considered domains are 
+%          inside (true) or outside (false) the different level-sets
+%     N  - number of disjoint level-sets
+%     sign - sign of the distance function inside the level-set
 %
 %  levelSet methods:
-%     refine       - add new points to the definition of distance function
-%     interface    - retrieve the interface as a cell of points lists
-%     initialize   - recompute the distance function based on interface
-%     intersection - intersection of two domains defined by levelsets
-%     union        - union of two domains defined by levelsets
-%     complement   - complement of a domain with respect to another
-%     inside       - check whether points are in the domain
-%     clean        - ???
-%     checkConnex  - ???
+%     distance      - distance from interface to a set of points
+%     getInterface  - Returns a level-set made of only one closed surface
+%     intersection  - intersecting two levelsets (new negative points are
+%                    points that were formarly negative for both level-sets)
+%     complement - complement of two levelsets (new negative points are
+%                    points that were in the first LS and not the second)
 %     plot         - plot the distance function and interface
+%     inside       - check whether points are inside the level-set
+%     normal       - normal vectors to edges in the level-set
+
+% NB: the structure of the class should be changed based on operational
+% functions Union and Intersection ... for now, it is not robust at all for
+% computing distances
 
 % R. Cottereau 04/2013
 
     properties
-        dist  % distance function from interface [scatteredInterpolant]
-        in    % indicates how the function is extrapolated outside the convex
-              % hull of dist [logical]
+        X     % Nn*2 coordinate matrix of nodes of the polygonal interface
+        T     % Ne*2 connectivity matrices of polygonal interfaces
+        in    % logical indicating the the domain is inside (true) or outside
+              % (false) the levelset
     end
 
     properties (Constant)
         gerr = 1e-9; % error used to compute separations of points
-        discC = 1e3; % discretization for approximation of circle convexhull
-        sign = -1;   % sign of distance function inside the interface
-        Nx = 1e2;    % discretization for computation of contours
+        discC = 1e3; % discretization for approximation of circle convexhull 
     end
     
     properties (Dependent)
-        interface; % interface (with contourc format)
-        Ni;        % number of disjoint interfaces
+        sign  % sign of the distance function inside the level-set
+        N     % number of disjoint level-sets
     end 
     
     methods
         % Definition of level-set
         function obj = levelSet(varargin)
-            if nargin==0
-                obj.dist = levelSet(true);
-            elseif nargin==1 && islogical(varargin{1})
-                obj.dist = scatteredInterpolant();
+            if nargin==1
+                obj.T = cell(0);
+                obj.X = cell(0);
                 obj.in = varargin{1};
-            elseif isa(varargin{1},'scatteredInterpolant')
-                obj.dist = varargin{1};
-                if nargin>1
-                    obj.in = varargin{2};
-                else
-                    obj.in = true;
+            elseif ~ischar(varargin{1})
+                obj.T{1} = varargin{1};
+                obj.X{1} = varargin{2};
+                obj.in = true;
+                if nargin>2
+                    obj.in = varargin{3};
                 end
             % special case of ellipse/circle
             elseif strcmp(varargin{1},'circle')
                 theta = linspace(0,2*pi,obj.discC)';
-                R = varargin{3};
                 Xc = varargin{2};
-                X = [ Xc; [Xc(1)+R*cos(theta) Xc(2)+R*sin(theta)]];
-                X = [ X; [Xc(1)+2*R*cos(theta) Xc(2)+2*R*sin(theta)]];
-                F = obj.sign*[ R; zeros(obj.discC,1); -R*ones(obj.discC,1) ];
-                obj.dist = scatteredInterpolant( X, F );
+                R = varargin{3};
+                Xc = [Xc(:,1)+R*cos(theta) Xc(:,2)+R*sin(theta)];
+                inc = true;
                 if nargin>3
-                    obj.in = varargin{4};
-                else
-                    obj.in = true;
+                    inc = varargin{4};
                 end
+                obj = levelSet( [(1:obj.discC-1)' (2:obj.discC)'], Xc, inc );
             % special case of rectangle/square
             elseif strcmp(varargin{1},'square')||strcmp(varargin{1},'rectangle')
                 L = varargin{3};
                 if length(L)==1
                     L = [L L];
                 end
-                % list of points
-                Xc = varargin{2};
-                de = 2*obj.gerr;
-                de = 0.1;
-                xv = Xc(:,1) + linspace(-.5,1.5,20)*L(1);
-                xv = [xv Xc(:,1)+[-de de L(1)-de L(1)+de] ];
-                yv = Xc(:,2) + linspace(-.5,1.5,20)*L(2);
-                yv = [yv Xc(:,2)+[-de de L(2)-de L(2)+de] ];
-                [xv,yv] = ndgrid(xv,yv);
-                Xv = [xv(:) yv(:)];
-                % four corners
-                poli = [Xc;Xc+[L(1) 0];Xc+L;Xc+[0 L(2)];Xc];
-                d = dppoli( Xv, poli );
-                ind = inpolygon( Xv(:,1), Xv(:,2), poli(:,1), poli(:,2) );
-                d(ind) = obj.sign*d(ind);
-                d(~ind) = -obj.sign*d(~ind);
-                obj.dist = scatteredInterpolant( Xv, d );
+                Xr = repmat(varargin{2},[4 1]) + [0 0;L(1) 0;L;0 L(2)];
+                inp = true;
                 if nargin>3
-                    obj.in = varargin{4};
-                else
-                    obj.in = true;
+                    inp = varargin{4};
                 end
-            % special case of interface definition
-            elseif strcmp(varargin{1},'interface')
-                Xv = varargin{3};
-                Xp = varargin{2};
-                Fv = dppoli( Xv, Xp );
-                ind = inpolygon( Xv(:,1), Xv(:,2), Xp(:,1), Xp(:,2) );
-                Fv(ind) = obj.sign*Fv(ind);
-                Fv(~ind) = -obj.sign*Fv(~ind);
-                obj = levelSet(Xv,Fv,true);
-                if nargin>3
-                    obj.in = varargin{4};
-                else
-                    obj.in = true;
-                end
+                obj = levelSet( [1 2;2 3;3 4;4 1], Xr, inp );
+                return
             else
-                obj.dist = scatteredInterpolant(varargin{1},varargin{2});
-                if nargin>2
-                    obj.in = varargin{3};
-                else
-                    obj.in = true;
-                end
+                error('unknown arguments')
             end
-%            obj = clean(obj);
-            obj.dist.ExtrapolationMethod = 'none';
-        end
-        % get the number of interface
-        function Ni = get.Ni(obj)
-            int = obj.interface;
-            Ni = 0;
-            n = 1;
-            while n<size(int,1)
-                n = n+int(n,2)+1;
-                Ni = Ni+1;
+            if ~obj.in(1)&&obj.N>0
+                obj.T{1} = obj.T{1}(end:-1:1,[2 1]);
             end
         end
-        % get the definition of the interface
-        function int = get.interface(obj)
-            X = obj.dist.Points;
-            xv = linspace( min(X(:,1)), max(X(:,1)), obj.Nx );
-            yv = linspace( min(X(:,2)), max(X(:,2)), obj.Nx );
-            [x,y] = ndgrid(xv,yv);
-            V = reshape( obj.dist([x(:) y(:)]), obj.Nx, obj.Nx )';
-            int = contourc( xv, yv, V, [0 0])';
-%             % create mesh
-%             dt = delaunayTriangulation( obj.dist.Points );
-%             E = edges(dt);
-%             V = obj.dist.Values;
-%             X = obj.dist.Points;
-%             % take all points on the interface inside
-%             ind0 = abs(V)<obj.gerr;
-%             V(ind0) = obj.sign*2*obj.gerr;
-%             % get edges crossed by interface and touching elements
-%             % get next possible nodes and edges crossed by level set
-%             ind = find( V(E(:,1)).*V(E(:,2)) < -obj.gerr );
-%             Ec = E(ind,:);
-%             alpha = abs(V(Ec(:,1)))./abs(V(Ec(:,1))-V(Ec(:,2)));
-%             alpha = repmat( alpha, [1 2] );
-%             Xc = X(Ec(:,1),:) + alpha.*(X(Ec(:,2),:)-X(Ec(:,1),:));
-%             Tn = edgeAttachments( dt, Ec );
-%             nn = size(Tn,1);
-%             Sn = zeros(nn,4);
-%             for i1 = 1:nn
-%                 Nn = setdiff(dt.ConnectivityList(Tn{i1},:),Ec(i1,:))';
-%                 Sn(i1,:) = find(any(ismember(E,Nn),2) & any(ismember(E,Ec(i1,:)),2))';
-%             end
-%             Sn = Sn';
-%             Sn = reshape( Sn( ismember(Sn(:),ind) ), 2, nn )' ;
-%             Seg = struct( 'ind', find(ind), 'Xc', Xc, 'nextSeg', Sn );
-%             % get single nodes that are on the interface
-%             % get next possible nodes and edges crossed by level set
-%             ind0 = find( abs(V)<obj.gerr );
-%             nn = length(ind0);
-%             Xc = X(ind0,:);
-%             Tn = vertexAttachments( dt, ind0 );
-%             Nn = inf(nn,10);
-%             Sn = inf(nn,10);
-%             for i1 = 1:nn
-%                 Nni = setdiff(T(Tn{i1},:),ind0(i1));
-%                 Nn(i1,1:length(Nni)) = Nni';
-%                 Sni = find( all( ismember(E,Nni), 2 ));
-%                 Sn(i1,1:length(Sni)) = Sni';
-%             end
-%             indall = T( all( abs(V(T))<obj.gerr, 2 ), : );
-%             if ~isempty(indall)
-%                 keyboard
-%                 Nall = numel(indall);
-%                 np = zeros(Nall,1);
-%                 ns = zeros(Nall,1);
-%                 for i1 = 1:Nall
-%                     np(i1) = nnz(Nn(~ismember(ind0,indall),:)==indall(i1));
-%                     ns(i1) = nnz(S.nextP(~ismember(ind0,indall),:)==indall(i1));
-%                 end
-%                 nindall = ~ismember(ind0,indall(n==0));
-%                 ind0 = ind0( nindall );
-%                 Nn = Nn( nindall, : );
-%                 Xc = Xc( nindall, : );
-%                 Sn = Sn( nindall, : );
-%             end
-%             P = struct( 'ind', ind0, 'Xc', Xc, 'nextP', Nn, 'nextSeg', Sn );
-            % get rid of all-zero elements ???
-            % get a series of single interface
-%            int = cell(0,1);
-%            while ~isempty(P.ind) || ~isempty(Seg.ind)
-% while ~isempty(Seg.ind)
-%                 [int,P,S] = singleInterface( obj, Seg );
-% %                int{end+1,1} = p;
-%             end
+        % get the sign of the distance function inside the level-set
+        function s = get.sign(obj)
+            s = -1*obj.in+1*~obj.in;
         end
-        % get one interface only
-        function ci = getInterface( obj, i1 )
-            int = obj.interface;
-            Ni = 0;
-            n = 1;
-            ci = [];
-            while n<size(int,1)
-                Ni = Ni+1;
-                if Ni==i1
-                    ci = int( n+(1:int(n,2)), : );
-                    return
-                end
-                n = n+int(n,2)+1;
-            end
+        % get the number of disjoint level-sets
+        function n = get.N(obj)
+            n = length(obj.X);
         end
-%         % get a single interface
-%         function [int,P,S] = singleInterface( obj, S )
-%             keyboard
-%             ind = S.ind;
-%             nextS = S.nextSeg(1,1);
-%             for i1 = 2:size(ind,1)
-%                 i2 = ind==nextS;
-%                 tmp = ind( i2 );
-%                 ind( i2 ) = ind( i1 );
-%                 ind( i1 ) = tmp;
-%                 nextS = setdiff( S.nextSeg(i2,:), ind(i1-1) )
-%         %        i2 = find( S.nextSeg(ind(i1-1))
-%             end
-%            nextP = [];
-%            nextS = [];
-%            int = [];
-%            if ~isempty(S.ind)
-%                nextS = S.ind(1);
-%            else
-%                nextP = P.ind(1);
-%            end
-%             while ~isempty(P.ind) || ~isempty(S.ind)
-%                 indS = find( ismember(S.ind,nextS), 1 );
-%                 indP = find( ismember(P.ind,nextP), 1 );
-%                 if ~isempty(indS)
-%                     int = [int; S.Xc(indS,:)];
-%                     nextP = S.nextP(indS,:);
-%                     nextS = S.nextSeg(indS,:);
-%                     nindS = [1:indS-1 indS+1:length(S.ind)];
-%                     P.nextSeg( P.nextSeg==S.ind(indS) ) = inf;
-%                     S.nextSeg( S.nextSeg==S.ind(indS) ) = inf;
-%                     S.ind = S.ind(nindS);
-%                     S.Xc = S.Xc(nindS,:);
-%                     S.nextSeg = S.nextSeg(nindS,:);
-%                     S.nextP = S.nextP(nindS,:);
-%                 elseif ~isempty(indP)
-%                     int = [int; P.Xc(indP,:)];
-%                     nextP = P.nextP(indP,:);
-%                     nextS = P.nextSeg(indP,:);
-%                     nindP = [1:indP-1 indP+1:length(P.ind)];
-%                     P.nextSeg( P.nextSeg==P.ind(indP) ) = inf;
-%                     S.nextSeg( S.nextSeg==P.ind(indP) ) = inf;
-%                     P.ind = P.ind(nindP);
-%                     P.Xc = P.Xc(nindP,:);
-%                     P.nextSeg = P.nextSeg(nindP,:);
-%                     P.nextP = P.nextP(nindP,:);
-%                 else
-%                     keyboard
-%                     error('to be checked ... does it only mean we closed the loop?')
-%                 end           
-%            end
-%             int = [ int; int(1,:)];
-%         end
-        % re-compute the distance from the interface
-        function obj = initialize( obj )
-            keyboard
-            X = obj.dist.Points;
-            d = inf( size(X,1), 1 );
-            for i1 = 1:obj.Ni
-                Xp = getInterface( obj, i1 );
-                Xp = [Xp;Xp(1,:)];
-                di = dppoli( X, Xp );
+        % Distance from a set of points to the level set
+        function d = distance( obj, X )
+            Nx = size(X,1);
+            d = zeros(Nx,obj.N);
+            for i1 = 1:obj.N
+                poli = obj.X{i1}( [obj.T{i1}(:,1); obj.T{i1}(end,2) ], : );
+                d(:,i1) = dppoli( X, poli );
                 % change the sign for nodes inside the polygon
-                ind = inpolygon( X(:,1), X(:,2), Xp(:,1), Xp(:,2));
-                di(ind) = obj.sign*di(ind);
-                di(~ind) = -obj.sign*di(~ind);
-                [~,indj] = min(abs([d di]),[],2);
-                d(indj==2) = di(indj==2);
+                ind = inpolygon( X(:,1), X(:,2), obj.X{i1}(:,1), obj.X{i1}(:,2));
+                d(ind,i1) = obj.sign(i1)*d(ind,i1);
+                d(~ind,i1) = -obj.sign(i1)*d(~ind,i1);
             end
-            obj = levelSet( X, d, obj.in );
+            d = max(d,[],2);
         end
-        % add points to the definition of a level-set
-        function obj = refine(obj,X)
-            X = unique( round(X/obj.gerr)*obj.gerr, 'rows' );
-            V = obj.dist(X);
-%            Xo = obj.dist.Points;
-%            K = convhull(Xo);
-%            ind = ~inpolygon( X(:,1), X(:,2), Xo(K,1), Xo(K,2) ) & (V==0);
-            V(isnan(V)) = (-obj.in*obj.sign+~obj.in*obj.sign)*inf;
-            obj = levelSet( X, V, obj.in );
-        end
-        % intersecting two domains composed of several level-sets
-        function obj = intersection( obj1, obj2 )
-            if ~isempty(obj1.dist)
-                X1 = obj1.dist.Points;
+        % get interface number i
+        function lsi = getInterface( obj, i1 )
+            if i1<=obj.N
+                lsi = levelSet( obj.T{i1}, obj.X{i1}, obj.in(i1) );
             else
-                X1 = [];
+                lsi = levelSet(true);
             end
-            if ~isempty(obj2.dist)
-                X2 = obj2.dist.Points;
-            else
-                X2 = [];
-            end
-            % obj1 is full space
-            if isempty(X1)&&~obj1.in
-                obj = obj2;
-                return
-            % obj2 is full space
-            elseif isempty(X2)&&~obj2.in 
-                obj = obj1;
-                return
-            % obj1 or obj2 are empty space
-            elseif (isempty(X1)&&obj1.in) || (isempty(X2)&&obj2.in)
-                obj = levelSet(true);
-                return
-            end
-            % general case
-            X = [ X1; X2];
-            obj1 = refine( obj1, X );
-            obj2 = refine( obj2, X );
-            d = max( obj1.dist.Values, obj2.dist.Values );
-            obj = levelSet( obj1.dist.Points, d, true );
-%            obj = initialize( obj );
         end
-        % intersecting two domains composed of several level-sets
-        function obj = union( obj1, obj2 )
-%             % obj1 is empty space
-%             if (obj1.Ni==0&&obj1.in)
-%                 obj = obj2;
-%                 return
-%             % obj2 is empty space
-%             elseif (obj2.Ni==0&&obj2.in)
-%                 obj = obj1;
-%                 return
-%             % obj1 or obj2 are full space
-%             elseif (obj1.Ni==0&&~obj1.in) || (obj2.Ni==0&&~obj2.in)
-%                 obj = levelSet(false);
-%                 return
-%             end
-            % general case
-            X = [ obj1.dist.Points; obj2.dist.Points];
-            obj1 = refine( obj1, X );
-            obj2 = refine( obj2, X );
-            d = min( obj1.dist.Values, obj2.dist.Values );
-            obj = levelSet( obj1.dist.Points, d, true );
-            obj = initialize( obj );
+        % erase an interface of a levelSet structure
+        function obj = rmInterface( obj, i1 )
+            ind = [1:(i1-1) (i1+1):obj.N];
+            obj.X = obj.X(ind);
+            obj.T = obj.T(ind);
+            obj.in = obj.in(ind);
+        end
+        % replace the interface number i by another one
+        function obj = setInterface( obj, obji, ind )
+            if nargin<3
+                ind = obj.N+(1:obji.N);
+            end
+            for i1 = ind
+            obj.X{i1,1} = obji.X{1};
+            obj.T{i1,1} = obji.T{1};
+            obj.in(i1,1) = obji.in(1);
+            end
         end
         % complement of obj2 in obj1
         function obj = complement( obj1, obj2 )
-            if nargin==1
-                d = obj1.dist;
-                obj = levelSet( d.Points, -d.Values, ~obj1.in );
+            obj = levelSet(true);
+            obj2.in = ~obj2.in;
+            for i1 = 1:obj2.N
+                ls12 = intersection( obj1, getInterface(obj2,i1) );
+                if ls12.N>0
+                    obj = union( obj, ls12 );
+                end
+            end
+        end
+        % intersecting two domains composed of several level-sets
+        function obj = intersection( obj1, obj2 )
+            if (obj1.N==0&&obj1.in)||(obj2.N==0&&obj2.in)
+                obj = levelSet(true);
+                return
+            end
+            if (obj1.N==0&&~obj1.in)
+                obj = obj2;
+                return
+            end
+            if (obj2.N==0&&~obj2.in)
+                obj = obj1;
+                return
+            end
+            obj = levelSet(false);
+            for i1 = 1:obj1.N
+                for i2 = 1:obj2.N
+                    ls1 = getInterface( obj1, i1 );
+                    ls2 = getInterface( obj2, i2 );
+                    ls12 = LSintersection( ls2, ls1 );
+                    if ls12.N==1
+                        obj = setInterface( obj, ls12, obj.N+1 );
+                    elseif ls12.N==2
+                        obj = setInterface( obj, getInterface(ls12,1), obj.N+1 );
+                        obj = setInterface( obj, getInterface(ls12,2), obj.N+1 );
+                    end
+                end
+            end
+            obj = collapseIntersection( obj );
+            if obj.N==0
+                obj = levelSet(true);
+            end
+        end
+        % union of two domains composed of several level-sets
+        function obj = union( obj1, obj2 )
+            if (obj1.N==0&&~obj1.in)||(obj2.N==0&&~obj2.in)
+                obj = levelSet(false);
+                return
+            end
+            if (obj1.N==0&&obj1.in)
+                obj = obj2;
+                return
+            end
+            if (obj2.N==0&&obj2.in)
+                obj = obj1;
+                return
+            end
+            obj = levelSet(true);
+            if obj2.N==1&&obj1.N==1
+                obj = LSunion( obj1, obj2 );
+            elseif obj1.N==1
+                for i1 = 1:max(obj2.N,1)
+                    ls12 = LSunion( getInterface( obj2, i1 ), obj1 );
+                    obj = setInterface( obj, ls12 );
+                end
             else
-                obj = intersection( obj1, complement(obj2) );
+                for i1 = 1:max(obj2.N,1)
+                    ls12 = union( getInterface( obj2, i1 ), obj1 );
+                    obj = setInterface( obj, ls12 );
+                end
+            end
+        end
+        % returns the intersection of all the level-sets in one object
+        function obj = collapseIntersection(obj)
+            if obj.N<2
+                return
+            end
+            for i1 = obj.N:-1:2
+                for i2 = obj.N-1:-1:1
+                    ls1 = getInterface( obj, i1 );
+                    ls2 = getInterface( obj, i2 );
+                    ls12 = LSintersection( ls2, ls1 );
+                    if ls12.N<2
+                        obj = setInterface( obj, ls12, i2 );
+                        obj = rmInterface( obj, i1 );
+                        break
+                    end
+                end
+            end
+        end
+        % returns the union of all the level-sets in one object
+        function obj = collapseUnion(obj)
+            if obj.N<2
+                return
+            end
+            for i1 = obj.N:-1:2
+                for i2 = obj.N-1:-1:1
+                    ls1 = getInterface( obj, i1 );
+                    ls2 = getInterface( obj, i2 );
+                    ls12 = LSunion( ls2, ls1 );
+                    if ls12.N<2
+                        obj = setInterface( obj, ls12, i2 );
+                        obj = rmInterface( obj, i1 );
+                    end
+                end
+            end
+        end
+        % intersecting two level-sets of size 1 each
+        function obj = LSintersection( obj1, obj2 )
+            l12 = inside( obj1, obj2.X{1}, false );
+            l21 = inside( obj2, obj1.X{1}, false );
+            if ~all(l12)&&~all(l21)
+                [dt,ind1,ind2] = CrossLS( obj1, obj2 );
+                dt = subSet( dt, ind1&ind2 );
+                if dt.Ne>0
+                    [tt,xx] = freeBoundary(dt);
+                    obj = levelSet(tt,xx);
+                else
+                    obj = levelSet(true);
+                end
+            elseif all(l12)&&all(l21)
+                obj = setInterface( obj1, obj2, obj1.N+1 );
+            elseif all(l21)
+                obj = obj1;
+            elseif all(l12)
+                obj = obj2;
+            else
+                obj = levelSet(true);
+            end
+        end
+        % union of two level-sets of size 1 each
+        function obj = LSunion( obj1, obj2 )
+            l12 = inside( obj1, obj2.X{1}, true );
+            l21 = inside( obj2, obj1.X{1}, true );
+            % two disjoint domains
+            if all(~l12) && all(~l21)
+                obj = setInterface( obj1, obj2 );
+            % obj1 included in obj2
+            elseif all(l21)
+                obj = obj2;
+            % obj2 included in obj1
+            elseif all(l12)
+                obj = obj1;
+            elseif ~all(l12)&&~all(l21)
+                [dt,ind1,ind2] = CrossLS( obj1, obj2 );
+                dt = subSet( dt, ind1|ind2 );
+                obj = freeBoundary(dt);
+            else
+                obj = levelSet(false);
             end
         end
         % check whether points are inside the level-set
-        function l = inside( obj, X, lon )
+        function in = inside( obj, X, lon )
+            d = distance( obj, X );
+            on = abs(d)<= obj.gerr;
+            in = d <= -obj.gerr;
             if nargin<3 || lon
-                l = obj.dist(X)<=obj.gerr;
-            else
-                l = obj.dist(X)<=-obj.gerr;
+                in = in|on;
             end
-        end
-        % clean X of unused and repeated nodes
-        function obj = clean(obj)
-            % get rid of infinity values
-            ind = ~isinf(obj.dist.Values);
-            X = obj.dist.Points(ind,:);
-            V = obj.dist.Values(ind);
-            % get rid of repeated nodes
-            [X,ind] = unique( round(X/obj.gerr)*obj.gerr, 'rows' );
-            V = V(ind);
-            % create level set
-            obj.dist = scatteredInterpolant( X, V );
         end
         % plot function
-        function  plot( obj )
-            figure;
-            X = obj.dist.Points;
-            dt = delaunayTriangulation(X);
-            trisurf(dt.ConnectivityList,X(:,1),X(:,2),obj.dist.Values);
-            for i1 = 1:obj.Ni
-                ci = getInterface( obj, i1 );
-                hold on; plot( ci(:,1), ci(:,2), 'k-', 'linewidth', 2 );
+        function  plot( obj, xv, yv )
+            [x,y] = ndgrid(xv,yv);
+            d = distance( obj, [x(:) y(:)] );
+            if ~isempty(d)
+                figure; surf(xv,yv,reshape(d,length(xv),length(yv))')
+                shading flat; view(2); colorbar
+                hold on;
+                contour( xv, yv, reshape(d,length(xv),length(yv))',[0 0], ...
+                    'color','k','linewidth',2);
+            else
+                disp('empty level-set')
             end
-            view(2);
+        end
+        % normal vectors to edges in the level-set
+        function [n,c] = normal( varargin )
+            obj = varargin{1};
+            n = cell(obj.N,1);
+            c = cell(obj.N,1);
+            for i1 = 1:obj.N
+                if nargin<2
+                    ind = true(size(obj.T{i1},1),1);
+                else
+                    ind = varargin{2};
+                end
+                x = obj.X{i1}(:,1);
+                y = obj.X{i1}(:,2);
+                dx = x(obj.T{i1}(ind,2))-x(obj.T{i1}(ind,1));
+                dy = y(obj.T{i1}(ind,2))-y(obj.T{i1}(ind,1));
+                nn = [dy -dx];
+                nn = sqrt(sum(nn.^2,2));
+                n{i1} = [dy./nn -dx./nn];
+                c{i1} = -n{i1}(:,1).*x(obj.T{i1}(ind,1)) ...
+                        -n{i1}(:,2).*y(obj.T{i1}(ind,1));
+            end
+        end
+        % create a Delaunay triangulation constrained by two level-sets
+        % (always convex) and indicates which elements are in/out 
+        function [dt,ind1,ind2] = CrossLS( obj1, obj2, i1, i2 )
+            if nargin<4 || isempty(i2);
+                i2 = 1;
+            end
+            if nargin<3 || isempty(i1);
+                i1 = 1;
+            end
+            C = [ obj1.T{i1}; obj2.T{i2}+size(obj1.X{i1},1) ];
+            Xdt = [ obj1.X{i1}; obj2.X{i2} ];
+            ldt = clean( levelSet( C, Xdt ) );
+            dt = DelaunayTri( ldt.X{1}, ldt.T{1} );
+            dt = TRI6( dt.Triangulation, dt.X );
+            ind1 = inside( obj1, dt.X, true );
+            ind1 = all( ind1(dt.Triangulation), 2 );
+            ind2 = inside( obj2, dt.X, true );
+            ind2 = all( ind2(dt.Triangulation), 2 );
+        end
+        % check ordering of T and separation of different levelSets
+        % this routine should be checked before use
+        function obj = checkConnex( obj )
+            for i1 = obj.N
+                ind = (obj.T{i1}(1:end-1,2)-obj.T{i1}(2:end,1))~=0;
+                if any(ind)
+                    i0 = find(ind,1,'first');
+                    Te = obj.T{i1}(i0:end,:);
+                    for i2 = 2:size(Te,1)
+                        [i3,j3] = find(Te(i2:end,:)==Te(i2-1,2),1,'first');
+                        if ~isempty(i3)
+                            tmp = Te(i2,:);
+                            Te(i2,:) = Te(i3+i2-1,:);
+                            Te(i3+i2-1,:) = tmp;
+                            if j3==2
+                                Te(i2,:) = Te(i2,[2 1]);
+                            end
+                        else
+                            error('levelSet/checkConnex: check obj.in')
+                            ls = levelSet(Te(i2:end,:),obj.X{i1},obj.in);
+                            obj = setInterface( obj, ls, obj.N+1 );
+                            i2=i2-1;
+                            break
+                        end
+                    end
+                    obj.T{i1}(i0-1+(1:i2),:) = Te(1:i2,:);
+                    obj.T{i1} = obj.T{i1}(1:(i0-1+i2),:);
+                end
+            end
+        end
+        % project a 2D domain along a direction, and create a 1D levelSet
+        function ls = projection( obj, dir, x0 )
+            if size(dir,1)<size(dir,2)
+                dir = dir';
+            end
+            if nargin<3
+                x0 = [0 0];
+            end
+            ls = levelSet1D( false );
+            for i1 = 1:obj.N
+                x = obj.X{i1}*dir - x0*dir;
+                ls = union( ls, levelSet1D( min(x), max(x) ) );
+            end
+        end
+        % get rid of nodes that are not used in T, and of repeated elements
+        function obj = cleanT(obj)
+            % get rid of elements that are repeated
+            [~,ind] = unique( sort(obj.T{1},2) ,'rows' );
+            obj.T{1} = obj.T{1}(ind,:);
+            % get rid of elements that join the same nodes
+            ind = diff(obj.T{1},[],2)==0;
+            obj.T{1} = obj.T{1}(~ind,:);
+            % get rid of nodes that are not used in T
+            ind = unique(obj.T{1});
+            n3 = length(ind);
+            for i1 = 1:n3
+                obj.T{1}( obj.T{1}==ind(i1) ) = i1;
+            end
+            obj.X{1} = obj.X{1}(ind,:);
+        end
+        % get rid of nodes that are repeated
+        function obj = cleanX(obj)
+            xrnd = round(obj.X{1}/obj.gerr)*obj.gerr;
+            [~,indx,indu] = unique( xrnd, 'rows' );
+%            [~,indx,indu] = unique( xrnd, 'rows', 'stable' );
+            Nx = size(obj.X{1},1);
+            if length(indx)<Nx
+                obj.X{1} = obj.X{1}(indx,:);
+                obj.T{1} = indu(obj.T{1});
+            end
+        end
+        % clean X of unused nodes and repeated nodes and elements
+        function obj = clean(obj)
+            for i1 = obj.N
+                obji = getInterface( obj, i1 );
+                obji = cleanX(obji);
+                obji = cleanT(obji);
+                obj.X{i1} = obji.X{1};
+                obj.T{i1} = obji.T{1};
+            end
         end
     end
 end

@@ -1,10 +1,10 @@
 % distance from a set of points to a polygon
 % dist = dppoli( pto, poli )
-function dist = dppoli( pto, poli )
-n1 = size( poli, 1 ) - 1;
+function dist = dppoli( pto, T, X )
+Ne = size( T, 1 );
 dist = inf(size(pto,1),1);
-for i1 = 1:n1
-    dist = min( dist, dpr( pto, poli(i1+(0:1),:) ) );
+for i1 = 1:Ne
+    dist = min( dist, dpr( pto, X(T(i1,:)',:) ) );
 end
 % distance from a set of points to a line
 function dist = dpr( p, r )
