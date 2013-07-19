@@ -1,13 +1,14 @@
 function [ Nm, Nc, opt ] = Initiatevalues( model, coupling, opt )
 % function [ Nm, Nc, opt ] = Initiatevalues( model, coupling, opt )
-% Set the initiale values and default options.
+% Set the initial values and default options.
 
 % disabling some warnings
-warning off MATLAB:DelaunayTri:ConsConsSplitWarnId;
-warning off MATLAB:DelaunayTri:ConsSplitPtWarnId;
-warning off MATLAB:TriRep:PtsNotInTriWarnId;
+warning off MATLAB:triangulation:PtsNotInTriWarnId
 warning off MATLAB:delaunayTriangulation:ConsSplitPtWarnId
 warning off MATLAB:delaunayTriangulation:ConsConsSplitWarnId
+warning off MATLAB:delaunayTriangulation:DupPtsConsUpdatedWarnId
+warning off MATLAB:delaunayTriangulation:DupPtsConsUpdatedWarnId
+warning off MATLAB:scatteredInterpolant:DupPtsAvValuesWarnId
 
 % constants
 Nm = length( model );    % number of models
