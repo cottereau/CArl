@@ -113,7 +113,7 @@ for i1 = 1:Nm
         
         % condensate alpha functions for each model
         Mdl{i1}.alpha = CondensateAlpha( i1, Cpl );
-        
+
         % construct stiffness and force matrices
         [ Mdl{i1}.K, Mdl{i1}.F, Mdl{i1}.Kmc ] = StiffnessMatrix( Mdl{i1} );
         

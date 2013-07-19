@@ -60,8 +60,8 @@ classdef levelSet
                 obj.mesh = delaunayTriangulation;
                 obj.dist = scatteredInterpolant;
             elseif nargin==1
-                x0 = [0 0];
-                v0 = obj.in;
+                x0 = [0 0;1 0;1 1];
+                v0 = obj.in*inf(3,1);
                 obj.mesh = delaunayTriangulation( x0 );
                 obj.dist = scatteredInterpolant( x0, v0, 'nearest' );
             elseif nargin==2||nargin==3
@@ -109,7 +109,7 @@ classdef levelSet
                         tp = [6 7;7 11;11 10;10 6];
                         obj = levelSet( x, 'polygon', xp, tp );
                         
-                    % POLYGONE
+                    % POLYGON
                     case 'polygon'
                         if abs(x2(2:end,1)-x2(1:end-1,2))>obj.gerr
                             error('to be checked')
@@ -148,6 +148,14 @@ classdef levelSet
         end
         % plot function
         function  plot(obj)
+            if all(isinf(obj.dist.Values))
+                if all(obj.in*obj.dist.Values>0)
+                    disp('full domain')
+                elseif all(obj.in*obj.dist.Values<0)
+                    disp('empty domain')
+                end
+                return
+            end
             T = obj.mesh.ConnectivityList;
             X = obj.dist.Points;
             V = obj.dist.Values;
@@ -158,12 +166,33 @@ classdef levelSet
             hold on; plot( x', y', 'k-', 'LineWidth', 2 );
             shading flat; view(2); colorbar
         end
-        % get the boundary (where the distance is zero)
+        % get the interface (for which distance=0)
         function varargout = boundary(obj)
             C = obj.mesh.Constraints;
-            [~,on] = inside( obj, obj.mesh.Points, true );
-            on = all(ismember(C,find(on)),2);
-            varargout{1} = C(on,:);
+            % attached elements are on different sides of the interface (or
+            % on the boundary of the convex hull)
+            on = true(size(C,1),1);
+            bnd = ~all( ismember(C,convexHull(obj.mesh)), 2 );
+            if ~isempty(bnd)
+                TE = edgeAttachments( obj.mesh, C(bnd,1), C(bnd,2) );
+                TE = cat( 1, TE{:} );
+                [inXc,onXc] = inside( obj, incenter(obj.mesh,TE(:)), false );
+                N = size(TE,1);
+                inXc = reshape( inXc, N, 2 );
+                onXc = reshape( onXc, N, 2 );
+                on(bnd) = ~( all(inXc,2) | all(~(inXc|onXc),2) );
+            end
+            C = C(on,:);
+            % both nodes of the constraint are on the boundary
+            [~,on] = inside( obj, obj.dist.Points(C(:),:), true );
+            C = C( all( reshape(on,size(C,1),2), 2 ), : );
+            % a node inside the domain is not on two segments
+%             [sc,ic] = sort(C(:));
+%             dn = diff([ -Inf; sc; Inf ]);
+%             dn = ~dn(2:end)==0 & ~dn(1:end-1)==0;
+%             C = C( all( reshape( dn(ic), size(C) ), 2 ), : );
+            % output
+            varargout{1} = C;
             if nargout==2
                 [xf,~,ff] = unique(varargout{1});
                 varargout{1} = reshape(ff,size(varargout{1}));
@@ -188,6 +217,7 @@ classdef levelSet
             C = dt.Constraints;
             C = C( all(abs(V(C))<obj1.gerr,2), : );
             obj = levelSet( dt.Points, 'init', V, C );
+            obj = clean(obj);
         end
         % union of two level-sets
         function obj = union( obj1, obj2 )
@@ -198,7 +228,8 @@ classdef levelSet
             V = min( [obj1.dist(dt.Points) obj2.dist(dt.Points)], [], 2 );
             C = dt.Constraints;
             C = C( all(abs(V(C))<obj1.gerr,2), : );
-            obj = levelSet( dt.Points, 'init', V, C );            
+            obj = levelSet( dt.Points, 'init', V, C );  
+            obj = clean(obj);
         end
         % check whether points are inside the domain
         function [in,on] = inside( obj, X, lon )
@@ -207,6 +238,32 @@ classdef levelSet
             in = d <= -obj.gerr;
             if nargin<3 || lon
                 in = in|on;
+            end
+        end
+        % clean level-Set
+        function obj = clean(obj)
+            inon = inside(obj,obj.mesh.Points,true);
+            outon = ~inside(obj,obj.mesh.Points,false);
+            if all( inon )
+                obj = levelSet(true);
+            elseif all( outon )
+                obj = levelSet(false);
+            else
+                C = boundary(obj);
+                d = dppoli( obj.dist.Points, C, obj.dist.Points );
+                inin = inon & ~outon;
+                d(inin) = obj.in * d(inin);
+                outout = outon & ~inon;
+                d(outout) = -obj.in * d(outout);
+                % for nodes that were zero and are now non-zero, get the
+                % sign by averaging the touching nodes
+                ind = find( (inon&outon) & (abs(d)>obj.gerr) );
+                TI = vertexAttachments( obj.mesh, ind );
+                for i1 = 1:length(ind)
+                    ni = obj.mesh.ConnectivityList(TI{i1}',:);
+                    d(ind(i1)) = sign(mean(d(ni(:)))) * d(ind(i1));
+                end
+                obj = levelSet( obj.dist.Points,'init', d, C );
             end
         end
      end

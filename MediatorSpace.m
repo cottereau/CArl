@@ -20,8 +20,6 @@ function M = MediatorSpace( mediator, Rep )
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
 
-% R. Cottereau 05/2010
-
 [ x, y, val ] = find( Rep{mediator}.M );
-[~,~,x]=unique(x);
+[~,~,x] = unique(x);
 M = sparse( x, y, val );

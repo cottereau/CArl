@@ -55,7 +55,7 @@ classdef discontinuous
                 else
                     val = varargin{3};
                 end
-                obj.f{1} = TriScatteredInterp(varargin{2},val);
+                obj.f{1} = scatteredInterpolant(varargin{2},val);
             end 
              if nargin>3 && mod(nargin,3)==0
                 for i1 = 2:nargin/3
@@ -76,28 +76,24 @@ classdef discontinuous
             obj.x{obj.Ns+1,1} = x;
         end
         % plotting discontinuous function
-        function plot( obj, X )
-            [fval,ind] = interp( obj, X ,X);
+        function plot( obj )
             figure; hold on;
             for i1 = 1:obj.Ns
-                if any(ind==i1)
-                    dt = DelaunayTri(X(ind==i1,:));
-                    xi = dt.X(:,1); yi = dt.X(:,2);
-                    Xc = [mean(xi(dt.Triangulation),2) ...
-                        mean(yi(dt.Triangulation),2)];
-                    indT = distance( obj.x{i1}, Xc, true )<=0;
-                    trisurf( dt.Triangulation(indT,:), dt.X(:,1), ...
-                        dt.X(:,2), fval(ind==i1), fval(ind==i1) );
-                    shading interp; view(2); colorbar;
-                end
+                xp = obj.x{i1}.mesh.Points;
+                v = obj.f{i1}(xp);
+                ind = inside( obj.x{i1}, xp, true );
+                ind = all( ind(obj.x{i1}.mesh.ConnectivityList), 2 );
+                trisurf( obj.x{i1}.mesh.ConnectivityList(ind,:), ...
+                                                  xp(:,1), xp(:,2), v, v );
             end
+            shading interp; view(2); colorbar;
         end
         % interpolation: getting values of f inside each subdomain
         function [fv,indg] = interp(obj,Xe)
             fv = zeros(size(Xe,1),1);
             indg = zeros(size(Xe,1),1);
             for i1 = 1:obj.Ns
-                ind = distance(obj.x{i1},Xe)<=0;
+                ind = inside(obj.x{i1},Xe);
                 indg(ind) = i1;
                 fv(ind) = obj.f{i1}(Xe(ind,:));
             end

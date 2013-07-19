@@ -34,14 +34,13 @@ function [ Int, Rep ] = MeshIntersect( mesh1, mesh2, LSet )
 [meshr2,ind2] = subSet( mesh2, elementsInBoundary(mesh2,LSet,false) );
 
 % coupling mesh for integration puroses
-meshi = MergeMeshes( bounded(meshr1,LSet), bounded(meshr2,LSet), LSet );
+meshi = MergeMeshes( bounded(meshr1,LSet), bounded(meshr2,LSet) );
 
 % compute the passage matrices in terms of nodes = get the values of the 
 % basis functions in the representation meshes at the nodes of the 
 % integration mesh
 [ Mx1, My1, Mval1 ] = XR2XI( meshr1, meshi );
 [ Mx2, My2, Mval2 ] = XR2XI( meshr2, meshi );
-keyboard 
 M11 = sparse( ind1(Mx1), My1, Mval1, mesh1.Nn, meshi.Nn);
 M22 = sparse( ind2(Mx2), My2, Mval2, mesh2.Nn, meshi.Nn);
 

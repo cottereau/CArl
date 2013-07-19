@@ -33,11 +33,10 @@ switch model.code
     % HOMEFE
     case 'HomeFE'
         stiff = model.HomeFE;
-        alpha = interp(model.alpha,incenters(model.mesh));
+        alpha = interp(model.alpha,incenter(model.mesh));
         alpha = repmat(alpha',size(stiff.mesh.T,2),1)';
         stiff.property = stiff.property .* alpha;
         stiff.load = stiff.load .* alpha;   
-        keyboard
         [ x, y, K, z, F ] = StiffnessMatrixHomeFE( stiff );
         
     % MONTE CARLO VERSION OF HOME FE

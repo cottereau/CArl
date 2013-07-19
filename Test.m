@@ -131,12 +131,14 @@ end
 
 % FUNCTION PLOTTEST 2D
 function plottest2D( model, sol )
-T1 = model{1}.mesh.T3;
-T2 = model{2}.mesh.T3;
-X1 = model{1}.mesh.X3;
-X2 = model{2}.mesh.X3;
-figure; trimesh( T1, X1(:,1), X1(:,2), sol{1} ); 
-hold on; trisurf( T2, X2(:,1), X2(:,2), sol{2} ); 
+T1 = model{1}.mesh.ConnectivityList;
+T2 = model{2}.mesh.ConnectivityList;
+X1 = model{1}.mesh.Points;
+X2 = model{2}.mesh.Points;
+N1 = size(X1,1);
+N2 = size(X2,1);
+figure; trimesh( T1, X1(:,1), X1(:,2), sol{1}(1:N1) ); 
+hold on; trisurf( T2, X2(:,1), X2(:,2), sol{2}(1:N2) ); 
 colorbar; view(3)
 
 % FUNCTION PLOTTESTSTOCHASTIC

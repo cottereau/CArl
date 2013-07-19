@@ -23,39 +23,39 @@ function alpha = ArlequinWeight( cpl, i1, model )
 % contact: regis.cottereau@ecp.fr
 
 % initializations
-mesh = model.mesh;
+X = model.mesh.Points;
 
 % define other element of the coupling
 i2 = setdiff(1:2,i1);
 val = cpl.cplval{i1};
 
 % alpha in constant zones
-ind1 = inside( cpl.free{i1}, mesh.X );
-ind2 = inside( cpl.free12, mesh.X );
-if mesh.d==1
-    alpha = discontinuous1D( cpl.free{i1}, mesh.X(ind1,:), 1, ...
-                             cpl.free12,   mesh.X(ind2,:), cpl.freeval{i1});
-elseif mesh.d==2
-    alpha = discontinuous( cpl.free{i1}, mesh.X(ind1,:), 1, ...
-                           cpl.free12,   mesh.X(ind2,:), cpl.freeval{i1});
+ind1 = inside( cpl.free{i1}, X );
+ind2 = inside( cpl.free12, X );
+if model.mesh.d==1
+    alpha = discontinuous1D( cpl.free{i1}, X(ind1,:), 1, ...
+                             cpl.free12,   X(ind2,:), cpl.freeval{i1});
+elseif model.mesh.d==2
+    alpha = discontinuous( cpl.free{i1}, X(ind1,:), 1, ...
+                           cpl.free12,   X(ind2,:), cpl.freeval{i1});
 end
 
 % alpha in the transition zone
 % CONSTANT CASE
 if numel(val)==1
-    alpha = addRegion( alpha, cpl.domain, mesh.X, val );
+    alpha = addRegion( alpha, cpl.domain, X, val );
 
 % LINEAR CASE
 elseif numel(val)==2
-    ind = inside( cpl.domain, mesh.X );
-    Xi = mesh.X(ind,:);
-    d2 = distance( cpl.free12, Xi );
-    d1 = distance( cpl.free{i1}, Xi );
-    if isempty(d1)
-        d1 = distance( cpl.free{i2}, Xi );
+    ind = inside( cpl.domain, X );
+    Xi = X(ind,:);
+    d2 = cpl.free12.dist(Xi);
+    d1 = cpl.free{i1}.dist(Xi);
+    if all(isinf(d1))
+        d1 = cpl.free{i2}.dist(Xi);
         f = (max(val)*d1 + min(val)*d2)./(d1+d2);
-    elseif isempty(d2)
-        d2 = distance( cpl.free{i2}, Xi );
+    elseif all(isinf(d2))
+        d2 = cpl.free{i2}.dist(Xi);
         f = (max(val)*d2 + min(val)*d1)./(d1+d2);
     else
         f = (max(val)*d2 + min(val)*d1)./(d1+d2);

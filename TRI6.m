@@ -1,4 +1,4 @@
-classdef TRI6 < TriRep
+classdef TRI6 < triangulation
 % definition of a mesh with TRI6 elements (extension of TriRep class to
 % handle higher order representation of functions)
 %
@@ -32,27 +32,20 @@ classdef TRI6 < TriRep
 %     size               - Returns the size of the Triangulation matrix
 %     clean              - Removes unused X and repeated X and T
 %
-%  TRI6 inherited methods:
-%     TRI6 does not inherits the methods of TriRep in a classical sense.
-%     However, you can use all methods of TriRep with TRI6 and they will be
-%     applied to the underlying TriRep class composed of TRI3 elements.
-%     Refer to the help for TriRep for a list of these methods.
+%  TRI6 is a subclass of triangulation and hence inherits its properties
+%  and methods
 %
 %  TRI6 properties:
-%     T      - connectivity matrix [Ne*6]
-%     X      - nodal coordinates matrix [Nn*d]
 %     d      - space dimension
 %     Ne     - number of elements
 %     Nn     - number of nodes
-%     tri3   - underlying mesh with TRI3 elements (TriRep class)
-%     T3     - underlying TRI3 elements
-%     X3     - nodes of the underlying tri3 mesh
-%     ind3v6 - indices of the TRI3 nodes in the TRI6 nodes list
+%     DT     - delaunay triangulation constrained
+%     DT2TRI - index vector of the elements of DT into TRI6
 
    % define the TRI6 object
     methods
         function obj = TRI6( T, X, lclean )
-            obj = obj@TriRep(T,X(:,1),X(:,2));
+            obj = obj@triangulation(T,X(:,1),X(:,2));
             if nargin<3 || lclean
                 obj = clean(obj);
             end
@@ -74,38 +67,37 @@ classdef TRI6 < TriRep
     methods
         % set the number of elements
         function Ne = get.Ne(obj)
-            Ne = size(obj.Triangulation,1);
+            Ne = size(obj.ConnectivityList,1);
         end
         % set the number of nodes
         function Nn = get.Nn(obj)
-            Nn = size(obj.X,1);
+            Nn = size(obj.Points,1);
         end
         % set the space dimension
         function d = get.d(obj)
-            d = size(obj.X,2);
+            d = size(obj.Points,2);
         end
         % construct a constrained Delaunay triangulation attached to TRI6
         function DT = get.DT(obj)
-            DT = DelaunayTri( obj.X, edges(obj) );
+            DT = delaunayTriangulation( obj.Points, obj.edges );
         end
         % indices of the DT elements in the TRI6 mesh
         function ind = get.DT2TRI(obj)
-            T1 = sort( obj.Triangulation, 2 );
+            T1 = sort( obj.ConnectivityList, 2 );
             [T1,ind1] = sortrows( T1, [1 2 3] );
-            T2 = sort( obj.DT.Triangulation, 2 );
+            T2 = sort( obj.DT.ConnectivityList, 2 );
             [T2,ind2] = sortrows( T2, [1 2 3] );
             lind1 = ismember( T2, T1, 'rows' );
-            lind2 = ismember( ind2, ind1, 'rows' );
             ind = NaN(size(ind2));
-            ind(lind2) = ind1(ind2(ind2(lind1)));
+            ind(ind2(lind1)) = ind1;
         end
         % plot the mesh and the nodes
         function plot(obj)
             figure; triplot( obj, 'color', 'k' )
-            hold on; scatter( obj.X(:,1), obj.X(:,2), 50, 'r', 'full' );
-            Xc = incenters(obj);
+            hold on; scatter( obj.Points(:,1), obj.Points(:,2), 50, 'r', 'full' );
+            Xc = incenter(obj);
             hold on; scatter( Xc(:,1), Xc(:,2), 50, 'bs' );
-            bounds = max(obj.X) - min(obj.X);
+            bounds = max(obj.Points) - min(obj.Points);
             set( gca, 'PlotBoxAspectRatio', [bounds 1] );
         end
         % indices of elements containing specified points
@@ -118,63 +110,50 @@ classdef TRI6 < TriRep
             if nargin<3
                 lall = true;
             end
-            ind = inside( ls, obj.X, true );
+            ind = inside( ls, obj.Points, true );
             if lall
-                ind = all( ind(obj.Triangulation), 2 );
+                ind = all( ind(obj.ConnectivityList), 2 );
             else
-                ind = any( ind(obj.Triangulation), 2 );
+                ind = any( ind(obj.ConnectivityList), 2 );
             end
         end
         % returns a TRI6 object using only a selected list of elements
         function [obj,ind] = subSet(obj,indT)
-            obj = TRI6( obj.Triangulation(indT,:), obj.X, false );
+            obj = TRI6( obj.ConnectivityList(indT,:), obj.Points, false );
             [obj,ind] = clean(obj);
         end
         % domain covered by the mesh
         function ls = domain(obj)
             [bnd,xf] = freeBoundary(obj);
-            ls = levelSet( bnd, xf );
+            ls = levelSet( obj.Points, 'polygon', xf, bnd );
         end
         % bound a mesh by a level-set. Nodes are added where the level-set
         % crosses elements
         function obj = bounded( obj, LSet )
-            C = [obj.Triangulation(:,1:2); obj.Triangulation(:,2:3); ...
-                 obj.Triangulation(:,[3 1])];
-            Xm = obj.X;
-            for i1=1:LSet.N
-                C = [ C; LSet.T{i1}+size(Xm,1) ];
-                Xm = [ Xm; LSet.X{i1} ];
-            end
-            [~,ind] = unique( sort(C,2) ,'rows', 'first');
-            C = C(ind,:);
-            ldt = clean( levelSet( C, Xm ) );
-            obj = DelaunayTri( ldt.X{1}, ldt.T{1} );
-            obj = TRI6( obj.Triangulation, obj.X );
+            X = [ obj.Points; LSet.mesh.Points ];
+            C = [ edges(obj); LSet.mesh.Constraints+size(obj.Points,1)];
+            obj = delaunayTriangulation( X, C );
+            obj = TRI6( obj.ConnectivityList, obj.Points );
             obj = subSet( obj, elementsInBoundary(obj,LSet,true) );
         end
         % merge two meshes (find a mesh embedded in both obj1 and obj2
         % and located within ls)
-        function obj = MergeMeshes( obj1, obj2, ls )
-            N = size(obj1.X,1);
-            Xm = [ obj1.X ; obj2.X ];
-            Tm = [ obj1.Triangulation ; obj2.Triangulation+N ];
-            C = [Tm(:,1:2); Tm(:,2:3); Tm(:,[3 1])];
-            [~,ind] = unique( sort(C,2) ,'rows', 'first');
-            C = C(ind,:);
-            ldt = clean( levelSet( C, Xm ) );
-            obj = DelaunayTri( ldt.X{1}, ldt.T{1} );
-            obj = TRI6( obj.Triangulation, obj.X );
-            obj = subSet( obj, elementsInBoundary(obj,ls,true) );
+        function obj = MergeMeshes( obj1, obj2 ) 
+            X = [ obj1.Points ; obj2.Points ];
+            C = [ edges(obj1); edges(obj2)+size(obj1.Points,1) ];
+            obj = delaunayTriangulation( X, C );
+            obj = TRI6( obj.ConnectivityList, obj.Points );
+%            obj = subSet( obj, elementsInBoundary(obj,ls,true) );
         end
         % for each node in meshi, find nodes that are inside the elements
         % that touch it, and the value of the linear FE basis function 
         % centered on Xr (=local barycentric coordinate of that node in the
         % element). Return a matrix in sparse format
         function [ Mx, My, Mval ] = XR2XI( obj, obj1 )
-            indx = pointLocation( obj, obj1.X );
-            Mval = cartToBary( obj, indx, obj1.X );
+            indx = pointLocation( obj, obj1.Points );
+            Mval = cartesianToBarycentric( obj, indx, obj1.Points );
             My = repmat( (1:size(Mval,1))', [3 1] );
-            Mx = obj.Triangulation(indx,:);
+            Mx = obj.ConnectivityList(indx,:);
             ind = abs(Mval(:))>obj.gerr;
             Mx = Mx(ind);
             Mval = Mval(ind);
@@ -183,11 +162,11 @@ classdef TRI6 < TriRep
         % get rid of nodes that are not used in T, and of repeated elements
         function [obj,indX] = cleanT(obj)
             % get rid of elements that are repeated
-            T = obj.Triangulation;
+            T = obj.ConnectivityList;
             [~,ind] = unique( sort(T,2) , 'rows', 'first', 'legacy' );
             T = T(ind,:);
             % get rid of elements that have area zero
-            xi = obj.X(:,1); yi = obj.X(:,2);
+            xi = obj.Points(:,1); yi = obj.Points(:,2);
             ind = polyarea( xi(T)', yi(T)' )' > obj.gerr;
             T = T(ind,:);
             % get rid of nodes that are not used in T
@@ -195,13 +174,13 @@ classdef TRI6 < TriRep
             for i1 = 1:length(indX)
                 T( T==indX(i1) ) = i1;
             end
-            obj = TRI6( T, obj.X(indX,:), false );
+            obj = TRI6( T, obj.Points(indX,:), false );
         end
         % get rid of nodes that are repeated
         function [obj,indX] = cleanX(obj)
-            xrnd = round(obj.X/obj.gerr)*obj.gerr;
+            xrnd = round(obj.Points/obj.gerr)*obj.gerr;
             [X,indX,indu] = unique( xrnd, 'rows' ,'first', 'legacy' );
-            T = indu(obj.Triangulation);
+            T = indu(obj.ConnectivityList);
             obj = TRI6( T, X, false );
         end
         % clean X of unused nodes and repeated nodes and elements
