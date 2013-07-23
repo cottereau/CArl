@@ -135,8 +135,10 @@ classdef TRI6 < triangulation
             obj = delaunayTriangulation( X, C );
             obj = delaunayTriangulation( obj.Points, obj.Constraints );
             obj = TRI6( obj.ConnectivityList, obj.Points );
-            inin = inside( LSet, obj.Points, false );
-            obj = subSet( obj, any(inin(obj.ConnectivityList),2) );
+            [inin,on] = inside( LSet, obj.Points, false );
+            indT = any(inin(obj.ConnectivityList),2) | ...
+                   all(on(obj.ConnectivityList),2);
+            obj = subSet( obj, indT );
         end
         % merge two meshes (find a mesh embedded in both obj1 and obj2
         % and located within ls)
