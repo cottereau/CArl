@@ -46,7 +46,7 @@ switch model.code
         stiff = model.HomeFE;
         property = stiff.property;
         Nmc = size( property, 3 );
-        alpha = interp(model.alpha,incenters(model.mesh));
+        alpha = interp(model.alpha,incenter(model.mesh));
         alpha = repmat(alpha',size(stiff.mesh.T,2),1)';
         stiff.load = stiff.load .* alpha;
         MC = cell( Nmc, 1 );

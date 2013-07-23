@@ -121,7 +121,7 @@ classdef levelSet1D
             obj = clean( obj );
         end
         % Distance from a set of points to the level set
-        function [d,ind] = distance( obj, X )
+        function [d,ind] = dist( obj, X )
             if size(X,1)<size(X,2)
                 X = X';
             end
@@ -142,7 +142,7 @@ classdef levelSet1D
         end
         % check whether points are inside the level-set
         function [in,on] = inside( obj, X, lon )
-            d = distance( obj, X );
+            d = dist( obj, X );
             on = abs(d)<= obj.gerr;
             in = d <= -obj.gerr;
             if nargin<3 || lon
