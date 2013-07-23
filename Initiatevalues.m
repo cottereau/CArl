@@ -7,7 +7,7 @@ warning off MATLAB:triangulation:PtsNotInTriWarnId
 warning off MATLAB:delaunayTriangulation:ConsSplitPtWarnId
 warning off MATLAB:delaunayTriangulation:ConsConsSplitWarnId
 warning off MATLAB:delaunayTriangulation:DupPtsConsUpdatedWarnId
-warning off MATLAB:delaunayTriangulation:DupPtsConsUpdatedWarnId
+warning off MATLAB:delaunayTriangulation:DupConsWarnId
 warning off MATLAB:scatteredInterpolant:DupPtsAvValuesWarnId
 
 % constants
