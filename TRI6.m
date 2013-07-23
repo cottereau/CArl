@@ -67,7 +67,7 @@ classdef TRI6 < triangulation
     methods
         % set the number of elements
         function Ne = get.Ne(obj)
-            Ne = size(obj,1);
+            Ne = size(obj.ConnectivityList,1);
         end
         % set the number of nodes
         function Nn = get.Nn(obj)
