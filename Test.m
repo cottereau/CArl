@@ -13,7 +13,7 @@ function Test( type )
 %  | 'join1D'           | acoustic   | acoustic   |  D  | join case    |
 %  | 'force1D'          | acoustic   | acoustic   |  D  | bulk load    |
 %  | 'MC1D'             | acoustic   | acoustic   | D/S |              |
-%  | 'zoom1Dstosto'     | acoustic   | acoustic   |  S  | zoom case    |
+%  | 'stoSto1D'         | acoustic   | acoustic   |  S  |              |
 %  |____________________|____________|____________|_____|______________|
 %
 % TWO-DIMENSIONAL TESTS
@@ -44,11 +44,13 @@ function Test( type )
 %  |____________________|______________________________________________|
 %
 % SERIES
-%  type='short' launches in series the series '1D' and the tests :
-%               'join2D', 'zoom2D', 'indent2D', 'NonEmbedded2D_1', 
-%               'force2D', 'stoSto2D'
+%  type='short' launches in series the series '1D', '2D' and 'mesh'
 %  type='1D' launches in series the short 1D tests: 'zoom1D', 'join1D',
 %               'force1D', 'MC1D', 'zoom1Dstosto'
+%  type='2D' launches in series the short 2D tests: 'join2D', 'zoom2D',
+%               'force2D', 'stoSto2D'
+%  type='mesh' launches in series the meshing tests: 'indent2D', 
+%               'NonEmbedded2D_1'
 
 % default
 if nargin==0
@@ -68,7 +70,7 @@ switch lower(type)
         [ sol, out ] = CArl( model, coupling, solver );
         plottest2D( out.model, sol );
 
-    case {'mc1d','zoom1dstosto'}
+    case {'mc1d','stosto1d'}
         load(['Tests/' type '.mat']);
         sol = CArl( model, coupling, solver );
         plotteststochastic( model, sol );
@@ -93,7 +95,7 @@ switch lower(type)
         Test('join1D');
         Test('force1D');
         Test('MC1D');
-        Test('zoom1Dstosto');
+        Test('stoSto1D');
 
     case '2d'
         Test('join2D');
@@ -111,30 +113,15 @@ switch lower(type)
 end
 
 % FUNCTION PLOTTEST 1D
-function plottest1D( model, sol, ref )
-if nargin<3
-    ref = [];
-end
-x1 = model{1}.mesh.X( model{1}.mesh.T )';
-x2 = model{2}.mesh.X( model{2}.mesh.T )';
-u1 = sol{1}( model{1}.mesh.T )';
-u2 = sol{2}( model{2}.mesh.T )';
+function plottest1D( model, sol )
+x1 = model{1}.mesh.Points( model{1}.mesh.ConnectivityList )';
+x2 = model{2}.mesh.Points( model{2}.mesh.ConnectivityList )';
+u1 = sol{1}( model{1}.mesh.ConnectivityList )';
+u2 = sol{2}( model{2}.mesh.ConnectivityList )';
 figure; plot( x1(:), u1(:), 'bx-', x2(:), u2(:), 'ro--' )
-if ~isempty(ref)
-    hold on; plot(ref.X,ref.u,'k--')
-end
 s1 = diff(u1) ./ diff(x1); s1 = [s1; s1];
 s2 = diff(u2) ./ diff(x2); s2 = [s2; s2];
 figure; plot( x1, s1, 'bx-', x2(1,:), s2(1,:), 'r' );
-if ~isempty(ref)
-    xref = zeros( 2*(length(ref.X)-1), 1);
-    xref(1:2:end,:) = ref.X(1:end-1) ;
-    xref(2:2:end,:) = ref.X(2:end) ;
-    sref = zeros( 2*(length(ref.X)-1), 1);
-    sref(1:2:end,:) = diff( ref.u, 1 ) / mean(diff(ref.X));
-    sref(2:2:end,:) = sref(1:2:end,:);
-    hold on; plot(xref,sref,'k--')
-end
 
 % FUNCTION PLOTTEST 2D
 function plottest2D( model, sol )
