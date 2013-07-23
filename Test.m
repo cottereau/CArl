@@ -4,34 +4,34 @@ function Test( type )
 %   syntax: Test(type)
 %
 % ONE-DIMENSIONAL TESTS
-%   ____________________ ____________ ____________ _____ ______________
-%  |                    |            |            |     |              |
-%  |       type         |  Model 1   |  Model 2   | S/D |    remark    |
-%  |____________________|____________|____________|_____|______________|
-%  |                    |            |            |     |              |
-%  | 'zoom1D'           | acoustic   | acoustic   |  D  | zoom case    |
-%  | 'join1D'           | acoustic   | acoustic   |  D  | join case    |
-%  | 'force1D'          | acoustic   | acoustic   |  D  | bulk load    |
-%  | 'MC1D'             | acoustic   | acoustic   | D/S |              |
-%  | 'stoSto1D'         | acoustic   | acoustic   |  S  |              |
-%  |____________________|____________|____________|_____|______________|
+%   ____________________ _____________ _____________ ______________
+%  |                    |             |             |              |
+%  |       type         |  Model 1    |  Model 2    |    remark    |
+%  |____________________|_____________|_____________|______________|
+%  |                    |             |             |              |
+%  | 'zoom1D'           | acoustic    | acoustic    | zoom case    |
+%  | 'join1D'           | acoustic    | acoustic    | join case    |
+%  | 'force1D'          | acoustic    | acoustic    | bulk load    |
+%  | 'stoDet1D'         | acoustic    | acoustic(S) |              |
+%  | 'stoSto1D'         | acoustic(S) | acoustic(S) |              |
+%  |____________________|_____________|_____________|______________|
 %
 % TWO-DIMENSIONAL TESTS
-%   ____________________ ____________ ____________ _____ ______________
-%  |                    |            |            |     |              |
-%  |       type         |  Model 1   |  Model 2   | S/D |    remark    |
-%  |____________________|____________|____________|_____|______________|
-%  |                    |            |            |     |              |
-%  | 'zoom2D'           | acoustic   | acoustic   |  D  | zoom case    |
-%  | 'join2D'           | acoustic   | acoustic   |  D  | join case    |
-%  | 'force2D'          | acoustic   | acoustic   |  D  | bulk load    |
-%  | 'comsol2D'         | comsol     | comsol     |  D  | acoustic     |
-%  | 'stoSto2D    '     | acoustic   | acoustic   | S/S |              |
-%  | 'beam2D'           | beam       | elastic    |  D  |              |
-%  |____________________|____________|____________|_____|______________|
+%   ____________________ _____________ _____________ ______________
+%  |                    |             |             |              |
+%  |       type         |  Model 1    |  Model 2    |    remark    |
+%  |____________________|_____________|_____________|______________|
+%  |                    |             |             |              |
+%  | 'zoom2D'           | acoustic    | acoustic    | zoom mesh    |
+%  | 'join2D'           | acoustic    | acoustic    | join mesh    |
+%  | 'force2D'          | acoustic    | acoustic    |              |
+%  | 'comsol2D'         | comsol      | comsol      | acoustic     |
+%  | 'stoDet2D    '     | acoustic(S) | acoustic    | join mesh    |
+%  | 'stoSto2D    '     | acoustic(S) | acoustic(S) | join mesh    |
+%  | 'beam2D'           | beam        | elastic(S)  |              |
+%  |____________________|_____________|_____________|______________|
 %
-% D = deterministic
-% S = stochastic
+% (S) = stochastic
 %
 % TECHNICAL TESTS
 %   ____________________ ______________________________________________
@@ -48,7 +48,7 @@ function Test( type )
 %  type='1D' launches in series the short 1D tests: 'zoom1D', 'join1D',
 %               'force1D', 'MC1D', 'zoom1Dstosto'
 %  type='2D' launches in series the short 2D tests: 'join2D', 'zoom2D',
-%               'force2D', 'stoSto2D'
+%               'force2D', 'stoDet2D', 'stoSto2D'
 %  type='mesh' launches in series the meshing tests: 'indent2D', 
 %               'NonEmbedded2D_1'
 
@@ -65,7 +65,8 @@ switch lower(type)
         [sol,out] = CArl( model, coupling, solver );
         plottest1D( out.model, sol );
         
-    case {'join2d', 'force2d', 'zoom2d', 'stosto2d', 'comsol2d'}
+    case {'join2d', 'force2d', 'zoom2d', 'stodet2d', 'stosto2d', ...
+          'comsol2d'}
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
         plottest2D( out.model, sol );
@@ -94,13 +95,14 @@ switch lower(type)
         Test('zoom1D');
         Test('join1D');
         Test('force1D');
-        Test('MC1D');
+        Test('stoDet1D');
         Test('stoSto1D');
 
     case '2d'
         Test('join2D');
         Test('zoom2D');
         Test('force2D');
+        Test('stoDet2D');
         Test('stoSto2D');
 
     case 'mesh'
