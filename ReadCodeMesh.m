@@ -23,9 +23,9 @@ switch lower(model.code)
         X = model.HomeFE.mesh.X;
         d = size(X,2);
         if d==1
-            model.mesh = INT3( T, X, true );
+            model.mesh = INT3( T, X, false );
         elseif d==2
-            model.mesh = TRI6( T, X, true );
+            model.mesh = TRI6( T, X, false );
         else
             error('case not treated yet')
         end

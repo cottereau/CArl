@@ -51,10 +51,10 @@ elseif numel(val)==2
     Xi = X(ind,:);
     d2 = cpl.free12.dist(Xi);
     d1 = cpl.free{i1}.dist(Xi);
-    if all(isinf(d1))
+    if all(isinf(d1)|isnan(d1))
         d1 = cpl.free{i2}.dist(Xi);
         f = (max(val)*d1 + min(val)*d2)./(d1+d2);
-    elseif all(isinf(d2))
+    elseif all(isinf(d2)|isnan(d2))
         d2 = cpl.free{i2}.dist(Xi);
         f = (max(val)*d2 + min(val)*d1)./(d1+d2);
     else

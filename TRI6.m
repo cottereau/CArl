@@ -67,7 +67,7 @@ classdef TRI6 < triangulation
     methods
         % set the number of elements
         function Ne = get.Ne(obj)
-            Ne = size(obj.ConnectivityList,1);
+            Ne = size(obj,1);
         end
         % set the number of nodes
         function Nn = get.Nn(obj)
@@ -133,12 +133,14 @@ classdef TRI6 < triangulation
             X = [ obj.Points; LSet.mesh.Points ];
             C = [ edges(obj); LSet.mesh.Constraints+size(obj.Points,1)];
             obj = delaunayTriangulation( X, C );
+            obj = delaunayTriangulation( obj.Points, obj.Constraints );
             obj = TRI6( obj.ConnectivityList, obj.Points );
-            obj = subSet( obj, elementsInBoundary(obj,LSet,true) );
+            inin = inside( LSet, obj.Points, false );
+            obj = subSet( obj, any(inin(obj.ConnectivityList),2) );
         end
         % merge two meshes (find a mesh embedded in both obj1 and obj2
         % and located within ls)
-        function obj = MergeMeshes( obj1, obj2 ) 
+        function obj = mergeMeshes( obj1, obj2 ) 
             X = [ obj1.Points ; obj2.Points ];
             C = [ edges(obj1); edges(obj2)+size(obj1.Points,1) ];
             obj = delaunayTriangulation( X, C );

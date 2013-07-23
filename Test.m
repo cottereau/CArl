@@ -26,8 +26,8 @@ function Test( type )
 %  | 'join2D'           | acoustic   | acoustic   |  D  | join case    |
 %  | 'force2D'          | acoustic   | acoustic   |  D  | bulk load    |
 %  | 'comsol2D'         | comsol     | comsol     |  D  | acoustic     |
-%  | 'zoom2Dindent'     | acoustic   | acoustic   |  S  | ??           |
-%  | 'beam2D'           | beam       | elastic    | D/S |              |
+%  | 'stoSto2D    '     | acoustic   | acoustic   | S/S |              |
+%  | 'beam2D'           | beam       | elastic    |  D  |              |
 %  |____________________|____________|____________|_____|______________|
 %
 % D = deterministic
@@ -40,12 +40,13 @@ function Test( type )
 %  |____________________|______________________________________________|
 %  |                    |                                              |
 %  | 'nonembedded2D_1'  | Intersection of non-embedded meshes          |
+%  | 'indent2D'         | Intersection of a mesh with acute angles     |
 %  |____________________|______________________________________________|
 %
 % SERIES
 %  type='short' launches in series the series '1D' and the tests :
-%               'join2D', 'zoom2D', 'zoom2Dindent', 
-%               'NonEmbedded2D_1', 'force2D', 'zoom2dstosto'
+%               'join2D', 'zoom2D', 'indent2D', 'NonEmbedded2D_1', 
+%               'force2D', 'stoSto2D'
 %  type='1D' launches in series the short 1D tests: 'zoom1D', 'join1D',
 %               'force1D', 'MC1D', 'zoom1Dstosto'
 
@@ -62,8 +63,7 @@ switch lower(type)
         [sol,out] = CArl( model, coupling, solver );
         plottest1D( out.model, sol );
         
-    case {'join2d', 'force2d', 'zoom2d', 'zoom2dstosto', 'comsol2d', ...
-          'nonembedded2d_1', 'zoom2dindent'}
+    case {'join2d', 'force2d', 'zoom2d', 'stosto2d', 'comsol2d'}
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
         plottest2D( out.model, sol );
@@ -78,18 +78,15 @@ switch lower(type)
         [ sol, out ] = CArl( model, coupling, solver );
         plottest2D( out.model, sol );
 
+    case {'nonembedded2d_1', 'indent2d'}
+        load(['Tests/' type '.mat']);
+        [ sol, out ] = CArl( model, coupling, solver );
+        plottest2D( out.model, sol );
+
     case 'short'
-        Test('zoom1D');
-        Test('join1D');
-        Test('force1D');
-        Test('MC1D');
-        Test('zoom1Dstosto');
-        Test('join2D');
-        Test('zoom2D');
-        Test('zoom2Dindent');
-        Test('NonEmbedded2D_1');
-        Test('force2D');
-        Test('zoom2dstosto');
+        Test('1D');
+        Test('2D');
+        Test('mesh');
         
     case '1d'
         Test('zoom1D');
@@ -98,6 +95,16 @@ switch lower(type)
         Test('MC1D');
         Test('zoom1Dstosto');
 
+    case '2d'
+        Test('join2D');
+        Test('zoom2D');
+        Test('force2D');
+        Test('stoSto2D');
+
+    case 'mesh'
+        Test('indent2D');
+        Test('NonEmbedded2D_1');
+        
     otherwise
         error('unknown test case')
 
