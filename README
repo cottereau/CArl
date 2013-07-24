@@ -32,7 +32,9 @@ where you replace install_dir_CArl by the full path to the directory CArl/
 
 Additionally, you might want to write this line in the startup file (generally located in ~/matlab/startup.m)
 
-This code has not been extensively tested, but should run on Matlab versions R2011a and newer (mainly because the objects TriRep and DelaunayTri are required)
+This code has not been extensively tested, but should run on Matlab versions R2012a and newer (mainly because the objects triangulation and delaunayTriangulation are required)
+
+To use the code 'FE2D', one should install and make available in the path the functions downloadable at http://www.mathworks.in/matlabcentral/fileexchange/27826-fast-assembly-of-stiffness-and-matrices-in-finite-element-method (by Talal Rahman and Jan Valdman)
 
 USE
 ============
