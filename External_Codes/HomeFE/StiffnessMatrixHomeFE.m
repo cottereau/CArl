@@ -1,4 +1,4 @@
-function [ K, F ] = StiffnessMatrixHomeFE( model )
+function [ K, F ] = StiffnessMatrixHomeFE( model, alpha )
 % STIFFNESSMATRIXHOMEFE to construct the basic stiffness matrix and force
 % vector by calling a home-made FE code in 1D
 %
@@ -30,10 +30,23 @@ d = size(X,2);
 T = model.mesh.T;
 [ Ne, nnode ] = size( T );
 E = model.property;
+
+% default values
 if ~isfield(model,'load')
     load = [];
 else 
     load = model.load;
+end
+
+% multiply load and stiffness by alpha (when present)
+if nargin==2 && ~isempty(alpha)
+    Xv = X(T',:);
+    Xc = (Xv(1:3:end,:)+Xv(2:3:end,:)+Xv(3:3:end,:))/3;
+    [~,ind] = interp( alpha, Xc );
+    ind = repmat( ind', [nnode 1] );
+    alpha = reshape( interp(alpha,Xv,ind(:)), nnode, Ne )';
+    E = E .* alpha;
+    load = load .* alpha;
 end
 
 % initializations

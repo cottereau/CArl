@@ -89,13 +89,20 @@ classdef discontinuous
             shading interp; view(2); colorbar;
         end
         % interpolation: getting values of f inside each subdomain
-        function [fv,indg] = interp(obj,Xe)
+        function [fv,indg] = interp(obj,Xe,indg)
             fv = zeros(size(Xe,1),1);
-            indg = zeros(size(Xe,1),1);
-            for i1 = 1:obj.Ns
-                ind = inside(obj.x{i1},Xe);
-                indg(ind) = i1;
-                fv(ind) = obj.f{i1}(Xe(ind,:));
+            if nargin<3
+                indg = zeros(size(Xe,1),1);
+                for i1 = 1:obj.Ns
+                    ind = inside(obj.x{i1},Xe);
+                    indg(ind) = i1;
+                    fv(ind) = obj.f{i1}(Xe(ind,:));
+                end
+            else
+                for i1 = 1:obj.Ns
+                    ind = indg==i1;
+                    fv(ind) = obj.f{i1}(Xe(ind,:));
+                end
             end
         end
         % addregion: define a new subdomain and corresponding function
@@ -154,14 +161,13 @@ classdef discontinuous
                error('discontinuous/times: not implemented yet')
            end
         end
-        
+        % power of a function
         function obj = power( obj1, n )
                obj = obj1;
                for ijk=1:obj.Ns
                obj.f{ijk}.V = (obj.f{ijk}.V).^n;
                end
-        end
-        
+        end       
         % addition of two functions
         function obj = plus( obj1, obj2 )
            if isfloat(obj2)
