@@ -6,15 +6,11 @@
 
 \f0\fs24 \cf0 TODO list:\
 \
--  update all the TriRep and DelaunayTri calls to triangulation and delaunayTriangulation\
-\
 - change the name and calls to 'FE2D' into 'elastic2D' or something similar \'85 in order to stress the difference with HomeFE which is acoustic\
 \
 - clarify the definition of the alphas in StiffnessMatrix.m there seems to be a lot of repeated stuff between the different cases\
 \
 - remove 'MonteCarloHomeFE' from the list of codes because it is really the code "HomeFE" ?\
-\
-- remove several of the properties of TRI6 because this is probably slowing the program as the properties are automatically computed even though they might not be used \'85 potentially transform these properties into methods \'85 maybe make at the same time the TRI6 a TRI3 ?\
 \
 - separate clearly the classes into "topology/domain" (currently the levelSet classes), "meshes" (TRI6, INT3 classes), and "functions" (discontinuous)\
 \
@@ -22,15 +18,13 @@
 \
 - remove method "addDomain" from discontinuous and discontinuous1D classes because it is redundant with method addRegion\
 \
-- in README, make a list of the codes (with links to webpages, etc ..) that are linked through CArl. Also, remove the exterior codes 'FE2D' and 'Beam' from the git repository and indicate in the README file how to download the codes \'85\
+- in README, make a list of the codes (with links to webpages, etc ..) that are linked through CArl. Also, remove the exterior codes 'Beam' from the git repository and indicate in the README file how to download the codes \'85\
 \
 - implement distance function from [Elias, Martins & Coutinho, 2007]\
 \
-- create cases (in 1D and 2D) with three models and two couplings\
+- create cases (in 1D and 2D) with three models and two couplings (one where the two coupling areas are distinct and one where they are overlapping)\
 \
 - define the input coupling directly in terms of a discontinuous function alpha, rather than by entering the values of the functions ?\
 \
 - introduce reference solutions for all the cases and output the Test.m with logicals (depending on comparison with reference functions) rather than plots\
-\
-- clarify the definition of the coupling operator and functional: the operator should be defined in terms of a code (with the same name as the codes for stiffness), and possibly 'H1' or 'L2', the mesh is defined by Int.mesh.\
 }
