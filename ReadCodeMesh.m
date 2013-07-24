@@ -30,11 +30,9 @@ switch lower(model.code)
             error('case not treated yet')
         end
 
-    % FE2D
+    % FE2D elastic code
     case 'fe2d'
-        T = model.HomeFE.mesh.T;
-        X = model.HomeFE.mesh.X;
-        model.mesh = TRI6( T, X, false );
+        model.mesh = TRI6( model.FE2D.T, model.FE2D.X, false );
 
     % COMSOL
     case 'comsol'

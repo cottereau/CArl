@@ -1,50 +1,41 @@
-function [ x, y, C ] = CouplingOperatorFE2D( operator, mesh, opt )
+function C = CouplingOperatorFE2D( operator, mesh, opt )
+% COUPLINGOPERATORFE2D to construct the Arlequin coupling matrix 
+% by calling a the elastic code FE2D
+%
+% syntax: C = CouplingOperatorHomeFE( operator, mesh, opt )
+%
+%    operator: 'H1' or 'L2' [string]
+%    mesh    : mesh structure [INT3 or TRI6 object]
+%    opt     : structured array containing field 'kappa' (only used with
+%              'H1' operator
+%
+%    C: the output matrix is in sparse format
+%
+% copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
+% contact: regis.cottereau@ecp.fr
+%
+% uses routines by Talal Rahman and Jan Valdman downloadable at 
+% http://www.mathworks.in/matlabcentral/fileexchange/
+% 27826-fast-assembly-of-stiffness-and-matrices-in-finite-element-method 
 
+% construction of Stiffness Matrix
+[ K, areas ] = stifness_matrixP1_2D_elasticity( mesh.ConnectivityList, ...
+                                                     mesh.Points, 0, 1/2 );
 
-[Nne,ne] = size(mesh.Triangulation);
+% construction of Mass Matrix
+C = mass_matrixP1_2D_elasticity( mesh.ConnectivityList, areas );
 
-% computation of MassMatrix
-m = struct( 'mesh', mesh, ...
-    'property', ones(Nne,ne), ...
-    'load', zeros(Nne,ne,2), ...
-    'BC', [] );
-
-elements = m.mesh.Triangulation;
-coordinates = m.mesh.X;
-
-[ Mass1,Mass2 ] = mass_coupling_FE2D(elements,coordinates);
-[x2,y2] = find(Mass2);
-indtemp = (find(Mass2));
-C = Mass2(indtemp);
-[x,y] = find(Mass1);
-maxx = size(Mass1,1);
-x = [x;x2];
-y = [y;y2+maxx];
-indtemp = (find(Mass1));
-C = [Mass1(indtemp);C];
 % choice of the coupling operator
 switch operator
     
     % L2 coupling
     case 'L2'
         
-        % H1 coupling
+    % H1 coupling
     case 'H1'
-        [stiffC1,stiffC2] = stifness_coupling_FE2D( elements,coordinates);
-        [z2,k2] = find(stiffC2);
-        indtemp= find(stiffC2);
-        K2=(stiffC2(indtemp));
-        x = [ z2; x ];
-        y = [ k2+maxx; y ];
-        C = [ opt.kappa*K2; C ];
-        
-        [z,k] = find(stiffC1);
-        indtemp= find(stiffC1);
-        K=(stiffC1(indtemp));
-        x = [ z; x ];
-        y = [ k; y ];
-        C = [ opt.kappa*K; C ];
-        % unknown coupling operator
+        C = opt.kappa*K + C;
+
+    % unknown coupling operator
     otherwise
         error('unknown coupling operator')
 end

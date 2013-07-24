@@ -6,7 +6,7 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %  model: cell of structured arrays containing the information relative to
 %         the different models, in particular:
 %       -'code': code to be used to construct the stiffness matrices.
-%               Implemented: {'Comsol' 'HomeFE' 'MonteCarloHomeFE}
+%               Implemented: 'Comsol', 'HomeFE', 'MonteCarloHomeFE','FE2D'
 %       - other fields should be in a format appropriate for the code used
 %               to return a stiffness matrix in sparse format
 %       NB: fields 'mesh', 'alpha', 'K', 'F', 'Kmc', 'u' should not be used

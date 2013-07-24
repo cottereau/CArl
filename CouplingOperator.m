@@ -44,17 +44,16 @@ switch lower(couple.code)
         
     % ELASTIC COUPLING
     case 'fe2d'
-        [ x, y, C ] = CouplingOperatorFE2D( couple.operator, Int.mesh.tri3, opt );
-        C = (sparse( x, y, C ));
-        RepM = zeros(2*size(Rep.M));
-        RepM(1:2:end-1,1:2:end-1) = Rep.M;
-        RepM(2:2:end,2:2:end) = Rep.M;
-        IntM = zeros(3*size(Int.Mbeam2D));
-        IntM(1:size(Int.Mbeam2D,1),1:size(Int.Mbeam2D,2)) = Int.Mbeam2D;
-        IntM(size(Int.Mbeam2D,1)+1:2*size(Int.Mbeam2D,1),size(Int.Mbeam2D,2)+1:2*size(Int.Mbeam2D,2)) = Int.Mbeam2D;
-        IntM(2*size(Int.Mbeam2D,1)+1:3*size(Int.Mbeam2D,1),2*size(Int.Mbeam2D,2)+1:3*size(Int.Mbeam2D,2)) = Int.Mbeam2D;
-        [ x, y, C ] = find( RepM * C * IntM' );
-        C = struct( 'x', x, 'y', y, 'val', C );
+        C = CouplingOperatorFE2D( couple.operator, Int.mesh, opt );
+        N = 2*size(Rep.M);
+        [ x, y, R ] = find(Rep.M);
+        R = sparse( (x-1)*2+1, (y-1)*2+1, R, N(1), N(2) ) + ...
+            sparse( x*2,       y*2,       R, N(1), N(2) );
+        N = 2*size(Int.M);
+        [ x, y, I ] = find(Int.M);
+        I = sparse( (x-1)*2+1, (y-1)*2+1, I, N(1), N(2) ) + ...
+            sparse( x*2,       y*2,       I, N(1), N(2) );
+        C = R * C * I';
       
     % TIMOSCHENKO BEAM COUPLING
     case 'beam'     
@@ -72,18 +71,7 @@ switch lower(couple.code)
         IntM(2*size(Int.Mbeam,1)+1:3*size(Int.Mbeam,1),2*size(Int.Mbeam,2)+1:3*size(Int.Mbeam,2)) = Int.Mbeam;
         [ x, y, C ] = find( RepM * sparse( x, y, C ) * IntM' );
         C = struct( 'x', x, 'y', y, 'val', C );
-        
-        if (strcmp( couple.mediator.type, 'stochastic' ))
-            [ x, y, Cs ] = CouplingOperatorTimo( 'L2', Int.mesh.tri3, opt );
-            Cs = RepM * sparse( x , y, Cs );
-            [ xtheta, ~, Ctheta ] = find( sum( Cs, 2 ) );
-            [ xpsi, ~, Cpsi ] = find( sum( Cs * IntM', 1 )' );
-            C.xBCpsi = xpsi;
-            C.BCpsi = Cpsi;
-            C.xtheta = xtheta;
-            C.Ctheta = Ctheta;
-        end
-      
+              
     % UNKNOWN COUPLING CASE
     otherwise
         error('unknown coupling case')

@@ -28,7 +28,8 @@ function Test( type )
 %  | 'comsol2D'         | comsol      | comsol      | acoustic     |
 %  | 'stoDet2D    '     | acoustic(S) | acoustic    | join mesh    |
 %  | 'stoSto2D    '     | acoustic(S) | acoustic(S) | join mesh    |
-%  | 'beam2D'           | beam        | elastic(S)  |              |
+%  | 'FE2D'             | elastic     | elastic     | join mesh    |
+%  | 'beam2D'           | beam        | elastic     |              |
 %  |____________________|_____________|_____________|______________|
 %
 % (S) = stochastic
@@ -71,6 +72,18 @@ switch lower(type)
         [ sol, out ] = CArl( model, coupling, solver );
         plottest2D( out.model, sol );
 
+    case {'fe2d'}
+        load(['Tests/' type '.mat']);
+        [ sol, out ] = CArl( model, coupling, solver );
+        solx = sol; 
+        solx{1} = solx{1}(1:2:end);
+        solx{2} = solx{2}(1:2:end);
+        plottest2D( out.model, solx );
+        soly = sol; 
+        soly{1} = soly{1}(2:2:end);
+        soly{2} = soly{2}(2:2:end);
+        plottest2D( out.model, soly );
+
     case {'mc1d','stosto1d'}
         load(['Tests/' type '.mat']);
         sol = CArl( model, coupling, solver );
@@ -104,6 +117,7 @@ switch lower(type)
         Test('force2D');
         Test('stoDet2D');
         Test('stoSto2D');
+        Test('FE2D');
 
     case 'mesh'
         Test('indent2D');
