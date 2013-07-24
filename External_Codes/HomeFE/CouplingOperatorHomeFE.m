@@ -20,8 +20,7 @@ m = struct( 'mesh', struct( 'X', mesh.Points, ...
             'property', ones(size(mesh)), ...
             'load', zeros(size(mesh)), ...
             'BC', [] );
-[ x, y, C ] = MassMatrixHomeFE( m );
-C = sparse( x, y, C );
+C = MassMatrixHomeFE( m );
 
 % choice of the coupling operator
 switch operator
@@ -31,8 +30,7 @@ switch operator
         
     % H1 coupling
     case 'H1'
-        [ z, k, K ] = StiffnessMatrixHomeFE( m );
-        K = sparse( z, k, K );
+        K = StiffnessMatrixHomeFE( m );
         C = opt.kappa*K + C;
         
     % unknown coupling operator

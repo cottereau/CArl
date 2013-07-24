@@ -1,4 +1,4 @@
-function [ x, y, M ] = MassMatrixHomeFE( model )
+function M = MassMatrixHomeFE( model )
 % MASSMATRIXHOMEFE to construct the basic mass matrix by calling a 
 % home-made FE code
 %
@@ -46,6 +46,9 @@ for i1 = 1:Ne
                                         gaussX, gaussW, N, Nxi, Neta );
     M( (i1-1)*Nn2 + (1:Nn2) ) = Me( : );
 end
+
+% sparse format
+M = sparse( x, y, M );
 
 %==========================================================================
 % ELEMENTMASSMATRIXHOMEFE

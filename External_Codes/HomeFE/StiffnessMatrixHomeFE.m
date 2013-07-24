@@ -1,8 +1,8 @@
-function [ x, y, K, z, F ] = StiffnessMatrixHomeFE( model )
+function [ K, F ] = StiffnessMatrixHomeFE( model )
 % STIFFNESSMATRIXHOMEFE to construct the basic stiffness matrix and force
 % vector by calling a home-made FE code in 1D
 %
-% syntax: [ x, y, K, z, F ] = StiffnessMatrixHomeFE( model )
+% syntax: [ K, F ] = StiffnessMatrixHomeFE( model )
 %
 %  model: cell of structured arrays containing the information relative to
 %         the different models, in particular:
@@ -17,10 +17,7 @@ function [ x, y, K, z, F ] = StiffnessMatrixHomeFE( model )
 %       - 'load': vector of load per element [Ne*e matrix] of the value of
 %                 the load at each node of each element
 %
-%  output: the format is that of sparse matrices. The matrix of stiffness
-%          and the vector of force are such that, schematically:
-%               Stiffness( x, y ) = K
-%               Force( z ) = F
+%  K and F are sparse matrices
 %
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
@@ -72,6 +69,8 @@ if isfield(model,'BC')&&~isempty( model.BC )
     F = [ F; reshape(repmat(model.BC.value(ind)',[1 Nf]),Nbc*Nf,1) ];
     
 end
+K = sparse( x, y, K );
+F = sparse( z, 1, F );
 
 %==========================================================================
 % BASESTIFFNESSMATRIXHOMEFE

@@ -37,9 +37,7 @@ switch model.code
         alpha = repmat(alpha',size(stiff.mesh.T,2),1)';
         stiff.property = stiff.property .* alpha;
         stiff.load = stiff.load .* alpha;   
-        [ x, y, K, z, F ] = StiffnessMatrixHomeFE( stiff );
-        K = sparse( x, y, K );
-        F = sparse( z, 1, F );
+        [ K, F ] = StiffnessMatrixHomeFE( stiff );
 
     % MONTE CARLO VERSION OF HOME FE
     case 'MonteCarloHomeFE'
@@ -52,11 +50,10 @@ switch model.code
         MC = cell( Nmc, 1 );
         for i1 = 1:Nmc
             stiff.property = property(:,:,i1) .* alpha;
-            [ x, y, tmpK, z, F ] = StiffnessMatrixHomeFE( stiff );
-            MC{i1} = sparse( x, y, tmpK );
+            [ K, F ] = StiffnessMatrixHomeFE( stiff );
+            MC{i1} = K;
         end
-        K = sparse( x, y, zeros(size(tmpK)) );
-        F = sparse( z, 1, F );
+        K = sparse( size(K,1), size(K,2) );
         
     % 2D ELASTIC MODEL
     case 'FE2D'

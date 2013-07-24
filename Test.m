@@ -29,7 +29,8 @@ function Test( type )
 %  | 'stoDet2D    '     | acoustic(S) | acoustic    | join mesh    |
 %  | 'stoSto2D    '     | acoustic(S) | acoustic(S) | join mesh    |
 %  | 'FE2D'             | elastic     | elastic     | join mesh    |
-%  | 'beam2D'           | beam        | elastic     |              |
+%  | 'beam2D'           | beam        | beam        |              |
+%  | 'beamFE2D'         | beam        | elastic     |              |
 %  |____________________|_____________|_____________|______________|
 %
 % (S) = stochastic
@@ -65,12 +66,14 @@ switch lower(type)
         load(['Tests/' type '.mat']);
         [sol,out] = CArl( model, coupling, solver );
         plottest1D( out.model, sol );
+        title(type)
         
     case {'join2d', 'force2d', 'zoom2d', 'stodet2d', 'stosto2d', ...
           'comsol2d'}
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
         plottest2D( out.model, sol );
+        title(type)
 
     case {'fe2d'}
         load(['Tests/' type '.mat']);
@@ -79,25 +82,30 @@ switch lower(type)
         solx{1} = solx{1}(1:2:end);
         solx{2} = solx{2}(1:2:end);
         plottest2D( out.model, solx );
+        title([type  'x-direction'])
         soly = sol; 
         soly{1} = soly{1}(2:2:end);
         soly{2} = soly{2}(2:2:end);
         plottest2D( out.model, soly );
+        title([type  'y-direction'])
 
     case {'mc1d','stosto1d'}
         load(['Tests/' type '.mat']);
         sol = CArl( model, coupling, solver );
         plotteststochastic( model, sol );
+        title(type)
         
     case {'beam2d'}
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
         plottest2D( out.model, sol );
+        title(type)
 
     case {'nonembedded2d_1', 'indent2d'}
         load(['Tests/' type '.mat']);
-        [ sol, out ] = CArl( model, coupling, solver );
-        plottest2D( out.model, sol );
+        [ ~, out ] = CArl( model, coupling, solver );
+        plotmesh2D( out );
+        title(type)
 
     case 'short'
         Test('1D');
