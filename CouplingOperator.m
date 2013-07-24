@@ -32,15 +32,13 @@ switch lower(couple.code)
     
     % ACOUSTIC COUPLING
     case {'homefe','montecarlohomefe'}
-        [ x, y, C ] = CouplingOperatorHomeFE( couple.operator, Int.mesh, opt );
-        C = Rep.M * sparse( x, y, C ) * Int.M';
+        C = CouplingOperatorHomeFE( couple.operator, Int.mesh, opt );
+        C = Rep.M * C * Int.M';
         
         if strcmpi( couple.code, 'montecarlohomefe' )
-            [ x, y, Cs ] = CouplingOperatorHomeFE( 'L2', Int.mesh, opt );
-            Cs = Rep.M * sparse( x , y, Cs );
-            Ns = size(Cs);
+            Cs = Rep.M * CouplingOperatorHomeFE( 'L2', Int.mesh, opt );
             N = size(C,2);
-            C = [ C sum( Cs, 2 ) sparse(Ns(1),1);
+            C = [ C sum( Cs, 2 ) sparse(size(Cs,1),1);
                   sparse(N,N+1) sum( Cs * Int.M', 1 )'];
         end
         
@@ -57,19 +55,7 @@ switch lower(couple.code)
         IntM(2*size(Int.Mbeam2D,1)+1:3*size(Int.Mbeam2D,1),2*size(Int.Mbeam2D,2)+1:3*size(Int.Mbeam2D,2)) = Int.Mbeam2D;
         [ x, y, C ] = find( RepM * C * IntM' );
         C = struct( 'x', x, 'y', y, 'val', C );
-        
-        if (strcmp( couple.mediator.type, 'stochastic' ))
-            [ x, y, Cs ] = CouplingOperatorTimotmp( 'L2', Int.mesh.tri3, opt );
-            Cs = sparse(x,y,Cs)';
-            Cs = RepM * Cs;
-            [ xtheta, ~, Ctheta ] = find( sum( Cs, 2 ) );
-            [ xpsi, ~, Cpsi ] = find( sum( Cs * IntM', 1 )' );
-            C.xBCpsi = xpsi;
-            C.BCpsi = Cpsi;
-            C.xtheta = xtheta;
-            C.Ctheta = Ctheta;
-        end
-        
+      
     % TIMOSCHENKO BEAM COUPLING
     case 'beam'     
         [ x, y, C ] = CouplingOperatorTimo( couple.operator, Int.mesh.tri3, opt );

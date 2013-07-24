@@ -1,50 +1,27 @@
-function [ x, y, C ] = CouplingOperatorHomeFE( operator, mesh, opt )
+function C = CouplingOperatorHomeFE( operator, mesh, opt )
 % COUPLINGOPERATORHOMEFE to construct the Arlequin coupling matrix 
 % by calling a home-made FE code
 %
-% syntax: [ x, y, C ] = CouplingOperatorHomeFE( model coupling, n )
+% syntax: C = CouplingOperatorHomeFE( operator, mesh, opt )
 %
-%  model: structured array containing the information relative to the
-%         model, in particular:
-%       - 'type': describes the type of representation used for the
-%                 geometry. This is used for all interpolation purposes,
-%                 in particular for the definition of weight functions
-%                 Implemented: {'FE' 'discrete'}
-%       - 'code': code to be used to construct the stiffness matrices.
-%                 Implemented: {'Comsol' 'HomeFE'}
-%       - 'mesh': array dependent on 'type'.
-%  coupling: cell of structured array describing the coupling options, in
-%            particular
-%       - 'mesh': indicates the subdomain of the mesh that corresponds to
-%                 the coupling domain
-%       - 'mediator': definition of the mediator space: 'default' or an
-%                     integer indicating the optional choices (not always
-%                     available)
-%       - 'operator': coupling operator 'H1' 'L2'. The definition of these
-%                     spaces may be dependent on the type of coupling
-%  n: indicates what model is being considered [1 or 2]
+%    operator: 'H1' or 'L2' [string]
+%    mesh    : mesh structure [INT3 or TRI6 object]
+%    opt     : structured array containing field 'kappa' (only used with
+%              'H1' operator
 %
-%  output: the format is that of sparse matrices. The coupling matrix
-%          is such that, schematically:
-%               CouplingMatrix( x, y ) = C
+%    C: the output matrix is in sparse format
 %
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
 
-% R. Cottereau 04/2010
-
-% constants
-s = size(mesh);
-Nne = s(1);
-ne = s(2);
-
 % computation of MassMatrix
 m = struct( 'mesh', struct( 'X', mesh.Points, ...
                             'T', mesh.ConnectivityList), ...
-            'property', ones(Nne,ne), ...
-            'load', zeros(Nne,ne), ...
+            'property', ones(size(mesh)), ...
+            'load', zeros(size(mesh)), ...
             'BC', [] );
 [ x, y, C ] = MassMatrixHomeFE( m );
+C = sparse( x, y, C );
 
 % choice of the coupling operator
 switch operator
@@ -55,9 +32,8 @@ switch operator
     % H1 coupling
     case 'H1'
         [ z, k, K ] = StiffnessMatrixHomeFE( m );
-        x = [ z; x ];
-        y = [ k; y ];
-        C = [ opt.kappa*K; C ];
+        K = sparse( z, k, K );
+        C = opt.kappa*K + C;
         
     % unknown coupling operator
     otherwise
