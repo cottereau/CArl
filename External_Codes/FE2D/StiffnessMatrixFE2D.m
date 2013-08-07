@@ -20,15 +20,34 @@ function [K,F] = StiffnessMatrixFE2D( m, alpha )
 % 27826-fast-assembly-of-stiffness-and-matrices-in-finite-element-method 
 
 % construction of the variable parameter field
-warning('variable alpha not implemented yet')
+x = m.X(:,1);
+y = m.X(:,2);
+alpha = interp( alpha, [ mean(x(m.T),2) mean(y(m.T),2)] );
+alpha = repmat(alpha,[1 3]);
 
 % construction of Stiffness Matrix
-m.mu = 100;
-[ K, areas ] = stifness_matrixP1_2D_elasticity( m.T, m.X, m.lambda, m.mu );
+% [ K, areas ] = stifness_matrixP1_2D_elasticity( m.T, m.X, m.lambda, m.mu );
+K = stifness_matrixP1_2D_elasfluc( m.T, m.X, m.lambda, m.mu, alpha );
 
-% construction of Mass Matrix and load vector
-M = mass_matrixP1_2D_elasticity( m.T, areas );
-F = sum(M,2) .* reshape( m.load', numel(m.load), 1 );
+% construction of load vector
+F = sparse( size(K,1), 1 );
+if any(m.load~=0)
+    error('bulk load not enforced yet in FE2D')
+end
+if ~isfield(m,'neumann')
+    m.neumann = [];
+end
+if ~isempty(m.neumann)
+    edges = m.neumann(:,1:2);
+    load = m.neumann(:,3:4);
+    d = m.X(edges(:,2),:) - m.X(edges(:,1),:);
+    n = [-d(:,2) d(:,1)];
+    load = load.*[n(:,1) d(:,1)] + load.*[n(:,2) d(:,2)];
+    F(2*edges(:,1)-1) = F(2*edges(:,1)-1) + load(:,1)/2;
+    F(2*edges(:,2)-1) = F(2*edges(:,2)-1) + load(:,1)/2;
+    F(2*edges(:,1)) = F(2*edges(:,1)) + load(:,2)/2;
+    F(2*edges(:,2)) = F(2*edges(:,2)) + load(:,2)/2;
+end
 
 % enforcing boundary conditions
 N = 2*length(m.dirichlet);

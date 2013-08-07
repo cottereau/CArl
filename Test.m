@@ -77,17 +77,9 @@ switch lower(type)
 
     case {'fe2d'}
         load(['Tests/' type '.mat']);
+        model{2}.FE2D.load = model{2}.FE2D.load*10;
         [ sol, out ] = CArl( model, coupling, solver );
-        solx = sol; 
-        solx{1} = solx{1}(1:2:end);
-        solx{2} = solx{2}(1:2:end);
-        plottest2D( out.model, solx );
-        title([type  'x-direction'])
-        soly = sol; 
-        soly{1} = soly{1}(2:2:end);
-        soly{2} = soly{2}(2:2:end);
-        plottest2D( out.model, soly );
-        title([type  'y-direction'])
+        plottestvec2D( out.model, sol );
 
     case {'mc1d','stosto1d'}
         load(['Tests/' type '.mat']);
@@ -198,3 +190,19 @@ hold on;
 fill( xx2, pms2, 'y' )
 plot( x1(:), ms1, 'bx-', x2(:), ms2, 'ro--' );
 
+% FUNCTION PLOTTESTVEC2D
+function plottestvec2D( model, sol )
+T1 = model{1}.FE2D.T;
+X1 = model{1}.FE2D.X;
+N1 = numel(X1)/2;
+u1 = reshape( sol{1}(1:2*N1), 2, N1 )';
+dX1 = X1+u1;
+T2 = model{2}.FE2D.T;
+X2 = model{2}.FE2D.X;
+N2 = numel(X2)/2;
+u2 = reshape( sol{2}(1:2*N2), 2, N2 )';
+dX2 = X2+u2;
+figure; trimesh( T1, X1(:,1), X1(:,2), 'color', 'k', 'LineStyle', ':' );
+hold on; trimesh( T1, dX1(:,1), dX1(:,2), 'color', 'b' );
+hold on; trimesh( T2, X2(:,1), X2(:,2), 'color', 'k', 'LineStyle', ':' );
+hold on; trimesh( T2, dX2(:,1), dX2(:,2), 'color', 'r' );
