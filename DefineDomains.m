@@ -47,13 +47,3 @@ cpl.free12 = complement( overlap, cpl.domain );
 % definition of free areas
 cpl.free{1} = complement( bnd1, bnd2 );
 cpl.free{2} = complement( bnd2, bnd1 );
-
-% choose coupling mesh for incompatibles models
-if strcmp( m1.code, 'Beam')&&strcmp( m2.code, 'FE2D') || ...
-                         strcmp( m1.code, 'FE2D')&&strcmp( m2.code, 'Beam')
-    cpl.virtual2D = cpl.domain;
-    cpl.domain = projection( cpl.virtual2D, [1 0] );
-    cpl.virtual2Dfree12 = cpl.free12;
-    cpl.free12 = projection( cpl.virtual2Dfree12, [1 0] );
-    cpl.free{ibeam} = projection( cpl.free{ibeam}, [1 0] );
-end
