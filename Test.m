@@ -24,11 +24,11 @@ function Test( type )
 %  |                    |             |             |              |
 %  | 'zoom2D'           | acoustic    | acoustic    | zoom mesh    |
 %  | 'join2D'           | acoustic    | acoustic    | join mesh    |
-%  | 'force2D'          | acoustic    | acoustic    |              |
+%  | 'force2D'          | acoustic    | acoustic    | bulk load    |
 %  | 'comsol2D'         | comsol      | comsol      | acoustic     |
-%  | 'stoDet2D    '     | acoustic(S) | acoustic    | join mesh    |
-%  | 'stoSto2D    '     | acoustic(S) | acoustic(S) | join mesh    |
-%  | 'FE2D'             | elastic     | elastic     | join mesh    |
+%  | 'stoDet2D    '     | acoustic(S) | acoustic    |              |
+%  | 'stoSto2D    '     | acoustic(S) | acoustic(S) |              |
+%  | 'FE2D'             | elastic     | elastic     |              |
 %  | 'beam2D'           | beam        | beam        |              |
 %  | 'beamFE2D'         | beam        | elastic     |              |
 %  |____________________|_____________|_____________|______________|

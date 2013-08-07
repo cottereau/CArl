@@ -2,13 +2,13 @@ classdef levelSet1D
 % definition of a levelSet class for implicit definition of boundaries of
 % complex convex or concave domains in 1D
 %
-% LS = levelSet(x1,x2) creates a 1D domain between x1 and x2
+% LS = levelSet1D(x1,x2) creates a 1D domain between x1 and x2
 %
-% LS = levelSet(...,in) considers the interior of [x1 x1] if in==true
+% LS = levelSet1D(...,in) considers the interior of [x1 x1] if in==true
 % (default) and the outside if in==false.
 %
-% LS = levelSet(true) corresponds to an empty domain and 
-% LS = levelSet(false) corresponds to the full line.
+% LS = levelSet1D(true) corresponds to an empty domain and 
+% LS = levelSet1D(false) corresponds to the full line.
 %
 % When there are several segments defined, the composite domain is defined
 % as the union of all the segments
@@ -26,6 +26,7 @@ classdef levelSet1D
 %     union        - union of two domains
 %     complement   - complement of one domain within another
 %     distance     - distance from a set of points to the closest boundary
+%     boundary     - find the point on the boundary of the domain
 %     inside       - check whether points are inside the domain
 
 % R. Cottereau 07/2013
