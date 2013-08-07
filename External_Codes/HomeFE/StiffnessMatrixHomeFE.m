@@ -40,8 +40,9 @@ end
 
 % multiply load and stiffness by alpha (when present)
 if nargin==2 && ~isempty(alpha)
-    Xv = X(T',:);
-    Xc = (Xv(1:3:end,:)+Xv(2:3:end,:)+Xv(3:3:end,:))/3;
+    Xv = reshape( X(T',:), nnode, Ne, d );
+    Xc = permute( mean(Xv,1), [2 3 1] );
+    Xv = reshape( Xv, nnode*Ne, d );
     [~,ind] = interp( alpha, Xc );
     ind = repmat( ind', [nnode 1] );
     alpha = reshape( interp(alpha,Xv,ind(:)), nnode, Ne )';

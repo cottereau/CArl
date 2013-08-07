@@ -82,13 +82,19 @@ classdef discontinuous1D
             end            
         end
         % interpolation: getting values of f inside each subdomain
-        function [fv,ind] = interp( obj, X )
-            ind = inside( obj, X );
+        function [fv,indg] = interp( obj, X, indg )
             fv = zeros( size(X,1), 1 );
-            for i1 = 1:obj.Ns
-                if obj.x{i1}.N>0
-                    fv(ind==i1) = interp1( obj.val{i1}.x, obj.val{i1}.f, ...
-                                                             X(ind==i1,:));
+            if nargin<3
+                indg = zeros(size(X,1),1);
+                for i1 = 1:obj.Ns
+                    ind = inside( obj.x{i1}, X );
+                    indg(ind) = i1;
+                    fv(ind) = interp1( obj.val{i1}.x, obj.val{i1}.f, X(ind,:));
+                end
+            else
+                for i1 = 1:obj.Ns
+                    ind = indg==i1;
+                    fv(ind) = interp1( obj.val{i1}.x, obj.val{i1}.f, X(ind,:));
                 end
             end
         end
