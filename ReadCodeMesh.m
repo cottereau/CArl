@@ -45,47 +45,9 @@ switch lower(model.code)
         eval( ['cd ' wd ';' ]);
     
     % TIMOSCHENKO BEAM CODE
-    % we are assuming here that the local referential of the beam is along 
-    % a line in direction [1 0] and going through point [0 0]
     case  'beam'
-        % default values
-        Xb = model.Beam.mesh.X;
-        if size(Xb,2)>size(Xb,1)
-            Xb = Xb';
-        end
-        if isfield( model.Beam, 'L' )
-            L = model.Beam.L;
-        else
-            L = 1;
-        end
-        if isfield( model.Beam, 'X0' )
-            X0 = model.Beam.X0;
-        else
-            X0 = [0 0];
-        end
-        if isfield( model.Beam, 'dir' )
-            dir = model.Beam.dir;
-        else
-            dir = [1 0];
-        end
-        % create 1D mesh of INT3
-        model.mesh = INT3( model.Beam.mesh.T, Xb );
-        % create virtual 2D mesh of TRI6 and transformation basis
-        orth = [-dir(2) dir(1)];
-        Y = [-L/2 0 L/2];
-        [X,Y] = meshgrid( Xb, Y );
-        XY = X(:)*dir + Y(:)*orth;
-        XY = [ XY(:,1)+X0(1)  XY(:,2)+X0(2) ];
-        dt = DelaunayTri( XY );
-        model.virtualMesh2D = TRI6( dt.Triangulation, dt.X, false );
-        Nl = length(Xb);
-        model.v2mX = reshape( repmat( 1:2:2*Nl, [3 1] ), 3*Nl, 1 );
-        model.v2mT = zeros( model.virtualMesh2D.Ne, 1 );
-        Tloc = model.v2mX(model.virtualMesh2D.T3);
-        for i1 = 1:model.mesh.Ne
-            ind = all( ismember(Tloc,model.mesh.T(i1,:)), 2 );
-            model.v2mT(ind) = i1;
-        end
+        model.mesh = INT3( model.Beam.T, model.Beam.X, false );
+        
     % error
     otherwise
         error( 'unknown code' );
