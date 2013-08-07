@@ -81,7 +81,7 @@ switch lower(type)
         [ sol, out ] = CArl( model, coupling, solver );
         plottestvec2D( out.model, sol );
 
-    case {'mc1d','stosto1d'}
+    case {'stodet1d','stosto1d'}
         load(['Tests/' type '.mat']);
         sol = CArl( model, coupling, solver );
         plotteststochastic( model, sol );
