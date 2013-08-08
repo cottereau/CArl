@@ -90,7 +90,7 @@ switch lower(type)
     case {'beam2d'}
         load(['Tests/' type '.mat']);
         [ sol, out ] = CArl( model, coupling, solver );
-        plottest2D( out.model, sol );
+        plottest1D( out.model, sol );
         title(type)
 
     case {'nonembedded2d_1', 'indent2d'}
