@@ -22,8 +22,6 @@ function [ K, F, MC ] = StiffnessMatrix( model )
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
 
-% R. Cottereau 04/2010
-
 % Initialization
 MC = [];
 
@@ -68,26 +66,8 @@ switch model.code
 
     % TIMOSCHENKO BEAM MODEL
     case 'Beam'
-        keyboard
-        inc = mean(model.mesh.X(model.mesh.T),2);
-        alpha = interp(model.alpha,[inc;zeros(1,length(inc))]', ...
-                                   [inc;zeros(1,length(inc))]');
-        model.load = model.HomeFE.load .* repmat(alpha,[1,2,3]);
-        model.property = model.property .* repmat(alpha,1,2);
-        [ x, y, K, z, F ] = Timostiff( model );
-        
-        % compute the modified value of the model property values
-        Nmc = size( model.HomeFE.property, 3 );
-        MC = cell( Nmc, 1 );
-        for i1 = 1:Nmc
-            model.property = property(:,:,i1) .* repmat(alpha,1,2);
-            [ x, y, tmpK, z, F ] = Timostiff( model );
-            MC{i1} = sparse( x, y, tmpK );
-        end
-        K = sparse( x, y, zeros(size(tmpK)) );
-        F = sparse( z, 1, F );
-        
-        
+        [ K, F ] = StiffnessMatrixBeam( model.Beam, model.alpha );
+                
     % unknown case
     otherwise
         error('this external code is not supported')
