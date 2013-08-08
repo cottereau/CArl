@@ -118,6 +118,7 @@ switch lower(type)
         Test('stoDet2D');
         Test('stoSto2D');
         Test('FE2D');
+        Test('Beam2D');
 
     case 'mesh'
         Test('indent2D');

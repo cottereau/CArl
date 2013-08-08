@@ -4,20 +4,17 @@ function [ K, F ] = StiffnessMatrixBeam( model, alpha )
 %
 % syntax: [K,F] = StiffnessMatrixBeam( model, alpha )
 %
-%    model: structured array containing the fields 'X', 'T', 'lambda', 'mu'
-%           'load', 
+%    model: structured array containing the fields 'X', 'T', 'young',
+%           'poisson', 'h', 'P' (optional), 'BC' (optional)
 %    mesh    : mesh structure [INT3 or TRI6 object]
 %
-%    C: the output matrix is in sparse format
+%    K, F: the output matrices are in sparse format
 %
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
 %
-% uses routines by Talal Rahman and Jan Valdman downloadable at 
-% http://www.mathworks.in/matlabcentral/fileexchange/
-% 27826-fast-assembly-of-stiffness-and-matrices-in-finite-element-method 
-
-        warning('varying alpha not implemented yet for beams')
+% uses routines by Manuel Diaz and A. Ferreira downloadable at 
+% https://github.com/wme7/aero-matlab/tree/master/FEM/Timoshenko_beam
 
 % geometrical parameters
 b = 1;
@@ -28,11 +25,8 @@ I = b*h^3/12;
 % mechanical parameters
 E = model.young;
 G = model.young/2/(1+model.poisson);
-C = [ E*I 0; 0 S*G];
+C = [ E*I; 0; 0; S*G];
 P = model.P;
-if P~=0
-    warning('pressure variation through alpha not be implemented in beam');
-end
 
 % mesh
 X = model.X;
@@ -41,8 +35,16 @@ Nn = size(X,1);
 Ne = size(model.T,1);
 Nd = 2*Nn;
 
+% multiply properties and load by alpha (when present)
+if nargin==2 && ~isempty(alpha)
+    Xc = mean( X(T), 2 );
+    alpha = interp( alpha, Xc );
+    C = reshape( C * alpha', 2, 2, Ne );
+    P = P * alpha;
+end
+
 % compute stiffness matrix
-[ K, F ] = formStiffnessMassTimoshenkoBeam(Nd,Ne,T,Nn,X,C,P,1,I,h);
+[ K, F ] = StiffnessMassTimoshenkoBeamVar(Nd,Ne,T,Nn,X,C,P,1,I,h);
 K = sparse(K);
 F = sparse(F);
 
