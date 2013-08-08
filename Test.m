@@ -14,6 +14,7 @@ function Test( type )
 %  | 'force1D'          | acoustic    | acoustic    | bulk load    |
 %  | 'stoDet1D'         | acoustic    | acoustic(S) |              |
 %  | 'stoSto1D'         | acoustic(S) | acoustic(S) |              |
+%  | 'beam2D'           | beam        | beam        |              |
 %  |____________________|_____________|_____________|______________|
 %
 % TWO-DIMENSIONAL TESTS
@@ -29,7 +30,6 @@ function Test( type )
 %  | 'stoDet2D    '     | acoustic(S) | acoustic    |              |
 %  | 'stoSto2D    '     | acoustic(S) | acoustic(S) |              |
 %  | 'FE2D'             | elastic     | elastic     |              |
-%  | 'beam2D'           | beam        | beam        |              |
 %  | 'beamFE2D'         | beam        | elastic     |              |
 %  |____________________|_____________|_____________|______________|
 %
@@ -110,6 +110,7 @@ switch lower(type)
         Test('force1D');
         Test('stoDet1D');
         Test('stoSto1D');
+        Test('Beam2D');
 
     case '2d'
         Test('join2D');
@@ -118,7 +119,6 @@ switch lower(type)
         Test('stoDet2D');
         Test('stoSto2D');
         Test('FE2D');
-        Test('Beam2D');
 
     case 'mesh'
         Test('indent2D');
