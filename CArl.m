@@ -55,11 +55,7 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %  sol: cell containing the solution for each model
 %  out: structured array containing information on the computation
 %
-% developed at 
-% Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579, 
-% grande voie des vignes
-% F-92295 Chatenay-Malabry
-% FRANCE
+% copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
 
 % initialization
@@ -128,7 +124,10 @@ disp('Assembling and inverting system ...')
 [ Mdl, Cpl ] = SolveArlequin( K, F, Mdl, Cpl, solver, opt, Kmc );
 
 % preparing output
-[ sol, Mdl ] = ArlequinOutput( Mdl );
+sol = cell(Nm,1);
+for i1 = 1:Nm
+    sol{i1} = ArlequinOutput( Mdl{i1} );
+end
 out = struct( 'model', {Mdl}, ...
               'coupling', {Cpl}, ...
               'K', K, ...

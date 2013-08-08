@@ -1,38 +1,45 @@
-function [ sol, model ] = ArlequinOutput( model )
-% ARLEQUINOUTPUT to construct an Arlequin solution based on the individual
-% solutions for each model, and the alpha functions
+function u = ArlequinOutput( model )
+% ARLEQUINOUTPUT to construct solutions in format adapted to each of the
+% models
 %
-%  u = alpha*u
-
-% developed at 
-% Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579, 
-% grande voie des vignes
-% F-92295 Chatenay-Malabry
-% FRANCE
+%  u = ArlequinOutput( model )
+%
+% copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
 
-% constants
-Nm = length(model);
+% brute solution
+u = full(model.u);
 
-% initialization
-sol = cell(Nm,1);
+% transformation depending on the model at hand
+switch model.code
+    
+    % ACOUSTIC - HOMEFE
+    case 'HomeFE'
+        Ndof = size(model.HomeFE.mesh.X,1);
+        u = mean( u( 1:Ndof, : ), 2 );
+        
+    % ACOUSTIC STOCHASTIC - MONTECARLOHOMEFE
+    case 'MonteCarloHomeFE'
+        Ndof = size(model.HomeFE.mesh.X,1);
+        u = u( 1:Ndof, : );
+        
+    % ELASTIC - FE2D
+    case 'FE2D'
+        Ndof = size(model.FE2D.X,1);
+        u = reshape( u( 1:2*Ndof, 1 ), 2, Ndof )';
 
-% construction of local solutions to each model
-for i1 = 1:Nm
-    
-    % solution brute
-    sol{i1} = full(model{i1}.u);
-    
-    % additional reconstruction for Monte Carlo solutions
-    if isfield( model{i1}, 'uMC' );
-        sol{i1} = mean( full(model{i1}.uMC), 2 );
-    end
-    
-    % reconstruction of alpha.u
-  %  alpha = model{i1}.alpha;
-  %  u = TriScatteredInterp( model{i1}.mesh.X3, sol{i1} );
-  %  u = discontinuous( freeBoundary(model{i1}.mesh), u );
-%    model{i1}.au = alpha.*u;
-    
+    % COMSOL
+    case 'Comsol'
+        error('not implemented yet: output in COMSOL format')
+
+    % TIMOSCHENKO BEAM - BEAM
+    case 'Beam'
+        Ndof = size(model.Beam.X,1);
+        u = reshape( u( 1:2*Ndof, 1 ), Ndof, 2 );
+                
+    % unknown case
+    otherwise
+        error('this external code is not supported')
+ 
 end
 
