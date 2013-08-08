@@ -1,8 +1,8 @@
 function C = CouplingOperatorFE2D( operator, mesh, opt )
 % COUPLINGOPERATORFE2D to construct the Arlequin coupling matrix 
-% by calling a the elastic code FE2D
+% by calling the elastic code FE2D
 %
-% syntax: C = CouplingOperatorHomeFE( operator, mesh, opt )
+% syntax: C = CouplingOperatorFE2D( operator, mesh, opt )
 %
 %    operator: 'H1' or 'L2' [string]
 %    mesh    : mesh structure [INT3 or TRI6 object]

@@ -1,4 +1,4 @@
-function [ Int, Rep ] = MeshIntersect( mesh1, mesh2, LSet )
+function [ Int, Rep ] = MeshIntersect( mdl1, mdl2, LSet )
 % MESHINTERSECT to create the mesh at the intersection between two meshes,
 % both in terms of support (for the definition of the interpolation
 % functions) and for integration purposes
@@ -26,25 +26,41 @@ function [ Int, Rep ] = MeshIntersect( mesh1, mesh2, LSet )
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
 
-% R. Cottereau 04/2010
-
 % coupling zone for representation purposes (including elements of the
 % original meshes that are cut by the level-set)
-[meshr1,ind1] = subSet( mesh1, elementsInBoundary(mesh1,LSet,false) );
-[meshr2,ind2] = subSet( mesh2, elementsInBoundary(mesh2,LSet,false) );
+[meshr1,ind1] = subSet( mdl1.mesh, elementsInBoundary(mdl1.mesh,LSet,false) );
+[meshr2,ind2] = subSet( mdl2.mesh, elementsInBoundary(mdl2.mesh,LSet,false) );
 
 % coupling mesh for integration purposes
-meshi = bounded( mergeMeshes( meshr1, meshr2 ), LSet );
+Int.mesh = bounded( mergeMeshes( meshr1, meshr2 ), LSet );
 
-% compute the passage matrices in terms of nodes = get the values of the 
-% basis functions in the representation meshes at the nodes of the 
-% integration mesh
-[ Mx1, My1, Mval1 ] = XR2XI( meshr1, meshi );
-[ Mx2, My2, Mval2 ] = XR2XI( meshr2, meshi );
-M11 = sparse( ind1(Mx1), My1, Mval1, mesh1.Nn, meshi.Nn);
-M22 = sparse( ind2(Mx2), My2, Mval2, mesh2.Nn, meshi.Nn);
+% compute passage matrix from integration mesh to model meshes
+Rep{1} = integration2Model( mdl1, meshr1, Int.mesh, ind1 );
+Rep{2} = integration2Model( mdl2, meshr2, Int.mesh, ind2 );
+ 
+% passage matrix from integration mesh to model meshes
+function R = integration2Model( mdl, m, mi, ind )
+% compute passage matrix in terms of nodes of the mesh
+[ Mx, My, Mval ] = XR2XI( m, mi );
+M = sparse( ind(Mx), My, Mval, mdl.mesh.Nn, mi.Nn);
+% compute passage matrix in terms of DOFs
+switch mdl.code
+    
+    % elastic case
+    case {'FE2D'}
+        N = 2*size(M);
+        [ x, y, M ] = find(M);
+        M = sparse( (x-1)*2+1, (y-1)*2+1, M, N(1), N(2) ) + ...
+            sparse( x*2,       y*2,       M, N(1), N(2) );
 
+        
+    % beam case
+    case {'Beam'}
+        N = size(M);
+        [ x, y, M ] = find(M);
+        M = sparse( [x;x+N(1)], [y;y+N(2)], [M;M], 2*N(1), 2*N(2) ); 
+        
+end
 % output
-Int.mesh = meshi;
-Rep{1} = struct( 'mesh', meshr1, 'M', M11 );
-Rep{2} = struct( 'mesh', meshr2, 'M', M22 );
+R = struct( 'mesh', m, 'M', M );
+
