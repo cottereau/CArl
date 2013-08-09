@@ -6,6 +6,11 @@
 
 \f0\fs24 \cf0 TODO list:\
 \
+- define the input coupling directly in terms of a discontinuous function alpha, rather than by entering the values of the functions ?\
+\
+\
+\
+\
 - change the name and calls to 'FE2D' into 'elastic2D' or something similar \'85 in order to stress the difference with HomeFE which is acoustic\
 \
 - clarify the definition of the alphas in StiffnessMatrix.m there seems to be a lot of repeated stuff between the different cases\
@@ -16,15 +21,11 @@
 \
 - beams are now defined only along x, as 1D problems \'85 this should be made more general\
 \
-- remove method "addDomain" from discontinuous and discontinuous1D classes because it is redundant with method addRegion\
-\
-- in README, make a list of the codes (with links to webpages, etc ..) that are linked through CArl. Also, remove the exterior codes 'Beam' from the git repository and indicate in the README file how to download the codes \'85\
+- remove method "addDomain" from discontinuous classes because it is redundant with method addRegion\
 \
 - implement distance function from [Elias, Martins & Coutinho, 2007]\
 \
 - create cases (in 1D and 2D) with three models and two couplings (one where the two coupling areas are distinct and one where they are overlapping)\
-\
-- define the input coupling directly in terms of a discontinuous function alpha, rather than by entering the values of the functions ?\
 \
 - introduce reference solutions for all the cases and output the Test.m with logicals (depending on comparison with reference functions) rather than plots\
 \
