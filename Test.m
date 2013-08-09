@@ -170,7 +170,7 @@ switch model.code
         u = u(:,1);
         du = diff(u) ./ diff(X); du = [du du]';
         dX = [X(1:end-1,1) X(2:end,1)]';
-        xt = [ X-h*sin(theta) X+h*sin(theta) ];
+        xt = [ X+h*sin(theta) X-h*sin(theta) ];
         yt = [ u+h*cos(theta) u-h*cos(theta) ];
         subplot(2,1,1); hold on; plot( X, u, [coul style] );
         hold on; plot( xt', yt', coul );
