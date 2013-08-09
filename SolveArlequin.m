@@ -1,4 +1,4 @@
-function [ Mdl, Cpl ] = SolveArlequin( K, F, Mdl, Cpl, solver, opt, Kmc )
+function u = SolveArlequin( K, F, solver, Kmc )
 % SOLVEARLEQUIN to solve the coupled system
 %
 % syntax: sol = SolveArlequin( K, F, coupling )
@@ -34,12 +34,4 @@ switch lower(solver)
     % unknown solver
     otherwise
         error( 'unknown solver type' )        
-end
-
-% prepare output
-for i1 = 1:length(Mdl)
-    Mdl{i1}.u = ( u( (opt.iK(i1)+1):opt.iK(i1+1), : ) );
-end
-for i1 = 1:length(Cpl)
-    Cpl{i1}.lambda = ( u( (opt.iC(i1,3)+1):opt.iC(i1,3), : ) );
 end

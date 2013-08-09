@@ -121,13 +121,10 @@ disp('Assembling and inverting system ...')
 [ K, F, opt, Kmc ] = AssembleArlequin( Mdl, Cpl );
 
 % solving system
-[ Mdl, Cpl ] = SolveArlequin( K, F, Mdl, Cpl, solver, opt, Kmc );
+U = SolveArlequin( K, F, solver, Kmc );
 
 % preparing output
-sol = cell(Nm,1);
-for i1 = 1:Nm
-    sol{i1} = ArlequinOutput( Mdl{i1} );
-end
+sol = ArlequinOutput( U, Mdl, opt );
 out = struct( 'model', {Mdl}, ...
               'coupling', {Cpl}, ...
               'K', K, ...
