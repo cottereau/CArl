@@ -68,11 +68,7 @@ classdef discontinuous1D
         end
         % plotting discontinuous function
         function plot( obj, X )
-            [ fval, ind ] = f( obj, X );
-            figure; hold on;
-            for i1 = 1:obj.Ns
-                plot( X(ind==i1), fval(ind==i1) );
-            end
+            figure; plot( X, interp( obj, X ), '+-' );
         end
         % identify the subdomains where nodes are located
         function ind = inside( obj, X )
