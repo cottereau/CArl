@@ -229,13 +229,6 @@ classdef levelSet
             obj = levelSet( dt.Points, 'init', V, dt.Constraints );
             obj = clean(obj);
         end
-%         % union of two domains
-%         function obj = union( obj1, obj2 )
-%             dt = mergeMeshes( obj1, obj2 );
-%             V = min( [obj1.dist(dt.Points) obj2.dist(dt.Points)], [], 2 );
-%             obj = levelSet( dt.Points, 'init', V, dt.Constraints );
-%             obj = clean(obj);
-%         end
         % check whether points are inside the domain
         function [in,on] = inside( obj, X, lon )
             d = obj.dist( X );
@@ -299,5 +292,9 @@ classdef levelSet
             out = ~inside( obj1, obj.mesh.Points, true );
             ind = ~all( out( obj.mesh.Constraints ), 2 );
         end
+        % projection of a 2D domain onto a line
+%         function line = projectLine( obj, x0, dir )
+%             
+%         end
      end
 end

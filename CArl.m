@@ -22,15 +22,11 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %                    support for the physical basis functions. Note that
 %                    usually the coarser support should be used.
 %       -'operator' : type of coupling operator used ('H1' or 'L2').
-%       -'levelSet' : definition of the coupling zone, given as a
-%                     levelSet1D or levelSet object.
-%       -'cplval' : value of the weight function in the coupling zone (cell
-%                   of values for each model. When the value is a scalar, a
-%                   constant function is used in the coupling area. When
-%                   two values are given, the function is taken as linear
-%                   between the two values given.
-%       -'freeval' : cell of the (constant) value of the weight function
-%                    for each model outside the coupling zone.
+%       -'domain' : definition of the coupling zone, given as a
+%                   levelSet1D or levelSet object.
+%       -'alpha' : cell of definition of the alpha functions for each model
+%                  of the coupling, given as a discontinuous1D or
+%                  discontinuous object.
 %
 %  solver: 'direct' (default) or 'FETI' (not implemented yet)
 %
@@ -79,13 +75,6 @@ for i1 = 1:Nc
         m1 = Mdl{ Cpl{i1}.models(1) };
         m2 = Mdl{ Cpl{i1}.models(2) };
         
-        % define coupling and free volumes
-        Cpl{i1} = DefineDomains( Cpl{i1}, m1, m2 );
-
-        % compute weights for each model
-        Cpl{i1}.alpha{1} = ArlequinWeight( Cpl{i1}, 1, m1 );
-        Cpl{i1}.alpha{2} = ArlequinWeight( Cpl{i1}, 2, m2 );
-
         % create intersection of meshes (for both representation and
         % integration purposes)
         [Int,Rep] = MeshIntersect( m1, m2, Cpl{i1}.domain );
