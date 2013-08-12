@@ -172,10 +172,18 @@ classdef INT3
         % merge two meshes (find a mesh embedded in both obj1 and obj2)
         % it is not checked that both meshes are defined on same domain
         function obj = mergeMeshes( obj1, obj2, ~ )
-            x = unique( [ obj1.Points; obj2.Points ] );
-            N = length(x);
-            t = [ (1:N-1)' (2:N)'];
-            obj = INT3( t, x );
+            if isa( obj2, 'INT3' )
+                x = unique( [ obj1.Points; obj2.Points ] );
+                N = length(x);
+                t = [ (1:N-1)' (2:N)'];
+                obj = INT3( t, x );
+            elseif isa( obj2, 'TRI6' )
+                obj21D = projectLine( obj2, [0 0], [1 0] );
+                obj = mergeMeshes( obj1, obj21D );
+            else
+                error(['mergeMeshes not implemented for this ' ...
+                       'combination of dimensions'])
+            end
         end
         % bound an INT3 mesh inside a domain. Point are inserted at bnd
         function obj = bounded( obj, dom )
@@ -201,7 +209,7 @@ classdef INT3
             Xb = (Xc-X1)./(X2-X1);
         end
         % find elements in which nodes are located
-        function ind = inElements( obj, Xc )
+        function ind = pointLocation( obj, Xc )
             ind = zeros(size(Xc,1),1);
             for i1 = 1:obj.Ne
                 ind(Xc>=obj.Points(obj.ConnectivityList(i1,1)) ...
@@ -213,7 +221,7 @@ classdef INT3
         % centered on Xr (=local barycentric coordinate of that node in the
         % element). Return a matrix in sparse format
         function [ Mx, My, Mval ] = XR2XI( obj, obj1 )
-            ind = inElements( obj, obj1.Points );
+            ind = pointLocation( obj, obj1.Points );
             f1 = cartesianToBarycentric( obj, ind, obj1.Points );
             Mx = obj.ConnectivityList(ind,:);
             My = repmat((1:length(ind))',1,2);
