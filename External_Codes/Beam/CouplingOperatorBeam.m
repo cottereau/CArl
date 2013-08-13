@@ -25,6 +25,14 @@ T = mesh.ConnectivityList;
 [ K, ~, C ] = formStiffnessMassTimoshenkoBeam( 2*mesh.Nn, mesh.Ne, ...
                                        T, mesh.Nn, X, eye(2), 1, 1, 1, 1 );
 
+% adding coupling for the longitudinal displacement
+model  = struct( 'mesh', struct('X',X,'T',T), 'property', ones(size(T)));
+Cn = MassMatrixHomeFE( model );
+Kn = StiffnessMatrixHomeFE( model );
+O = zeros( size(Kn,1), size(K,2) );
+K = [Kn O; O' K];
+C = [Cn O; O' C];
+
 % choice of the coupling operator
 switch operator
     

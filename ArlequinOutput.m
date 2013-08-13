@@ -42,7 +42,7 @@ for i1 = 1:Nm
             % TIMOSCHENKO BEAM - BEAM
         case 'Beam'
             Ndof = size(model{i1}.Beam.X,1);
-            sol{i1} = reshape( ui( 1:2*Ndof, 1 ), Ndof, 2 );
+            sol{i1} = reshape( ui( 1:3*Ndof, 1 ), Ndof, 3 );
             
             % unknown case
         otherwise

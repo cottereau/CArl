@@ -33,38 +33,53 @@ X = model.X;
 T = model.T;
 Nn = size(X,1);
 Ne = size(model.T,1);
-Nd = 2*Nn;
 
 % multiply properties and load by alpha (when present)
 if nargin==2 && ~isempty(alpha)
     Xc = mean( X(T), 2 );
-    alpha = interp( alpha, Xc );
-    C = reshape( C * alpha', 2, 2, Ne );
-    P = P * alpha;
+    alphac = interp( alpha, Xc );
+    C = reshape( C * alphac', 2, 2, Ne );
+    P = P * alphac;
 end
 
 % compute stiffness matrix
-[ K, F ] = StiffnessMassTimoshenkoBeamVar(Nd,Ne,T,Nn,X,C,P,1,I,h);
+[ K, F ] = StiffnessMassTimoshenkoBeamVar(2*Nn,Ne,T,Nn,X,C,P,1,I,h);
 K = sparse(K);
 F = sparse(F);
+
+% add longitudinal stiffness
+modelN = struct( 'mesh', struct('T',T,'X',X), ...
+                'property', E*ones(size(T)) );
+[ Kn, Fn ] = StiffnessMatrixHomeFE( modelN, alpha );
+
+% condensate
+O = sparse(size(Kn,1),size(K,2));
+K = [Kn O;O' K];
+F = [Fn; F];
 
 % add boundary conditions
 if isfield(model,'BC')&&~isempty( model.BC )
 
-    % Dirichlet Boundary Conditions in displacement
+    % Dirichlet Boundary Conditions in longitudinal displacement
     ind = find(model.BC.type == 'U');
     Nbc = length(ind);
-    BC = sparse( model.BC.nodes(ind), 1:Nbc, 1, Nd, Nbc );
+    BC = sparse( model.BC.nodes(ind), 1:Nbc, 1, 3*Nn, Nbc );
     FBC = sparse( 1:Nbc, 1, model.BC.value(ind), Nbc, 1 );
+
+    % Dirichlet Boundary Conditions in transverse displacement
+    ind = find(model.BC.type == 'V');
+    Nbc = length(ind);
+    BC = [BC sparse( model.BC.nodes(ind)+Nn, 1:Nbc, 1, 3*Nn, Nbc )];
+    FBC = [FBC; sparse( 1:Nbc, 1, model.BC.value(ind), Nbc, 1 )];
 
     % Dirichlet Boundary Conditions in rotation
     ind = find(model.BC.type == 'R');
     Nbc = length(ind);
-    BC = [BC sparse( model.BC.nodes(ind)+Nn, 1:Nbc, 1, Nd, Nbc )];
+    BC = [BC sparse( model.BC.nodes(ind)+2*Nn, 1:Nbc, 1, 3*Nn, Nbc )];
     FBC = [FBC; sparse( 1:Nbc, 1, model.BC.value(ind), Nbc, 1 )];
 
-    % Neumann Boundary Conditions in Force
-    ind = find(model.BC.type == 'F');
+    % Neumann Boundary Conditions in longitudinal Force
+    ind = find(model.BC.type == 'N');
     Nbc = length(ind);
     if Nbc>0
         val = model.BC.value(ind);
@@ -72,6 +87,15 @@ if isfield(model,'BC')&&~isempty( model.BC )
         F(ind) = F(ind) + sparse( 1:Nbc, 1, val, Nbc, 1 );
     end
 
+    % Neumann Boundary Conditions in transverse Force
+    ind = find(model.BC.type == 'Q');
+    Nbc = length(ind);
+    if Nbc>0
+        val = model.BC.value(ind);
+        ind = model.BC.node(ind);
+        F(ind) = F(ind) + sparse( 1:Nbc, 1, val, Nbc, 1 );
+    end
+    
     % Neumann Boundary Conditions in moment
     ind = find(model.BC.type == 'M');
     Nbc = length(ind);

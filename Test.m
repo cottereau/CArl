@@ -166,15 +166,16 @@ switch model.code
     case 'Beam'
         X = model.Beam.X;
         h = 0.02*(max(X)-min(X));
-        theta = u(:,2);
+        theta = u(:,3);
+        v = u(:,2);
         u = u(:,1);
-        du = diff(u) ./ diff(X); du = [du du]';
+        dv = diff(v) ./ diff(X); dv = [dv dv]';
         dX = [X(1:end-1,1) X(2:end,1)]';
-        xt = [ X+h*sin(theta) X-h*sin(theta) ];
-        yt = [ u+h*cos(theta) u-h*cos(theta) ];
-        subplot(2,1,1); hold on; plot( X, u, [coul style] );
+        xt = [ X+u+h*sin(theta) X+u-h*sin(theta) ];
+        yt = [ v+h*cos(theta) v-h*cos(theta) ];
+        subplot(2,1,1); hold on; plot( X+u, v, [coul style] );
         hold on; plot( xt', yt', coul );
-        subplot(2,1,2); hold on; plot( dX(:), du(:), [coul style] );
+        subplot(2,1,2); hold on; plot( dX(:), dv(:), [coul style] );
 
     % NOT IMPLEMENTED YET
     otherwise

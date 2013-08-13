@@ -33,7 +33,7 @@ E = model.property;
 
 % default values
 if ~isfield(model,'load')
-    load = [];
+    load = zeros(size(T));
 else 
     load = model.load;
 end
