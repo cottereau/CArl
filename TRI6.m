@@ -107,6 +107,10 @@ classdef TRI6 < triangulation
         end
         % Selects the elements of obj inside a given boundary
         function ind = elementsInBoundary(obj,ls,lall)
+            if ~isa( ls, 'levelSet' )
+                ind = true(obj.Ne,1);
+                return
+            end
             if nargin<3
                 lall = true;
             end
@@ -142,26 +146,92 @@ classdef TRI6 < triangulation
         end
         % merge two meshes (find a mesh embedded in both obj1 and obj2
         % and located within ls)
-        function obj = mergeMeshes( obj1, obj2 ) 
-            X = [ obj1.Points ; obj2.Points ];
-            C = [ edges(obj1); edges(obj2)+size(obj1.Points,1) ];
-            obj = delaunayTriangulation( X, C );
-            obj = TRI6( obj.ConnectivityList, obj.Points );
-%            obj = subSet( obj, elementsInBoundary(obj,ls,true) );
+        function obj = mergeMeshes( obj1, obj2 )
+            if isa( obj2, 'TRI6' )
+                X = [ obj1.Points ; obj2.Points ];
+                C = [ edges(obj1); edges(obj2)+size(obj1.Points,1) ];
+                obj = delaunayTriangulation( X, C );
+                obj = TRI6( obj.ConnectivityList, obj.Points );
+            elseif isa( obj2, 'INT3' )
+                obj = mergeMeshes( obj2, obj1 );
+            else
+                error(['mergeMeshes not implemented for this ' ...
+                       'combination of dimensions'])
+            end
         end
         % for each node in meshi, find nodes that are inside the elements
         % that touch it, and the value of the linear FE basis function 
         % centered on Xr (=local barycentric coordinate of that node in the
         % element). Return a matrix in sparse format
         function [ Mx, My, Mval ] = XR2XI( obj, obj1 )
-            indx = pointLocation( obj, obj1.Points );
-            Mval = cartesianToBarycentric( obj, indx, obj1.Points );
-            My = repmat( (1:size(Mval,1))', [3 1] );
-            Mx = obj.ConnectivityList(indx,:);
-            ind = abs(Mval(:))>obj.gerr;
-            Mx = Mx(ind);
-            Mval = Mval(ind);
-            My = My(ind);
+            if isa( obj1, 'TRI6' )
+                indx = pointLocation( obj, obj1.Points );
+                Mval = cartesianToBarycentric( obj, indx, obj1.Points );
+                My = repmat( (1:size(Mval,1))', [3 1] );
+                Mx = obj.ConnectivityList(indx,:);
+                ind = abs(Mval(:))>obj.gerr;
+                Mx = Mx(ind);
+                Mval = Mval(ind);
+                My = My(ind);
+            elseif isa( obj1, 'INT3' )
+                % NB: one should implement 2nd order elements to be able to
+                % compute these projections properly ... this
+                % implementation is probably rather wrong !!!
+                % computation of gradients in the y direction for all
+                % elements of the TRI6
+                gry = zeros(obj.Ne,3);
+                for i1 = 1:obj.Ne
+                    Xe = obj.Points(obj.ConnectivityList(i1,:),:);
+                    gr = [Xe ones(3,1)]\eye(3);
+                    gry(i1,:) = gr(2,:);
+                end
+                Mx = cell(obj.Ne,1);
+                My = cell(obj.Ne,1);
+                Mval = cell(obj.Ne,1);
+                [~,~,xloc,yloc] = projectLine( obj, [0 0], [1 0] );
+                edg = edges( obj );
+%                for i1 = 30
+                 for i1 = 1:obj1.Nn
+                    % finding edges intersected by a section at x=xloc
+                    edgCut = xloc(edg(:,1))<=obj1.Points(i1) ...
+                                          & xloc(edg(:,2))>=obj1.Points(i1);
+                    edgCut = edg(edgCut,:);
+                    X1 = [xloc(edgCut(:,1)) yloc(edgCut(:,1))];
+                    X2 = [xloc(edgCut(:,2)) yloc(edgCut(:,2))];
+                    dx = (obj1.Points(i1)-X1(:,1)) ./ (X2(:,1)-X1(:,1));
+                    dx(isnan(dx))=0;
+                    yCut = X1(:,2)+ dx.*(X2(:,2)-X1(:,2));
+                    [yCut,ind] = sort(yCut);
+                    h = diff(yCut);
+                    h = [[0;h] [h;0]];
+                    % computing average of phi
+                    h1 = sum(h,2);
+                    dx = dx(ind,:);
+                    m1 = [ (1-dx).*h1/2; dx.*h1/2 ];
+                    % computing average of grad phi
+                    TI = edgeAttachments( obj, edgCut(ind,1), edgCut(ind,2));
+                    nT = cellfun(@length,TI);
+                    m2 = zeros(size(TI,1),2);
+                    ind = nT==2;
+                    m2(ind,:) = gry(cat(1,TI{ind})) .* h(ind,:);
+                    m2(~ind,1) = gry(cat(1,TI{~ind})) .*h1(~ind,:);
+                    % storing
+                    Mval{i1} = [ m1; m2(:) ];
+                    Mx{i1} = repmat( edgCut(:), [2 1] );
+                    on = ones(size(Mx{i1},1)/2,1);
+                    My{i1} = [i1*on; (i1+obj1.Nn)*on];
+                    ind = abs(Mval{i1}(:))>obj.gerr;
+                    Mx{i1} = Mx{i1}(ind);
+                    My{i1} = My{i1}(ind);
+                    Mval{i1} = Mval{i1}(ind);
+                end
+                Mx = cat(1,Mx{:});
+                My = cat(1,My{:});
+                Mval = cat(1,Mval{:});
+            else
+                error(['XR2XI not implemented for this ' ...
+                       'combination of dimensions'])
+            end
         end
         % get rid of nodes that are not used in T, and of repeated elements
         function [obj,indX] = cleanT(obj)
@@ -192,6 +262,16 @@ classdef TRI6 < triangulation
             [obj,indX1] = cleanT(obj);
             [obj,indX2] = cleanX(obj);
             indX = indX1(indX2);
+        end
+        % projection of a 2D mesh onto a 1D mesh
+        function [line,ind,xloc,yloc] = projectLine( obj, x0, dir )
+            x = obj.Points(:,1)-x0(:,1);
+            y = obj.Points(:,2)-x0(:,2);
+            xloc = [x y]*dir';
+            yloc = [x y]*[-dir(2); dir(1)];
+            [xline,~,ind] = unique( xloc );
+            N = length(xline);
+            line = INT3( [(1:N-1)' (2:N)'], xline );
         end
     end
 end

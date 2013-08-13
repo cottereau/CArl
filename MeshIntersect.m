@@ -42,23 +42,38 @@ Rep{2} = integration2Model( mdl2, meshr2, Int.mesh, ind2 );
 function R = integration2Model( mdl, m, mi, ind )
 % compute passage matrix in terms of nodes of the mesh
 [ Mx, My, Mval ] = XR2XI( m, mi );
-M = sparse( ind(Mx), My, Mval, mdl.mesh.Nn, mi.Nn);
+
 % compute passage matrix in terms of DOFs
 switch mdl.code
     
     % elastic case
     case {'FE2D'}
-        N = 2*size(M);
-        [ x, y, M ] = find(M);
-        M = sparse( (x-1)*2+1, (y-1)*2+1, M, N(1), N(2) ) + ...
-            sparse( x*2,       y*2,       M, N(1), N(2) );
-
+        % beam-solid coupling case
+        if max(My)>mi.Nn
+            M = sparse( Mx, My, Mval );
+            Mu = M(:,1:mi.Nn);
+            Mr = M(:,mi.Nn+1:end);
+            [ Mx, My, Mval ] = find(Mu);
+            N = 2*[mdl.mesh.Nn  mi.Nn];
+            Mu = sparse( (Mx-1)*2+1, (My-1)*2+1, Mval, N(1), N(2) ) + ...
+                sparse( Mx*2,       My*2,       Mval, N(1), N(2) );
+            [ Mx, My, Mval ] = find(Mr);
+            Mr = sparse( (Mx-1)*2+1, My, Mval, N(1), mi.Nn );
+            M = [Mu Mr];
+        % classical solid-solid coupling
+        else
+            N = 2*[mdl.mesh.Nn  mi.Nn];
+            M = sparse( (Mx-1)*2+1, (My-1)*2+1, Mval, N(1), N(2) ) + ...
+                sparse( Mx*2,       My*2,       Mval, N(1), N(2) );
+        end
         
     % beam case
     case {'Beam'}
+        M = sparse( ind(Mx), My, Mval, mdl.mesh.Nn, mi.Nn);
         N = size(M);
         [ x, y, M ] = find(M);
-        M = sparse( [x;x+N(1)], [y;y+N(2)], [M;M], 2*N(1), 2*N(2) ); 
+        M = sparse( [x;x+N(1);x+2*N(1)], ...
+                    [y;y+N(2);y+2*N(2)], [M;M;M], 3*N(1), 3*N(2) ); 
         
 end
 % output

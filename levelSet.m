@@ -292,9 +292,5 @@ classdef levelSet
             out = ~inside( obj1, obj.mesh.Points, true );
             ind = ~all( out( obj.mesh.Constraints ), 2 );
         end
-        % projection of a 2D domain onto a line
-%         function line = projectLine( obj, x0, dir )
-%             
-%         end
      end
 end
