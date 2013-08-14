@@ -14,7 +14,7 @@ function Test( type )
 %  | 'force1D'          | acoustic    | acoustic    | bulk load    |
 %  | 'stoDet1D'         | acoustic    | acoustic(S) |              |
 %  | 'stoSto1D'         | acoustic(S) | acoustic(S) |              |
-%  | 'beam2D'           | beam        | beam        |              |
+%  | 'beamcomp2D'       | beam        | beam        | compression  |
 %  |____________________|_____________|_____________|______________|
 %
 % TWO-DIMENSIONAL TESTS
@@ -30,6 +30,7 @@ function Test( type )
 %  | 'stoDet2D    '     | acoustic(S) | acoustic    |              |
 %  | 'stoSto2D    '     | acoustic(S) | acoustic(S) |              |
 %  | 'FE2D'             | elastic     | elastic     |              |
+%  | 'beam2D'           | beam        | beam        |              |
 %  | 'beamFE2D'         | beam        | elastic     |              |
 %  |____________________|_____________|_____________|______________|
 %
@@ -87,7 +88,7 @@ switch type
         Test('force1D');
         Test('stoDet1D');
         Test('stoSto1D');
-        Test('Beam2D');
+        Test('BeamComp2D');
         
     case '2d'
         Test('join2D');
@@ -96,6 +97,7 @@ switch type
         Test('stoDet2D');
         Test('stoSto2D');
         Test('FE2D');
+        Test('Beam2D');
         
     case 'mesh'
         Test('indent2D');
@@ -171,9 +173,13 @@ switch model.code
         u = u(:,1);
         dv = diff(v) ./ diff(X); dv = [dv dv]';
         dX = [X(1:end-1,1) X(2:end,1)]';
+        xt0 = [ X X ];
+        yt0 = ones(size(X))*[ 1 -1 ]*h;
         xt = [ X+u+h*sin(theta) X+u-h*sin(theta) ];
         yt = [ v+h*cos(theta) v-h*cos(theta) ];
-        subplot(2,1,1); hold on; plot( X+u, v, [coul style] );
+        subplot(2,1,1); hold on; plot( X, zeros(size(X)), [coul style] );
+        hold on; plot( xt0', yt0', [coul ':'] );
+        hold on; plot( X+u, v, [coul style] );
         hold on; plot( xt', yt', coul );
         subplot(2,1,2); hold on; plot( dX(:), dv(:), [coul style] );
 
