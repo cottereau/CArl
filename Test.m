@@ -31,6 +31,7 @@ function Test( type )
 %  | 'stoSto2D    '     | acoustic(S) | acoustic(S) |              |
 %  | 'FE2D'             | elastic     | elastic     |              |
 %  | 'beam2D'           | beam        | beam        |              |
+%  | 'beamFEComp2D'     | beam        | elastic     | compression  |
 %  | 'beamFE2D'         | beam        | elastic     |              |
 %  |____________________|_____________|_____________|______________|
 %
@@ -177,7 +178,7 @@ switch model.code
         yt0 = ones(size(X))*[ 1 -1 ]*h;
         xt = [ X+u+h*sin(theta) X+u-h*sin(theta) ];
         yt = [ v+h*cos(theta) v-h*cos(theta) ];
-        subplot(2,1,1); hold on; plot( X, zeros(size(X)), [coul style] );
+        subplot(2,1,1); hold on; plot( X, zeros(size(X)), [coul ':'] );
         hold on; plot( xt0', yt0', [coul ':'] );
         hold on; plot( X+u, v, [coul style] );
         hold on; plot( xt', yt', coul );
