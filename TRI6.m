@@ -190,31 +190,42 @@ classdef TRI6 < triangulation
                 Mval = cell(obj.Ne,1);
                 [~,~,xloc,yloc] = projectLine( obj, [0 0], [1 0] );
                 edg = edges( obj );
-%                for i1 = 30
-                 for i1 = 1:obj1.Nn
+                for i1 = 1:obj1.Nn
                     % finding edges intersected by a section at x=xloc
                     edgCut = xloc(edg(:,1))<=obj1.Points(i1) ...
                                           & xloc(edg(:,2))>=obj1.Points(i1);
                     edgCut = edg(edgCut,:);
                     X1 = [xloc(edgCut(:,1)) yloc(edgCut(:,1))];
                     X2 = [xloc(edgCut(:,2)) yloc(edgCut(:,2))];
-                    dx = (obj1.Points(i1)-X1(:,1)) ./ (X2(:,1)-X1(:,1));
-                    dx(isnan(dx))=0;
-                    yCut = X1(:,2)+ dx.*(X2(:,2)-X1(:,2));
+                    phi = (obj1.Points(i1)-X1(:,1)) ./ (X2(:,1)-X1(:,1));
+                    yCut = X1(:,2)+ phi.*(X2(:,2)-X1(:,2));
+                    inan = isnan(yCut);
+                    yCut(inan) = (X1(inan,2)+X2(inan,2))/2;
                     [yCut,ind] = sort(yCut);
+                    edgCut = edgCut(ind,:);
                     h = diff(yCut);
                     h = [[0;h] [h;0]];
+                    h(find(inan(ind))-1,2) = 0;
+                    h(find(inan(ind))+1,1) = 0;
+                    h = sum(h,2)/2;
                     % computing average of phi
-                    h1 = sum(h,2);
-                    dx = dx(ind,:);
-                    m1 = [ (1-dx).*h1/2; dx.*h1/2 ];
+                    phi = [1-phi(ind,:) phi(ind,:)];
+                    phi(inan(ind),:) = 1;
+                    m1 = [ phi(:,1).*h/2; phi(:,2).*h/2 ];
                     % computing average of grad phi
-                    TI = edgeAttachments( obj, edgCut(ind,1), edgCut(ind,2));
-                    nT = cellfun(@length,TI);
-                    m2 = zeros(size(TI,1),2);
-                    ind = nT==2;
-                    m2(ind,:) = gry(cat(1,TI{ind})) .* h(ind,:);
-                    m2(~ind,1) = gry(cat(1,TI{~ind})) .*h1(~ind,:);
+                    TI = edgeAttachments( obj, edgCut(:,1), edgCut(:,2));
+                    gri = zeros( size(edgCut,1),2);
+                    for i2 = 1:size(gri,1);
+                        tt = obj.ConnectivityList(TI{i2},:);
+                        gri1 = gry( TI{i2}(1), tt(1,:)==edgCut(i2,1) );
+                        gri2 = gry( TI{i2}(1), tt(1,:)==edgCut(i2,2) );
+                        if size(tt,1)>1
+                        gri1 = (gri1+gry(TI{i2}(2),tt(2,:)==edgCut(i2,1)))/2;
+                        gri2 = (gri2+gry(TI{i2}(2),tt(2,:)==edgCut(i2,2)))/2;
+                        end
+                        gri(i2,:) = [gri1 gri2];
+                    end
+                    m2 = [ gri(:,1).*h/2; gri(:,2).*h/2 ];
                     % storing
                     Mval{i1} = [ m1; m2(:) ];
                     Mx{i1} = repmat( edgCut(:), [2 1] );

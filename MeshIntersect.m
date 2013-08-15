@@ -50,21 +50,21 @@ switch mdl.code
     case {'FE2D'}
         % beam-solid coupling case
         if max(My)>mi.Nn
-            M = sparse( Mx, My, Mval );
+            M = sparse( ind(Mx), My, Mval );
             Mu = M(:,1:mi.Nn);
             Mr = M(:,mi.Nn+1:end);
             [ Mx, My, Mval ] = find(Mu);
             N = 2*[mdl.mesh.Nn  mi.Nn];
-            Mu = sparse( (Mx-1)*2+1, (My-1)*2+1, Mval, N(1), N(2) ) + ...
-                sparse( Mx*2,       My*2,       Mval, N(1), N(2) );
+            Mu = sparse( (Mx-1)*2+1, My,       Mval, N(1), N(2) ) + ...
+                 sparse( Mx*2,       My+mi.Nn, Mval, N(1), N(2) );
             [ Mx, My, Mval ] = find(Mr);
-            Mr = sparse( (Mx-1)*2+1, My, Mval, N(1), mi.Nn );
+            Mr = sparse( (Mx-1)*2+1, My,       Mval, N(1), mi.Nn );
             M = [Mu Mr];
         % classical solid-solid coupling
         else
             N = 2*[mdl.mesh.Nn  mi.Nn];
-            M = sparse( (Mx-1)*2+1, (My-1)*2+1, Mval, N(1), N(2) ) + ...
-                sparse( Mx*2,       My*2,       Mval, N(1), N(2) );
+            M = sparse( (ind(Mx)-1)*2+1, (My-1)*2+1, Mval, N(1), N(2) ) ...
+              + sparse( ind(Mx)*2,       My*2,       Mval, N(1), N(2) );
         end
         
     % beam case
@@ -74,6 +74,10 @@ switch mdl.code
         [ x, y, M ] = find(M);
         M = sparse( [x;x+N(1);x+2*N(1)], ...
                     [y;y+N(2);y+2*N(2)], [M;M;M], 3*N(1), 3*N(2) ); 
+      
+    % other cases
+    otherwise
+        M = sparse( ind(Mx), My, Mval, mdl.mesh.Nn, mi.Nn);
         
 end
 % output
