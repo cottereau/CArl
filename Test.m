@@ -74,8 +74,8 @@ if ~( strcmp(type,'1d') || strcmpi(type,'2d') || strcmpi(type,'mesh') )
     % plot results
     figure; plotTestCArl( model{1}, sol{1}, 'k', '--x' )
     hold on; plotTestCArl( model{2}, sol{2}, 'r', '--o' );
-    subplot(2,1,1); title( [type ' - displacement'] ); box on; grid on
-    subplot(2,1,2); title( [type ' - gradient'] ); box on; grid on
+    subplot(2,1,1); title( [type ' - primal'] ); box on; grid on
+    subplot(2,1,2); title( [type ' - dual'] ); box on; grid on
     
     return
 end
@@ -126,8 +126,18 @@ switch model.code
             subplot(2,1,1); hold on; plot( X, u, [coul style] );
             subplot(2,1,2); hold on; plot( dX(:), du(:), [coul style] );
         elseif d==2
-            subplot(2,1,1); hold on; trimesh( T, X(:,1), X(:,2), u );
-            view(3)
+            Y = X(:,2);
+            X = X(:,1);
+            subplot(2,1,1); hold on; trimesh( T, X, Y, u ); view(3)
+            Ne = size(T,1);
+            strain = zeros(Ne,2);
+            for i1=1:Ne
+                grad = [X(T(i1,:)) Y(T(i1,:)) ones(3,1)]\u(T(i1,:),:);
+                strain(i1,:) = grad(1:2,:)';
+            end
+            Xc = mean(X(T),2); Yc = mean(Y(T),2);
+            subplot(2,1,2); hold on; trimesh( T, X, Y, 'color', coul );
+            hold on; quiver( Xc, Yc, strain(:,1), strain(:,2),'color',coul );
         end
 
     % ACOUSTIC STOCHASTIC
@@ -158,12 +168,26 @@ switch model.code
         
     % ELASTIC - FE2D
     case 'FE2D'
-        X = model.FE2D.X;
+        X = model.FE2D.X(:,1);
+        Y = model.FE2D.X(:,2);
         T = model.FE2D.T;
-        dx = X(:,1)+u(:,1); dy = X(:,2)+u(:,2);
+        dx = X+u(:,1); dy = Y+u(:,2);
         subplot(2,1,1); 
-        trimesh( T, X(:,1), X(:,2), 'color', coul, 'LineStyle', ':' );
+        trimesh( T, X, Y, 'color', coul, 'LineStyle', ':' );
         hold on; trimesh( T, dx, dy, 'color', coul, 'LineStyle', '-' );
+        Ne = size(T,1);
+        strain = zeros(Ne,4);
+        for i1=1:Ne
+            grad = [X(T(i1,:)) Y(T(i1,:)) ones(3,1)]\u(T(i1,:),:);
+            strain(i1,:) = reshape( grad(1:2,:), 1, 4 );
+        end
+        % trace of strain operator
+        strain = strain(:,1)+strain(:,4);
+        Xc = mean(X(T),2); Yc = mean(Y(T),2);
+        subplot(2,1,2); 
+        trimesh( T, X, Y, 'color', coul, 'LineStyle', ':' );
+        hold on; scatter( Xc, Yc, 50, strain, 'full' );
+        colorbar
 
     % BEAM
     case 'Beam'
