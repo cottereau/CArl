@@ -26,7 +26,6 @@ alpha = interp( alpha, [ mean(x(m.T),2) mean(y(m.T),2)] );
 alpha = repmat(alpha,[1 3]);
 
 % construction of Stiffness Matrix
-% [ K, areas ] = stifness_matrixP1_2D_elasticity( m.T, m.X, m.lambda, m.mu );
 K = stifness_matrixP1_2D_elasfluc( m.T, m.X, m.lambda, m.mu, alpha );
 
 % construction of load vector
@@ -34,23 +33,46 @@ F = sparse( size(K,1), 1 );
 if any(m.load~=0)
     error('bulk load not enforced yet in FE2D')
 end
-if ~isfield(m,'neumann')
-    m.neumann = [];
-end
-if ~isempty(m.neumann)
-    edges = m.neumann(:,1:2);
-    load = m.neumann(:,3:4);
-    d = m.X(edges(:,2),:) - m.X(edges(:,1),:);
-    n = [-d(:,2) d(:,1)];
-    load = load.*[n(:,1) d(:,1)] + load.*[n(:,2) d(:,2)];
-    F(2*edges(:,1)-1) = F(2*edges(:,1)-1) + load(:,1)/2;
-    F(2*edges(:,2)-1) = F(2*edges(:,2)-1) + load(:,1)/2;
-    F(2*edges(:,1)) = F(2*edges(:,1)) + load(:,2)/2;
-    F(2*edges(:,2)) = F(2*edges(:,2)) + load(:,2)/2;
-end
 
-% enforcing boundary conditions
-N = 2*length(m.dirichlet);
-I = sparse(1:N, [ (m.dirichlet-1)*2+1; 2*m.dirichlet ], 1, N, size(K,1) );
-K = [ K I'; I sparse(N,N) ];
-F = [ F; sparse(N,1) ];
+% add boundary conditions
+if isfield(m,'BC')&&~isempty( m.BC )
+
+    % constants
+    type = m.BC.type;
+    nodes = m.BC.nodes;
+    val = m.BC.value;
+    Nn = length(x);
+
+    % Dirichlet Boundary Conditions in longitudinal displacement
+    ind = type == 'U';
+    Nbc = nnz(ind);
+    BC = sparse( 2*nodes(ind)-1, 1:Nbc, 1, 2*Nn, Nbc );
+    FBC = sparse( 1:Nbc, 1, val(ind), Nbc, 1 );
+
+    % Dirichlet Boundary Conditions in transverse displacement
+    ind = type == 'V';
+    Nbc = nnz(ind);
+    BC = [BC sparse( 2*nodes(ind), 1:Nbc, 1, 2*Nn, Nbc )];
+    FBC = [FBC; sparse( 1:Nbc, 1, val(ind), Nbc, 1 )];
+
+    % Neumann Boundary Conditions in longitudinal Force
+    ind = type == 'N';
+    Nbc = nnz(ind);
+    if Nbc>0
+        nod = 2*node(ind)-1;
+        F(nod) = F(nod) + sparse( 1:Nbc, 1, val(ind), Nbc, 1 );
+    end
+
+    % Neumann Boundary Conditions in transverse Force
+    ind = type == 'Q';
+    Nbc = nnz(ind);
+    if Nbc>0
+        nod = 2*node(ind);
+        F(nod) = F(nod) + sparse( 1:Nbc, 1, val(ind), Nbc, 1 );
+    end
+    
+    % construct new matrices
+    K = [ K BC; BC' sparse(size(BC,2),size(BC,2)) ];
+    F = [ F; FBC ]; 
+    
+end
