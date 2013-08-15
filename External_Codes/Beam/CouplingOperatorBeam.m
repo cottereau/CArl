@@ -22,13 +22,16 @@ X = mesh.Points;
 T = mesh.ConnectivityList;    
 
 % construction of stiffness and mass Matrix
+I = 1*opt.h^3/12;
+S = 1*opt.h;
+C = [ I 0; 0 S];
 [ K, ~, C ] = formStiffnessMassTimoshenkoBeam( 2*mesh.Nn, mesh.Ne, ...
-                                       T, mesh.Nn, X, eye(2), 1, 1, 1, 1 );
+                                        T, mesh.Nn, X, C, 0, 1, I, opt.h );
 
 % adding coupling for the longitudinal displacement
 model  = struct( 'mesh', struct('X',X,'T',T), 'property', ones(size(T)));
-Cn = MassMatrixHomeFE( model );
-Kn = StiffnessMatrixHomeFE( model );
+Cn = S*MassMatrixHomeFE( model );
+Kn = S*StiffnessMatrixHomeFE( model );
 O = zeros( size(Kn,1), size(K,2) );
 K = [Kn O; O' K];
 C = [Cn O; O' C];

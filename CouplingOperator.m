@@ -38,9 +38,9 @@ switch lower(couple.code)
       
     % TIMOSCHENKO BEAM COUPLING
     case 'beam'
+        opt.h = couple.h;
         C = CouplingOperatorBeam( couple.operator, Int.mesh, opt );
         C = Rep.M * C * Int.M';
-        
               
     % UNKNOWN COUPLING CASE
     otherwise
