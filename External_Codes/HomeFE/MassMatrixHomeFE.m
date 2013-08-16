@@ -2,16 +2,14 @@ function M = MassMatrixHomeFE( model )
 % MASSMATRIXHOMEFE to construct the basic mass matrix by calling a 
 % home-made FE code
 %
-% syntax: [ x, y, M ] = MassMatrixHomeFE( model )
+% syntax: M = MassMatrixHomeFE( model )
 %
 %  model: cell of structured arrays containing the information relative to
 %         the different models, in particular:
 %       - 'mesh': .X = matrix of coordinates of nodes [Nn*d matrix]
 %                 .T = connectivity matrix [Ne*e matrix]
 %
-%  output: the format is that of sparse matrices. The matrix of mass
-%          is such that, schematically:
-%               Mass( x, y ) = M
+%  output matrix is sparse
 %
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
