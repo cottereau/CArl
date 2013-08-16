@@ -271,22 +271,6 @@ classdef levelSet
             end
             obj = levelSet( X,'init', d, C );
         end
-        % merge two meshes
-        function dt = mergeMeshes(obj1,obj2)
-            X = [ obj1.mesh.Points; obj2.mesh.Points ];
-            N1 = size(obj1.mesh.Points,1);
-            C = [ obj1.mesh.Constraints; obj2.mesh.Constraints+N1 ];
-            % merge close-by nodes
-            X = round( X/obj1.gerr ) * obj1.gerr;
-            [X,~,ind] = unique( X, 'rows' );
-            C = ind(C);
-            if ~isempty(C)
-                dt = delaunayTriangulation( X, C );
-                dt = delaunayTriangulation( dt.Points, dt.Constraints );
-            else
-                dt = delaunayTriangulation( X );
-            end
-        end
         % reduce the constraints in one domain to be intersected
         function ind = reduceBoundary( obj, obj1 )
             out = ~inside( obj1, obj.mesh.Points, true );
