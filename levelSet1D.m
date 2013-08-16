@@ -33,6 +33,8 @@ classdef levelSet1D
 
     properties
         X     % N*2 coordinate matrix of nodes of the domains
+        dir   % direction of the 1D levelSet embedded in a 2D space
+        x0    % reference point of the 1D levelSet embedded in 2D space
     end
 
     properties (Constant)
@@ -46,7 +48,7 @@ classdef levelSet1D
     
     methods
         % Definition of level-set
-        function obj = levelSet1D( x1, x2, in )
+        function obj = levelSet1D( x1, x2, in, dir, x0 )
             if nargin==1
                 obj = levelSet1D( -Inf, Inf, x1 );
             elseif nargin==2
@@ -67,6 +69,16 @@ classdef levelSet1D
                     end
                 end
             end
+            if nargin<4 || isempty(dir)
+                obj.dir = [1 0];
+            else
+                obj.dir = dir;
+            end
+            if nargin<5 || isempty(x0)
+                obj.x0 = [0 0];
+            else
+                obj.x0 = x0;
+            end            
             obj = clean(obj);
         end
         % get the number of disjoint level-sets

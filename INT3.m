@@ -61,9 +61,13 @@ classdef INT3
             obj.ConnectivityList = T;
             if nargin<4 || isempty(dir)
                 obj.dir = [1 0];
+            else
+                obj.dir = dir;
             end
             if nargin<5 || isempty(x0)
                 obj.x0 = [0 0];
+            else
+                obj.x0 = x0;
             end
             if lclean
                 obj = clean( obj );

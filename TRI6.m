@@ -107,14 +107,16 @@ classdef TRI6 < triangulation
         end
         % Selects the elements of obj inside a given boundary
         function ind = elementsInBoundary(obj,ls,lall)
-            if ~isa( ls, 'levelSet' )
-                ind = true(obj.Ne,1);
-                return
-            end
             if nargin<3
                 lall = true;
             end
-            ind = inside( ls, obj.Points, true );
+            if isa( ls, 'levelSet' )
+                ind = inside( ls, obj.Points, true );
+            elseif isa( ls, 'levelSet1D' )
+                [proj,one2two] = projectLine( obj, ls.x0, ls.dir );
+                ind = inside( ls, proj.Points, true );
+                ind = ind(one2two(1:obj.Nn));
+            end
             if lall
                 ind = all( ind(obj.ConnectivityList), 2 );
             else
@@ -179,66 +181,7 @@ classdef TRI6 < triangulation
                 % implementation is probably rather wrong !!!
                 % computation of gradients in the y direction for all
                 % elements of the TRI6
-                gry = zeros(obj.Ne,3);
-                for i1 = 1:obj.Ne
-                    Xe = obj.Points(obj.ConnectivityList(i1,:),:);
-                    gr = [Xe ones(3,1)]\eye(3);
-                    gry(i1,:) = gr(2,:);
-                end
-                Mx = cell(obj.Ne,1);
-                My = cell(obj.Ne,1);
-                Mval = cell(obj.Ne,1);
-                [~,~,xloc,yloc] = projectLine( obj, obj1.x0, obj1.dir );
-                edg = edges( obj );
-                for i1 = 1:obj1.Nn
-                    % finding edges intersected by a section at x=xloc
-                    edgCut = xloc(edg(:,1))<=obj1.Points(i1) ...
-                                          & xloc(edg(:,2))>=obj1.Points(i1);
-                    edgCut = edg(edgCut,:);
-                    X1 = [xloc(edgCut(:,1)) yloc(edgCut(:,1))];
-                    X2 = [xloc(edgCut(:,2)) yloc(edgCut(:,2))];
-                    phi = (obj1.Points(i1)-X1(:,1)) ./ (X2(:,1)-X1(:,1));
-                    yCut = X1(:,2)+ phi.*(X2(:,2)-X1(:,2));
-                    inan = isnan(yCut);
-                    yCut(inan) = (X1(inan,2)+X2(inan,2))/2;
-                    [yCut,ind] = sort(yCut);
-                    edgCut = edgCut(ind,:);
-                    h = diff(yCut);
-                    h = [[0;h] [h;0]]
-                    h(find(inan(ind))-1,2) = 0;
-                    h(find(inan(ind))+1,1) = 0;
-                    h = sum(h,2)
-                    % computing average of phi
-                    phi = [1-phi(ind,:) phi(ind,:)];
-                    phi(inan(ind),:) = 1;
-                    m1 = [ phi(:,1).*h/2; phi(:,2).*h/2 ];
-                    % computing average of grad phi
-                    TI = edgeAttachments( obj, edgCut(:,1), edgCut(:,2));
-                    gri = zeros( size(edgCut,1),2);
-                    for i2 = 1:size(gri,1);
-                        tt = obj.ConnectivityList(TI{i2},:);
-                        gri1 = gry( TI{i2}(1), tt(1,:)==edgCut(i2,1) );
-                        gri2 = gry( TI{i2}(1), tt(1,:)==edgCut(i2,2) );
-                        if size(tt,1)>1
-                        gri1 = (gri1+gry(TI{i2}(2),tt(2,:)==edgCut(i2,1)))/2;
-                        gri2 = (gri2+gry(TI{i2}(2),tt(2,:)==edgCut(i2,2)))/2;
-                        end
-                        gri(i2,:) = [gri1 gri2];
-                    end
-                    m2 = [ gri(:,1).*h; gri(:,2).*h ];
-                    % storing
-                    Mval{i1} = [ m1; m2(:) ];
-                    Mx{i1} = repmat( edgCut(:), [2 1] );
-                    on = ones(size(Mx{i1},1)/2,1);
-                    My{i1} = [i1*on; (i1+obj1.Nn)*on];
-                    ind = abs(Mval{i1}(:))>obj.gerr;
-                    Mx{i1} = Mx{i1}(ind);
-                    My{i1} = My{i1}(ind);
-                    Mval{i1} = Mval{i1}(ind);
-                end
-                Mx = cat(1,Mx{:});
-                My = cat(1,My{:});
-                Mval = cat(1,Mval{:});
+                
             else
                 error(['XR2XI not implemented for this ' ...
                        'combination of dimensions'])
