@@ -204,14 +204,14 @@ classdef TRI6 < triangulation
                     [yCut,ind] = sort(yCut);
                     edgCut = edgCut(ind,:);
                     h = diff(yCut);
-                    h = [[0;h] [h;0]];
+                    h = [[0;h] [h;0]]
                     h(find(inan(ind))-1,2) = 0;
                     h(find(inan(ind))+1,1) = 0;
-                    h = sum(h,2)/2;
+                    h = sum(h,2)
                     % computing average of phi
                     phi = [1-phi(ind,:) phi(ind,:)];
                     phi(inan(ind),:) = 1;
-                    m1 = [ phi(:,1).*h; phi(:,2).*h ];
+                    m1 = [ phi(:,1).*h/2; phi(:,2).*h/2 ];
                     % computing average of grad phi
                     TI = edgeAttachments( obj, edgCut(:,1), edgCut(:,2));
                     gri = zeros( size(edgCut,1),2);
@@ -225,7 +225,7 @@ classdef TRI6 < triangulation
                         end
                         gri(i2,:) = [gri1 gri2];
                     end
-                    m2 = [ gri(:,1).*h/2; gri(:,2).*h/2 ];
+                    m2 = [ gri(:,1).*h; gri(:,2).*h ];
                     % storing
                     Mval{i1} = [ m1; m2(:) ];
                     Mx{i1} = repmat( edgCut(:), [2 1] );
@@ -280,6 +280,15 @@ classdef TRI6 < triangulation
             y = obj.Points(:,2)-x0(:,2);
             xloc = [x y]*dir';
             yloc = [x y]*[-dir(2); dir(1)];
+            E = edges(obj);
+            % add intersection of edges that are cut by the line
+            ind = yloc(E(:,1)).*yloc(E(:,2))<0;
+            x1 = [xloc(E(ind,1)) yloc(E(ind,1))];
+            x2 = [xloc(E(ind,2)) yloc(E(ind,2))];
+            xc = x1(:,1)+x1(:,2).*(x2(:,1)-x1(:,1))./abs(x2(:,2)-x1(:,2));
+            xloc = [ xloc; xc ];
+            yloc = [ yloc; zeros(size(xc)) ];
+            % sort and create INT3 object
             [xline,~,ind] = unique( xloc );
             N = length(xline);
             line = INT3( [(1:N-1)' (2:N)'], xline );
