@@ -188,7 +188,7 @@ classdef TRI6 < triangulation
                 Mx = cell(obj.Ne,1);
                 My = cell(obj.Ne,1);
                 Mval = cell(obj.Ne,1);
-                [~,~,xloc,yloc] = projectLine( obj, [0 0], [1 0] );
+                [~,~,xloc,yloc] = projectLine( obj, obj1.x0, obj1.dir );
                 edg = edges( obj );
                 for i1 = 1:obj1.Nn
                     % finding edges intersected by a section at x=xloc

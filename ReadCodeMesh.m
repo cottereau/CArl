@@ -46,7 +46,17 @@ switch lower(model.code)
     
     % TIMOSCHENKO BEAM CODE
     case  'beam'
-        model.mesh = INT3( model.Beam.T, model.Beam.X, false );
+        if isfield( model.Beam, 'dir' )
+            dir = model.Beam.dir;
+        else
+            dir =[];
+        end
+        if isfield( model.Beam, 'x0' )
+            x0 = model.Beam.x0;
+        else
+            x0 = [];
+        end
+        model.mesh = INT3( model.Beam.T, model.Beam.X, false, dir, x0 );
         
     % error
     otherwise

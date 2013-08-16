@@ -3,20 +3,21 @@ classdef INT3
     %
     %  syntax: mesh = INT3( T, X )
     %
-    %  X: [Nn*d] nodal coordinates matrix, where Nn is the number of nodes and
-    %     d is the space dimension
-    %  T: [Nel*3] element connectivity matrix indexing lines in X, where Nel is
-    %     the number of elements and 3 the number of nodes in each element.
+    %  X: [Nn*d] nodal coordinates matrix, where Nn is the number of nodes 
+    %     and d is the space dimension
+    %  T: [Nel*3] element connectivity matrix indexing lines in X, where 
+    %     Nel isthe number of elements and 3 the number of nodes in each 
+    %     element.
     %
     %  NB: the numeration of int3 elements is
     %           1---3---2
     %
     %  INT3 methods:
     %     plot               - Plot the TRI6 mesh with nodes and vertices
-    %     elementsInBoundary - Returns the list of simplices inside a polygon
+    %     elementsInBoundary - Returns list of simplices inside a polygon
     %     subSet             - Extract a subset of the TRI6 mesh
     %     incenters          - middle of the segment
-    %     freeBoundary       - Returns the nodes referenced by only one elemt
+    %     freeBoundary       - Returns nodes referenced by only one element
     %     parts              - separate the mesh into disjoint parts
     %     domain             - Returns a vector of size of the elements
     %     parts              - domain covered by the elements
@@ -35,6 +36,8 @@ classdef INT3
     properties
         Points           % Nn*1 coordinate matrix
         ConnectivityList % Ne*3 connectivity matrix
+        dir              % direction of the 1D mesh embedded in a 2D space
+        x0               % reference point of the 1D mesh in 2D space
     end
     
     properties (Constant)
@@ -50,12 +53,18 @@ classdef INT3
     
     methods
         % define the INT3 object
-        function obj = INT3( T, X, lclean )
-            if nargin<3
+        function obj = INT3( T, X, lclean, dir, x0 )
+            if nargin<3 || isempty(lclean)
                 lclean = true;
             end
             obj.Points = X;
             obj.ConnectivityList = T;
+            if nargin<4 || isempty(dir)
+                obj.dir = [1 0];
+            end
+            if nargin<5 || isempty(x0)
+                obj.x0 = [0 0];
+            end
             if lclean
                 obj = clean( obj );
             end
@@ -178,7 +187,7 @@ classdef INT3
                 t = [ (1:N-1)' (2:N)'];
                 obj = INT3( t, x );
             elseif isa( obj2, 'TRI6' )
-                obj21D = projectLine( obj2, [0 0], [1 0] );
+                obj21D = projectLine( obj2, obj1.x0, obj1.dir );
                 obj = mergeMeshes( obj1, obj21D );
             else
                 error(['mergeMeshes not implemented for this ' ...
