@@ -73,7 +73,8 @@ switch mdl.code
         N = size(M);
         [ x, y, M ] = find(M);
         M = sparse( [x;x+N(1);x+2*N(1)], ...
-                    [y;y+N(2);y+2*N(2)], [M;M;M], 3*N(1), 3*N(2) ); 
+                    [y;y+N(2);y+2*N(2)], [M;M;M], 3*N(1), 3*N(2) );
+        M = M * mdl.Beam.h;
       
     % other cases
     otherwise

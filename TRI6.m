@@ -211,7 +211,7 @@ classdef TRI6 < triangulation
                     % computing average of phi
                     phi = [1-phi(ind,:) phi(ind,:)];
                     phi(inan(ind),:) = 1;
-                    m1 = [ phi(:,1).*h/2; phi(:,2).*h/2 ];
+                    m1 = [ phi(:,1).*h; phi(:,2).*h ];
                     % computing average of grad phi
                     TI = edgeAttachments( obj, edgCut(:,1), edgCut(:,2));
                     gri = zeros( size(edgCut,1),2);
