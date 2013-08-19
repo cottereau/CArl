@@ -171,21 +171,83 @@ classdef TRI6 < triangulation
                 Mval = cartesianToBarycentric( obj, indx, obj1.Points );
                 My = repmat( (1:size(Mval,1))', [3 1] );
                 Mx = obj.ConnectivityList(indx,:);
-                ind = abs(Mval(:))>obj.gerr;
-                Mx = Mx(ind);
-                Mval = Mval(ind);
-                My = My(ind);
             elseif isa( obj1, 'INT3' )
                 % NB: one should implement 2nd order elements to be able to
                 % compute these projections properly ... this
                 % implementation is probably rather wrong !!!
                 % computation of gradients in the y direction for all
                 % elements of the TRI6
-                
+                [~,~,xloc,yloc] = projectLine( obj, obj1.x0, obj1.dir );
+                xCut = obj1.Points;
+                E = edges(obj);
+                N = size(E,1);
+                xc = cell(N,1);
+                yc = cell(N,1);
+                % list of cuts in the edges
+                for i1 = 1:N
+                    x1 = xloc(E(i1,1)); y1 = yloc(E(i1,1));
+                    x2 = xloc(E(i1,2)); y2 = yloc(E(i1,2));
+                    ind = find( xCut>=min(x1,x2) & xCut<=max(x1,x2) );
+                    xc{i1} = ind;
+                    yc{i1} = y1+(xCut(ind)-x1)/(x2-x1)*(y2-y1);
+                    if isnan(yc{i1})
+                        xc{i1} = [ind; ind];
+                        yc{i1} = [y1; y2];
+                    end
+                end
+                Mx = cell(obj.Ne,1);
+                My = cell(obj.Ne,1);
+                Mval = cell(obj.Ne,1);
+                for i1 = 1:obj.Ne
+                    Te = obj.ConnectivityList(i1,:);
+                    Ei = sort([Te(1:2); Te(2:3); Te([3 1])],2);
+                    lE = ismember( E, Ei, 'rows' );
+                    xind = cat(1,xc{lE});
+                    % exclude repeated cuts and cuts with one node only
+                    xi = [xCut(xind) cat(1,yc{lE})];
+                    xi = round( xi/obj1.gerr )*obj1.gerr;
+                    [xi,ind] = unique( xi,'rows');
+                    dx = diff(xi(:,1))==0;
+                    dx = [false;dx] | [dx;false];
+                    xi = xi(dx,:);
+                    ind = ind(dx);
+                    Nc = size(xi,1);
+                    % length of the cut
+                    h = diff(reshape(xi(:,2),2,Nc/2));
+                    h = repmat( abs(h), [6 1]);
+                    % position of the cut in local coordinates
+                    bar = cartesianToBarycentric( obj, ...
+                        i1*ones(Nc,1), xi )';
+                    % should not count twice edges between elements
+                    % NB: this should be corrected to include only for
+                    % edges that are between two elements
+                    [~,indj] = find(bar==1);
+                    [indi,indj] = ndgrid(1:3,indj);
+                    ind1 = sub2ind( [3 Nc], indi(:), indj(:) );
+                    h(ind1) = h(ind1)/2;
+                    % y-derivative along the cut (assuming linear elements)
+                    dy = [obj.Points(Te,:) ones(3,1)]\eye(3);
+                    dy = repmat( dy(2,:)', [Nc/2 1] );
+                    x1 = repmat( Te', [Nc 1] );
+                    y1 = reshape(repmat(xind(ind),[1 3])',3*Nc,1);
+                    val1 = h(:) .* bar(:)/2;
+                    val2 = reshape(h(1:2:end,:),Nc/2*3,1) .* dy;
+                    Mx{i1} = [x1; x1(1:end/2)];
+                    My{i1} = [y1; y1(1:2:end)+obj1.Nn];
+                    Mval{i1} = [val1; val2];
+                end
+                Mx = cat( 1, Mx{:} );
+                My = cat( 1, My{:} );
+                Mval = cat( 1, Mval{:} );
+
             else
                 error(['XR2XI not implemented for this ' ...
                        'combination of dimensions'])
             end
+            ind = abs(Mval(:))>obj.gerr;
+            Mx = Mx(ind);
+            Mval = Mval(ind);
+            My = My(ind);
         end
         % get rid of nodes that are not used in T, and of repeated elements
         function [obj,indX] = cleanT(obj)
