@@ -206,7 +206,7 @@ switch model.code
         dX = [X(1:end-1,1) X(2:end,1)]';
         xt0 = [ X X ];
         yt0 = ones(size(X))*[ 1 -1 ]*h;
-        xt = [ X+u-h*sin(theta) X+u+h*sin(theta) ];
+        xt = [ X+u+h*sin(theta) X+u-h*sin(theta) ];
         yt = [ v+h*cos(theta) v-h*cos(theta) ];
         subplot(2,1,1); hold on; plot( X, zeros(size(X)), [coul ':'] );
         hold on; plot( xt0', yt0', [coul ':'] );
