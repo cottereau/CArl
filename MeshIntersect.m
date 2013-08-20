@@ -60,6 +60,7 @@ switch mdl.code
             [ Mx, My, Mval ] = find(Mr);
             Mr = sparse( (Mx-1)*2+1, My,       Mval, N(1), mi.Nn );
             M = [Mu Mr];
+            
         % classical solid-solid coupling
         else
             N = 2*[mdl.mesh.Nn  mi.Nn];

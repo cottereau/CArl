@@ -212,19 +212,21 @@ classdef TRI6 < triangulation
                     xi = xi(dx,:);
                     ind = ind(dx);
                     Nc = size(xi,1);
-                    % length of the cut
-                    h = diff(reshape(xi(:,2),2,Nc/2));
-                    h = repmat( abs(h), [6 1]);
                     % position of the cut in local coordinates
                     bar = cartesianToBarycentric( obj, ...
                         i1*ones(Nc,1), xi )';
+                    % length of the cut
+                    h = diff(reshape(xi(:,2),2,Nc/2));
                     % should not count twice edges between elements
-                    % NB: this should be corrected to include only for
-                    % edges that are between two elements
-                    [~,indj] = find(bar==1);
-                    [indi,indj] = ndgrid(1:3,indj);
-                    ind1 = sub2ind( [3 Nc], indi(:), indj(:) );
-                    h(ind1) = h(ind1)/2;
+                    indj = any( bar==1, 1 );
+                    indj = find(indj(:,1:2:end)&indj(:,2:2:end));
+                    if size(indj,1)==0; indj = zeros(1,0); end
+                    [indi,~] = find( bar(:,[2*indj-1;2*indj])==1 );
+                    Ei = reshape(Te(indi),2,length(indj))';
+                    nT = edgeAttachments( obj, Ei(:,1), Ei(:,2) );
+                    nT = cellfun( @length, nT );
+                    h(indj) = h(indj)./nT';
+                    h = repmat( abs(h), [6 1]);
                     % y-derivative along the cut (assuming linear elements)
                     dy = [obj.Points(Te,:) ones(3,1)]\eye(3);
                     dy = repmat( dy(2,:)', [Nc/2 1] );
@@ -239,7 +241,6 @@ classdef TRI6 < triangulation
                 Mx = cat( 1, Mx{:} );
                 My = cat( 1, My{:} );
                 Mval = cat( 1, Mval{:} );
-
             else
                 error(['XR2XI not implemented for this ' ...
                        'combination of dimensions'])
