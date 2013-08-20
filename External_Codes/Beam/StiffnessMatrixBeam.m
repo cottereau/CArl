@@ -40,6 +40,10 @@ if nargin==2 && ~isempty(alpha)
     alphac = interp( alpha, Xc );
     C = reshape( C * alphac', 2, 2, Ne );
     P = P * alphac;
+else
+    C = repmat( reshape(C,2,2), [1 1 Ne] );
+    P = P * ones(Ne,1);
+    alpha = [];
 end
 
 % compute stiffness matrix
