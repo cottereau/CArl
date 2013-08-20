@@ -93,6 +93,9 @@ switch type
         Test('stoDet1D');
         Test('stoSto1D');
         Test('BeamComp2D');
+        Test('BeamFEComp2D');
+        Test('BeamFEComp2Dcoarse');
+        Test('BeamFEComp2Dcoarse2');
         
     case '2d'
         Test('join2D');
@@ -102,6 +105,7 @@ switch type
         Test('stoSto2D');
         Test('FE2D');
         Test('Beam2D');
+        Test('BeamFE2D');
         
     case 'mesh'
         Test('indent2D');
