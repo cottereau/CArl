@@ -85,12 +85,14 @@ classdef discontinuous1D
                 for i1 = 1:obj.Ns
                     ind = inside( obj.x{i1}, X );
                     indg(ind) = i1;
-                    fv(ind) = interp1( obj.val{i1}.x, obj.val{i1}.f, X(ind,:));
+                    fv(ind) = interp1( obj.val{i1}.x, obj.val{i1}.f, ...
+                                             X(ind,:),'linear', 'extrap');
                 end
             else
                 for i1 = 1:obj.Ns
                     ind = indg==i1;
-                    fv(ind) = interp1( obj.val{i1}.x, obj.val{i1}.f, X(ind,:));
+                    fv(ind) = interp1( obj.val{i1}.x, obj.val{i1}.f, ...
+                                             X(ind,:),'linear', 'extrap');
                 end
             end
         end
