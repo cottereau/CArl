@@ -115,7 +115,7 @@ classdef TRI6 < triangulation
             elseif isa( ls, 'levelSet1D' )
                 [proj,one2two] = projectLine( obj, ls.x0, ls.dir );
                 ind = inside( ls, proj.Points, true );
-                ind = ind(one2two(1:obj.Nn));
+                ind = ind(one2two);
             end
             if lall
                 ind = all( ind(obj.ConnectivityList), 2 );
@@ -288,14 +288,17 @@ classdef TRI6 < triangulation
             yloc = [x y]*[-dir(2); dir(1)];
             E = edges(obj);
             % add intersection of edges that are cut by the line
-            ind = yloc(E(:,1)).*yloc(E(:,2))<0;
+            ind = (yloc(E(:,1)).*yloc(E(:,2))<-obj.gerr) ...
+                & (abs(xloc(E(:,1))-xloc(E(:,2)))>obj.gerr);
             x1 = [xloc(E(ind,1)) yloc(E(ind,1))];
             x2 = [xloc(E(ind,2)) yloc(E(ind,2))];
             xc = x1(:,1)+x1(:,2).*(x2(:,1)-x1(:,1))./abs(x2(:,2)-x1(:,2));
             xloc = [ xloc; xc ];
             yloc = [ yloc; zeros(size(xc)) ];
             % sort and create INT3 object
+            xloc = round(xloc/obj.gerr)*obj.gerr;
             [xline,~,ind] = unique( xloc );
+            ind = ind(1:obj.Nn);
             N = length(xline);
             line = INT3( [(1:N-1)' (2:N)'], xline );
         end
