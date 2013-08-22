@@ -164,8 +164,8 @@ classdef levelSet1D
         end
         % find the point on the boundary of the domain
         function x = boundary( obj, x1, x2 )
-            d1 = distance( obj, x1 );
-            d2 = distance( obj, x2 );
+            d1 = dist( obj, x1 );
+            d2 = dist( obj, x2 );
             dx = abs(d1.*(x2-x1)./(d2-d1));
             ind = x1<x2;
             x(ind) = x1(ind) + dx(ind);

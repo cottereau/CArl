@@ -210,7 +210,7 @@ classdef INT3
                 obj.ConnectivityList(bnd(~bnd1),2) = obj.Nn+find(~bnd1);
                 x1 = obj.Points(obj.ConnectivityList(bnd,1));
                 x2 = obj.Points(obj.ConnectivityList(bnd,2));
-                obj.Points = [ obj.Points; boundary( dom, x1, x2 ) ];
+                obj.Points = [ obj.Points; boundary( dom, x1, x2 )' ];
             end
             obj.ConnectivityList = obj.ConnectivityList(inT|bnd,:);
             obj = clean(obj);
