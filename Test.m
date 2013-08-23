@@ -33,6 +33,7 @@ function Test( type )
 %  | 'beam2D'           | beam        | beam        |              |
 %  | 'beamFEComp2D'     | beam        | elastic     | compression  |
 %  | 'beamFE2D'         | beam        | elastic     |              |
+%  | 'StoDetFE2D'       | elastic     | elastic (S) |              |
 %  |____________________|_____________|_____________|______________|
 %
 % (S) = stochastic
@@ -106,6 +107,7 @@ switch type
         Test('FE2D');
         Test('Beam2D');
         Test('BeamFE2D');
+        Test('stoDetFE2D');
         
     case 'mesh'
         Test('indent2D');
@@ -128,32 +130,6 @@ switch model.code
         d = size(X,2);
         % 1D
         if d==1
-            du = diff(u) ./ diff(X); du = [du du]'; 
-            dX = [X(1:end-1,1) X(2:end,1)]';
-            subplot(2,1,1); hold on; plot( X, u, [coul style] );
-            subplot(2,1,2); hold on; plot( dX(:), du(:), [coul style] );
-        elseif d==2
-            Y = X(:,2);
-            X = X(:,1);
-            subplot(2,1,1); hold on; trimesh( T, X, Y, u ); view(3)
-            Ne = size(T,1);
-            strain = zeros(Ne,2);
-            for i1=1:Ne
-                grad = [X(T(i1,:)) Y(T(i1,:)) ones(3,1)]\u(T(i1,:),:);
-                strain(i1,:) = grad(1:2,:)';
-            end
-            Xc = mean(X(T),2); Yc = mean(Y(T),2);
-            subplot(2,1,2); hold on; trimesh( T, X, Y, 'color', coul );
-            hold on; quiver( Xc, Yc, strain(:,1), strain(:,2),'color',coul );
-        end
-
-    % ACOUSTIC STOCHASTIC
-    case 'MonteCarloHomeFE'
-        X = model.HomeFE.mesh.X;
-        T = model.HomeFE.mesh.T;
-        d = size(X,2);
-        % 1D
-        if d==1
             Nmc = size(u,2);
             mu = mean(u,2);
             su = std(u,[],2)/sqrt(1+0.9);
@@ -168,9 +144,19 @@ switch model.code
             subplot(2,1,1); hold on; plot( X, mu, [coul style] );
             subplot(2,1,2); hold on; plot( dX(:), mdu(:), [coul style] );
         elseif d==2
-            mu = mean(u,2);
-            subplot(2,1,1); hold on; trimesh( T, X(:,1), X(:,2), mu );
-            view(3)            
+            u = mean(u,2);
+            Y = X(:,2);
+            X = X(:,1);
+            subplot(2,1,1); hold on; trimesh( T, X, Y, u ); view(3)
+            Ne = size(T,1);
+            strain = zeros(Ne,2);
+            for i1=1:Ne
+                grad = [X(T(i1,:)) Y(T(i1,:)) ones(3,1)]\u(T(i1,:),:);
+                strain(i1,:) = grad(1:2,:)';
+            end
+            Xc = mean(X(T),2); Yc = mean(Y(T),2);
+            subplot(2,1,2); hold on; trimesh( T, X, Y, 'color', coul );
+            hold on; quiver( Xc, Yc, strain(:,1), strain(:,2),'color',coul );
         end
         
     % ELASTIC - FE2D

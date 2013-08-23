@@ -23,11 +23,6 @@ for i1 = 1:Nm
         % ACOUSTIC - HOMEFE
         case 'HomeFE'
             Ndof = size(model{i1}.HomeFE.mesh.X,1);
-            sol{i1} = mean( ui( 1:Ndof, : ), 2 );
-            
-            % ACOUSTIC STOCHASTIC - MONTECARLOHOMEFE
-        case 'MonteCarloHomeFE'
-            Ndof = size(model{i1}.HomeFE.mesh.X,1);
             sol{i1} = ui( 1:Ndof, : );
             
             % ELASTIC - FE2D (DETERMINISTIC AND STOCHASTIC)

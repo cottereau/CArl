@@ -8,9 +8,7 @@
 \
 - change the name and calls to 'FE2D' into 'elastic2D' or something similar \'85 in order to stress the difference with HomeFE which is acoustic\
 \
-- clarify the definition of the alphas in StiffnessMatrix.m there seems to be a lot of repeated stuff between the different cases\
-\
-- remove 'MonteCarloHomeFE' from the list of codes because it is really the code "HomeFE" ?\
+- clarify the definition of the alphas in StiffnessMatrix.m there seems to be a lot of repeated stuff between the different cases. + Check the way the alpha functions are multiplied by the properties in StiffnessMatrix evaluations.\
 \
 - separate clearly the classes into "topology/domain" (currently the levelSet classes), "meshes" (TRI6, INT3 classes), and "functions" (discontinuous)\
 \
@@ -27,5 +25,4 @@
 - once the classes levelSet, discontinuous and TRI will be converged, create help functions for all the methods\
 \
 - the projection in TRI6/XR2XI should be performed with 2nd order elements !\
-\
-- check the way the alpha functions are multiplied by the properties in StiffnessMatrix evaluations.}
+}

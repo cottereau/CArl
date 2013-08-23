@@ -18,7 +18,7 @@ function model = ReadCodeMesh( model )
 switch lower(model.code)
     
     % HOMEFE
-    case {'homefe','montecarlohomefe'}
+    case {'homefe'}
         T = model.HomeFE.mesh.T;
         X = model.HomeFE.mesh.X;
         d = size(X,2);

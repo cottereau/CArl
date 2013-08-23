@@ -30,20 +30,22 @@ switch model.code
     
     % HOMEFE
     case 'HomeFE'
-        [ K, F ] = StiffnessMatrixHomeFE( model.HomeFE, model.alpha );
+        Nmc = size( model.HomeFE.property, 3 );
+        if Nmc==1
+            [ K, F ] = StiffnessMatrixHomeFE( model.HomeFE, model.alpha );
 
     % MONTE CARLO VERSION OF HOME FE
-    case 'MonteCarloHomeFE'
-        stiff = model.HomeFE;
-        property = stiff.property;
-        Nmc = size( property, 3 );
-        MC = cell( Nmc, 1 );
-        for i1 = 1:Nmc
-            stiff.property = property(:,:,i1);
-            [ K, F ] = StiffnessMatrixHomeFE( stiff, model.alpha );
-            MC{i1} = K;
+        else
+            property = model.HomeFE.property;
+            MC = cell( Nmc, 1 );
+            for i1 = 1:Nmc
+                model.HomeFE.property = property(:,:,i1);
+                [ K, F ] = StiffnessMatrixHomeFE(model.HomeFE,model.alpha);
+                MC{i1} = K;
+            end
+            model.HomeFE.property = property;
+            K = sparse( size(K,1), size(K,2) );
         end
-        K = sparse( size(K,1), size(K,2) );
         
     % 2D ELASTIC MODEL
     case 'FE2D'
