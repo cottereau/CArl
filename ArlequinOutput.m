@@ -30,10 +30,12 @@ for i1 = 1:Nm
             Ndof = size(model{i1}.HomeFE.mesh.X,1);
             sol{i1} = ui( 1:Ndof, : );
             
-            % ELASTIC - FE2D
+            % ELASTIC - FE2D (DETERMINISTIC AND STOCHASTIC)
         case 'FE2D'
+            Nmc = size(u,2);
             Ndof = size(model{i1}.FE2D.X,1);
-            sol{i1} = reshape( ui( 1:2*Ndof, 1 ), 2, Ndof )';
+            sol{i1} = reshape( ui( 1:2*Ndof, 1:Nmc ), 2, Ndof, Nmc );
+            sol{i1} = permute( sol{i1}, [2 1 3] );
             
             % COMSOL
         case 'Comsol'

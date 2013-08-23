@@ -33,15 +33,11 @@ R([3,2],[2,4,6],:) = dphi;
 clear dphi
 
 if numel(lambda)~=1
-    lambda = (lambda(:,:,1) * [1/6 2/3 1/6; 2/3 1/6 1/6;1/6 1/6 2/3])';
+    lambda = (lambda * [1/6 2/3 1/6; 2/3 1/6 1/6;1/6 1/6 2/3])';
 else
     lambda = lambda*ones(NG,NE);
 end
-if numel(mu)~=1
-    mu = (mu * [1/6 2/3 1/6; 2/3 1/6 1/6;1/6 1/6 2/3])';
-else
-    mu = mu*ones(NG,NE);
-end
+mu = mu*ones(NG,NE);
 C = mu(:)*[2 0 0 0 2 0 0 0 1] + lambda(:)*[1 1 0 1 1 0 0 0 0];
 C = reshape( C', 3, 3, NG*NE );
 

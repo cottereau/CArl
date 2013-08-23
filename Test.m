@@ -175,6 +175,7 @@ switch model.code
         
     % ELASTIC - FE2D
     case 'FE2D'
+        u = mean(u,3);
         X = model.FE2D.X(:,1);
         Y = model.FE2D.X(:,2);
         T = model.FE2D.T;

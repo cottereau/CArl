@@ -47,7 +47,22 @@ switch model.code
         
     % 2D ELASTIC MODEL
     case 'FE2D'
-        [ K, F ] = StiffnessMatrixFE2D( model.FE2D, model.alpha );
+        Nmc = size( model.FE2D.lambda, 3 );
+        if Nmc==1
+            [ K, F ] = StiffnessMatrixFE2D( model.FE2D, model.alpha );
+
+    % MONTE CARLO VERSION OF FE2D
+        else
+            lambda = model.FE2D.lambda;
+            MC = cell( Nmc, 1 );
+            for i1 = 1:Nmc
+                model.FE2D.lambda = lambda(:,:,i1);
+                [ K, F ] = StiffnessMatrixFE2D( model.FE2D, model.alpha );
+                MC{i1} = K;
+            end
+            model.FE2D.lambda = lambda;
+            K = sparse( size(K,1), size(K,2) );
+        end
 
     % COMSOL
     case 'Comsol'
