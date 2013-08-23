@@ -32,13 +32,25 @@ R([1,3],[1,3,5],:) = dphi;
 R([3,2],[2,4,6],:) = dphi;
 clear dphi
 
-C=mu*[2 0 0;0 2 0;0 0 1] + lambda*[1 1 0;1 1 0;0 0 0];
+if numel(lambda)~=1
+    lambda = (lambda(:,:,1) * [1/6 2/3 1/6; 2/3 1/6 1/6;1/6 1/6 2/3])';
+else
+    lambda = lambda*ones(NG,NE);
+end
+if numel(mu)~=1
+    mu = (mu * [1/6 2/3 1/6; 2/3 1/6 1/6;1/6 1/6 2/3])';
+else
+    mu = mu*ones(NG,NE);
+end
+C = mu(:)*[2 0 0 0 2 0 0 0 1] + lambda(:)*[1 1 0 1 1 0 0 0 0];
+C = reshape( C', 3, 3, NG*NE );
 
 Elements=2*elements(:,[1 1 2 2 3 3])-kron(ones(NE,1),[1,0,1,0,1,0]);
 Y=reshape(repmat(Elements,1,NLB*DIM)',NLB*DIM,NLB*DIM,NE);
 Y = repmat( Y, [1 1 NG] );
 X=permute(Y,[2 1 3]);
-Z=astam(areas',amtam(R,smamt(C,permute(R,[2 1 3]))));
+Z=astam(areas',amtam(R,amtam(C,R)));
+% Z=astam(areas',amtam(R,smamt(C,permute(R,[2 1 3]))));
 
 A=sparse(X(:),Y(:),Z(:));
 
