@@ -25,7 +25,7 @@ I = b*h^3/12;
 % mechanical parameters
 E = model.young;
 G = model.young/2/(1+model.poisson);
-C = [ E*I; 0; 0; S*G];
+C = [ E*I; 0; 0; 5/6*S*G];
 P = model.P;
 
 % mesh
