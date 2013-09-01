@@ -20,28 +20,28 @@ for i1 = 1:Nm
     % transformation depending on the model at hand
     switch model{i1}.code
         
-        % ACOUSTIC - HOMEFE
+        % ACOUSTIC - HOMEFE (DETERMINISTIC AND STOCHASTIC)
         case 'HomeFE'
             Ndof = size(model{i1}.HomeFE.mesh.X,1);
             sol{i1} = ui( 1:Ndof, : );
             
-            % ELASTIC - FE2D (DETERMINISTIC AND STOCHASTIC)
+        % ELASTIC - FE2D (DETERMINISTIC AND STOCHASTIC)
         case 'FE2D'
             Nmc = size(u,2);
             Ndof = size(model{i1}.FE2D.X,1);
             sol{i1} = reshape( ui( 1:2*Ndof, 1:Nmc ), 2, Ndof, Nmc );
             sol{i1} = permute( sol{i1}, [2 1 3] );
             
-            % COMSOL
+        % COMSOL
         case 'Comsol'
             error('not implemented yet: output in COMSOL format')
             
-            % TIMOSCHENKO BEAM - BEAM
+        % TIMOSCHENKO BEAM - BEAM
         case 'Beam'
             Ndof = size(model{i1}.Beam.X,1);
             sol{i1} = reshape( ui( 1:3*Ndof, 1 ), Ndof, 3 );
             
-            % unknown case
+        % unknown case
         otherwise
             error('this external code is not supported')
             
