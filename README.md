@@ -12,7 +12,7 @@ This project is focused on the development of a software based on the [Arlequin 
 This software is mainly developed at laboratoire MSSMat (Ecole Centrale Paris - CNRS).
 
 * contact : [Regis Cottereau](mailto:regis.cottereau@ecp.fr)
-*c ontributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec
+* contributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec
 
 It is developed for [MATLAB](http://www.mathworks.fr/products/matlab/). This may however evolve in future versions.
  
@@ -20,8 +20,8 @@ It is developed for [MATLAB](http://www.mathworks.fr/products/matlab/). This may
 
 Original references for the theory are (among others)
 
-1. H. Ben Dhia. _Multiscale mechanical problems: the Arlequin method, Comptes Rendus de l'Academie des Sciences_ - Series IIB 326 (1998), pp. 899-904.
-1. H. Ben Dhia, G. Rateau. _The Arlequin method as a flexible engineering design tool_, Int. J. Numer. Meths. Engr. 62 (2005), pp. 1442-1462.
+1. H. Ben Dhia. Multiscale mechanical problems: the Arlequin method, _Comptes Rendus de l'Academie des Sciences - Series IIB 326_ (1998), pp. 899-904.
+1. H. Ben Dhia, G. Rateau. The Arlequin method as a flexible engineering design tool, _Int. J. Numer. Meths. Engr._ 62 (2005), pp. 1442-1462.
 
 Many other papers make use of the method or describe specific aspects and implementation details. Some of the scientific papers that made use of the CArl software are included in [references.rtf](references.rtf)
 
