@@ -70,7 +70,7 @@ classdef levelSet
                 switch geom
                     % CIRCLE
                     case 'circle'
-                        nc = 1e3;
+                        nc = 1e2;
                         t = linspace( 0, 2*pi, nc )';
                         xon = [x1(1)+x2*cos(t) x1(2)+x2*sin(t)];
                         xout = [x1(1)+2*x2*cos(t) x1(2)+2*x2*sin(t)];
@@ -130,9 +130,16 @@ classdef levelSet
                 end
             end
             
+            % get rid of repeated elements
+            ger = 1e-9;
+            X = round( X/ger ) * ger;
+            [X,indv,indc] = unique( X, 'rows' );
+            V = V(indv);
+            C = indc(C);
+
             % create structure
             if ~isempty(V)
-                obj.dist = scatteredInterpolant( X, V, 'linear', 'nearest' );
+                obj.dist = scatteredInterpolant( X, V, 'linear','nearest');
             else
                 obj.dist = scatteredInterpolant;
             end
@@ -201,8 +208,8 @@ classdef levelSet
             % output
             varargout{1} = C;
             if nargout==2
-                [xf,~,ff] = unique(varargout{1});
-                varargout{1} = reshape(ff,size(varargout{1}));
+                [xf,~,ff] = unique(C);
+                varargout{1} = reshape(ff,size(C));
                 varargout{2} = obj.mesh.Points(xf,:);
             end
         end
@@ -216,18 +223,64 @@ classdef levelSet
         end
         % intersecting two domains
         function obj = intersection(obj1,obj2)
-            C1 = obj1.mesh.Constraints( reduceBoundary(obj1,obj2), : );
-            C2 = obj2.mesh.Constraints( reduceBoundary(obj2,obj1), : );
-            obj1.mesh = delaunayTriangulation( obj1.mesh.Points, C1 );
-            obj2.mesh = delaunayTriangulation( obj2.mesh.Points, C2 );
-            dt = mergeMeshes( obj1, obj2 );
-            if isempty(C1)&&isempty(C2)
-                V = -obj1.in*inf(size(dt.Points,1),1);
-            else
-                V = max([obj1.dist(dt.Points) obj2.dist(dt.Points)],[],2);
+            % select the boundary of each levelSet
+            X1 = obj1.mesh.Points;
+            [indi,~,indj] = unique(obj1.mesh.Constraints); N = length(indj);
+            Xc1 = X1(indi,:); C1 = (1:N)';
+            C1 = reshape( C1(indj), N/2, 2 );
+            X2 = obj2.mesh.Points;
+            [indi,~,indj] = unique(obj2.mesh.Constraints); N = length(indj);
+            Xc2 = X2(indi,:); C2 = (1:N)';
+            C2 = reshape( C2(indj), N/2, 2 );
+            % split overlapping constrained elements
+            % when several overlapping colinear constraints are enforced, some are
+            % discarded without notice !!!
+            vec1 = (X1(C1(:,2),2)-X1(C1(:,1),2))./(X1(C1(:,2),1)-X1(C1(:,1),1));
+            yc1 = X1(C1(:,2),2) - vec1.*X1(C1(:,2),1);
+            xc1 = -yc1./vec1;
+            vec2 = (X2(C2(:,2),2)-X2(C2(:,1),2))./(X2(C2(:,2),1)-X2(C2(:,1),1));
+            yc2 = X2(C2(:,2),2) - vec2.*X2(C2(:,2),1);
+            xc2 = X2(C2(:,2),1)-X2(C2(:,2),2)./vec2;
+            ind = find( ismember(vec1,vec2) ...
+                    & ( ismember(xc1,xc2) | isinf(xc1) | isnan(xc1) ) ...
+                    & ( ismember(yc1,yc2) | isinf(yc1) | isnan(yc1) ) );
+            rm1 = true(size(vec1));
+            rm2 = true(size(vec2));
+            Xadd = zeros(0,2);
+            Cadd = zeros(0,2);
+            for i1 = 1:length(ind)
+                x1 = X1(C1(ind(i1),1),1);
+                y1 = X1(C1(ind(i1),1),2);
+                x2 = X1(C1(ind(i1),2),1);
+                y2 = X1(C1(ind(i1),2),2);
+                ind2 = find(vec2==vec1(ind(i1)));
+                ind3 = (xc2(ind2)==xc1(ind(i1))|isinf(xc2(ind2))) ...
+                     & (yc2(ind2)==yc1(ind(i1))|isinf(yc2(ind2)));
+                ind2 = ind2(ind3);
+                if isinf(vec1(ind(i1)))
+                    xloc = (X2(C2(ind2,:),2)-y1)./(y2-y1);
+                else
+                    xloc = (X2(C2(ind2,:),1)-x1)./(x2-x1);
+                end
+                [~,inds] = sort([0 1 xloc']);
+                if ~isempty(inds)
+                    Cadd = [Cadd; [inds(1:end-1)' inds(2:end)']];
+                    Xadd = [ Xadd; [x1 y1]; [x2 y2];
+                                      [X2(C2(ind2,:),1) X2(C2(ind2,:),2)]];
+                end
+                rm1(ind(i1)) = false;
+                rm2(ind2) = false;
             end
-            obj = levelSet( dt.Points, 'init', V, dt.Constraints );
-            obj = clean(obj);
+            
+            % construct DT with appropriate constraints
+            dt = delaunayTriangulation( [Xc1;Xc2], [C1;C2+size(Xc1,1)] );
+            X = [dt.Points; X1; X2; incenter( dt )];
+            if isempty(C1)&&isempty(C2)
+                V = -obj1.in*inf(size(X,1),1);
+            else
+                V = max([obj1.dist(X) obj2.dist(X)],[],2);
+            end
+            obj = levelSet( X, 'init', V, dt.Constraints );
         end
         % check whether points are inside the domain
         function [in,on] = inside( obj, X, lon )

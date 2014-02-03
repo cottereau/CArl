@@ -22,4 +22,4 @@ function M = MediatorSpace( mediator, Rep )
 
 [ x, y, val ] = find( Rep{mediator}.M );
 [~,~,x] = unique(x);
-M = sparse( x, y, val );
+M = sparse( x, y, val, max(x), size(Rep{mediator}.M,2) );

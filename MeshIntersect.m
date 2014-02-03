@@ -37,7 +37,7 @@ Int.mesh = bounded( mergeMeshes( meshr1, meshr2 ), LSet );
 % compute passage matrix from integration mesh to model meshes
 Rep{1} = integration2Model( mdl1, meshr1, Int.mesh, ind1 );
 Rep{2} = integration2Model( mdl2, meshr2, Int.mesh, ind2 );
- 
+
 % passage matrix from integration mesh to model meshes
 function R = integration2Model( mdl, m, mi, ind )
 % compute passage matrix in terms of nodes of the mesh

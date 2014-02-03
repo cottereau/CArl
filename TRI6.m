@@ -29,7 +29,9 @@ classdef TRI6 < triangulation
 %     subSet             - Extract a subset of the TRI6 mesh
 %     cartToBary         - Converts the coordinates of a point from 
 %                          cartesian to barycentric
+%     isInterior         - tests wheteher points are interior to a mesh 
 %     size               - Returns the size of the Triangulation matrix
+%     area               - Returns the areas of the triangles
 %     clean              - Removes unused X and repeated X and T
 %
 %  TRI6 is a subclass of triangulation and hence inherits its properties
@@ -45,6 +47,17 @@ classdef TRI6 < triangulation
    % define the TRI6 object
     methods
         function obj = TRI6( T, X, lclean )
+            ger = 1e-9;
+            % get rid of nodes that are not used in T
+            [indi,~,indj] = unique(T);
+            N = length(indj);
+            X = X(indi,:); Tc = (1:N)';
+            T = reshape( Tc(indj), N/3, 3 );
+            % get rid of nodes that overlap        
+            xrnd = round(X/ger)*ger;
+            [X,~,indu] = unique( xrnd, 'rows' ,'first', 'legacy' );
+            T = indu(T);
+            % construct the mesh
             obj = obj@triangulation(T,X(:,1),X(:,2));
             if nargin<3 || lclean
                 obj = clean(obj);
@@ -102,8 +115,7 @@ classdef TRI6 < triangulation
         end
         % indices of elements containing specified points
         function TI = pointLocation(obj,qp)
-            TI = pointLocation(obj.DT,qp);
-            TI = obj.DT2TRI(TI);
+            [~,TI] = isInterior(obj,qp);
         end
         % Selects the elements of obj inside a given boundary
         function ind = elementsInBoundary(obj,ls,lall)
@@ -129,31 +141,61 @@ classdef TRI6 < triangulation
             [obj,ind] = clean(obj);
         end
         % domain covered by the mesh
-        function ls = domain(obj)
+        function dom = domain(obj)
             [bnd,xf] = freeBoundary(obj);
-            ls = levelSet( obj.Points, 'polygon', xf, bnd );
+            dom = levelSet( obj.Points, 'polygon', xf, bnd );
+        end
+        % areas of the triangles of the mesh
+        function s = area(obj,ind)
+            if nargin==1
+                ind = 1:obj.Ne;
+            end
+            x = obj.Points(:,1);
+            y = obj.Points(:,2);
+            T = obj.ConnectivityList(ind,:);
+            s = polyarea(x(T),y(T),2);
         end
         % bound a mesh by a level-set. Nodes are added where the level-set
         % crosses elements
         function obj = bounded( obj, LSet )
-            X = [ obj.Points; LSet.mesh.Points ];
-            C = [ edges(obj); LSet.mesh.Constraints+size(obj.Points,1)];
-            obj = delaunayTriangulation( X, C );
-            obj = delaunayTriangulation( obj.Points, obj.Constraints );
-            obj = TRI6( obj.ConnectivityList, obj.Points );
-            [inin,on] = inside( LSet, obj.Points, false );
-            indT = any(inin(obj.ConnectivityList),2) | ...
-                   all(on(obj.ConnectivityList),2);
-            obj = subSet( obj, indT );
+            [bnd,xbnd] = boundary(LSet);
+            X = [ obj.Points ; xbnd ];
+            C = [ edges(obj); bnd+obj.Nn ];
+            dt = delaunayTriangulation( X, C );
+            xc = incenter(dt);
+            ind = inside( LSet, xc, true ) & isInterior( obj, xc );
+            obj = TRI6( dt.ConnectivityList(ind,:), dt.Points );
+        end
+        % test whether a list of points are interior to the mesh
+        function [lind,ind] = isInterior( obj, X )
+            N = size(X,1);
+            p1 = obj.Points(obj.ConnectivityList(:,1),:);
+            p2 = obj.Points(obj.ConnectivityList(:,2),:);
+            p3 = obj.Points(obj.ConnectivityList(:,3),:);
+            s = repmat(p1(:,2).*p3(:,1) - p1(:,1).*p3(:,2),[1 N]) ...
+                + (p3(:,2)-p1(:,2))*X(:,1)' + (p1(:,1)-p3(:,1))*X(:,2)';
+            t = repmat(p1(:,1).*p2(:,2) - p1(:,2).*p2(:,1),[1 N]) ...
+                + (p1(:,2)-p2(:,2))*X(:,1)' + (p2(:,1)-p1(:,1))*X(:,2)';
+            dom = repmat( 2*area(obj), [1 N] );
+            ind = (s>-obj.gerr) & (t>-obj.gerr) & ((s+t)<(dom+obj.gerr));
+            lind = any(ind,1)';
+            if nargout>1
+                [indx,indy] = find(ind);
+                [~,indz] = unique(indy);
+                ind = nan(N,1);
+                ind(lind) = indx(indz);
+            end
         end
         % merge two meshes (find a mesh embedded in both obj1 and obj2
         % and located within ls)
         function obj = mergeMeshes( obj1, obj2 )
             if isa( obj2, 'TRI6' )
                 X = [ obj1.Points ; obj2.Points ];
-                C = [ edges(obj1); edges(obj2)+size(obj1.Points,1) ];
-                obj = delaunayTriangulation( X, C );
-                obj = TRI6( obj.ConnectivityList, obj.Points );
+                C = [ edges(obj1); edges(obj2)+obj1.Nn ];
+                dt = delaunayTriangulation( X, C );
+                xc = incenter(dt);
+                ind = isInterior(obj1,xc) & isInterior(obj2,xc);
+                obj = TRI6( dt.ConnectivityList(ind,:), dt.Points );                
             elseif isa( obj2, 'INT3' )
                 obj = mergeMeshes( obj2, obj1 );
             else
@@ -168,9 +210,17 @@ classdef TRI6 < triangulation
         function [ Mx, My, Mval ] = XR2XI( obj, obj1 )
             if isa( obj1, 'TRI6' )
                 indx = pointLocation( obj, obj1.Points );
-                Mval = cartesianToBarycentric( obj, indx, obj1.Points );
-                My = repmat( (1:size(Mval,1))', [3 1] );
-                Mx = obj.ConnectivityList(indx,:);
+                isn = isnan(indx);
+                fisn = find(isn);
+                [ii,jj] = ismember(obj1.Points(isn,:), ...
+                         obj.Points,'rows');
+                Mval = cartesianToBarycentric( obj, indx(~isn), ...
+                    obj1.Points(~isn,:) );
+                My = repmat( find(~isn)', [3 1] );
+                Mx = obj.ConnectivityList(indx(~isn),:);
+                Mval = [Mval(:); ones(sum(ii),1)];
+                Mx = [Mx(:); jj(ii)];
+                My = [My(:); fisn(ii)];
             elseif isa( obj1, 'INT3' )
                 % NB: one should implement 2nd order elements to be able to
                 % compute these projections properly ... this
