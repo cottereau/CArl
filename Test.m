@@ -61,7 +61,7 @@ function Test( type )
 
 % default
 if nargin==0
-    type = 'short';
+    type = '1d';
 end
 type = lower(type);
 
