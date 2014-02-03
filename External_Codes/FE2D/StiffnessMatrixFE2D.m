@@ -5,12 +5,10 @@ function [K,F] = StiffnessMatrixFE2D( m, alpha )
 % syntax: [K,F] = StiffnessMatrixFE2D( model, alpha )
 %
 %    model: structured array containing the fields 'X', 'T', 'lambda', 'mu'
-%           'load', 
-%    mesh    : mesh structure [INT3 or TRI6 object]
-%    opt     : structured array containing field 'kappa' (only used with
-%              'H1' operator
+%           'load'
+%    alpha: weight function [discontinuous] 
 %
-%    C: the output matrix is in sparse format
+%    K,F: stiffness and force matrices in sparse format
 %
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
@@ -30,7 +28,7 @@ K = stifness_matrixP1_2D_elasfluc( m.T, m.X, m.lambda, m.mu, alpha );
 
 % construction of load vector
 F = sparse( size(K,1), 1 );
-if any(m.load~=0)
+if isfield(m,'load') && any(m.load(:)~=0)
     error('bulk load not enforced yet in FE2D')
 end
 
