@@ -1,4 +1,4 @@
-function [ K, F, opt, Kmc ] = AssembleArlequin( model, coupling )
+function [ K, F, iK, iC, Kmc ] = AssembleArlequin( model, coupling )
 % ASSEMBLEARLEQUIN to assemble the Arlequin system before resolution
 %
 %  syntax: [ K, F, ind, opt ] = AssembleArlequin( Ki, Fi, C1, C2, ...
@@ -84,6 +84,3 @@ for i1 = 1:Nm
         end
     end
 end
-
-% output
-opt = struct( 'iK', iK, 'iC', iC );

@@ -34,3 +34,8 @@ end
 if ~isfield( opt, 'recomputeK' )
     opt.recomputeK = true(Nm,1);
 end
+
+% compute solution
+if ~isfield( opt, 'computeSol' )
+    opt.computeSol = true;
+end

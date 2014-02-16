@@ -31,6 +31,8 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %  solver: 'direct' (default) or 'FETI' (not implemented yet)
 %
 %  opt: structured array with options. Possible options include
+%       -'computeSol' logical to indicate whether the solution should 
+%             actually be computed. Default is .true.
 %       -'recomputeK' logical array of size Nm*1 where Nm is the number of
 %             models. Indicates, for each model, whether the stiffness
 %             matrix should be recomputed. If .false. the fields 'K' and 
@@ -57,7 +59,7 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 % initialization
 if nargin<3 || isempty(solver); solver = 'direct'; end
 if nargin<4; opt = []; end
-[ Nm, Nc, opt ] = Initiatevalues( Mdl, Cpl, opt ) ;
+[ Nm, Nc, opt ] = Initiatevalues( Mdl, Cpl, opt );
 
 % reading the code-dependant mesh into CArl format (TRI6)
 for i1 = 1:Nm
@@ -81,10 +83,12 @@ for i1 = 1:Nc
 
         % definition of the mediator space
         Int.M = MediatorSpace( Cpl{i1}.mediator, Rep );
+        Cpl{i1}.Int = Int;
         
         % construction of coupling operators
         Cpl{i1}.C1 = CouplingOperator( Cpl{i1}, Int, Rep{1}, opt );
         Cpl{i1}.C2 = CouplingOperator( Cpl{i1}, Int, Rep{2}, opt );
+        Cpl{i1}.Rep = Rep;
 
     end
 end
@@ -106,16 +110,19 @@ for i1 = 1:Nm
 end
 
 % assemble sparse matrix system
-disp('Assembling and inverting system ...')
-[ K, F, opt, Kmc ] = AssembleArlequin( Mdl, Cpl );
-
-% solving system
-U = SolveArlequin( K, F, solver, Kmc );
-
-% preparing output
-sol = ArlequinOutput( U, Mdl, opt );
+disp('Assembling system ...')
+[ K, F, opt.iK, opt.iC, Kmc ] = AssembleArlequin( Mdl, Cpl );
 out = struct( 'model', {Mdl}, ...
               'coupling', {Cpl}, ...
               'K', K, ...
               'F', F, ...
               'opt', opt );
+
+% solving system
+if opt.computeSol
+    disp('Solving system ...')
+    U = SolveArlequin( K, F, solver, Kmc );
+    sol = ArlequinOutput( U, Mdl, opt );
+else
+    sol = [];
+end
