@@ -58,6 +58,9 @@ classdef TRI6 < triangulation
             [X,~,indu] = unique( xrnd, 'rows' ,'first', 'legacy' );
             T = indu(T);
             % construct the mesh
+            if size(T,2)==1 && size(T,1)==3
+                T = T';
+            end
             obj = obj@triangulation(T,X(:,1),X(:,2));
             if nargin<3 || lclean
                 obj = clean(obj);
@@ -130,9 +133,9 @@ classdef TRI6 < triangulation
                 ind = ind(one2two);
             end
             if lall
-                ind = all( ind(obj.ConnectivityList), 2 );
+                ind = all( ind(obj.ConnectivityList'), 1 )';
             else
-                ind = any( ind(obj.ConnectivityList), 2 );
+                ind = any( ind(obj.ConnectivityList'), 1 )';
             end
         end
         % returns a TRI6 object using only a selected list of elements
@@ -153,7 +156,7 @@ classdef TRI6 < triangulation
             x = obj.Points(:,1);
             y = obj.Points(:,2);
             T = obj.ConnectivityList(ind,:);
-            s = polyarea(x(T),y(T),2);
+            s = polyarea(x(T'),y(T'),1)';
         end
         % bound a mesh by a level-set. Nodes are added where the level-set
         % crosses elements

@@ -20,7 +20,7 @@ function [K,F] = StiffnessMatrixFE2D( m, alpha )
 % construction of the variable parameter field
 x = m.X(:,1);
 y = m.X(:,2);
-alpha = interp( alpha, [ mean(x(m.T),2) mean(y(m.T),2)] );
+alpha = interp( alpha, [ mean(x(m.T'),1); mean(y(m.T'),1)]' );
 alpha = repmat(alpha,[1 3]);
 
 % construction of Stiffness Matrix

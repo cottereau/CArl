@@ -21,7 +21,11 @@ WG = 1/6;
 %%%%%%%%%%%%%%%%%%%
 NG = size(IP,2); % number of gauss points
 [dphi,jac] = phider(coord,IP,'P1'); %integration rule, it must be known!
-jac = abs(squeeze(jac))'.* alpha;
+if size(jac,3)==1
+    jac = abs(squeeze(jac)).* alpha;
+else
+    jac = abs(squeeze(jac))'.* alpha;
+end
 areas = reshape( jac, 1, NG*NE )*WG;
 
 %elasticity matrix is derived from laplace matrix
