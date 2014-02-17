@@ -24,8 +24,8 @@ classdef levelSet
 % LS = levelSet(...,in) considers the exterior of the interface if 
 % in==false, and the interior if in==true (default).
 %
-% LS = levelSet(true) corresponds to an empty domain and
-% LS = levelSet(false) corresponds to the full space.
+% LS = levelSet(true) corresponds to the full space and
+% LS = levelSet(false) corresponds to an empty space.
 % LS = levelSet is the same as levelSet(true)
 %
 %    levelSet properties:
@@ -284,6 +284,11 @@ classdef levelSet
         end
         % check whether points are inside the domain
         function [in,on] = inside( obj, X, lon )
+            if any(isinf(obj.dist.Values))
+                in = (obj.dist.Values(1)<0) & true(size(X,1),1);
+                on = false(size(in));
+                return
+            end
             d = obj.dist( X );
             on = abs(d)<= obj.gerr;
             in = d <= -obj.gerr;
