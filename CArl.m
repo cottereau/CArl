@@ -126,3 +126,4 @@ if opt.computeSol
 else
     sol = [];
 end
+out.U = U;
