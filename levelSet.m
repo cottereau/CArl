@@ -86,7 +86,7 @@ classdef levelSet
                     % RECTANGLE OR SQUARE
                     case {'square','rectangle'}
                         xm = min(x2)/2;
-                        de = 0.9*xm;
+                        de = 1*xm;
                         if numel(x2)==1
                             x2 = [x2 x2];
                         end
@@ -94,8 +94,8 @@ classdef levelSet
                         yv = x1(2) + [-de 0 x2(2)/2 x2(2) x2(2)+de];
                         [xv,yv] = ndgrid(xv,yv);
                         xp = [xv(:) yv(:)];
-                        xc = x1(1) + [xm x2(1)-xm]';
-                        yc = x1(2) + [xm x2(2)-xm]';
+                        xc = x1(1) + [xm x2(1)-xm .1*x2(1) .9*x2(1)]';
+                        yc = x1(2) + [xm x2(2)-xm .1*x2(2) .9*x2(2)]';
                         X = [ xp; [xc yc]; x ];
                         ind = [7 8 9 14 19 18 17 12];
                         C = [ind' [ind(2:end) ind(1)]'];
