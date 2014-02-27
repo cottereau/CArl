@@ -33,6 +33,9 @@ switch model.code
         Nmc = size( model.HomeFE.property, 3 );
         if Nmc==1
             [ K, F ] = StiffnessMatrixHomeFE( model.HomeFE, model.alpha );
+            m2c = [ model.carl2Model; ((model.mesh.Nn+1):size(K,1))'];
+            K = K(m2c,m2c);
+            F = F(m2c);
 
     % MONTE CARLO VERSION OF HOME FE
         else
@@ -41,8 +44,13 @@ switch model.code
             for i1 = 1:Nmc
                 model.HomeFE.property = property(:,:,i1);
                 [ K, F ] = StiffnessMatrixHomeFE(model.HomeFE,model.alpha);
+                if i1==1
+                    m2c = [ model.carl2Model; ((model.mesh.Nn+1):size(K,1))'];
+                end
+                K = K(m2c,m2c);
                 MC{i1} = K;
             end
+            F = F(m2c);
             model.HomeFE.property = property;
             K = sparse( size(K,1), size(K,2) );
         end
@@ -52,6 +60,10 @@ switch model.code
         Nmc = size( model.FE2D.lambda, 3 );
         if Nmc==1
             [ K, F ] = StiffnessMatrixFE2D( model.FE2D, model.alpha );
+            m2c = [ 2*model.carl2Model-1 2*model.carl2Model ]';
+            m2c = [ m2c(:); ((2*model.mesh.Nn+1):size(K,1))'];
+            K = K(m2c,m2c);
+            F = F(m2c);
 
     % MONTE CARLO VERSION OF FE2D
         else
@@ -60,8 +72,13 @@ switch model.code
             for i1 = 1:Nmc
                 model.FE2D.lambda = lambda(:,:,i1);
                 [ K, F ] = StiffnessMatrixFE2D( model.FE2D, model.alpha );
-                MC{i1} = K;
+                if i1==1
+                    m2c = [ 2*model.carl2Model-1 2*model.carl2Model ]';
+                    m2c = [ m2c(:); ((2*model.mesh.Nn+1):size(K,1))'];
+                end
+                MC{i1} = K(m2c,m2c);
             end
+            F = F(m2c);
             model.FE2D.lambda = lambda;
             K = sparse( size(K,1), size(K,2) );
         end

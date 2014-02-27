@@ -22,15 +22,19 @@ for i1 = 1:Nm
         
         % ACOUSTIC - HOMEFE (DETERMINISTIC AND STOCHASTIC)
         case 'HomeFE'
+            Nmc = size(u,2);
             Ndof = size(model{i1}.HomeFE.mesh.X,1);
-            sol{i1} = ui( 1:Ndof, : );
+            sol{i1} = zeros(Ndof,Nmc);
+            sol{i1}(model{i1}.carl2Model,:) = ui(1:model{i1}.mesh.Nn);
             
         % ELASTIC - FE2D (DETERMINISTIC AND STOCHASTIC)
         case 'FE2D'
             Nmc = size(u,2);
             Ndof = size(model{i1}.FE2D.X,1);
-            sol{i1} = reshape( ui( 1:2*Ndof, 1:Nmc ), 2, Ndof, Nmc );
-            sol{i1} = permute( sol{i1}, [2 1 3] );
+            sol{i1} = zeros(Ndof,Nmc,2);
+            sol{i1}(model{i1}.carl2Model,:,1) = ui(2*(1:model{i1}.mesh.Nn)-1,:);
+            sol{i1}(model{i1}.carl2Model,:,2) = ui(2*(1:model{i1}.mesh.Nn),:);
+            sol{i1} = permute( sol{i1}, [1 3 2] );
             
         % COMSOL
         case 'Comsol'

@@ -14,13 +14,16 @@ function model = ReadCodeMesh( model )
 
 % creation: R. Cottereau 01/2010
 
+% constant
+gerr = 1e-9;
+
 % switch on the type of code used
 switch lower(model.code)
     
     % HOMEFE
     case {'homefe'}
         T = model.HomeFE.mesh.T;
-        X = model.HomeFE.mesh.X;
+        X = round(model.HomeFE.mesh.X/gerr)*gerr;
         d = size(X,2);
         if d==1
             model.mesh = INT3( T, X, false );
@@ -32,20 +35,22 @@ switch lower(model.code)
 
     % FE2D elastic code
     case 'fe2d'
-        model.mesh = TRI6( model.FE2D.T, model.FE2D.X, false );
+        T = model.FE2D.T;
+        X = round(model.FE2D.X/gerr)*gerr;
+        model.mesh = TRI6( T, X, false );
 
     % COMSOL
     case 'comsol'
-        wd = pwd;
         cd( model.meshpath );
         eval( ['mesh = ' model.meshfile ';' ]);
         X = mesh.mesh('mesh1').getVertex';
         T = double( mesh.mesh('mesh1').getElem('tri')' +1 );
         model.mesh = TRI6( T, X, false );
-        eval( ['cd ' wd ';' ]);
     
     % TIMOSCHENKO BEAM CODE
     case  'beam'
+        T = model.Beam.T;
+        X = model.Beam.X;
         if isfield( model.Beam, 'dir' )
             dir = model.Beam.dir;
         else
@@ -56,10 +61,22 @@ switch lower(model.code)
         else
             x0 = [];
         end
-        model.mesh = INT3( model.Beam.T, model.Beam.X, false, dir, x0 );
+        model.mesh = INT3( T, X, false, dir, x0 );
         
     % error
     otherwise
         error( 'unknown code' );
 end
-        
+
+% consider relation between Carl meshes and model meshes (for computation
+% of stiffness for instance)
+[~,model.carl2Model] = ismember( model.mesh.Points, X, 'rows' );
+[~,model.model2Carl] = ismember( X, model.mesh.Points, 'rows' );
+
+% if any node in the model mesh does not appear in Carl mesh, check that is
+% not used in the connectivity matrix
+if any(any(ismember(T,find(model.model2Carl==0))))
+    error('there is a problem with the lecture of the model mesh');
+else
+    model.model2Carl = model.model2Carl(model.model2Carl~=0);
+end
