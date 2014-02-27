@@ -206,7 +206,7 @@ classdef TRI6 < triangulation
                        'combination of dimensions'])
             end
         end
-        % for each node in meshi, find nodes that are inside the elements
+        % for each node in obj1, find nodes that are inside the elements
         % that touch it, and the value of the linear FE basis function 
         % centered on Xr (=local barycentric coordinate of that node in the
         % element). Return a matrix in sparse format
@@ -215,11 +215,10 @@ classdef TRI6 < triangulation
                 indx = pointLocation( obj, obj1.Points );
                 isn = isnan(indx);
                 fisn = find(isn);
-                [ii,jj] = ismember(obj1.Points(isn,:), ...
-                         obj.Points,'rows');
+                [ii,jj] = ismember(obj1.Points(isn,:),obj.Points,'rows');
                 Mval = cartesianToBarycentric( obj, indx(~isn), ...
                     obj1.Points(~isn,:) );
-                My = repmat( find(~isn)', [3 1] );
+                My = repmat( find(~isn), [1 3] );
                 Mx = obj.ConnectivityList(indx(~isn),:);
                 Mval = [Mval(:); ones(sum(ii),1)];
                 Mx = [Mx(:); jj(ii)];
