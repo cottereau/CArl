@@ -3,14 +3,14 @@ classdef discontinuous
 % different subdomains
 %
 % vd = discontinuous(ls,v) defines a continuous function, defined as a 
-% TriScatteredInterp class element over a single domain x defined as a 
+% scatteredInterpolant class element over a single domain x defined as a 
 % levelSet class element. Note that the nodes defining the function f do
 % not have to be contained in the interior of the level-set. Equivalently,
 % this means that the delaunay triangulation on which the interpolating
 % function is defined is independent of the definition of the level-set.
 %
 % vd = discontinuous(ls,x,v) is equivalent to using 
-% vd = discontinuous(ls,TriScatteredInterp(x,v)). Also you can set v as a
+% vd = discontinuous(ls,scatteredInterpolant(x,v)). Also you can set v as a
 % single scalar.
 % 
 % vd = discontinuous(ls1,x1,v1,ls2,x2,v2,...,lsn,xn,vn) defines a 
@@ -21,7 +21,7 @@ classdef discontinuous
 %
 %  discontinuous properties:
 %     x  - Ns*1 cell of subdomains (level-set class)
-%     f  - Ns*1 cell of function definitions (TriScatteredInterp class)
+%     f  - Ns*1 cell of function definitions (scatteredInterpolant class)
 %     Ns - number of subdomains
 %
 %  discontinuous methods:
@@ -34,8 +34,8 @@ classdef discontinuous
 % R. Cottereau 03/2013
 
     properties
-        x    % Ns*1 cell of subdomains
-        f    % Ns*1 cell of function definitions (TriScatteredInterp)
+        x    % Ns*1 cell of subdomains [levelSet]
+        f    % Ns*1 cell of function definitions [scatteredInterpolant]
     end
     
     properties (Dependent)

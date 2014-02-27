@@ -29,15 +29,15 @@ classdef levelSet
 % LS = levelSet is the same as levelSet(true)
 %
 %    levelSet properties:
-%        mesh    - distance function from interface [scatteredInterpolant]
-%        dist    - corresponding triangulation [delaunayTriangulation]
-%        d       - dimension of space [scalar]
+%        dist    - distance function from interface [scatteredInterpolant]
+%        mesh    - corresponding triangulation [delaunayTriangulation]
 %
 %    levelSet methods:
 %     intersection - intersection of two domains
 %     union        - union of two domains
 %     complement   - complement of one domain within another
 %     inside       - check whether points are inside the domain
+%     plot         - plot the level-set object
     
     properties
         dist  % distance function from interface [scatteredInterpolant]
@@ -177,7 +177,7 @@ classdef levelSet
             x = [xf(ff(:,1),1) xf(ff(:,2),1)];
             y = [xf(ff(:,1),2) xf(ff(:,2),2)];
             hold on; plot( x', y', 'k-', 'LineWidth', 2 );
-            colorbar
+            caxis([-1 1]*1e-3); colorbar
         end
         % get the interface (for which distance=0)
         function varargout = boundary(obj)
