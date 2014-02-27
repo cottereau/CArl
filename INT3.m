@@ -219,14 +219,14 @@ classdef INT3
         function Xb = cartesianToBarycentric( obj, Tc, Xc )
             X1 = obj.Points(obj.ConnectivityList(Tc,1));
             X2 = obj.Points(obj.ConnectivityList(Tc,2));
-            Xb = (Xc-X1)./(X2-X1);
+            Xb = [(X2-Xc)./(X2-X1) (Xc-X1)./(X2-X1)];
         end
-        % find elements in which nodes are located
+        % find elements of obj in which nodes Xc are located
         function ind = pointLocation( obj, Xc )
-            ind = zeros(size(Xc,1),1);
+            ind = nan(size(Xc,1),1);
             for i1 = 1:obj.Ne
-                ind(Xc>=obj.Points(obj.ConnectivityList(i1,1)) ...
-                   &Xc<=obj.Points(obj.ConnectivityList(i1,2))) = i1;
+                ind(Xc>=(obj.Points(obj.ConnectivityList(i1,1))-obj.gerr) ...
+                & Xc<=(obj.Points(obj.ConnectivityList(i1,2))+obj.gerr)) = i1;
             end
         end
         % for each node in obj1, find the nodes that are inside the elts
@@ -238,7 +238,7 @@ classdef INT3
             f1 = cartesianToBarycentric( obj, ind, obj1.Points );
             Mx = obj.ConnectivityList(ind,:);
             My = repmat((1:length(ind))',1,2);
-            Mval = [1-f1 f1];
+            Mval = f1;
             ind = Mval>=obj.gerr;
             Mx = Mx(ind(:));
             My = My(ind(:));
