@@ -26,20 +26,15 @@ function [ Int, Rep ] = MeshIntersect( mdl1, mdl2, LSet )
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
 
-% coupling zone for representation purposes (including elements of the
-% original meshes that are cut by the level-set)
-[meshr1,ind1] = subSet( mdl1.mesh, elementsInBoundary(mdl1.mesh,LSet,false) );
-[meshr2,ind2] = subSet( mdl2.mesh, elementsInBoundary(mdl2.mesh,LSet,false) );
-
 % coupling mesh for integration purposes
-Int.mesh = bounded( mergeMeshes( meshr1, meshr2 ), LSet );
+Int.mesh = bounded( mergeMeshes( mdl1.mesh, mdl2.mesh ), LSet );
 
 % compute passage matrix from integration mesh to model meshes
-Rep{1} = integration2Model( mdl1, meshr1, Int.mesh, ind1 );
-Rep{2} = integration2Model( mdl2, meshr2, Int.mesh, ind2 );
+Rep{1} = integration2Model( mdl1, mdl1.mesh, Int.mesh );
+Rep{2} = integration2Model( mdl2, mdl2.mesh, Int.mesh );
 
 % passage matrix from integration mesh to model meshes
-function R = integration2Model( mdl, m, mi, ind )
+function R = integration2Model( mdl, m, mi )
 % compute passage matrix in terms of nodes of the mesh
 [ Mx, My, Mval ] = XR2XI( m, mi );
 
@@ -50,7 +45,7 @@ switch mdl.code
     case {'FE2D'}
         % beam-solid coupling case
         if max(My)>mi.Nn
-            M = sparse( ind(Mx), My, Mval );
+            M = sparse( Mx, My, Mval );
             Mu = M(:,1:mi.Nn);
             Mr = M(:,mi.Nn+1:end);
             [ Mx, My, Mval ] = find(Mu);
@@ -64,13 +59,13 @@ switch mdl.code
         % classical solid-solid coupling
         else
             N = 2*[mdl.mesh.Nn  mi.Nn];
-            M = sparse( (ind(Mx)-1)*2+1, (My-1)*2+1, Mval, N(1), N(2) ) ...
-              + sparse( ind(Mx)*2,       My*2,       Mval, N(1), N(2) );
+            M = sparse( (Mx-1)*2+1, (My-1)*2+1, Mval, N(1), N(2) ) ...
+              + sparse( Mx*2,       My*2,       Mval, N(1), N(2) );
         end
         
     % beam case
     case {'Beam'}
-        M = sparse( ind(Mx), My, Mval, mdl.mesh.Nn, mi.Nn);
+        M = sparse( Mx, My, Mval, mdl.mesh.Nn, mi.Nn);
         N = size(M);
         [ x, y, M ] = find(M);
         M = sparse( [x;x+N(1);x+2*N(1)], ...
@@ -79,7 +74,7 @@ switch mdl.code
       
     % other cases
     otherwise
-        M = sparse( ind(Mx), My, Mval, mdl.mesh.Nn, mi.Nn);
+        M = sparse( Mx, My, Mval, mdl.mesh.Nn, mi.Nn);
         
 end
 % output
