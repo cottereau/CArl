@@ -111,12 +111,12 @@ end
 % assemble sparse matrix system
 
 % solving system
+out = struct( 'model', {Mdl}, 'coupling', {Cpl} );
 if opt.computeSol
     disp('Solving system ...')
-    [U,out] = SolveArlequin( Mdl, Cpl, solver );
+    [ U, out ] = SolveArlequin( Mdl, Cpl, solver, out );
     sol = ArlequinOutput( U, Mdl, out.opt );
 else
     sol = [];
 end
 
-out.U = U;

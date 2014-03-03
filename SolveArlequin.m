@@ -1,4 +1,4 @@
-function [u,out] = SolveArlequin( model, coupling, solver )
+function [u,out] = SolveArlequin( model, coupling, solver, out )
 % SOLVEARLEQUIN to solve the coupled system
 %
 % syntax: sol = SolveArlequin( K, F, coupling )
@@ -11,10 +11,6 @@ function [u,out] = SolveArlequin( model, coupling, solver )
 %
 % copyright: Laboratoire MSSMat, Ecole Centrale Paris - CNRS UMR 8579
 % contact: regis.cottereau@ecp.fr
-
-% output structure initialization
-        out = struct( 'model', {model}, ...
-                      'coupling', {coupling} );
 
 % solve depending on the type of solver demanded
 switch lower(solver)
@@ -94,3 +90,4 @@ switch lower(solver)
     otherwise
         error( 'unknown solver type' )        
 end
+out.U = u;
