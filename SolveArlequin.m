@@ -48,8 +48,8 @@ switch lower(solver)
         C1 = [C1; zeros(size(K10,1)-size(C1,1),size(C1,2))];
         C2 = coupling{1}.C2;
         C2 = [C2; zeros(size(K20,1)-size(C2,1),size(C2,2))];
-        k1 = 1;
-        k2 = 1;
+        k1 = 100;
+        k2 = 100;
         
         % initialization
         K1 = K10 + k1*(C1*C1');
@@ -61,7 +61,7 @@ switch lower(solver)
         err = zeros(100,1);
         
         % iterate on U1, U2
-        for i1 = 1:100
+        for i1 = 1:1000
             
             % step 1: gluing
             a1 = -phi1 + k1*C1'*U1;
@@ -74,8 +74,8 @@ switch lower(solver)
             % step 2: uncoupled solutions
             a1h = -phi1h - k1*w1h;
             a2h = -phi2h - k2*w2h;
-            U1 = K1\(F1+C1*a1h);
-            U2 = K2\(F2+C2*a2h);
+            U1 = K1\(F1-C1*a1h);
+            U2 = K2\(F2-C2*a2h);
             phi1 = -k1*C1'*U1 - a1h;
             phi2 = -k2*C2'*U2 - a2h;
             
