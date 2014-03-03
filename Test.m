@@ -91,8 +91,8 @@ switch type
         Test('zoom1D');
         Test('join1D');
         Test('force1D');
-        Test('stoDet1D');
-        Test('stoSto1D');
+%        Test('stoDet1D');
+%        Test('stoSto1D');
         Test('BeamComp2D');
         Test('BeamFEComp2D');
         Test('BeamFEComp2Dcoarse');
@@ -102,12 +102,12 @@ switch type
         Test('join2D');
         Test('zoom2D');
         Test('force2D');
-        Test('stoDet2D');
-        Test('stoSto2D');
+%        Test('stoDet2D');
+%        Test('stoSto2D');
         Test('FE2D');
         Test('Beam2D');
         Test('BeamFE2D');
-        Test('stoDetFE2D');
+%        Test('stoDetFE2D');
         
     case 'mesh'
         Test('indent2D');

@@ -17,20 +17,28 @@ function [K,F] = StiffnessMatrixFE2D( m, alpha )
 % http://www.mathworks.in/matlabcentral/fileexchange/
 % 27826-fast-assembly-of-stiffness-and-matrices-in-finite-element-method 
 
+% constants
+N = 2*size(m.X,1);
+
 % construction of the variable parameter field
 x = m.X(:,1);
 y = m.X(:,2);
-alpha = interp( alpha, [ mean(x(m.T'),1); mean(y(m.T'),1)]' );
-alpha = repmat(alpha,[1 3]);
+if nargin>1
+    alpha = interp( alpha, [ mean(x(m.T'),1); mean(y(m.T'),1)]' );
+    alpha = repmat(alpha,[1 3]);
+else
+    alpha = ones(size(m.T));
+end
 
 % construction of Stiffness Matrix
 K = stifness_matrixP1_2D_elasfluc( m.T, m.X, m.lambda, m.mu, alpha );
 
 % construction of load vector
-F = sparse( size(K,1), 1 );
+F = sparse( N, 1 );
 if isfield(m,'load') && any(m.load(:)~=0)
     error('bulk load not enforced yet in FE2D')
 end
+%    F = mass_matrixP1_2D_elasticity( m.T , S ) * reshape( m.load', N, 1 );
 
 % add boundary conditions
 if isfield(m,'BC')&&~isempty( m.BC )

@@ -1,4 +1,4 @@
-function [A,areas]=stifness_matrixP1_2D_elasfluc(elements,coordinates,lambda,mu,alpha)
+function [A,areasave]=stifness_matrixP1_2D_elasfluc(elements,coordinates,lambda,mu,alpha)
 
 %for laplace
 NE=size(elements,1); %number of elements
@@ -21,6 +21,8 @@ WG = 1/6;
 %%%%%%%%%%%%%%%%%%%
 NG = size(IP,2); % number of gauss points
 [dphi,jac] = phider(coord,IP,'P1'); %integration rule, it must be known!
+areasave = abs(squeeze(jac))/factorial(DIM);
+areasave = areasave(1,:)';
 if size(jac,3)==1
     jac = abs(squeeze(jac)).* alpha;
 else

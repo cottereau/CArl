@@ -1,4 +1,4 @@
-function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
+function [ sol, out ] = CArlLatin( Mdl, Cpl, solver, opt )
 % CARL to solve a system of models coupled in the Arlequin manner
 %
 %  syntax: sol = CArl( model, coupling, solver, opt )
@@ -28,7 +28,7 @@ function [ sol, out ] = CArl( Mdl, Cpl, solver, opt )
 %                  of the coupling, given as a discontinuous1D or
 %                  discontinuous object.
 %
-%  solver: 'direct' (default) or 'LATIN'
+%  solver: 'direct' (default) or 'FETI' (not implemented yet)
 %
 %  opt: structured array with options. Possible options include
 %       -'computeSol' logical to indicate whether the solution should 
@@ -79,15 +79,16 @@ for i1 = 1:Nc
         
         % create intersection of meshes (for both representation and
         % integration purposes)
-        [Cpl{i1}.Int,Cpl{i1}.Rep] = MeshIntersect( m1, m2, Cpl{i1}.domain );
+        [Int,Rep] = MeshIntersect( m1, m2, Cpl{i1}.domain );
 
         % definition of the mediator space
-        Cpl{i1}.Int.M = MediatorSpace( Cpl{i1}.mediator, Cpl{i1}.Rep );
+        Int.M = MediatorSpace( Cpl{i1}.mediator, Rep );
+        Cpl{i1}.Int = Int;
         
         % construction of coupling operators
-        Cpl{i1}.C = CouplingOperator( Cpl{i1}, Cpl{i1}.Int, opt );
-        Cpl{i1}.C1 = Cpl{i1}.Rep{1}.M * Cpl{i1}.C * Cpl{i1}.Int.M';
-        Cpl{i1}.C2 = Cpl{i1}.Rep{2}.M * Cpl{i1}.C * Cpl{i1}.Int.M';
+        Cpl{i1}.C1 = CouplingOperator( Cpl{i1}, Int, Rep{1}, opt );
+        Cpl{i1}.C2 = CouplingOperator( Cpl{i1}, Int, Rep{2}, opt );
+        Cpl{i1}.Rep = Rep;
 
     end
 end

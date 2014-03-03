@@ -1,4 +1,5 @@
-function C = CouplingOperator( couple, Int, Rep, opt )
+function C = CouplingOperator( couple, Int, opt )
+% function C = CouplingOperator( couple, Int, Rep, opt )
 % COUPLINGOPERATOR to construct the coupling operator
 %
 % syntax: [ x, y, C ] = CouplingOperator( model, coupling, n )
@@ -22,9 +23,10 @@ switch lower(couple.code)
     % ACOUSTIC COUPLING
     case {'homefe','montecarlohomefe'}
         C = CouplingOperatorHomeFE( couple.operator, Int.mesh, opt );
-        C = Rep.M * C * Int.M';
         
         if strcmpi( couple.code, 'montecarlohomefe' )
+            warning('this section was modified: pay attention!')
+            C = Rep.M * C * Int.M';
             Cs = Rep.M * CouplingOperatorHomeFE( 'L2', Int.mesh, opt );
             N = size(C,2);
             C = [ C sum( Cs, 2 ) sparse(size(Cs,1),1);
@@ -34,13 +36,11 @@ switch lower(couple.code)
     % ELASTIC COUPLING
     case 'fe2d'
         C = CouplingOperatorFE2D( couple.operator, Int.mesh, opt );
-        C = Rep.M * C * Int.M';
       
     % TIMOSCHENKO BEAM COUPLING
     case 'beam'
         opt.h = couple.h;
         C = CouplingOperatorBeam( couple.operator, Int.mesh, opt );
-        C = Rep.M * C * Int.M';
               
     % UNKNOWN COUPLING CASE
     otherwise
