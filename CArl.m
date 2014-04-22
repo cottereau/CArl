@@ -88,7 +88,7 @@ for i1 = 1:Nc
         Cpl{i1}.C = CouplingOperator( Cpl{i1}, Cpl{i1}.Int, opt );
         Cpl{i1}.C1 = Cpl{i1}.Rep{1}.M * Cpl{i1}.C * Cpl{i1}.Int.M';
         Cpl{i1}.C2 = Cpl{i1}.Rep{2}.M * Cpl{i1}.C * Cpl{i1}.Int.M';
-
+        Cpl{i1}.M = Cpl{i1}.Int.M * Cpl{i1}.C * Cpl{i1}.Int.M';
     end
 end
 
@@ -113,7 +113,7 @@ end
 % solving system
 out = struct( 'model', {Mdl}, 'coupling', {Cpl} );
 if opt.computeSol
-    disp('Solving system ...')
+    disp([ 'Solving system using ', solver,' method ...' ])
     [ U, out ] = SolveArlequin( Mdl, Cpl, solver, out );
     sol = ArlequinOutput( U, Mdl, out.opt );
 else

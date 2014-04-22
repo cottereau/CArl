@@ -30,6 +30,9 @@ function Test( type )
 %  | 'stoDet2D    '     | acoustic(S) | acoustic    |              |
 %  | 'stoSto2D    '     | acoustic(S) | acoustic(S) |              |
 %  | 'FE2D'             | elastic     | elastic     |              |
+%  | 'FE2Dlatin'        | elastic     | elastic     | latin        |
+%  | 'hole2D'           | elastic     | elastic     |              |
+%  | 'hole2Dlatin'      | elastic     | elastic     | latin        |
 %  | 'beam2D'           | beam        | beam        |              |
 %  | 'beamFEComp2D'     | beam        | elastic     | compression  |
 %  | 'beamFE2D'         | beam        | elastic     |              |
@@ -70,13 +73,17 @@ if ~( strcmp(type,'1d') || strcmpi(type,'2d') || strcmpi(type,'mesh') )
     
     % get model and solve
     load( ['Tests/' type '.mat'] );
-    sol = CArl( model, coupling, solver );
+    [sol,out] = CArl( model, coupling, solver );
     
     % plot results
     figure; plotTestCArl( model{1}, sol{1}, 'k', '--x' )
     hold on; plotTestCArl( model{2}, sol{2}, 'b', '--o' );
     subplot(2,1,1); title( [type ' - primal'] ); box on; grid on
     subplot(2,1,2); title( [type ' - dual'] ); box on; grid on
+    if strcmp(solver,'latin');
+        figure; semilogy(out.indic);
+        title('LATIN indicator');
+    end
     if exist( 'ref', 'var' )
         hold on; plotTestCArl( ref, ref.sol, 'r', ':' );
     end
@@ -104,6 +111,7 @@ switch type
         Test('force2D');
 %        Test('stoDet2D');
 %        Test('stoSto2D');
+        Test('hole2D');
         Test('FE2D');
         Test('Beam2D');
         Test('BeamFE2D');
@@ -149,6 +157,7 @@ switch model.code
             X = X(:,1);
             subplot(2,1,1); hold on; trimesh( T, X, Y, u ); view(3)
             Ne = size(T,1);
+            axis equal;
             strain = zeros(Ne,2);
             for i1=1:Ne
                 grad = [X(T(i1,:)) Y(T(i1,:)) ones(3,1)]\u(T(i1,:),:);
@@ -170,6 +179,7 @@ switch model.code
         trimesh( T, X, Y, 'color', coul, 'LineStyle', ':' );
         hold on; trimesh( T, dx, dy, 'color', coul, 'LineStyle', '-' );
         Ne = size(T,1);
+        axis equal off;
         strain = zeros(Ne,4);
         for i1=1:Ne
             grad = [X(T(i1,:)) Y(T(i1,:)) ones(3,1)]\u(T(i1,:),:);
@@ -177,11 +187,10 @@ switch model.code
         end
         % trace of strain operator
         strain = strain(:,1)+strain(:,4);
-        Xc = mean(X(T),2); Yc = mean(Y(T),2);
         subplot(2,1,2); 
-        trimesh( T, X, Y, 'color', coul, 'LineStyle', ':' );
-        hold on; scatter( Xc, Yc, 50, strain, 'full' );
-        colorbar
+        trimesh( T, dx, dy, 'color', 'b', 'LineStyle', ':' );
+        hold on; trisurf( T, dx, dy, zeros(size(X)), strain );
+        colorbar; axis equal off;
 
     % BEAM
     case 'Beam'

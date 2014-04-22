@@ -56,12 +56,10 @@ switch lower(solver)
         P2 = inv(M)*C2';
         
         % search directions
-        lambda = model{2}.FE2D.lambda;
-        mu = model{2}.FE2D.mu;
-        young = mu*(3*lambda+2*mu)/(lambda+mu);
-        gluelength = -2*min(coupling{1}.domain.dist(coupling{1}.domain.mesh.Points));
-        k =  young/gluelength;
-        %k = 160;
+        %lambda = model{2}.FE2D.lambda;
+        %mu = model{2}.FE2D.mu;
+        %Young = mu*(3*lambda+2*mu)/(lambda+mu);
+        k =  160;
         
         ku1 = k;
         ku2 = k;
@@ -78,10 +76,41 @@ switch lower(solver)
         phi1 = -kd1*w1;
         phi2 = -kd2*w1;
         
-        indic = [ 1 zeros(1,nitermax-1) ];
+        % [DEBUG] Reference solution obtained by direct solver
+        load('Udirect');
+        U1direct = Udirect(1:size(K1,1),1);
+        U2direct = Udirect(size(K1,1)+1:size(K1,1)+size(K2,1),1);
+        phidirect = Udirect(size(K1,1)+size(K2,1)+1:end,1);
+        Knorm{1} = K1;
+        Knorm{2} = K2;
+        for i1 = 1:length(model)
+            switch lower(model{i1}.code)
+                case 'homefe'
+                    if ~isempty(model{i1}.HomeFE.BC)
+                        nBC = length(model{i1}.HomeFE.BC.nodes);
+                        Knorm{i1}(end-nBC+1:end,:) = 0;
+                        Knorm{i1}(:,end-nBC+1:end) = 0;
+                    end
+                case 'fe2d'
+                    if ~isempty(model{i1}.FE2D.BC)
+                        nBC = length(model{i1}.FE2D.BC.nodes);
+                        Knorm{i1}(end-nBC+1:end,:) = 0;
+                        Knorm{i1}(:,end-nBC+1:end) = 0;
+                    end
+                case 'beam'
+                otherwise
+                    error('unknown model')
+            end
+        end
+        K1norm = Knorm{1};
+        K2norm = Knorm{2};
+        % [DEBUG]
+        
+        indic = [ 1 zeros(1,niter-1) ];
+        err = [ 1 zeros(1,niter-1) ];
         i1 = 1;     
         
-        while (indic(i1) > errmax)&(i1 <= nitermax-1)
+        while (err(i1) > errmax)&(i1 <= niter-1)
             
             i1 = i1 + 1;
             
@@ -112,13 +141,36 @@ switch lower(solver)
             % error indicator
             indic(i1) = 2*sqrt(norm(phi1-phi1h)^2+norm(phi2-phi2h)^2) ...
                 / sqrt(norm(phi1+phi1h)^2+norm(phi2+phi2h)^2);
-                        
+            
+            err(i1) = sqrt((U1-U1direct)'*K1norm*(U1-U1direct)+ ...
+                (U2-U2direct)'*K2norm*(U2-U2direct)) ...
+                / sqrt(U1direct'*K1norm*U1direct+ ...
+                U2direct'*K2norm*U2direct);
+            err1(i1) = sqrt((U1-U1direct)'*K1norm*(U1-U1direct))  ...
+                / sqrt(U1direct'*K1norm*U1direct);
+            err2(i1) = sqrt((U2-U2direct)'*K2norm*(U2-U2direct))  ...
+                / sqrt(U2direct'*K2norm*U2direct);
+            
         end
-                
+        
+        % various errors
+        %         norm(K1*U1direct + C1*phidirect - F1)
+        %         norm(K2*U2direct - C2*phidirect - F2)
+        %         norm(C1'*U1direct - C2'*U2direct)
+        %         norm(K1*U1 - C1*phi1 - F1)
+        %         norm(K2*U2 - C2*phi2 - F2)
+        %         norm(C1'*U1 - C2'*U2)
+        %         norm(U1-U1direct)
+        %         norm(U2-U2direct)
+        %         norm(phi1+phi2)
+        %         norm(phi2-phidirect)
+        
         % output
         u = [ U1; U2; phi1h ];
         out.opt = struct('iK',[0 size(K1,1) size(K1,1)+size(K2,1)] );
         out.indic = indic;
+        out.err = err;
+        out.err(i1)
         
         % unknown solver
     otherwise
