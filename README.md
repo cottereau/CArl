@@ -12,7 +12,7 @@ This project is focused on the development of a software based on the [Arlequin 
 This software is mainly developed at laboratoire MSSMat (Ecole Centrale Paris - CNRS).
 
 * contact : [Regis Cottereau](mailto:regis.cottereau@ecp.fr)
-* contributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec
+* contributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec, D. Neron
 
 It is developed for [MATLAB](http://www.mathworks.fr/products/matlab/). This may however evolve in future versions.
  
