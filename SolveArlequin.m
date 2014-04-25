@@ -52,8 +52,8 @@ switch lower(solver)
         C2 = coupling{1}.C2;
         C2 = [C2; zeros(size(K2,1)-size(C2,1),size(C2,2))];
         M = coupling{1}.M;
-        P1 = inv(M)*C1';
-        P2 = inv(M)*C2';
+        P1 = M\C1';
+        P2 = M\C2';
         
         % search directions
         lambda = model{2}.FE2D.lambda;
@@ -67,8 +67,8 @@ switch lower(solver)
         ku2 = k;
         kd1 = k;
         kd2 = k;
-        H1 = K1 + kd1*(C1*inv(M)*C1');
-        H2 = K2 + kd2*(C2*inv(M)*C2');
+        H1 = K1 + kd1*(C1*(M\C1'));
+        H2 = K2 + kd2*(C2*(M\C2'));
         
         % initialization
         U1 = H1\F1;
@@ -81,7 +81,7 @@ switch lower(solver)
         indic = [ 1 zeros(1,nitermax-1) ];
         i1 = 1;     
         
-        while (indic(i1) > errmax)&(i1 <= nitermax-1)
+        while (indic(i1) > errmax)&&(i1 <= nitermax-1)
             
             i1 = i1 + 1;
             
