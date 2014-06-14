@@ -1,4 +1,4 @@
-function [ Int, Rep ] = MeshIntersect( mdl1, mdl2, LSet )
+function [ Int, Rep ] = MeshIntersect( mdl1, mdl2, LSet, opt )
 % MESHINTERSECT to create the mesh at the intersection between two meshes,
 % both in terms of support (for the definition of the interpolation
 % functions) and for integration purposes
@@ -28,6 +28,9 @@ function [ Int, Rep ] = MeshIntersect( mdl1, mdl2, LSet )
 
 % coupling mesh for integration purposes
 Int.mesh = bounded( mergeMeshes( mdl1.mesh, mdl2.mesh ), LSet );
+if opt.plotIntersectionMesh
+    plot(Int.mesh)
+end
 
 % compute passage matrix from integration mesh to model meshes
 Rep{1} = integration2Model( mdl1, mdl1.mesh, Int.mesh );

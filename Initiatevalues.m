@@ -39,3 +39,8 @@ end
 if ~isfield( opt, 'computeSol' )
     opt.computeSol = true;
 end
+
+% plot intersection mesh
+if ~isfield( opt, 'plotIntersectionMesh' )
+    opt.plotIntersectionMesh = false;
+end
