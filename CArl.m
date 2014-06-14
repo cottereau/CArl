@@ -79,13 +79,13 @@ for i1 = 1:Nc
         
         % create intersection of meshes (for both representation and
         % integration purposes)
-        [Cpl{i1}.Int,Cpl{i1}.Rep] = MeshIntersect( m1, m2, Cpl{i1}.domain );
+        [Cpl{i1}.Int,Cpl{i1}.Rep] = MeshIntersect( m1, m2, Cpl{i1}.domain, opt );
 
         % definition of the mediator space
         Cpl{i1}.Int.M = MediatorSpace( Cpl{i1}.mediator, Cpl{i1}.Rep );
         
         % construction of coupling operators
-        Cpl{i1}.C = CouplingOperator( Cpl{i1}, Cpl{i1}.Int, opt );
+        [Cpl{i1}.C,Cpl{i1}.K] = CouplingOperator( Cpl{i1}, Cpl{i1}.Int, opt );
         Cpl{i1}.C1 = Cpl{i1}.Rep{1}.M * Cpl{i1}.C * Cpl{i1}.Int.M';
         Cpl{i1}.C2 = Cpl{i1}.Rep{2}.M * Cpl{i1}.C * Cpl{i1}.Int.M';
         Cpl{i1}.M = Cpl{i1}.Int.M * Cpl{i1}.C * Cpl{i1}.Int.M';

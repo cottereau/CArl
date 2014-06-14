@@ -1,4 +1,4 @@
-function C = CouplingOperatorHomeFE( operator, mesh, opt )
+function [C,K] = CouplingOperatorHomeFE( operator, mesh, opt )
 % COUPLINGOPERATORHOMEFE to construct the Arlequin coupling matrix 
 % by calling a home-made FE code
 %

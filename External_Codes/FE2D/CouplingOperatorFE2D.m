@@ -1,4 +1,4 @@
-function C = CouplingOperatorFE2D( operator, mesh, opt )
+function [C,K] = CouplingOperatorFE2D( operator, mesh, opt )
 % COUPLINGOPERATORFE2D to construct the Arlequin coupling matrix 
 % by calling the elastic code FE2D
 %

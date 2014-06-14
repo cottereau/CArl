@@ -1,4 +1,4 @@
-function C = CouplingOperatorBeam( operator, mesh, opt )
+function [C,K] = CouplingOperatorBeam( operator, mesh, opt )
 % COUPLINGOPERATORBEAM to construct the Arlequin coupling matrix 
 % by calling a beam code
 %
