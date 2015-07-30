@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
 	BuildMeshIntersections(dtA,dtB,tallyFastVector);
 
-	std::string filename = "intersection_tally_fast" + std::to_string(dtA.get_nb_of_faces())
+	std::string filename = "intersection_poly_" + std::to_string(dtA.get_nb_of_faces())
 	+ "_" + std::to_string(dtB.get_nb_of_faces()) + ".dat";
 
 	outputF.open(filename.c_str(),std::ios::trunc);

@@ -1,9 +1,9 @@
 
 Cpp/Mesh_intersection/CMakeFiles
 
-*.cgmesh
+Cpp/**/*.cgmesh
 
-*.dat
+Cpp/**/*.dat
 
 Cpp/Mesh_intersection/CMakeCache.txt
 
@@ -16,3 +16,13 @@ Cpp/.cproject
 Cpp/Mesh_intersection/Makefile
 
 Cpp/Mesh_intersection/intersections_2D
+
+Cpp/Mesh_intersection/timing.sh
+
+Cpp/Mesh_intersection/old_timing.sh
+
+Cpp/.settings/language.settings.xml
+
+Cpp/.settings/org.eclipse.cdt.codan.core.prefs
+
+Cpp/Mesh_intersection/intersections_3D

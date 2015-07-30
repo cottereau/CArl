@@ -7,37 +7,25 @@
  *  	This file contains the CGAL typedefs used by the
  */
 
-#ifndef DEFINES_INTERSECTION_2D_H_
-#define DEFINES_INTERSECTION_2D_H_
+#ifndef CGAL_DEFINES_2_H_
+#define CGAL_DEFINES_2_H_
 
-#include <chrono>
-
-#include <boost/random/uniform_real_distribution.hpp>
-#include <boost/random/lagged_fibonacci.hpp>
-
-#include <boost/variant/apply_visitor.hpp>
-#include <functional>
-
-//#include <CGAL/Exact_predicates_exact_constructions_kernel_with_sqrt.h>
+//	--- CGAL kernel and common headers
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Intersections.h>
+#include <CGAL/result_of.h>
+#include "common_header.h"
+
+// --- CGAL 2D triangulation headers
 #include <CGAL/Triangulation_2.h>
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <CGAL/Triangulation_face_base_with_info_2.h>
-
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/Delaunay_mesher_2.h>
 #include <CGAL/Delaunay_mesh_face_base_2.h>
 #include <CGAL/Delaunay_mesh_size_criteria_2.h>
 
-#include <CGAL/Intersections.h>
-#include <CGAL/result_of.h>
-
-#include <CGAL/IO/Geomview_stream.h>
-#include <CGAL/IO/Triangulation_geomview_ostream_2.h>
-
-//#include <CGAL/IO/Triangulation_geomview_ostream_3.h>
-
-// Structure used to add extra information to the triangles
+// Structure used to add extra information to the 2D triangles
 struct FaceInfo
 {
 	int ExtIndex;
@@ -48,7 +36,6 @@ struct FaceInfo
  */
 
 // --- Kernel type
-//typedef CGAL::Exact_predicates_exact_constructions_kernel_with_sqrt Kernel;
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 
 // --- Geometry typedefs
@@ -57,16 +44,16 @@ typedef Kernel::Triangle_2	Triangle_2;
 typedef Kernel::Segment_2	Segment_2;
 //
 // --- Constrained Delaunay mesh with info
-typedef CGAL::Triangulation_vertex_base_2<Kernel> Vb;
+typedef CGAL::Triangulation_vertex_base_2<Kernel> Vb_2;
 
-typedef CGAL::Delaunay_mesh_face_base_2<Kernel> Fb;
-typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo,Kernel,Fb> FbInfo;
+typedef CGAL::Delaunay_mesh_face_base_2<Kernel> Fb_2;
+typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo,Kernel,Fb_2> FbInfo_2;
 
-typedef CGAL::Triangulation_data_structure_2<Vb, FbInfo> Tds;
-typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel,Tds> CDT;
+typedef CGAL::Triangulation_data_structure_2<Vb_2, FbInfo_2> TdsInfo_2;
+typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel,TdsInfo_2> CDT;
 
-typedef CGAL::Delaunay_mesh_size_criteria_2<CDT> Criteria;
-typedef CGAL::Delaunay_mesher_2<CDT, Criteria> Mesher;
+typedef CGAL::Delaunay_mesh_size_criteria_2<CDT> Criteria_2;
+typedef CGAL::Delaunay_mesher_2<CDT, Criteria_2> Mesher_2;
 
 ////// --- Delaunay mesh with info
 //typedef CGAL::Triangulation_vertex_base_2<Kernel> Vb;
@@ -85,25 +72,12 @@ typedef CDT::Finite_faces_iterator		Finite_face_iterator_2;
 typedef CDT::Face_circulator			Face_circulator_2;
 typedef CDT::Finite_vertices_iterator	Finite_vertices_iterator_2;
 
-// Triangulation hash function and typedef
-
-//struct Face_handle_2_hash
-//{
-//    size_t operator()(const Face_handle_2 &i) const
-//    {
-//        return std::hash<int>()(i->info().ExtIndex);
-//    }
-//};
-//
-//typedef std::unordered_set<Face_handle_2,Face_handle_2_hash> unordered_face_set;
 
 // Intersection type typedef (boost::variant)
-
 typedef CGAL::cpp11::result_of<Kernel::Intersect_2(Triangle_2, Triangle_2)>::type
 		Triangle_2_Intersection_Variant;
 
 // Boost Random defines
-
 extern boost::random::lagged_fibonacci607 m_rng;
 
-#endif /* DEFINES_INTERSECTION_2D_H_ */
+#endif /* CGAL_DEFINES_2_H_ */

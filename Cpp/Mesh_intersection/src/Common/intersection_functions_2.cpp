@@ -80,15 +80,6 @@ void BuildMeshIntersections(
 	 * 		 kernel to obtain all the intersections, but this comes at a
 	 * 		 considerable resource and time cost.
 	 *
-	 * 		2)	The "vector_deque" data structure is essentially a vector,
-	 * 		but with an auxiliary index, used to access its data, and "length".
-	 * 		This allows to reuse the data structure without reallocating the
-	 * 		memory (setting the "length" to zero). This data structure does
-	 * 		fake but efficient "remove()" operations by moving the value of
-	 * 		the last entry to the entry to be removed and reducing the
-	 * 		artificial length. The order of the elements is, then, changed after
-	 * 		each "remove()" operation.
-	 *
 	 */
 
 	// --- Preamble - declarations
@@ -117,28 +108,18 @@ void BuildMeshIntersections(
 
 	/*
 	 *
-	 *  	The outer while loop runs over the deque "MeshBQueue", extracting its first element
-	 *  at each iteration, until the deque is empty (meaning that all triangles of "dtB" were
-	 *  treated). It also extracts the (corresponding) first element from "MeshAQueue", and set it
-	 *  as the first element of "MeshAToTest".
-	 *
-	 *
-	 *
-	 */
-
-	/*
-	 *
-	 * 			Vector_deques containing the lists of the next triangles to be
-	 * 		treated. If the algorithm is correct, these "vector_deques" are
-	 * 		twins: the elements "MeshBQueue[iii]" and "MeshAQueue[iii]"
-	 * 		correspond to a pair of triangles from, respectively, dtB and dtA
-	 * 		that are guaranteed to intersect (exactly, see note 1 above).
-	 * 		"MeshAQueue" and "MeshBQueue" correspond to "bil" and "bl" in
-	 * 		Gander's article.
+	 * 			Deques containing the lists of the next triangles to be treated.
+	 * 		If the algorithm is correct, these "deques" are twins: the elements
+	 * 		"MeshBQueue[iii]" and "MeshAQueue[iii]" correspond to a pair of
+	 * 		triangles from, respectively, dtB and dtA that are guaranteed to
+	 * 		intersect (exactly, see note 1 above). "MeshAQueue" and "MeshBQueue"
+	 * 		correspond to "bil" and "bl" in Gander's article. Deques were used
+	 * 		for these data lists due to the need to push_back() and pop_front()
+	 * 		elements efficiently.
 	 *
 	 */
-	vector_deque<Face_handle_2> MeshAQueue(dtA.get_nb_of_faces() + 1);
-	vector_deque<Face_handle_2> MeshBQueue(dtB.get_nb_of_faces() + 1);
+	std::deque<Face_handle_2> MeshAQueue;
+	std::deque<Face_handle_2> MeshBQueue;
 
 	/*
 	 * 			Marker vector, used to indicate if a triangle from dtB was
@@ -151,15 +132,17 @@ void BuildMeshIntersections(
 	/*
 	 * 			Marker unordered_set, used to indicate if a triangle from dtA
 	 * 		was trated (find()==true) or not (find()==false). dtA uses an
-	 * 		unordered_set instead of a vector due to the need of efficiently
-	 * 		emptying it before the start of the inner loop.
+	 * 		unordered_set instead of a vector or deque due to the need of
+	 * 		efficient insertion, search and emptying of the data. The number of
+	 * 		buckets chosen (dtA.get_nb_of_faces() + 1) guarantees that there
+	 * 		will be no collisions.
 	 *
 	 */
 	std::unordered_set<int> treatedFromA(dtA.get_nb_of_faces() + 1);
 	treatedFromB[dtB.get_nb_of_faces()] = 1;
 
-	// Vector_deque of the elements from dtA that must be tested yet
-	vector_deque<Face_handle_2>	MeshAToTest(dtA.get_nb_of_faces() + 1);
+	// Deque of the elements from dtA that must be tested yet
+	std::deque<Face_handle_2>	MeshAToTest;
 
 	// Handles of the elements that might be added to MeshAQueue
 	std::vector<Face_handle_2> candidatesA(3);
@@ -174,8 +157,8 @@ void BuildMeshIntersections(
 
 	// --- Preamble - initializations
 	// Insert the first elements in the queues
-	MeshBQueue.add(FirstB);
-	MeshAQueue.add(FirstA);
+	MeshAQueue.push_back(FirstA);
+	MeshBQueue.push_back(FirstB);
 
 	// Mark the first element from dtB as "treated"
 	treatedFromB[FirstB->info().ExtIndex] = 1;
@@ -190,17 +173,17 @@ void BuildMeshIntersections(
 	// Number of operations per cycle of the external loop
 	int DebugNumberOfOperations = 0;
 
-	while(!MeshBQueue.isEmpty())
+	while(!MeshBQueue.empty())
 	{
 		// Pop out working triangle from mesh B
 		workingTriangleB = MeshBQueue[0];
-		MeshBQueue.remove(0);
+		MeshBQueue.pop_front();
 
 		// Clear "MeshAToTest" and initialize it with the first element from
 		// "MeshAQueue"
-		MeshAToTest.clearAll();
-		MeshAToTest.add(MeshAQueue[0]);
-		MeshAQueue.remove(0);
+		MeshAToTest.clear();
+		MeshAToTest.push_back(MeshAQueue[0]);
+		MeshAQueue.pop_front();
 
 		// Clear "treatedFromA", mark the first element and the infinite
 		// triangles as "Treated"
@@ -213,11 +196,11 @@ void BuildMeshIntersections(
 		candidatesAIsOccupied[1] = 0;
 		candidatesAIsOccupied[2] = 0;
 
-		while(!MeshAToTest.isEmpty())
+		while(!MeshAToTest.empty())
 		{
 			// Pop out working triangle from mesh A's test triangles
 			workingTriangleA = MeshAToTest[0];
-			MeshAToTest.remove(0);
+			MeshAToTest.pop_front();
 
 			queryIntersect = false;
 			IntersectTriangles(
@@ -245,7 +228,7 @@ void BuildMeshIntersections(
 					if(treatedFromA.find(neighAindex)==treatedFromA.end())
 					{
 						// New triangle!
-						MeshAToTest.add(neighTriangleA);
+						MeshAToTest.push_back(neighTriangleA);
 						treatedFromA.insert(neighAindex);
 					}
 
@@ -270,8 +253,8 @@ void BuildMeshIntersections(
 			if(treatedFromB[neighBindex]==0 && candidatesAIsOccupied[iii]==1)
 			{
 				// New triangle!
-				MeshBQueue.add(neighTriangleB);
-				MeshAQueue.add(candidatesA[iii]);
+				MeshBQueue.push_back(neighTriangleB);
+				MeshAQueue.push_back(candidatesA[iii]);
 				treatedFromB[neighBindex]=1;
 			}
 		}

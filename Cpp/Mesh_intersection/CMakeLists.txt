@@ -49,21 +49,25 @@ endif()
 # set directories
 set ( COMMON_DIR src/Common )
 set ( INTERSECTION_2D_DIR src/Intersections_2D)
+set ( INTERSECTION_3D_DIR src/Intersections_3D)
 
 # include for local directory
 include_directories( ${COMMON_DIR} )
 
 # set sources
-set ( COMMON_SOURCES ${COMMON_DIR}/vector_deque.cpp)
 set ( INTERSECTION_2D_SOURCES ${INTERSECTION_2D_DIR}/main.cpp ${COMMON_DIR}/intersection_functions_2.cpp ${COMMON_DIR}/triangular_mesh_2.cpp)
+set ( INTERSECTION_3D_SOURCES ${INTERSECTION_3D_DIR}/main.cpp )
 
 # Creating entries for target: intersections_2D
 # ############################
 
-add_executable( intersections_2D ${COMMON_SOURCES} ${INTERSECTION_2D_SOURCES})
+add_executable( intersections_2D ${INTERSECTION_2D_SOURCES} )
+add_executable( intersections_3D ${INTERSECTION_3D_SOURCES} )
 
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS intersections_2D )
+add_to_cached_list( CGAL_EXECUTABLE_TARGETS intersections_3D )
 
 # Link the executable to CGAL and third-party libraries
-target_link_libraries(intersections_2D   ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+target_link_libraries(intersections_2D  ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+target_link_libraries(intersections_3D  ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 

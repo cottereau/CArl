@@ -69,7 +69,7 @@ void Triangular_Mesh_2::GenerateTestMeshSquare(const Point_2& initPoint, const P
 	dummyY = (finalPoint.y() + initPoint.y())/2 + 0.2*dy*shift(m_rng);
 
 	mesh.insert(Point_2(dummyX,dummyY));
-	CGAL::refine_Delaunay_mesh_2(mesh,Criteria(0.125, std::min(dx,dy)));
+	CGAL::refine_Delaunay_mesh_2(mesh,Criteria_2(0.125, std::min(dx,dy)));
 	set_nb_of_faces();
 	set_nb_of_vertices();
 };
