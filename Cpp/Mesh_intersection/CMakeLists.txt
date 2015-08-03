@@ -52,11 +52,11 @@ set ( INTERSECTION_2D_DIR src/Intersections_2D)
 set ( INTERSECTION_3D_DIR src/Intersections_3D)
 
 # include for local directory
-include_directories( ${COMMON_DIR} )
+include_directories( ${COMMON_DIR} ${INTERSECTION_2D_DIR} ${INTERSECTION_3D_DIR} )
 
 # set sources
 set ( INTERSECTION_2D_SOURCES ${INTERSECTION_2D_DIR}/main.cpp ${COMMON_DIR}/intersection_functions_2.cpp ${COMMON_DIR}/triangular_mesh_2.cpp)
-set ( INTERSECTION_3D_SOURCES ${INTERSECTION_3D_DIR}/main.cpp )
+set ( INTERSECTION_3D_SOURCES ${INTERSECTION_3D_DIR}/main.cpp ${COMMON_DIR}/intersection_functions_3.cpp  ${COMMON_DIR}/triangular_mesh_3.cpp)
 
 # Creating entries for target: intersections_2D
 # ############################

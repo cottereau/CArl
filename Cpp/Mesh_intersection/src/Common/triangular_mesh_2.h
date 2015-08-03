@@ -52,4 +52,4 @@ public:
 
 	int get_nb_of_vertices() const;
 };
-#endif /* TRIANGULAR_MESH_2_H_ */
+#endif /* TRIANGULAR_MESH_3_H_ */

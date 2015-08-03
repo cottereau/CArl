@@ -48,6 +48,7 @@ void Triangular_Mesh_2::GenerateTestMeshSquare(const Point_2& initPoint, const P
 	double dummyX;
 	double dummyY;
 
+	boost::random::lagged_fibonacci607 m_rng;
 	boost::random::uniform_real_distribution<double> shift(-1,1);
 
 	// Set boundaries

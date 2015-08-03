@@ -31,6 +31,11 @@ struct FaceInfo
 	int ExtIndex;
 };
 
+struct CellInfo
+{
+	int ExtIndex;
+};
+
 /*
  * 		CGAL typedefs
  */
@@ -42,6 +47,10 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 typedef Kernel::Point_2	 	Point_2;
 typedef Kernel::Triangle_2	Triangle_2;
 typedef Kernel::Segment_2	Segment_2;
+
+typedef Kernel::Point_3		Point_3;
+typedef Kernel::Triangle_3  Triangle_3;
+typedef Kernel::Segment_3	Segment_3;
 //
 // --- Constrained Delaunay mesh with info
 typedef CGAL::Triangulation_vertex_base_2<Kernel> Vb_2;
@@ -76,8 +85,5 @@ typedef CDT::Finite_vertices_iterator	Finite_vertices_iterator_2;
 // Intersection type typedef (boost::variant)
 typedef CGAL::cpp11::result_of<Kernel::Intersect_2(Triangle_2, Triangle_2)>::type
 		Triangle_2_Intersection_Variant;
-
-// Boost Random defines
-extern boost::random::lagged_fibonacci607 m_rng;
 
 #endif /* CGAL_DEFINES_2_H_ */
