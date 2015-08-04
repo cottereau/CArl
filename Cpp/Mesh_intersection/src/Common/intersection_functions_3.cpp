@@ -7,14 +7,136 @@
 
 #include "intersection_functions_3.h"
 
-bool tetra_intersection(const Tetrahedron& tetraA, const Tetrahedron& tetraB, Polyhedron& tetraOut)
+bool tetra_intersection(
+						const Triangular_Mesh_3& 	dtA,
+						const Cell_handle_3 		cellA,
+						const Triangular_Mesh_3& 	dtB,
+						const Cell_handle_3 		cellB,
+						Polyhedron& polyOut
+						)
 {
-	return false;
+	// Fast intersection test, using bbox
+	bool bPreliminary = CGAL::do_intersect(
+								dtA.mesh.tetrahedron(cellA).bbox(),
+								dtB.mesh.tetrahedron(cellB).bbox()
+								);
+
+	IntersectionPointsVisitor_3		visPointList;
+
+	bool bTriangleIntersect = false;
+	if(bPreliminary)
+	{
+		// If true, must do real test
+		Triangle_3_Intersection_Variant varTriangleIntersection;
+
+		for(int iii = 0; iii < 4; ++iii)
+		{
+			for(int jjj =0; jjj < 4; ++jjj)
+			{
+				varTriangleIntersection = CGAL::intersection(
+									dtA.mesh.triangle(cellA,iii),
+									dtB.mesh.triangle(cellB,jjj)
+									);
+
+				if(varTriangleIntersection)
+				{
+					bTriangleIntersect = true;
+					boost::apply_visitor(visPointList, *varTriangleIntersection);
+				}
+			}
+		}
+
+
+		if(bTriangleIntersect)
+		{
+			// --- Add the corner points
+			CGAL::Bounded_side pointLocation;
+
+			// The dummy variables are needed for using side_of_cell ...
+			Locate_type_3 dummyLT;
+			int dummyLI, dummyLJ;
+
+			for(int iii = 0; iii < 4; ++ iii)
+			{
+				pointLocation = dtA.mesh.side_of_cell(
+													dtB.mesh.point(cellB,iii),
+													cellA,
+													dummyLT,
+													dummyLI,
+													dummyLJ
+													);
+
+				if(pointLocation==CGAL::ON_BOUNDED_SIDE || pointLocation==CGAL::ON_BOUNDARY)
+				{
+					visPointList.add(dtB.mesh.point(cellB,iii));
+				}
+
+				pointLocation = dtB.mesh.side_of_cell(
+													dtA.mesh.point(cellA,iii),
+													cellB,
+													dummyLT,
+													dummyLI,
+													dummyLJ
+													);
+
+				if(pointLocation==CGAL::ON_BOUNDED_SIDE || pointLocation==CGAL::ON_BOUNDARY)
+				{
+					visPointList.add(dtA.mesh.point(cellA,iii));
+				}
+			}
+
+			// Build the polyhedron - if there are at least 4 points!
+			if(visPointList.IntersectionData.size()>3)
+			{
+				CGAL::convex_hull_3(
+									visPointList.IntersectionData.begin(),
+									visPointList.IntersectionData.end(),
+									polyOut
+									);
+			}
+			else
+			{
+				// Well, this was useless ...
+				bTriangleIntersect = false;
+			}
+		}
+	}
+
+	return bTriangleIntersect;
 };
 
-bool tetra_do_intersect(const Tetrahedron& tetraA, const Tetrahedron& tetraB)
+bool tetra_do_intersect(
+						const Triangular_Mesh_3& 	dtA,
+						const Cell_handle_3 		cellA,
+						const Triangular_Mesh_3& 	dtB,
+						const Cell_handle_3 		cellB
+						)
 {
-	return false;
+	// Fast intersection test, using bbox
+	bool bPreliminary = CGAL::do_intersect(
+								dtA.mesh.tetrahedron(cellA).bbox(),
+								dtB.mesh.tetrahedron(cellB).bbox()
+								);
+
+	bool bTriangleIntersect = false;
+	// If true, must do real test
+	if(bPreliminary)
+	{
+		for(int iii = 0; iii < 4; ++iii)
+		{
+			bTriangleIntersect =
+					CGAL::do_intersect(
+									   dtA.mesh.tetrahedron(cellA),
+									   dtB.mesh.triangle(cellB,iii)
+									   );
+			if(bTriangleIntersect)
+			{
+				break;
+			}
+		}
+	}
+
+	return bTriangleIntersect;
 };
 
 void BuildMeshIntersections_Brute(
@@ -57,7 +179,7 @@ void BuildMeshIntersections_Brute(
 		for(Finite_cells_iterator_3 itA = finiteCellsBegin_A; itA != finiteCellsEnd_A; ++itA)
 		{
 			// Crossing
-			result = tetra_intersection(dtA.mesh.tetrahedron(itA),dtB.mesh.tetrahedron(itB),dummyPoly);
+			result = tetra_intersection(dtA,itA,dtB,itB,dummyPoly);
 
 			if (result) {
 				output.push_back(dummyPoly);
@@ -314,26 +436,30 @@ void IntersectTetrahedrons(
 {
 	// Test exact intersection between "workingTetrahedronB" and "workingTetrahedronA"
 	queryIntersect = tetra_do_intersect(
-										dtA.mesh.tetrahedron(workingTetrahedronA),
-										dtB.mesh.tetrahedron(workingTetrahedronB)
+										dtA,
+										workingTetrahedronA,
+										dtB,
+										workingTetrahedronB
 									   );
 
 	// If true, build inexact intersection
 	if(queryIntersect)
 	{
 		inexactQueryIntersect = tetra_intersection(
-									dtA.mesh.tetrahedron(workingTetrahedronA),
-									dtB.mesh.tetrahedron(workingTetrahedronB),
-									output
-								   );
+										dtA,
+										workingTetrahedronA,
+										dtB,
+										workingTetrahedronB,
+										output
+									   );
 	}
 
 	// Test exact intersection with "workingTetrahedronB" 's neighbors
 	bool neighTest = false;
 	for(int iii = 0; iii < 3; ++iii)
 	{
-		neighTest = tetra_do_intersect(dtB.mesh.tetrahedron(workingTetrahedronB->neighbor(iii)),
-				dtA.mesh.tetrahedron(workingTetrahedronA));
+		neighTest = tetra_do_intersect(dtB,workingTetrahedronB->neighbor(iii),
+				dtA,workingTetrahedronA);
 
 		if(neighTest)
 		{

@@ -43,6 +43,9 @@
 //		IO
 #include <CGAL/IO/Polyhedron_iostream.h>
 
+//		3D convex hull
+#include <CGAL/convex_hull_3.h>
+
 // --- CGAL typedefs
 
 ////		Polyhedron domain typedefs
@@ -112,6 +115,8 @@ typedef DT_3::Finite_cells_iterator 	Finite_cells_iterator_3;
 
 typedef DT_3::Facet_circulator			Facet_circulator_3;
 typedef DT_3::Cell_circulator			Cell_circulator_3;
+
+typedef DT_3::Locate_type				Locate_type_3;
 
 typedef CGAL::cpp11::result_of<Kernel::Intersect_2(Triangle_3, Triangle_3)>::type
 		Triangle_3_Intersection_Variant;

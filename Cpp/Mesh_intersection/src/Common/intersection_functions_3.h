@@ -184,4 +184,19 @@ void FindFirstPair(
 		Cell_handle_3&				FirstB
 		);
 
+bool tetra_intersection(
+		const Triangular_Mesh_3& 	dtA,
+		const Cell_handle_3 		cellA,
+		const Triangular_Mesh_3& 	dtB,
+		const Cell_handle_3 		cellB,
+		Polyhedron& polyOut
+		);
+
+bool tetra_do_intersect(
+		const Triangular_Mesh_3& 	dtA,
+		const Cell_handle_3 		cellA,
+		const Triangular_Mesh_3& 	dtB,
+		const Cell_handle_3 		cellB
+		);
+
 #endif /* INTERSECTION_FUNCTIONS_H_ */
