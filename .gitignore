@@ -28,3 +28,5 @@ Cpp/.settings/org.eclipse.cdt.codan.core.prefs
 Cpp/Mesh_intersection/intersections_3D
 
 Cpp/Mesh_intersection/out.mesh
+
+Cpp/Mesh_intersection/timing_3d.sh

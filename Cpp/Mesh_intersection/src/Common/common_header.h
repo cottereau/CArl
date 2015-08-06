@@ -33,6 +33,7 @@
 #include <unordered_set>
 #include <deque>
 #include <vector>
+#include <iterator>
 
 // --- C++ strings
 #include <string>

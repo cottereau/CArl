@@ -164,9 +164,11 @@ void BuildMeshIntersections_Brute(
 
 	//	Total number of intersections found
 	int nbOfIntersections = 0;
+	int nbOfExactIntersections = 0;
 
 	//  Result initialization
 	bool result = false;
+	bool exactResult = false;
 
 	// 	Dummy polyhedron
 	Polyhedron dummyPoly;
@@ -185,8 +187,16 @@ void BuildMeshIntersections_Brute(
 				output.push_back(dummyPoly);
 				++nbOfIntersections;
 			}
+
+			exactResult = tetra_do_intersect(dtA,itA,dtB,itB);
+
+			if (exactResult)
+			{
+				++nbOfExactIntersections;
+			}
 		}
 	}
+	std::cout << nbOfExactIntersections << " " << nbOfIntersections << std::endl;
 };
 
 void BuildMeshIntersections(
@@ -283,12 +293,12 @@ void BuildMeshIntersections(
 	std::deque<Cell_handle_3>	MeshAToTest;
 
 	// Handles of the elements that might be added to MeshAQueue
-	std::vector<Cell_handle_3> candidatesA(3);
+	std::vector<Cell_handle_3> candidatesA(4);
 
 	// Marker vectors, used to determinate if a tetrahedron must be added
 	// to MeshAQueue
-	std::vector<int> candidatesAUpdate(3,0);
-	std::vector<int> candidatesAIsOccupied(3,0);
+	std::vector<int> candidatesAUpdate(4,0);
+	std::vector<int> candidatesAIsOccupied(4,0);
 
 	// Boolean saying if two tetrahedrons intersect (exactly)
 	bool queryIntersect = false;
@@ -339,6 +349,7 @@ void BuildMeshIntersections(
 		candidatesAIsOccupied[0] = 0;
 		candidatesAIsOccupied[1] = 0;
 		candidatesAIsOccupied[2] = 0;
+		candidatesAIsOccupied[3] = 0;
 
 		while(!MeshAToTest.empty())
 		{
@@ -456,7 +467,7 @@ void IntersectTetrahedrons(
 
 	// Test exact intersection with "workingTetrahedronB" 's neighbors
 	bool neighTest = false;
-	for(int iii = 0; iii < 3; ++iii)
+	for(int iii = 0; iii < 4; ++iii)
 	{
 		neighTest = tetra_do_intersect(dtB,workingTetrahedronB->neighbor(iii),
 				dtA,workingTetrahedronA);
@@ -482,8 +493,6 @@ void FindFirstPair(
 	Cell_handle_3				tempACell;
 	std::vector<Cell_handle_3>	BCellsToTest;
 
-	std::vector<Cell_handle_3>::iterator	BCellsToTest_begin;
-
 	FirstB = NULL;
 
 	for(Finite_vertices_iterator_3 itBVertex = dtB.mesh.finite_vertices_begin();
@@ -492,12 +501,10 @@ void FindFirstPair(
 		tempACell = dtA.mesh.locate(itBVertex->point());
 		if(tempACell!=NULL && !dtA.mesh.is_infinite(tempACell))
 		{
-
 			// There is a intersection AND it's not with a infinite face
 			FirstA = tempACell;
-			dtB.mesh.incident_cells(itBVertex,BCellsToTest.begin());
+			dtB.mesh.incident_cells(itBVertex,std::back_insert_iterator<std::vector<Cell_handle_3> >(BCellsToTest));
 
-			BCellsToTest_begin = BCellsToTest.begin();
 			for(std::vector<Cell_handle_3>::iterator itVec = BCellsToTest.begin();
 					itVec != BCellsToTest.end(); ++itVec)
 			{

@@ -12,39 +12,56 @@ using namespace CGAL::parameters;
 int main(int argc, char *argv[])
 {
     Point_3 pA( 0.0, 0.0, 0.0);
-    Point_3 qA( 1.0, 1.0, 1.0);
+    Point_3 qA( 2.0, 2.0, 2.0);
 
     Point_3 pB( 0.5, 0.5, 0.5);
     Point_3 qB( 1.5, 1.5, 1.5);
 
-    int nx = 2; int ny = 2; int nz = 2;
+    int nA, nB;
+	if(argc == 3)
+	{
+		nA = atoi(argv[1]);
+		nB = atoi(argv[2]);
+	}
 
     Triangular_Mesh_3 dt3A, dt3B;
 
-    dt3A.GenerateTestMeshCube(pA,qA,nx,ny,nz);
-    dt3B.GenerateTestMeshCube(pB,qB,nx,ny,nz);
+    dt3A.GenerateTestMeshCube(pA,qA,nA,nA,nA);
+    dt3B.GenerateTestMeshCube(pB,qB,nB,nB,nB);
 
-    std::vector<Polyhedron> 	output;
+    std::ofstream outputF;
 
-    BuildMeshIntersections_Brute(dt3A,dt3B,output);
+    std::vector<Polyhedron> 	outputBrute;
+    std::vector<Polyhedron> 	outputFast;
 
-    std::cout << output.size() << std::endl;
-    std::cout << "-----------" << std::endl;
+//    BuildMeshIntersections_Brute(dt3A,dt3B,outputBrute);
+//
+//    outputF.open("3D_mesh_intersections_brute.dat",std::ios::trunc);
+//    for(unsigned int iii = 0; iii < outputBrute.size(); ++iii)
+//    {
+//    	outputF << outputBrute[iii] << std::endl;
+//    }
+//    outputF.close();
 
-    for(unsigned int iii = 0; iii < output.size(); ++iii)
-    {
-    	std::cout << output[iii] << std::endl;
-    }
-    CGAL::Geomview_stream gv(CGAL::Bbox_3(-1, -1, -1, 2.5, 2.5, 2.5));
-    gv.set_line_width(4);
+    BuildMeshIntersections(dt3A,dt3B,outputFast);
 
-    gv.set_bg_color(CGAL::Color(0, 200, 200));
+//    outputF.open("3D_mesh_intersections_fast.dat",std::ios::trunc);
+//    for(unsigned int iii = 0; iii < outputFast.size(); ++iii)
+//    {
+//    	outputF << outputFast[iii] << std::endl;
+//    }
+//    outputF.close();
 
-    gv << dt3A.mesh;
-    gv << dt3B.mesh;
-
-    std::cout << "Enter a key to finish" << std::endl;
-    std::cin.ignore();
+//    CGAL::Geomview_stream gv(CGAL::Bbox_3(-1, -1, -1, 2.5, 2.5, 2.5));
+//    gv.set_line_width(4);
+//
+//    gv.set_bg_color(CGAL::Color(0, 200, 200));
+//
+//    gv << dt3A.mesh;
+//    gv << dt3B.mesh;
+//
+//    std::cout << "Enter a key to finish" << std::endl;
+//    std::cin.ignore();
 
 	return 0;
 }

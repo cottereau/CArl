@@ -179,6 +179,7 @@ void Triangular_Mesh_3::GenerateTestMeshCube(const Point_3& initPoint, const Poi
 		}
 	}
 
+	set_indexes();
 	set_nb_of_vertices();
 	set_nb_of_facets();
 	set_nb_of_cells();
