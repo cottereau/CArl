@@ -7,8 +7,6 @@
 
 #include "main.h"
 
-boost::random::lagged_fibonacci607 m_rng(42);
-
 void ReadInput(Point_2& iA, Point_2& fA, Point_2& iB, Point_2& fB, int& nx, int& ny)
 {
 	std::cout << "Points of the first square domain: " << std::endl;
@@ -91,6 +89,18 @@ int main(int argc, char *argv[])
 	outputF.open(filename.c_str(),std::ios::trunc);
 	outputF << tallyFastVector << std::endl;
 	outputF.close();
+
+	CGAL::Geomview_stream gv
+	(
+		CGAL::Bbox_3(	std::min(iA.x(),iB.x()),std::min(iA.y(),iB.y()), -2,
+						std::max(fA.x(),fB.x()),std::max(fA.y(),fB.y()),2)
+	);
+
+	gv << dtA.mesh;
+	gv << dtB.mesh;
+
+	std::cout << "Enter a key to finish" << std::endl;
+	std::cin.ignore();
 
 	return 0;
 }

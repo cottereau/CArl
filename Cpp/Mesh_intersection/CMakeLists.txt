@@ -47,27 +47,37 @@ return()
 endif()
 
 # set directories
-set ( COMMON_DIR src/Common )
-set ( INTERSECTION_2D_DIR src/Intersections_2D)
-set ( INTERSECTION_3D_DIR src/Intersections_3D)
+set ( SOURCE_DIR src)
+set ( MESH_DIR ${SOURCE_DIR}/Triangular_mesh)
+set ( INTERSECTION_DIR ${SOURCE_DIR}/Intersections)
+set ( INTERSECTION_2D_EXEC_DIR ${SOURCE_DIR}/Intersections_2D_test)
+set ( INTERSECTION_3D_EXEC_DIR ${SOURCE_DIR}/Intersections_3D_test)
+set ( TEST_IMPORT_EXEC_DIR ${SOURCE_DIR}/Mesh_import_test)
 
 # include for local directory
-include_directories( ${COMMON_DIR} ${INTERSECTION_2D_DIR} ${INTERSECTION_3D_DIR} )
+include_directories( ${SOURCE_DIR} ${MESH_DIR} ${INTERSECTION_DIR} ${INTERSECTION_2D_EXEC_DIR} ${INTERSECTION_3D_EXEC_DIR} ${MESHER_EXEC_DIR} ${TEST_IMPORT_EXEC_DIR})
 
 # set sources
-set ( INTERSECTION_2D_SOURCES ${INTERSECTION_2D_DIR}/main.cpp ${COMMON_DIR}/intersection_functions_2.cpp ${COMMON_DIR}/triangular_mesh_2.cpp)
-set ( INTERSECTION_3D_SOURCES ${INTERSECTION_3D_DIR}/main.cpp ${COMMON_DIR}/intersection_functions_3.cpp  ${COMMON_DIR}/triangular_mesh_3.cpp)
+set ( INTERSECTION_2D_EXEC_SOURCES ${INTERSECTION_2D_EXEC_DIR}/main.cpp ${INTERSECTION_DIR}/intersection_functions_2.cpp ${MESH_DIR}/triangular_mesh_2.cpp)
+
+set ( INTERSECTION_3D_EXEC_SOURCES ${INTERSECTION_3D_EXEC_DIR}/main.cpp ${INTERSECTION_DIR}/intersection_functions_3.cpp ${MESH_DIR}/triangular_mesh_3.cpp)
+
+set ( TEST_IMPORT_EXEC_SOURCES ${TEST_IMPORT_EXEC_DIR}/main.cpp ${INTERSECTION_DIR}/intersection_functions_2.cpp ${MESH_DIR}/triangular_mesh_2.cpp)
 
 # Creating entries for target: intersections_2D
 # ############################
 
-add_executable( intersections_2D ${INTERSECTION_2D_SOURCES} )
-add_executable( intersections_3D ${INTERSECTION_3D_SOURCES} )
+add_executable( intersections_2D ${INTERSECTION_2D_EXEC_SOURCES} )
+add_executable( intersections_3D ${INTERSECTION_3D_EXEC_SOURCES} )
+add_executable( import_mesh_2D ${TEST_IMPORT_EXEC_SOURCES} )
 
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS intersections_2D )
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS intersections_3D )
+add_to_cached_list( CGAL_EXECUTABLE_TARGETS import_mesh_2D )
 
 # Link the executable to CGAL and third-party libraries
 target_link_libraries(intersections_2D  ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+
 target_link_libraries(intersections_3D  ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 
+target_link_libraries(import_mesh_2D  ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )

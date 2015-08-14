@@ -13,4 +13,6 @@
 #include "triangular_mesh_2.h"
 #include "intersection_functions_2.h"
 
+boost::random::lagged_fibonacci607 m_rng(42);
+
 #endif /* MAIN_H_ */

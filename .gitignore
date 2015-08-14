@@ -30,3 +30,11 @@ Cpp/Mesh_intersection/intersections_3D
 Cpp/Mesh_intersection/out.mesh
 
 Cpp/Mesh_intersection/timing_3d.sh
+
+Cpp/Mesh_intersection/data/fandisk.off
+
+Cpp/Mesh_intersection/data/cheese.off
+
+Cpp/Mesh_intersection/data/elephant.off
+
+Cpp/Mesh_intersection/data/out.mesh

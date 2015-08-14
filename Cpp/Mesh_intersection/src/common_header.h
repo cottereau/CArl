@@ -31,11 +31,15 @@
 
 // --- Containers
 #include <unordered_set>
+#include <unordered_map>
 #include <deque>
 #include <vector>
 #include <iterator>
 
 // --- C++ strings
 #include <string>
+#include <sstream>
+
+extern boost::random::lagged_fibonacci607 m_rng;
 
 #endif /* COMMON_HEADER_H_ */
