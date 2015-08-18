@@ -42,25 +42,32 @@ int main(int argc, char *argv[])
 	sillyname = "Testing B";
 	Triangular_Mesh_2 dtB(sillyname);
 
-	Point_2 iA, fA, iB, fB;
-	int nA, nB;
-	if(argc == 11)
-	{
-		iA = Point_2(atof(argv[1]),atof(argv[2]));
-		fA = Point_2(atof(argv[3]),atof(argv[4]));
-		iB = Point_2(atof(argv[5]),atof(argv[6]));
-		fB = Point_2(atof(argv[7]),atof(argv[8]));
+	// Import meshes from Gmsh files
+	std::string filenameA("data/test_mesh_A.msh");
+	std::string filenameB("data/test_mesh_B.msh");
 
-		nA = atoi(argv[9]);
-		nB = atoi(argv[10]);
-	}
-	else
-	{
-		ReadInput(iA, fA, iB, fB, nA, nB);
-	}
+	dtA.importGmsh(filenameA);
+	dtA.importGmsh(filenameB);
 
-	dtA.GenerateTestMeshSquare(iA,fA,nA,nA);
-	dtB.GenerateTestMeshSquare(iB,fB,nB,nB);
+//	Point_2 iA, fA, iB, fB;
+//	int nA, nB;
+//	if(argc == 11)
+//	{
+//		iA = Point_2(atof(argv[1]),atof(argv[2]));
+//		fA = Point_2(atof(argv[3]),atof(argv[4]));
+//		iB = Point_2(atof(argv[5]),atof(argv[6]));
+//		fB = Point_2(atof(argv[7]),atof(argv[8]));
+//
+//		nA = atoi(argv[9]);
+//		nB = atoi(argv[10]);
+//	}
+//	else
+//	{
+//		ReadInput(iA, fA, iB, fB, nA, nB);
+//	}
+//
+//	dtA.GenerateTestMeshSquare(iA,fA,nA,nA);
+//	dtB.GenerateTestMeshSquare(iB,fB,nB,nB);
 
 	// Print triangulations in files
 	std::ofstream outputF("testeA.cgmesh",std::ios::trunc);
@@ -71,9 +78,9 @@ int main(int argc, char *argv[])
 	outputF << dtB.mesh << std::endl;
 	outputF.close();
 
-	// Set indexes
-	dtA.set_indexes();
-	dtB.set_indexes();
+//	// Set indexes
+//	dtA.set_indexes();
+//	dtB.set_indexes();
 
 	// ****************************** //
 	// Intersection                   //
@@ -92,8 +99,7 @@ int main(int argc, char *argv[])
 
 	CGAL::Geomview_stream gv
 	(
-		CGAL::Bbox_3(	std::min(iA.x(),iB.x()),std::min(iA.y(),iB.y()), -2,
-						std::max(fA.x(),fB.x()),std::max(fA.y(),fB.y()),2)
+		CGAL::Bbox_3(0,0,0,10,10,10)
 	);
 
 	gv << dtA.mesh;

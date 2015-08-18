@@ -20,12 +20,17 @@ private:
 	int					mSize_faces;
 
 	std::unordered_map<int,Vertex_handle_2>		mVertexHandleIndexMap;
+	std::vector<int>							mNbOfNeighs;
 
 	void 	Create_Vertex_2(Point_2& pointInput, int indexInput);
 
-	void	Create_Face_2(int i0, int i1, int i2);
-	void	Create_Face_2(std::vector<int>& idx);
+	void	Create_Face_2(int i0, int i1, int i2, int idx);
+	void	Create_Face_2(std::vector<int>& vertices, int idx);
+	void 	Create_Infinite_Face_2(int i0, int i1, Face_handle_2& outputHandle);
 	void 	Connect_Triangles_2();
+	bool	TestForNeighbor_2(Finite_face_iterator_2& faceHandleA, Finite_face_iterator_2& faceHandleB,int idxNeigh);
+	void	AddInfiniteFaces_2();
+	void 	PrintDebugInfo();
 
 public:
 	// Members
@@ -62,10 +67,10 @@ public:
 
 	void importGmsh(std::string &ifName);
 
-	void exportGmsh(std::string &ofName);
-
-	void importMedit(std::string &ifName);
-
-	void exportMedit(std::string &ofName);
+//	void exportGmsh(std::string &ofName);
+//
+//	void importMedit(std::string &ifName);
+//
+//	void exportMedit(std::string &ofName);
 };
-#endif /* TRIANGULAR_MESH_3_H_ */
+#endif /* TRIANGULAR_MESH_2_H_ */
