@@ -25,6 +25,9 @@
 #include <boost/variant/apply_visitor.hpp>
 #include <functional>
 
+// --- Boost/filesystem
+#include <boost/filesystem.hpp>
+
 // --- IO
 #include <fstream>
 #include <iostream>

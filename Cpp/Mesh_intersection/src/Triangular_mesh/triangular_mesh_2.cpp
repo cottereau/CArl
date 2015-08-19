@@ -3,169 +3,25 @@
  *
  *  Created on: May 6, 2015
  *      Author: Thiago Milanetto Schlittler
+ *
+ *		Methods of the class "Triangular_Mesh_2". A detailed description of each
+ *		method can be found inside the header file.
+ *
  */
 
 #include "triangular_mesh_2.h"
+// PRIVATE Methods
 
-std::string Triangular_Mesh_2::get_name()
-{
-	return mName;
-};
-
-void Triangular_Mesh_2::set_indexes()
-{
-	// Set up indexes for the faces. Each finite face receives a different
-	// integer index, while the infinite ones receive the same index, equal to
-	// mesh.number_of_faces()
-
-	int dummy = 0;
-	int infiniteDummy = mesh.number_of_faces();
-
-	for(All_faces_iterator_2	itFace = mesh.all_faces_begin();
-			itFace !=  mesh.all_faces_end(); ++itFace)
-	{
-		if(!mesh.is_infinite(itFace))
-		{
-			itFace->info().ExtIndex = dummy;
-			++dummy;
-		}
-		else
-		{
-			itFace->info().ExtIndex = infiniteDummy;
-		}
-	}
-};
-
-//void Triangular_Mesh_2::GenerateTestMeshSquare(const Point_2& initPoint, const Point_2& finalPoint, int nx, int ny)
-//{
-//	mesh.clear();
-//
-//	//double dx = (CGAL::to_double(finalPoint.x()) - CGAL::to_double(initPoint.x()))/(nx-1);
-//	//double dy = (CGAL::to_double(finalPoint.y()) - CGAL::to_double(initPoint.y()))/(ny-1);
-//	double dx = (finalPoint.x() - initPoint.x())/(nx-1);
-//	double dy = (finalPoint.y() - initPoint.y())/(ny-1);
-//
-//	double dummyX;
-//	double dummyY;
-//
-//	boost::random::lagged_fibonacci607 m_rng;
-//	boost::random::uniform_real_distribution<double> shift(-1,1);
-//
-//	// Set boundaries
-//
-//	Vertex_handle_2 vA = mesh.insert(initPoint);
-//	Vertex_handle_2 vB = mesh.insert(Point_2(initPoint.x(),finalPoint.y()));
-//	Vertex_handle_2 vC = mesh.insert(finalPoint);
-//	Vertex_handle_2 vD = mesh.insert(Point_2(finalPoint.x(),initPoint.y()));
-//
-//	mesh.insert_constraint(vA,vB);
-//	mesh.insert_constraint(vB,vC);
-//	mesh.insert_constraint(vC,vD);
-//	mesh.insert_constraint(vD,vA);
-//
-////	dummyX = (CGAL::to_double(finalPoint.x()) + CGAL::to_double(initPoint.x()))/2 + 0.2*dx*shift(m_rng);
-////	dummyY = (CGAL::to_double(finalPoint.y()) + CGAL::to_double(initPoint.y()))/2 + 0.2*dy*shift(m_rng);
-//
-//	dummyX = (finalPoint.x() + initPoint.x())/2 + 0.2*dx*shift(m_rng);
-//	dummyY = (finalPoint.y() + initPoint.y())/2 + 0.2*dy*shift(m_rng);
-//
-//	mesh.insert(Point_2(dummyX,dummyY));
-//	CGAL::refine_Delaunay_mesh_2(mesh,Criteria_2(0.125, std::min(dx,dy)));
-//	set_nb_of_faces();
-//	set_nb_of_vertices();
-//};
-
-void Triangular_Mesh_2::GenerateTestMeshSquare(const Point_2& initPoint, const Point_2& finalPoint, int nx, int ny, double amplitude)
-{
-	mesh.clear();
-
-	double dx = (finalPoint.x() - initPoint.x())/(nx-1);
-	double dy = (finalPoint.y() - initPoint.y())/(ny-1);
-
-	double dummyX;
-	double dummyY;
-
-	boost::random::uniform_real_distribution<double> shift(-1,1);
-
-	// Set points
-
-	// --- Corners
-	mesh.insert(initPoint);
-	mesh.insert(finalPoint);
-	mesh.insert(Point_2(initPoint.x(),finalPoint.y()));
-	mesh.insert(Point_2(finalPoint.x(),initPoint.y()));
-
-	// --- Left and right border
-
-	for(int iii = 1; iii < ny-1; ++iii)
-	{
-		dummyX = initPoint.x();
-		dummyY = initPoint.y() + iii*dy + amplitude*dy*shift(m_rng);
-		mesh.insert(Point_2(dummyX,dummyY));
-
-		dummyX = finalPoint.x();
-		dummyY = initPoint.y() + iii*dy + amplitude*dy*shift(m_rng);
-		mesh.insert(Point_2(dummyX,dummyY));
-	}
-
-	// --- Top and bottom border
-
-	for(int iii = 1; iii < nx-1; ++iii)
-	{
-		dummyY = initPoint.y();
-		dummyX = initPoint.x() + iii*dx + amplitude*dx*shift(m_rng);
-		mesh.insert(Point_2(dummyX,dummyY));
-
-		dummyY = finalPoint.y();
-		dummyX = initPoint.x() + iii*dx + amplitude*dx*shift(m_rng);
-		mesh.insert(Point_2(dummyX,dummyY));
-	}
-
-	// Middle
-	for(int iii = 1; iii < nx-1; ++iii)
-	{
-		for(int jjj = 1; jjj < ny-1; ++jjj)
-		{
-			dummyX = initPoint.x() + iii*dx + amplitude*dx*shift(m_rng);
-			dummyY = initPoint.y() + jjj*dy + amplitude*dy*shift(m_rng);
-			mesh.insert(Point_2(dummyX,dummyY));
-		}
-	}
-
-	set_nb_of_faces();
-	set_nb_of_vertices();
-};
-
-void Triangular_Mesh_2::set_nb_of_faces()
-{
-	mSize_faces = mesh.number_of_faces();
-};
-
-void Triangular_Mesh_2::set_nb_of_vertices()
-{
-	mSize_vertices = mesh.number_of_vertices();
-};
-
-int Triangular_Mesh_2::get_nb_of_faces() const
-{
-	return mSize_faces;
-};
-
-int Triangular_Mesh_2::get_nb_of_vertices() const
-{
-	return mSize_vertices;
-};
-
-void Triangular_Mesh_2::Create_Vertex_2(Point_2& pointInput, int indexInput)
+Vertex_handle_2 Triangular_Mesh_2::Create_Vertex_2(Point_2& pointInput, int indexInput)
 {
 	Vertex_handle_2 outputHandle;
 	outputHandle = mesh.tds().create_vertex();
 	outputHandle->set_point(pointInput);
 	outputHandle->info().ExtIndex = indexInput;
-	mVertexHandleIndexMap[indexInput] = outputHandle;
+	return outputHandle;
 }
 
-void Triangular_Mesh_2::Create_Face_2(int i0, int i1, int i2, int idx)
+Face_handle_2 Triangular_Mesh_2::Create_Face_2(int i0, int i1, int i2, int idx)
 {
 	// Create face
 	Face_handle_2 outputHandle;
@@ -182,9 +38,11 @@ void Triangular_Mesh_2::Create_Face_2(int i0, int i1, int i2, int idx)
 
 	// Set external index
 	outputHandle->info().ExtIndex = idx;
+
+	return outputHandle;
 }
 
-void Triangular_Mesh_2::Create_Face_2(std::vector<int>& vertices, int idx)
+Face_handle_2 Triangular_Mesh_2::Create_Face_2(std::vector<int>& vertices, int idx)
 {
 	// Create face
 	Face_handle_2 outputHandle;
@@ -203,16 +61,18 @@ void Triangular_Mesh_2::Create_Face_2(std::vector<int>& vertices, int idx)
 
 	// Set external index
 	outputHandle->info().ExtIndex = idx;
+
+	return outputHandle;
 }
 
-void Triangular_Mesh_2::Create_Infinite_Face_2(int i0, int i1, Face_handle_2& outputHandle)
+Face_handle_2 Triangular_Mesh_2::Create_Infinite_Face_2(int i0, int i1)
 {
 	// Create face
-	outputHandle = mesh.tds().create_face();
+	Face_handle_2 outputHandle = mesh.tds().create_face();
 	outputHandle->set_neighbors();
 
-	outputHandle->set_vertices(	mVertexHandleIndexMap[i0],
-								mVertexHandleIndexMap[i1],
+	outputHandle->set_vertices(	mVertexHandleIndexMap[i1],
+								mVertexHandleIndexMap[i0],
 								mesh.infinite_vertex());
 
 	// Set incident faces
@@ -222,6 +82,82 @@ void Triangular_Mesh_2::Create_Infinite_Face_2(int i0, int i1, Face_handle_2& ou
 
 	// Set external index
 	outputHandle->info().ExtIndex = mSize_faces;
+
+	return outputHandle;
+}
+
+bool Triangular_Mesh_2::TestForNeighbor_2(Finite_face_iterator_2& faceHandleA, Finite_face_iterator_2& faceHandleB,int idxNeigh)
+{
+	bool output = false;
+
+	int idxIII = mesh.ccw(idxNeigh);
+	int idxJJJ = mesh.ccw(idxIII);
+
+	//		Indexes used for the reciprocity relation
+	int idxBNeigh = -1;
+	int idxBIII = -1;
+	int idxBJJJ = -1;
+
+	//		Handles for A's vertices
+	Vertex_handle_2 testIII = faceHandleA->vertex(idxIII);
+	Vertex_handle_2 testJJJ = faceHandleA->vertex(idxJJJ);
+
+	// 		Watch out, order of the indexes is inversed when changing the
+	//	triangle:  III <-> JJJ
+	if(faceHandleB->has_vertex(testIII,idxBJJJ) && faceHandleB->has_vertex(testJJJ,idxBIII))
+	{
+		//	Then we have neighbors, set up indexes
+		idxNeigh	= mesh.ccw(idxJJJ);
+		idxBNeigh	= mesh.ccw(idxBJJJ);
+
+		faceHandleA->set_neighbor(idxNeigh,faceHandleB);
+		faceHandleB->set_neighbor(idxBNeigh,faceHandleA);
+
+		++mNbOfNeighs[faceHandleA->info().ExtIndex];
+		++mNbOfNeighs[faceHandleB->info().ExtIndex];
+		// Set up boolean
+		output = true;
+	}
+	return output;
+}
+
+void Triangular_Mesh_2::ConnectTriangles_2()
+{
+	mNbOfNeighs.resize(mSize_faces,0);
+	Finite_face_iterator_2 itCompare;
+	bool areNeighbors = false;
+
+	// --- Connect the (finite) triangles
+	for(Finite_face_iterator_2 itFaces = mesh.finite_faces_begin(); itFaces != mesh.finite_faces_end(); ++itFaces)
+	{
+		// 		The neighbor relations are reciprocal, so the inner loop starts
+		// at the current face iterator + 1;
+		Finite_face_iterator_2 itCompare = itFaces;
+		++itCompare;
+
+		for( ; itCompare != mesh.finite_faces_end(); ++itCompare)
+		{
+			// Test for neighbors ...
+			for(int iii = 0; iii < 3; ++iii)
+			{
+				areNeighbors = TestForNeighbor_2(itFaces,itCompare,iii);
+
+				if(areNeighbors)
+				{
+					break;
+				}
+			}
+
+			if(mNbOfNeighs[itFaces->info().ExtIndex]==3)
+			{
+				// Already found all the 3 neighbors, stop the inner loop
+				break;
+			}
+		}
+	}
+
+	// Create and connect the INFINITE faces
+	AddInfiniteFaces_2();
 }
 
 void Triangular_Mesh_2::AddInfiniteFaces_2()
@@ -252,7 +188,7 @@ void Triangular_Mesh_2::AddInfiniteFaces_2()
 					vertexIII = itFaces->vertex(idxIII)->info().ExtIndex;
 					vertexJJJ = itFaces->vertex(idxJJJ)->info().ExtIndex;
 
-					Create_Infinite_Face_2(vertexIII,vertexJJJ,infiniteFaces[FakeIndex]);
+					infiniteFaces[FakeIndex] = Create_Infinite_Face_2(vertexIII,vertexJJJ);
 
 					// Set as neighbor for the finite face
 					itFaces->set_neighbor(idxNeigh,infiniteFaces[FakeIndex]);
@@ -323,6 +259,28 @@ void Triangular_Mesh_2::PrintDebugInfo()
 {
 	int debugIII;
 	int debugCounter;
+
+	for(All_vertices_iterator_2 itVertex = mesh.all_vertices_begin(); itVertex != mesh.all_vertices_end(); ++itVertex)
+	{
+		std::cout << "Vertex no. " << itVertex->info().ExtIndex << ": ";
+		std::cout << "(";
+		if(mesh.is_infinite(itVertex))
+		{
+			std::cout << "infty";
+		}
+		else
+		{
+			std::cout << itVertex->point();
+		}
+		std::cout << ")" << std::endl;
+		if(!itVertex->is_valid())
+		{
+			std::cout << "   ---> INVALID VERTEX!!!" << std::endl;
+		}
+	}
+
+	std::cout << " ----------------- " << std::endl;
+
 	for(All_faces_iterator_2 itFaces = mesh.all_faces_begin(); itFaces != mesh.all_faces_end(); ++itFaces)
 	{
 		debugCounter = 0;
@@ -331,16 +289,7 @@ void Triangular_Mesh_2::PrintDebugInfo()
 		std::cout << "   vertices  : ";
 		for(int jjj = 0; jjj < 3; ++jjj)
 		{
-			std::cout << "(";
-			if(mesh.is_infinite(itFaces->vertex(jjj)))
-			{
-				std::cout << "infty";
-			}
-			else
-			{
-				std::cout << itFaces->vertex(jjj)->point();
-			}
-			std::cout << ")";
+			std::cout << itFaces->vertex(jjj)->info().ExtIndex << " ";
 		}
 		std::cout << std::endl;
 		std::cout << "   neighbors : ";
@@ -368,26 +317,6 @@ void Triangular_Mesh_2::PrintDebugInfo()
 
 	std::cout << " ----------------- " << std::endl;
 
-	for(All_vertices_iterator_2 itVertex = mesh.all_vertices_begin(); itVertex != mesh.all_vertices_end(); ++itVertex)
-	{
-		std::cout << "Vertex no. " << itVertex->info().ExtIndex << ": ";
-		std::cout << "(";
-		if(mesh.is_infinite(itVertex))
-		{
-			std::cout << "infty";
-		}
-		else
-		{
-			std::cout << itVertex->point();
-		}
-		std::cout << ")" << std::endl;
-		if(!itVertex->is_valid())
-		{
-			std::cout << "   ---> INVALID VERTEX!!!" << std::endl;
-		}
-	}
-
-	std::cout << " ----------------- " << std::endl;
 	if(!mesh.tds().is_valid())
 	{
 		std::cout << "   ---> INVALID TDS!!!" << std::endl;
@@ -396,98 +325,137 @@ void Triangular_Mesh_2::PrintDebugInfo()
 	{
 		std::cout << "   ---> INVALID MESH!!!" << std::endl;
 	}
-
 }
 
-bool Triangular_Mesh_2::TestForNeighbor_2(Finite_face_iterator_2& faceHandleA, Finite_face_iterator_2& faceHandleB,int idxNeigh)
+// PUBLIC Methods
+
+//  --- Getters
+std::string Triangular_Mesh_2::get_name()
 {
-	bool output = false;
+	return mName;
+};
 
-	int idxIII = mesh.ccw(idxNeigh);
-	int idxJJJ = mesh.ccw(idxIII);
-
-	//		Indexes used for the reciprocity relation
-	int idxBNeigh = -1;
-	int idxBIII = -1;
-	int idxBJJJ = -1;
-
-	//		Handles for A's vertices
-	Vertex_handle_2 testIII = faceHandleA->vertex(idxIII);
-	Vertex_handle_2 testJJJ = faceHandleA->vertex(idxJJJ);
-
-	// 		Watch out, order of the indexes is inversed when changing the
-	//	triangle:  III <-> JJJ
-	if(faceHandleB->has_vertex(testIII,idxBJJJ) && faceHandleB->has_vertex(testJJJ,idxBIII))
-	{
-		//	Then we have neighbors, set up indexes
-		idxNeigh	= mesh.ccw(idxJJJ);
-		idxBNeigh	= mesh.ccw(idxBJJJ);
-
-		faceHandleA->set_neighbor(idxNeigh,faceHandleB);
-		faceHandleB->set_neighbor(idxBNeigh,faceHandleA);
-
-		// Set up boolean
-		output = true;
-	}
-	return output;
-}
-
-void Triangular_Mesh_2::Connect_Triangles_2()
+int Triangular_Mesh_2::get_nb_of_faces() const
 {
-	mNbOfNeighs.resize(mSize_faces,0);
-	Finite_face_iterator_2 itCompare;
-	bool areNeighbors = false;
+	return mSize_faces;
+};
 
-	// --- Connect the (finite) triangles
-	for(Finite_face_iterator_2 itFaces = mesh.finite_faces_begin(); itFaces != mesh.finite_faces_end(); ++itFaces)
+int Triangular_Mesh_2::get_nb_of_vertices() const
+{
+	return mSize_vertices;
+};
+
+//  --- Setters
+void Triangular_Mesh_2::set_nb_of_faces()
+{
+	mSize_faces = mesh.number_of_faces();
+};
+
+void Triangular_Mesh_2::set_nb_of_vertices()
+{
+	mSize_vertices = mesh.number_of_vertices();
+};
+
+void Triangular_Mesh_2::set_indexes()
+{
+	// Set up indexes for the faces. Each finite face receives a different
+	// integer index, while the infinite ones receive the same index, equal to
+	// mesh.number_of_faces()
+
+	int dummy = 0;
+	int infiniteDummy = mesh.number_of_faces();
+
+	for(All_faces_iterator_2	itFace = mesh.all_faces_begin();
+			itFace !=  mesh.all_faces_end(); ++itFace)
 	{
-		// 		The neighbor relations are reciprocal, so the inner loop starts
-		// at the current face iterator + 1;
-		Finite_face_iterator_2 itCompare = itFaces;
-		++itCompare;
-
-		for( ; itCompare != mesh.finite_faces_end(); ++itCompare)
+		if(!mesh.is_infinite(itFace))
 		{
-			// Test for first neighbor ...
-			areNeighbors = TestForNeighbor_2(itFaces,itCompare,0);
-			if(!areNeighbors)
-			{
-				// ... second neighbor ...
-				areNeighbors = TestForNeighbor_2(itFaces,itCompare,1);
-				if(!areNeighbors)
-				{
-					// ... and third neighbor
-					areNeighbors = TestForNeighbor_2(itFaces,itCompare,2);
-				}
-			}
+			itFace->info().ExtIndex = dummy;
+			++dummy;
+		}
+		else
+		{
+			itFace->info().ExtIndex = infiniteDummy;
+		}
+	}
+};
 
-			if(areNeighbors)
-			{
-				++mNbOfNeighs[itFaces->info().ExtIndex];
-				++mNbOfNeighs[itCompare->info().ExtIndex];
-			}
+//  --- DEBUG Generate a dummy square triangulation, used for testing.
+void Triangular_Mesh_2::GenerateTestMeshSquare(const Point_2& initPoint, const Point_2& finalPoint, int nx, int ny, double amplitude)
+{
+	mesh.clear();
 
-			if(mNbOfNeighs[itFaces->info().ExtIndex]==3)
-			{
-				// Already found all the 3 neighbors, stop the inner loop
-				break;
-			}
+	double dx = (finalPoint.x() - initPoint.x())/(nx-1);
+	double dy = (finalPoint.y() - initPoint.y())/(ny-1);
+
+	double dummyX;
+	double dummyY;
+
+	boost::random::uniform_real_distribution<double> shift(-1,1);
+
+	// Set points
+
+	// --- Corners
+	mesh.insert(initPoint);
+	mesh.insert(finalPoint);
+	mesh.insert(Point_2(initPoint.x(),finalPoint.y()));
+	mesh.insert(Point_2(finalPoint.x(),initPoint.y()));
+
+	// --- Left and right border
+
+	for(int iii = 1; iii < ny-1; ++iii)
+	{
+		dummyX = initPoint.x();
+		dummyY = initPoint.y() + iii*dy + amplitude*dy*shift(m_rng);
+		mesh.insert(Point_2(dummyX,dummyY));
+
+		dummyX = finalPoint.x();
+		dummyY = initPoint.y() + iii*dy + amplitude*dy*shift(m_rng);
+		mesh.insert(Point_2(dummyX,dummyY));
+	}
+
+	// --- Top and bottom border
+
+	for(int iii = 1; iii < nx-1; ++iii)
+	{
+		dummyY = initPoint.y();
+		dummyX = initPoint.x() + iii*dx + amplitude*dx*shift(m_rng);
+		mesh.insert(Point_2(dummyX,dummyY));
+
+		dummyY = finalPoint.y();
+		dummyX = initPoint.x() + iii*dx + amplitude*dx*shift(m_rng);
+		mesh.insert(Point_2(dummyX,dummyY));
+	}
+
+	// Middle
+	for(int iii = 1; iii < nx-1; ++iii)
+	{
+		for(int jjj = 1; jjj < ny-1; ++jjj)
+		{
+			dummyX = initPoint.x() + iii*dx + amplitude*dx*shift(m_rng);
+			dummyY = initPoint.y() + jjj*dy + amplitude*dy*shift(m_rng);
+			mesh.insert(Point_2(dummyX,dummyY));
 		}
 	}
 
-	// --- Generate and connect the (finite) triangles
-	AddInfiniteFaces_2();
-}
+	set_nb_of_faces();
+	set_nb_of_vertices();
+};
 
-void Triangular_Mesh_2::importGmsh(std::string &ifName)
+//  --- Import an triangulation from a Gmsh file.
+void Triangular_Mesh_2::ImportGmsh(std::string &ifName)
 {
+	// Open data stream and check if the file exists
+	std::ifstream dataF(ifName);
+	assert(dataF.good());
+
 	// Clear and set up the mesh
 	mesh.clear();
 	mesh.tds().set_dimension(2);
+	mVertexHandleIndexMap.clear();
+	mNbOfNeighs.clear();
 
-	/* 		Must remove the first face of the triangulation, created when the
-	 * 	mesh was created.
-	 */
+	// Set index for the infinite vertex (mostly for debugging)
 	Face_handle_2 starterFace = mesh.infinite_face();
 	mesh.infinite_vertex()->info().ExtIndex = -1;
 
@@ -515,10 +483,6 @@ void Triangular_Mesh_2::importGmsh(std::string &ifName)
 
 	// Variables needed to build the triangulation
 	Vertex_handle_2		workingVertex;
-
-
-	// Open data stream
-	std::ifstream dataF(ifName);
 
 	// Buffer string
 	std::string bufferLine;
@@ -568,7 +532,7 @@ void Triangular_Mesh_2::importGmsh(std::string &ifName)
 
 				// Add point to intersection
 				bufferPoint = Point_2(bufferX,bufferY);
-				Create_Vertex_2(bufferPoint,bufferNodeIndex);
+				mVertexHandleIndexMap[bufferNodeIndex] = Create_Vertex_2(bufferPoint,bufferNodeIndex);
 			}
 
 //			// DEBUG
@@ -684,9 +648,54 @@ void Triangular_Mesh_2::importGmsh(std::string &ifName)
 	set_nb_of_faces();
 	set_nb_of_vertices();
 
-	// Create neighbor relations between the faces
-	Connect_Triangles_2();
+	// Create neighbor relations between the FINITE faces
+	ConnectTriangles_2();
 
-	// DEBUG
-	PrintDebugInfo();
+//	// DEBUG
+//	PrintDebugInfo();
+}
+
+//  --- Export an triangulation in a Gmsh file.
+void Triangular_Mesh_2::ExportGmsh(std::string &ofName)
+{
+	std::ofstream dataF(ofName);
+
+	// Small precaution ...
+	set_nb_of_vertices();
+	set_nb_of_faces();
+
+	assert(mSize_faces > 0 && mSize_vertices > 3);
+
+	dataF << "$MeshFormat" << std::endl;
+	dataF << "2.2 0 " << sizeof(double) << std::endl;
+	dataF << "$EndMeshFormat" << std::endl;
+
+	dataF << "$Nodes" << std::endl;
+	dataF << mSize_vertices << std::endl;
+	for(Finite_vertices_iterator_2 	itVertex = mesh.finite_vertices_begin();
+									itVertex != mesh.finite_vertices_end();
+									++itVertex)
+	{
+		dataF << itVertex->info().ExtIndex << " " ;
+		dataF << itVertex->point() << " " << "0" << std::endl;
+	}
+	dataF << "$EndNodes" << std::endl;
+
+	dataF << "$Elements" << std::endl;
+	dataF << mSize_faces << std::endl;
+	for(Finite_face_iterator_2 	itFace = mesh.finite_faces_begin();
+								itFace != mesh.finite_faces_end();
+								++itFace)
+	{
+		dataF << itFace->info().ExtIndex + 1 << " " ; // Gmsh index starts at 1
+		dataF << "2 2 1 1 "; // dummy tags
+		for(int iii = 0; iii < 3; ++ iii)
+		{
+			dataF << itFace->vertex(iii)->info().ExtIndex << " ";
+		}
+		dataF << std::endl;
+	}
+	dataF << "$EndElements" << std::endl;
+	dataF.close();
+
 }

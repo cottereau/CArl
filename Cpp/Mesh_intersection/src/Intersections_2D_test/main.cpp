@@ -7,26 +7,6 @@
 
 #include "main.h"
 
-void ReadInput(Point_2& iA, Point_2& fA, Point_2& iB, Point_2& fB, int& nx, int& ny)
-{
-	std::cout << "Points of the first square domain: " << std::endl;
-	std::cin >> iA >> fA;
-	std::cout << "Points of the second square domain: " << std::endl;
-	std::cin >> iB >> fB;
-	std::cout << "Discretization integers: " << std::endl;
-	std::cin >> nx >> ny;
-};
-
-void PrintInput(Point_2 iA, Point_2 fA, Point_2 iB, Point_2 fB, int nx, int ny)
-{
-	std::cout << "Points of the first square domain are " << std::endl;
-	std::cout << iA << ", " << fA << std::endl;
-	std::cout << "Points of the second square domain are " << std::endl;
-	std::cout << iB << ", " << fB << std::endl;
-	std::cout << "Discretization integers are " << std::endl;
-	std::cout << nx << ", " << ny << std::endl;;
-};
-
 int main(int argc, char *argv[])
 {
 
@@ -35,39 +15,21 @@ int main(int argc, char *argv[])
 	// ************ //
 
 	// Declare meshes
+	std::string filenameA = "data/test_mesh_A.msh";
+	std::string filenameB = "data/test_mesh_B.msh";
+
+	if(argc == 3)
+	{
+		filenameA = argv[1];
+		filenameB = argv[2];
+	}
+
 	std::string sillyname;
 	sillyname = "Testing A";
-	Triangular_Mesh_2 dtA(sillyname);
+	Triangular_Mesh_2 dtA(sillyname,filenameA);
 
 	sillyname = "Testing B";
-	Triangular_Mesh_2 dtB(sillyname);
-
-	// Import meshes from Gmsh files
-	std::string filenameA("data/test_mesh_A.msh");
-	std::string filenameB("data/test_mesh_B.msh");
-
-	dtA.importGmsh(filenameA);
-	dtA.importGmsh(filenameB);
-
-//	Point_2 iA, fA, iB, fB;
-//	int nA, nB;
-//	if(argc == 11)
-//	{
-//		iA = Point_2(atof(argv[1]),atof(argv[2]));
-//		fA = Point_2(atof(argv[3]),atof(argv[4]));
-//		iB = Point_2(atof(argv[5]),atof(argv[6]));
-//		fB = Point_2(atof(argv[7]),atof(argv[8]));
-//
-//		nA = atoi(argv[9]);
-//		nB = atoi(argv[10]);
-//	}
-//	else
-//	{
-//		ReadInput(iA, fA, iB, fB, nA, nB);
-//	}
-//
-//	dtA.GenerateTestMeshSquare(iA,fA,nA,nA);
-//	dtB.GenerateTestMeshSquare(iB,fB,nB,nB);
+	Triangular_Mesh_2 dtB(sillyname,filenameB);
 
 	// Print triangulations in files
 	std::ofstream outputF("testeA.cgmesh",std::ios::trunc);
@@ -77,10 +39,6 @@ int main(int argc, char *argv[])
 	outputF.open("testeB.cgmesh",std::ios::trunc);
 	outputF << dtB.mesh << std::endl;
 	outputF.close();
-
-//	// Set indexes
-//	dtA.set_indexes();
-//	dtB.set_indexes();
 
 	// ****************************** //
 	// Intersection                   //
@@ -97,10 +55,7 @@ int main(int argc, char *argv[])
 	outputF << tallyFastVector << std::endl;
 	outputF.close();
 
-	CGAL::Geomview_stream gv
-	(
-		CGAL::Bbox_3(0,0,0,10,10,10)
-	);
+	CGAL::Geomview_stream gv(CGAL::Bbox_3(-5,-5,-5,5,5,5));
 
 	gv << dtA.mesh;
 	gv << dtB.mesh;

@@ -75,9 +75,12 @@ add_to_cached_list( CGAL_EXECUTABLE_TARGETS intersections_2D )
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS intersections_3D )
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS import_mesh_2D )
 
+set ( LIB_DIR /opt/local/lib)
+set ( BOOST_LIBRARIES ${LIB_DIR}/libboost_filesystem-mt.dylib) 
+
 # Link the executable to CGAL and third-party libraries
-target_link_libraries(intersections_2D  ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+target_link_libraries(intersections_2D ${CGAL_LIBRARIES} ${BOOST_LIBRARIES}  ${CGAL_3RD_PARTY_LIBRARIES} )
 
-target_link_libraries(intersections_3D  ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+target_link_libraries(intersections_3D ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 
-target_link_libraries(import_mesh_2D  ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+target_link_libraries(import_mesh_2D ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )

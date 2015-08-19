@@ -77,7 +77,7 @@ typedef CGAL::Triangulation_vertex_base_with_info_2<VertexInfo,Kernel> VbInfo;
 typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo,Kernel> FbInfo;
 
 typedef CGAL::Triangulation_data_structure_2<VbInfo, FbInfo> Tds;
-typedef CGAL::Triangulation_2<Kernel,Tds> CDT;
+typedef CGAL::Delaunay_triangulation_2<Kernel,Tds> CDT;
 
 // --- Constrained triangulation iterator typedefs
 typedef CDT::Face 						Face_2;

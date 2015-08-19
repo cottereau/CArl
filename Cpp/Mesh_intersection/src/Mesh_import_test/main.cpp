@@ -10,12 +10,11 @@
 int main(int argc, char *argv[])
 {
 	std::string meshTestFilename = "data/test_mesh.msh";
+	std::string sillyName = "sillyName";
+	Triangular_Mesh_2 meshTest(sillyName,meshTestFilename);
 
-	Triangular_Mesh_2 meshTest;
-
-	meshTest.importGmsh(meshTestFilename);
+	std::string meshOutputFilename = "data/test_mesh_out.msh";
+	meshTest.ExportGmsh(meshOutputFilename);
 
 	return 0;
 }
-
-
