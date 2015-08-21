@@ -65,6 +65,48 @@ Face_handle_2 Triangular_Mesh_2::Create_Face_2(std::vector<int>& vertices, int i
 	return outputHandle;
 }
 
+Face_handle_2 Triangular_Mesh_2::Create_Face_2(std::vector<Vertex_handle_2>& vertices, int idx)
+{
+	// Create face
+	Face_handle_2 outputHandle;
+	outputHandle = mesh.tds().create_face();
+
+	outputHandle->set_vertices(vertices[0],vertices[1],vertices[2]);
+
+	outputHandle->set_neighbors();
+
+	// Set incident faces
+	vertices[0]->set_face(outputHandle);
+	vertices[1]->set_face(outputHandle);
+	vertices[2]->set_face(outputHandle);
+
+	// Set external index
+	outputHandle->info().ExtIndex = idx;
+
+	return outputHandle;
+}
+
+Face_handle_2 Triangular_Mesh_2::Create_Face_2(Vertex_handle_2 v0, Vertex_handle_2 v1, Vertex_handle_2 v2, int idx)
+{
+	// Create face
+	Face_handle_2 outputHandle;
+	outputHandle = mesh.tds().create_face();
+
+	outputHandle->set_vertices(v0,v1,v2);
+
+	outputHandle->set_neighbors();
+
+	// Set incident faces
+	v0->set_face(outputHandle);
+	v1->set_face(outputHandle);
+	v2->set_face(outputHandle);
+
+	// Set external index
+	outputHandle->info().ExtIndex = idx;
+
+	return outputHandle;
+}
+
 Face_handle_2 Triangular_Mesh_2::Create_Infinite_Face_2(int i0, int i1)
 {
 	// Create face
@@ -442,6 +484,62 @@ void Triangular_Mesh_2::GenerateTestMeshSquare(const Point_2& initPoint, const P
 	set_nb_of_vertices();
 };
 
+void Triangular_Mesh_2::Initialize()
+{
+	mesh.clear();
+	mesh.tds().set_dimension(2);
+	mVertexHandleIndexMap.clear();
+	mNbOfNeighs.clear();
+	mStarterFace = mesh.infinite_face();
+	mesh.infinite_vertex()->info().ExtIndex = -1;
+}
+
+void Triangular_Mesh_2::Finalize()
+{
+	mesh.tds().delete_face(mStarterFace);
+	set_nb_of_faces();
+	set_nb_of_vertices();
+}
+
+void Triangular_Mesh_2::InitializeIntersection(int& iPreallocation)
+{
+	Initialize();
+	mInterVertexDummyIndex = 1;
+	mInterFaceDummyIndex = 1;
+	mVertexHandleIndexMap.reserve(iPreallocation);
+	mInterVertexHandle.resize(6);
+}
+
+void Triangular_Mesh_2::AddPolygon(const Triangle_2& t)
+{
+	Point_2 dummyPoint;
+	for(int iii = 0; iii < 3; ++iii)
+	{
+		dummyPoint = t.vertex(iii);
+		mInterVertexHandle[iii] = Create_Vertex_2(dummyPoint,mInterVertexDummyIndex);
+		++mInterVertexDummyIndex;
+	}
+
+	Create_Face_2(mInterVertexHandle,mInterFaceDummyIndex);
+	++mInterFaceDummyIndex;
+};
+
+void Triangular_Mesh_2::AddPolygon(Polygon_2& t,int nbOfVertices)
+{
+	Point_2 dummyPoint;
+	for(int iii = 0; iii < nbOfVertices; ++iii)
+	{
+		dummyPoint = t.vertex(iii);
+		mInterVertexHandle[iii] = Create_Vertex_2(dummyPoint,mInterVertexDummyIndex);
+		++mInterVertexDummyIndex;
+	}
+
+	for(int iii = 2; iii < nbOfVertices; ++iii)
+	{
+		Create_Face_2(mInterVertexHandle[0],mInterVertexHandle[iii-1],mInterVertexHandle[iii],mInterFaceDummyIndex);
+		++mInterFaceDummyIndex;
+	}
+}
 //  --- Import an triangulation from a Gmsh file.
 void Triangular_Mesh_2::ImportGmsh(std::string &ifName)
 {
@@ -449,15 +547,8 @@ void Triangular_Mesh_2::ImportGmsh(std::string &ifName)
 	std::ifstream dataF(ifName);
 	assert(dataF.good());
 
-	// Clear and set up the mesh
-	mesh.clear();
-	mesh.tds().set_dimension(2);
-	mVertexHandleIndexMap.clear();
-	mNbOfNeighs.clear();
-
-	// Set index for the infinite vertex (mostly for debugging)
-	Face_handle_2 starterFace = mesh.infinite_face();
-	mesh.infinite_vertex()->info().ExtIndex = -1;
+	// Initialize the mesh
+	Initialize();
 
 	// Set up safety booleans
 	bool hasHeader = false;
@@ -623,8 +714,7 @@ void Triangular_Mesh_2::ImportGmsh(std::string &ifName)
 	// 		MUST remove the first triangle! CGAL starts the triangulations with
 	//	an almost empty triangle, connected to the infinite vertex, which is not
 	//	used by this algorithm.
-
-	mesh.tds().delete_face(starterFace);
+	Finalize();
 
 	/*
 	 * 		At this point, we built
@@ -643,10 +733,6 @@ void Triangular_Mesh_2::ImportGmsh(std::string &ifName)
 	 * 		- Set up neighboring relations between the infinite faces
 	 *
 	 */
-
-	// Set up number of FINITE vertices and faces
-	set_nb_of_faces();
-	set_nb_of_vertices();
 
 	// Create neighbor relations between the FINITE faces
 	ConnectTriangles_2();

@@ -18,6 +18,7 @@ private:
 	std::string			mName;
 	int					mSize_vertices;
 	int					mSize_faces;
+	Face_handle_2		mStarterFace;
 
 	/*
 	 * --- Map linking each vertex index to a vertex handle. Needed because
@@ -30,6 +31,11 @@ private:
 	 *		speed up some of the mesh import operations
 	 */
 	std::vector<int>							mNbOfNeighs;
+
+	// Dummy variables used to build a mesh from an intersection
+	int								mInterVertexDummyIndex;
+	int								mInterFaceDummyIndex;
+	std::vector<Vertex_handle_2>	mInterVertexHandle;
 
 	// Methods
 
@@ -51,6 +57,10 @@ private:
 	 *  	face handle.
 	 */
 	Face_handle_2		Create_Face_2(std::vector<int>& vertices, int idx);
+
+	Face_handle_2 		Create_Face_2(std::vector<Vertex_handle_2>& vertices, int idx);
+
+	Face_handle_2		Create_Face_2(Vertex_handle_2 v0, Vertex_handle_2 v1, Vertex_handle_2 v2, int idx);
 
 	/*
 	 *  --- Create a INFINITE face using the vertices indexed as "i0", "i1". The
@@ -131,6 +141,29 @@ public:
 	void GenerateTestMeshSquare(const Point_2& initPoint, const Point_2& finalPoint, int nx, int ny, double amplitude = 0.15);
 
 	/*
+	 *  --- Initialize the mesh: clean up the data structures and set up the
+	 *  	initial dimension.
+	 */
+	void Initialize();
+
+	/*
+	 *  --- Finalize the mesh: remove the dummy initial face
+	 */
+	void Finalize();
+
+	/*
+	 *  --- Initialize the mesh to save the intersection triangulation
+	 */
+	void InitializeIntersection(int& iPreallocation);
+
+	/*
+	 *  --- Triangle / polygon insertion, used with Gander's algorithm
+	 */
+	void AddPolygon(const Triangle_2& t);
+
+	void AddPolygon(Polygon_2& t, int nbOfVertices);
+
+	/*
 	 *  --- Import an triangulation from a Gmsh file. ATTENTION: the current
 	 *  	implementation was made only to be used with Gander's algorithm,
 	 *  	where we only need the geometry information (nodes and triangular
@@ -149,6 +182,7 @@ public:
 	/*
 	 * 		TODO : implement Medit file import/export operations
 	 */
+
 //	void importMedit(std::string &ifName);
 //
 //	void exportMedit(std::string &ofName);

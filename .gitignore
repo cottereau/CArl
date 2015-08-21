@@ -40,3 +40,9 @@ Cpp/Mesh_intersection/data/elephant.off
 Cpp/Mesh_intersection/data/out.mesh
 
 Cpp/Mesh_intersection/data/3to2.awk
+
+Cpp/Mesh_intersection/data/intersection_test_faces.eps
+
+Cpp/Mesh_intersection/data/intersection_test.eps
+
+Cpp/Mesh_intersection/import_mesh_2D

@@ -48,13 +48,15 @@ void BuildMeshIntersections_Brute(
 			}
 		}
 	}
+
+	output.Finalize();
 };
 
 template<typename TemplateVisitor>
 void BuildMeshIntersections(
 		const Triangular_Mesh_2& dtA,
 		const Triangular_Mesh_2& dtB,
-		 TemplateVisitor& output
+		TemplateVisitor& output
 		)
 {
 
@@ -260,6 +262,8 @@ void BuildMeshIntersections(
 		}
 	}
 
+	output.Finalize();
+
 	// --- Finish - Timing and debug
 	timing_end   = std::chrono::system_clock::now();
 	elapsed_seconds_total = timing_end-timing_start;
@@ -449,6 +453,15 @@ std::ostream& operator<<(
 	return out;
 };
 
+std::ostream& operator<<(
+		std::ostream& out,
+		TriangulationIntersectionVisitor& input
+		)
+{
+	out << "I don't do nothing for the moment" << std::endl;
+	return out;
+};
+
 // --- Template specializations
 /*
  * 			Needed to allow template implementations inside a .cpp file. A new
@@ -499,4 +512,27 @@ template void IntersectTriangles<PolyIntersectionVisitor>(
 		std::vector<int>& 			candidatesAUpdate,
 		bool& 						queryIntersect,
 		PolyIntersectionVisitor& 	output
+		);
+
+// Template visitor == TriangulationIntersectionVisitor
+template void BuildMeshIntersections_Brute<TriangulationIntersectionVisitor>(
+		const Triangular_Mesh_2& dtA,
+		const Triangular_Mesh_2& dtB,
+		TriangulationIntersectionVisitor& output
+		);
+
+template void BuildMeshIntersections<TriangulationIntersectionVisitor>(
+		const Triangular_Mesh_2& dtA,
+		const Triangular_Mesh_2& dtB,
+		TriangulationIntersectionVisitor& output
+		);
+
+template void IntersectTriangles<TriangulationIntersectionVisitor>(
+		const Triangular_Mesh_2& 	dtB,
+		const Face_handle_2& 		workingTriangleB,
+		const Triangular_Mesh_2& 	dtA,
+		const Face_handle_2& 		workingTriangleA,
+		std::vector<int>& 			candidatesAUpdate,
+		bool& 						queryIntersect,
+		TriangulationIntersectionVisitor& 	output
 		);

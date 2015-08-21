@@ -16,11 +16,15 @@
 #include <CGAL/result_of.h>
 #include "common_header.h"
 
+// --- CGAL 2D polygon
+#include <CGAL/Polygon_2.h>
+
 // --- CGAL 2D triangulation headers
 #include <CGAL/Triangulation_2.h>
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <CGAL/Triangulation_vertex_base_with_info_2.h>
 #include <CGAL/Triangulation_face_base_with_info_2.h>
+
 //#include <CGAL/Constrained_Delaunay_triangulation_2.h>
 //#include <CGAL/Delaunay_mesher_2.h>
 //#include <CGAL/Delaunay_mesh_face_base_2.h>
@@ -59,6 +63,8 @@ typedef Kernel::Segment_2	Segment_2;
 typedef Kernel::Point_3		Point_3;
 typedef Kernel::Triangle_3  Triangle_3;
 typedef Kernel::Segment_3	Segment_3;
+
+typedef CGAL::Polygon_2<Kernel>		Polygon_2;
 //
 // --- Constrained Delaunay mesh with info
 //typedef CGAL::Triangulation_vertex_base_2<Kernel> Vb_2;
@@ -89,9 +95,7 @@ typedef CDT::All_faces_iterator 		All_faces_iterator_2;
 typedef CDT::Finite_faces_iterator		Finite_face_iterator_2;
 typedef CDT::Face_circulator			Face_circulator_2;
 typedef CDT::Finite_vertices_iterator	Finite_vertices_iterator_2;
-
 typedef CDT::Triangulation_data_structure::Vertex_iterator	Vertex_iterator_2;
-
 
 // Intersection type typedef (boost::variant)
 typedef CGAL::cpp11::result_of<Kernel::Intersect_2(Triangle_2, Triangle_2)>::type

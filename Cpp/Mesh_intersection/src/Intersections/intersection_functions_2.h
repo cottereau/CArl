@@ -102,7 +102,13 @@ public:
 				std::to_string(seg_intersections.size()) + " " +
 				std::to_string(tri_intersections.size()) + " " +
 				std::to_string(poly_intersections.size());
-	}
+	};
+
+	// Finalize does nothing for this visitor
+	void Finalize()
+	{
+
+	};
 };
 
 //	Friend function - overloaded operator<< for 'IntersectionTallyVisitor
@@ -114,9 +120,6 @@ std::ostream& operator<<(std::ostream& out, IntersectionTallyVisitor& input);
  * 			This visitor keeps only the informations from the 'triangle' and
  * 		'polygon' intersection results. Output is done with the 'operator<<'
  * 		overload, and is formatted for easy (machine) reading.
- *
- * 		TODO: adapt the output operator overload (or build a new function) such
- * 		that it is well formated for FreeFem++
  *
  */
 class PolyIntersectionVisitor
@@ -170,6 +173,12 @@ public:
 		poly_intersections.push_back(q);
 	};
 
+	// Finalize does nothing for this visitor
+	void Finalize()
+	{
+
+	};
+
 	// Return information from the visitor (size of the vectors)
 	std::string printStatics()
 	{
@@ -180,6 +189,84 @@ public:
 
 //	Friend function - overloaded operator<< for 'PolyIntersectionVisitor'
 std::ostream& operator<<(std::ostream& out, PolyIntersectionVisitor& input);
+
+/*
+ * 			TriangulationIntersectionVisitor
+ *
+ * 			This visitor takes the informations from the 'triangle' and
+ * 		'polygon' intersection results, and convert them to a Triangulation_2.
+ * 		NOTE: the triangulation itself is NOT valid for the CGAL standards.
+ *
+ */
+class TriangulationIntersectionVisitor
+	: public boost::static_visitor<void>
+{
+private:
+	// --- Members
+	// Empty constructor - set as private
+	TriangulationIntersectionVisitor()
+	{
+		CharacteristicLength = -1;
+		CharacteristicArea   = -1;
+	};
+public:
+	// --- Members
+
+	Triangular_Mesh_2	IntersectionTDS_2;
+	double				CharacteristicLength;
+	double				CharacteristicArea;
+
+	// --- Constructors
+	// Constructor with an characteristic length (and area)
+	TriangulationIntersectionVisitor(double iLength,int iVertexMapLength)
+	{
+		IntersectionTDS_2.InitializeIntersection(iVertexMapLength);
+		CharacteristicLength = iLength*pow(10,-3);
+		CharacteristicArea   = CharacteristicLength*CharacteristicLength;
+	};
+
+	// --- Visitor operators
+
+	// Intersection is a point -> do nothing.
+	void operator()(const Point_2& p)
+	{
+	};
+
+	// Intersection is a segment -> do nothing.
+	void operator()(const Segment_2& s)
+	{
+	};
+
+	// Push back a triangle intersection.
+	void operator()(const Triangle_2& t)
+	{
+		if(std::abs(t.area()) > CharacteristicArea)
+		{
+			// Then the triangle is "big enough"
+			IntersectionTDS_2.AddPolygon(t);
+		}
+	};
+
+	// Push back a polygon intersection.
+	void operator()(const std::vector<Point_2>& q)
+	{
+		Polygon_2 	tempPolygon(q.begin(),q.end());
+		if(std::abs(tempPolygon.area()) > CharacteristicArea)
+		{
+			// Then the triangle is "big enough"
+			IntersectionTDS_2.AddPolygon(tempPolygon,q.size());
+		}
+	};
+
+	// Finalize: remove the dummy first face
+	void Finalize()
+	{
+		IntersectionTDS_2.Finalize();
+	};
+};
+
+//	Friend function - overloaded operator<< for 'PolyIntersectionVisitor'
+std::ostream& operator<<(std::ostream& out, TriangulationIntersectionVisitor& input);
 
 // -------- Functions ---------------------------------------------------------
 

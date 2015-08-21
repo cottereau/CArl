@@ -17,11 +17,19 @@ int main(int argc, char *argv[])
 	// Declare meshes
 	std::string filenameA = "data/test_mesh_A.msh";
 	std::string filenameB = "data/test_mesh_B.msh";
+	std::string filenameOutput = "data/test_mesh_intersection.msh";
 
 	if(argc == 3)
 	{
 		filenameA = argv[1];
 		filenameB = argv[2];
+	}
+
+	if(argc == 4)
+	{
+		filenameA = argv[1];
+		filenameB = argv[2];
+		filenameOutput = argv[3];
 	}
 
 	std::string sillyname;
@@ -44,24 +52,11 @@ int main(int argc, char *argv[])
 	// Intersection                   //
 	// ****************************** //
 
-	PolyIntersectionVisitor tallyFastVector;
+	TriangulationIntersectionVisitor tallyFastVector(pow(10,-2),6*std::min(dtA.get_nb_of_faces(),dtB.get_nb_of_faces()));
 
 	BuildMeshIntersections(dtA,dtB,tallyFastVector);
 
-	std::string filename = "intersection_poly_" + std::to_string(dtA.get_nb_of_faces())
-	+ "_" + std::to_string(dtB.get_nb_of_faces()) + ".dat";
-
-	outputF.open(filename.c_str(),std::ios::trunc);
-	outputF << tallyFastVector << std::endl;
-	outputF.close();
-
-	CGAL::Geomview_stream gv(CGAL::Bbox_3(-5,-5,-5,5,5,5));
-
-	gv << dtA.mesh;
-	gv << dtB.mesh;
-
-	std::cout << "Enter a key to finish" << std::endl;
-	std::cin.ignore();
+	tallyFastVector.IntersectionTDS_2.ExportGmsh(filenameOutput);
 
 	return 0;
 }
