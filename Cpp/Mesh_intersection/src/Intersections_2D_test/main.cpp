@@ -32,6 +32,21 @@ int main(int argc, char *argv[])
 		filenameOutput = argv[3];
 	}
 
+	// --- Preamble - timing variables
+	std::chrono::time_point<std::chrono::system_clock> 	timing_start,
+														timing_end,
+														timing_start_total,
+														timing_end_total;
+
+	std::chrono::duration<double> 	elapsed_seconds_input,
+									elapsed_seconds_intersections,
+									elapsed_seconds_export,
+									elapsed_seconds_total;
+
+	// Import meshes
+	timing_start 		= std::chrono::system_clock::now();
+	timing_start_total 	= std::chrono::system_clock::now();
+
 	std::string sillyname;
 	sillyname = "Testing A";
 	Triangular_Mesh_2 dtA(sillyname,filenameA);
@@ -39,24 +54,40 @@ int main(int argc, char *argv[])
 	sillyname = "Testing B";
 	Triangular_Mesh_2 dtB(sillyname,filenameB);
 
-	// Print triangulations in files
-	std::ofstream outputF("testeA.cgmesh",std::ios::trunc);
-	outputF << dtA.mesh << std::endl;
-	outputF.close();
-
-	outputF.open("testeB.cgmesh",std::ios::trunc);
-	outputF << dtB.mesh << std::endl;
-	outputF.close();
+	timing_end   = std::chrono::system_clock::now();
+	elapsed_seconds_input = timing_end-timing_start;
 
 	// ****************************** //
 	// Intersection                   //
 	// ****************************** //
 
-	TriangulationIntersectionVisitor tallyFastVector(pow(10,-2),6*std::min(dtA.get_nb_of_faces(),dtB.get_nb_of_faces()));
+	timing_start = std::chrono::system_clock::now();
+
+	TriangulationIntersectionVisitor tallyFastVector(std::min(dtA.LengthOrder(),dtB.LengthOrder()),
+														6*std::min(dtA.get_nb_of_faces(),dtB.get_nb_of_faces()));
 
 	BuildMeshIntersections(dtA,dtB,tallyFastVector);
 
+	timing_end   = std::chrono::system_clock::now();
+	elapsed_seconds_intersections = timing_end-timing_start;
+
+	timing_start = std::chrono::system_clock::now();
+
 	tallyFastVector.IntersectionTDS_2.ExportGmsh(filenameOutput);
+
+	timing_end   		= std::chrono::system_clock::now();
+	timing_end_total	= std::chrono::system_clock::now();
+	elapsed_seconds_export = timing_end-timing_start;
+	elapsed_seconds_total  = timing_end_total - timing_start_total;
+
+
+	std::cout 	<< dtA.get_nb_of_faces() << " "
+				<< dtB.get_nb_of_faces() << " "
+				<< tallyFastVector.IntersectionTDS_2.get_nb_of_faces() << " "
+				<< elapsed_seconds_input.count() << " "
+				<< elapsed_seconds_intersections.count() << " "
+				<< elapsed_seconds_export.count() << " "
+				<< elapsed_seconds_total.count() << std::endl;
 
 	return 0;
 }

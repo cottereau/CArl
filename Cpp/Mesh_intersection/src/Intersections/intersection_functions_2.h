@@ -11,6 +11,7 @@
 #include "common_header.h"
 #include "CGAL_typedefs.h"
 #include "triangular_mesh_2.h"
+#include "triangular_mesh_intersection_2.h"
 
 /**
  * 			This file contains the classes and declarations of functions needed
@@ -202,7 +203,8 @@ class TriangulationIntersectionVisitor
 	: public boost::static_visitor<void>
 {
 private:
-	// --- Members
+	// --- Constructor
+
 	// Empty constructor - set as private
 	TriangulationIntersectionVisitor()
 	{
@@ -212,7 +214,7 @@ private:
 public:
 	// --- Members
 
-	Triangular_Mesh_2	IntersectionTDS_2;
+	Intersection_Mesh_2	IntersectionTDS_2;
 	double				CharacteristicLength;
 	double				CharacteristicArea;
 
@@ -221,7 +223,7 @@ public:
 	TriangulationIntersectionVisitor(double iLength,int iVertexMapLength)
 	{
 		IntersectionTDS_2.InitializeIntersection(iVertexMapLength);
-		CharacteristicLength = iLength*pow(10,-3);
+		CharacteristicLength = iLength*pow(10,-2);
 		CharacteristicArea   = CharacteristicLength*CharacteristicLength;
 	};
 
@@ -254,7 +256,7 @@ public:
 		if(std::abs(tempPolygon.area()) > CharacteristicArea)
 		{
 			// Then the triangle is "big enough"
-			IntersectionTDS_2.AddPolygon(tempPolygon,q.size());
+			IntersectionTDS_2.AddPolygon(tempPolygon,q.size(),CharacteristicArea);
 		}
 	};
 
@@ -262,6 +264,7 @@ public:
 	void Finalize()
 	{
 		IntersectionTDS_2.Finalize();
+		IntersectionTDS_2.CleanUp(CharacteristicArea);
 	};
 };
 

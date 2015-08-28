@@ -2,7 +2,7 @@ load "gmsh"
 load "medit"
 verbosity = 1;
 
-mesh Th = readmesh("separated_triangles.mesh");
+mesh Th = readmesh("intersections_2_timing/test_mesh_new_intersection_AB_5.mesh");
 
 fespace Vh(Th,P1);
 
@@ -24,4 +24,3 @@ for(int iii = 0; iii < C.n; ++iii)
 }
 
 cout << "   Sum_ij = " << countTotal << endl;
-cout << M << endl;

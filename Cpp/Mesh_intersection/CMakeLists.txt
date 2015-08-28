@@ -57,12 +57,17 @@ set ( TEST_IMPORT_EXEC_DIR ${SOURCE_DIR}/Mesh_import_test)
 # include for local directory
 include_directories( ${SOURCE_DIR} ${MESH_DIR} ${INTERSECTION_DIR} ${INTERSECTION_2D_EXEC_DIR} ${INTERSECTION_3D_EXEC_DIR} ${MESHER_EXEC_DIR} ${TEST_IMPORT_EXEC_DIR})
 
-# set sources
-set ( INTERSECTION_2D_EXEC_SOURCES ${INTERSECTION_2D_EXEC_DIR}/main.cpp ${INTERSECTION_DIR}/intersection_functions_2.cpp ${MESH_DIR}/triangular_mesh_2.cpp)
+# set source sets
+set ( MESH_2D_SOURCES ${INTERSECTION_DIR}/intersection_functions_2.cpp ${INTERSECTION_DIR}/triangular_mesh_intersection_2.cpp ${MESH_DIR}/triangular_mesh_2.cpp )
 
-set ( INTERSECTION_3D_EXEC_SOURCES ${INTERSECTION_3D_EXEC_DIR}/main.cpp ${INTERSECTION_DIR}/intersection_functions_3.cpp ${MESH_DIR}/triangular_mesh_3.cpp)
+set ( MESH_3D_SOURCES ${INTERSECTION_DIR}/intersection_functions_3.cpp ${MESH_DIR}/triangular_mesh_3.cpp )
 
-set ( TEST_IMPORT_EXEC_SOURCES ${TEST_IMPORT_EXEC_DIR}/main.cpp ${INTERSECTION_DIR}/intersection_functions_2.cpp ${MESH_DIR}/triangular_mesh_2.cpp)
+# set execs sources
+set ( INTERSECTION_2D_EXEC_SOURCES ${INTERSECTION_2D_EXEC_DIR}/main.cpp ${MESH_2D_SOURCES})
+
+set ( INTERSECTION_3D_EXEC_SOURCES ${INTERSECTION_3D_EXEC_DIR}/main.cpp ${MESH_3D_SOURCES})
+
+set ( TEST_IMPORT_EXEC_SOURCES ${TEST_IMPORT_EXEC_DIR}/main.cpp ${MESH_2D_SOURCES})
 
 # Creating entries for target: intersections_2D
 # ############################

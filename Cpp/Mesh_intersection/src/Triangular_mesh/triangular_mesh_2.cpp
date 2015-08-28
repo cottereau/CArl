@@ -501,45 +501,6 @@ void Triangular_Mesh_2::Finalize()
 	set_nb_of_vertices();
 }
 
-void Triangular_Mesh_2::InitializeIntersection(int& iPreallocation)
-{
-	Initialize();
-	mInterVertexDummyIndex = 1;
-	mInterFaceDummyIndex = 1;
-	mVertexHandleIndexMap.reserve(iPreallocation);
-	mInterVertexHandle.resize(6);
-}
-
-void Triangular_Mesh_2::AddPolygon(const Triangle_2& t)
-{
-	Point_2 dummyPoint;
-	for(int iii = 0; iii < 3; ++iii)
-	{
-		dummyPoint = t.vertex(iii);
-		mInterVertexHandle[iii] = Create_Vertex_2(dummyPoint,mInterVertexDummyIndex);
-		++mInterVertexDummyIndex;
-	}
-
-	Create_Face_2(mInterVertexHandle,mInterFaceDummyIndex);
-	++mInterFaceDummyIndex;
-};
-
-void Triangular_Mesh_2::AddPolygon(Polygon_2& t,int nbOfVertices)
-{
-	Point_2 dummyPoint;
-	for(int iii = 0; iii < nbOfVertices; ++iii)
-	{
-		dummyPoint = t.vertex(iii);
-		mInterVertexHandle[iii] = Create_Vertex_2(dummyPoint,mInterVertexDummyIndex);
-		++mInterVertexDummyIndex;
-	}
-
-	for(int iii = 2; iii < nbOfVertices; ++iii)
-	{
-		Create_Face_2(mInterVertexHandle[0],mInterVertexHandle[iii-1],mInterVertexHandle[iii],mInterFaceDummyIndex);
-		++mInterFaceDummyIndex;
-	}
-}
 //  --- Import an triangulation from a Gmsh file.
 void Triangular_Mesh_2::ImportGmsh(std::string &ifName)
 {
@@ -578,6 +539,7 @@ void Triangular_Mesh_2::ImportGmsh(std::string &ifName)
 	// Buffer string
 	std::string bufferLine;
 	std::stringstream	dataBuffer;
+
 
 	// Read info until the file ends
 	while(std::getline(dataF,bufferLine))
@@ -623,6 +585,7 @@ void Triangular_Mesh_2::ImportGmsh(std::string &ifName)
 
 				// Add point to intersection
 				bufferPoint = Point_2(bufferX,bufferY);
+				UpdateBbox(bufferPoint);
 				mVertexHandleIndexMap[bufferNodeIndex] = Create_Vertex_2(bufferPoint,bufferNodeIndex);
 			}
 
@@ -711,6 +674,9 @@ void Triangular_Mesh_2::ImportGmsh(std::string &ifName)
 
 	dataF.close();
 
+
+
+
 	// 		MUST remove the first triangle! CGAL starts the triangulations with
 	//	an almost empty triangle, connected to the infinite vertex, which is not
 	//	used by this algorithm.
@@ -745,6 +711,7 @@ void Triangular_Mesh_2::ImportGmsh(std::string &ifName)
 void Triangular_Mesh_2::ExportGmsh(std::string &ofName)
 {
 	std::ofstream dataF(ofName);
+	dataF.precision(17);
 
 	// Small precaution ...
 	set_nb_of_vertices();

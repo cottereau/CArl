@@ -165,13 +165,6 @@ void BuildMeshIntersections(
 	// Mark the first element from dtB as "treated"
 	treatedFromB[FirstB->info().ExtIndex] = 1;
 
-	// --- Preamble - timing variables
-	std::chrono::time_point<std::chrono::system_clock> 	timing_start,
-														timing_end;
-
-	std::chrono::duration<double> 	elapsed_seconds_total;
-	timing_start = std::chrono::system_clock::now();
-
 	// Number of operations per cycle of the external loop
 	int DebugNumberOfOperations = 0;
 
@@ -263,18 +256,6 @@ void BuildMeshIntersections(
 	}
 
 	output.Finalize();
-
-	// --- Finish - Timing and debug
-	timing_end   = std::chrono::system_clock::now();
-	elapsed_seconds_total = timing_end-timing_start;
-
-	std::cout 	<< dtA.get_nb_of_faces() << " "
-				<< dtB.get_nb_of_faces() << " "
-				<< nbOfIntersections << " "
-				<< DebugNumberOfOperations << " "
-				<< double(DebugNumberOfOperations)/dtB.get_nb_of_faces()  << " "
-				<< elapsed_seconds_total.count() << std::endl;
-
 };
 
 template<typename TemplateVisitor>

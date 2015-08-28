@@ -13,12 +13,15 @@
 
 class	Triangular_Mesh_2
 {
-private:
+protected:
 	// Members
 	std::string			mName;
 	int					mSize_vertices;
 	int					mSize_faces;
 	Face_handle_2		mStarterFace;
+
+	Point_2				mPointMax;
+	Point_2				mPointMin;
 
 	/*
 	 * --- Map linking each vertex index to a vertex handle. Needed because
@@ -31,11 +34,6 @@ private:
 	 *		speed up some of the mesh import operations
 	 */
 	std::vector<int>							mNbOfNeighs;
-
-	// Dummy variables used to build a mesh from an intersection
-	int								mInterVertexDummyIndex;
-	int								mInterFaceDummyIndex;
-	std::vector<Vertex_handle_2>	mInterVertexHandle;
 
 	// Methods
 
@@ -76,7 +74,13 @@ private:
 							  Finite_face_iterator_2& faceHandleB,int idxNeigh);
 
 	/*
-	 *  --- Connect the FINITE triangles and connect them
+	 *  --- Connect the FINITE triangles and connect them. The current version
+	 *  	is O(n^2) in time: the function has two for loops, with the outer
+	 *  	one loop running over all the faces, and the inner one running over
+	 *  	most of them (even if there are tests to stop it after finding 3
+	 *  	neighbors)
+	 *
+	 *  	TODO	: optimize this algorithm
 	 */
 	void 	ConnectTriangles_2();
 
@@ -87,6 +91,30 @@ private:
 	 *  	neighbors to determinate where to build the infinite faces).
 	 */
 	void	AddInfiniteFaces_2();
+
+	/*
+	 *  --- Update the corner points, used to crate the bbox
+	 */
+	void UpdateBbox(Point_2& iPoint)
+	{
+		if(iPoint.x() < mPointMin.x())
+		{
+			mPointMin = Point_2(iPoint.x(),mPointMin.y());
+		}
+		else if(iPoint.x() > mPointMax.x())
+		{
+			mPointMax = Point_2(iPoint.x(),mPointMax.y());
+		}
+
+		if(iPoint.y() < mPointMin.y())
+		{
+			mPointMin = Point_2(mPointMin.x(),iPoint.y());
+		}
+		else if(iPoint.y() > mPointMax.y())
+		{
+			mPointMax = Point_2(mPointMax.x(),iPoint.y());
+		}
+	}
 
 	/*
 	 *  --- DEBUG: print all the vertices and the faces in an human-readable
@@ -103,6 +131,8 @@ public:
 	{
 		mSize_vertices = 0;
 		mSize_faces = 0;
+		mPointMin = Point_2(0,0);
+		mPointMax = Point_2(0,0);
 	}
 
 	Triangular_Mesh_2(std::string &iName)
@@ -110,6 +140,8 @@ public:
 		mName = iName;
 		mSize_vertices = 0;
 		mSize_faces = 0;
+		mPointMin = Point_2(0,0);
+		mPointMax = Point_2(0,0);
 	}
 
 	Triangular_Mesh_2(std::string &iName, std::string &fileName)
@@ -117,6 +149,10 @@ public:
 		mName = iName;
 		mSize_vertices = 0;
 		mSize_faces = 0;
+
+		mPointMin = Point_2(0,0);
+		mPointMax = Point_2(0,0);
+
 		if(boost::filesystem::path(fileName).extension().string().compare(".msh")==0)
 		{
 			// Its a Gmsh .msh file
@@ -129,6 +165,33 @@ public:
 	std::string get_name();
 	int get_nb_of_faces() const;
 	int get_nb_of_vertices() const;
+
+	/*
+	 *  --- Returns the bounding box of the triangulation
+	 */
+	Bbox_2 bbox()
+	{
+		return Bbox_2(mPointMin.x(),mPointMin.y(),mPointMax.x(),mPointMax.y());
+	}
+
+	/*
+	 *  --- Returns a length of the order of the mesh's average distance between
+	 *      the vertices
+	 */
+	double LengthOrder()
+	{
+		return sqrt(XLength()*YLength()/mSize_faces);
+	}
+
+	double XLength()
+	{
+		return mPointMax.x()-mPointMin.x();
+	}
+
+	double YLength()
+	{
+		return mPointMax.y()-mPointMin.y();
+	}
 
 	//  --- Setters
 	void set_nb_of_faces();
@@ -150,18 +213,6 @@ public:
 	 *  --- Finalize the mesh: remove the dummy initial face
 	 */
 	void Finalize();
-
-	/*
-	 *  --- Initialize the mesh to save the intersection triangulation
-	 */
-	void InitializeIntersection(int& iPreallocation);
-
-	/*
-	 *  --- Triangle / polygon insertion, used with Gander's algorithm
-	 */
-	void AddPolygon(const Triangle_2& t);
-
-	void AddPolygon(Polygon_2& t, int nbOfVertices);
 
 	/*
 	 *  --- Import an triangulation from a Gmsh file. ATTENTION: the current

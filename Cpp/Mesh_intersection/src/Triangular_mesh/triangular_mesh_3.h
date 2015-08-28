@@ -14,7 +14,7 @@
 
 class	Triangular_Mesh_3
 {
-private:
+protected:
 	// Members
 	std::string			mName;
 	int					mSize_vertices;

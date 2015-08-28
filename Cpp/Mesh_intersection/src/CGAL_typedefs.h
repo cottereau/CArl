@@ -59,6 +59,7 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 typedef Kernel::Point_2	 	Point_2;
 typedef Kernel::Triangle_2	Triangle_2;
 typedef Kernel::Segment_2	Segment_2;
+typedef CGAL::Bbox_2		Bbox_2;
 
 typedef Kernel::Point_3		Point_3;
 typedef Kernel::Triangle_3  Triangle_3;
