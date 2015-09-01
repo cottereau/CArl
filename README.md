@@ -46,27 +46,3 @@ To use the option __Comsol__ (optional), one should install and make available i
 The main calling routine is `CArl.m`
 
 Some examples (in 1D and 2D) can be launched through use of the routine `Test.m` (see the corresponding help). The tests should run without any problem on computers with around 2Go.
-
-## C++ (WORK IN PROGRESS)
-
-A C++ implementation of CArl, saved in the folder "Cpp", is under development. Its main goal is to reproduce and expand the capabilities of the current MATLAB implementation. In the meantime, certain functions of the latter might be substituted by the former, using MATLAB’s [MEX-functions](http://fr.mathworks.com/help/matlab/matlab_external/introducing-mex-files.html).
-
-### IMPLEMENTED CODE
-
-* Efficient identification (linear, in most cases) of the intersections between the triangles/tetrahedrons of two meshings using an algorithm developed by [Gander *et al.*, 2009](http://link.springer.com/chapter/10.1007/978-3-642-02677-5_19)). The test executables `intersections_2D` and `intersections_3D` apply this algorithm to test 2D and 3D meshes, respectively.
-
-### PRE-REQUISITES
-
-The C++ version of this software depends on the following libraries
-
-* [Boost](http://www.boost.org), tested with version 1.58: `random` and `variant` libraries.
-* [CMake](http://www.cmake.org), tested with version 3.2.3: compilation.
-* [CGAL](http://www.cgal.org), tested with version 4.6: data structures and geometry methods.
-
-### INSTALLATION / COMPILATION
-
-1. `cd CArl/Cpp/Mesh_intersection`
-2. `cmake -DCGAL_DIR=[directory with the CGAL cmake files] .`
-3. `make`
-
-This will build the executables `intersections_2D` and `intersections_3D` inside the `Mesh_intersection`. Usually, the CGAL cmake files are found at the folder `${CGAL_ROOT}/cmake`. **DO NOT** use CGAL’s `cgal_create_CMakeLists` script - the `CMakeLists.txt` included with this code is already configured to compile the executables.
