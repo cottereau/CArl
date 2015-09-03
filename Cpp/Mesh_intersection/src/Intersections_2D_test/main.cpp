@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 	// Declare meshes
 	std::string filenameA = "data/test_mesh_A.msh";
 	std::string filenameB = "data/test_mesh_B.msh";
-	std::string filenameOutput = "data/test_mesh_intersection.msh";
+	std::string filenameOutput = "data/test_mesh_intersection.mesh";
 
 	if(argc == 3)
 	{
@@ -60,7 +60,6 @@ int main(int argc, char *argv[])
 	// ****************************** //
 	// Intersection                   //
 	// ****************************** //
-
 	timing_start = std::chrono::system_clock::now();
 
 	TriangulationIntersectionVisitor tallyFastVector(std::min(dtA.LengthOrder(),dtB.LengthOrder()),
@@ -73,10 +72,12 @@ int main(int argc, char *argv[])
 
 	timing_start = std::chrono::system_clock::now();
 
-	tallyFastVector.IntersectionTDS_2.ExportGmsh(filenameOutput);
+	// Export the meshes
+	tallyFastVector.IntersectionTDS_2.ExportMedit(filenameOutput);
 
 	timing_end   		= std::chrono::system_clock::now();
 	timing_end_total	= std::chrono::system_clock::now();
+
 	elapsed_seconds_export = timing_end-timing_start;
 	elapsed_seconds_total  = timing_end_total - timing_start_total;
 

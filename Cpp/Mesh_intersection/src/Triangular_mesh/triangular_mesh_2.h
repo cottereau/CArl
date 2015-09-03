@@ -153,10 +153,16 @@ public:
 		mPointMin = Point_2(0,0);
 		mPointMax = Point_2(0,0);
 
+		// TODO : better method to identify the mesh: read the first line
 		if(boost::filesystem::path(fileName).extension().string().compare(".msh")==0)
 		{
 			// Its a Gmsh .msh file
 			ImportGmsh(fileName);
+		}
+		else if(boost::filesystem::path(fileName).extension().string().compare(".mesh")==0)
+		{
+			// Its a Medit file
+			ImportMedit(fileName);
 		}
 	}
 
@@ -224,18 +230,20 @@ public:
 	 */
 	void ImportGmsh(std::string &ifName);
 
+	/*  --- Import an triangulation from a Medit file. ATTENTION: the current
+	 *  	implementation was made only to be used with Gander's algorithm.
+	 */
+	void ImportMedit(std::string &ifName);
+
 	/*  --- Export an triangulation in a Gmsh file. ATTENTION: the resulting
 	 * 		file may not be identical to the original one, read the description
 	 * 		of "ImportGmsh"
 	 */
 	void ExportGmsh(std::string &ofName);
 
-	/*
-	 * 		TODO : implement Medit file import/export operations
+	/*  --- Export an triangulation in a Medit file. ATTENTION: the resulting
+	 * 		file may not be identical to the original one.
 	 */
-
-//	void importMedit(std::string &ifName);
-//
-//	void exportMedit(std::string &ofName);
+	void ExportMedit(std::string &ofName);
 };
 #endif /* TRIANGULAR_MESH_2_H_ */

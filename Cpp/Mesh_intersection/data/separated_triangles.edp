@@ -1,8 +1,12 @@
+include "getARGV.idp"
 load "gmsh"
 load "medit"
-verbosity = 1;
 
-mesh Th = readmesh("intersections_2_timing/test_mesh_new_intersection_AB_5.mesh");
+// Read arguments
+verbosity = getARGV("-verbose",0);
+string InputIntersection = getARGV("-intersection","intersections_2_timing/test_mesh_new_intersection_AB_2.mesh");
+
+mesh Th = readmesh(InputIntersection);
 
 fespace Vh(Th,P1);
 
@@ -23,4 +27,5 @@ for(int iii = 0; iii < C.n; ++iii)
     countTotal += C[iii];
 }
 
+cout.precision(16);
 cout << "   Sum_ij = " << countTotal << endl;

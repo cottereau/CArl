@@ -707,11 +707,189 @@ void Triangular_Mesh_2::ImportGmsh(std::string &ifName)
 //	PrintDebugInfo();
 }
 
+//  --- Import an triangulation from a Gmsh file.
+void Triangular_Mesh_2::ImportMedit(std::string &ifName)
+{
+	// Open data stream and check if the file exists
+	std::ifstream dataF(ifName);
+	assert(dataF.good());
+
+	// Initialize the mesh
+	Initialize();
+
+	// Set up safety booleans
+	bool hasHeader = false;
+	bool hasNodes = false;
+	bool hasElements = false;
+
+	// Variables needed by medit
+	unsigned int		meditNumberOfNodes = 0;
+	unsigned int 		meditNumberOfElements = 0;
+	unsigned int 		meditDimension = 0;
+	double				bufferX = 1;
+	double				bufferY = 1;
+	int 				bufferNodeIndex = 1;
+	Point_2				bufferPoint;
+
+	std::vector<int>	bufferElementNodes(4);
+
+	double				dummyZ = 1;
+	int					dummyDomain = 1;
+	int					dummyExtIndex = 0;
+
+	// Variables needed to build the triangulation
+	Vertex_handle_2		workingVertex;
+
+	// Buffer string
+	std::string bufferLine;
+	std::stringstream	dataBuffer;
+
+
+	// Read info until the file ends
+	while(std::getline(dataF,bufferLine))
+	{
+//		if(bufferLine.compare("MeshVersionFormatted 2")==0)
+//		{
+//			// Read mesh format!
+//			hasHeader = true;
+//
+//			// DEBUG
+//			std::cout << bufferLine << std::endl;
+//			std::cout << "2.2 0 " << sizeof(double) << std::endl;
+//			std::cout << "$EndMeshFormat" << std::endl;
+//		}
+
+		if(bufferLine.compare(" Dimension")==0)
+		{
+			dataF >> meditDimension;
+		}
+
+		if(bufferLine.compare(" Vertices")==0)
+		{
+			// Read nodes!
+			hasNodes = true;
+			dataF >> meditNumberOfNodes;
+
+			// Reserve space for the nodes
+			mVertexHandleIndexMap.reserve(2*meditNumberOfNodes);
+
+//			// DEBUG
+//			std::cout << bufferLine << std::endl;
+//			std::cout << meditNumberOfNodes << std::endl;
+
+			// Line structure (* = to be ignored):
+			// [X] [Y] [domain*]
+			std::getline(dataF,bufferLine);
+			for(unsigned int iii = 0; iii < meditNumberOfNodes; ++iii)
+			{
+				std::getline(dataF,bufferLine);
+				dataBuffer.str("");
+				dataBuffer.clear();
+				dataBuffer << bufferLine;
+
+				if(meditDimension==2)
+				{
+					dataBuffer >> bufferX >> bufferY >> dummyDomain;
+				}
+				else if(meditDimension==3)
+				{
+					dataBuffer >> bufferX >> bufferY >> dummyZ >> dummyDomain;
+				}
+
+
+//				// DEBUG
+//				std::cout << bufferNodeIndex << " " << bufferX << " " << bufferY << " " << dummyZ << std::endl;
+
+				// Add point to intersection
+				bufferPoint = Point_2(bufferX,bufferY);
+				UpdateBbox(bufferPoint);
+				mVertexHandleIndexMap[bufferNodeIndex] = Create_Vertex_2(bufferPoint,bufferNodeIndex);
+				++bufferNodeIndex;
+			}
+
+//			// DEBUG
+//			std::cout << "$EndNodes" << std::endl;
+		}
+
+		if(bufferLine.compare(" Triangles")==0)
+		{
+			// Read the triangles!
+			hasElements = true;
+			dataF >> meditNumberOfElements;
+
+//			// DEBUG
+//			std::cout << bufferLine << std::endl;
+//			std::cout << meditNumberOfElements << std::endl;
+
+			// Element structures (* = to be ignored):
+			// [nodes] [domain*]
+
+			std::getline(dataF,bufferLine);
+			for(unsigned int iii = 0; iii < meditNumberOfElements; ++iii)
+			{
+				std::getline(dataF,bufferLine);
+				dataBuffer.str("");
+				dataBuffer.clear();
+				dataBuffer << bufferLine;
+
+				for(int jjj = 0; jjj < 3; ++jjj)
+				{
+					dataBuffer >> bufferElementNodes[jjj];
+
+//						// DEBUG
+//						std::cout << bufferElementNodes[jjj] << " ";
+				}
+
+				// Create the triangle
+				Create_Face_2(bufferElementNodes,dummyExtIndex);
+				++dummyExtIndex;
+
+
+//				// DEBUG
+//				std::cout << std::endl;
+			}
+//			// DEBUG
+//			std::cout << "$EndElements" << std::endl;
+		}
+	}
+
+	dataF.close();
+
+	// 		MUST remove the first triangle! CGAL starts the triangulations with
+	//	an almost empty triangle, connected to the infinite vertex, which is not
+	//	used by this algorithm.
+	Finalize();
+
+	/*
+	 * 		At this point, we built
+	 * 		- The vertices (all finite + 1 infinite)
+	 * 		- The faces (all finite)
+	 *
+	 * 		and we've set up
+	 * 		- Incident relations between vertices and finite faces
+	 * 		- Indexes for the finite faces
+	 *
+	 * 		We must
+	 * 		- Set up neighboring relations between the finite faces
+	 * 		- Build infinite faces
+	 * 		- Set up neighboring relations between the finite and infinite faces
+	 * 		- Set up incident relations with infinite faces
+	 * 		- Set up neighboring relations between the infinite faces
+	 *
+	 */
+
+	// Create neighbor relations between the FINITE faces
+	ConnectTriangles_2();
+
+//	// DEBUG
+//	PrintDebugInfo();
+}
+
 //  --- Export an triangulation in a Gmsh file.
 void Triangular_Mesh_2::ExportGmsh(std::string &ofName)
 {
 	std::ofstream dataF(ofName);
-	dataF.precision(17);
+	dataF.precision(15);
 
 	// Small precaution ...
 	set_nb_of_vertices();
@@ -749,6 +927,49 @@ void Triangular_Mesh_2::ExportGmsh(std::string &ofName)
 		dataF << std::endl;
 	}
 	dataF << "$EndElements" << std::endl;
+	dataF.close();
+
+}
+
+//  --- Export an triangulation in a Medit file.
+void Triangular_Mesh_2::ExportMedit(std::string &ofName)
+{
+	std::ofstream dataF(ofName);
+	dataF.precision(15);
+
+	// Small precaution ...
+	set_nb_of_vertices();
+	set_nb_of_faces();
+
+	assert(mSize_faces > 0 && mSize_vertices > 3);
+
+	dataF << " MeshVersionFormatted 2" << std::endl;
+	dataF << " Dimension" << std::endl;
+	dataF << " 2" << std::endl;
+
+	dataF << " Vertices" << std::endl;
+	dataF << mSize_vertices << std::endl;
+	for(Finite_vertices_iterator_2 	itVertex = mesh.finite_vertices_begin();
+									itVertex != mesh.finite_vertices_end();
+									++itVertex)
+	{
+		dataF << "    " ;
+		dataF << itVertex->point() << " " << "   1" << std::endl;
+	}
+
+	dataF << " Triangles" << std::endl;
+	dataF << mSize_faces << std::endl;
+	for(Finite_face_iterator_2 	itFace = mesh.finite_faces_begin();
+								itFace != mesh.finite_faces_end();
+								++itFace)
+	{
+		dataF << "    ";
+		for(int iii = 0; iii < 3; ++ iii)
+		{
+			dataF << itFace->vertex(iii)->info().ExtIndex << " ";
+		}
+		dataF << "   1" << std::endl;
+	}
 	dataF.close();
 
 }

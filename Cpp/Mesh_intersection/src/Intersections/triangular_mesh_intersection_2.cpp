@@ -46,45 +46,94 @@ void Intersection_Mesh_2::AddPolygon(const Triangle_2& t)
 	++mInterFaceDummyIndex;
 };
 
+void Intersection_Mesh_2::AddPolygonVertex(int iii, Polygon_2& t)
+{
+	Point_2 dummyPoint;
+	dummyPoint = t.vertex(iii);
+
+	UpdateBbox(dummyPoint);
+	mInterVertexHandle[iii] = Create_Vertex_2(dummyPoint,mInterVertexDummyIndex);
+	mVertexHandleIndexMap[mInterVertexDummyIndex]=mInterVertexHandle[iii];
+	mInterVertexIndex[iii] = mInterVertexDummyIndex;
+	++mInterVertexDummyIndex;
+}
 void Intersection_Mesh_2::AddPolygon(Polygon_2& t,int nbOfVertices, double CharacteristicArea)
 {
 	Triangle_2	dummyTriangle;
 
-	Point_2 dummyPoint;
+
 	Face_handle_2 dummyFace;
 	std::pair<int, Face_handle_2> dummyPair;
+	bool createdPrevious = false;
 
-	for(int iii = 0; iii < nbOfVertices; ++iii)
-	{
-		dummyPoint = t.vertex(iii);
-
-		UpdateBbox(dummyPoint);
-		mInterVertexHandle[iii] = Create_Vertex_2(dummyPoint,mInterVertexDummyIndex);
-		mVertexHandleIndexMap[mInterVertexDummyIndex]=mInterVertexHandle[iii];
-		mInterVertexIndex[iii] = mInterVertexDummyIndex;
-		++mInterVertexDummyIndex;
-	}
+	// Add first vertex
+	AddPolygonVertex(0,t);
 
 	for(int iii = 2; iii < nbOfVertices; ++iii)
 	{
-		dummyTriangle = Triangle_2(mInterVertexHandle[0]->point(),mInterVertexHandle[iii-1]->point(),mInterVertexHandle[iii]->point());
+		dummyTriangle = Triangle_2(mInterVertexHandle[0]->point(),t.vertex(iii-1),t.vertex(iii));
 		if(std::abs(dummyTriangle.area()) > CharacteristicArea)
 		{
+			// Create the vertices
+			if(!createdPrevious)
+			{
+				AddPolygonVertex(iii-1,t);
+			}
+			AddPolygonVertex(iii,t);
+
+			// Create face
 			dummyFace = Create_Face_2(mInterVertexHandle[iii],mInterVertexHandle[iii-1],mInterVertexHandle[0],mInterFaceDummyIndex);
-			dummyPair = std::pair<int, Face_handle_2>(mInterVertexIndex[0],dummyFace);
-			mInterVertexIncidentFaces.insert(dummyPair);
-			dummyPair = std::pair<int, Face_handle_2>(mInterVertexIndex[iii-1],dummyFace);
-			mInterVertexIncidentFaces.insert(dummyPair);
-			dummyPair = std::pair<int, Face_handle_2>(mInterVertexIndex[iii],dummyFace);
-			mInterVertexIncidentFaces.insert(dummyPair);
+						dummyPair = std::pair<int, Face_handle_2>(mInterVertexIndex[0],dummyFace);
+						mInterVertexIncidentFaces.insert(dummyPair);
+						dummyPair = std::pair<int, Face_handle_2>(mInterVertexIndex[iii-1],dummyFace);
+						mInterVertexIncidentFaces.insert(dummyPair);
+						dummyPair = std::pair<int, Face_handle_2>(mInterVertexIndex[iii],dummyFace);
+						mInterVertexIncidentFaces.insert(dummyPair);
 
 			++mInterFaceDummyIndex;
+
+			createdPrevious = true;
+		}
+		else
+		{
+			createdPrevious = false;
 		}
 	}
+
+//	for(int iii = 0; iii < nbOfVertices; ++iii)
+//	{
+//		dummyPoint = t.vertex(iii);
+//
+//		UpdateBbox(dummyPoint);
+//		mInterVertexHandle[iii] = Create_Vertex_2(dummyPoint,mInterVertexDummyIndex);
+//		mVertexHandleIndexMap[mInterVertexDummyIndex]=mInterVertexHandle[iii];
+//		mInterVertexIndex[iii] = mInterVertexDummyIndex;
+//		++mInterVertexDummyIndex;
+//	}
+//
+//	for(int iii = 2; iii < nbOfVertices; ++iii)
+//	{
+//		dummyTriangle = Triangle_2(mInterVertexHandle[0]->point(),mInterVertexHandle[iii-1]->point(),mInterVertexHandle[iii]->point());
+//		if(std::abs(dummyTriangle.area()) > CharacteristicArea)
+//		{
+//			dummyFace = Create_Face_2(mInterVertexHandle[iii],mInterVertexHandle[iii-1],mInterVertexHandle[0],mInterFaceDummyIndex);
+//			dummyPair = std::pair<int, Face_handle_2>(mInterVertexIndex[0],dummyFace);
+//			mInterVertexIncidentFaces.insert(dummyPair);
+//			dummyPair = std::pair<int, Face_handle_2>(mInterVertexIndex[iii-1],dummyFace);
+//			mInterVertexIncidentFaces.insert(dummyPair);
+//			dummyPair = std::pair<int, Face_handle_2>(mInterVertexIndex[iii],dummyFace);
+//			mInterVertexIncidentFaces.insert(dummyPair);
+//
+//			++mInterFaceDummyIndex;
+//		}
+//	}
 };
 
 void Intersection_Mesh_2::CleanUp(double CharacteristicArea)
 {
+	set_nb_of_faces();
+	set_nb_of_vertices();
+
 	mEps = LengthOrder()*pow(10,-6);
 	mGridNx = XLength()/mEps + 1;
 	mGridNy = YLength()/mEps + 1;
@@ -99,6 +148,16 @@ void Intersection_Mesh_2::CleanUp(double CharacteristicArea)
 
 	set_nb_of_faces();
 	set_nb_of_vertices();
+
+	// Now, reorder them
+	int dummyIdx = 1;
+	for(Finite_vertices_iterator_2 	itVertex = mesh.finite_vertices_begin();
+									itVertex != mesh.finite_vertices_end();
+									++itVertex)
+	{
+		itVertex->info().ExtIndex = dummyIdx;
+		++dummyIdx;
+	}
 }
 
 void Intersection_Mesh_2::TestVertex(Vertex_handle_2 itVertex)
@@ -127,6 +186,8 @@ void Intersection_Mesh_2::TestVertex(Vertex_handle_2 itVertex)
 			searchVertex->second->set_face(itRange->second);
 		}
 
+		// Remove it!
+		mVertexHandleIndexMap.erase(itVertex->info().ExtIndex);
 		mesh.delete_vertex(itVertex);
 	}
 }
@@ -135,4 +196,3 @@ long int Intersection_Mesh_2::ConvertToIndex(Point_2 iPoint)
 {
 	return lround((iPoint.x() - mPointMin.x())/mEps)*mGridNy + lround((iPoint.y() - mPointMin.y())/mEps);
 }
-

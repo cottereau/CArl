@@ -35,8 +35,8 @@ protected:
 
 	double			mEps;
 
-	int mGridNx;
-	int mGridNy;
+	long int mGridNx;
+	long int mGridNy;
 
 public:
 
@@ -60,6 +60,8 @@ public:
 	 *  --- Triangle / polygon insertion, used with Gander's algorithm
 	 */
 	void AddPolygon(const Triangle_2& t);
+
+	void AddPolygonVertex(int iii, Polygon_2& t);
 
 	void AddPolygon(Polygon_2& t, int nbOfVertices, double CharacteristicArea);
 

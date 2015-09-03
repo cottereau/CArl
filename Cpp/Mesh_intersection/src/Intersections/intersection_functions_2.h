@@ -223,7 +223,7 @@ public:
 	TriangulationIntersectionVisitor(double iLength,int iVertexMapLength)
 	{
 		IntersectionTDS_2.InitializeIntersection(iVertexMapLength);
-		CharacteristicLength = iLength*pow(10,-2);
+		CharacteristicLength = iLength*pow(10,-3);
 		CharacteristicArea   = CharacteristicLength*CharacteristicLength;
 	};
 
