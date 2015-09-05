@@ -78,15 +78,17 @@ classdef discontinuous
         % plotting discontinuous function
         function plot( obj )
             figure; hold on;
+            cm = [Inf -Inf];
             for i1 = 1:obj.Ns
                 xp = obj.x{i1}.mesh.Points;
                 v = obj.f{i1}(xp);
                 ind = inside( obj.x{i1}, xp, true );
-                ind = all( ind(obj.x{i1}.mesh.ConnectivityList), 2 );
-                trisurf( obj.x{i1}.mesh.ConnectivityList(ind,:), ...
-                                                  xp(:,1), xp(:,2), v, v );
+                indT = all( ind(obj.x{i1}.mesh.ConnectivityList), 2 );
+                t = obj.x{i1}.mesh.ConnectivityList(indT,:);
+                trisurf( t, xp(:,1), xp(:,2), v );
+                cm = [min(min(v(ind)),cm(1)) max(max(v(ind)),cm(2))];
             end
-            shading interp; view(2); colorbar;
+            shading interp; view(2); caxis(cm); colorbar;
         end
         % interpolation: getting values of f inside each subdomain
         function [fv,indg] = interp(obj,Xe,indg)
@@ -94,7 +96,7 @@ classdef discontinuous
             if nargin<3
                 indg = zeros(size(Xe,1),1);
                 for i1 = 1:obj.Ns
-                    ind = inside(obj.x{i1},Xe);
+                    ind = inside( obj.x{i1}, Xe, true );
                     indg(ind) = i1;
                     fv(ind) = obj.f{i1}(Xe(ind,:));
                 end

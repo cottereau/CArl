@@ -31,7 +31,11 @@ else
 end
 
 % construction of Stiffness Matrix
-K = stifness_matrixP1_2D_elasfluc( m.T, m.X, m.lambda, m.mu, alpha );
+if isfield(m,'cubic') && m.cubic
+    K = stifness_matrixP1_2D_cubic( m.T, m.X, m.c1, m.c4, m.c12, alpha, m.theta );
+else
+    K = stifness_matrixP1_2D_elasfluc( m.T, m.X, m.lambda, m.mu, alpha );
+end
 
 % construction of load vector
 F = sparse( N, 1 );
