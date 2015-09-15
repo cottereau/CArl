@@ -1,6 +1,5 @@
 function ExportHomeFEToMedit(filename, mesh)
-% Export a mesh (as defined in HomeFE code) in a Medit file, readable by
-% Freefem++.
+% Export a mesh in a Medit file, readable by Freefem++.
 %
 %  syntax: ExportHomeFEToMedit(filename, mesh)
 %

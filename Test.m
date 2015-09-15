@@ -66,7 +66,7 @@ function Test( type )
 if nargin==0
     type = '1d';
 end
-type = lower(type);
+% type = lower(type);
 
 % load case parameters
 if ~( strcmp(type,'1d') || strcmpi(type,'2d') || strcmpi(type,'mesh') )

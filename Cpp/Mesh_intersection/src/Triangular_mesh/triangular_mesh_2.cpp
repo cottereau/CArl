@@ -707,6 +707,8 @@ void Triangular_Mesh_2::ImportGmsh(std::string &ifName)
 //	PrintDebugInfo();
 }
 
+// FIXME : importing files from Medit results into a segfault!!!
+
 //  --- Import an triangulation from a Gmsh file.
 void Triangular_Mesh_2::ImportMedit(std::string &ifName)
 {

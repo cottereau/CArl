@@ -61,11 +61,12 @@ public:
 	 */
 	void AddPolygon(const Triangle_2& t);
 
-	void AddPolygonVertex(int iii, Polygon_2& t);
+	template<typename GeometryType>
+	void AddPolygonVertex(int iii, GeometryType& t);
 
 	void AddPolygon(Polygon_2& t, int nbOfVertices, double CharacteristicArea);
 
-	void CleanUp(double CharacteristicArea);
+	void CleanUp();
 
 	void TestVertex(Vertex_handle_2 itVertex);
 

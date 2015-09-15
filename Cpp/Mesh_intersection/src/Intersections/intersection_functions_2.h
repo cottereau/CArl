@@ -264,7 +264,7 @@ public:
 	void Finalize()
 	{
 		IntersectionTDS_2.Finalize();
-		IntersectionTDS_2.CleanUp(CharacteristicArea);
+		IntersectionTDS_2.CleanUp();
 	};
 };
 

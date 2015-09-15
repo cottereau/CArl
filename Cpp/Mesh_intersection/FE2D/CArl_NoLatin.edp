@@ -1,0 +1,307 @@
+/*
+ * 		Prototype of a CArl implementation using FreeFem++
+ *
+ *		To do lists
+ *
+ *		---- 	Can be done almost immediately
+ * 		TODO : 	Implement LATIN
+ *
+ * 		----	Needs some more reading and testing before implementation
+ * 		TODO :	Different solvers (sparse, parallel?)
+ *		TODO :	Connecting to METIS (needed if the solver is parallel?)
+ *
+ * 		----	Long(ish) term
+ * 		TODO :	Separating the main FreeFem++ files into parts (hide the ugly,
+ * 				dangerous parts ...)
+ * 		TODO :	Set up a file reading interface
+ * 		TODO :	Read the model parameters from a file
+ *
+ */
+
+// --- Includes and loads
+include "getARGV.idp"
+load "gmsh"
+load "medit"
+
+// --- Macros
+
+macro PrintDimensions(macroMatrix) {cout << macroMatrix.n << " " << macroMatrix.m << endl;} // End of PrintDimensions
+
+// - Tensors
+// Strain tensor
+macro Epsilon2D(ux,uy) [dx(ux),dy(uy),(dy(ux)+dx(uy))/sqrt(2.)] // End of Epsilon2D
+macro Div2D(ux,uy) ( dx(ux)+dy(uy) ) // End of Div2D
+
+// - Variational terms
+// Mass matrix
+macro Mass(u,v) u*v // End of Mass
+macro Mass2D(ux,uy,vx,vy) Mass(ux,vx)+Mass(uy,vy) // End of Mass2D
+macro Stiffness2D(ux,uy,vx,vy) Epsilon2D(ux,uy)' * Epsilon2D(vx,vy)  // End of Stiffness2D
+
+// - Matrix reduction
+macro CompactCols(macroMatrix,macroIII,macroJJJ,macroVal)
+{
+	[macroIII,macroJJJ,macroVal] = macroMatrix;
+	int[int] translationVector(macroMatrix.m);
+	int[int] sortedJJJ = macroJJJ;
+
+	sortedJJJ.sort;
+
+	translationVector = sortedJJJ.min;
+	int latestValue = sortedJJJ.min;
+	int indexDelta = 0;
+	for(int jjj = 0; jjj < sortedJJJ.n; ++jjj)
+	{
+		indexDelta = sortedJJJ[jjj]-latestValue - 1;
+		if(indexDelta > 0)
+		{
+			for(int kkk = sortedJJJ[jjj]; kkk < translationVector.n; ++kkk)
+			{
+				translationVector[kkk] = translationVector[kkk] + indexDelta;
+			}
+		}
+		latestValue = sortedJJJ[jjj];
+	}
+
+	for(int jjj = 0; jjj < JJJ.n; ++jjj)
+	{
+		macroJJJ[jjj] = macroJJJ[jjj] - translationVector[macroJJJ[jjj]];
+	}
+	macroMatrix = [macroIII,macroJJJ,macroVal];
+
+} // End of CompactCols
+
+macro CompactLines(macroMatrix,macroIII,macroJJJ,macroVal)
+{
+	[macroIII,macroJJJ,macroVal] = macroMatrix;
+
+	int[int] translationVector(macroMatrix.n);
+	int[int] sortedIII = macroIII;
+
+	sortedIII.sort;
+
+	translationVector = sortedIII.min;
+	int latestValue = sortedIII.min;
+	int indexDelta = 0;
+	for(int jjj = 0; jjj < sortedIII.n; ++jjj)
+	{
+		indexDelta = sortedIII[jjj]-latestValue - 1;
+		if(indexDelta > 0)
+		{
+			for(int kkk = sortedIII[jjj]; kkk < translationVector.n; ++kkk)
+			{
+				translationVector[kkk] = translationVector[kkk] + indexDelta;
+			}
+		}
+		latestValue = sortedIII[jjj];
+	}
+
+	for(int jjj = 0; jjj < III.n; ++jjj)
+	{
+		macroIII[jjj] = macroIII[jjj] - translationVector[macroIII[jjj]];
+	}
+
+	macroMatrix = [macroIII,macroJJJ,macroVal];
+} // End of CompactLines
+
+// --- Program
+
+// - Preamble
+
+// Define system constants
+real tgv = 10^30;			// tres grande valeur
+real alphaEps = 10^-2;		// alpha epsilon constant
+
+// Read arguments
+/*
+ * 		The functional space associated to "InputA"'s mesh will be as the "main"
+ * 	space - the virtual deformations of the couplings will be associated to it.
+ * 	In general, it is a good idea then to associate the coarser mesh to it.
+ *
+ */
+string InputA = getARGV("-meshA","");
+string InputB = getARGV("-meshB","");
+string InputIntersection = getARGV("-meshInter","");
+
+// Create mesh objects
+mesh ThA = readmesh(InputA);
+mesh ThB = readmesh(InputB);
+mesh ThI = readmesh(InputIntersection);
+
+// Create the functional spaces
+fespace VhA(ThA,[P1,P1]);	// Model A
+fespace VhB(ThB,[P1,P1]);	// Model B
+
+VhA [uxA,uyA],[vxA,vyA];
+VhB [uxB,uyB],[vxB,vyB];
+
+// - Define the models' constants
+// Load
+func fAX = 0;
+func fAY = 0;
+
+func fBX = 0;
+func fBY = 0;
+
+// Boundary conditions
+int  boundAIdx1 = 10;
+func boundAX1   = 0;
+func boundAY1   = 0;
+
+int  boundBIdx1 = 10;
+func boundBX1   = 0.038625*(y);
+func boundBY1   = -0.0061125*(y);
+
+// Physical constants
+real lambdaA = 1;
+real muA = 1;
+
+real lambdaB = 1;
+real muB = 1;
+
+// - Create the alpha mask
+string InputAlphaMask = getARGV("-alphaMask","");
+mesh ThAlpha = readmesh(InputAlphaMask);
+fespace VhAlpha(ThAlpha,P0);
+
+/*
+ *		Create a "reg" function that returns, for a given point, the geometric
+ * 	region defined in the "InputAlphaMask" file.
+ */
+VhAlpha reg=region; // Remember, it's a P0 function!
+
+/*
+ * 		Identify the region indices.
+ */
+int idxA =reg(0.5,0.5);
+int idxB =reg(2.5,0.5);
+int idxI =reg(1.5,0.5);
+
+/*
+ * 		Region identifying functions
+ */
+VhAlpha isInA = (region==idxA);
+VhAlpha isInB = (region==idxB);
+VhAlpha isInI = (region==idxI);
+
+func alphaA		= 0 + (1 - alphaEps)*isInA + 0.5*isInI + alphaEps*isInB;
+func alphaB		= 0 + alphaEps*isInA + 0.5*isInI + (1 - alphaEps)*isInB;
+
+// - Main models
+
+// Set up weak formulations
+/*
+ * 		Note: 	when using "varf" and "matrix" to build the matrices, the first
+ * 				argument is associated to the solution, while the second defines
+ * 				the functional space of the test functions.
+ */
+
+// Matrices
+// Using the Lamé's system definition given by FreeFem++ docs
+varf vStiffA([uxA,uyA],[vxA,vyA]) = int2d(ThA)(
+						alphaA*2*muA*Stiffness2D(uxA,uyA,vxA,vyA)
+						+ alphaA*lambdaA*Div2D(uxA,uyA)*Div2D(vxA,vyA)
+						)
+						+ on(10,uxA=boundAX1,uyA=boundAY1);
+
+varf vStiffB([uxB,uyB],[vxB,vyB]) = int2d(ThB)(
+						alphaB*2*muB*Stiffness2D(uxB,uyB,vxB,vyB)
+						+ alphaB*lambdaB*Div2D(uxB,uyB)*Div2D(vxB,vyB)
+						)
+						+ on(10,uxB=boundBX1,uyB=boundBY1);
+
+matrix MA = vStiffA(VhA,VhA,tgv=tgv);
+matrix MB = vStiffB(VhB,VhB,tgv=tgv);
+
+// Vectors
+varf vForceA([dummyX,dummyY],[vx,vy]) =
+						- int2d(ThA)( alphaA * (fAX*vx + fAY*vy) )
+						+ on(10,dummyX=boundAX1,dummyY=boundAY1);
+
+varf vForceB([dummyX,dummyY],[vx,vy]) =
+						- int2d(ThB)( alphaB * (fBX*vx + fBY*vy) )
+						+ on(10,dummyX=boundBX1,dummyY=boundBY1);
+
+real[int] FA = vForceA(0,VhA,tgv=tgv);
+real[int] FB = vForceB(0,VhB,tgv=tgv);
+
+// - Couplings
+
+// Set up constants
+real kappa = 1;
+real eee   = 1;
+
+// Set up weak formulations
+varf vCoupling([ux,uy],[vx,vy]) = int2d(ThI)
+	( kappa/(eee*eee)*Mass2D(ux,uy,vx,vy) + kappa*Stiffness2D(ux,uy,vx,vy) );
+
+// Build the coupling matrices
+matrix CA = vCoupling(VhA,VhA,tgv=tgv);
+matrix CB = vCoupling(VhB,VhA,tgv=tgv);
+
+// Compact the lines
+int[int] III(1), JJJ(1); real[int] Val(1);
+CompactLines(CA,III,JJJ,Val);
+CompactLines(CB,III,JJJ,Val);
+
+// Test if the number of lines of the couplings is the same
+assert(CA.n==CB.n);
+
+// Assemble the final matrix and vector
+matrix CAt =  CA';
+CB = -CB;
+matrix CBt =  CB';
+matrix M	= [[ MA ,   0 ,  CAt ],
+		       [  0 ,  MB ,  CBt ],
+			   [ CA ,  CB ,   0  ]
+			  ];
+
+real[int] F(M.n);
+for(int iii = 0; iii < MA.n; ++ iii)
+{
+	F[iii] = FA[iii];
+}
+for(int iii = 0; iii < MB.n; ++ iii)
+{
+	F[MA.n + iii] = FB[iii];
+}
+
+// Solve (direct)
+set(M,solver=UMFPACK,nbiter=10000);
+real[int] sol = M^-1*F;
+
+// Extract solution
+real[int] solA(MA.n);
+real[int] solB(MB.n);
+
+for(int iii = 0; iii < MA.n; ++iii)
+{
+	solA[iii] = sol[iii];
+}
+for(int iii = 0; iii < MB.n; ++iii)
+{
+	solB[iii] = sol[MA.n + iii];
+}
+
+/*		!!!	The two expressions below are NOT equivalent (i.e. uxA[] != uyA[])
+ * 			It seems like FreeFem++ overloads the 'operator=' for vectorial
+ * 			F.E. spaces. [uxA,uyA] are linked by their declaration, and the
+ * 			operations 'uxA[] = solA' and 'uyA[] = solA' projects the X and Y
+ * 			elements of the solutions onto uxA and uyA;
+ */
+
+uxA[] = solA;
+uyA[] = solA;
+
+uxB[] = solB;
+uyB[] = solB;
+
+// Prepare to plot
+real coef = 1;
+
+mesh ThASol = movemesh(ThA,[x+coef*uxA,y+coef*uyA]);
+mesh ThBSol = movemesh(ThB,[x+coef*uxB,y+coef*uyB]);
+
+// Plot deformed mesh
+plot(ThA,ThB,wait=true);
+plot(ThASol,ThBSol,wait=true);

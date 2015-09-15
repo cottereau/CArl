@@ -22,18 +22,19 @@ void Intersection_Mesh_2::InitializeIntersection(int& iPreallocation)
 
 void Intersection_Mesh_2::AddPolygon(const Triangle_2& t)
 {
-	Point_2 dummyPoint;
+//	Point_2 dummyPoint;
 	std::pair<int, Face_handle_2> dummyPair;
 
 	for(int iii = 0; iii < 3; ++iii)
 	{
-		dummyPoint = t.vertex(iii);
-
-		UpdateBbox(dummyPoint);
-		mInterVertexHandle[iii] = Create_Vertex_2(dummyPoint,mInterVertexDummyIndex);
-		mVertexHandleIndexMap[mInterVertexDummyIndex]=mInterVertexHandle[iii];
-		mInterVertexIndex[iii] = mInterVertexDummyIndex;
-		++mInterVertexDummyIndex;
+		AddPolygonVertex(iii,t);
+//		dummyPoint = t.vertex(iii);
+//
+//		UpdateBbox(dummyPoint);
+//		mInterVertexHandle[iii] = Create_Vertex_2(dummyPoint,mInterVertexDummyIndex);
+//		mVertexHandleIndexMap[mInterVertexDummyIndex]=mInterVertexHandle[iii];
+//		mInterVertexIndex[iii] = mInterVertexDummyIndex;
+//		++mInterVertexDummyIndex;
 	}
 
 	Face_handle_2 dummyFace = Create_Face_2(mInterVertexHandle[2],mInterVertexHandle[1],mInterVertexHandle[0],mInterFaceDummyIndex);
@@ -46,7 +47,8 @@ void Intersection_Mesh_2::AddPolygon(const Triangle_2& t)
 	++mInterFaceDummyIndex;
 };
 
-void Intersection_Mesh_2::AddPolygonVertex(int iii, Polygon_2& t)
+template<typename GeometryType>
+void Intersection_Mesh_2::AddPolygonVertex(int iii, GeometryType& t)
 {
 	Point_2 dummyPoint;
 	dummyPoint = t.vertex(iii);
@@ -57,6 +59,7 @@ void Intersection_Mesh_2::AddPolygonVertex(int iii, Polygon_2& t)
 	mInterVertexIndex[iii] = mInterVertexDummyIndex;
 	++mInterVertexDummyIndex;
 }
+
 void Intersection_Mesh_2::AddPolygon(Polygon_2& t,int nbOfVertices, double CharacteristicArea)
 {
 	Triangle_2	dummyTriangle;
@@ -129,7 +132,7 @@ void Intersection_Mesh_2::AddPolygon(Polygon_2& t,int nbOfVertices, double Chara
 //	}
 };
 
-void Intersection_Mesh_2::CleanUp(double CharacteristicArea)
+void Intersection_Mesh_2::CleanUp()
 {
 	set_nb_of_faces();
 	set_nb_of_vertices();
@@ -196,3 +199,9 @@ long int Intersection_Mesh_2::ConvertToIndex(Point_2 iPoint)
 {
 	return lround((iPoint.x() - mPointMin.x())/mEps)*mGridNy + lround((iPoint.y() - mPointMin.y())/mEps);
 }
+
+template
+void Intersection_Mesh_2::AddPolygonVertex<Polygon_2>(int iii, Polygon_2& t);
+
+template
+void Intersection_Mesh_2::AddPolygonVertex<Triangle_2>(int iii, Triangle_2& t);
