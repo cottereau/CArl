@@ -3,126 +3,19 @@
  *
  *		To do lists
  *
- *		---- 	Can be done almost immediately
- * 		TODO : 	Implement LATIN
- *
  * 		----	Needs some more reading and testing before implementation
  * 		TODO :	Different solvers (sparse, parallel?)
  *		TODO :	Connecting to METIS (needed if the solver is parallel?)
  *
  * 		----	Long(ish) term
- * 		TODO :	Separating the main FreeFem++ files into parts (hide the ugly,
- * 				dangerous parts ...)
  * 		TODO :	Set up a file reading interface
  * 		TODO :	Read the model parameters from a file
  *
  */
 
 // --- Includes and loads
-include "getARGV.idp"
-load "gmsh"
-load "medit"
+include "CArlFreeFemMacros.idp"
 
-// --- Macros
-
-macro PrintDimensions(macroMatrix) {cout << macroMatrix.n << " " << macroMatrix.m << endl;} // End of PrintDimensions
-
-// - Tensors
-// Strain tensor
-macro Epsilon2D(ux,uy) [dx(ux),dy(uy),(dy(ux)+dx(uy))/sqrt(2.)] // End of Epsilon2D
-macro Div2D(ux,uy) ( dx(ux)+dy(uy) ) // End of Div2D
-
-// - Variational terms
-// Mass matrix
-macro Mass(u,v) u*v // End of Mass
-macro Mass2D(ux,uy,vx,vy) Mass(ux,vx)+Mass(uy,vy) // End of Mass2D
-macro Stiffness2D(ux,uy,vx,vy) Epsilon2D(ux,uy)' * Epsilon2D(vx,vy)  // End of Stiffness2D
-
-// - Matrix reduction
-macro CompactCols(macroMatrix,macroIII,macroJJJ,macroVal)
-{
-	[macroIII,macroJJJ,macroVal] = macroMatrix;
-	int[int] translationVector(macroMatrix.m);
-	int[int] sortedJJJ = macroJJJ;
-
-	sortedJJJ.sort;
-
-	translationVector = sortedJJJ.min;
-	int latestValue = sortedJJJ.min;
-	int indexDelta = 0;
-	for(int jjj = 0; jjj < sortedJJJ.n; ++jjj)
-	{
-		indexDelta = sortedJJJ[jjj]-latestValue - 1;
-		if(indexDelta > 0)
-		{
-			for(int kkk = sortedJJJ[jjj]; kkk < translationVector.n; ++kkk)
-			{
-				translationVector[kkk] = translationVector[kkk] + indexDelta;
-			}
-		}
-		latestValue = sortedJJJ[jjj];
-	}
-
-	for(int jjj = 0; jjj < JJJ.n; ++jjj)
-	{
-		macroJJJ[jjj] = macroJJJ[jjj] - translationVector[macroJJJ[jjj]];
-	}
-	macroMatrix = [macroIII,macroJJJ,macroVal];
-
-} // End of CompactCols
-
-macro CompactLines(macroMatrix,macroIII,macroJJJ,macroVal)
-{
-	[macroIII,macroJJJ,macroVal] = macroMatrix;
-
-	int[int] translationVector(macroMatrix.n);
-	int[int] sortedIII = macroIII;
-
-	sortedIII.sort;
-
-	translationVector = sortedIII.min;
-	int latestValue = sortedIII.min;
-	int indexDelta = 0;
-	for(int jjj = 0; jjj < sortedIII.n; ++jjj)
-	{
-		indexDelta = sortedIII[jjj]-latestValue - 1;
-		if(indexDelta > 0)
-		{
-			for(int kkk = sortedIII[jjj]; kkk < translationVector.n; ++kkk)
-			{
-				translationVector[kkk] = translationVector[kkk] + indexDelta;
-			}
-		}
-		latestValue = sortedIII[jjj];
-	}
-
-	for(int jjj = 0; jjj < III.n; ++jjj)
-	{
-		macroIII[jjj] = macroIII[jjj] - translationVector[macroIII[jjj]];
-	}
-
-	macroMatrix = [macroIII,macroJJJ,macroVal];
-} // End of CompactLines
-
-// Matrix inversion (yep ...)
-macro HomeInvert(macroInputMatrix,macroOutputMatrix,macroDummyMatrix)
-{
-	real[int] macroB(macroInputMatrix.n);
-	real[int] macroSol(macroInputMatrix.n);
-
-	macroOutputMatrix.resize(macroInputMatrix.n,macroInputMatrix.n);
-	set(macroInputMatrix,solver=GMRES);
-	for(int jjj = 0; jjj < macroInputMatrix.n; ++jjj)
-	{
-		macroB = 0;
-		macroB[jjj] = 1;
-
-		macroSol = macroInputMatrix^-1*macroB;
-		macroDummyMatrix = macroB*macroSol';
-
-		macroOutputMatrix = macroOutputMatrix+macroDummyMatrix;
-	}
-}
 // --- Program
 
 // - Preamble
@@ -130,6 +23,12 @@ macro HomeInvert(macroInputMatrix,macroOutputMatrix,macroDummyMatrix)
 // Define system constants
 real tgv = 10^30;
 real alphaEps = 10^-2;		// alpha epsilon constant
+
+// LATIN parameters
+int			LATINIters = 10^2;
+real		LATINTol = 1e-2;
+real		LATINRelax = 0.8;
+real[int]	LATINIndex(LATINIters);
 
 // Read arguments
 /*
@@ -148,13 +47,9 @@ mesh ThA = readmesh(InputA);
 mesh ThB = readmesh(InputB);
 mesh ThI = readmesh(InputIntersection);
 
-// Plot the meshes
-plot(ThA,ThB,wait=true);
-plot(ThI,wait=true);
-
 // Create the functional spaces
 fespace VhA(ThA,[P1,P1]);	// Model A
-fespace VhB(ThB,[P2,P2]);	// Model B
+fespace VhB(ThB,[P1,P1]);	// Model B
 
 VhA [uxA,uyA],[vxA,vyA];
 VhB [uxB,uyB],[vxB,vyB];
@@ -173,7 +68,7 @@ func boundAX1   = 0;
 func boundAY1   = 0;
 
 int  boundBIdx1 = 10;
-func boundBX1   = 0.038625*(x - 3);
+func boundBX1   = 0.038625*y;
 func boundBY1   = -0.0061125*(y);
 
 // Physical constants
@@ -263,138 +158,196 @@ varf vCoupling([ux,uy],[vx,vy]) = int2d(ThI)
 matrix CA = vCoupling(VhA,VhA,tgv=tgv);
 matrix CB = vCoupling(VhB,VhA,tgv=tgv);
 
-int[int] III(1), JJJ(1); real[int] Val(1);
-CompactLines(CA,III,JJJ,Val);
-CompactLines(CB,III,JJJ,Val);
-
+CompactLines(CA);
+CompactLines(CB);
 // - Projections
 
 // Set up weak formulations
 varf vProject([ux,uy],[vx,vy]) = int2d(ThI)
 	( kappa/(eee*eee)*Mass2D(ux,uy,vx,vy) + kappa*Stiffness2D(ux,uy,vx,vy) );
 
-matrix baseProjectA = vProject(VhA,VhA,tgv=tgv);
-matrix baseProjectB = vProject(VhB,VhA,tgv=tgv);
+// Mediator space coupling
+matrix CI = vProject(VhA,VhA,tgv=tgv);
 
-CompactCols(baseProjectA,III,JJJ,Val);
-CompactLines(baseProjectA,III,JJJ,Val);
+CompactLines(CI);
+CompactCols(CI);
 
-CompactLines(baseProjectB,III,JJJ,Val);
-CompactCols(baseProjectB,III,JJJ,Val);
+matrix invCI;
+InvertSparse(CI,invCI);
 
-matrix invertedProjA;
-matrix invertedProjB;
-matrix DummyMatrix;
-matrix SuperDummyMatrix;
-
-HomeInvert(baseProjectA,invertedProjA,DummyMatrix);
-
-SuperDummyMatrix = baseProjectB'*baseProjectB;
-HomeInvert(SuperDummyMatrix,invertedProjB,DummyMatrix);
-
-matrix PA = invertedProjA*CA;
-
-matrix PB = invertedProjB*baseProjectB';
-       PB = PB*CB;
+matrix PA = invCI*CA;
+matrix PB = invCI*CB;
 
 // - LATIN !
+// Do some asserts (just to be sure)
+assert(MA.n==MA.m);
+assert(MB.n==MB.m);
+assert(CI.n==CI.m);
+
+assert(CA.n==CI.n);
+assert(CA.m==MA.m);
+
+assert(CB.n==CI.n);
+assert(CB.m==MB.m);
+
+// Dimension constants (for ease of use)
+int nA = MA.n;
+int nB = MB.n;
+int nI = CI.n;
+
 // Search constants
 real k = 2.5;
 real kuA = k; real kuB = k; real kdA = k; real kdB = k;
 
-// Effective decoupled matrices
-PrintDimensions(MA);
-PrintDimensions(CA);
-PrintDimensions(PA);
-PrintDimensions(baseProjectA);
-cout << endl;
-PrintDimensions(MB);
-PrintDimensions(CB);
-PrintDimensions(PB);
-PrintDimensions(baseProjectB);
+// Vectors
+real[int] solA(nA);		// solutions
+real[int] solB(nB);		//
 
+real[int] wA(nI);    	// projections
+real[int] wB(nI);   	//
 
+real[int] auxA(nI);    	// auxiliar vectors
+real[int] auxB(nI);   	//
+
+real[int] phiA(nI); 	// Lagrange multiplier fields
+real[int] phiB(nI);  	//
+
+real[int] forceA(nA);	// external forces
+real[int] forceB(nB);	//
+
+real[int] solAOld(nA);		// old versions
+real[int] solBOld(nB);		//
+real[int] phiAOld(nI); 		//
+real[int] phiBOld(nI);  	//
+
+real[int] phiADiff(nI);		//
+real[int] phiBDiff(nI);		//
+real[int] phiASum(nI);		//
+real[int] phiBSum(nI);		//
+
+// Matrices
 matrix HA = (CA'*PA);
-       HA = kdA*HA;
-       HA = HA + MA;
+       HA = kdA*HA + MA;
+
 matrix HB = (CB'*PB);
        HB = kdB*HB + MB;
 
-//// DEBUG Test sums and co.
-//cout.precision(8);
-//
-//
-//real countTotal = 0;
-//
-//// Couplings
-//[I,J,C] = CouplingA;
-//countTotal = 0;
-//
-//for(int iii = 0; iii < C.n; ++iii)
-//{
-//    countTotal += C[iii];
-//}
-//
-//cout << " --- Coupling matrix A -> A: " << endl;
-//cout << "     Sum_ij = " << countTotal << endl;
-//cout << " Dimensions = " << CouplingA.n << "x" << CouplingA.m << endl;
-//
-//[I,J,C] = CouplingB;
-//countTotal = 0;
-//
-//for(int iii = 0; iii < C.n; ++iii)
-//{
-//    countTotal += C[iii];
-//}
-//
-//cout << " --- Coupling matrix B -> A: " << endl;
-//cout << "     Sum_ij = " << countTotal << endl;
-//cout << " Dimensions = " << CouplingB.n << "x" << CouplingB.m << endl;
-//
-//// Main models - matrices
-//[I,J,C] = MA;
-//
-//countTotal = 0;
-//
-//for(int iii = 0; iii < C.n; ++iii)
-//{
-//    countTotal += C[iii];
-//}
-//
-//cout << " --- Model A matrix: " << endl;
-//cout << "     Sum_ij = " << countTotal << endl;
-//cout << " Dimensions = " << MA.n << "x" << MA.m << endl;
-//
-//[I,J,C] = MB;
-//
-//countTotal = 0;
-//
-//for(int iii = 0; iii < C.n; ++iii)
-//{
-//    countTotal += C[iii];
-//}
-//
-//cout << " --- Model B matrix: " << endl;
-//cout << "     Sum_ij = " << countTotal << endl;
-//cout << " Dimensions = " << MB.n << "x" << MB.m << endl;
-//
-//// Main models - vectors
-//cout << " --- Model A vector: " << endl;
-//cout << " Dimension  = " << FA.n << endl;
-//
-//cout << " --- Model B vector: " << endl;
-//cout << " Dimension  = " << FB.n << endl;
+set(HA,solver=UMFPACK);
+set(HB,solver=UMFPACK);
 
-real[int] solB = MB^-1*FB;
+// Initializations
+forceA = FA;
+forceB = FB;
 
-/*		!!!	The two expressions below are NOT equivalent (i.e. uxB[] != uyB[])
+solA = HA^-1*forceA;
+solB = HB^-1*forceB;
+
+wA = PA*solA;
+wB = PB*solB;
+
+phiA = -kdA*wA;
+phiB = -kdB*wB;
+
+// Iterate!
+int iterCount = -1;
+real LATINConv = 1 + LATINTol;
+
+while ( LATINConv > LATINTol && iterCount < LATINIters)
+{
+	++iterCount;
+
+	// Coupled stage
+	auxA = kuA*wA - phiA;
+	auxB = kuB*wB - phiB;
+
+	wA = auxA + auxB;
+	wA = 1/(kuA+kuB)*wA;
+	wB = wA;
+
+	phiA = kuA*wA - auxA;
+	phiB = kuB*wB - auxB;
+
+	// Uncoupled stage
+	auxA = - kdA*wA - phiA;
+	auxB = - kdB*wB - phiB;
+
+	solAOld = solA;
+	solBOld = solB;
+
+	forceA = CA'*auxA;
+	forceA = FA - forceA;
+
+	forceB = CB'*auxB;
+	forceB = FB - forceB;
+
+	solA = HA^-1*forceA;
+	solB = HB^-1*forceB;
+
+	wA = PA*solA;
+	wB = PB*solB;
+
+	phiAOld = phiA;
+	phiBOld = phiB;
+
+	phiA = - kdA*wA - auxA;
+	phiB = - kdB*wB - auxB;
+
+	// Relaxation
+	solA = LATINRelax*solA + (1 - LATINRelax)*solAOld;
+	solB = LATINRelax*solB + (1 - LATINRelax)*solBOld;
+
+	// Convergence
+	phiADiff = phiA - phiAOld;
+	phiBDiff = phiB - phiBOld;
+
+	phiASum = phiA + phiAOld;
+	phiBSum = phiB + phiBOld;
+	LATINConv = 2*sqrt(pow(phiADiff.l2,2) + pow(phiBDiff.l2,2)) /
+			      sqrt(pow(phiASum.l2,2)  + pow(phiBSum.l2,2));
+
+	LATINIndex[iterCount] = LATINConv;
+}
+
+// Print solution!
+
+/*		!!!	The two expressions below are NOT equivalent (i.e. uxA[] != uyA[])
  * 			It seems like FreeFem++ overloads the 'operator=' for vectorial
- * 			F.E. spaces. [uxB,uyB] are linked by their declaration, and the
- * 			operations 'uxB[] = solB' and 'uyB[] = solB' projects the X and Y
- * 			elements of the solutions onto uxB and uyB;
+ * 			F.E. spaces. [uxA,uyA] are linked by their declaration, and the
+ * 			operations 'uxA[] = solA' and 'uyA[] = solA' projects the X and Y
+ * 			elements of the solutions onto uxA and uyA;
  */
+
+uxA[] = solA;
+uyA[] = solA;
 
 uxB[] = solB;
 uyB[] = solB;
 
-plot(ThB,[uxB,uyB],coef=100);
+// Prepare to plot
+real coef = 10;
+
+mesh ThASol = movemesh(ThA,[x+coef*uxA,y+coef*uyA]);
+mesh ThBSol = movemesh(ThB,[x+coef*uxB,y+coef*uyB]);
+
+// Plot deformed mesh
+plot(ThA,ThB,wait=true,ps="FE2DLatin_originalMesh.eps");
+plot(ThASol,ThBSol,wait=true,ps="FE2DLatin_deformedMesh.eps");
+
+// Plot tolerance
+ofstream toleranceFile("FE2DLatin_tol.dat");
+for (int iii = 0; iii <= iterCount; iii++)
+{
+	toleranceFile <<  iii + 1 << " " << LATINIndex[iii] << endl;
+}
+
+ofstream gnuplotFile("FE2DLatin_tol.gplot");
+gnuplotFile	<< "set title \"LATIN tolerance\"" << endl
+			<< "set xrange [1:]" << endl
+		    << "set xlabel \"Iteration\"" << endl
+			<< "set ylabel \"Tolerance\"" << endl
+			<< "plot \"CArl_tol.dat\" w lp lc 1 notitle" << endl
+			<< "pause 1" << endl
+			<< "set term eps" << endl
+			<< "set output \"CArl_tol.eps\" " << endl
+			<< "replot" << endl
+			<< "quit" << endl;

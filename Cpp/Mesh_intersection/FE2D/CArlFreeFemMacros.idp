@@ -1,0 +1,141 @@
+// --- Includes and loads
+include "getARGV.idp"
+load "lapack"
+load "gmsh"
+load "medit"
+
+// --- Macros
+macro InvertSparse(macroMatrix, macroInverse)
+{
+	assert(macroMatrix.n == macroMatrix.m);
+
+	int[int] macroIII(1), macroJJJ(1); real[int] macroVal(1);
+	[macroIII,macroJJJ,macroVal] = macroMatrix;
+
+	real[int,int] macroDense(macroMatrix.n,macroMatrix.n);
+	real[int,int] macroInverseDense(macroMatrix.n,macroMatrix.n);
+
+	macroDense = 0;
+	macroInverseDense = 0;
+
+	for(int iii = 0; iii < macroIII.n; ++iii)
+	{
+		macroDense(macroIII[iii],macroJJJ[iii]) = macroVal[iii];
+	}
+
+	macroInverseDense = macroDense^-1;
+	macroInverse = macroInverseDense;
+} // End of macro InvertSparse
+
+macro PrintDimensions(macroMatrix) {cout << macroMatrix.n << " " << macroMatrix.m << endl;} // End of PrintDimensions
+
+// - Tensors
+// Strain tensor
+macro Epsilon2D(ux,uy) [dx(ux),dy(uy),(dy(ux)+dx(uy))/sqrt(2.)] // End of Epsilon2D
+macro Div2D(ux,uy) ( dx(ux)+dy(uy) ) // End of Div2D
+
+// - Variational terms
+// Mass matrix
+macro Mass(u,v) u*v // End of Mass
+macro Mass2D(ux,uy,vx,vy) Mass(ux,vx)+Mass(uy,vy) // End of Mass2D
+macro Stiffness2D(ux,uy,vx,vy) Epsilon2D(ux,uy)' * Epsilon2D(vx,vy)  // End of Stiffness2D
+
+// - Matrix reduction
+macro CompactCols(macroMatrix)
+{
+	int[int] macroIII(1), macroJJJ(1); real[int] macroVal(1);
+	int originalN, originalM;
+	originalN = macroMatrix.n;
+	originalM = macroMatrix.m;
+
+	[macroIII,macroJJJ,macroVal] = macroMatrix;
+
+	if(macroIII.n == (macroMatrix.nbcoef + 1) &&
+	   macroJJJ.n == (macroMatrix.nbcoef + 1) &&
+	   macroVal.n == (macroMatrix.nbcoef + 1))
+	{
+		macroIII.resize(macroIII.n-1);
+		macroJJJ.resize(macroJJJ.n-1);
+		macroVal.resize(macroVal.n-1);
+	}
+
+	int[int] translationVector(macroMatrix.m);
+	int[int] sortedJJJ = macroJJJ;
+
+	sortedJJJ.sort;
+
+	translationVector = sortedJJJ.min;
+	int latestValue = sortedJJJ.min;
+	int indexDelta = 0;
+	for(int jjj = 0; jjj < sortedJJJ.n; ++jjj)
+	{
+		indexDelta = sortedJJJ[jjj]-latestValue - 1;
+		if(indexDelta > 0)
+		{
+			for(int kkk = sortedJJJ[jjj]; kkk < translationVector.n; ++kkk)
+			{
+				translationVector[kkk] = translationVector[kkk] + indexDelta;
+			}
+		}
+		latestValue = sortedJJJ[jjj];
+	}
+
+	for(int jjj = 0; jjj < macroJJJ.n; ++jjj)
+	{
+		macroJJJ[jjj] = macroJJJ[jjj] - translationVector[macroJJJ[jjj]];
+	}
+	macroMatrix = [macroIII,macroJJJ,macroVal];
+
+	/* resize to get the correct dimensions */
+	macroMatrix.resize(originalN,macroMatrix.m);
+} // End of CompactCols
+
+macro CompactLines(macroMatrix)
+{
+	int[int] macroIII(1), macroJJJ(1); real[int] macroVal(1);
+	int originalN, originalM;
+	originalN = macroMatrix.n;
+	originalM = macroMatrix.m;
+
+	[macroIII,macroJJJ,macroVal] = macroMatrix;
+
+	if(macroIII.n == (macroMatrix.nbcoef + 1) &&
+	   macroJJJ.n == (macroMatrix.nbcoef + 1) &&
+	   macroVal.n == (macroMatrix.nbcoef + 1))
+	{
+		macroIII.resize(macroIII.n-1);
+		macroJJJ.resize(macroJJJ.n-1);
+		macroVal.resize(macroVal.n-1);
+	}
+
+	int[int] translationVector(macroMatrix.n);
+	int[int] sortedIII = macroIII;
+
+	sortedIII.sort;
+
+	translationVector = sortedIII.min;
+	int latestValue = sortedIII.min;
+	int indexDelta = 0;
+	for(int jjj = 0; jjj < sortedIII.n; ++jjj)
+	{
+		indexDelta = sortedIII[jjj]-latestValue - 1;
+		if(indexDelta > 0)
+		{
+			for(int kkk = sortedIII[jjj]; kkk < translationVector.n; ++kkk)
+			{
+				translationVector[kkk] = translationVector[kkk] + indexDelta;
+			}
+		}
+		latestValue = sortedIII[jjj];
+	}
+
+	for(int jjj = 0; jjj < macroIII.n; ++jjj)
+	{
+		macroIII[jjj] = macroIII[jjj] - translationVector[macroIII[jjj]];
+	}
+
+	macroMatrix = [macroIII,macroJJJ,macroVal];
+
+	/* resize to get the correct dimensions */
+	macroMatrix.resize(macroMatrix.n,originalM);
+} // End of CompactLines
