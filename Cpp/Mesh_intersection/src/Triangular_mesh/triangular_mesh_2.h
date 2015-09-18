@@ -70,8 +70,8 @@ protected:
 	 *  --- Test whenever "faceHandleB" is a neighbor of "faceHandleA" in the
 	 *  	"idxNeigh" direction. If true, build the neighboring relations.
 	 */
-	bool	TestForNeighbor_2(Finite_face_iterator_2& faceHandleA,
-							  Finite_face_iterator_2& faceHandleB,int idxNeigh);
+	bool	TestForNeighbor_2(Finite_faces_iterator_2& faceHandleA,
+							  Finite_faces_iterator_2& faceHandleB,int idxNeigh);
 
 	/*
 	 *  --- Connect the FINITE triangles and connect them. The current version
@@ -124,7 +124,7 @@ protected:
 
 public:
 	// Members
-	CDT		mesh;
+	DT_2	mesh;
 
 	// Constructors
 	Triangular_Mesh_2()

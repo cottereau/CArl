@@ -2,7 +2,7 @@ set title "LATIN tolerance"
 set xrange [1:]
 set xlabel "Iteration"
 set ylabel "Tolerance"
-plot "CArl_tol.dat" w lp lc 1 notitle
+plot "FE2DLatin_tol.dat" w lp lc 1 notitle
 pause 1
 set term eps
 set output "CArl_tol.eps" 

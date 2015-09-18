@@ -10,7 +10,6 @@
 
 #include "CGAL_typedefs.h"
 #include "common_header.h"
-#include "defines_3D.h"
 #include "triangular_mesh_3.h"
 #include "intersection_functions_3.h"
 

@@ -128,7 +128,7 @@ Face_handle_2 Triangular_Mesh_2::Create_Infinite_Face_2(int i0, int i1)
 	return outputHandle;
 }
 
-bool Triangular_Mesh_2::TestForNeighbor_2(Finite_face_iterator_2& faceHandleA, Finite_face_iterator_2& faceHandleB,int idxNeigh)
+bool Triangular_Mesh_2::TestForNeighbor_2(Finite_faces_iterator_2& faceHandleA, Finite_faces_iterator_2& faceHandleB,int idxNeigh)
 {
 	bool output = false;
 
@@ -166,15 +166,15 @@ bool Triangular_Mesh_2::TestForNeighbor_2(Finite_face_iterator_2& faceHandleA, F
 void Triangular_Mesh_2::ConnectTriangles_2()
 {
 	mNbOfNeighs.resize(mSize_faces,0);
-	Finite_face_iterator_2 itCompare;
+	Finite_faces_iterator_2 itCompare;
 	bool areNeighbors = false;
 
 	// --- Connect the (finite) triangles
-	for(Finite_face_iterator_2 itFaces = mesh.finite_faces_begin(); itFaces != mesh.finite_faces_end(); ++itFaces)
+	for(Finite_faces_iterator_2 itFaces = mesh.finite_faces_begin(); itFaces != mesh.finite_faces_end(); ++itFaces)
 	{
 		// 		The neighbor relations are reciprocal, so the inner loop starts
 		// at the current face iterator + 1;
-		Finite_face_iterator_2 itCompare = itFaces;
+		Finite_faces_iterator_2 itCompare = itFaces;
 		++itCompare;
 
 		for( ; itCompare != mesh.finite_faces_end(); ++itCompare)
@@ -215,7 +215,7 @@ void Triangular_Mesh_2::AddInfiniteFaces_2()
 	int FakeIndex = 0;
 
 	// Build the infinite faces
-	for(Finite_face_iterator_2 itFaces = mesh.finite_faces_begin(); itFaces != mesh.finite_faces_end(); ++itFaces)
+	for(Finite_faces_iterator_2 itFaces = mesh.finite_faces_begin(); itFaces != mesh.finite_faces_end(); ++itFaces)
 	{
 		if(mNbOfNeighs[itFaces->info().ExtIndex]!=3)
 		{
@@ -707,9 +707,7 @@ void Triangular_Mesh_2::ImportGmsh(std::string &ifName)
 //	PrintDebugInfo();
 }
 
-// FIXME : importing files from Medit results into a segfault!!!
-
-//  --- Import an triangulation from a Gmsh file.
+//  --- Import an triangulation from a Medit file.
 void Triangular_Mesh_2::ImportMedit(std::string &ifName)
 {
 	// Open data stream and check if the file exists
@@ -916,7 +914,7 @@ void Triangular_Mesh_2::ExportGmsh(std::string &ofName)
 
 	dataF << "$Elements" << std::endl;
 	dataF << mSize_faces << std::endl;
-	for(Finite_face_iterator_2 	itFace = mesh.finite_faces_begin();
+	for(Finite_faces_iterator_2 	itFace = mesh.finite_faces_begin();
 								itFace != mesh.finite_faces_end();
 								++itFace)
 	{
@@ -961,7 +959,7 @@ void Triangular_Mesh_2::ExportMedit(std::string &ofName)
 
 	dataF << " Triangles" << std::endl;
 	dataF << mSize_faces << std::endl;
-	for(Finite_face_iterator_2 	itFace = mesh.finite_faces_begin();
+	for(Finite_faces_iterator_2 	itFace = mesh.finite_faces_begin();
 								itFace != mesh.finite_faces_end();
 								++itFace)
 	{

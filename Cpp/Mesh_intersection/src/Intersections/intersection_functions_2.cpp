@@ -25,18 +25,18 @@ void BuildMeshIntersections_Brute(
 	// --- Preamble
 
 	//	Starting and ending iterators for buth meshes
-	Finite_face_iterator_2 finiteFacesBegin_A = dtA.mesh.finite_faces_begin();
-	Finite_face_iterator_2 finiteFacesEnd_A = dtA.mesh.finite_faces_end();
+	Finite_faces_iterator_2 finiteFacesBegin_A = dtA.mesh.finite_faces_begin();
+	Finite_faces_iterator_2 finiteFacesEnd_A = dtA.mesh.finite_faces_end();
 
-	Finite_face_iterator_2 finiteFacesBegin_B = dtB.mesh.finite_faces_begin();
-	Finite_face_iterator_2 finiteFacesEnd_B = dtB.mesh.finite_faces_end();
+	Finite_faces_iterator_2 finiteFacesBegin_B = dtB.mesh.finite_faces_begin();
+	Finite_faces_iterator_2 finiteFacesEnd_B = dtB.mesh.finite_faces_end();
 
 	//	Total number of intersections found
 	int nbOfIntersections = 0;
 
-	for(Finite_face_iterator_2 itB = finiteFacesBegin_B; itB != finiteFacesEnd_B; ++itB)
+	for(Finite_faces_iterator_2 itB = finiteFacesBegin_B; itB != finiteFacesEnd_B; ++itB)
 	{
-		for(Finite_face_iterator_2 itA = finiteFacesBegin_A; itA != finiteFacesEnd_A; ++itA)
+		for(Finite_faces_iterator_2 itA = finiteFacesBegin_A; itA != finiteFacesEnd_A; ++itA)
 		{
 
 			// Crossing

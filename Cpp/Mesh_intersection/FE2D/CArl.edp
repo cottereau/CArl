@@ -345,7 +345,7 @@ gnuplotFile	<< "set title \"LATIN tolerance\"" << endl
 			<< "set xrange [1:]" << endl
 		    << "set xlabel \"Iteration\"" << endl
 			<< "set ylabel \"Tolerance\"" << endl
-			<< "plot \"CArl_tol.dat\" w lp lc 1 notitle" << endl
+			<< "plot \"FE2DLatin_tol.dat\" w lp lc 1 notitle" << endl
 			<< "pause 1" << endl
 			<< "set term eps" << endl
 			<< "set output \"CArl_tol.eps\" " << endl

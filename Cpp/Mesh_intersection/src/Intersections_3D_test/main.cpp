@@ -7,7 +7,7 @@
 
 #include "main.h"
 
-using namespace CGAL::parameters;
+//using namespace CGAL::parameters;
 
 int main(int argc, char *argv[])
 {
