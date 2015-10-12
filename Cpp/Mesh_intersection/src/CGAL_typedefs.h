@@ -12,6 +12,8 @@
 
 //	--- CGAL kernel and common headers
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include <CGAL/Cartesian_converter.h>
 #include <CGAL/Intersections.h>
 #include <CGAL/result_of.h>
 #include "common_header.h"
@@ -35,36 +37,67 @@
 #include <CGAL/Triangulation_vertex_base_with_info_3.h>
 #include <CGAL/Triangulation_cell_base_with_info_3.h>
 
+#include <CGAL/Nef_polyhedron_3.h>
+
 // Structure used to add extra information to the 2D triangles
 struct VertexInfo_2
 {
 	int ExtIndex;
+	bool ToAdd;
 };
 
 struct VertexInfo_3
 {
 	int ExtIndex;
+	bool ToAdd;
 };
 
 struct FaceInfo
 {
 	int ExtIndex;
-	int ExtImportedIndex;
+	std::vector<int> faceHasNeighbour;
+	bool ToAdd;
 };
 
 struct CellInfo
 {
 	int ExtIndex;
-	int ExtImportedIndex;
+	std::vector<int> faceHasNeighbour;
+	bool ToAdd;
 };
 
 /*
  * 		CGAL typedefs
  */
 
-// --- Kernel type
+// --- Kernel types
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
+typedef CGAL::Exact_predicates_exact_constructions_kernel ExactKernel;
 
+typedef CGAL::Cartesian_converter<Kernel,ExactKernel>	Kernel_to_ExactKernel;
+typedef CGAL::Cartesian_converter<ExactKernel,Kernel>	ExactKernel_to_Kernel;
+
+// EXACT
+// --- Geometry typedefs
+typedef ExactKernel::Point_2	 	ExactPoint_2;
+typedef ExactKernel::Triangle_2		ExactTriangle_2;
+typedef ExactKernel::Segment_2		ExactSegment_2;
+
+typedef ExactKernel::Point_3		ExactPoint_3;
+typedef ExactKernel::Triangle_3 	ExactTriangle_3;
+typedef ExactKernel::Segment_3		ExactSegment_3;
+
+typedef CGAL::Polygon_2<ExactKernel>		ExactPolygon_2;
+typedef CGAL::Polyhedron_3<ExactKernel>		ExactPolyhedron;
+typedef CGAL::Tetrahedron_3<ExactKernel>	ExactTetrahedron;
+
+typedef CGAL::Nef_polyhedron_3<ExactKernel>  	Nef_Polyhedron;
+typedef Nef_Polyhedron::Plane_3  				NefPlane_3;
+
+typedef CGAL::Polyhedron_3<ExactKernel,CGAL::Polyhedron_items_3>
+														ExactPolyhedralSurface;
+
+// INEXACT
 // --- Geometry typedefs
 typedef Kernel::Point_2	 	Point_2;
 typedef Kernel::Triangle_2	Triangle_2;

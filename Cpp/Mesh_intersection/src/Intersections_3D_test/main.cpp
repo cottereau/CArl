@@ -7,63 +7,96 @@
 
 #include "main.h"
 
-//using namespace CGAL::parameters;
 
 int main(int argc, char *argv[])
 {
-    Point_3 pA( 0.0, 0.0, 0.0);
-    Point_3 qA( 2.0, 2.0, 2.0);
+	// Declare meshes
+	std::string filenameA = "data/3D/test_inter_A_3D.mesh";
+	std::string filenameB = "data/3D/test_inter_B_3D.mesh";
+	std::string filenameOutput = "data/3D/test_inter_I_3D.mesh";
 
-    Point_3 pB( 0.5, 0.5, 0.5);
-    Point_3 qB( 1.5, 1.5, 1.5);
-
-    int nA, nB;
 	if(argc == 3)
 	{
-		nA = atoi(argv[1]);
-		nB = atoi(argv[2]);
+		filenameA = argv[1];
+		filenameB = argv[2];
 	}
 
-    Triangular_Mesh_3 dt3A, dt3B;
+	if(argc == 4)
+	{
+		filenameA = argv[1];
+		filenameB = argv[2];
+		filenameOutput = argv[3];
+	}
 
-    dt3A.GenerateTestMeshCube(pA,qA,nA,nA,nA);
-    dt3B.GenerateTestMeshCube(pB,qB,nB,nB,nB);
+	// --- Preamble - timing variables
+	std::chrono::time_point<std::chrono::system_clock> 	timing_start,
+														timing_end,
+														timing_start_total,
+														timing_end_total;
 
-    std::ofstream outputF;
+	std::chrono::duration<double> 	elapsed_seconds_input,
+									elapsed_seconds_intersections,
+									elapsed_seconds_export,
+									elapsed_seconds_total;
 
-    std::vector<Polyhedron> 	outputBrute;
-    std::vector<Polyhedron> 	outputFast;
+	std::cout << " ---> Mesh files : " << std::endl;
+	std::cout << "           (input) " << filenameA << std::endl;
+	std::cout << "                   " << filenameB << std::endl;
+	std::cout << "          (output) " << filenameOutput << std::endl;
 
-//    BuildMeshIntersections_Brute(dt3A,dt3B,outputBrute);
-//
-//    outputF.open("3D_mesh_intersections_brute.dat",std::ios::trunc);
-//    for(unsigned int iii = 0; iii < outputBrute.size(); ++iii)
-//    {
-//    	outputF << outputBrute[iii] << std::endl;
-//    }
-//    outputF.close();
+	// Import meshes
+	timing_start 		= std::chrono::system_clock::now();
+	timing_start_total 	= std::chrono::system_clock::now();
 
-    BuildMeshIntersections(dt3A,dt3B,outputFast);
+	std::cout << " ---> Importing mesh ... ";
+	std::string sillyname;
+	sillyname = "Testing A";
+	Triangular_Mesh_3 dtA(sillyname,filenameA);
 
-//    outputF.open("3D_mesh_intersections_fast.dat",std::ios::trunc);
-//    for(unsigned int iii = 0; iii < outputFast.size(); ++iii)
-//    {
-//    	outputF << outputFast[iii] << std::endl;
-//    }
-//    outputF.close();
+	sillyname = "Testing B";
+	Triangular_Mesh_3 dtB(sillyname,filenameB);
+	std::cout << "finished!" << std::endl;
 
-//    CGAL::Geomview_stream gv(CGAL::Bbox_3(-1, -1, -1, 2.5, 2.5, 2.5));
-//    gv.set_line_width(4);
-//
-//    gv.set_bg_color(CGAL::Color(0, 200, 200));
-//
-//    gv << dt3A.mesh;
-//    gv << dt3B.mesh;
-//
-//    std::cout << "Enter a key to finish" << std::endl;
-//    std::cin.ignore();
+	timing_end   = std::chrono::system_clock::now();
+	elapsed_seconds_input = timing_end-timing_start;
+
+	// ****************************** //
+	// Intersection                   //
+	// ****************************** //
+	timing_start = std::chrono::system_clock::now();
+
+	std::cout << " ---> Building intersections ... ";
+	std::cout.flush();
+	TriangulationIntersectionVisitor_3 	tallyFastVector(std::min(dtA.LengthOrder(),dtB.LengthOrder()),
+															36*std::min(dtA.get_nb_of_cells(),dtB.get_nb_of_cells()));
+
+	BuildMeshIntersections(dtA,dtB,tallyFastVector);
+	std::cout << "finished!" << std::endl;
+
+	timing_end   = std::chrono::system_clock::now();
+	elapsed_seconds_intersections = timing_end-timing_start;
+
+	timing_start = std::chrono::system_clock::now();
+
+	// Export the meshes
+	std::cout << " ---> Exporting data ... ";
+	tallyFastVector.IntersectionTDS_3.ExportMedit(filenameOutput);
+	std::cout << "finished!" << std::endl;
+
+	timing_end   		= std::chrono::system_clock::now();
+	timing_end_total	= std::chrono::system_clock::now();
+
+	elapsed_seconds_export = timing_end-timing_start;
+	elapsed_seconds_total  = timing_end_total - timing_start_total;
+
+	std::cout << " ---> Timing : " << std::endl;
+	std::cout 	<< dtA.get_nb_of_cells() << " "
+				<< dtB.get_nb_of_cells() << " "
+				<< tallyFastVector.IntersectionTDS_3.get_nb_of_cells() << " "
+				<< elapsed_seconds_input.count() << " "
+				<< elapsed_seconds_intersections.count() << " "
+				<< elapsed_seconds_export.count() << " "
+				<< elapsed_seconds_total.count() << std::endl;
 
 	return 0;
 }
-
-

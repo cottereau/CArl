@@ -16,29 +16,27 @@ void Intersection_Mesh_3::InitializeIntersection(int& iPreallocation)
 	mInterVertexHandleIndexMap.reserve(iPreallocation);
 	mInterVertexIncidentCells.reserve(iPreallocation);
 
-	mInterVertexHandle.resize(6);
-	mInterVertexIndex.resize(6);
+	mInterVertexHandle.resize(36);
+	mInterVertexIndex.resize(36);
 }
 
-void Intersection_Mesh_3::AddPolyhedron(const Triangle_3& t)
+void Intersection_Mesh_3::AddPolyhedron(const Tetrahedron& t)
 {
 //	Point_3 dummyPoint;
 	std::pair<int, Cell_handle_3> dummyPair;
 
-	for(int iii = 0; iii < 3; ++iii)
+	for(int iii = 0; iii < 4; ++iii)
 	{
 		AddPolyhedronVertex(iii,t);
-//		dummyPoint = t.vertex(iii);
-//
-//		UpdateBbox(dummyPoint);
-//		mInterVertexHandle[iii] = Create_Vertex_3(dummyPoint,mInterVertexDummyIndex);
-//		mVertexHandleIndexMap[mInterVertexDummyIndex]=mInterVertexHandle[iii];
-//		mInterVertexIndex[iii] = mInterVertexDummyIndex;
-//		++mInterVertexDummyIndex;
 	}
 
-	Cell_handle_3 dummyCell = Create_Cell_3(mInterVertexHandle[2],mInterVertexHandle[1],mInterVertexHandle[0],mInterCellDummyIndex);
-	for(int iii = 0; iii < 3; ++iii)
+	Cell_handle_3 dummyCell = Create_Cell_3(
+									mInterVertexHandle[3],
+									mInterVertexHandle[2],
+									mInterVertexHandle[1],
+									mInterVertexHandle[0],
+									mInterCellDummyIndex);
+	for(int iii = 0; iii < 4; ++iii)
 	{
 		dummyPair = std::pair<int, Cell_handle_3>(mInterVertexIndex[iii],dummyCell);
 		mInterVertexIncidentCells.insert(dummyPair);
@@ -47,8 +45,7 @@ void Intersection_Mesh_3::AddPolyhedron(const Triangle_3& t)
 	++mInterCellDummyIndex;
 };
 
-template<typename GeometryType>
-void Intersection_Mesh_3::AddPolyhedronVertex(int iii, GeometryType& t)
+void Intersection_Mesh_3::AddPolyhedronVertex(int iii, const Tetrahedron& t)
 {
 	Point_3 dummyPoint;
 	dummyPoint = t.vertex(iii);
@@ -60,86 +57,95 @@ void Intersection_Mesh_3::AddPolyhedronVertex(int iii, GeometryType& t)
 	++mInterVertexDummyIndex;
 }
 
-void Intersection_Mesh_3::AddPolyhedron(Polyhedron& t,int nbOfVertices, double CharacteristicArea)
+void Intersection_Mesh_3::AddPolyhedronVertex(int iii, Point_3& dummyPoint)
 {
-	Triangle_3	dummyTriangle;
+	UpdateBbox(dummyPoint);
+	mInterVertexHandle[iii] = Create_Vertex_3(dummyPoint,mInterVertexDummyIndex);
+	mVertexHandleIndexMap[mInterVertexDummyIndex]=mInterVertexHandle[iii];
+	mInterVertexIndex[iii] = mInterVertexDummyIndex;
+	++mInterVertexDummyIndex;
+}
 
-
+void Intersection_Mesh_3::AddPolyhedron(Polyhedron& t, double CharacteristicVolume)
+{
+	polyTriang.ConvertToTriangulation_3(t);
 	Cell_handle_3 dummyCell;
+	Vertex_handle_3 bufferHandle0, bufferHandle1, bufferHandle2, bufferHandle3;
+
 	std::pair<int, Cell_handle_3> dummyPair;
-	bool createdPrevious = false;
 
-	// Add first vertex
-	AddPolyhedronVertex(0,t);
-
-	for(int iii = 2; iii < nbOfVertices; ++iii)
+	// First, test if the cells should be added
+	for(Finite_cells_iterator_3 itSubCells = polyTriang.mesh.finite_cells_begin();
+								itSubCells != polyTriang.mesh.finite_cells_end();
+								++itSubCells)
 	{
-		dummyTriangle = Triangle_3(mInterVertexHandle[0]->point(),t.vertex(iii-1),t.vertex(iii));
-		if(std::abs(dummyTriangle.area()) > CharacteristicArea)
+		dummyTetrahedron = Tetrahedron(	itSubCells->vertex(0)->point(),
+										itSubCells->vertex(1)->point(),
+										itSubCells->vertex(2)->point(),
+										itSubCells->vertex(3)->point());
+		if(std::abs(dummyTetrahedron.volume()) > CharacteristicVolume)
 		{
-			// Create the vertices
-			if(!createdPrevious)
+			itSubCells->info().ToAdd = true;
+			for(int iii = 0; iii < 4; ++iii)
 			{
-				AddPolyhedronVertex(iii-1,t);
+				itSubCells->vertex(iii)->info().ToAdd = true;
 			}
-			AddPolyhedronVertex(iii,t);
-
-			// Create face
-			dummyCell = Create_Cell_3(mInterVertexHandle[iii],mInterVertexHandle[iii-1],mInterVertexHandle[0],mInterCellDummyIndex);
-						dummyPair = std::pair<int, Cell_handle_3>(mInterVertexIndex[0],dummyCell);
-						mInterVertexIncidentCells.insert(dummyPair);
-						dummyPair = std::pair<int, Cell_handle_3>(mInterVertexIndex[iii-1],dummyCell);
-						mInterVertexIncidentCells.insert(dummyPair);
-						dummyPair = std::pair<int, Cell_handle_3>(mInterVertexIndex[iii],dummyCell);
-						mInterVertexIncidentCells.insert(dummyPair);
-
-			++mInterCellDummyIndex;
-
-			createdPrevious = true;
-		}
-		else
-		{
-			createdPrevious = false;
 		}
 	}
 
-//	for(int iii = 0; iii < nbOfVertices; ++iii)
-//	{
-//		dummyPoint = t.vertex(iii);
-//
-//		UpdateBbox(dummyPoint);
-//		mInterVertexHandle[iii] = Create_Vertex_3(dummyPoint,mInterVertexDummyIndex);
-//		mVertexHandleIndexMap[mInterVertexDummyIndex]=mInterVertexHandle[iii];
-//		mInterVertexIndex[iii] = mInterVertexDummyIndex;
-//		++mInterVertexDummyIndex;
-//	}
-//
-//	for(int iii = 2; iii < nbOfVertices; ++iii)
-//	{
-//		dummyTriangle = Triangle_3(mInterVertexHandle[0]->point(),mInterVertexHandle[iii-1]->point(),mInterVertexHandle[iii]->point());
-//		if(std::abs(dummyTriangle.area()) > CharacteristicArea)
-//		{
-//			dummyCell = Create_Cell_3(mInterVertexHandle[iii],mInterVertexHandle[iii-1],mInterVertexHandle[0],mInterCellDummyIndex);
-//			dummyPair = std::pair<int, Cell_handle_3>(mInterVertexIndex[0],dummyCell);
-//			mInterVertexIncidentCells.insert(dummyPair);
-//			dummyPair = std::pair<int, Cell_handle_3>(mInterVertexIndex[iii-1],dummyCell);
-//			mInterVertexIncidentCells.insert(dummyPair);
-//			dummyPair = std::pair<int, Cell_handle_3>(mInterVertexIndex[iii],dummyCell);
-//			mInterVertexIncidentCells.insert(dummyPair);
-//
-//			++mInterCellDummyIndex;
-//		}
-//	}
+	// Insert the vertices
+	int dummyIndex = 0;
+	for(Finite_vertices_iterator_3 itSubVertices = polyTriang.mesh.finite_vertices_begin();
+								itSubVertices != polyTriang.mesh.finite_vertices_end();
+								++itSubVertices)
+	{
+		if(itSubVertices->info().ToAdd==true)
+		{
+			AddPolyhedronVertex(dummyIndex,itSubVertices->point());
+			itSubVertices->info().ExtIndex = dummyIndex;
+			++dummyIndex;
+		}
+	}
+
+	// Insert the cells
+	for(Finite_cells_iterator_3 itSubCells = polyTriang.mesh.finite_cells_begin();
+								itSubCells != polyTriang.mesh.finite_cells_end();
+								++itSubCells)
+	{
+		if(itSubCells->info().ToAdd==true)
+		{
+			bufferHandle0 = mInterVertexHandle[itSubCells->vertex(0)->info().ExtIndex];
+			bufferHandle1 = mInterVertexHandle[itSubCells->vertex(1)->info().ExtIndex];
+			bufferHandle2 = mInterVertexHandle[itSubCells->vertex(2)->info().ExtIndex];
+			bufferHandle3 = mInterVertexHandle[itSubCells->vertex(3)->info().ExtIndex];
+
+			dummyCell = Create_Cell_3(bufferHandle0,bufferHandle1,bufferHandle2,bufferHandle3,mInterCellDummyIndex);
+
+			dummyPair = std::pair<int, Cell_handle_3>(mInterVertexIndex[itSubCells->vertex(0)->info().ExtIndex],dummyCell);
+			mInterVertexIncidentCells.insert(dummyPair);
+			dummyPair = std::pair<int, Cell_handle_3>(mInterVertexIndex[itSubCells->vertex(1)->info().ExtIndex],dummyCell);
+			mInterVertexIncidentCells.insert(dummyPair);
+			dummyPair = std::pair<int, Cell_handle_3>(mInterVertexIndex[itSubCells->vertex(2)->info().ExtIndex],dummyCell);
+			mInterVertexIncidentCells.insert(dummyPair);
+			dummyPair = std::pair<int, Cell_handle_3>(mInterVertexIndex[itSubCells->vertex(3)->info().ExtIndex],dummyCell);
+			mInterVertexIncidentCells.insert(dummyPair);
+
+			++mInterCellDummyIndex;
+		}
+	}
 };
 
 void Intersection_Mesh_3::CleanUp()
 {
-	set_nb_of_faces();
+	set_nb_of_cells();
 	set_nb_of_vertices();
 
 	mEps = LengthOrder()*pow(10,-6);
 	mGridNx = XLength()/mEps + 1;
 	mGridNy = YLength()/mEps + 1;
+	mGridNz = ZLength()/mEps + 1;
+
+	mInterVertexToRemoveMap.reserve(mSize_vertices);
 
 	// For all the vertices, test if they are valid
 	for(Finite_vertices_iterator_3 	itVertex = mesh.finite_vertices_begin();
@@ -149,7 +155,17 @@ void Intersection_Mesh_3::CleanUp()
 		TestVertex(itVertex);
 	}
 
-	set_nb_of_faces();
+	Vertex_handle_3 removableHandle;
+	for(std::unordered_set<int>::iterator itRemove = mInterVertexToRemoveMap.begin();
+			itRemove != mInterVertexToRemoveMap.end();
+			++itRemove)
+	{
+		removableHandle = mVertexHandleIndexMap[*itRemove];
+		mVertexHandleIndexMap.erase(*itRemove);
+		mesh.tds().delete_vertex(removableHandle);
+	}
+
+	set_nb_of_cells();
 	set_nb_of_vertices();
 
 	// Now, reorder them
@@ -161,6 +177,15 @@ void Intersection_Mesh_3::CleanUp()
 		itVertex->info().ExtIndex = dummyIdx;
 		++dummyIdx;
 	}
+
+	// Set data structures
+	set_indexes();
+
+//	// Connect tetrahedrons
+//	ConnectTetrahedrons_3();
+//
+//	// Create and connect the INFINITE cells
+//	AddInfiniteCells_3();
 }
 
 void Intersection_Mesh_3::TestVertex(Vertex_handle_3 itVertex)
@@ -178,30 +203,25 @@ void Intersection_Mesh_3::TestVertex(Vertex_handle_3 itVertex)
 	else
 	{
 		// Vertex is already in the map - must remove it!
-		faceRangeIteratorPair CellRange = mInterVertexIncidentCells.equal_range(itVertex->info().ExtIndex);
-		faceRangeIterator	  itRange = CellRange.first;
+		cellRangeIteratorPair CellRange = mInterVertexIncidentCells.equal_range(itVertex->info().ExtIndex);
+		cellRangeIterator	  itRange = CellRange.first;
 
 		for( ; itRange != CellRange.second;++itRange)
 		{
 			// Exchange vertex on the first triangle
 			triangleVertexIdx = itRange->second->index(itVertex);
 			itRange->second->set_vertex(triangleVertexIdx,searchVertex->second);
-			searchVertex->second->set_face(itRange->second);
+			searchVertex->second->set_cell(itRange->second);
 		}
 
-		// Remove it!
-		mVertexHandleIndexMap.erase(itVertex->info().ExtIndex);
-		mesh.delete_vertex(itVertex);
+		// Mark for removal!
+		mInterVertexToRemoveMap.insert(itVertex->info().ExtIndex);
 	}
 }
 
 long int Intersection_Mesh_3::ConvertToIndex(Point_3 iPoint)
 {
-	return lround((iPoint.x() - mPointMin.x())/mEps)*mGridNy + lround((iPoint.y() - mPointMin.y())/mEps);
+	return lround((iPoint.x() - mPointMin.x())/mEps)*mGridNy*mGridNz
+			+ lround((iPoint.y() - mPointMin.y())/mEps)*mGridNz
+			+ lround((iPoint.z() - mPointMin.z())/mEps);
 }
-
-template
-void Intersection_Mesh_3::AddPolyhedronVertex<Polyhedron>(int iii, Polyhedron& t);
-
-template
-void Intersection_Mesh_3::AddPolyhedronVertex<Triangle_3>(int iii, Triangle_3& t);

@@ -12,6 +12,8 @@
 #include "CGAL_typedefs.h"
 #include "triangular_mesh_2.h"
 #include "intersection_functions_2.h"
+#include "triangular_mesh_3.h"
+#include "intersection_functions_3.h"
 
 boost::random::lagged_fibonacci607 m_rng(42);
 

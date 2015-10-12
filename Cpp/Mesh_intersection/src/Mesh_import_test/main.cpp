@@ -9,13 +9,19 @@
 
 int main(int argc, char *argv[])
 {
-	std::string meshTestFilename = "data/test_mesh.mesh";
-	std::string sillyName = "sillyName";
-	Triangular_Mesh_2 meshTest(sillyName,meshTestFilename);
 
-	std::string meshOutputFilename = "data/test_mesh_out.msh";
-	meshTest.ExportGmsh(meshOutputFilename);
-	meshOutputFilename = "data/test_mesh_out.mesh";
+	std::string meshTestFilename = "data/3D/test_pyramid.mesh";
+	std::string meshOutputFilename = "data/3D/test_pyramid_out.mesh";
+
+	if(argc == 3)
+	{
+		meshTestFilename = argv[1];
+		meshOutputFilename = argv[2];
+	}
+
+	std::string sillyName = "sillyName";
+
+	Triangular_Mesh_3 meshTest(sillyName,meshTestFilename);
 	meshTest.ExportMedit(meshOutputFilename);
 
 	return 0;

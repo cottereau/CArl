@@ -5,8 +5,8 @@
  *      Author: Thiago Milanetto Schlittler
  */
 
-#ifndef MAIN_H_
-#define MAIN_H_
+#ifndef MAIN_INTERSECTION_2_H_
+#define MAIN_INTERSECTION_2_H_
 
 #include "common_header.h"
 #include "CGAL_typedefs.h"

@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named import_mesh_2D
+# Target rules for targets named import_mesh
 
 # Build rule for target.
-import_mesh_2D: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 import_mesh_2D
-.PHONY : import_mesh_2D
+import_mesh: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 import_mesh
+.PHONY : import_mesh
 
 # fast build rule for target.
-import_mesh_2D/fast:
-	$(MAKE) -f CMakeFiles/import_mesh_2D.dir/build.make CMakeFiles/import_mesh_2D.dir/build
-.PHONY : import_mesh_2D/fast
+import_mesh/fast:
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/build
+.PHONY : import_mesh/fast
 
 #=============================================================================
 # Target rules for targets named intersections_2D
@@ -155,7 +155,7 @@ src/Intersections/intersection_functions_2.o: src/Intersections/intersection_fun
 
 # target to build an object file
 src/Intersections/intersection_functions_2.cpp.o:
-	$(MAKE) -f CMakeFiles/import_mesh_2D.dir/build.make CMakeFiles/import_mesh_2D.dir/src/Intersections/intersection_functions_2.cpp.o
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Intersections/intersection_functions_2.cpp.o
 	$(MAKE) -f CMakeFiles/intersections_2D.dir/build.make CMakeFiles/intersections_2D.dir/src/Intersections/intersection_functions_2.cpp.o
 .PHONY : src/Intersections/intersection_functions_2.cpp.o
 
@@ -165,7 +165,7 @@ src/Intersections/intersection_functions_2.i: src/Intersections/intersection_fun
 
 # target to preprocess a source file
 src/Intersections/intersection_functions_2.cpp.i:
-	$(MAKE) -f CMakeFiles/import_mesh_2D.dir/build.make CMakeFiles/import_mesh_2D.dir/src/Intersections/intersection_functions_2.cpp.i
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Intersections/intersection_functions_2.cpp.i
 	$(MAKE) -f CMakeFiles/intersections_2D.dir/build.make CMakeFiles/intersections_2D.dir/src/Intersections/intersection_functions_2.cpp.i
 .PHONY : src/Intersections/intersection_functions_2.cpp.i
 
@@ -175,7 +175,7 @@ src/Intersections/intersection_functions_2.s: src/Intersections/intersection_fun
 
 # target to generate assembly for a file
 src/Intersections/intersection_functions_2.cpp.s:
-	$(MAKE) -f CMakeFiles/import_mesh_2D.dir/build.make CMakeFiles/import_mesh_2D.dir/src/Intersections/intersection_functions_2.cpp.s
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Intersections/intersection_functions_2.cpp.s
 	$(MAKE) -f CMakeFiles/intersections_2D.dir/build.make CMakeFiles/intersections_2D.dir/src/Intersections/intersection_functions_2.cpp.s
 .PHONY : src/Intersections/intersection_functions_2.cpp.s
 
@@ -185,6 +185,7 @@ src/Intersections/intersection_functions_3.o: src/Intersections/intersection_fun
 
 # target to build an object file
 src/Intersections/intersection_functions_3.cpp.o:
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Intersections/intersection_functions_3.cpp.o
 	$(MAKE) -f CMakeFiles/intersections_3D.dir/build.make CMakeFiles/intersections_3D.dir/src/Intersections/intersection_functions_3.cpp.o
 .PHONY : src/Intersections/intersection_functions_3.cpp.o
 
@@ -194,6 +195,7 @@ src/Intersections/intersection_functions_3.i: src/Intersections/intersection_fun
 
 # target to preprocess a source file
 src/Intersections/intersection_functions_3.cpp.i:
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Intersections/intersection_functions_3.cpp.i
 	$(MAKE) -f CMakeFiles/intersections_3D.dir/build.make CMakeFiles/intersections_3D.dir/src/Intersections/intersection_functions_3.cpp.i
 .PHONY : src/Intersections/intersection_functions_3.cpp.i
 
@@ -203,6 +205,7 @@ src/Intersections/intersection_functions_3.s: src/Intersections/intersection_fun
 
 # target to generate assembly for a file
 src/Intersections/intersection_functions_3.cpp.s:
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Intersections/intersection_functions_3.cpp.s
 	$(MAKE) -f CMakeFiles/intersections_3D.dir/build.make CMakeFiles/intersections_3D.dir/src/Intersections/intersection_functions_3.cpp.s
 .PHONY : src/Intersections/intersection_functions_3.cpp.s
 
@@ -212,7 +215,7 @@ src/Intersections/triangular_mesh_intersection_2.o: src/Intersections/triangular
 
 # target to build an object file
 src/Intersections/triangular_mesh_intersection_2.cpp.o:
-	$(MAKE) -f CMakeFiles/import_mesh_2D.dir/build.make CMakeFiles/import_mesh_2D.dir/src/Intersections/triangular_mesh_intersection_2.cpp.o
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Intersections/triangular_mesh_intersection_2.cpp.o
 	$(MAKE) -f CMakeFiles/intersections_2D.dir/build.make CMakeFiles/intersections_2D.dir/src/Intersections/triangular_mesh_intersection_2.cpp.o
 .PHONY : src/Intersections/triangular_mesh_intersection_2.cpp.o
 
@@ -222,7 +225,7 @@ src/Intersections/triangular_mesh_intersection_2.i: src/Intersections/triangular
 
 # target to preprocess a source file
 src/Intersections/triangular_mesh_intersection_2.cpp.i:
-	$(MAKE) -f CMakeFiles/import_mesh_2D.dir/build.make CMakeFiles/import_mesh_2D.dir/src/Intersections/triangular_mesh_intersection_2.cpp.i
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Intersections/triangular_mesh_intersection_2.cpp.i
 	$(MAKE) -f CMakeFiles/intersections_2D.dir/build.make CMakeFiles/intersections_2D.dir/src/Intersections/triangular_mesh_intersection_2.cpp.i
 .PHONY : src/Intersections/triangular_mesh_intersection_2.cpp.i
 
@@ -232,9 +235,39 @@ src/Intersections/triangular_mesh_intersection_2.s: src/Intersections/triangular
 
 # target to generate assembly for a file
 src/Intersections/triangular_mesh_intersection_2.cpp.s:
-	$(MAKE) -f CMakeFiles/import_mesh_2D.dir/build.make CMakeFiles/import_mesh_2D.dir/src/Intersections/triangular_mesh_intersection_2.cpp.s
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Intersections/triangular_mesh_intersection_2.cpp.s
 	$(MAKE) -f CMakeFiles/intersections_2D.dir/build.make CMakeFiles/intersections_2D.dir/src/Intersections/triangular_mesh_intersection_2.cpp.s
 .PHONY : src/Intersections/triangular_mesh_intersection_2.cpp.s
+
+src/Intersections/triangular_mesh_intersection_3.o: src/Intersections/triangular_mesh_intersection_3.cpp.o
+
+.PHONY : src/Intersections/triangular_mesh_intersection_3.o
+
+# target to build an object file
+src/Intersections/triangular_mesh_intersection_3.cpp.o:
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Intersections/triangular_mesh_intersection_3.cpp.o
+	$(MAKE) -f CMakeFiles/intersections_3D.dir/build.make CMakeFiles/intersections_3D.dir/src/Intersections/triangular_mesh_intersection_3.cpp.o
+.PHONY : src/Intersections/triangular_mesh_intersection_3.cpp.o
+
+src/Intersections/triangular_mesh_intersection_3.i: src/Intersections/triangular_mesh_intersection_3.cpp.i
+
+.PHONY : src/Intersections/triangular_mesh_intersection_3.i
+
+# target to preprocess a source file
+src/Intersections/triangular_mesh_intersection_3.cpp.i:
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Intersections/triangular_mesh_intersection_3.cpp.i
+	$(MAKE) -f CMakeFiles/intersections_3D.dir/build.make CMakeFiles/intersections_3D.dir/src/Intersections/triangular_mesh_intersection_3.cpp.i
+.PHONY : src/Intersections/triangular_mesh_intersection_3.cpp.i
+
+src/Intersections/triangular_mesh_intersection_3.s: src/Intersections/triangular_mesh_intersection_3.cpp.s
+
+.PHONY : src/Intersections/triangular_mesh_intersection_3.s
+
+# target to generate assembly for a file
+src/Intersections/triangular_mesh_intersection_3.cpp.s:
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Intersections/triangular_mesh_intersection_3.cpp.s
+	$(MAKE) -f CMakeFiles/intersections_3D.dir/build.make CMakeFiles/intersections_3D.dir/src/Intersections/triangular_mesh_intersection_3.cpp.s
+.PHONY : src/Intersections/triangular_mesh_intersection_3.cpp.s
 
 src/Intersections_2D_test/main.o: src/Intersections_2D_test/main.cpp.o
 
@@ -296,7 +329,7 @@ src/Mesh_import_test/main.o: src/Mesh_import_test/main.cpp.o
 
 # target to build an object file
 src/Mesh_import_test/main.cpp.o:
-	$(MAKE) -f CMakeFiles/import_mesh_2D.dir/build.make CMakeFiles/import_mesh_2D.dir/src/Mesh_import_test/main.cpp.o
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Mesh_import_test/main.cpp.o
 .PHONY : src/Mesh_import_test/main.cpp.o
 
 src/Mesh_import_test/main.i: src/Mesh_import_test/main.cpp.i
@@ -305,7 +338,7 @@ src/Mesh_import_test/main.i: src/Mesh_import_test/main.cpp.i
 
 # target to preprocess a source file
 src/Mesh_import_test/main.cpp.i:
-	$(MAKE) -f CMakeFiles/import_mesh_2D.dir/build.make CMakeFiles/import_mesh_2D.dir/src/Mesh_import_test/main.cpp.i
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Mesh_import_test/main.cpp.i
 .PHONY : src/Mesh_import_test/main.cpp.i
 
 src/Mesh_import_test/main.s: src/Mesh_import_test/main.cpp.s
@@ -314,7 +347,7 @@ src/Mesh_import_test/main.s: src/Mesh_import_test/main.cpp.s
 
 # target to generate assembly for a file
 src/Mesh_import_test/main.cpp.s:
-	$(MAKE) -f CMakeFiles/import_mesh_2D.dir/build.make CMakeFiles/import_mesh_2D.dir/src/Mesh_import_test/main.cpp.s
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Mesh_import_test/main.cpp.s
 .PHONY : src/Mesh_import_test/main.cpp.s
 
 src/Triangular_mesh/triangular_mesh_2.o: src/Triangular_mesh/triangular_mesh_2.cpp.o
@@ -323,7 +356,7 @@ src/Triangular_mesh/triangular_mesh_2.o: src/Triangular_mesh/triangular_mesh_2.c
 
 # target to build an object file
 src/Triangular_mesh/triangular_mesh_2.cpp.o:
-	$(MAKE) -f CMakeFiles/import_mesh_2D.dir/build.make CMakeFiles/import_mesh_2D.dir/src/Triangular_mesh/triangular_mesh_2.cpp.o
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Triangular_mesh/triangular_mesh_2.cpp.o
 	$(MAKE) -f CMakeFiles/intersections_2D.dir/build.make CMakeFiles/intersections_2D.dir/src/Triangular_mesh/triangular_mesh_2.cpp.o
 .PHONY : src/Triangular_mesh/triangular_mesh_2.cpp.o
 
@@ -333,7 +366,7 @@ src/Triangular_mesh/triangular_mesh_2.i: src/Triangular_mesh/triangular_mesh_2.c
 
 # target to preprocess a source file
 src/Triangular_mesh/triangular_mesh_2.cpp.i:
-	$(MAKE) -f CMakeFiles/import_mesh_2D.dir/build.make CMakeFiles/import_mesh_2D.dir/src/Triangular_mesh/triangular_mesh_2.cpp.i
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Triangular_mesh/triangular_mesh_2.cpp.i
 	$(MAKE) -f CMakeFiles/intersections_2D.dir/build.make CMakeFiles/intersections_2D.dir/src/Triangular_mesh/triangular_mesh_2.cpp.i
 .PHONY : src/Triangular_mesh/triangular_mesh_2.cpp.i
 
@@ -343,7 +376,7 @@ src/Triangular_mesh/triangular_mesh_2.s: src/Triangular_mesh/triangular_mesh_2.c
 
 # target to generate assembly for a file
 src/Triangular_mesh/triangular_mesh_2.cpp.s:
-	$(MAKE) -f CMakeFiles/import_mesh_2D.dir/build.make CMakeFiles/import_mesh_2D.dir/src/Triangular_mesh/triangular_mesh_2.cpp.s
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Triangular_mesh/triangular_mesh_2.cpp.s
 	$(MAKE) -f CMakeFiles/intersections_2D.dir/build.make CMakeFiles/intersections_2D.dir/src/Triangular_mesh/triangular_mesh_2.cpp.s
 .PHONY : src/Triangular_mesh/triangular_mesh_2.cpp.s
 
@@ -353,6 +386,7 @@ src/Triangular_mesh/triangular_mesh_3.o: src/Triangular_mesh/triangular_mesh_3.c
 
 # target to build an object file
 src/Triangular_mesh/triangular_mesh_3.cpp.o:
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Triangular_mesh/triangular_mesh_3.cpp.o
 	$(MAKE) -f CMakeFiles/intersections_3D.dir/build.make CMakeFiles/intersections_3D.dir/src/Triangular_mesh/triangular_mesh_3.cpp.o
 .PHONY : src/Triangular_mesh/triangular_mesh_3.cpp.o
 
@@ -362,6 +396,7 @@ src/Triangular_mesh/triangular_mesh_3.i: src/Triangular_mesh/triangular_mesh_3.c
 
 # target to preprocess a source file
 src/Triangular_mesh/triangular_mesh_3.cpp.i:
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Triangular_mesh/triangular_mesh_3.cpp.i
 	$(MAKE) -f CMakeFiles/intersections_3D.dir/build.make CMakeFiles/intersections_3D.dir/src/Triangular_mesh/triangular_mesh_3.cpp.i
 .PHONY : src/Triangular_mesh/triangular_mesh_3.cpp.i
 
@@ -371,6 +406,7 @@ src/Triangular_mesh/triangular_mesh_3.s: src/Triangular_mesh/triangular_mesh_3.c
 
 # target to generate assembly for a file
 src/Triangular_mesh/triangular_mesh_3.cpp.s:
+	$(MAKE) -f CMakeFiles/import_mesh.dir/build.make CMakeFiles/import_mesh.dir/src/Triangular_mesh/triangular_mesh_3.cpp.s
 	$(MAKE) -f CMakeFiles/intersections_3D.dir/build.make CMakeFiles/intersections_3D.dir/src/Triangular_mesh/triangular_mesh_3.cpp.s
 .PHONY : src/Triangular_mesh/triangular_mesh_3.cpp.s
 
@@ -380,9 +416,9 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... import_mesh_2D"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... import_mesh"
 	@echo "... intersections_3D"
 	@echo "... intersections_2D"
 	@echo "... src/Intersections/intersection_functions_2.o"
@@ -394,6 +430,9 @@ help:
 	@echo "... src/Intersections/triangular_mesh_intersection_2.o"
 	@echo "... src/Intersections/triangular_mesh_intersection_2.i"
 	@echo "... src/Intersections/triangular_mesh_intersection_2.s"
+	@echo "... src/Intersections/triangular_mesh_intersection_3.o"
+	@echo "... src/Intersections/triangular_mesh_intersection_3.i"
+	@echo "... src/Intersections/triangular_mesh_intersection_3.s"
 	@echo "... src/Intersections_2D_test/main.o"
 	@echo "... src/Intersections_2D_test/main.i"
 	@echo "... src/Intersections_2D_test/main.s"

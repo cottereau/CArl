@@ -29,6 +29,7 @@ protected:
 	int												mInterVertexDummyIndex;
 	int												mInterFaceDummyIndex;
 	std::vector<Vertex_handle_2>					mInterVertexHandle;
+
 	std::vector<int>								mInterVertexIndex;
 	std::unordered_map<long int,Vertex_handle_2>	mInterVertexHandleIndexMap;
 	std::unordered_multimap<int, Face_handle_2>		mInterVertexIncidentFaces;

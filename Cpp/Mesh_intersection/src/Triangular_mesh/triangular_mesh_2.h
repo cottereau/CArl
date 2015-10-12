@@ -30,6 +30,12 @@ protected:
 	std::unordered_map<int,Vertex_handle_2>		mVertexHandleIndexMap;
 
 	/*
+	 * --- Map linking each face index to a face handle. Needed because
+	 * 		CGAL does not have a search by "info" functionality.
+	 */
+	std::unordered_map<int,Face_handle_2>		mFaceHandleIndexMap;
+	
+	/*
 	 * --- Vector counting the number of neighbors of each triangle. Used to
 	 *		speed up some of the mesh import operations
 	 */

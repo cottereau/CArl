@@ -269,6 +269,11 @@ void IntersectTriangles(
 		TemplateVisitor& 	output
 		)
 {
+	/*
+	 * 		TODO: implement it using CGAL's Nef polyhedrons (for generality and to
+	 * 			  avoid using the inexact intersection operations)
+	 */
+
 	// Test exact intersection between "workingTriangleB" and "workingTriangleA"
 	queryIntersect = CGAL::do_intersect(
 										dtA.mesh.triangle(workingTriangleA),

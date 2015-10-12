@@ -14,7 +14,7 @@
  */
 
 // --- Includes and loads
-include "CArlFreeFemMacros.idp"
+include "../CArlFreeFemMacros.idp"
 
 // --- Program
 
@@ -29,6 +29,7 @@ int			LATINIters = 10^2;
 real		LATINTol = 1e-2;
 real		LATINRelax = 0.8;
 real[int]	LATINIndex(LATINIters);
+real		normTol = 1e-14;
 
 // Read arguments
 /*
@@ -37,7 +38,6 @@ real[int]	LATINIndex(LATINIters);
  * 	In general, it is a good idea then to associate the coarser mesh to it.
  *
  */
-verbosity = getARGV("-verbose",0);
 string InputA = getARGV("-meshA","");
 string InputB = getARGV("-meshB","");
 string InputIntersection = getARGV("-meshInter","");
@@ -71,6 +71,7 @@ int  boundBIdx1 = 10;
 func boundBX1   = 0.038625*y;
 func boundBY1   = -0.0061125*(y);
 
+
 // Physical constants
 real lambdaA = 1;
 real muA = 1;
@@ -103,8 +104,8 @@ VhAlpha isInA = (region==idxA);
 VhAlpha isInB = (region==idxB);
 VhAlpha isInI = (region==idxI);
 
-func alphaA		= 0 + (1 - alphaEps)*isInA + 0.5*isInI + alphaEps*isInB;
-func alphaB		= 0 + alphaEps*isInA + 0.5*isInI + (1 - alphaEps)*isInB;
+func alphaA		= 0 + isInA + 0.5*isInI + alphaEps*isInB;
+func alphaB		= 0 + alphaEps*isInA + 0.5*isInI + isInB;
 
 // - Main models
 
@@ -121,13 +122,13 @@ varf vStiffA([uxA,uyA],[vxA,vyA]) = int2d(ThA)(
 						alphaA*2*muA*Stiffness2D(uxA,uyA,vxA,vyA)
 						+ alphaA*lambdaA*Div2D(uxA,uyA)*Div2D(vxA,vyA)
 						)
-						+ on(10,uxA=boundAX1,uyA=boundAY1);
+						+ on(boundAIdx1,uxA=boundAX1,uyA=boundAY1);
 
 varf vStiffB([uxB,uyB],[vxB,vyB]) = int2d(ThB)(
 						alphaB*2*muB*Stiffness2D(uxB,uyB,vxB,vyB)
 						+ alphaB*lambdaB*Div2D(uxB,uyB)*Div2D(vxB,vyB)
 						)
-						+ on(10,uxB=boundBX1,uyB=boundBY1);
+						+ on(boundBIdx1,uxB=boundBX1,uyB=boundBY1);
 
 matrix MA = vStiffA(VhA,VhA,tgv=tgv);
 matrix MB = vStiffB(VhB,VhB,tgv=tgv);
@@ -135,11 +136,11 @@ matrix MB = vStiffB(VhB,VhB,tgv=tgv);
 // Vectors
 varf vForceA([dummyX,dummyY],[vx,vy]) =
 						- int2d(ThA)( fAX*vx + fAY*vy)
-						+ on(10,dummyX=boundAX1,dummyY=boundAY1);
+						+ on(boundAIdx1,dummyX=boundAX1,dummyY=boundAY1);
 
 varf vForceB([dummyX,dummyY],[vx,vy]) =
 						- int2d(ThB)( fBX*vx + fBY*vy)
-						+ on(10,dummyX=boundBX1,dummyY=boundBY1);
+						+ on(boundBIdx1,dummyX=boundBX1,dummyY=boundBY1);
 
 real[int] FA = vForceA(0,VhA,tgv=tgv);
 real[int] FB = vForceB(0,VhB,tgv=tgv);
@@ -252,7 +253,9 @@ phiB = -kdB*wB;
 int iterCount = -1;
 real LATINConv = 1 + LATINTol;
 
-while ( LATINConv > LATINTol && iterCount < LATINIters)
+real normDiff, normSum;
+
+while ( LATINConv > LATINTol && iterCount < LATINIters-1)
 {
 	++iterCount;
 
@@ -302,10 +305,19 @@ while ( LATINConv > LATINTol && iterCount < LATINIters)
 
 	phiASum = phiA + phiAOld;
 	phiBSum = phiB + phiBOld;
-	LATINConv = 2*sqrt(pow(phiADiff.l2,2) + pow(phiBDiff.l2,2)) /
-			      sqrt(pow(phiASum.l2,2)  + pow(phiBSum.l2,2));
 
-	LATINIndex[iterCount] = LATINConv;
+	normDiff = sqrt(pow(phiADiff.l2,2) + pow(phiBDiff.l2,2));
+	normSum = sqrt(pow(phiASum.l2,2)  + pow(phiBSum.l2,2));
+
+	if(normSum < normTol)
+	{
+		break;
+	}
+	else
+	{
+		LATINConv = 2*normDiff/normSum;
+		LATINIndex[iterCount] = LATINConv;
+	}
 }
 
 // Print solution!
@@ -329,25 +341,22 @@ real coef = 10;
 mesh ThASol = movemesh(ThA,[x+coef*uxA,y+coef*uyA]);
 mesh ThBSol = movemesh(ThB,[x+coef*uxB,y+coef*uyB]);
 
-// Plot deformed mesh
-plot(ThA,ThB,wait=true,ps="FE2DLatin_originalMesh.eps");
-plot(ThASol,ThBSol,wait=true,ps="FE2DLatin_deformedMesh.eps");
+savemesh(ThASol,"output/deformed_A.mesh");
+savemesh(ThBSol,"output/deformed_B.mesh");
 
 // Plot tolerance
-ofstream toleranceFile("FE2DLatin_tol.dat");
+ofstream toleranceFile("output/FE2DLatin_tol.dat");
 for (int iii = 0; iii <= iterCount; iii++)
 {
 	toleranceFile <<  iii + 1 << " " << LATINIndex[iii] << endl;
 }
 
-ofstream gnuplotFile("FE2DLatin_tol.gplot");
-gnuplotFile	<< "set title \"LATIN tolerance\"" << endl
+ofstream gnuplotFile("output/FE2DLatin_tol.gplot");
+gnuplotFile	<< "set term eps" << endl
+			<< "set output \"output/CArl_tol.eps\" " << endl
+			<< "set title \"LATIN tolerance (inverse)\"" << endl
 			<< "set xrange [1:]" << endl
 		    << "set xlabel \"Iteration\"" << endl
 			<< "set ylabel \"Tolerance\"" << endl
-			<< "plot \"FE2DLatin_tol.dat\" w lp lc 1 notitle" << endl
-			<< "pause 1" << endl
-			<< "set term eps" << endl
-			<< "set output \"CArl_tol.eps\" " << endl
-			<< "replot" << endl
+			<< "plot \"output/FE2DLatin_tol.dat\" w lp lc 1 notitle" << endl
 			<< "quit" << endl;

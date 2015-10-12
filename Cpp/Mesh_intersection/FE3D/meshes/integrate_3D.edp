@@ -1,0 +1,30 @@
+load "msh3"
+load "tetgen"
+load "medit"
+load "Element_P3"
+
+verbosity = 0;
+
+mesh3 ThA = readmesh3("FE3Dlatin_meshA.mesh");
+mesh3 ThB = readmesh3("FE3Dlatin_meshB.mesh");
+mesh3 ThC = readmesh3("FE3Dlatin_meshI.mesh");
+
+fespace VhA(ThA,P1);
+fespace VhB(ThB,P1);
+
+varf vTest1(u,v)= int3d(ThC)(u*v);
+
+int[int] I(1), J(1); real[int] C(1);
+real countTotal = 0;
+
+matrix Mabc = vTest1(VhA,VhB);
+[I,J,C] = Mabc;
+
+countTotal = 0;
+
+for(int iii = 0; iii < C.n; ++iii)
+{
+    countTotal += C[iii];
+}
+
+cout << "   Sum_ij = " << countTotal << endl;

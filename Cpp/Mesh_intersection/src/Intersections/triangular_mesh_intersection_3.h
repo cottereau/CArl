@@ -28,15 +28,21 @@ protected:
 	// Variables used to build a mesh from an intersection
 	int												mInterVertexDummyIndex;
 	int												mInterCellDummyIndex;
-	std::vector<Vertex_handle_2>					mInterVertexHandle;
+	std::vector<Vertex_handle_3>					mInterVertexHandle;
+
 	std::vector<int>								mInterVertexIndex;
-	std::unordered_map<long int,Vertex_handle_2>	mInterVertexHandleIndexMap;
+	std::unordered_map<long int,Vertex_handle_3>	mInterVertexHandleIndexMap;
+	std::unordered_set<int>							mInterVertexToRemoveMap;
 	std::unordered_multimap<int, Cell_handle_3>		mInterVertexIncidentCells;
 
 	double			mEps;
 
 	long int mGridNx;
 	long int mGridNy;
+	long int mGridNz;
+
+	Triangular_Mesh_3	polyTriang;
+	Tetrahedron 		dummyTetrahedron;
 
 public:
 
@@ -49,6 +55,7 @@ public:
 
 		mGridNx = -1;
 		mGridNy = -1;
+		mGridNz = -1;
 	}
 	// --- Methods
 	/*
@@ -59,12 +66,13 @@ public:
 	/*
 	 *  --- Triangle / polygon insertion, used with Gander's algorithm
 	 */
-	void AddPolyhedron(const Triangle_3& t);
+	void AddPolyhedron(const Tetrahedron& t);
 
-	template<typename GeometryType>
-	void AddPolyhedronVertex(int iii, GeometryType& t);
+	void AddPolyhedronVertex(int iii, const Tetrahedron& t);
 
-	void AddPolyhedron(Polyhedron& t, int nbOfVertices, double CharacteristicArea);
+	void AddPolyhedronVertex(int iii, Point_3& dummyPoint);
+
+	void AddPolyhedron(Polyhedron& t, double CharacteristicArea);
 
 	void CleanUp();
 

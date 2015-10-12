@@ -122,6 +122,8 @@ std::ostream& operator<<(std::ostream& out, IntersectionTallyVisitor& input);
  * 		'polygon' intersection results. Output is done with the 'operator<<'
  * 		overload, and is formatted for easy (machine) reading.
  *
+ * 		TODO: implement it using CGAL's Nef polyhedrons (for generality and to
+ * 			  avoid using the inexact intersection operations)
  */
 class PolyIntersectionVisitor
 	: public boost::static_visitor<void>
@@ -220,10 +222,10 @@ public:
 
 	// --- Constructors
 	// Constructor with an characteristic length (and area)
-	TriangulationIntersectionVisitor(double iLength,int iVertexMapLength)
+	TriangulationIntersectionVisitor(double iLength,int iVertexMapLength, double proportion = 0.01)
 	{
 		IntersectionTDS_2.InitializeIntersection(iVertexMapLength);
-		CharacteristicLength = iLength*pow(10,-3);
+		CharacteristicLength = iLength*proportion;
 		CharacteristicArea   = CharacteristicLength*CharacteristicLength;
 	};
 
