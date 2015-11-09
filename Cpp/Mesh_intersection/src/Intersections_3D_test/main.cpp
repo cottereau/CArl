@@ -39,6 +39,11 @@ int main(int argc, char *argv[])
 									elapsed_seconds_export,
 									elapsed_seconds_total;
 
+	std::cout << " ---> Program call : ./intersection_3D "
+			  << filenameA << " "
+			  << filenameB << " "
+			  << filenameOutput << std::endl;
+
 	std::cout << " ---> Mesh files : " << std::endl;
 	std::cout << "           (input) " << filenameA << std::endl;
 	std::cout << "                   " << filenameB << std::endl;
