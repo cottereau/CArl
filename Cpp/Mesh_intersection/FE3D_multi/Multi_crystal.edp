@@ -1,0 +1,159 @@
+/*
+ * 		Prototype of a CArl implementation using FreeFem++
+ *
+ *		To do lists
+ *
+ * 		----	Needs some more reading and testing before implementation
+ * 		TODO :	Different solvers (sparse, parallel?)
+ *		TODO :	Connecting to METIS (needed if the solver is parallel?)
+ *
+ * 		----	Long(ish) term
+ * 		TODO :	Set up a file reading interface
+ * 		TODO :	Read the model parameters from a file
+ *
+ */
+
+// --- Includes and loads
+include "../CArlFreeFemMacros.idp"
+
+// --- Program
+
+// - Preamble
+
+// Define system constants
+real tgv = 10^30;
+
+// Read arguments
+/*
+ * 		The functional space associated to "InputA"'s mesh will be as the "main"
+ * 	space - the virtual deformations of the couplings will be associated to it.
+ * 	In general, it is a good idea then to associate the coarser mesh to it.
+ *
+ */
+string InputA = getARGV("-meshA","");
+
+// Create mesh objects
+mesh3 ThA = readmesh3(InputA);
+
+// Create the functional spaces
+fespace VhA(ThA,[P1,P1,P1]);	// Model A
+
+VhA [uxA,uyA,uzA],[vxA,vyA,vzA];
+
+// - Define the models' constants
+// Load
+func fAX = 0;
+func fAY = 0;
+func fAZ = 0;
+
+// Boundary conditions
+//int leftBorder = 869;
+//int rightBorder = 868;
+
+int leftBorder = 7493;
+int rightBorder = 7492;
+
+func boundAX1   = 0;
+func boundAY1   = 0;
+func boundAZ1   = 0;
+
+func boundAX2   = 0.2;
+func boundAY2   = 0;
+func boundAZ2   = 0;
+
+// Physical constants
+real youngMean = 200;
+real muMean = 80;
+
+real youngAmpl = youngMean*0.1;
+real muAmpl = muMean*0.1;
+
+// Physical constant mask
+string crystalMask = getARGV("-pointFile","");
+
+ifstream crystalCenters(crystalMask);
+
+int nbOfCrystals = -1;
+crystalCenters >> nbOfCrystals;
+
+real[int] crystalX(nbOfCrystals);
+real[int] crystalY(nbOfCrystals);
+real[int] crystalZ(nbOfCrystals);
+int[int]  crystalIdx(nbOfCrystals);
+
+real[int] lambdaVector(nbOfCrystals);
+real[int] muVector(nbOfCrystals);
+real youngTemp = 0;
+
+fespace VhCrystalDomains(ThA,P0);
+
+cout << endl;
+cout << " --> Reading file ..." << endl;
+for(int iii = 0; iii < nbOfCrystals; ++iii)
+{
+	crystalCenters >> crystalX[iii];
+	crystalCenters >> crystalY[iii];
+	crystalCenters >> crystalZ[iii];
+	crystalCenters >> crystalIdx[iii];
+}
+
+for(int iii = 0; iii < nbOfCrystals; ++iii)
+{
+	cout << crystalX[iii] << " " << crystalY[iii] << " " << crystalZ[iii] << " " << crystalIdx[iii] << endl;
+}
+
+VhCrystalDomains reg=region;
+VhCrystalDomains[int] crystalRegions(nbOfCrystals);
+
+VhCrystalDomains tempRandomLambda;
+VhCrystalDomains tempRandomMu;
+
+cout << endl;
+cout << " --> Generating values ... " << endl;
+
+for(int iii = 0; iii < nbOfCrystals; ++iii)
+{
+	muVector[iii] = muMean + (2*randreal1() - 1) * muAmpl;
+	youngTemp = youngMean + (2*randreal1() - 1) * youngAmpl;
+	lambdaVector[iii] = lambdaF(youngTemp,muVector[iii]);
+
+	crystalRegions[iii] = (region == reg(crystalX[iii],crystalY[iii],crystalZ[iii]));
+
+	tempRandomLambda = tempRandomLambda + lambdaVector[iii]*crystalRegions[iii];
+	tempRandomMu = tempRandomMu + muVector[iii]*crystalRegions[iii];
+
+	cout << muVector[iii] << " " << lambdaVector[iii] << " " << crystalIdx[iii] << endl;
+}
+
+func randomLambda = tempRandomLambda;
+func randomMu = tempRandomMu;
+
+cout << "--> Building matrices ... " << endl;
+varf vStiff([uxA,uyA,uzA],[vxA,vyA,vzA]) = int3d(ThA)(
+						2*randomMu*Stiffness3D(uxA,uyA,uzA,vxA,vyA,vzA)
+						+ randomLambda*Div3D(uxA,uyA,uzA)*Div3D(vxA,vyA,vzA)
+						)
+						+ on(leftBorder,uxA=boundAX1,uyA=boundAY1,uzA=boundAZ1)
+						+ on(rightBorder,uxA=boundAX2,uyA=boundAY2,uzA=boundAZ2);
+
+varf vForce([dummyAX,dummyAY,dummyAZ],[vxA,vyA,vzA]) =
+						- int3d(ThA)( fAX*vxA + fAY*vyA + fAZ*vzA)
+						+ on(leftBorder,dummyAX=boundAX1,dummyAY=boundAY1,dummyAZ=boundAZ1)
+						+ on(rightBorder,dummyAX=boundAX2,dummyAY=boundAY2,dummyAZ=boundAZ2);
+
+
+matrix M = vStiff(VhA,VhA,tgv=tgv);
+
+real[int] F = vForce(0,VhA,tgv=tgv);
+
+real[int] sol = M^-1*F;
+
+uxA[] = sol;
+uyA[] = sol;
+uzA[] = sol;
+
+real coef = 10;
+
+mesh3 ThASol = movemesh3(ThA,transfo=[x+coef*uxA,y+coef*uyA,z+coef*uzA]);
+
+savemesh(ThASol,"deformed_A.mesh");

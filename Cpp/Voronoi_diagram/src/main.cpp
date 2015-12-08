@@ -18,6 +18,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <unordered_set>
+#include <queue>
 #include <chrono>
 #include <ctime>
 
@@ -25,7 +26,28 @@
 #include <boost/random/uniform_01.hpp>
 #include <boost/random/lagged_fibonacci.hpp>
 
-void ExportVoronoiToGmsh(voro::container &con, std::string &outFilename)
+#define BOUNDARY_ID_MIN_Z 1
+#define BOUNDARY_ID_MIN_Y 2
+#define BOUNDARY_ID_MAX_X 3
+#define BOUNDARY_ID_MAX_Y 4
+#define BOUNDARY_ID_MIN_X 5
+#define BOUNDARY_ID_MAX_Z 6
+
+bool IsNearBorder(double px, double py, double pz, double a, double b, double c, double d, double eps)
+{
+	double difference = std::abs(px*a + py*b + pz*c - std::abs(d));
+
+	if(difference < eps)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void ExportVoronoiToGmsh(voro::container &con, double weight, std::string &baseFilename)
 {
 	// ---------------
 	//  Preamble
@@ -62,11 +84,29 @@ void ExportVoronoiToGmsh(voro::container &con, std::string &outFilename)
 	// Dummy cell with neighbour informations
 	voro::voronoicell dummy_cell;
 
+	// Some queues to save the boundaries
+	std::queue<int> minXQueue;
+	std::queue<int> maxXQueue;
+
+	std::queue<int> minYQueue;
+	std::queue<int> maxYQueue;
+
+	std::queue<int> minZQueue;
+	std::queue<int> maxZQueue;
+
 	// -----------------------
 	//  Gmsh data structure
 	// -----------------------
 
+	double eps = 1E-8*pow((con.bx-con.ax)*(con.by-con.ay)*(con.bz-con.az)/con.total_particles(),1./3.);
+	std::cout << eps << std::endl;
+
+	std::string  outFilename = baseFilename + ".geo";
+	std::string  outFilenameCenters = baseFilename + "_centers.dat";
+
 	std::ofstream gmshOutput(outFilename, std::ofstream::trunc);
+	std::ofstream centerOutput(outFilenameCenters, std::ofstream::trunc);
+
 	std::chrono::time_point<std::chrono::system_clock> time_now;
 	time_now = std::chrono::system_clock::now();
 	std::time_t timestamp = std::chrono::system_clock::to_time_t(time_now);
@@ -102,7 +142,6 @@ void ExportVoronoiToGmsh(voro::container &con, std::string &outFilename)
 		// 		cell particle's coords.
 
 		cell_loop.pos(pos_x,pos_y,pos_z);
-//		cell_id = cell_loop.pid();
 
 		dummy_cell.vertices(pos_x,pos_y,pos_z,cell_vertices);
 		cell_nb_of_vertices = dummy_cell.p;
@@ -113,7 +152,7 @@ void ExportVoronoiToGmsh(voro::container &con, std::string &outFilename)
 						<< cell_vertices[3*iii] << ", "
 						<< cell_vertices[3*iii+1] << ", "
 						<< cell_vertices[3*iii+2] << ", "
-						<< "1.0};" << std::endl;
+						<< weight << "};" << std::endl;
 			++vertex_global_index;
 		}
 
@@ -130,6 +169,7 @@ void ExportVoronoiToGmsh(voro::container &con, std::string &outFilename)
 
 	int cell_number_of_faces = 0;
 
+	int current_vertex	 = 0;
 	int current_edge     = 0;
 	int current_face     = 0;
 
@@ -140,7 +180,22 @@ void ExportVoronoiToGmsh(voro::container &con, std::string &outFilename)
 	int face_global_index = 1;
 	int cell_global_index = 1;
 
+	double pointX = -1;
+	double pointY = -1;
+	double pointZ = -1;
+
+	int minXCounter = 0;
+	int maxXCounter = 0;
+
+	int minYCounter = 0;
+	int maxYCounter = 0;
+
+	int minZCounter = 0;
+	int maxZCounter = 0;
+
 	keepIterating = cell_loop.start();
+
+	centerOutput << con.total_particles() << std::endl;
 
 	while(keepIterating)
 	{
@@ -149,6 +204,7 @@ void ExportVoronoiToGmsh(voro::container &con, std::string &outFilename)
 
 		// ... and extract it
 		cell_loop.pos(pos_x,pos_y,pos_z);
+		dummy_cell.vertices(pos_x,pos_y,pos_z,cell_vertices);
 
 		// Get neighbors and face vertices
 		dummy_cell.face_vertices(face_vertices_index);
@@ -182,6 +238,109 @@ void ExportVoronoiToGmsh(voro::container &con, std::string &outFilename)
 						<< edge_start << ", " << edge_end << "};"
 						<< std::endl;
 			++edge_global_index;
+
+			// -> Test if the face is on a border
+			minXCounter = 0;
+			maxXCounter = 0;
+
+			minYCounter = 0;
+			maxYCounter = 0;
+
+			minZCounter = 0;
+			maxZCounter = 0;
+
+			for(int jjj = 1; jjj < face_nb_of_vertices + 1; ++jjj)
+			{
+				current_vertex = face_vertices_index[aux_index + jjj];
+
+				pointX = cell_vertices[3*current_vertex];
+				pointY = cell_vertices[3*current_vertex + 1];
+				pointZ = cell_vertices[3*current_vertex + 2];
+
+				// Test min X
+				if(IsNearBorder(	pointX,pointY,pointZ,
+									-1,0,0, con.ax, eps))
+				{
+					// Add to border min x
+					++minXCounter;
+				}
+
+				// Test max X
+				if(IsNearBorder(	pointX,pointY,pointZ,
+									1,0,0, con.bx, eps))
+				{
+					// Add to border max x
+					++maxXCounter;
+				}
+
+				// Test min Y
+				if(IsNearBorder(	pointX,pointY,pointZ,
+									0,-1,0, con.ay, eps))
+				{
+					// Add to border min y
+					++minYCounter;
+				}
+
+				// Test max Y
+				if(IsNearBorder(	pointX,pointY,pointZ,
+									0,1,0, con.by, eps))
+				{
+					// Add to border max y
+					++maxYCounter;
+				}
+
+				// Test min Z
+				if(IsNearBorder(	pointX,pointY,pointZ,
+									0,0,-1, con.az, eps))
+				{
+					// Add to border min z
+					++minZCounter;
+				}
+
+				// Test max Z
+				if(IsNearBorder(	pointX,pointY,pointZ,
+									0,0,1, con.bz, eps))
+				{
+					// Add to border max z
+					++maxZCounter;
+				}
+			}
+
+			if(minXCounter == face_nb_of_vertices)
+			{
+				// It's on the min X face, add it!
+				minXQueue.push(face_global_index);
+			}
+
+			if(maxXCounter == face_nb_of_vertices)
+			{
+				// It's on the max X face, add it!
+				maxXQueue.push(face_global_index);
+			}
+
+			if(minYCounter == face_nb_of_vertices)
+			{
+				// It's on the min X face, add it!
+				minYQueue.push(face_global_index);
+			}
+
+			if(maxYCounter == face_nb_of_vertices)
+			{
+				// It's on the max X face, add it!
+				maxYQueue.push(face_global_index);
+			}
+
+			if(minZCounter == face_nb_of_vertices)
+			{
+				// It's on the min X face, add it!
+				minZQueue.push(face_global_index);
+			}
+
+			if(maxZCounter == face_nb_of_vertices)
+			{
+				// It's on the max X face, add it!
+				maxZQueue.push(face_global_index);
+			}
 
 			// -> Build the face
 			gmshOutput	<< std::endl;
@@ -225,11 +384,15 @@ void ExportVoronoiToGmsh(voro::container &con, std::string &outFilename)
 		// -> Set up the volumes
 		gmshOutput	<< "Volume(" <<  cell_global_index
 					<< ") = {" <<  cell_global_index << "};" << std::endl;
-		gmshOutput	<< "Physical Volume(" <<  face_global_index
-					<< ") = {" <<  face_global_index << "};" << std::endl;
+		gmshOutput	<< "Physical Volume(" <<  cell_global_index
+					<< ") = {" <<  cell_global_index << "};" << std::endl;
 		gmshOutput	<< std::endl;
 
-		// Update tje cell index
+		// -> Print the center
+		centerOutput 	<< pos_x << " " << pos_y << " " << pos_z << " "
+						<< cell_global_index << std::endl;
+
+		// Update the cell index
 		++cell_global_index;
 		treated_faces = face_global_index;
 
@@ -238,8 +401,131 @@ void ExportVoronoiToGmsh(voro::container &con, std::string &outFilename)
 		keepIterating = cell_loop.inc();
 	}
 
-	gmshOutput << "Coherence;";
+	gmshOutput << "Coherence;" << std::endl;
+
+	// Now save the physical surfaces
+	int dummySurface = -1;
+
+	std::cout 		<< minXQueue.size() << " " << maxXQueue.size() << " "
+					<< minYQueue.size() << " " << maxYQueue.size() << " "
+					<< minZQueue.size() << " " << maxZQueue.size() << std::endl;
+
+	gmshOutput 	<< "Physical Surface(" << BOUNDARY_ID_MIN_X << ") = {";
+	while(!minXQueue.empty())
+	{
+		dummySurface = minXQueue.front();
+		minXQueue.pop();
+		gmshOutput 	<< dummySurface;
+		if(!minXQueue.empty())
+		{
+			// Then the list still isn't empty, add comma
+			gmshOutput << ", ";
+		}
+		else
+		{
+			// Then the list ended
+			gmshOutput << "};" << std::endl;
+		}
+	}
+	gmshOutput << std::endl;
+
+	gmshOutput 	<< "Physical Surface(" << BOUNDARY_ID_MAX_X << ") = {";
+	while(!maxXQueue.empty())
+	{
+		dummySurface = maxXQueue.front();
+		maxXQueue.pop();
+		gmshOutput 	<< dummySurface;
+		if(!maxXQueue.empty())
+		{
+			// Then the list still isn't empty, add comma
+			gmshOutput << ", ";
+		}
+		else
+		{
+			// Then the list ended
+			gmshOutput << "};" << std::endl;
+		}
+	}
+	gmshOutput << std::endl;
+
+	gmshOutput 	<< "Physical Surface(" << BOUNDARY_ID_MIN_Y << ") = {";
+	while(!minYQueue.empty())
+	{
+		dummySurface = minYQueue.front();
+		minYQueue.pop();
+		gmshOutput 	<< dummySurface;
+		if(!minYQueue.empty())
+		{
+			// Then the list still isn't empty, add comma
+			gmshOutput << ", ";
+		}
+		else
+		{
+			// Then the list ended
+			gmshOutput << "};" << std::endl;
+		}
+	}
+
+	gmshOutput 	<< "Physical Surface(" << BOUNDARY_ID_MAX_Y << ") = {";
+	while(!maxYQueue.empty())
+	{
+		dummySurface = maxYQueue.front();
+		maxYQueue.pop();
+		gmshOutput 	<< dummySurface;
+		if(!maxYQueue.empty())
+		{
+			// Then the list still isn't empty, add comma
+			gmshOutput << ", ";
+		}
+		else
+		{
+			// Then the list ended
+			gmshOutput << "};" << std::endl;
+		}
+	}
+	gmshOutput << std::endl;
+
+	gmshOutput 	<< "Physical Surface(" << BOUNDARY_ID_MIN_Z << ") = {";
+	while(!minZQueue.empty())
+	{
+		dummySurface = minZQueue.front();
+		minZQueue.pop();
+		gmshOutput 	<< dummySurface;
+		if(!minZQueue.empty())
+		{
+			// Then the list still isn't empty, add comma
+			gmshOutput << ", ";
+		}
+		else
+		{
+			// Then the list ended
+			gmshOutput << "};" << std::endl;
+		}
+	}
+	gmshOutput << std::endl;
+
+	gmshOutput 	<< "Physical Surface(" << BOUNDARY_ID_MAX_Z << ") = {";
+	while(!maxZQueue.empty())
+	{
+		dummySurface = maxZQueue.front();
+		maxZQueue.pop();
+		gmshOutput 	<< dummySurface;
+		if(!maxZQueue.empty())
+		{
+			// Then the list still isn't empty, add comma
+			gmshOutput << ", ";
+		}
+		else
+		{
+			// Then the list ended
+			gmshOutput << "};" << std::endl;
+		}
+	}
+	gmshOutput << std::endl;
+
 	gmshOutput.close();
+
+	centerOutput.close();
 }
 
 void ExportVoronoiToGmshTest(voro::container &con, std::string &outFilename)
@@ -350,10 +636,19 @@ int main(int argc, char *argv[])
 	bool yIsPeriodic = false;
 	bool zIsPeriodic = false;
 
+	// Set up weight
+	double weight = 1.0;
+
 	// Set up filename
-	std::string output_geo_filename("test_voronoi_to_gmsh.geo");
+	std::string output_geo_filename("test_voronoi_to_gmsh");
 
 	// --> Read parameters from command line
+	// - Filename
+	if ( cmd_line.search(1, "-o") )
+	{
+		output_geo_filename = cmd_line.next(output_geo_filename.c_str());
+	}
+
 	// - Dimensions
 	if ( cmd_line.search(1, "-xmin") )
 	{
@@ -397,6 +692,15 @@ int main(int argc, char *argv[])
 		output_geo_filename = cmd_line.next(output_geo_filename.c_str());
 	}
 
+	if ( cmd_line.search(1, "-w") )
+	{
+		weight = cmd_line.next(weight);
+		if(weight > 1)
+		{
+			weight = 1.0;
+		}
+	}
+
 	// Set up the number of blocks that the container is divided into
 	int part_per_block = 8;
 
@@ -427,5 +731,27 @@ int main(int argc, char *argv[])
 	}
 
 	// Export it to Gmsh format
-	ExportVoronoiToGmsh(con,output_geo_filename);
+	ExportVoronoiToGmsh(con,weight,output_geo_filename);
+
+	// And build physical parameters
+	double youngMean = 200;
+	double muMean = 80;
+
+	double youngAmpl = youngMean*0.1;
+	double muAmpl = muMean*0.1;
+
+	std::string  outPhysicalParameters = output_geo_filename + "_physical.dat";
+	std::ofstream physOutput(outPhysicalParameters, std::ofstream::trunc);
+
+	double youngValue = -1;
+	double muValue = -1;
+
+	physOutput << particles << std::endl;
+	for(int iii=0; iii<particles; iii++)
+	{
+		youngValue = youngMean + (2*rnd(m_rng) - 1) * youngAmpl;
+		muValue = muMean + (2*rnd(m_rng) - 1) * muAmpl;
+		physOutput << youngValue << " " << muValue << " " << iii + 1 << std::endl;
+	}
+	physOutput.close();
 }
