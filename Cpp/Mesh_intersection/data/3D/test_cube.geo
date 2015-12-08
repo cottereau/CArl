@@ -45,3 +45,4 @@ Line Loop(324) = {101, 102, 103, 104};
 Plane Surface(324) = {324};
 Surface Loop(426) = {314, 316, 318, 320, 322, 324};
 Volume(426) = {426};
+Physical Volume(427) = {426};

@@ -7,6 +7,8 @@ load "gmsh"
 load "medit"
 
 // --- Macros
+macro lambdaF(macroE, macroG) macroG*(macroE - 2*macroG)/(3*macroG-macroE) // End of macro
+
 macro FullLumpingCI(macroCI, macroLumpedCI)
 {
 	int 		macronnn = macroCI.n;
