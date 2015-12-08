@@ -66,7 +66,7 @@ void Intersection_Mesh_3::AddPolyhedronVertex(int iii, Point_3& dummyPoint)
 	++mInterVertexDummyIndex;
 }
 
-void Intersection_Mesh_3::AddPolyhedron(Polyhedron& t, double CharacteristicVolume)
+void Intersection_Mesh_3::AddPolyhedron(Polyhedron& t, double dummyVolume)
 {
 	polyTriang.ConvertToTriangulation_3(t);
 	Cell_handle_3 dummyCell;
@@ -83,7 +83,7 @@ void Intersection_Mesh_3::AddPolyhedron(Polyhedron& t, double CharacteristicVolu
 										itSubCells->vertex(1)->point(),
 										itSubCells->vertex(2)->point(),
 										itSubCells->vertex(3)->point());
-		if(std::abs(dummyTetrahedron.volume()) > CharacteristicVolume)
+		if(std::abs(dummyTetrahedron.volume()) > dummyVolume)
 		{
 			itSubCells->info().ToAdd = true;
 			for(int iii = 0; iii < 4; ++iii)

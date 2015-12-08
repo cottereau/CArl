@@ -354,75 +354,77 @@ void Triangular_Mesh_3::AddInfiniteCells_3()
 	}
 }
 
-void Triangular_Mesh_3::PrintDebugInfo()
+void Triangular_Mesh_3::PrintDebugInfo(std::ostream& outStream)
 {
 	int debugIII;
 	int debugCounter;
 
 	for(All_vertices_iterator_3 itVertex = mesh.all_vertices_begin(); itVertex != mesh.all_vertices_end(); ++itVertex)
 	{
-		std::cout << "Vertex no. " << itVertex->info().ExtIndex << ": ";
-		std::cout << "(";
+		outStream << "Vertex no. " << itVertex->info().ExtIndex << ": ";
+		outStream << "(";
 		if(mesh.is_infinite(itVertex))
 		{
-			std::cout << "infty";
+			outStream << "infty";
 		}
 		else
 		{
-			std::cout << itVertex->point();
+			outStream << itVertex->point();
 		}
-		std::cout << ")" << std::endl;
+		outStream << ")" << std::endl;
 		if(!itVertex->is_valid())
 		{
-			std::cout << "   ---> INVALID VERTEX!!!" << std::endl;
+			outStream << "   ---> INVALID VERTEX!!!" << std::endl;
 		}
 	}
 
-	std::cout << " ----------------- " << std::endl;
+	outStream << " ----------------- " << std::endl;
 
 	for(All_cells_iterator_3 itCells = mesh.all_cells_begin(); itCells != mesh.all_cells_end(); ++itCells)
 	{
 		debugCounter = 0;
 		debugIII = itCells->info().ExtIndex;
-		std::cout << "Cell no. " << debugIII << ": " << std::endl;
-		std::cout << "   vertices  : ";
+		outStream << "Cell no. " << debugIII << ": " << std::endl;
+		outStream << "   vertices  : ";
+		outStream << std::endl;
 		for(int jjj = 0; jjj < 4; ++jjj)
 		{
-			std::cout << itCells->vertex(jjj)->info().ExtIndex << " ";
+			outStream 	<< "   " << itCells->vertex(jjj)->info().ExtIndex << " : "
+						<< "(" << itCells->vertex(jjj)->point() << ")" << std::endl;;
 		}
-		std::cout << std::endl;
-//		std::cout << "   neighbors : ";
-//		for(int jjj = 0; jjj < 4; ++jjj)
-//		{
-//			std::cout << "(";
-//			if(itCells->info().faceHasNeighbour[jjj]==0)
-//			{
-//				std::cout << jjj << " , undef";
-//			}
-//			else
-//			{
-//				std::cout << jjj << " , " << itCells->neighbor(jjj)->info().ExtIndex;
-//				++debugCounter;
-//			}
-//			std::cout << ") ";
-//		}
+
+		outStream << "   neighbors : ";
+		for(int jjj = 0; jjj < 4; ++jjj)
+		{
+			outStream << "(";
+			if(itCells->info().faceHasNeighbour[jjj]==0)
+			{
+				outStream << jjj << " , undef";
+			}
+			else
+			{
+				outStream << jjj << " , " << itCells->neighbor(jjj)->info().ExtIndex;
+				++debugCounter;
+			}
+			outStream << ") ";
+		}
 		if(!itCells->is_valid())
 		{
-			std::cout << "   ---> INVALID CELL!!!" << std::endl;
+			outStream << "   ---> INVALID CELL!!!" << std::endl;
 		}
 
-		std::cout << std::endl;
+		outStream << std::endl;
 	}
 
-	std::cout << " ----------------- " << std::endl;
+	outStream << " ----------------- " << std::endl;
 
 	if(!mesh.tds().is_valid())
 	{
-		std::cout << "   ---> INVALID TDS!!!" << std::endl;
+		outStream << "   ---> INVALID TDS!!!" << std::endl;
 	}
 	if(!mesh.is_valid(true,1))
 	{
-		std::cout << "   ---> INVALID MESH!!!" << std::endl;
+		outStream << "   ---> INVALID MESH!!!" << std::endl;
 	}
 }
 
@@ -1060,6 +1062,12 @@ void Triangular_Mesh_3::ImportMedit(std::string &ifName)
 
 	// Create and connect the INFINITE cells
 	AddInfiniteCells_3();
+
+//	std::string debugInfo = ifName + "_debug.txt";
+//	std::ofstream debugStream(debugInfo);
+//	PrintDebugInfo(debugStream);
+//	debugStream.close();
+
 }
 
 //  --- Export an triangulation in a Gmsh file.

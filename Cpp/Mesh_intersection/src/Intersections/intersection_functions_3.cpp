@@ -56,6 +56,7 @@ bool tetra_do_intersect(
 	// If true, must do real test
 	// -> No problem in using the triangle intersection here since we are not
 	//    building the intersection and we are using exact predicates
+
 	if(bPreliminary)
 	{
 		for(int iii = 0; iii < 4; ++iii)
@@ -68,6 +69,22 @@ bool tetra_do_intersect(
 			if(bTriangleIntersect)
 			{
 				break;
+			}
+		}
+
+		if(!bTriangleIntersect)
+		{
+			for(int iii = 0; iii < 4; ++iii)
+			{
+				bTriangleIntersect =
+						CGAL::do_intersect(
+										   dtA.mesh.tetrahedron(cellB),
+										   dtB.mesh.triangle(cellA,iii)
+										   );
+				if(bTriangleIntersect)
+				{
+					break;
+				}
 			}
 		}
 	}
@@ -110,14 +127,29 @@ void BuildMeshIntersections_Brute(
 	Polyhedron dummyPoly;
 	IntersectionPointsVisitor_3 visPointList(24);
 
+//	Tetrahedron dummyATetra;
+//	Tetrahedron dummyBTetra;
+//	double dummyVolume = 0;
+
 	for(Finite_cells_iterator_3 itB = finiteCellsBegin_B; itB != finiteCellsEnd_B; ++itB)
 	{
+//		dummyBTetra = Tetrahedron(	itB->vertex(0)->point(),
+//									itB->vertex(1)->point(),
+//									itB->vertex(2)->point(),
+//									itB->vertex(3)->point());
+
 		for(Finite_cells_iterator_3 itA = finiteCellsBegin_A; itA != finiteCellsEnd_A; ++itA)
 		{
 			// Crossing
 			result = tetra_intersection(dtA,itA,dtB,itB,dummyPoly,visPointList);
 
 			if (result) {
+//				dummyATetra = Tetrahedron(	itA->vertex(0)->point(),
+//											itA->vertex(1)->point(),
+//											itA->vertex(2)->point(),
+//											itA->vertex(3)->point());
+//
+//				dummyVolume = 10E-6*std::min(dummyATetra.volume(),dummyBTetra.volume());
 				output.InsertPolyhedron(dummyPoly);
 				++nbOfIntersections;
 			}
@@ -257,15 +289,21 @@ void BuildMeshIntersections(
 
 	// Number of operations per cycle of the external loop
 	int DebugNumberOfOperations = 0;
+	int DebugNumberOfCellsB = 0;
 
 	// Dummy polyhedron
 	Polyhedron dummyPoly;
 	IntersectionPointsVisitor_3 visPointList(24);
 
+	Tetrahedron dummyATetra;
+	Tetrahedron dummyBTetra;
+	double dummyVolume = 0;
+
 	while(!MeshBQueue.empty())
 	{
 		// Pop out working tetrahedron from mesh B
 		workingTetrahedronB = MeshBQueue[0];
+		++DebugNumberOfCellsB;
 		MeshBQueue.pop_front();
 
 		// Clear "MeshAToTest" and initialize it with the first element from
@@ -290,7 +328,12 @@ void BuildMeshIntersections(
 		{
 			// Pop out working tetrahedron from mesh A's test tetrahedrons
 			workingTetrahedronA = MeshAToTest[0];
+
 			MeshAToTest.pop_front();
+			dummyATetra = Tetrahedron(	workingTetrahedronA->vertex(0)->point(),
+										workingTetrahedronA->vertex(1)->point(),
+										workingTetrahedronA->vertex(2)->point(),
+										workingTetrahedronA->vertex(3)->point());
 
 			queryIntersect = false;
 			IntersectTetrahedrons(
@@ -313,7 +356,13 @@ void BuildMeshIntersections(
 				++nbOfIntersections;
 				if(inexactQueryIntersect)
 				{
-					output.InsertPolyhedron(dummyPoly);
+					dummyBTetra = Tetrahedron(	workingTetrahedronB->vertex(0)->point(),
+												workingTetrahedronB->vertex(1)->point(),
+												workingTetrahedronB->vertex(2)->point(),
+												workingTetrahedronB->vertex(3)->point());
+
+					dummyVolume = 10E-8*std::min(dummyATetra.volume(),dummyBTetra.volume());
+					output.InsertPolyhedron(dummyPoly,dummyVolume);
 				}
 
 				for(int iii = 0; iii < 4; ++iii)
@@ -363,7 +412,6 @@ void BuildMeshIntersections(
 	// --- Finish - Timing and debug
 	timing_end   = std::chrono::system_clock::now();
 	elapsed_seconds_total = timing_end-timing_start;
-
 };
 
 void IntersectTetrahedrons(

@@ -261,12 +261,17 @@ public:
 
 	// --- Constructors
 	// Constructor with an characteristic length (and area)
-	TriangulationIntersectionVisitor_3(double iLength,int iVertexMapLength, double proportion = 0.01)
+	TriangulationIntersectionVisitor_3(double iLength,int iVertexMapLength, double proportion = 0.001)
 	{
 		IntersectionTDS_3.InitializeIntersection(iVertexMapLength);
 		CharacteristicLength = iLength*proportion;
 		CharacteristicVolume  = CharacteristicLength*CharacteristicLength*CharacteristicLength;
 	};
+
+	void InsertPolyhedron(Polyhedron& poly, double dummyVolume)
+	{
+		IntersectionTDS_3.AddPolyhedron(poly,dummyVolume);
+	}
 
 	void InsertPolyhedron(Polyhedron& poly)
 	{

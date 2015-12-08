@@ -201,7 +201,7 @@ public:
 	 *  --- DEBUG: print all the vertices and the faces in an human-readable
 	 *  	format.
 	 */
-	void 	PrintDebugInfo();
+	void 	PrintDebugInfo(std::ostream& outStream = std::cout);
 
 	/*
 	 *  --- Returns the bounding box of the triangulation

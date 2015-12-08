@@ -3,8 +3,7 @@ load "gmsh"
 load "medit"
 
 // Read arguments
-verbosity = getARGV("-verbose",0);
-string InputIntersection = getARGV("-intersection","intersections_2_timing/test_mesh_new_intersection_AB_2.mesh");
+string InputIntersection = getARGV("-file","intersections_2_timing/test_mesh_new_intersection_AB_2.mesh");
 
 mesh Th = readmesh(InputIntersection);
 
