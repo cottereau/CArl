@@ -1,0 +1,29 @@
+load "medit"
+load "Element_P3"
+
+verbosity = 0;
+
+mesh3 ThA = readmesh3("test_inter_A_3D.mesh");
+mesh3 ThB = readmesh3("test_inter_B_3D.mesh");
+mesh3 ThC = readmesh3("test_inter_I_3D.mesh");
+
+fespace VhA(ThA,P1);
+fespace VhB(ThB,P1);
+
+plot(ThC,wait=true);
+varf vTest1(u,v)= int3d(ThC)(u*v);
+
+int[int] I(1), J(1); real[int] C(1);
+real countTotal = 0;
+
+matrix Mabc = vTest1(VhA,VhB);
+[I,J,C] = Mabc;
+
+countTotal = 0;
+
+for(int iii = 0; iii < C.n; ++iii)
+{
+    countTotal += C[iii];
+}
+
+cout << "   Sum_ij = " << countTotal << endl;
