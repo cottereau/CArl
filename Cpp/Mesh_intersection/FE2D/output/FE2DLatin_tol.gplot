@@ -1,8 +1,0 @@
-set term eps
-set output "output/CArl_tol.eps" 
-set title "LATIN tolerance (inverse)"
-set xrange [1:]
-set xlabel "Iteration"
-set ylabel "Tolerance"
-plot "output/FE2DLatin_tol.dat" w lp lc 1 notitle
-quit

@@ -737,8 +737,8 @@ int main(int argc, char *argv[])
 	double youngMean = 200;
 	double muMean = 80;
 
-	double youngAmpl = youngMean*0.1;
-	double muAmpl = muMean*0.1;
+	double youngAmpl = youngMean*0.05;
+	double muAmpl = muMean*0.05;
 
 	std::string  outPhysicalParameters = output_geo_filename + "_physical.dat";
 	std::ofstream physOutput(outPhysicalParameters, std::ofstream::trunc);

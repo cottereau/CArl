@@ -1,0 +1,325 @@
+// --- Includes and loads
+include "getARGV.idp"
+load "msh3"
+load "tetgen"
+load "lapack"
+load "gmsh"
+load "medit"
+
+// --- Macros
+func real lambdaF(real macroE, real macroG)
+{
+	return macroG*(macroE - 2*macroG)/(3*macroG-macroE);
+}
+
+macro FullLumpingCI(macroCI, macroLumpedCI)
+{
+	int 		macronnn = macroCI.n;
+	real[int]	macrodummyVector(macronnn); macrodummyVector = 1;
+	macroLumpedCI = macroCI*macrodummyVector;
+} // End of macro FullLumpingCI
+
+macro FullLumpingProjection(macroLumpedCI, macroP)
+{
+	int[int] macroIII(1), macroJJJ(1);
+	real[int] macroVVV(1);
+
+	[macroIII,macroJJJ,macroVVV] = macroP;
+
+	for(int kkk = 0; kkk < macroVVV.n; ++kkk)
+	{
+		macroVVV[kkk] = macroVVV[kkk]/macroLumpedCI[macroIII[kkk]];
+	}
+
+	macroP = [macroIII,macroJJJ,macroVVV];
+} // End of macro FullLumpingProjection
+
+macro BlockLumpingInvCI(macroCI, macroBlockInverted)
+{
+	int 			macronnn = macroCI.n;
+	int[int]		macroIntervals(3);
+	int 			interval = macronnn/2;
+	int				macroPosIII = -1;
+	int				macroPosJJJ = -1;
+
+	for(int iii = 1; iii < 2; ++iii)
+	{
+		macroIntervals[iii] = iii*interval;
+	}
+	macroIntervals[2] = macronnn;
+
+	int[int] macroIII(1), macroJJJ(1);
+	real[int] macroVVV(1);
+
+	[macroIII,macroJJJ,macroVVV] = macroCI;
+
+	int 		macroSize0 = 0;
+	int 		macroSize1 = 0;
+
+	for(int kkk = 0; kkk < macroVVV.n; ++kkk)
+	{
+		if(	macroIII[kkk] < macroIntervals[1] &&
+			macroIII[kkk] >= macroIntervals[0] &&
+			macroJJJ[kkk] < macroIntervals[1] &&
+			macroJJJ[kkk] >= macroIntervals[0])
+		{
+			++macroSize0;
+		}
+		else if(	macroIII[kkk] < macroIntervals[2] &&
+					macroIII[kkk] >= macroIntervals[1] &&
+					macroJJJ[kkk] < macroIntervals[2] &&
+					macroJJJ[kkk] >= macroIntervals[1])
+		{
+			++macroSize1;
+		}
+	}
+
+	int[int]	macroLocalIII0(macroSize0), macroLocalJJJ0(macroSize0);
+	real[int]	macroLocalVVV0(macroSize0);
+
+	int[int]	macroLocalIII1(macroSize1), macroLocalJJJ1(macroSize1);
+	real[int]	macroLocalVVV1(macroSize1);
+
+	real[int]	macroTransferTo0(macroIntervals[1] - macroIntervals[0]);
+	real[int]	macroTransferTo1(macroIntervals[2] - macroIntervals[1]);
+
+	int[int]	macroDiagonalPos0(macroIntervals[1] - macroIntervals[0]);
+	int[int]	macroDiagonalPos1(macroIntervals[2] - macroIntervals[1]);
+
+	int macroLocalIndex0 = 0;
+	int macroLocalIndex1 = 0;
+
+	for(int kkk = 0; kkk < macroVVV.n; ++kkk)
+	{
+		macroPosIII = -1;
+		macroPosJJJ = -1;
+
+		for(int iii = 0; iii < 2; ++iii)
+		{
+			if(	macroIII[kkk] >= macroIntervals[iii] &&
+				macroIII[kkk] < macroIntervals[iii + 1])
+			{
+				macroPosIII = iii;
+				break;
+			}
+		}
+
+		for(int iii = 0; iii < 2; ++iii)
+		{
+			if(	macroJJJ[kkk] >= macroIntervals[iii] &&
+				macroJJJ[kkk] < macroIntervals[iii + 1])
+			{
+				macroPosJJJ = iii;
+				break;
+			}
+		}
+
+		if(macroPosIII == macroPosJJJ)
+		{
+			if(macroPosJJJ == 0)
+			{
+				macroLocalIII0[macroLocalIndex0] = macroIII[kkk] - macroIntervals[0];
+				macroLocalJJJ0[macroLocalIndex0] = macroJJJ[kkk] - macroIntervals[0];
+				macroLocalVVV0[macroLocalIndex0] = macroVVV[kkk];
+				if(macroLocalIII0[macroLocalIndex0] == macroLocalJJJ0[macroLocalIndex0])
+				{
+					macroDiagonalPos0[macroLocalIII0[macroLocalIndex0]] = macroLocalIndex0;
+				}
+				++macroLocalIndex0;
+			}
+
+			if(macroPosJJJ == 1)
+			{
+				macroLocalIII1[macroLocalIndex1] = macroIII[kkk] - macroIntervals[1];
+				macroLocalJJJ1[macroLocalIndex1] = macroJJJ[kkk] - macroIntervals[1];
+				macroLocalVVV1[macroLocalIndex1] = macroVVV[kkk];
+				if(macroLocalIII1[macroLocalIndex1] == macroLocalJJJ1[macroLocalIndex1])
+				{
+					macroDiagonalPos1[macroLocalIII1[macroLocalIndex1]] = macroLocalIndex1;
+				}
+				++macroLocalIndex1;
+			}
+		}
+		else
+		{
+			if(macroPosIII == 0)
+			{
+				macroTransferTo0[macroIII[kkk] - macroIntervals[0]] += macroVVV[kkk];
+			}
+			if(macroPosIII == 1)
+			{
+				macroTransferTo1[macroIII[kkk] - macroIntervals[1]] += macroVVV[kkk];
+			}
+		}
+	}
+
+	for(int iii = 0; iii < macroIntervals[1] - macroIntervals[0]; ++iii)
+	{
+		macroLocalVVV0[macroDiagonalPos0[iii]] += macroTransferTo0[iii];
+	}
+
+	for(int iii = 0; iii < macroIntervals[2] - macroIntervals[1]; ++iii)
+	{
+		macroLocalVVV1[macroDiagonalPos1[iii]] += macroTransferTo1[iii];
+	}
+
+	matrix[int] macroLocalMatrix(2);
+
+	macroLocalMatrix[0] = [macroLocalIII0,macroLocalJJJ0,macroLocalVVV0];
+	macroLocalMatrix[1] = [macroLocalIII1,macroLocalJJJ1,macroLocalVVV1];
+
+	matrix[int] macroLocalInverted(2);
+
+	InvertSparse(macroLocalMatrix[0], macroLocalInverted[0]);
+	InvertSparse(macroLocalMatrix[1], macroLocalInverted[1]);
+
+	macroBlockInverted = 	[
+						  	  [macroLocalInverted[0], 0 ],
+							  [ 0 , macroLocalInverted[1]]
+							];
+
+	matrix macroBlock = 	[
+						  	  [macroLocalMatrix[0], 0 ],
+							  [ 0 , macroLocalMatrix[1]]
+							];
+} // End of macro FullLumpingCI
+
+macro InvertSparse(macroMatrix, macroInverse)
+{
+	assert(macroMatrix.n == macroMatrix.m);
+
+	int[int] macroIII(1), macroJJJ(1); real[int] macroVal(1);
+	[macroIII,macroJJJ,macroVal] = macroMatrix;
+
+	real[int,int] macroDense(macroMatrix.n,macroMatrix.n);
+	real[int,int] macroInverseDense(macroMatrix.n,macroMatrix.n);
+
+	macroDense = 0;
+	macroInverseDense = 0;
+
+	for(int iii = 0; iii < macroIII.n; ++iii)
+	{
+		macroDense(macroIII[iii],macroJJJ[iii]) = macroVal[iii];
+	}
+
+	macroInverseDense = macroDense^-1;
+	macroInverse = macroInverseDense;
+} // End of macro InvertSparse
+
+macro PrintDimensions(macroMatrix) {cout << macroMatrix.n << " " << macroMatrix.m << endl;} // End of PrintDimensions
+
+// - Tensors
+// Strain tensor
+macro Epsilon2D(ux,uy) [dx(ux),dy(uy),(dy(ux)+dx(uy))/sqrt(2.)] // End of Epsilon2D
+macro Epsilon3D(ux,uy,uz) [dx(ux),dy(uy),dz(uz),(dy(ux)+dx(uy))/sqrt(2.),(dz(ux)+dx(uz))/sqrt(2.),(dy(uz)+dz(uy))/sqrt(2.)] // End of Epsilon3D
+
+macro Div2D(ux,uy) ( dx(ux)+dy(uy) ) // End of Div2D
+macro Div3D(ux,uy,uz) ( dx(ux)+dy(uy)+dz(uz) ) // End of Div3D
+
+// - Variational terms - 2D
+// Mass matrix
+macro Mass(u,v) u*v // End of Mass
+macro Mass2D(ux,uy,vx,vy) Mass(ux,vx)+Mass(uy,vy) // End of Mass2D
+macro Mass3D(ux,uy,uz,vx,vy,vz) Mass(ux,vx)+Mass(uy,vy)+Mass(uz,vz)// End of Mass3D
+
+macro Stiffness2D(ux,uy,vx,vy) Epsilon2D(ux,uy)' * Epsilon2D(vx,vy)  // End of Stiffness2D
+macro Stiffness3D(ux,uy,uz,vx,vy,vz) Epsilon3D(ux,uy,uz)' * Epsilon3D(vx,vy,vz)  // End of Stiffness3D
+
+// - Matrix reduction
+macro CompactCols(macroMatrix)
+{
+	int[int] macroIII(1), macroJJJ(1); real[int] macroVal(1);
+	int originalN, originalM;
+	originalN = macroMatrix.n;
+	originalM = macroMatrix.m;
+	cout << "  -- N, M = " << originalN << ", " << originalM <<endl;
+
+	[macroIII,macroJJJ,macroVal] = macroMatrix;
+
+	if(abs(macroVal[macroVal.n-1]) < 10E-30)
+	{
+		macroIII.resize(macroIII.n-1);
+		macroJJJ.resize(macroJJJ.n-1);
+		macroVal.resize(macroVal.n-1);
+	}
+
+	int[int] translationVector(macroMatrix.m);
+	int[int] sortedJJJ = macroJJJ;
+
+	sortedJJJ.sort;
+
+	translationVector = sortedJJJ.min;
+	int latestValue = sortedJJJ.min;
+	int indexDelta = 0;
+	for(int jjj = 0; jjj < sortedJJJ.n; ++jjj)
+	{
+		indexDelta = sortedJJJ[jjj]-latestValue - 1;
+		if(indexDelta > 0)
+		{
+			for(int kkk = sortedJJJ[jjj]; kkk < translationVector.n; ++kkk)
+			{
+				translationVector[kkk] = translationVector[kkk] + indexDelta;
+			}
+		}
+		latestValue = sortedJJJ[jjj];
+	}
+
+	for(int jjj = 0; jjj < macroJJJ.n; ++jjj)
+	{
+		macroJJJ[jjj] = macroJJJ[jjj] - translationVector[macroJJJ[jjj]];
+	}
+	macroMatrix = [macroIII,macroJJJ,macroVal];
+
+	/* resize to get the correct dimensions */
+	macroMatrix.resize(originalN,macroMatrix.m);
+	cout 	<< "  -- Final dimensions: " << macroMatrix.n << " " << macroMatrix.m
+			<< endl << endl;
+} // End of CompactCols
+
+macro CompactLines(macroMatrix)
+{
+	int[int] macroIII(1), macroJJJ(1); real[int] macroVal(1);
+	int originalN, originalM;
+	originalN = macroMatrix.n;
+	originalM = macroMatrix.m;
+	cout << "  -- N, M = " << originalN << ", " << originalM <<endl;
+
+	[macroIII,macroJJJ,macroVal] = macroMatrix;
+	int[int] translationVector(macroMatrix.n);
+
+	if(abs(macroVal[macroVal.n-1]) < 10E-30)
+	{
+		macroIII.resize(macroIII.n-1);
+		macroJJJ.resize(macroJJJ.n-1);
+		macroVal.resize(macroVal.n-1);
+	}
+
+	/* No need to do a sort, III is already sorted up */
+
+	translationVector = macroIII[0];
+	int latestValue = macroIII[0];
+
+	int indexDelta = 0;
+	for(int jjj = 0; jjj < macroIII.n; ++jjj)
+	{
+		indexDelta = macroIII[jjj]-latestValue - 1;
+		if(indexDelta > 0)
+		{
+			for(int kkk = macroIII[jjj]; kkk < translationVector.n; ++kkk)
+			{
+				translationVector[kkk] = translationVector[kkk] + indexDelta;
+			}
+		}
+		latestValue = macroIII[jjj];
+	}
+
+	for(int jjj = 0; jjj < macroIII.n; ++jjj)
+	{
+		macroIII[jjj] = macroIII[jjj] - translationVector[macroIII[jjj]];
+	}
+
+	macroMatrix = [macroIII,macroJJJ,macroVal];
+	macroMatrix.resize(macroMatrix.n,originalM);
+	cout 	<< "  -- Final dimensions: " << macroMatrix.n << " " << macroMatrix.m
+			<< endl << endl;
+} // End of CompactLines

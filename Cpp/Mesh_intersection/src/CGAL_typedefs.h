@@ -62,6 +62,7 @@ struct FaceInfo
 struct CellInfo
 {
 	int ExtIndex;
+	int IntersectionIndex;
 	std::vector<int> faceHasNeighbour;
 	bool ToAdd;
 };
