@@ -72,6 +72,7 @@ protected:
 
 	// Vector containing all the intersection points
 	std::vector<Point_3>	IntersectionData;
+	int nbOfIntersections;
 
 public:
 
@@ -83,6 +84,7 @@ public:
 		exactVerticesA.resize(4);
 		exactVerticesB.resize(4);
 		dummyIndex = 0;
+		nbOfIntersections = 0;
 	};
 
 	// --- Visitor operators
@@ -262,6 +264,7 @@ public:
 	std::unordered_multimap<int,int> IntersectionListsFromI;
 
 	int dummyIntersectionNumber;
+	int dummyTotalNbOfinterTetras;
 
 	// --- Constructors
 	// Constructor with an characteristic length (and area)
@@ -281,6 +284,7 @@ public:
 		IntersectionListsFromI.reserve(iNbOfCellsA*iNbOfCellsB*12);
 
 		dummyIntersectionNumber = 0;
+		dummyTotalNbOfinterTetras = 0;
 	};
 
 	void InsertPolyhedron(Polyhedron& poly, int idxA, int idxB, double dummyVolume)
@@ -310,6 +314,7 @@ public:
 		IntersectionTDS_3.Finalize();
 		IntersectionTDS_3.CleanUp();
 		IntersectionTDS_3.CreateIntersectionIndexMap(IntersectionListsFromI);
+		dummyTotalNbOfinterTetras = IntersectionTDS_3.mesh.number_of_finite_cells();
 	};
 
 	void PrintIntersectionTables()
@@ -323,19 +328,24 @@ public:
 
 		std::unordered_multimap<int,int>::iterator itInterTetras;
 
+		fileAB	<< dummyIntersectionNumber << std::endl;
+		fileI 	<< dummyIntersectionNumber << " "
+				<< dummyTotalNbOfinterTetras << std::endl;
+
 		for(int iii = 0; iii < dummyIntersectionNumber; ++iii)
 		{
-			fileAB 	<< iii << " " << IntersectionPairsFromAB[iii].first << " "
-					<< IntersectionPairsFromAB[iii].second << std::endl;
+			// The +1 is due to the indexing difference between CGAL and Gmsh
+			fileAB 	<< iii << " " << IntersectionPairsFromAB[iii].first + 1 << " "
+					<< IntersectionPairsFromAB[iii].second + 1 << std::endl;
 
 			auto itRange = IntersectionListsFromI.equal_range(iii);
-			fileI 	<< iii << " ";
+			fileI 	<< iii << " " << IntersectionListsFromI.count(iii) << " ";
 
 			for( 	itInterTetras = itRange.first;
 					itInterTetras != itRange.second;
 					++itInterTetras)
 			{
-				fileI << itInterTetras->second << " ";
+				fileI << itInterTetras->second + 1 << " ";
 			}
 			fileI << std::endl;
 		}

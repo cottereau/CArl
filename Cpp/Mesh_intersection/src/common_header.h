@@ -12,8 +12,6 @@
 #ifndef COMMON_HEADER_H_
 #define COMMON_HEADER_H_
 
-#include <unistd.h>
-
 // --- Timing
 #include <chrono>
 
@@ -32,16 +30,21 @@
 #include <fstream>
 #include <iostream>
 
-// --- Containers
+// --- Containers and algorithms
 #include <unordered_set>
 #include <unordered_map>
 #include <deque>
 #include <vector>
 #include <iterator>
+#include <algorithm>
 
 // --- C++ strings
 #include <string>
 #include <sstream>
+
+// --- Common C/C++
+#include <math.h>
+#include <unistd.h>
 
 extern boost::random::lagged_fibonacci607 m_rng;
 
