@@ -298,10 +298,16 @@ int main (int argc, char** argv)
 	// Associate the boundary conditions -> no boundary conditions!
 
 	// Generate the equation systems
-	libMesh::EquationSystems equation_systems_BIG(mesh_BIG);
-	libMesh::EquationSystems equation_systems_micro(mesh_micro);
-	libMesh::EquationSystems equation_systems_restrict(mesh_restrict);
-	libMesh::EquationSystems equation_systems_inter(mesh_inter);
+	carl::coupled_system CoupledTest;
+
+	libMesh::EquationSystems& equation_systems_BIG =
+					CoupledTest.set_BIG_EquationSystem("BigSys", mesh_BIG);
+	libMesh::EquationSystems& equation_systems_micro =
+					CoupledTest.add_micro_EquationSystem("MicroSys", mesh_micro);
+	libMesh::EquationSystems& equation_systems_restrict =
+					CoupledTest.add_restrict_EquationSystem("RestrictSys", mesh_restrict);
+	libMesh::EquationSystems& equation_systems_inter =
+					CoupledTest.add_inter_EquationSystem("InterSys", mesh_inter);
 
 	// - Build the BIG system --------------------------------------------------
 
