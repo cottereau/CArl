@@ -20,15 +20,22 @@ class coupled_system
 {
 private:
 	// Members
+
+	// -> Equation system maps
 	std::pair<std::string, libMesh::EquationSystems* > m_BIG_EquationSystem;
 	std::map<std::string, libMesh::EquationSystems* > m_micro_EquationSystemMap;
 	std::map<std::string, libMesh::EquationSystems* > m_inter_EquationSystemMap;
 	std::map<std::string, libMesh::EquationSystems* > m_restrict_EquationSystemMap;
 
+	// -> Matrix maps
+	std::map<std::string, libMesh::SparseMatrix<libMesh::Number>* > m_couplingMatrixMap_restrict_micro;
+	std::map<std::string, libMesh::SparseMatrix<libMesh::Number>* > m_couplingMatrixMap_restrict_BIG;
+
 	//	std::vector<std::pair<int,int> > m_intersection_table_BIGmicro;
 	//	std::unordered_multimap<int,int> m_intersection_table_inter;
 
 	typedef std::map<std::string, libMesh::EquationSystems* >::iterator EqSystem_iterator;
+	typedef std::map<std::string, libMesh::SparseMatrix<libMesh::Number>* >::iterator Matrix_iterator;
 
 	// Methods
 
@@ -57,15 +64,24 @@ public:
 		return *EqSystemPtr;
 	}
 
+	template <typename libMesh_MatrixType>
 	libMesh::EquationSystems& add_micro_EquationSystem(const std::string& name, libMesh::MeshBase& microMesh)
 	{
 		libMesh::EquationSystems* EqSystemPtr = NULL;
+		libMesh::SparseMatrix<libMesh::Number>* Matrix_BIG_micro_Ptr = NULL;
+		libMesh::SparseMatrix<libMesh::Number>* Matrix_BIG_BIG_Ptr = NULL;
 
 		if(!m_micro_EquationSystemMap.count(name))
 		{
 			// Then add a new system
 			EqSystemPtr = new libMesh::EquationSystems(microMesh);
+
+			Matrix_BIG_micro_Ptr = new libMesh_MatrixType(microMesh.comm());
+			Matrix_BIG_BIG_Ptr = new libMesh_MatrixType(microMesh.comm());
+
 			m_micro_EquationSystemMap.insert (std::make_pair(name, EqSystemPtr));
+			m_couplingMatrixMap_restrict_micro.insert (std::make_pair(name, Matrix_BIG_micro_Ptr));
+			m_couplingMatrixMap_restrict_BIG.insert (std::make_pair(name, Matrix_BIG_BIG_Ptr));
 		}
 		else
 		{
@@ -162,25 +178,95 @@ public:
 			m_restrict_EquationSystemMap.erase(toClean);
 		}
 
+		while(!m_couplingMatrixMap_restrict_micro.empty())
+		{
+			Matrix_iterator toClean = m_couplingMatrixMap_restrict_micro.begin();
+
+			libMesh::SparseMatrix<libMesh::Number> *Mat = toClean->second;
+			Mat->clear();
+			delete Mat;
+			Mat = NULL;
+
+			m_couplingMatrixMap_restrict_micro.erase(toClean);
+		}
+
+		while(!m_couplingMatrixMap_restrict_BIG.empty())
+		{
+			Matrix_iterator toClean = m_couplingMatrixMap_restrict_BIG.begin();
+
+			libMesh::SparseMatrix<libMesh::Number> *Mat = toClean->second;
+			Mat->clear();
+			delete Mat;
+			Mat = NULL;
+
+			m_couplingMatrixMap_restrict_BIG.erase(toClean);
+		}
+
 	};
 
+	void assemble_coupling_matrices(	const std::string BIG_name,
+										const std::string micro_name,
+										const std::string inter_name,
+										const std::string restrict_name,
+										std::vector<std::pair<int,int> >& intersection_table_restrict_micro,
+										std::unordered_multimap<int,int>& intersection_table_inter,
+//										libMesh::SparseMatrix<libMesh::Number>& couplingMatrix,
+										bool using_same_mesh_restrict_A = false,
+										bool bSameElemsType = true);
+
+	libMesh::SparseMatrix<libMesh::Number>& get_micro_coupling_matrix(const std::string& name)
+	{
+		return * m_couplingMatrixMap_restrict_micro[name];
+	}
+
+	libMesh::SparseMatrix<libMesh::Number>& get_BIG_coupling_matrix(const std::string& name)
+	{
+		return * m_couplingMatrixMap_restrict_BIG[name];
+	}
+
+	void print_matrix_micro_info(const std::string& name)
+	{
+		libMesh::SparseMatrix<libMesh::Number>& CouplingTestMatrix =
+							* m_couplingMatrixMap_restrict_micro[name];
+		libMesh::Real accumulator = 0;
+		std::cout << "| C_(R,B) i,j :" << std::endl;
+		for(unsigned int iii = 0; iii < CouplingTestMatrix.m(); ++iii)
+		{
+			std::cout << "|    ";
+			for(unsigned int jjj = 0; jjj < CouplingTestMatrix.n(); ++jjj)
+			{
+				std::cout <<  CouplingTestMatrix(iii,jjj) << " ";
+				accumulator += CouplingTestMatrix(iii,jjj);
+			}
+			std::cout << std::endl;
+		}
+		std::cout << "|" << std::endl;
+		std::cout << "| Sum( C_i,j ) = " << accumulator << std::endl << std::endl;
+	}
+
+	void print_matrix_BIG_info(const std::string& name)
+	{
+		libMesh::SparseMatrix<libMesh::Number>& CouplingTestMatrix =
+							* m_couplingMatrixMap_restrict_BIG[name];
+		libMesh::Real accumulator = 0;
+		std::cout << "| C_(R,A) i,j :" << std::endl;
+		for(unsigned int iii = 0; iii < CouplingTestMatrix.m(); ++iii)
+		{
+			std::cout << "|    ";
+			for(unsigned int jjj = 0; jjj < CouplingTestMatrix.n(); ++jjj)
+			{
+				std::cout <<  CouplingTestMatrix(iii,jjj) << " ";
+				accumulator += CouplingTestMatrix(iii,jjj);
+			}
+			std::cout << std::endl;
+		}
+		std::cout << "|" << std::endl;
+		std::cout << "| Sum( C_i,j ) = " << accumulator << std::endl;
+	}
 };
 }
 
-void assemble_coupling_matrix(	libMesh::EquationSystems& BIG_eq_system,
-								libMesh::EquationSystems& micro_eq_system,
-								libMesh::EquationSystems& inter_eq_system,
-								libMesh::SparseMatrix<libMesh::Number>& couplingMatrix,
-								bool bSameElemsType = true);
-
-void assemble_coupling_matrix(	libMesh::EquationSystems& BIG_eq_system,
-								libMesh::EquationSystems& micro_eq_system,
-								libMesh::EquationSystems& inter_eq_system,
-								std::vector<std::pair<int,int> >& intersection_table_BIGmicro,
-								std::unordered_multimap<int,int>& intersection_table_inter,
-								libMesh::SparseMatrix<libMesh::Number>& couplingMatrix,
-								bool bSameElemsType = true);
-
+// Index tables reading and mapping
 void create_mesh_map(std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map);
 
 void build_mesh_map_Gmsh(std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map);

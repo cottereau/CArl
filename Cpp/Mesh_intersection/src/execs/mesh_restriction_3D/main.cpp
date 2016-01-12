@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
 	// ****************************** //
 	// Restriction                    //
 	// ****************************** //
+
 	timing_start = std::chrono::system_clock::now();
 
 	std::cout << " ---> Generating the Nef polyhedron ... " << std::endl;

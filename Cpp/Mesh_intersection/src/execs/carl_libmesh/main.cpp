@@ -1,18 +1,19 @@
 #include "main.h"
 
-void generate_intersection_tables(	std::string& intersection_table_AB_Filename,
-									std::string& intersection_table_I_Filename,
-									std::unordered_map<int,int>& mesh_restrict_ElemMap,
-									std::unordered_map<int,int>& mesh_micro_ElemMap,
-									std::unordered_map<int,int>& mesh_inter_ElemMap,
-									std::vector<std::pair<int,int> >& intersection_table_AB,
-									std::unordered_multimap<int,int>& intersection_table_I
-									)
+void generate_intersection_tables_partial(	std::string& intersection_table_restrict_B_Filename,
+											std::string& intersection_table_I_Filename,
+											std::unordered_map<int,int>& mesh_restrict_ElemMap,
+											std::unordered_map<int,int>& mesh_micro_ElemMap,
+											std::unordered_map<int,int>& mesh_inter_ElemMap,
+											std::vector<std::pair<int,int> >& intersection_table_restrict_A,
+											std::vector<std::pair<int,int> >& intersection_table_restrict_B,
+											std::unordered_multimap<int,int>& intersection_table_I
+											)
 {
-	std::ifstream table_AB_file(intersection_table_AB_Filename);
+	std::ifstream table_restrict_B_file(intersection_table_restrict_B_Filename);
 	std::ifstream table_I_file(intersection_table_I_Filename);
 
-	int nbOfIntersectionsAB = -1;
+	int nbOfIntersections_restrict_B = -1;
 	int nbOfIntersectionsI  = -1;
 	int nbOfTotalTetrasI  = -1;
 	int dummyInt = -1;
@@ -23,19 +24,19 @@ void generate_intersection_tables(	std::string& intersection_table_AB_Filename,
 	int extIdxB = -1;
 	int extIdxI = -1;
 
-	table_AB_file >> nbOfIntersectionsAB;
+	table_restrict_B_file >> nbOfIntersections_restrict_B;
 	table_I_file >> nbOfIntersectionsI >> nbOfTotalTetrasI;
 
-	homemade_assert_msg(nbOfIntersectionsAB == nbOfIntersectionsI, "Incompatible intersection table files!");
+	homemade_assert_msg(nbOfIntersections_restrict_B == nbOfIntersectionsI, "Incompatible intersection table files!");
 
-	intersection_table_AB.resize(nbOfIntersectionsAB);
+	intersection_table_restrict_B.resize(nbOfIntersections_restrict_B);
 	intersection_table_I.reserve(2*nbOfTotalTetrasI);
 
-	for(int iii = 0; iii < nbOfIntersectionsAB; ++iii)
+	for(int iii = 0; iii < nbOfIntersections_restrict_B; ++iii)
 	{
-		table_AB_file >> dummyInt >> extIdxA >> extIdxB;
-		intersection_table_AB[iii].first = mesh_restrict_ElemMap[extIdxA];
-		intersection_table_AB[iii].second = mesh_micro_ElemMap[extIdxB];
+		table_restrict_B_file >> dummyInt >> extIdxA >> extIdxB;
+		intersection_table_restrict_B[iii].first = mesh_restrict_ElemMap[extIdxA];
+		intersection_table_restrict_B[iii].second = mesh_micro_ElemMap[extIdxB];
 
 		table_I_file >> dummyInt >> nbOfTetras;
 		for(int jjj = 0; jjj < nbOfTetras; ++jjj)
@@ -46,10 +47,23 @@ void generate_intersection_tables(	std::string& intersection_table_AB_Filename,
 		}
 	}
 
-	table_AB_file.close();
+	table_restrict_B_file.close();
 	table_I_file.close();
 };
 
+void generate_intersection_tables_full(		std::string& intersection_table_restrict_A_Filename,
+											std::string& intersection_table_restrict_B_Filename,
+											std::string& intersection_table_I_Filename,
+											std::unordered_map<int,int>& mesh_restrict_ElemMap,
+											std::unordered_map<int,int>& mesh_micro_ElemMap,
+											std::unordered_map<int,int>& mesh_inter_ElemMap,
+											std::vector<std::pair<int,int> >& intersection_table_restrict_A,
+											std::vector<std::pair<int,int> >& intersection_table_restrict_B,
+											std::unordered_multimap<int,int>& intersection_table_I
+											)
+{
+	libmesh_error_msg("\n---> ERROR: I shouldn't be here ...");
+};
 int main (int argc, char** argv)
 {
 	/* To Do list --------------------------------------------------------------
@@ -142,8 +156,11 @@ int main (int argc, char** argv)
 	std::string mesh_restrict_Filename;
 	std::string mesh_inter_Filename;
 
-	std::string intersection_table_AB_Filename;
+	std::string intersection_table_restrict_A_Filename;
+	std::string intersection_table_restrict_B_Filename;
 	std::string intersection_table_I_Filename;
+
+	std::string extra_restrict_info = "";
 
 //	// Read mesh ...
 //	int BOUNDARY_ID_MIN_Z = 0;
@@ -165,14 +182,17 @@ int main (int argc, char** argv)
 	std::unordered_map<int,int> mesh_inter_NodeMap;
 	std::unordered_map<int,int> mesh_inter_ElemMap;
 
-	std::vector<std::pair<int,int> > intersection_table_AB;
+	std::vector<std::pair<int,int> > intersection_table_restrict_A;
+	std::vector<std::pair<int,int> > intersection_table_restrict_B;
 	std::unordered_multimap<int,int> intersection_table_I;
+
+	bool using_same_mesh_restrict_A = false;
 
 
 	if ( 	command_line.search(2, "--meshA", "-mA") &&
 			command_line.search(2, "--meshB", "-mB") &&
 			command_line.search(2, "--meshI", "-mI") &&
-			command_line.search(1, "--tableAB") &&
+			command_line.search(1, "--tableB") &&
 			command_line.search(1, "--tableI"))
 	{
 		command_line.search(2, "--meshA", "-mA");
@@ -196,13 +216,13 @@ int main (int argc, char** argv)
 		mesh_inter.prepare_for_use();
 		create_mesh_map(mesh_inter_Filename,mesh_inter_NodeMap,mesh_inter_ElemMap);
 
-		command_line.search(1, "--tableAB");
-		intersection_table_AB_Filename = command_line.next(intersection_table_AB_Filename);
+		command_line.search(1, "--tableB");
+		intersection_table_restrict_B_Filename = command_line.next(intersection_table_restrict_B_Filename);
 
 		command_line.search(1, "--tableI");
 		intersection_table_I_Filename = command_line.next(intersection_table_I_Filename);
 
-		if (command_line.search(2, "--meshR", "-mR"))
+		if (command_line.search(2, "--meshR", "-mR") && command_line.search(1, "--tableA"))
 		{
 			command_line.search(2, "--meshR", "-mR");
 			mesh_restrict_Filename = command_line.next(mesh_restrict_Filename);
@@ -210,22 +230,49 @@ int main (int argc, char** argv)
 			meshBuffer_restrict.read(mesh_restrict_Filename);
 			mesh_restrict.prepare_for_use();
 			create_mesh_map(mesh_restrict_Filename,mesh_restrict_NodeMap,mesh_restrict_ElemMap);
+
+			command_line.search(1, "--tableA");
+			intersection_table_restrict_A_Filename = command_line.next(intersection_table_restrict_A_Filename);
+
+			generate_intersection_tables_full(	intersection_table_restrict_A_Filename,
+												intersection_table_restrict_B_Filename,
+												intersection_table_I_Filename,
+												mesh_restrict_ElemMap,
+												mesh_micro_ElemMap,
+												mesh_inter_ElemMap,
+												intersection_table_restrict_A,
+												intersection_table_restrict_B,
+												intersection_table_I);
 		}
-		else
+		else if(!command_line.search(2, "--meshR", "-mR") && !command_line.search(1, "--tableA"))
 		{
 			mesh_restrict.copy_nodes_and_elements(mesh_BIG);
 			mesh_restrict_Filename = mesh_BIG_Filename;
 			mesh_restrict_NodeMap = mesh_BIG_NodeMap;
 			mesh_restrict_ElemMap = mesh_BIG_ElemMap;
-		}
 
-		generate_intersection_tables(	intersection_table_AB_Filename,
-										intersection_table_I_Filename,
-										mesh_restrict_ElemMap,
-										mesh_micro_ElemMap,
-										mesh_inter_ElemMap,
-										intersection_table_AB,
-										intersection_table_I);
+			using_same_mesh_restrict_A = true;
+
+			extra_restrict_info = " (Same as A)";
+			intersection_table_restrict_A_Filename = " --- ";
+
+			generate_intersection_tables_partial(	intersection_table_restrict_B_Filename,
+													intersection_table_I_Filename,
+													mesh_restrict_ElemMap,
+													mesh_micro_ElemMap,
+													mesh_inter_ElemMap,
+													intersection_table_restrict_A,
+													intersection_table_restrict_B,
+													intersection_table_I);
+		}
+		else if(!command_line.search(2, "--meshR", "-mR"))
+		{
+			libmesh_error_msg("\n---> ERROR: Missing restrition mesh file");
+		}
+		else if(!command_line.search(1, "--tableA"))
+		{
+			libmesh_error_msg("\n---> ERROR: Missing restrition table file");
+		}
 //
 //		++BOUNDARY_ID_MIN_Z;
 //		++BOUNDARY_ID_MIN_Y;
@@ -252,14 +299,17 @@ int main (int argc, char** argv)
 		std::cout << "|    n_nodes      " << mesh_inter.n_nodes() << std::endl;
 		std::cout << "|    n_subdomains " << mesh_inter.n_subdomains() << std::endl << std::endl;
 
-		std::cout << "| Mesh restriction info :" << std::endl;
+		std::cout << "| Mesh restriction info :" << extra_restrict_info << std::endl;
 		std::cout << "|    filename     " << mesh_restrict_Filename << std::endl;
 		std::cout << "|    n_elem       " << mesh_restrict.n_elem() << std::endl;
 		std::cout << "|    n_nodes      " << mesh_restrict.n_nodes() << std::endl;
 		std::cout << "|    n_subdomains " << mesh_restrict.n_subdomains() << std::endl << std::endl;
 
-		std::cout << "| Inter. table AB :" << std::endl;
-		std::cout << "|    filename     " << intersection_table_AB_Filename << std::endl << std::endl;
+		std::cout << "| Inter. table restrict / A :" << std::endl;
+		std::cout << "|    filename     " << intersection_table_restrict_A_Filename << std::endl << std::endl;
+
+		std::cout << "| Inter. table restrict / B :" << std::endl;
+		std::cout << "|    filename     " << intersection_table_restrict_B_Filename << std::endl << std::endl;
 
 		std::cout << "| Inter. table I  :" << std::endl;
 		std::cout << "|    filename     " << intersection_table_I_Filename << std::endl << std::endl;
@@ -303,7 +353,7 @@ int main (int argc, char** argv)
 	libMesh::EquationSystems& equation_systems_BIG =
 					CoupledTest.set_BIG_EquationSystem("BigSys", mesh_BIG);
 	libMesh::EquationSystems& equation_systems_micro =
-					CoupledTest.add_micro_EquationSystem("MicroSys", mesh_micro);
+					CoupledTest.add_micro_EquationSystem<libMesh::PetscMatrix<libMesh::Number> >("MicroSys", mesh_micro);
 	libMesh::EquationSystems& equation_systems_restrict =
 					CoupledTest.add_restrict_EquationSystem("RestrictSys", mesh_restrict);
 	libMesh::EquationSystems& equation_systems_inter =
@@ -345,14 +395,11 @@ int main (int argc, char** argv)
 
 	equation_systems_inter.init();
 
-	libMesh::PetscMatrix<libMesh::Number> CouplingTestMatrix(init.comm());
-
-	assemble_coupling_matrix(	equation_systems_restrict,
-								equation_systems_micro,
-								equation_systems_inter,
-								intersection_table_AB,
-								intersection_table_I,
-								CouplingTestMatrix);
+	CoupledTest.assemble_coupling_matrices(	"BigSys","MicroSys",
+											"InterSys","RestrictSys",
+											intersection_table_restrict_B,
+											intersection_table_I,
+											using_same_mesh_restrict_A);
 
 //	elasticity_system.attach_assemble_function(assemble_elasticity_heterogeneous);
 //
@@ -383,22 +430,8 @@ int main (int argc, char** argv)
 //
 //	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_displaced);
 
-	CouplingTestMatrix.close();
-
-	libMesh::Real accumulator = 0;
-	std::cout << "| C_i,j :" << std::endl;
-	for(unsigned int iii = 0; iii < CouplingTestMatrix.m(); ++iii)
-	{
-		std::cout << "|    ";
-		for(unsigned int jjj = 0; jjj < CouplingTestMatrix.n(); ++jjj)
-		{
-			std::cout <<  CouplingTestMatrix(iii,jjj) << " ";
-			accumulator += CouplingTestMatrix(iii,jjj);
-		}
-		std::cout << std::endl;
-	}
-	std::cout << "|" << std::endl;
-	std::cout << "| Sum( C_i,j ) = " << accumulator << std::endl;
+	CoupledTest.print_matrix_micro_info("MicroSys");
+	CoupledTest.print_matrix_BIG_info("MicroSys");
 
 	return 0;
 }
