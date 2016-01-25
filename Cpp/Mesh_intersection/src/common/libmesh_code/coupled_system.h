@@ -208,6 +208,7 @@ public:
 										const std::string micro_name,
 										const std::string inter_name,
 										const std::string restrict_name,
+										std::unordered_map<int,int>& equivalence_table_restrict_BIG,
 										std::vector<std::pair<int,int> >& intersection_table_restrict_micro,
 										std::unordered_multimap<int,int>& intersection_table_inter,
 //										libMesh::SparseMatrix<libMesh::Number>& couplingMatrix,
@@ -229,16 +230,16 @@ public:
 		libMesh::SparseMatrix<libMesh::Number>& CouplingTestMatrix =
 							* m_couplingMatrixMap_restrict_micro[name];
 		libMesh::Real accumulator = 0;
-		std::cout << "| C_(R,B) i,j :" << std::endl;
+		std::cout << "| C_(R,B) i,j : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl;
 		for(unsigned int iii = 0; iii < CouplingTestMatrix.m(); ++iii)
 		{
-			std::cout << "|    ";
+//			std::cout << "|    ";
 			for(unsigned int jjj = 0; jjj < CouplingTestMatrix.n(); ++jjj)
 			{
-				std::cout <<  CouplingTestMatrix(iii,jjj) << " ";
+//				std::cout <<  CouplingTestMatrix(iii,jjj) << " ";
 				accumulator += CouplingTestMatrix(iii,jjj);
 			}
-			std::cout << std::endl;
+//			std::cout << std::endl;
 		}
 		std::cout << "|" << std::endl;
 		std::cout << "| Sum( C_i,j ) = " << accumulator << std::endl << std::endl;
@@ -249,16 +250,16 @@ public:
 		libMesh::SparseMatrix<libMesh::Number>& CouplingTestMatrix =
 							* m_couplingMatrixMap_restrict_BIG[name];
 		libMesh::Real accumulator = 0;
-		std::cout << "| C_(R,A) i,j :" << std::endl;
+		std::cout << "| C_(R,A) i,j : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl;
 		for(unsigned int iii = 0; iii < CouplingTestMatrix.m(); ++iii)
 		{
-			std::cout << "|    ";
+//			std::cout << "|    ";
 			for(unsigned int jjj = 0; jjj < CouplingTestMatrix.n(); ++jjj)
 			{
-				std::cout <<  CouplingTestMatrix(iii,jjj) << " ";
+//				std::cout <<  CouplingTestMatrix(iii,jjj) << " ";
 				accumulator += CouplingTestMatrix(iii,jjj);
 			}
-			std::cout << std::endl;
+//			std::cout << std::endl;
 		}
 		std::cout << "|" << std::endl;
 		std::cout << "| Sum( C_i,j ) = " << accumulator << std::endl;

@@ -701,7 +701,7 @@ void Triangular_Mesh_3::Add_Cell(std::vector<int>& inputVertexList, int inputIdx
 	mCellHandleIndexMap[inputIdx] = Create_Cell_3(inputVertexList,inputIdx);
 }
 
-void Triangular_Mesh_3::RestrictMesh(Nef_Polyhedron& nefRestriction, Triangular_Mesh_3& outputMesh)
+void Triangular_Mesh_3::RestrictMesh(Nef_Polyhedron& nefRestriction, Triangular_Mesh_3& outputMesh, const std::string tableFilename)
 {
 	// Initialize the mesh
 	outputMesh.Initialize(mesh.number_of_vertices(), mesh.number_of_finite_cells());
@@ -722,6 +722,8 @@ void Triangular_Mesh_3::RestrictMesh(Nef_Polyhedron& nefRestriction, Triangular_
 	std::vector<ExactPoint_3> exactPoints(4);
 
 	std::unordered_map<int,int> FullToRestrictedMap(mesh.number_of_finite_cells());
+	std::unordered_map<int,int> RestrictedToFullMap(mesh.number_of_finite_cells());
+
 	int originalIdx = -1;
 	std::unordered_map<int, int>::const_iterator searchPair;
 
@@ -764,6 +766,8 @@ void Triangular_Mesh_3::RestrictMesh(Nef_Polyhedron& nefRestriction, Triangular_
 				{
 					// Insert a new vertex
 					FullToRestrictedMap[originalIdx] = bufferNodeIndex;
+					RestrictedToFullMap[bufferNodeIndex] = originalIdx;
+
 					outputMesh.Add_Vertex(inexactPoints[iii],bufferNodeIndex);
 					vertexIdxList[iii] = bufferNodeIndex;
 					++bufferNodeIndex;
@@ -805,6 +809,17 @@ void Triangular_Mesh_3::RestrictMesh(Nef_Polyhedron& nefRestriction, Triangular_
 
 	// Create and connect the INFINITE cells
 	outputMesh.AddInfiniteCells_3();
+
+	// Finally, print the restriction -> full table
+	std::ofstream tableFile(tableFilename);
+
+	tableFile << RestrictedToFullMap.size() << std::endl;
+
+	for(int iii = 1; iii <= RestrictedToFullMap.size(); ++iii)
+	{
+		tableFile << iii << " " << RestrictedToFullMap[iii] << std::endl;
+	}
+	tableFile.close();
 
 
 	// DEBUG

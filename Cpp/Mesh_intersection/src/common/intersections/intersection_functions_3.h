@@ -13,6 +13,7 @@
 #include "triangular_mesh_3.h"
 #include "triangular_mesh_intersection_3.h"
 
+extern Nef_Polyhedron cheatingNef;
 /**
  * 			This file contains the classes and declarations of functions needed
  * 		to do the intersection operations of two 2D meshes. This includes:
@@ -49,6 +50,7 @@ protected:
 	IntersectionPointsVisitor_3()
 	{
 		dummyIndex = 0;
+		NefPolyR.clear(Nef_Polyhedron::COMPLETE);
 	};
 
 	// --- Members
@@ -59,13 +61,18 @@ protected:
 	Nef_Polyhedron NefPolyB;
 	Nef_Polyhedron NefPolyI;
 
+	Nef_Polyhedron NefPolyR;
+
 	ExactPolyhedron exactDummyPolyA;
 	ExactPolyhedron exactDummyPolyB;
+	ExactPolyhedron exactDummyPolyI;
 
 	std::vector<ExactPoint_3> exactVerticesA;
 	std::vector<ExactPoint_3> exactVerticesB;
 
 	Point_3	inexactPointI;
+
+
 
 	Kernel_to_ExactKernel ConvertInexactToExact;
 	ExactKernel_to_Kernel ConvertExactToInexact;
@@ -125,7 +132,12 @@ public:
 		return 	std::to_string(IntersectionData.size());
 	}
 
-	void convertCellsToExact(Cell_handle_3 cellA, Cell_handle_3 cellB)
+	void setRestriction(Nef_Polyhedron& restrictionPolyhedron)
+	{
+		NefPolyR = restrictionPolyhedron;
+	};
+
+ 	void convertCellsToExact(Cell_handle_3 cellA, Cell_handle_3 cellB)
 	{
 		for(int iii = 0;iii < 4; ++iii)
 		{
@@ -150,28 +162,86 @@ public:
 		NefPolyB = Nef_Polyhedron(exactDummyPolyB);
 	}
 
-	bool intersect(Polyhedron& polyOut)
-	{
-		NefPolyI = NefPolyA*NefPolyB;
+//	bool intersect(Polyhedron& polyOut)
+//	{
+//		NefPolyI = NefPolyA*NefPolyB*NefPolyR;
+//
+//		if(NefPolyI.number_of_volumes() == 2)
+//		{
+//			// Then we have an intersection composed by only one polyhedron
+//			// (the second volume is the polyhedron's exterior)
+//			for(Nef_Polyhedron::Vertex_const_iterator
+//											itVertex = NefPolyI.vertices_begin();
+//											itVertex != NefPolyI.vertices_end();
+//											++itVertex)
+//			{
+//				inexactPointI = ConvertExactToInexact(itVertex->point());
+//				add(inexactPointI);
+//			}
+//
+//			std::vector<Point_3>::iterator visPointListBegin = IntersectionData.begin();
+//			std::vector<Point_3>::iterator visPointListEnd = visPointListBegin;
+//			std::advance(visPointListEnd,size());
+//
+//			CGAL::convex_hull_3(visPointListBegin,visPointListEnd,polyOut);
+//			return true;
+//		}
+//
+//		return false;
+//	}
 
-		if(NefPolyI.number_of_volumes() == 2)
+	bool intersect(std::vector<Polyhedron>& polyOut, int& nbOfPolys)
+	{
+		NefPolyI = NefPolyA*NefPolyB*NefPolyR;
+		int nbOfVolumes = NefPolyI.number_of_volumes();
+
+		if(nbOfVolumes >= 2)
 		{
 			// Then we have an intersection composed by only one polyhedron
 			// (the second volume is the polyhedron's exterior)
-			for(Nef_Polyhedron::Vertex_const_iterator
-											itVertex = NefPolyI.vertices_begin();
-											itVertex != NefPolyI.vertices_end();
-											++itVertex)
-			{
-				inexactPointI = ConvertExactToInexact(itVertex->point());
-				add(inexactPointI);
-			}
+
+			CGAL::convex_decomposition_3(NefPolyI);
+			nbOfPolys = 0;
+
+//			// First volume is the outer volume
+//			if(NefPolyI.number_of_volumes() > polyOut.size())
+//			{
+//				polyOut.resize(2*NefPolyI.number_of_volumes());
+//			}
+
+			int idxVertexNb = 0;
 
 			std::vector<Point_3>::iterator visPointListBegin = IntersectionData.begin();
 			std::vector<Point_3>::iterator visPointListEnd = visPointListBegin;
-			std::advance(visPointListEnd,size());
 
-			CGAL::convex_hull_3(visPointListBegin,visPointListEnd,polyOut);
+			Nef_Polyhedron::Volume_const_iterator itVol = ++NefPolyI.volumes_begin();
+			for( ; itVol != NefPolyI.volumes_end(); ++itVol)
+			{
+			    if(itVol->mark())
+			    {
+			    	idxVertexNb = 0;
+
+			    	NefPolyI.convert_inner_shell_to_polyhedron(itVol->shells_begin(), exactDummyPolyI);
+			    	for(ExactPolyhedron::Vertex_const_iterator
+			    							itVertex = exactDummyPolyI.vertices_begin();
+											itVertex != exactDummyPolyI.vertices_end();
+											++itVertex)
+			    	{
+						inexactPointI = ConvertExactToInexact(itVertex->point());
+						add(inexactPointI);
+						++idxVertexNb;
+			    	}
+
+					std::advance(visPointListEnd,idxVertexNb);
+
+					CGAL::convex_hull_3(visPointListBegin,visPointListEnd,polyOut[nbOfPolys]);
+					++nbOfPolys;
+
+					visPointListBegin = visPointListEnd;
+			    }
+			}
+
+
 			return true;
 		}
 
@@ -317,10 +387,9 @@ public:
 		dummyTotalNbOfinterTetras = IntersectionTDS_3.mesh.number_of_finite_cells();
 	};
 
-	void PrintIntersectionTables()
+	void PrintIntersectionTables(const std::string filenameBase = "intersection_tables")
 	{
-		std::string filenameBase = "intersection_tables";
-		std::string filenameAB = filenameBase + "_AB.dat";
+		std::string filenameAB = filenameBase + "_restrict_B.dat";
 		std::string filenameI = filenameBase + "_I.dat";
 
 		std::ofstream fileAB(filenameAB,std::ios::trunc);
@@ -402,7 +471,8 @@ void BuildMeshIntersections_Brute(
 void BuildMeshIntersections(
 		const Triangular_Mesh_3& 	dtA,
 		const Triangular_Mesh_3& 	dtB,
-		TriangulationIntersectionVisitor_3& 	output
+		TriangulationIntersectionVisitor_3& 	output,
+		Nef_Polyhedron& restrictionPolyhedron = cheatingNef
 		);
 
 /*
@@ -413,6 +483,17 @@ void BuildMeshIntersections(
  * 		(detailed in the source file).
  *
  */
+//void IntersectTetrahedrons(
+//		const Triangular_Mesh_3& 	dtB,
+//		const Cell_handle_3& 		workingTetrahedronB,
+//		const Triangular_Mesh_3& 	dtA,
+//		const Cell_handle_3& 		workingTetrahedronA,
+//		std::vector<int>& 			candidatesAUpdate,
+//		bool& 						queryIntersect,
+//		bool&						exactQueryIntersect,
+//		Polyhedron& 				output,
+//		IntersectionPointsVisitor_3&	visPointList
+//		);
 void IntersectTetrahedrons(
 		const Triangular_Mesh_3& 	dtB,
 		const Cell_handle_3& 		workingTetrahedronB,
@@ -420,8 +501,9 @@ void IntersectTetrahedrons(
 		const Cell_handle_3& 		workingTetrahedronA,
 		std::vector<int>& 			candidatesAUpdate,
 		bool& 						queryIntersect,
-		bool&						inexactQueryIntersect,
-		Polyhedron& 				output,
+		bool&						exactQueryIntersect,
+		std::vector<Polyhedron>& 		output,
+		int&							nbOfPolys,
 		IntersectionPointsVisitor_3&	visPointList
 		);
 
@@ -450,14 +532,24 @@ void FindFirstPair(
  * 		intersection operations and the inexact constructions kernels.
  *
  */
+//bool tetra_intersection(
+//		const Triangular_Mesh_3& 	dtA,
+//		const Cell_handle_3 		cellA,
+//		const Triangular_Mesh_3& 	dtB,
+//		const Cell_handle_3 		cellB,
+//		Polyhedron& polyOut,
+//		IntersectionPointsVisitor_3&	visPointList
+//		);
+
 bool tetra_intersection(
-		const Triangular_Mesh_3& 	dtA,
-		const Cell_handle_3 		cellA,
-		const Triangular_Mesh_3& 	dtB,
-		const Cell_handle_3 		cellB,
-		Polyhedron& polyOut,
-		IntersectionPointsVisitor_3&	visPointList
-		);
+						const Triangular_Mesh_3& 	dtA,
+						const Cell_handle_3 		cellA,
+						const Triangular_Mesh_3& 	dtB,
+						const Cell_handle_3 		cellB,
+						std::vector<Polyhedron>&	polyOut,
+						int& 						nbOfPolys,
+						IntersectionPointsVisitor_3& visPointList
+						);
 
 /*
  * 			Test the existence of an intersection between two tetrahedrons. This

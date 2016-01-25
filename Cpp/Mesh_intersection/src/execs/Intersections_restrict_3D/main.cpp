@@ -13,23 +13,47 @@ int main(int argc, char *argv[])
 {
 	// Declare meshes
 	// -> BIG mesh
-	std::string filenameA = "meshes/3D/test_inter_A_3D.msh";
+	std::string filenameA = "meshes/3D/test_restriction_cube.msh";
 	// -> small mesh
-	std::string filenameB = "meshes/3D/test_inter_B_3D.msh";
+	std::string filenameB = "meshes/3D/test_restriction_micro.msh";
+	// -> restrict region
+	std::string filenameRestrict = "meshes/3D/restriction_data.txt";
 
-	std::string filenameOutput = "meshes/3D/output/test_inter_I_3D.msh";
+	std::string filenameOutput = "meshes/3D/output/test_restriction_inter_I_3D.msh";
+
+	std::string filenameTableOutputBase = "meshes/equivalence_tables/intersection_carl";
 
 	if(argc == 3)
 	{
 		filenameA = argv[1];
 		filenameB = argv[2];
+		filenameOutput = "meshes/3D/output/test_full_inter_I_3D.msh";
+		filenameTableOutputBase = "meshes/equivalence_tables/intersection_carl_full";
 	}
+
 
 	if(argc == 4)
 	{
 		filenameA = argv[1];
 		filenameB = argv[2];
-		filenameOutput = argv[3];
+		filenameRestrict = argv[3];
+	}
+
+	if(argc == 5)
+	{
+		filenameA = argv[1];
+		filenameB = argv[2];
+		filenameRestrict = argv[3];
+		filenameOutput = argv[4];
+	}
+
+	if(argc == 6)
+	{
+		filenameA = argv[1];
+		filenameB = argv[2];
+		filenameRestrict = argv[3];
+		filenameOutput = argv[4];
+		filenameTableOutputBase = argv[5];
 	}
 
 	// --- Preamble - timing variables
@@ -43,14 +67,16 @@ int main(int argc, char *argv[])
 									elapsed_seconds_export,
 									elapsed_seconds_total;
 
-	std::cout << " ---> Program call : ./intersection_3D "
+	std::cout << " ---> Program call : ./intersection_3D_restrict "
 			  << filenameA << " "
 			  << filenameB << " "
+			  << filenameRestrict << " "
 			  << filenameOutput << std::endl;
 
 	std::cout << " ---> Mesh files : " << std::endl;
 	std::cout << "           (input) " << filenameA << std::endl;
 	std::cout << "                   " << filenameB << std::endl;
+	std::cout << "                   " << filenameRestrict << std::endl;
 	std::cout << "          (output) " << filenameOutput << std::endl;
 
 	// Import meshes
@@ -66,6 +92,19 @@ int main(int argc, char *argv[])
 	Triangular_Mesh_3 dtB(sillyname,filenameB);
 	std::cout << "finished!" << std::endl;
 
+	std::cout << " ---> Generating the Nef polyhedron ... " << std::endl;
+	Nef_Polyhedron couplingRegion;
+	if(argc == 3)
+	{
+		std::cout << " ---> Using the full space" << std::endl;
+		couplingRegion.clear(Nef_Polyhedron::COMPLETE);
+	}
+	else
+	{
+		GenerateNefRestrictedRegion(filenameRestrict,couplingRegion);
+	}
+	std::cout << " ---> Generating the Nef polyhedron ... finished!" << std::endl;
+
 	timing_end   = std::chrono::system_clock::now();
 	elapsed_seconds_input = timing_end-timing_start;
 
@@ -79,7 +118,7 @@ int main(int argc, char *argv[])
 	TriangulationIntersectionVisitor_3 	tallyFastVector(std::min(dtA.LengthOrder(),dtB.LengthOrder()),
 														dtA.get_nb_of_cells(),dtB.get_nb_of_cells());
 
-	BuildMeshIntersections(dtA,dtB,tallyFastVector);
+	BuildMeshIntersections(dtA,dtB,tallyFastVector,couplingRegion);
 	std::cout << "finished!" << std::endl;
 
 	timing_end   = std::chrono::system_clock::now();
@@ -90,7 +129,7 @@ int main(int argc, char *argv[])
 	// Export the meshes
 	std::cout << " ---> Exporting data ... ";
 	tallyFastVector.IntersectionTDS_3.ExportMesh_3(filenameOutput);
-	tallyFastVector.PrintIntersectionTables();
+	tallyFastVector.PrintIntersectionTables(filenameTableOutputBase);
 	std::cout << "finished!" << std::endl;
 
 	timing_end   		= std::chrono::system_clock::now();

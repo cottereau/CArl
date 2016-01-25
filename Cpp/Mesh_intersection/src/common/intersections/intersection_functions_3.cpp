@@ -7,12 +7,48 @@
 
 #include "intersection_functions_3.h"
 
+Nef_Polyhedron cheatingNef(Nef_Polyhedron::COMPLETE);
+
+//bool tetra_intersection(
+//						const Triangular_Mesh_3& 	dtA,
+//						const Cell_handle_3 		cellA,
+//						const Triangular_Mesh_3& 	dtB,
+//						const Cell_handle_3 		cellB,
+//						Polyhedron&	polyOut,
+//						IntersectionPointsVisitor_3& visPointList
+//						)
+//{
+//
+//	// Fast intersection test, using bbox
+//	bool bPreliminary = CGAL::do_intersect(
+//								dtA.mesh.tetrahedron(cellA).bbox(),
+//								dtB.mesh.tetrahedron(cellB).bbox()
+//								);
+//
+//	bool bTriangleIntersect  = false;
+//
+//	if(bPreliminary)
+//	{
+//		// Then must try to intersect
+//		// - Convert the tetrahedrons to exact polyhedrons
+//		visPointList.clear();
+//		visPointList.convertCellsToExact(cellA,cellB);
+//
+//		// - Try to intersect
+//		bTriangleIntersect = visPointList.intersect(polyOut);
+//	}
+//
+//	return bTriangleIntersect;
+//};
+
+
 bool tetra_intersection(
 						const Triangular_Mesh_3& 	dtA,
 						const Cell_handle_3 		cellA,
 						const Triangular_Mesh_3& 	dtB,
 						const Cell_handle_3 		cellB,
-						Polyhedron& polyOut,
+						std::vector<Polyhedron>&	polyOut,
+						int& 						nbOfPolys,
 						IntersectionPointsVisitor_3& visPointList
 						)
 {
@@ -33,7 +69,7 @@ bool tetra_intersection(
 		visPointList.convertCellsToExact(cellA,cellB);
 
 		// - Try to intersect
-		bTriangleIntersect = visPointList.intersect(polyOut);
+		bTriangleIntersect = visPointList.intersect(polyOut,nbOfPolys);
 	}
 
 	return bTriangleIntersect;
@@ -124,8 +160,9 @@ void BuildMeshIntersections_Brute(
 	bool exactResult = false;
 
 	// 	Dummy polyhedron
-	Polyhedron dummyPoly;
-	IntersectionPointsVisitor_3 visPointList(24);
+	std::vector<Polyhedron> dummyPoly(12);
+	int nbOfPolys = 0;
+	IntersectionPointsVisitor_3 visPointList(240);
 
 //	Tetrahedron dummyATetra;
 //	Tetrahedron dummyBTetra;
@@ -141,7 +178,7 @@ void BuildMeshIntersections_Brute(
 		for(Finite_cells_iterator_3 itA = finiteCellsBegin_A; itA != finiteCellsEnd_A; ++itA)
 		{
 			// Crossing
-			result = tetra_intersection(dtA,itA,dtB,itB,dummyPoly,visPointList);
+			result = tetra_intersection(dtA,itA,dtB,itB,dummyPoly,nbOfPolys,visPointList);
 
 			if (result) {
 //				dummyATetra = Tetrahedron(	itA->vertex(0)->point(),
@@ -150,7 +187,11 @@ void BuildMeshIntersections_Brute(
 //											itA->vertex(3)->point());
 //
 //				dummyVolume = 10E-6*std::min(dummyATetra.volume(),dummyBTetra.volume());
-				output.InsertPolyhedron(dummyPoly,itA->info().ExtIndex,itB->info().ExtIndex);
+				for(int iii = 0; iii < nbOfPolys; ++iii)
+				{
+					output.InsertPolyhedron(dummyPoly[iii],itA->info().ExtIndex,itB->info().ExtIndex);
+				}
+
 				++nbOfIntersections;
 			}
 
@@ -168,7 +209,8 @@ void BuildMeshIntersections_Brute(
 void BuildMeshIntersections(
 		const Triangular_Mesh_3& 	dtA,
 		const Triangular_Mesh_3& 	dtB,
-		TriangulationIntersectionVisitor_3& 	output
+		TriangulationIntersectionVisitor_3& 	output,
+		Nef_Polyhedron& restrictionPolyhedron
 		)
 {
 
@@ -177,22 +219,21 @@ void BuildMeshIntersections(
 	 * 		dtA, dtB	:	3D triangulations to be analyzed
 	 * 		output		:	visitor class (see "Boost::variant::") that will be
 	 * 						applied to the intersections
+	 * 		restrictionPolyhedron :
+	 * 						a geometric region to which the intersection mesh
+	 * 						must be restricted. If none is given, the code will
+	 * 						run as if there is no restriction.
 	 */
 
 	// --- Notes
 	/*
-	 * 		1)	This algorithm was built with CGAL's "exact predicates, inexact
-	 * 		constructions" kernel, and so the (cheap) "do_intersect" tests,
-	 * 		linked to the algorithm's logic, are exact. On the other hand, the
-	 * 		"intersection" operations (linked to the output) are inexact.
-	 * 		This might result in the algorithm finding an intersection, but not
-	 * 		 outputing it. The size of these missed intersections is of the
-	 * 		 order of the "double" format rounding error (15 - 17 significant
-	 * 		 decimal digits), and can be ignored.
-	 *
-	 * 		 	One can use CGAL's "exact predicates, exact constructions"
-	 * 		 kernel to obtain all the intersections, but this comes at a
-	 * 		 considerable resource and time cost.
+	 * 		1)	This algorithm was built using both CGAL's "exact predicates,
+	 * 		exact constructions" and "exact predicates, INexact constructions"
+	 * 		kernels. Cheap "do_intersect" tests use the latter, but the
+	 * 		intersection construction uses Nef polyhedrons, which needd the
+	 * 		latter. This has a certain computational cost, but it has the
+	 * 		advantage of the exactitude of the results and ease to adapt it to
+	 * 		different types of elements.
 	 *
 	 */
 
@@ -269,8 +310,8 @@ void BuildMeshIntersections(
 	// Boolean saying if two tetrahedrons intersect (exactly)
 	bool queryIntersect = false;
 
-	// Boolean saying if two tetrahedrons intersect (inexactly)
-	bool inexactQueryIntersect = false;
+	// Boolean saying if two tetrahedrons intersection was built
+	bool builtQueryIntersect = false;
 
 	// --- Preamble - initializations
 	// Insert the first elements in the queues
@@ -292,8 +333,11 @@ void BuildMeshIntersections(
 	int DebugNumberOfCellsB = 0;
 
 	// Dummy polyhedron
-	Polyhedron dummyPoly;
-	IntersectionPointsVisitor_3 visPointList(24);
+	std::vector<Polyhedron> dummyPoly(12);
+	int nbOfPolys = 0;
+	IntersectionPointsVisitor_3 visPointList(240);
+
+	visPointList.setRestriction(restrictionPolyhedron);
 
 	Tetrahedron dummyATetra;
 	Tetrahedron dummyBTetra;
@@ -343,8 +387,9 @@ void BuildMeshIntersections(
 					workingTetrahedronA,
 					candidatesAUpdate,
 					queryIntersect,
-					inexactQueryIntersect,
+					builtQueryIntersect,
 					dummyPoly,
+					nbOfPolys,
 					visPointList
 				);
 
@@ -354,7 +399,7 @@ void BuildMeshIntersections(
 			if(queryIntersect)
 			{
 				++nbOfIntersections;
-				if(inexactQueryIntersect)
+				if(builtQueryIntersect)
 				{
 					dummyBTetra = Tetrahedron(	workingTetrahedronB->vertex(0)->point(),
 												workingTetrahedronB->vertex(1)->point(),
@@ -362,10 +407,13 @@ void BuildMeshIntersections(
 												workingTetrahedronB->vertex(3)->point());
 
 					dummyVolume = 10E-8*std::min(dummyATetra.volume(),dummyBTetra.volume());
-					output.InsertPolyhedron(dummyPoly,
-											workingTetrahedronA->info().ExtIndex,
-											workingTetrahedronB->info().ExtIndex,
-											dummyVolume);
+					for(int iii = 0; iii < nbOfPolys; ++iii)
+					{
+						output.InsertPolyhedron(dummyPoly[iii],
+												workingTetrahedronA->info().ExtIndex,
+												workingTetrahedronB->info().ExtIndex,
+												dummyVolume);
+					}
 				}
 
 				for(int iii = 0; iii < 4; ++iii)
@@ -424,8 +472,9 @@ void IntersectTetrahedrons(
 		const Cell_handle_3& 			workingTetrahedronA,
 		std::vector<int>& 				candidatesAUpdate,
 		bool& 							queryIntersect,
-		bool&							inexactQueryIntersect,
-		Polyhedron& 					output,
+		bool&							exactQueryIntersect,
+		std::vector<Polyhedron>& 		output,
+		int&							nbOfPolys,
 		IntersectionPointsVisitor_3&	visPointList
 		)
 {
@@ -437,15 +486,16 @@ void IntersectTetrahedrons(
 										workingTetrahedronB
 									   );
 
-	// If true, build inexact intersection
+	// If true, build exact intersection
 	if(queryIntersect)
 	{
-		inexactQueryIntersect = tetra_intersection(
+		exactQueryIntersect = tetra_intersection(
 										dtA,
 										workingTetrahedronA,
 										dtB,
 										workingTetrahedronB,
 										output,
+										nbOfPolys,
 										visPointList
 									   );
 	}

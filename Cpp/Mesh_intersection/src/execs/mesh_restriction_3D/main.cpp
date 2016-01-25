@@ -16,6 +16,12 @@ int main(int argc, char *argv[])
 	std::string filenameMesh;
 	std::string filenamePoints;
 	std::string filenameOutput;
+	std::string filenameTableOutput;
+
+	filenameMesh = "meshes/3D/test_restriction_cube.msh";
+	filenamePoints = "meshes/3D/restriction_data.txt";
+	filenameOutput = "meshes/3D/output/test_restriction_output.msh";
+	filenameTableOutput = "meshes/equivalence_tables/equivalence_carl_restrict_A.dat";
 
 	if(argc == 3)
 	{
@@ -29,17 +35,16 @@ int main(int argc, char *argv[])
 		filenamePoints = argv[2];
 		filenameOutput = argv[3];
 	}
-	else if(argc == 1)
+	else if(argc == 5)
 	{
-		filenameMesh = "meshes/3D/test_restriction_cube.msh";
-		filenamePoints = "meshes/3D/restriction_data.txt";
-		filenameOutput = "meshes/3D/output/test_restriction_output.msh";
+		filenameMesh = argv[1];
+		filenamePoints = argv[2];
+		filenameOutput = argv[3];
+		filenameTableOutput = argv[4];
 	}
 	else
 	{
-		std::cout << " Usage : ./restrict_mesh_3D [input mesh with restriction data] [output mesh]" << std::endl;
-		std::cout << "         ./restrict_mesh_3D [input mesh] [restriction data] [output mesh]" << std::endl;
-		return 0;
+		std::cout << " >>>> IGNORING ARGUMENTS, WILL USE DEFAULT FILES !!! <<<< " << std::endl;
 	}
 
 	// --- Preamble - timing variables
@@ -57,6 +62,7 @@ int main(int argc, char *argv[])
 	std::cout << "             (input mesh) " << filenameMesh << std::endl;
 	std::cout << "      (input restriction) " << filenamePoints << std::endl;
 	std::cout << "                 (output) " << filenameOutput << std::endl;
+	std::cout << "           (output table) " << filenameTableOutput << std::endl;
 
 	// Import meshes
 	timing_start 		= std::chrono::system_clock::now();
@@ -80,15 +86,12 @@ int main(int argc, char *argv[])
 	timing_start = std::chrono::system_clock::now();
 
 	std::cout << " ---> Generating the Nef polyhedron ... " << std::endl;
-	std::cout.flush();
-
 	Nef_Polyhedron couplingRegion;
 	GenerateNefRestrictedRegion(filenamePoints,couplingRegion);
 	std::cout << " ---> Generating the Nef polyhedron ... finished!" << std::endl;
 
 	std::cout << " ---> Generating the restricted mesh ... " << std::endl;
-	std::cout.flush();
-	dtMesh.RestrictMesh(couplingRegion,dtMeshSilly);
+	dtMesh.RestrictMesh(couplingRegion,dtMeshSilly,filenameTableOutput);
 	std::cout << " ---> Generating the restricted mesh ... finished!" << std::endl;
 
 	timing_end   = std::chrono::system_clock::now();

@@ -115,6 +115,7 @@ void carl::coupled_system::assemble_coupling_matrices(	const std::string BIG_nam
 														const std::string micro_name,
 														const std::string inter_name,
 														const std::string restrict_name,
+														std::unordered_map<int,int>& equivalence_table_restrict_BIG,
 														std::vector<std::pair<int,int> >& intersection_table_restrict_micro,
 														std::unordered_multimap<int,int>& intersection_table_inter,
 //														libMesh::SparseMatrix<libMesh::Number>& couplingMatrix,
@@ -246,8 +247,24 @@ void carl::coupled_system::assemble_coupling_matrices(	const std::string BIG_nam
 	const unsigned int BIG_N_local = dof_map_BIG.n_local_dofs();
 	const unsigned int micro_N_local = dof_map_micro.n_local_dofs();
 
-	couplingMatrix_micro.init(restrict_M,micro_N,restrict_M_local,micro_N_local);
-	couplingMatrix_BIG.init(restrict_M,BIG_N,restrict_M_local,BIG_N_local);
+	const std::vector<libMesh::dof_id_type>& n_nz = dof_map_restrict.get_n_nz();
+	const std::vector<libMesh::dof_id_type>& n_oz = dof_map_restrict.get_n_oz();
+
+	const std::vector<libMesh::dof_id_type>& micro_n_nz = dof_map_micro.get_n_nz();
+	const std::vector<libMesh::dof_id_type>& micro_n_oz = dof_map_micro.get_n_oz();
+
+	int max_nnz = *std::max_element(n_nz.begin(),n_nz.end());
+	int max_noz = *std::max_element(n_oz.begin(),n_oz.end());
+
+	int micro_max_nnz = *std::max_element(micro_n_nz.begin(),micro_n_nz.end());
+	int micro_max_noz = *std::max_element(micro_n_oz.begin(),micro_n_oz.end());
+
+//	std::cout << max_nnz << " " << max_noz << std::endl;
+//	std::cout << micro_max_nnz << " " << micro_max_noz << std::endl;
+
+	// TODO : correct memory allocation
+	couplingMatrix_micro.init(restrict_M,micro_N,restrict_M_local,micro_N_local,max_nnz*micro_max_nnz,max_noz*micro_max_noz);
+	couplingMatrix_BIG.init(restrict_M,BIG_N,restrict_M_local,BIG_N_local,max_nnz*micro_max_nnz,max_noz*micro_max_noz);
 
 	// Intersection indexes and iterators
 	int nb_of_intersections = intersection_table_restrict_micro.size();
@@ -268,15 +285,27 @@ void carl::coupled_system::assemble_coupling_matrices(	const std::string BIG_nam
 		{
 			elem_BIG_idx = elem_restrict_idx;
 		}
+		else
+		{
+			elem_BIG_idx = equivalence_table_restrict_BIG[elem_restrict_idx];
+		}
 
 		const libMesh::Elem* elem_restrict = mesh_restrict.elem(elem_restrict_idx);
 
 		const libMesh::Elem* elem_BIG = mesh_BIG.elem(elem_BIG_idx);
 		const libMesh::Elem* elem_micro = mesh_micro.elem(elem_micro_idx);
 
-		// And their dof maps
+		// And their dof map indices
 		dof_map_restrict.dof_indices(elem_restrict, dof_indices_restrict);
 		dof_map_micro.dof_indices(elem_micro, dof_indices_micro);
+		if(using_same_mesh_restrict_A)
+		{
+			dof_indices_BIG = dof_indices_restrict;
+		}
+		else
+		{
+			dof_map_BIG.dof_indices(elem_BIG, dof_indices_BIG);
+		}
 
 		// Resize dense matrix, if needed
 		if(!bSameElemsType)
@@ -315,28 +344,33 @@ void carl::coupled_system::assemble_coupling_matrices(	const std::string BIG_nam
 			// For each quadrature point determinate the sub-matrices elements
 			for (unsigned int qp=0; qp<qrule_inter.n_points(); qp++)
 			{
-				// Internal tension
+				// Restrict -> micro coupling
 				L2_Coupling(Me_micro,qp,phi_restrict,phi_micro,
 							n_dofs_restrict,n_dofs_micro,JxW);
+
+				// Restrict -> restrict coupling
+				L2_Coupling(Me_BIG,qp,phi_restrict,phi_restrict,
+							n_dofs_restrict,n_dofs_restrict,JxW);
 			}
 		}
 
 		couplingMatrix_micro.add_matrix(Me_micro,dof_indices_restrict,dof_indices_micro);
+		couplingMatrix_BIG.add_matrix(Me_BIG,dof_indices_restrict,dof_indices_BIG);
 
-		// The restrict / A "intersection" is trivial.
-		fe_restrict->reinit(elem_restrict);
+//		// The restrict / A "intersection" is trivial.
+//		fe_restrict->reinit(elem_restrict);
 
 		// TODO : check if the "fe_BIG" is not really needed. It SHOULDN'T, but
 		//        better safe than sorry.
 //		fe_BIG->reinit(elem_restrict,&quad_points_restrict);
-		for (unsigned int qp=0; qp<qrule_inter.n_points(); qp++)
-		{
-			// Internal tension
-			L2_Coupling(Me_BIG,qp,phi_restrict,phi_restrict,
-						n_dofs_restrict,n_dofs_restrict,JxWrestrict);
-		}
+//		for (unsigned int qp=0; qp<qrule_inter.n_points(); qp++)
+//		{
+//			// Internal tension
+//			L2_Coupling(Me_BIG,qp,phi_restrict,phi_restrict,
+//						n_dofs_restrict,n_dofs_restrict,JxWrestrict);
+//		}
 
-		couplingMatrix_BIG.add_matrix(Me_BIG,dof_indices_restrict,dof_indices_BIG);
+
 	}
 
 	couplingMatrix_micro.close();

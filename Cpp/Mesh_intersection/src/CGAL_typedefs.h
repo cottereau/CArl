@@ -22,7 +22,12 @@
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polyhedron_3.h>
 
-// --- CGAL 3D convex hull
+// --- CGAL 3D convex hull and polyhedron decomposition
+#include <CGAL/Polyhedron_3.h>
+#include <CGAL/Nef_polyhedron_3.h>
+//#include <CGAL/IO/Nef_polyhedron_iostream_3.h>
+#include <CGAL/Nef_3/SNC_indexed_items.h>
+#include <CGAL/convex_decomposition_3.h>
 #include <CGAL/convex_hull_3.h>
 
 // --- CGAL 2D triangulation headers
@@ -37,7 +42,7 @@
 #include <CGAL/Triangulation_vertex_base_with_info_3.h>
 #include <CGAL/Triangulation_cell_base_with_info_3.h>
 
-#include <CGAL/Nef_polyhedron_3.h>
+
 
 // Structure used to add extra information to the 2D triangles
 struct VertexInfo_2
@@ -92,7 +97,7 @@ typedef CGAL::Polygon_2<ExactKernel>		ExactPolygon_2;
 typedef CGAL::Polyhedron_3<ExactKernel>		ExactPolyhedron;
 typedef CGAL::Tetrahedron_3<ExactKernel>	ExactTetrahedron;
 
-typedef CGAL::Nef_polyhedron_3<ExactKernel>  	Nef_Polyhedron;
+typedef CGAL::Nef_polyhedron_3<ExactKernel, CGAL::SNC_indexed_items>  	Nef_Polyhedron;
 typedef Nef_Polyhedron::Plane_3  				NefPlane_3;
 
 typedef CGAL::Polyhedron_3<ExactKernel,CGAL::Polyhedron_items_3>

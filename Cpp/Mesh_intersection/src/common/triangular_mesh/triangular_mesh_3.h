@@ -325,6 +325,6 @@ public:
 	 *
 	 *      SHOULD NOT CHANGE THE CURRENT MESH !!!
 	 */
-	void RestrictMesh(Nef_Polyhedron& nefRestriction, Triangular_Mesh_3& outputMesh);
+	void RestrictMesh(Nef_Polyhedron& nefRestriction, Triangular_Mesh_3& outputMesh, const std::string tableFilename);
 };
 #endif /* TRIANGULAR_MESH_3_H_ */

@@ -43,6 +43,7 @@ return()
 endif()
 
 message(STATUS "${CMAKE_MODULE_PATH}")
+message(STATUS "${CGAL_LIBRARIES}")
 
 # libmesh commands
 execute_process(COMMAND libmesh-config --cppflags OUTPUT_VARIABLE LIBMESH_CPPFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -59,6 +60,7 @@ set ( SOURCE_DIR src )
 set ( EXEC_SRC_DIR ${SOURCE_DIR}/execs )
 set ( INTERSECTION_2D_EXEC_DIR ${EXEC_SRC_DIR}/intersections_2D )
 set ( INTERSECTION_3D_EXEC_DIR ${EXEC_SRC_DIR}/intersections_3D )
+set ( INTERSECTION_RESTRICT_3D_EXEC_DIR ${EXEC_SRC_DIR}/intersections_restrict_3D )
 set ( RESTRICTION_3D_EXEC_DIR  ${EXEC_SRC_DIR}/mesh_restriction_3D )
 set ( TEST_IMPORT_EXEC_DIR     ${EXEC_SRC_DIR}/mesh_import_test )
 set ( CARL_LIBMESH_EXEC_DIR    ${EXEC_SRC_DIR}/carl_libmesh )
@@ -70,7 +72,7 @@ set ( LIBMESH_CODE_DIR         ${COMMON_SRC_DIR}/libmesh_code )
 
 # include for local directory
 set ( LIB_DIRS ${SOURCE_DIR} ${MESH_DIR} ${INTERSECTION_DIR} ${LIBMESH_CODE_DIR} )
-set ( EXEC_DIRS ${INTERSECTION_2D_EXEC_DIR} ${INTERSECTION_3D_EXEC_DIR} ${MESHER_EXEC_DIR} ${TEST_IMPORT_EXEC_DIR} ${RESTRICTION_3D_EXEC_DIR} ${CARL_LIBMESH_EXEC_DIR} )
+set ( EXEC_DIRS ${INTERSECTION_2D_EXEC_DIR} ${INTERSECTION_3D_EXEC_DIR} ${INTERSECTION_RESTRICT_3D_EXEC_DIR} ${MESHER_EXEC_DIR} ${TEST_IMPORT_EXEC_DIR} ${RESTRICTION_3D_EXEC_DIR} ${CARL_LIBMESH_EXEC_DIR} )
 include_directories( ${LIB_DIRS} ${EXEC_DIR} )
 
 # set source sets
@@ -81,6 +83,7 @@ file ( GLOB LIBMESH_CODE_SOURCES "${LIBMESH_CODE_DIR}/*.h" "${LIBMESH_CODE_DIR}/
 # set execs sources
 set ( INTERSECTION_2D_EXEC_SOURCES ${INTERSECTION_2D_EXEC_DIR}/main.cpp)
 set ( INTERSECTION_3D_EXEC_SOURCES ${INTERSECTION_3D_EXEC_DIR}/main.cpp)
+set ( INTERSECTION_RESTRICT_3D_EXEC_SOURCES ${INTERSECTION_RESTRICT_3D_EXEC_DIR}/main.cpp)
 set ( TEST_IMPORT_EXEC_SOURCES ${TEST_IMPORT_EXEC_DIR}/main.cpp)
 set ( RESTRICTION_3D_EXEC_SOURCES ${RESTRICTION_3D_EXEC_DIR}/main.cpp )
 set ( CARL_LIBMESH_EXEC_SOURCES ${CARL_LIBMESH_EXEC_DIR}/main.cpp )
@@ -93,12 +96,14 @@ add_library( LIBMESH_CODE_OBJS OBJECT ${LIBMESH_CODE_SOURCES})
 
 add_executable( intersections_2D ${INTERSECTION_2D_EXEC_SOURCES} $<TARGET_OBJECTS:MESH_2D_OBJS>)
 add_executable( intersections_3D ${INTERSECTION_3D_EXEC_SOURCES} $<TARGET_OBJECTS:MESH_3D_OBJS>)
+add_executable( intersections_restrict_3D ${INTERSECTION_RESTRICT_3D_EXEC_SOURCES} $<TARGET_OBJECTS:MESH_3D_OBJS>)
 add_executable( import_mesh_test ${TEST_IMPORT_EXEC_SOURCES} $<TARGET_OBJECTS:MESH_2D_OBJS> $<TARGET_OBJECTS:MESH_3D_OBJS>)
 add_executable( restrict_mesh_3D ${RESTRICTION_3D_EXEC_SOURCES} $<TARGET_OBJECTS:MESH_3D_OBJS>)
 add_executable( carl_libmesh     ${CARL_LIBMESH_EXEC_SOURCES} $<TARGET_OBJECTS:MESH_3D_OBJS> $<TARGET_OBJECTS:LIBMESH_CODE_OBJS>)
 
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS intersections_2D )
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS intersections_3D )
+add_to_cached_list( CGAL_EXECUTABLE_TARGETS intersections_restrict_3D )
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS import_mesh_test )
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS restrict_mesh_3D )
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS carl_libmesh )
@@ -109,6 +114,7 @@ set ( BOOST_LIBRARIES ${LIB_DIR}/libboost_filesystem-mt.dylib)
 # Link the executable to CGAL and third-party libraries
 target_link_libraries(intersections_2D ${CGAL_LIBRARIES} ${BOOST_LIBRARIES}  ${CGAL_3RD_PARTY_LIBRARIES} )
 target_link_libraries(intersections_3D ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+target_link_libraries(intersections_restrict_3D ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 target_link_libraries(import_mesh_test ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 target_link_libraries(restrict_mesh_3D ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 target_link_libraries(carl_libmesh ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
