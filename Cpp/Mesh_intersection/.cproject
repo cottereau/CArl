@@ -7,6 +7,7 @@
 					<externalSetting>
 						<entry flags="RESOLVED" kind="includePath" name="/opt/local/include/CGAL"/>
 						<entry flags="RESOLVED" kind="includePath" name="/opt/local/include/boost"/>
+						<entry flags="RESOLVED" kind="includePath" name="/Users/breubreubreu/Execs/petsc-3.6.2/include"/>
 					</externalSetting>
 				</externalSettings>
 				<extensions>
@@ -29,6 +30,9 @@
 								<option id="macosx.cpp.link.option.paths.1567104999" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/usr/local/lib/"/>
 								</option>
+								<option id="macosx.cpp.link.option.libs.1023347547" superClass="macosx.cpp.link.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="/Users/breubreubreu/Execs/petsc-3.6.2/arch-darwin-c/lib"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.934035283" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -42,6 +46,8 @@
 								<option id="gnu.cpp.compiler.option.include.paths.335819638" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/opt/local/include"/>
 									<listOptionValue builtIn="false" value="/usr/local/include"/>
+									<listOptionValue builtIn="false" value="/Users/breubreubreu/Execs/petsc-3.6.2/include"/>
+									<listOptionValue builtIn="false" value="/Users/breubreubreu/Execs/petsc-3.6.2/arch-darwin-c/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.637417310" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -49,6 +55,7 @@
 								<option id="gnu.c.compiler.option.include.paths.515467696" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/opt/local/include/CGAL"/>
 									<listOptionValue builtIn="false" value="/opt/local/include/boost"/>
+									<listOptionValue builtIn="false" value="/Users/breubreubreu/Execs/petsc-3.6.2/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.416654253" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>

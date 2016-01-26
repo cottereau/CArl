@@ -12,7 +12,6 @@
 #include "common_header_libmesh.h"
 #include "mesh_tables.h"
 #include "coupled_system.h"
-#include "assemble_functions_elasticity_3D.h"
 
 // Classes
 

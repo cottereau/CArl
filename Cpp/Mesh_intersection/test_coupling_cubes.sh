@@ -1,0 +1,1 @@
+./carl_coupling_test -mA meshes/3D/test_inter_A_3D.msh -mB meshes/3D/test_inter_B_3D.msh -mI meshes/3D/output/test_inter_I_3D.msh --tableB meshes/equivalence_tables/intersection_cubes_restrict_B.dat  --tableI meshes/equivalence_tables/intersection_cubes_I.dat

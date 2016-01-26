@@ -35,5 +35,6 @@
 #include "libmesh/getpot.h"
 #include "libmesh/petsc_linear_solver.h"
 #include "libmesh/petsc_matrix.h"
+#include "libmesh/petsc_vector.h"
 
 #endif /* COMMON_LIBMESH_HEADER_H_ */

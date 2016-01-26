@@ -74,8 +74,6 @@ int main (int argc, char** argv)
 	 *
 	 * ---------------------------------------------------------------------- */
 
-	libMesh::PerfLog perf_log ("Main program");
-
 	// - Displacement conditions ----------------------------------------------
 	double x_max_x_displ = 0.5;
 	double x_max_y_displ = 0;
@@ -90,29 +88,6 @@ int main (int argc, char** argv)
 	const unsigned int dim = 3;
 
 	libmesh_example_requires(dim == LIBMESH_DIM, "3D support");
-
-	// Set constant parameters
-	std::string physicalParamsFile;
-	if ( command_line.search(2, "-p","--parameters") )
-	{
-		physicalParamsFile = command_line.next(physicalParamsFile);
-	}
-	else
-	{
-		std::cerr << "Need a physical parameter file!" << std::endl;
-		return 0;
-	}
-
-	// Set output
-	std::string outputParamsFile;
-	if ( command_line.search(1, "-o","--output") )
-	{
-		outputParamsFile = command_line.next(outputParamsFile);
-	}
-	else
-	{
-		outputParamsFile = "meshes/3D/output/carl_multi_crystal_test.exo";
-	}
 
 	// Set meshes
 	libMesh::Mesh mesh_BIG(init.comm(), dim);
@@ -131,13 +106,13 @@ int main (int argc, char** argv)
 
 	std::string extra_restrict_info = "";
 
-	// Read mesh ...
-	int BOUNDARY_ID_MIN_Z = 0;
-	int BOUNDARY_ID_MIN_Y = 1;
-	int BOUNDARY_ID_MAX_X = 2;
-	int BOUNDARY_ID_MAX_Y = 3;
-	int BOUNDARY_ID_MIN_X = 4;
-	int BOUNDARY_ID_MAX_Z = 5;
+//	// Read mesh ...
+//	int BOUNDARY_ID_MIN_Z = 0;
+//	int BOUNDARY_ID_MIN_Y = 1;
+//	int BOUNDARY_ID_MAX_X = 2;
+//	int BOUNDARY_ID_MAX_Y = 3;
+//	int BOUNDARY_ID_MIN_X = 4;
+//	int BOUNDARY_ID_MAX_Z = 5;
 
 	std::unordered_map<int,int> mesh_BIG_NodeMap;
 	std::unordered_map<int,int> mesh_BIG_ElemMap;
@@ -242,13 +217,13 @@ int main (int argc, char** argv)
 		{
 			libmesh_error_msg("\n---> ERROR: Missing restrition table file");
 		}
-
-		++BOUNDARY_ID_MIN_Z;
-		++BOUNDARY_ID_MIN_Y;
-		++BOUNDARY_ID_MAX_X;
-		++BOUNDARY_ID_MAX_Y;
-		++BOUNDARY_ID_MIN_X;
-		++BOUNDARY_ID_MAX_Z;
+//
+//		++BOUNDARY_ID_MIN_Z;
+//		++BOUNDARY_ID_MIN_Y;
+//		++BOUNDARY_ID_MAX_X;
+//		++BOUNDARY_ID_MAX_Y;
+//		++BOUNDARY_ID_MIN_X;
+//		++BOUNDARY_ID_MAX_Z;
 
 		double vol = 0;
 		libMesh::Elem* silly_elem;
@@ -321,33 +296,7 @@ int main (int argc, char** argv)
 		libmesh_error_msg("\n---> ERROR: Must give the three meshes and the intersection tables!\n");
 	}
 
-	// Associate the boundary conditions to the MICRO mesh (for now)
-	libMesh::MeshBase::const_element_iterator       el     = mesh_micro.active_local_elements_begin();
-	const libMesh::MeshBase::const_element_iterator end_el = mesh_micro.active_local_elements_end();
-	for ( ; el != end_el; ++el)
-	{
-		const libMesh::Elem* elem = *el;
-
-		// Test if it is on max x/y/z and/or min y
-		unsigned int side_max_x = 0, side_min_x = 0;
-
-		bool found_side_max_x = false, found_side_min_x = false;
-
-		for(unsigned int side=0; side<elem->n_sides(); side++)
-		{
-			if( mesh_micro.get_boundary_info().has_boundary_id(elem, side, BOUNDARY_ID_MAX_X))
-			{
-				side_max_x = side;
-				found_side_max_x = true;
-			}
-
-			if( mesh_micro.get_boundary_info().has_boundary_id(elem, side, BOUNDARY_ID_MIN_X))
-			{
-				side_min_x = side;
-				found_side_min_x = true;
-			}
-		}
-	}
+	// Associate the boundary conditions -> no boundary conditions!
 
 	// Generate the equation systems
 	carl::coupled_system CoupledTest;
@@ -363,108 +312,39 @@ int main (int argc, char** argv)
 
 	// - Build the BIG system --------------------------------------------------
 
-	perf_log.push("System initialization - BIG");
 	libMesh::LinearImplicitSystem& volume_BIG_system =
 			equation_systems_BIG.add_system<libMesh::LinearImplicitSystem> ("VolTest");
 
 	unsigned int sillyVar_BIG = volume_BIG_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
 
 	equation_systems_BIG.init();
-	perf_log.pop("System initialization - BIG");
 
 	// - Build the micro system ------------------------------------------------
 
-	// Simple coupling
-	// TODO correct the coupling!!!
-	perf_log.push("System initialization - micro");
 	libMesh::LinearImplicitSystem& volume_micro_system =
 			equation_systems_micro.add_system<libMesh::LinearImplicitSystem> ("VolTest");
 
 	unsigned int sillyVar_micro = volume_micro_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
 
-	// Set up the micro physical properties
-	libMesh::ExplicitSystem& physical_variables =
-			equation_systems_micro.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
-
-	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
-	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
-
-	libMesh::LinearImplicitSystem& elasticity_system =
-			equation_systems_micro.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
-
-	unsigned int u_var = elasticity_system.add_variable("u", libMesh::FIRST, libMesh::LAGRANGE);
-	unsigned int v_var = elasticity_system.add_variable("v", libMesh::FIRST, libMesh::LAGRANGE);
-	unsigned int w_var = elasticity_system.add_variable("w", libMesh::FIRST, libMesh::LAGRANGE);
-
-	elasticity_system.attach_assemble_function(assemble_elasticity_heterogeneous);
-
-	// Defining the boundaries with Dirichlet conditions ...
-	std::set<libMesh::boundary_id_type> boundary_ids_clamped;
-	std::set<libMesh::boundary_id_type> boundary_ids_displaced;
-
-	boundary_ids_clamped.insert(BOUNDARY_ID_MIN_X);
-	boundary_ids_displaced.insert(BOUNDARY_ID_MAX_X);
-
-	std::vector<unsigned int> variables(3);
-	variables[0] = u_var; variables[1] = v_var; variables[2] = w_var;
-
-	libMesh::ZeroFunction<> zf;
-	border_displacement right_border(u_var,v_var,w_var,
-									 x_max_x_displ,x_max_y_displ,x_max_z_displ);
-
-	// ... and set them
-	libMesh::DirichletBoundary dirichlet_bc_clamped(	boundary_ids_clamped,
-											variables,
-											&zf);
-
-	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_clamped);
-
-	libMesh::DirichletBoundary dirichlet_bc_displaced(	boundary_ids_displaced,
-												variables,
-												&right_border);
-
-	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_displaced);
-
-	// - Build stress system --------------------------------------------------
-	libMesh::ExplicitSystem& stress_system =
-				equation_systems_micro.add_system<libMesh::ExplicitSystem> ("StressSystem");
-
-	stress_system.add_variable("sigma_00", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_01", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_02", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_10", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_11", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_12", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_20", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_21", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_22", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("vonMises", libMesh::CONSTANT, libMesh::MONOMIAL);
-
 	equation_systems_micro.init();
-
-	perf_log.pop("System initialization - micro");
 
 	// - Build the restrict system --------------------------------------------------
 
-	perf_log.push("System initialization - restrict");
 	libMesh::LinearImplicitSystem& volume_restrict_system =
 			equation_systems_restrict.add_system<libMesh::LinearImplicitSystem> ("VolTest");
 
 	unsigned int sillyVar_restrict = volume_restrict_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
 
 	equation_systems_restrict.init();
-	perf_log.pop("System initialization - restrict");
 
 	// - Build the dummy inter system ------------------------------------------
 
-	perf_log.push("System initialization - inter");
 	libMesh::LinearImplicitSystem& volume_inter_system =
 			equation_systems_inter.add_system<libMesh::LinearImplicitSystem> ("VolTest");
 
 	unsigned int sillyVar_inter = volume_inter_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
 
 	equation_systems_inter.init();
-	perf_log.pop("System initialization - inter");
 
 	CoupledTest.assemble_coupling_matrices(	"BigSys","MicroSys",
 											"InterSys","RestrictSys",

@@ -8,28 +8,25 @@
 #ifndef ELASTICITY_3D_ELASTICITY_3D_TEST_H_
 #define ELASTICITY_3D_ELASTICITY_3D_TEST_H_
 
-#include "common_header.h"
-#include "common_header_libmesh.h"
-#include "mesh_tables.h"
-#include "coupled_system.h"
+#include "../common_headers_libmesh.h"
 #include "assemble_functions_elasticity_3D.h"
 
 // Classes
 
 // ---> Border displacememnt
-class border_displacement : public libMesh::FunctionBase<libMesh::Number>
+class border_displacement : public FunctionBase<Number>
 {
 	private:
 		const unsigned int _u_var, _v_var, _w_var;
-		const libMesh::Real _x_displ, _y_displ, _z_displ;
+		const Real _x_displ, _y_displ, _z_displ;
 
 	public:
 		border_displacement (	unsigned int u_var,
 								unsigned int v_var,
 								unsigned int w_var,
-								libMesh::Real x_displ = 0,
-								libMesh::Real y_displ = 0,
-								libMesh::Real z_displ = 0)
+								Real x_displ = 0,
+								Real y_displ = 0,
+								Real z_displ = 0)
 								: _u_var(u_var),
 								  _v_var(v_var),
 								  _w_var(w_var),
@@ -40,14 +37,14 @@ class border_displacement : public libMesh::FunctionBase<libMesh::Number>
 			this->_initialized = true;
 		}
 
-		virtual libMesh::Number operator() (const libMesh::Point&, const libMesh::Real = 0)
+		virtual Number operator() (const Point&, const Real = 0)
 		{
 			libmesh_not_implemented();
 		}
 
-		virtual void operator() (	const libMesh::Point& p,
-									const libMesh::Real,
-									libMesh::DenseVector<libMesh::Number>& output)
+		virtual void operator() (	const Point& p,
+									const Real,
+									DenseVector<Number>& output)
 		{
 			output.resize(3);
 			output.zero();
@@ -57,9 +54,9 @@ class border_displacement : public libMesh::FunctionBase<libMesh::Number>
 			output(_w_var) = _z_displ;
 		}
 
-		virtual libMesh::UniquePtr<FunctionBase<libMesh::Number> > clone() const
+		virtual AutoPtr<FunctionBase<Number> > clone() const
 		{
-			return libMesh::UniquePtr<FunctionBase<libMesh::Number> >
+			return AutoPtr<FunctionBase<Number> >
 				(new border_displacement(	_u_var, _v_var, _w_var,
 											_x_displ, _y_displ, _z_displ));
 		}

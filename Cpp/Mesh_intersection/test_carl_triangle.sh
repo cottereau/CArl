@@ -1,1 +1,0 @@
-./carl_libmesh -mA meshes/3D/test_triangle_A.msh -mB meshes/3D/test_triangle_B.msh -mI meshes/3D/test_triangle_I.msh --tableB intersection_triangle_restrict_B.dat  --tableI intersection_triangle_I.dat
