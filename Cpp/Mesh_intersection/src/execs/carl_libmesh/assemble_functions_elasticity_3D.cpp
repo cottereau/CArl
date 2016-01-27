@@ -515,7 +515,7 @@ void compute_stresses(libMesh::EquationSystems& es)
 	stress_system.update();
 };
 
-void set_physical_properties(libMesh::EquationSystems& es, std::string& physicalParamsFile)
+void set_physical_properties(libMesh::EquationSystems& es, std::string& physicalParamsFile, double& meanE, double& meanMu)
 {
 	// Read the random data info
 	std::ifstream physicalParamsIFS(physicalParamsFile);
@@ -527,11 +527,17 @@ void set_physical_properties(libMesh::EquationSystems& es, std::string& physical
 	std::vector<double> inputMu(NbOfSubdomains,-1);
 	std::vector<int> 	inputIdx(NbOfSubdomains,-1);
 
+	meanE = 0;
+	meanMu = 0;
+
 	for(int iii = 0; iii < NbOfSubdomains; ++iii)
 	{
 		physicalParamsIFS >> inputE[iii];
 		physicalParamsIFS >> inputMu[iii];
 		physicalParamsIFS >> inputIdx[iii];
+
+		meanE += inputE[iii];
+		meanMu += inputMu[iii];
 	}
 	physicalParamsIFS.close();
 
@@ -547,7 +553,6 @@ void set_physical_properties(libMesh::EquationSystems& es, std::string& physical
 	unsigned int physical_consts[2];
 	physical_consts[0] = physical_param_system.variable_number ("E");
 	physical_consts[1] = physical_param_system.variable_number ("mu");
-	const unsigned int phys_var = physical_param_system.variable_number ("E");
 
 	std::vector<libMesh::dof_id_type> physical_dof_indices_var;
 	libMesh::MeshBase::const_element_iterator       el     = mesh.active_local_elements_begin();
@@ -580,6 +585,56 @@ void set_physical_properties(libMesh::EquationSystems& es, std::string& physical
 		(dof_index < physical_param_system.solution->last_local_index()) )
 		{
 			physical_param_system.solution->set(dof_index, inputMu[currentSubdomain]);
+		}
+
+	}
+
+	physical_param_system.solution->close();
+	physical_param_system.update();
+}
+
+void set_constant_physical_properties(libMesh::EquationSystems& es, double meanE, double meanMu)
+{
+	// Mesh pointer
+	const libMesh::MeshBase& mesh = es.get_mesh();
+
+	const unsigned int dim = mesh.mesh_dimension();
+
+	// Physical system and its "variables"
+	libMesh::ExplicitSystem& physical_param_system = es.get_system<libMesh::ExplicitSystem>("PhysicalConstants");
+	const libMesh::DofMap& physical_dof_map = physical_param_system.get_dof_map();
+
+	unsigned int physical_consts[2];
+	physical_consts[0] = physical_param_system.variable_number ("E");
+	physical_consts[1] = physical_param_system.variable_number ("mu");
+
+	std::vector<libMesh::dof_id_type> physical_dof_indices_var;
+	libMesh::MeshBase::const_element_iterator       el     = mesh.active_local_elements_begin();
+	const libMesh::MeshBase::const_element_iterator end_el = mesh.active_local_elements_end();
+
+	for ( ; el != end_el; ++el)
+	{
+		const libMesh::Elem* elem = *el;
+
+		// Young modulus, E
+		physical_dof_map.dof_indices(elem, physical_dof_indices_var, physical_consts[0]);
+		libMesh::dof_id_type dof_index = physical_dof_indices_var[0];
+
+		if( (physical_param_system.solution->first_local_index() <= dof_index) &&
+		(dof_index < physical_param_system.solution->last_local_index()) )
+		{
+			physical_param_system.solution->set(dof_index, meanE);
+		}
+
+		// Mu
+		physical_dof_map.dof_indices (elem, physical_dof_indices_var, physical_consts[1]);
+
+		dof_index = physical_dof_indices_var[0];
+
+		if( (physical_param_system.solution->first_local_index() <= dof_index) &&
+		(dof_index < physical_param_system.solution->last_local_index()) )
+		{
+			physical_param_system.solution->set(dof_index, meanMu);
 		}
 
 	}

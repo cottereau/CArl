@@ -1,5 +1,120 @@
 #include "main.h"
 
+// Some classes and functions dealing with the boundary conditions
+class boundary_id_cube
+{
+public:
+	int MIN_Z;
+	int MIN_Y;
+	int MAX_X;
+	int MAX_Y;
+	int MIN_X;
+	int MAX_Z;
+
+	boundary_id_cube()
+	{
+		MIN_Z = 1;
+		MIN_Y = 2;
+		MAX_X = 3;
+		MAX_Y = 4;
+		MIN_X = 5;
+		MAX_Z = 6;
+	}
+};
+
+class boundary_displacement
+{
+public:
+	double x_displ;
+	double y_displ;
+	double z_displ;
+
+	boundary_displacement(): x_displ { 0.5 }, y_displ { 0 }, z_displ { 0 }
+	{
+	}
+
+	boundary_displacement(double inputX, double inputY, double inputZ): x_displ { inputX }, y_displ { inputY }, z_displ { inputZ }
+	{
+	}
+};
+
+// Some boundary conditions functions
+void set_x_displacement(libMesh::ImplicitSystem& elasticity_system, boundary_displacement& displ, boundary_id_cube& boundary_ids)
+{
+	// Defining the boundaries with Dirichlet conditions ...
+	std::set<libMesh::boundary_id_type> boundary_ids_clamped;
+	std::set<libMesh::boundary_id_type> boundary_ids_displaced;
+
+	boundary_ids_displaced.insert(boundary_ids.MAX_X);
+	boundary_ids_clamped.insert(boundary_ids.MIN_X);
+
+	std::vector<unsigned int> variables(3);
+	variables[0] = elasticity_system.variable_number("u");
+	variables[1] = elasticity_system.variable_number("v");
+	variables[2] = elasticity_system.variable_number("w");
+
+	libMesh::ZeroFunction<> zero_function;
+	border_displacement right_border(	variables[0],variables[1],variables[2],
+										displ.x_displ,displ.y_displ,displ.z_displ);
+
+	// ... and set them
+	libMesh::DirichletBoundary dirichlet_bc_clamped(	boundary_ids_clamped,
+											variables,
+											&zero_function);
+
+	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_clamped);
+
+	libMesh::DirichletBoundary dirichlet_bc_displaced(	boundary_ids_displaced,
+												variables,
+												&right_border);
+
+	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_displaced);
+}
+
+// Some functions to set up variables and co.
+libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
+						void fptr(	libMesh::EquationSystems& es,
+									const std::string& name),
+						libMesh::Order order = libMesh::FIRST,
+						libMesh::FEFamily family = libMesh::LAGRANGE)
+{
+	libMesh::ExplicitSystem& physical_variables =
+			input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
+
+	// Physical constants are set as constant, monomial
+	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
+
+	libMesh::LinearImplicitSystem& elasticity_system =
+			input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
+
+	elasticity_system.add_variable("u", order, family);
+	elasticity_system.add_variable("v", order, family);
+	elasticity_system.add_variable("w", order, family);
+
+	elasticity_system.attach_assemble_function(fptr);
+
+	return elasticity_system;
+}
+
+libMesh::ExplicitSystem& add_stress(libMesh::EquationSystems& input_systems)
+{
+	libMesh::ExplicitSystem& stress_system =
+			input_systems.add_system<libMesh::ExplicitSystem> ("StressSystem");
+
+	stress_system.add_variable("sigma_00", libMesh::CONSTANT, libMesh::MONOMIAL);
+	stress_system.add_variable("sigma_01", libMesh::CONSTANT, libMesh::MONOMIAL);
+	stress_system.add_variable("sigma_02", libMesh::CONSTANT, libMesh::MONOMIAL);
+	stress_system.add_variable("sigma_10", libMesh::CONSTANT, libMesh::MONOMIAL);
+	stress_system.add_variable("sigma_11", libMesh::CONSTANT, libMesh::MONOMIAL);
+	stress_system.add_variable("sigma_12", libMesh::CONSTANT, libMesh::MONOMIAL);
+	stress_system.add_variable("sigma_20", libMesh::CONSTANT, libMesh::MONOMIAL);
+	stress_system.add_variable("sigma_21", libMesh::CONSTANT, libMesh::MONOMIAL);
+	stress_system.add_variable("sigma_22", libMesh::CONSTANT, libMesh::MONOMIAL);
+	stress_system.add_variable("vonMises", libMesh::CONSTANT, libMesh::MONOMIAL);
+
+	return stress_system;
+}
 
 int main (int argc, char** argv)
 {
@@ -74,15 +189,16 @@ int main (int argc, char** argv)
 	 *
 	 * ---------------------------------------------------------------------- */
 
+	// - Start libmesh --------------------------------------------------------
+	libMesh::LibMeshInit init (argc, argv);
+
 	libMesh::PerfLog perf_log ("Main program");
 
 	// - Displacement conditions ----------------------------------------------
-	double x_max_x_displ = 0.5;
-	double x_max_y_displ = 0;
-	double x_max_z_displ = 0;
+	boundary_displacement x_max_BIG(0.5,0,0);
+	boundary_displacement x_max_micro(0.5,0,0);
 
-	// - Start libmesh --------------------------------------------------------
-	libMesh::LibMeshInit init (argc, argv);
+	boundary_id_cube boundary_ids;
 
 	// - Get inputs and set variables
 	GetPot command_line (argc, argv);
@@ -104,15 +220,18 @@ int main (int argc, char** argv)
 	}
 
 	// Set output
-	std::string outputParamsFile;
-	if ( command_line.search(1, "-o","--output") )
-	{
-		outputParamsFile = command_line.next(outputParamsFile);
-	}
-	else
-	{
-		outputParamsFile = "meshes/3D/output/carl_multi_crystal_test.exo";
-	}
+	std::string outputEXOFile_micro = "meshes/3D/output/carl_multi_crystal_test_micro.exo";
+	std::string outputEXOFile_BIG  = "meshes/3D/output/carl_multi_crystal_test_macro.exo";
+
+//	if ( command_line.search(1, "-o","--output") )
+//	{
+//		outputEXOFile_micro = command_line.next(outputEXOFile_micro);
+//		outputEXOFile_micro = command_line.next(outputEXOFile_micro);
+//	}
+//	else
+//	{
+//		outputEXOFile_micro = "meshes/3D/output/carl_multi_crystal_test_micro.exo";
+//	}
 
 	// Set meshes
 	libMesh::Mesh mesh_BIG(init.comm(), dim);
@@ -131,13 +250,7 @@ int main (int argc, char** argv)
 
 	std::string extra_restrict_info = "";
 
-	// Read mesh ...
-	int BOUNDARY_ID_MIN_Z = 0;
-	int BOUNDARY_ID_MIN_Y = 1;
-	int BOUNDARY_ID_MAX_X = 2;
-	int BOUNDARY_ID_MAX_Y = 3;
-	int BOUNDARY_ID_MIN_X = 4;
-	int BOUNDARY_ID_MAX_Z = 5;
+	// Read meshes ...
 
 	std::unordered_map<int,int> mesh_BIG_NodeMap;
 	std::unordered_map<int,int> mesh_BIG_ElemMap;
@@ -243,13 +356,6 @@ int main (int argc, char** argv)
 			libmesh_error_msg("\n---> ERROR: Missing restrition table file");
 		}
 
-		++BOUNDARY_ID_MIN_Z;
-		++BOUNDARY_ID_MIN_Y;
-		++BOUNDARY_ID_MAX_X;
-		++BOUNDARY_ID_MAX_Y;
-		++BOUNDARY_ID_MIN_X;
-		++BOUNDARY_ID_MAX_Z;
-
 		double vol = 0;
 		libMesh::Elem* silly_elem;
 		for(libMesh::MeshBase::element_iterator itBegin = mesh_BIG.elements_begin();
@@ -321,124 +427,65 @@ int main (int argc, char** argv)
 		libmesh_error_msg("\n---> ERROR: Must give the three meshes and the intersection tables!\n");
 	}
 
-	// Associate the boundary conditions to the MICRO mesh (for now)
-	libMesh::MeshBase::const_element_iterator       el     = mesh_micro.active_local_elements_begin();
-	const libMesh::MeshBase::const_element_iterator end_el = mesh_micro.active_local_elements_end();
-	for ( ; el != end_el; ++el)
-	{
-		const libMesh::Elem* elem = *el;
-
-		// Test if it is on max x/y/z and/or min y
-		unsigned int side_max_x = 0, side_min_x = 0;
-
-		bool found_side_max_x = false, found_side_min_x = false;
-
-		for(unsigned int side=0; side<elem->n_sides(); side++)
-		{
-			if( mesh_micro.get_boundary_info().has_boundary_id(elem, side, BOUNDARY_ID_MAX_X))
-			{
-				side_max_x = side;
-				found_side_max_x = true;
-			}
-
-			if( mesh_micro.get_boundary_info().has_boundary_id(elem, side, BOUNDARY_ID_MIN_X))
-			{
-				side_min_x = side;
-				found_side_min_x = true;
-			}
-		}
-	}
-
 	// Generate the equation systems
 	carl::coupled_system CoupledTest;
 
-	libMesh::EquationSystems& equation_systems_BIG =
-					CoupledTest.set_BIG_EquationSystem("BigSys", mesh_BIG);
-	libMesh::EquationSystems& equation_systems_micro =
-					CoupledTest.add_micro_EquationSystem<libMesh::PetscMatrix<libMesh::Number> >("MicroSys", mesh_micro);
-	libMesh::EquationSystems& equation_systems_restrict =
-					CoupledTest.add_restrict_EquationSystem("RestrictSys", mesh_restrict);
+
 	libMesh::EquationSystems& equation_systems_inter =
 					CoupledTest.add_inter_EquationSystem("InterSys", mesh_inter);
 
 	// - Build the BIG system --------------------------------------------------
 
 	perf_log.push("System initialization - BIG");
+
+	libMesh::EquationSystems& equation_systems_BIG =
+					CoupledTest.set_BIG_EquationSystem("BigSys", mesh_BIG);
+
+	// [MACRO] Simple coupling
+	// TODO correct the coupling!!!
 	libMesh::LinearImplicitSystem& volume_BIG_system =
 			equation_systems_BIG.add_system<libMesh::LinearImplicitSystem> ("VolTest");
 
 	unsigned int sillyVar_BIG = volume_BIG_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
+
+	// [MACRO] Set up the physical properties
+	libMesh::LinearImplicitSystem& elasticity_system_BIG
+										= add_elasticity(equation_systems_BIG,assemble_elasticity_heterogeneous);
+
+	// [MACRO] Defining the boundaries with Dirichlet conditions
+	set_x_displacement(elasticity_system_BIG, x_max_BIG,boundary_ids);
+
+	// [MACRO] Build stress system --------------------------------------------------
+	libMesh::ExplicitSystem& stress_system_BIG
+										= add_stress(equation_systems_BIG);
 
 	equation_systems_BIG.init();
 	perf_log.pop("System initialization - BIG");
 
 	// - Build the micro system ------------------------------------------------
 
-	// Simple coupling
-	// TODO correct the coupling!!!
 	perf_log.push("System initialization - micro");
+
+	libMesh::EquationSystems& equation_systems_micro =
+					CoupledTest.add_micro_EquationSystem<libMesh::PetscMatrix<libMesh::Number> >("MicroSys", mesh_micro);
+
+	// [MICRO] Simple coupling
+	// TODO correct the coupling!!!
 	libMesh::LinearImplicitSystem& volume_micro_system =
 			equation_systems_micro.add_system<libMesh::LinearImplicitSystem> ("VolTest");
 
 	unsigned int sillyVar_micro = volume_micro_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
 
-	// Set up the micro physical properties
-	libMesh::ExplicitSystem& physical_variables =
-			equation_systems_micro.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
+	// [MICRO] Set up the physical properties
+	libMesh::LinearImplicitSystem& elasticity_system_micro
+										= add_elasticity(equation_systems_micro,assemble_elasticity_heterogeneous);
 
-	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
-	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
+	// [MICRO] Defining the boundaries with Dirichlet conditions
+	set_x_displacement(elasticity_system_micro, x_max_micro,boundary_ids);
 
-	libMesh::LinearImplicitSystem& elasticity_system =
-			equation_systems_micro.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
-
-	unsigned int u_var = elasticity_system.add_variable("u", libMesh::FIRST, libMesh::LAGRANGE);
-	unsigned int v_var = elasticity_system.add_variable("v", libMesh::FIRST, libMesh::LAGRANGE);
-	unsigned int w_var = elasticity_system.add_variable("w", libMesh::FIRST, libMesh::LAGRANGE);
-
-	elasticity_system.attach_assemble_function(assemble_elasticity_heterogeneous);
-
-	// Defining the boundaries with Dirichlet conditions ...
-	std::set<libMesh::boundary_id_type> boundary_ids_clamped;
-	std::set<libMesh::boundary_id_type> boundary_ids_displaced;
-
-	boundary_ids_clamped.insert(BOUNDARY_ID_MIN_X);
-	boundary_ids_displaced.insert(BOUNDARY_ID_MAX_X);
-
-	std::vector<unsigned int> variables(3);
-	variables[0] = u_var; variables[1] = v_var; variables[2] = w_var;
-
-	libMesh::ZeroFunction<> zf;
-	border_displacement right_border(u_var,v_var,w_var,
-									 x_max_x_displ,x_max_y_displ,x_max_z_displ);
-
-	// ... and set them
-	libMesh::DirichletBoundary dirichlet_bc_clamped(	boundary_ids_clamped,
-											variables,
-											&zf);
-
-	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_clamped);
-
-	libMesh::DirichletBoundary dirichlet_bc_displaced(	boundary_ids_displaced,
-												variables,
-												&right_border);
-
-	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_displaced);
-
-	// - Build stress system --------------------------------------------------
-	libMesh::ExplicitSystem& stress_system =
-				equation_systems_micro.add_system<libMesh::ExplicitSystem> ("StressSystem");
-
-	stress_system.add_variable("sigma_00", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_01", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_02", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_10", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_11", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_12", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_20", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_21", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_22", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("vonMises", libMesh::CONSTANT, libMesh::MONOMIAL);
+	// [MICRO] Build stress system
+	libMesh::ExplicitSystem& stress_system_micro
+										= add_stress(equation_systems_micro);
 
 	equation_systems_micro.init();
 
@@ -447,6 +494,12 @@ int main (int argc, char** argv)
 	// - Build the restrict system --------------------------------------------------
 
 	perf_log.push("System initialization - restrict");
+
+	libMesh::EquationSystems& equation_systems_restrict =
+					CoupledTest.add_restrict_EquationSystem("RestrictSys", mesh_restrict);
+
+	// [RESTRICT] Simple coupling
+	// TODO correct the coupling!!!
 	libMesh::LinearImplicitSystem& volume_restrict_system =
 			equation_systems_restrict.add_system<libMesh::LinearImplicitSystem> ("VolTest");
 
@@ -466,41 +519,70 @@ int main (int argc, char** argv)
 	equation_systems_inter.init();
 	perf_log.pop("System initialization - inter");
 
+	perf_log.push("Build simple couplings");
 	CoupledTest.assemble_coupling_matrices(	"BigSys","MicroSys",
 											"InterSys","RestrictSys",
 											equivalence_table_restrict_A,
 											intersection_table_restrict_B,
 											intersection_table_I,
 											using_same_mesh_restrict_A);
+	perf_log.pop("Build simple couplings");
 
-//	elasticity_system.attach_assemble_function(assemble_elasticity_heterogeneous);
-//
-//	// Defining the boundaries with Dirichlet conditions ...
-//	std::set<boundary_id_type> boundary_ids_clamped;
-//	std::set<boundary_id_type> boundary_ids_displaced;
-//
-//	boundary_ids_clamped.insert(BOUNDARY_ID_MIN_X);
-//	boundary_ids_displaced.insert(BOUNDARY_ID_MAX_X);
-//
-//	std::vector<unsigned int> variables(3);
-//	variables[0] = u_var; variables[1] = v_var; variables[2] = w_var;
-//
-//	ZeroFunction<> zf;
-//	border_displacement right_border(u_var,v_var,w_var,
-//									 x_max_x_displ,x_max_y_displ,x_max_z_displ);
-//
-//	// ... and set them
-//	DirichletBoundary dirichlet_bc_clamped(	boundary_ids_clamped,
-//											variables,
-//											&zf);
-//
-//	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_clamped);
-//
-//	DirichletBoundary dirichlet_bc_displaced(	boundary_ids_displaced,
-//												variables,
-//												&right_border);
-//
-//	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_displaced);
+	 perf_log.push("Physical properties - micro");
+	 double BIG_E = 0;
+	 double BIG_Mu = 0;
+	 set_physical_properties(equation_systems_micro,physicalParamsFile,BIG_E,BIG_Mu);
+	 perf_log.pop("Physical properties - micro");
+
+	 perf_log.push("Physical properties - macro");
+	 set_constant_physical_properties(equation_systems_BIG,BIG_E,BIG_Mu);
+	 perf_log.pop("Physical properties - macro");
+
+	// [MICRO] Solve
+	perf_log.push("Solve - micro");
+	elasticity_system_micro.solve();
+	perf_log.pop("Solve - micro");
+
+	// [MICRO] Calculate stress
+	perf_log.push("Compute stress - micro");
+	compute_stresses(equation_systems_micro);
+	perf_log.pop("Compute stress - micro");
+
+	// [MICRO] Export solution
+#ifdef LIBMESH_HAVE_EXODUS_API
+
+	libMesh::ExodusII_IO exo_io_micro(mesh_micro, /*single_precision=*/true);
+
+	std::set<std::string> system_names_micro;
+	system_names_micro.insert("Elasticity");
+	exo_io_micro.write_equation_systems(outputEXOFile_micro.c_str(),equation_systems_micro,&system_names_micro);
+
+	exo_io_micro.write_element_data(equation_systems_micro);
+
+#endif
+
+	// [MACRO] Solve
+	perf_log.push("Solve - macro");
+	elasticity_system_BIG.solve();
+	perf_log.pop("Solve - macro");
+
+	// [MACRO] Calculate stress
+	perf_log.push("Compute stress - macro");
+	compute_stresses(equation_systems_BIG);
+	perf_log.pop("Compute stress - macro");
+
+	// [MACRO] Export solution
+#ifdef LIBMESH_HAVE_EXODUS_API
+
+	libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
+
+	std::set<std::string> system_names_BIG;
+	system_names_BIG.insert("Elasticity");
+	exo_io_BIG.write_equation_systems(outputEXOFile_BIG.c_str(),equation_systems_BIG,&system_names_BIG);
+
+	exo_io_BIG.write_element_data(equation_systems_BIG);
+
+#endif
 
 	CoupledTest.print_matrix_micro_info("MicroSys");
 	CoupledTest.print_matrix_BIG_info("MicroSys");
@@ -509,7 +591,9 @@ int main (int argc, char** argv)
 	libMesh::PetscMatrix<libMesh::Number>& LumpingTestInput = CoupledTest.get_restrict_coupling_matrix("MicroSys");
 	libMesh::PetscMatrix<libMesh::Number> LumpingTestOutput(LumpingTestInput.comm());
 
+	perf_log.push("Lumping");
 	carl::lump_matrix(LumpingTestInput,LumpingTestOutput);
+	perf_log.pop("Lumping");
 
 	std::cout << std::endl << "| Testing the lumping " << std::endl;
 	carl::print_matrix(LumpingTestOutput);

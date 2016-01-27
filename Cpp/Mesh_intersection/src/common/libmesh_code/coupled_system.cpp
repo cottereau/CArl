@@ -291,7 +291,7 @@ void carl::coupled_system::assemble_coupling_matrices(	const std::string BIG_nam
 	int micro_max_noz = *std::max_element(micro_n_oz.begin(),micro_n_oz.end());
 
 	// TODO : correct memory allocation
-	int temp_diag_alloc = max_nnz*micro_max_nnz;
+	int temp_diag_alloc = 600*max_nnz*micro_max_nnz;
 	int temp_off_alloc = max_noz*micro_max_noz + max_nnz*micro_max_noz + max_noz*micro_max_nnz;
 	couplingMatrix_restrict_micro.init(		restrict_M, micro_N,
 											restrict_M_local, micro_N_local,
