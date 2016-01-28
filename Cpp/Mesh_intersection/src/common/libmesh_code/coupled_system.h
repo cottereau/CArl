@@ -152,6 +152,16 @@ public:
 										bool using_same_mesh_restrict_A = false,
 										bool bSameElemsType = true);
 
+	void assemble_coupling_elasticity_3D(	const std::string BIG_name,
+											const std::string micro_name,
+											const std::string inter_name,
+											const std::string restrict_name,
+											std::unordered_map<int,int>& equivalence_table_restrict_BIG,
+											std::vector<std::pair<int,int> >& intersection_table_restrict_micro,
+											std::unordered_multimap<int,int>& intersection_table_inter,
+											bool using_same_mesh_restrict_A,
+											bool bSameElemsType = true);
+
 	libMesh::PetscMatrix<libMesh::Number>& get_micro_coupling_matrix(const std::string& name);
 
 	libMesh::PetscMatrix<libMesh::Number>& get_BIG_coupling_matrix(const std::string& name);

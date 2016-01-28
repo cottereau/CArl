@@ -34,7 +34,17 @@ void L2_Coupling(	libMesh::DenseMatrix<libMesh::Number>& Coupl,
 					const unsigned int n_dofs_sysA,
 					const unsigned int n_dofs_sysB,
 					const std::vector<libMesh::Real>& JxW,
-					const libMesh::Number cte = 1
+					const libMesh::Number cte
+					);
+
+void L2_Coupling(	libMesh::DenseSubMatrix<libMesh::Number>& Coupl,
+					unsigned int qp,
+					const std::vector<std::vector<libMesh::Real> >& phi_sysA,
+					const std::vector<std::vector<libMesh::Real> >& phi_sysB,
+					const unsigned int n_dofs_sysA,
+					const unsigned int n_dofs_sysB,
+					const std::vector<libMesh::Real>& JxW,
+					const libMesh::Number cte
 					);
 
 #endif /* COMMON_LIBMESH_CODE_WEAK_FORMULATIONS_H_ */

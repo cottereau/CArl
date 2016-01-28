@@ -73,6 +73,28 @@ void set_x_displacement(libMesh::ImplicitSystem& elasticity_system, boundary_dis
 
 // Some functions to set up variables and co.
 libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
+												libMesh::Order order = libMesh::FIRST,
+												libMesh::FEFamily family = libMesh::LAGRANGE)
+{
+	libMesh::ExplicitSystem& physical_variables =
+			input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
+
+	// Physical constants are set as constant, monomial
+	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
+
+	libMesh::LinearImplicitSystem& elasticity_system =
+			input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
+
+	elasticity_system.add_variable("u", order, family);
+	elasticity_system.add_variable("v", order, family);
+	elasticity_system.add_variable("w", order, family);
+
+	return elasticity_system;
+}
+
+// Some functions to set up variables and co.
+libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
 						void fptr(	libMesh::EquationSystems& es,
 									const std::string& name),
 						libMesh::Order order = libMesh::FIRST,
@@ -441,12 +463,14 @@ int main (int argc, char** argv)
 	libMesh::EquationSystems& equation_systems_BIG =
 					CoupledTest.set_BIG_EquationSystem("BigSys", mesh_BIG);
 
-	// [MACRO] Simple coupling
-	// TODO correct the coupling!!!
-	libMesh::LinearImplicitSystem& volume_BIG_system =
-			equation_systems_BIG.add_system<libMesh::LinearImplicitSystem> ("VolTest");
 
-	unsigned int sillyVar_BIG = volume_BIG_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
+
+	// [MACRO] Simple coupling
+//	// TODO correct the coupling!!!
+//	libMesh::LinearImplicitSystem& volume_BIG_system =
+//			equation_systems_BIG.add_system<libMesh::LinearImplicitSystem> ("VolTest");
+//
+//	unsigned int sillyVar_BIG = volume_BIG_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
 
 	// [MACRO] Set up the physical properties
 	libMesh::LinearImplicitSystem& elasticity_system_BIG
@@ -462,6 +486,8 @@ int main (int argc, char** argv)
 	equation_systems_BIG.init();
 	perf_log.pop("System initialization - BIG");
 
+
+
 	// - Build the micro system ------------------------------------------------
 
 	perf_log.push("System initialization - micro");
@@ -471,10 +497,10 @@ int main (int argc, char** argv)
 
 	// [MICRO] Simple coupling
 	// TODO correct the coupling!!!
-	libMesh::LinearImplicitSystem& volume_micro_system =
-			equation_systems_micro.add_system<libMesh::LinearImplicitSystem> ("VolTest");
-
-	unsigned int sillyVar_micro = volume_micro_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
+//	libMesh::LinearImplicitSystem& volume_micro_system =
+//			equation_systems_micro.add_system<libMesh::LinearImplicitSystem> ("VolTest");
+//
+//	unsigned int sillyVar_micro = volume_micro_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
 
 	// [MICRO] Set up the physical properties
 	libMesh::LinearImplicitSystem& elasticity_system_micro
@@ -491,6 +517,8 @@ int main (int argc, char** argv)
 
 	perf_log.pop("System initialization - micro");
 
+
+
 	// - Build the restrict system --------------------------------------------------
 
 	perf_log.push("System initialization - restrict");
@@ -500,33 +528,41 @@ int main (int argc, char** argv)
 
 	// [RESTRICT] Simple coupling
 	// TODO correct the coupling!!!
-	libMesh::LinearImplicitSystem& volume_restrict_system =
-			equation_systems_restrict.add_system<libMesh::LinearImplicitSystem> ("VolTest");
+//	libMesh::LinearImplicitSystem& volume_restrict_system =
+//			equation_systems_restrict.add_system<libMesh::LinearImplicitSystem> ("VolTest");
+//
+//	unsigned int sillyVar_restrict = volume_restrict_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
 
-	unsigned int sillyVar_restrict = volume_restrict_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
+	libMesh::LinearImplicitSystem& elasticity_system_restrict
+										= add_elasticity(equation_systems_restrict);
 
 	equation_systems_restrict.init();
 	perf_log.pop("System initialization - restrict");
 
+
+
 	// - Build the dummy inter system ------------------------------------------
 
 	perf_log.push("System initialization - inter");
-	libMesh::LinearImplicitSystem& volume_inter_system =
-			equation_systems_inter.add_system<libMesh::LinearImplicitSystem> ("VolTest");
+//	libMesh::LinearImplicitSystem& volume_inter_system =
+//			equation_systems_inter.add_system<libMesh::LinearImplicitSystem> ("VolTest");
+//
+//	unsigned int sillyVar_inter = volume_inter_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
 
-	unsigned int sillyVar_inter = volume_inter_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
+	libMesh::LinearImplicitSystem& elasticity_system_inter
+										= add_elasticity(equation_systems_inter);
 
 	equation_systems_inter.init();
 	perf_log.pop("System initialization - inter");
 
-	perf_log.push("Build simple couplings");
-	CoupledTest.assemble_coupling_matrices(	"BigSys","MicroSys",
-											"InterSys","RestrictSys",
-											equivalence_table_restrict_A,
-											intersection_table_restrict_B,
-											intersection_table_I,
-											using_same_mesh_restrict_A);
-	perf_log.pop("Build simple couplings");
+	perf_log.push("Build elasticity couplings");
+	CoupledTest.assemble_coupling_elasticity_3D(	"BigSys","MicroSys",
+													"InterSys","RestrictSys",
+													equivalence_table_restrict_A,
+													intersection_table_restrict_B,
+													intersection_table_I,
+													using_same_mesh_restrict_A);
+	perf_log.pop("Build elasticity couplings");
 
 	 perf_log.push("Physical properties - micro");
 	 double BIG_E = 0;
@@ -597,7 +633,6 @@ int main (int argc, char** argv)
 
 	std::cout << std::endl << "| Testing the lumping " << std::endl;
 	carl::print_matrix(LumpingTestOutput);
-
 
 	return 0;
 }

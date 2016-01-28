@@ -1,5 +1,26 @@
 #include "main.h"
 
+// Some functions to set up variables and co.
+libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
+												libMesh::Order order = libMesh::FIRST,
+												libMesh::FEFamily family = libMesh::LAGRANGE)
+{
+	libMesh::ExplicitSystem& physical_variables =
+			input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
+
+	// Physical constants are set as constant, monomial
+	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
+
+	libMesh::LinearImplicitSystem& elasticity_system =
+			input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
+
+	elasticity_system.add_variable("u", order, family);
+	elasticity_system.add_variable("v", order, family);
+	elasticity_system.add_variable("w", order, family);
+
+	return elasticity_system;
+}
 
 int main (int argc, char** argv)
 {
@@ -312,75 +333,38 @@ int main (int argc, char** argv)
 
 	// - Build the BIG system --------------------------------------------------
 
-	libMesh::LinearImplicitSystem& volume_BIG_system =
-			equation_systems_BIG.add_system<libMesh::LinearImplicitSystem> ("VolTest");
-
-	unsigned int sillyVar_BIG = volume_BIG_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
+	libMesh::LinearImplicitSystem& elasticity_system_BIG
+										= add_elasticity(equation_systems_BIG);
 
 	equation_systems_BIG.init();
 
 	// - Build the micro system ------------------------------------------------
 
-	libMesh::LinearImplicitSystem& volume_micro_system =
-			equation_systems_micro.add_system<libMesh::LinearImplicitSystem> ("VolTest");
-
-	unsigned int sillyVar_micro = volume_micro_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
+	libMesh::LinearImplicitSystem& elasticity_system_micro
+										= add_elasticity(equation_systems_micro);
 
 	equation_systems_micro.init();
 
 	// - Build the restrict system --------------------------------------------------
 
-	libMesh::LinearImplicitSystem& volume_restrict_system =
-			equation_systems_restrict.add_system<libMesh::LinearImplicitSystem> ("VolTest");
-
-	unsigned int sillyVar_restrict = volume_restrict_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
+	libMesh::LinearImplicitSystem& elasticity_system_restrict
+										= add_elasticity(equation_systems_restrict);
 
 	equation_systems_restrict.init();
 
 	// - Build the dummy inter system ------------------------------------------
 
-	libMesh::LinearImplicitSystem& volume_inter_system =
-			equation_systems_inter.add_system<libMesh::LinearImplicitSystem> ("VolTest");
-
-	unsigned int sillyVar_inter = volume_inter_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
+	libMesh::LinearImplicitSystem& elasticity_system_inter
+										= add_elasticity(equation_systems_inter);
 
 	equation_systems_inter.init();
 
-	CoupledTest.assemble_coupling_matrices(	"BigSys","MicroSys",
-											"InterSys","RestrictSys",
-											equivalence_table_restrict_A,
-											intersection_table_restrict_B,
-											intersection_table_I,
-											using_same_mesh_restrict_A);
-
-//	elasticity_system.attach_assemble_function(assemble_elasticity_heterogeneous);
-//
-//	// Defining the boundaries with Dirichlet conditions ...
-//	std::set<boundary_id_type> boundary_ids_clamped;
-//	std::set<boundary_id_type> boundary_ids_displaced;
-//
-//	boundary_ids_clamped.insert(BOUNDARY_ID_MIN_X);
-//	boundary_ids_displaced.insert(BOUNDARY_ID_MAX_X);
-//
-//	std::vector<unsigned int> variables(3);
-//	variables[0] = u_var; variables[1] = v_var; variables[2] = w_var;
-//
-//	ZeroFunction<> zf;
-//	border_displacement right_border(u_var,v_var,w_var,
-//									 x_max_x_displ,x_max_y_displ,x_max_z_displ);
-//
-//	// ... and set them
-//	DirichletBoundary dirichlet_bc_clamped(	boundary_ids_clamped,
-//											variables,
-//											&zf);
-//
-//	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_clamped);
-//
-//	DirichletBoundary dirichlet_bc_displaced(	boundary_ids_displaced,
-//												variables,
-//												&right_border);
-//
-//	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_displaced);
+	CoupledTest.assemble_coupling_elasticity_3D(	"BigSys","MicroSys",
+													"InterSys","RestrictSys",
+													equivalence_table_restrict_A,
+													intersection_table_restrict_B,
+													intersection_table_I,
+													using_same_mesh_restrict_A);
 
 	CoupledTest.print_matrix_micro_info("MicroSys");
 	CoupledTest.print_matrix_BIG_info("MicroSys");
