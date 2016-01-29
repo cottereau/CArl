@@ -39,7 +39,7 @@ void carl::lump_matrix(		libMesh::PetscMatrix<libMesh::Number>& matrixInput,
 void carl::print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix)
 {
 	libMesh::Real accumulator = 0;
-	std::cout << "| M i,j : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl;
+	std::cout << "| M_i,j : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl;
 	for(unsigned int iii = 0; iii < CouplingTestMatrix.m(); ++iii)
 	{
 		for(unsigned int jjj = 0; jjj < CouplingTestMatrix.n(); ++jjj)
@@ -56,7 +56,7 @@ void carl::print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatri
 		}
 	}
 	std::cout << "|" << std::endl;
-	std::cout << "| Sum( C_i,j ) = " << accumulator << std::endl << std::endl;
+	std::cout << "| Sum( M_i,j ) = " << accumulator << std::endl;
 }
 
 
@@ -541,14 +541,18 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 	libMesh::DenseMatrix<libMesh::Number> Me_BIG;
 
 	libMesh::DenseSubMatrix<libMesh::Number>
-	M_micro_uu(Me_micro), M_micro_uv(Me_micro), M_micro_uw(Me_micro),
-	M_micro_vu(Me_micro), M_micro_vv(Me_micro), M_micro_vw(Me_micro),
-	M_micro_wu(Me_micro), M_micro_wv(Me_micro), M_micro_ww(Me_micro);
+	M_micro_uu(Me_micro), M_micro_vv(Me_micro), M_micro_ww(Me_micro);
 
 	libMesh::DenseSubMatrix<libMesh::Number>
-	M_BIG_uu(Me_BIG), M_BIG_uv(Me_BIG), M_BIG_uw(Me_BIG),
-	M_BIG_vu(Me_BIG), M_BIG_vv(Me_BIG), M_BIG_vw(Me_BIG),
-	M_BIG_wu(Me_BIG), M_BIG_wv(Me_BIG), M_BIG_ww(Me_BIG);
+	M_micro_uv(Me_micro), M_micro_vw(Me_micro), M_micro_wu(Me_micro),
+	M_micro_vu(Me_micro), M_micro_wv(Me_micro), M_micro_uw(Me_micro);
+
+	libMesh::DenseSubMatrix<libMesh::Number>
+	M_BIG_uu(Me_BIG), M_BIG_vv(Me_BIG), M_BIG_ww(Me_BIG);
+
+	libMesh::DenseSubMatrix<libMesh::Number>
+	M_BIG_uv(Me_BIG), M_BIG_vw(Me_BIG), M_BIG_wu(Me_BIG),
+	M_BIG_vu(Me_BIG), M_BIG_wv(Me_BIG), M_BIG_uw(Me_BIG);
 
 	//    If all elements are of the same type, do the index "extraction",
 	// the matrices resizes and repositions here
@@ -588,29 +592,29 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 		Me_micro.resize (n_dofs_restrict, n_dofs_micro);
 
 		M_micro_uu.reposition (u_var_restrict*n_dofs_u_restrict, u_var_micro*n_dofs_u_micro, n_dofs_u_restrict, n_dofs_u_micro);
-		M_micro_uv.reposition (u_var_restrict*n_dofs_u_restrict, v_var_micro*n_dofs_u_micro, n_dofs_u_restrict, n_dofs_v_micro);
-		M_micro_uw.reposition (u_var_restrict*n_dofs_u_restrict, w_var_micro*n_dofs_u_micro, n_dofs_u_restrict, n_dofs_w_micro);
+//		M_micro_uv.reposition (u_var_restrict*n_dofs_u_restrict, v_var_micro*n_dofs_u_micro, n_dofs_u_restrict, n_dofs_v_micro);
+//		M_micro_uw.reposition (u_var_restrict*n_dofs_u_restrict, w_var_micro*n_dofs_u_micro, n_dofs_u_restrict, n_dofs_w_micro);
 
-		M_micro_vu.reposition (v_var_restrict*n_dofs_u_restrict, u_var_micro*n_dofs_u_micro, n_dofs_v_restrict, n_dofs_u_micro);
+//		M_micro_vu.reposition (v_var_restrict*n_dofs_u_restrict, u_var_micro*n_dofs_u_micro, n_dofs_v_restrict, n_dofs_u_micro);
 		M_micro_vv.reposition (v_var_restrict*n_dofs_u_restrict, v_var_micro*n_dofs_u_micro, n_dofs_v_restrict, n_dofs_v_micro);
-		M_micro_vw.reposition (v_var_restrict*n_dofs_u_restrict, w_var_micro*n_dofs_u_micro, n_dofs_v_restrict, n_dofs_w_micro);
+//		M_micro_vw.reposition (v_var_restrict*n_dofs_u_restrict, w_var_micro*n_dofs_u_micro, n_dofs_v_restrict, n_dofs_w_micro);
 
-		M_micro_wu.reposition (w_var_restrict*n_dofs_u_restrict, u_var_micro*n_dofs_u_micro, n_dofs_w_restrict, n_dofs_u_micro);
-		M_micro_wv.reposition (w_var_restrict*n_dofs_u_restrict, v_var_micro*n_dofs_u_micro, n_dofs_w_restrict, n_dofs_v_micro);
+//		M_micro_wu.reposition (w_var_restrict*n_dofs_u_restrict, u_var_micro*n_dofs_u_micro, n_dofs_w_restrict, n_dofs_u_micro);
+//		M_micro_wv.reposition (w_var_restrict*n_dofs_u_restrict, v_var_micro*n_dofs_u_micro, n_dofs_w_restrict, n_dofs_v_micro);
 		M_micro_ww.reposition (w_var_restrict*n_dofs_u_restrict, w_var_micro*n_dofs_u_micro, n_dofs_w_restrict, n_dofs_w_micro);
 
 		Me_BIG.resize (n_dofs_restrict, n_dofs_BIG);
 
 		M_BIG_uu.reposition (u_var_restrict*n_dofs_u_restrict, u_var_BIG*n_dofs_u_BIG, n_dofs_u_restrict, n_dofs_u_BIG);
-		M_BIG_uv.reposition (u_var_restrict*n_dofs_u_restrict, v_var_BIG*n_dofs_u_BIG, n_dofs_u_restrict, n_dofs_v_BIG);
-		M_BIG_uw.reposition (u_var_restrict*n_dofs_u_restrict, w_var_BIG*n_dofs_u_BIG, n_dofs_u_restrict, n_dofs_w_BIG);
-
-		M_BIG_vu.reposition (v_var_restrict*n_dofs_u_restrict, u_var_BIG*n_dofs_u_BIG, n_dofs_v_restrict, n_dofs_u_BIG);
+//		M_BIG_uv.reposition (u_var_restrict*n_dofs_u_restrict, v_var_BIG*n_dofs_u_BIG, n_dofs_u_restrict, n_dofs_v_BIG);
+//		M_BIG_uw.reposition (u_var_restrict*n_dofs_u_restrict, w_var_BIG*n_dofs_u_BIG, n_dofs_u_restrict, n_dofs_w_BIG);
+//
+//		M_BIG_vu.reposition (v_var_restrict*n_dofs_u_restrict, u_var_BIG*n_dofs_u_BIG, n_dofs_v_restrict, n_dofs_u_BIG);
 		M_BIG_vv.reposition (v_var_restrict*n_dofs_u_restrict, v_var_BIG*n_dofs_u_BIG, n_dofs_v_restrict, n_dofs_v_BIG);
-		M_BIG_vw.reposition (v_var_restrict*n_dofs_u_restrict, w_var_BIG*n_dofs_u_BIG, n_dofs_v_restrict, n_dofs_w_BIG);
-
-		M_BIG_wu.reposition (w_var_restrict*n_dofs_u_restrict, u_var_BIG*n_dofs_u_BIG, n_dofs_w_restrict, n_dofs_u_BIG);
-		M_BIG_wv.reposition (w_var_restrict*n_dofs_u_restrict, v_var_BIG*n_dofs_u_BIG, n_dofs_w_restrict, n_dofs_v_BIG);
+//		M_BIG_vw.reposition (v_var_restrict*n_dofs_u_restrict, w_var_BIG*n_dofs_u_BIG, n_dofs_v_restrict, n_dofs_w_BIG);
+//
+//		M_BIG_wu.reposition (w_var_restrict*n_dofs_u_restrict, u_var_BIG*n_dofs_u_BIG, n_dofs_w_restrict, n_dofs_u_BIG);
+//		M_BIG_wv.reposition (w_var_restrict*n_dofs_u_restrict, v_var_BIG*n_dofs_u_BIG, n_dofs_w_restrict, n_dofs_v_BIG);
 		M_BIG_ww.reposition (w_var_restrict*n_dofs_u_restrict, w_var_BIG*n_dofs_u_BIG, n_dofs_w_restrict, n_dofs_w_BIG);
 	}
 
@@ -729,29 +733,29 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 			Me_micro.resize (n_dofs_restrict, n_dofs_micro);
 
 			M_micro_uu.reposition (u_var_restrict*n_dofs_u_restrict, u_var_micro*n_dofs_u_micro, n_dofs_u_restrict, n_dofs_u_micro);
-			M_micro_uv.reposition (u_var_restrict*n_dofs_u_restrict, v_var_micro*n_dofs_u_micro, n_dofs_u_restrict, n_dofs_v_micro);
-			M_micro_uw.reposition (u_var_restrict*n_dofs_u_restrict, w_var_micro*n_dofs_u_micro, n_dofs_u_restrict, n_dofs_w_micro);
-
-			M_micro_vu.reposition (v_var_restrict*n_dofs_u_restrict, u_var_micro*n_dofs_u_micro, n_dofs_v_restrict, n_dofs_u_micro);
+//			M_micro_uv.reposition (u_var_restrict*n_dofs_u_restrict, v_var_micro*n_dofs_u_micro, n_dofs_u_restrict, n_dofs_v_micro);
+//			M_micro_uw.reposition (u_var_restrict*n_dofs_u_restrict, w_var_micro*n_dofs_u_micro, n_dofs_u_restrict, n_dofs_w_micro);
+//
+//			M_micro_vu.reposition (v_var_restrict*n_dofs_u_restrict, u_var_micro*n_dofs_u_micro, n_dofs_v_restrict, n_dofs_u_micro);
 			M_micro_vv.reposition (v_var_restrict*n_dofs_u_restrict, v_var_micro*n_dofs_u_micro, n_dofs_v_restrict, n_dofs_v_micro);
-			M_micro_vw.reposition (v_var_restrict*n_dofs_u_restrict, w_var_micro*n_dofs_u_micro, n_dofs_v_restrict, n_dofs_w_micro);
-
-			M_micro_wu.reposition (w_var_restrict*n_dofs_u_restrict, u_var_micro*n_dofs_u_micro, n_dofs_w_restrict, n_dofs_u_micro);
-			M_micro_wv.reposition (w_var_restrict*n_dofs_u_restrict, v_var_micro*n_dofs_u_micro, n_dofs_w_restrict, n_dofs_v_micro);
+//			M_micro_vw.reposition (v_var_restrict*n_dofs_u_restrict, w_var_micro*n_dofs_u_micro, n_dofs_v_restrict, n_dofs_w_micro);
+//
+//			M_micro_wu.reposition (w_var_restrict*n_dofs_u_restrict, u_var_micro*n_dofs_u_micro, n_dofs_w_restrict, n_dofs_u_micro);
+//			M_micro_wv.reposition (w_var_restrict*n_dofs_u_restrict, v_var_micro*n_dofs_u_micro, n_dofs_w_restrict, n_dofs_v_micro);
 			M_micro_ww.reposition (w_var_restrict*n_dofs_u_restrict, w_var_micro*n_dofs_u_micro, n_dofs_w_restrict, n_dofs_w_micro);
 
 			Me_BIG.resize (n_dofs_restrict, n_dofs_BIG);
 
 			M_BIG_uu.reposition (u_var_restrict*n_dofs_u_restrict, u_var_BIG*n_dofs_u_BIG, n_dofs_u_restrict, n_dofs_u_BIG);
-			M_BIG_uv.reposition (u_var_restrict*n_dofs_u_restrict, v_var_BIG*n_dofs_u_BIG, n_dofs_u_restrict, n_dofs_v_BIG);
-			M_BIG_uw.reposition (u_var_restrict*n_dofs_u_restrict, w_var_BIG*n_dofs_u_BIG, n_dofs_u_restrict, n_dofs_w_BIG);
-
-			M_BIG_vu.reposition (v_var_restrict*n_dofs_u_restrict, u_var_BIG*n_dofs_u_BIG, n_dofs_v_restrict, n_dofs_u_BIG);
+//			M_BIG_uv.reposition (u_var_restrict*n_dofs_u_restrict, v_var_BIG*n_dofs_u_BIG, n_dofs_u_restrict, n_dofs_v_BIG);
+//			M_BIG_uw.reposition (u_var_restrict*n_dofs_u_restrict, w_var_BIG*n_dofs_u_BIG, n_dofs_u_restrict, n_dofs_w_BIG);
+//
+//			M_BIG_vu.reposition (v_var_restrict*n_dofs_u_restrict, u_var_BIG*n_dofs_u_BIG, n_dofs_v_restrict, n_dofs_u_BIG);
 			M_BIG_vv.reposition (v_var_restrict*n_dofs_u_restrict, v_var_BIG*n_dofs_u_BIG, n_dofs_v_restrict, n_dofs_v_BIG);
-			M_BIG_vw.reposition (v_var_restrict*n_dofs_u_restrict, w_var_BIG*n_dofs_u_BIG, n_dofs_v_restrict, n_dofs_w_BIG);
-
-			M_BIG_wu.reposition (w_var_restrict*n_dofs_u_restrict, u_var_BIG*n_dofs_u_BIG, n_dofs_w_restrict, n_dofs_u_BIG);
-			M_BIG_wv.reposition (w_var_restrict*n_dofs_u_restrict, v_var_BIG*n_dofs_u_BIG, n_dofs_w_restrict, n_dofs_v_BIG);
+//			M_BIG_vw.reposition (v_var_restrict*n_dofs_u_restrict, w_var_BIG*n_dofs_u_BIG, n_dofs_v_restrict, n_dofs_w_BIG);
+//
+//			M_BIG_wu.reposition (w_var_restrict*n_dofs_u_restrict, u_var_BIG*n_dofs_u_BIG, n_dofs_w_restrict, n_dofs_u_BIG);
+//			M_BIG_wv.reposition (w_var_restrict*n_dofs_u_restrict, v_var_BIG*n_dofs_u_BIG, n_dofs_w_restrict, n_dofs_v_BIG);
 			M_BIG_ww.reposition (w_var_restrict*n_dofs_u_restrict, w_var_BIG*n_dofs_u_BIG, n_dofs_w_restrict, n_dofs_w_BIG);
 		}
 
@@ -782,26 +786,26 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 				L2_Coupling(M_micro_uu,qp,phi_restrict,phi_micro,
 							n_dofs_u_restrict,n_dofs_u_micro,JxW,1);
 
-				L2_Coupling(M_micro_uv,qp,phi_restrict,phi_micro,
-							n_dofs_u_restrict,n_dofs_v_micro,JxW,1);
-
-				L2_Coupling(M_micro_uw,qp,phi_restrict,phi_micro,
-							n_dofs_u_restrict,n_dofs_w_micro,JxW,1);
-
-				L2_Coupling(M_micro_vu,qp,phi_restrict,phi_micro,
-							n_dofs_v_restrict,n_dofs_u_micro,JxW,1);
+//				L2_Coupling(M_micro_uv,qp,phi_restrict,phi_micro,
+//							n_dofs_u_restrict,n_dofs_v_micro,JxW,1);
+//
+//				L2_Coupling(M_micro_uw,qp,phi_restrict,phi_micro,
+//							n_dofs_u_restrict,n_dofs_w_micro,JxW,1);
+//
+//				L2_Coupling(M_micro_vu,qp,phi_restrict,phi_micro,
+//							n_dofs_v_restrict,n_dofs_u_micro,JxW,1);
 
 				L2_Coupling(M_micro_vv,qp,phi_restrict,phi_micro,
 							n_dofs_v_restrict,n_dofs_v_micro,JxW,1);
 
-				L2_Coupling(M_micro_vw,qp,phi_restrict,phi_micro,
-							n_dofs_v_restrict,n_dofs_w_micro,JxW,1);
-
-				L2_Coupling(M_micro_wu,qp,phi_restrict,phi_micro,
-							n_dofs_w_restrict,n_dofs_u_micro,JxW,1);
-
-				L2_Coupling(M_micro_wv,qp,phi_restrict,phi_micro,
-							n_dofs_w_restrict,n_dofs_v_micro,JxW,1);
+//				L2_Coupling(M_micro_vw,qp,phi_restrict,phi_micro,
+//							n_dofs_v_restrict,n_dofs_w_micro,JxW,1);
+//
+//				L2_Coupling(M_micro_wu,qp,phi_restrict,phi_micro,
+//							n_dofs_w_restrict,n_dofs_u_micro,JxW,1);
+//
+//				L2_Coupling(M_micro_wv,qp,phi_restrict,phi_micro,
+//							n_dofs_w_restrict,n_dofs_v_micro,JxW,1);
 
 				L2_Coupling(M_micro_ww,qp,phi_restrict,phi_micro,
 							n_dofs_w_restrict,n_dofs_w_micro,JxW,1);
@@ -810,26 +814,26 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 				L2_Coupling(M_BIG_uu,qp,phi_restrict,phi_restrict,
 							n_dofs_u_restrict,n_dofs_u_restrict,JxW,1);
 
-				L2_Coupling(M_BIG_uv,qp,phi_restrict,phi_restrict,
-							n_dofs_u_restrict,n_dofs_v_restrict,JxW,1);
-
-				L2_Coupling(M_BIG_uw,qp,phi_restrict,phi_restrict,
-							n_dofs_u_restrict,n_dofs_w_restrict,JxW,1);
-
-				L2_Coupling(M_BIG_vu,qp,phi_restrict,phi_restrict,
-							n_dofs_v_restrict,n_dofs_u_restrict,JxW,1);
+//				L2_Coupling(M_BIG_uv,qp,phi_restrict,phi_restrict,
+//							n_dofs_u_restrict,n_dofs_v_restrict,JxW,1);
+//
+//				L2_Coupling(M_BIG_uw,qp,phi_restrict,phi_restrict,
+//							n_dofs_u_restrict,n_dofs_w_restrict,JxW,1);
+//
+//				L2_Coupling(M_BIG_vu,qp,phi_restrict,phi_restrict,
+//							n_dofs_v_restrict,n_dofs_u_restrict,JxW,1);
 
 				L2_Coupling(M_BIG_vv,qp,phi_restrict,phi_restrict,
 							n_dofs_v_restrict,n_dofs_v_restrict,JxW,1);
 
-				L2_Coupling(M_BIG_vw,qp,phi_restrict,phi_restrict,
-							n_dofs_v_restrict,n_dofs_w_restrict,JxW,1);
-
-				L2_Coupling(M_BIG_wu,qp,phi_restrict,phi_restrict,
-							n_dofs_w_restrict,n_dofs_u_restrict,JxW,1);
-
-				L2_Coupling(M_BIG_wv,qp,phi_restrict,phi_restrict,
-							n_dofs_w_restrict,n_dofs_v_restrict,JxW,1);
+//				L2_Coupling(M_BIG_vw,qp,phi_restrict,phi_restrict,
+//							n_dofs_v_restrict,n_dofs_w_restrict,JxW,1);
+//
+//				L2_Coupling(M_BIG_wu,qp,phi_restrict,phi_restrict,
+//							n_dofs_w_restrict,n_dofs_u_restrict,JxW,1);
+//
+//				L2_Coupling(M_BIG_wv,qp,phi_restrict,phi_restrict,
+//							n_dofs_w_restrict,n_dofs_v_restrict,JxW,1);
 
 				L2_Coupling(M_BIG_ww,qp,phi_restrict,phi_restrict,
 							n_dofs_w_restrict,n_dofs_w_restrict,JxW,1);
