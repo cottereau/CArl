@@ -37,4 +37,8 @@
 #include "libmesh/petsc_matrix.h"
 #include "libmesh/petsc_vector.h"
 
+#include <petscmat.h>
+#include <petscsys.h>
+#include <petscksp.h>
+
 #endif /* COMMON_LIBMESH_HEADER_H_ */

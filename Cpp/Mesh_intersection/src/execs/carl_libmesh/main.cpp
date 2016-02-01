@@ -1,142 +1,56 @@
 #include "main.h"
 
-// Some classes and functions dealing with the boundary conditions
-class boundary_id_cube
-{
-public:
-	int MIN_Z;
-	int MIN_Y;
-	int MAX_X;
-	int MAX_Y;
-	int MIN_X;
-	int MAX_Z;
 
-	boundary_id_cube()
-	{
-		MIN_Z = 1;
-		MIN_Y = 2;
-		MAX_X = 3;
-		MAX_Y = 4;
-		MIN_X = 5;
-		MAX_Z = 6;
-	}
-};
+//
+//// Some functions to set up variables and co.
+//libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
+//												libMesh::Order order = libMesh::FIRST,
+//												libMesh::FEFamily family = libMesh::LAGRANGE)
+//{
+//	libMesh::ExplicitSystem& physical_variables =
+//			input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
+//
+//	// Physical constants are set as constant, monomial
+//	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
+//	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
+//
+//	libMesh::LinearImplicitSystem& elasticity_system =
+//			input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
+//
+//	elasticity_system.add_variable("u", order, family);
+//	elasticity_system.add_variable("v", order, family);
+//	elasticity_system.add_variable("w", order, family);
+//
+//	return elasticity_system;
+//}
+//
+//// Some functions to set up variables and co.
+//libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
+//						void fptr(	libMesh::EquationSystems& es,
+//									const std::string& name),
+//						libMesh::Order order = libMesh::FIRST,
+//						libMesh::FEFamily family = libMesh::LAGRANGE)
+//{
+//	libMesh::ExplicitSystem& physical_variables =
+//			input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
+//
+//	// Physical constants are set as constant, monomial
+//	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
+//	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
+//
+//	libMesh::LinearImplicitSystem& elasticity_system =
+//			input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
+//
+//	elasticity_system.add_variable("u", order, family);
+//	elasticity_system.add_variable("v", order, family);
+//	elasticity_system.add_variable("w", order, family);
+//
+//	elasticity_system.attach_assemble_function(fptr);
+//
+//	return elasticity_system;
+//}
 
-class boundary_displacement
-{
-public:
-	double x_displ;
-	double y_displ;
-	double z_displ;
 
-	boundary_displacement(): x_displ { 0.5 }, y_displ { 0 }, z_displ { 0 }
-	{
-	}
-
-	boundary_displacement(double inputX, double inputY, double inputZ): x_displ { inputX }, y_displ { inputY }, z_displ { inputZ }
-	{
-	}
-};
-
-// Some boundary conditions functions
-void set_x_displacement(libMesh::ImplicitSystem& elasticity_system, boundary_displacement& displ, boundary_id_cube& boundary_ids)
-{
-	// Defining the boundaries with Dirichlet conditions ...
-	std::set<libMesh::boundary_id_type> boundary_ids_clamped;
-	std::set<libMesh::boundary_id_type> boundary_ids_displaced;
-
-	boundary_ids_displaced.insert(boundary_ids.MAX_X);
-	boundary_ids_clamped.insert(boundary_ids.MIN_X);
-
-	std::vector<unsigned int> variables(3);
-	variables[0] = elasticity_system.variable_number("u");
-	variables[1] = elasticity_system.variable_number("v");
-	variables[2] = elasticity_system.variable_number("w");
-
-	libMesh::ZeroFunction<> zero_function;
-	border_displacement right_border(	variables[0],variables[1],variables[2],
-										displ.x_displ,displ.y_displ,displ.z_displ);
-
-	// ... and set them
-	libMesh::DirichletBoundary dirichlet_bc_clamped(	boundary_ids_clamped,
-											variables,
-											&zero_function);
-
-	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_clamped);
-
-	libMesh::DirichletBoundary dirichlet_bc_displaced(	boundary_ids_displaced,
-												variables,
-												&right_border);
-
-	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_displaced);
-}
-
-// Some functions to set up variables and co.
-libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
-												libMesh::Order order = libMesh::FIRST,
-												libMesh::FEFamily family = libMesh::LAGRANGE)
-{
-	libMesh::ExplicitSystem& physical_variables =
-			input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
-
-	// Physical constants are set as constant, monomial
-	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
-	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
-
-	libMesh::LinearImplicitSystem& elasticity_system =
-			input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
-
-	elasticity_system.add_variable("u", order, family);
-	elasticity_system.add_variable("v", order, family);
-	elasticity_system.add_variable("w", order, family);
-
-	return elasticity_system;
-}
-
-// Some functions to set up variables and co.
-libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
-						void fptr(	libMesh::EquationSystems& es,
-									const std::string& name),
-						libMesh::Order order = libMesh::FIRST,
-						libMesh::FEFamily family = libMesh::LAGRANGE)
-{
-	libMesh::ExplicitSystem& physical_variables =
-			input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
-
-	// Physical constants are set as constant, monomial
-	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
-	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
-
-	libMesh::LinearImplicitSystem& elasticity_system =
-			input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
-
-	elasticity_system.add_variable("u", order, family);
-	elasticity_system.add_variable("v", order, family);
-	elasticity_system.add_variable("w", order, family);
-
-	elasticity_system.attach_assemble_function(fptr);
-
-	return elasticity_system;
-}
-
-libMesh::ExplicitSystem& add_stress(libMesh::EquationSystems& input_systems)
-{
-	libMesh::ExplicitSystem& stress_system =
-			input_systems.add_system<libMesh::ExplicitSystem> ("StressSystem");
-
-	stress_system.add_variable("sigma_00", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_01", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_02", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_10", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_11", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_12", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_20", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_21", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("sigma_22", libMesh::CONSTANT, libMesh::MONOMIAL);
-	stress_system.add_variable("vonMises", libMesh::CONSTANT, libMesh::MONOMIAL);
-
-	return stress_system;
-}
 
 int main (int argc, char** argv)
 {
@@ -450,7 +364,7 @@ int main (int argc, char** argv)
 	}
 
 	// Generate the equation systems
-	carl::coupled_system CoupledTest;
+	carl::coupled_system CoupledTest(mesh_micro.comm());
 
 
 	libMesh::EquationSystems& equation_systems_inter =
@@ -474,7 +388,7 @@ int main (int argc, char** argv)
 
 	// [MACRO] Set up the physical properties
 	libMesh::LinearImplicitSystem& elasticity_system_BIG
-										= add_elasticity(equation_systems_BIG,assemble_elasticity_heterogeneous);
+										= add_elasticity_with_assemble(equation_systems_BIG,assemble_elasticity_heterogeneous);
 
 	// [MACRO] Defining the boundaries with Dirichlet conditions
 	set_x_displacement(elasticity_system_BIG, x_max_BIG,boundary_ids);
@@ -504,7 +418,7 @@ int main (int argc, char** argv)
 
 	// [MICRO] Set up the physical properties
 	libMesh::LinearImplicitSystem& elasticity_system_micro
-										= add_elasticity(equation_systems_micro,assemble_elasticity_heterogeneous);
+										= add_elasticity_with_assemble(equation_systems_micro,assemble_elasticity_heterogeneous);
 
 	// [MICRO] Defining the boundaries with Dirichlet conditions
 	set_x_displacement(elasticity_system_micro, x_max_micro,boundary_ids);

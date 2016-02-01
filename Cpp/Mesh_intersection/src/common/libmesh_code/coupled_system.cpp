@@ -1,64 +1,4 @@
-#include <petscmat.h>
-#include <petscsys.h>
 #include "coupled_system.h"
-
-// Functions
-
-void carl::lump_matrix(		libMesh::PetscMatrix<libMesh::Number>& matrixInput,
-							libMesh::PetscMatrix<libMesh::Number>& matrixOutput)
-{
-	if(matrixOutput.initialized())
-	{
-		matrixOutput.clear();
-	}
-
-	int M = matrixInput.m();
-	int N = matrixInput.n();
-
-	PetscInt local_M, local_N;
-
-	MatGetLocalSize(matrixInput.mat(),&local_M,&local_N);
-
-	// It will be a diagonal matrix, so no need of a heavy preallocation
-	matrixOutput.init(M,N,local_M,local_N,1,0);
-
-	libMesh::PetscVector<libMesh::Number> UnityVec(matrixInput.comm(),M,local_M);
-	libMesh::PetscVector<libMesh::Number> DummyVector(matrixInput.comm(),M,local_M);
-
-	VecSet(UnityVec.vec(),1);
-
-	UnityVec.close();
-
-	matrixInput.vector_mult(DummyVector,UnityVec);
-
-	MatDiagonalSet(matrixOutput.mat(),DummyVector.vec(),INSERT_VALUES);
-
-	matrixOutput.close();
-}
-
-void carl::print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix)
-{
-	libMesh::Real accumulator = 0;
-	std::cout << "| M_i,j : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl;
-	for(unsigned int iii = 0; iii < CouplingTestMatrix.m(); ++iii)
-	{
-		for(unsigned int jjj = 0; jjj < CouplingTestMatrix.n(); ++jjj)
-		{
-			accumulator += CouplingTestMatrix(iii,jjj);
-			if(CouplingTestMatrix.m() < 101 && CouplingTestMatrix.n() < 101)
-			{
-				std::cout << " " << CouplingTestMatrix(iii,jjj);
-			}
-		}
-		if(CouplingTestMatrix.m() < 101 && CouplingTestMatrix.n() < 101)
-		{
-			std::cout << std::endl;
-		}
-	}
-	std::cout << "|" << std::endl;
-	std::cout << "| Sum( M_i,j ) = " << accumulator << std::endl;
-}
-
 
 // Class members
 void carl::coupled_system::clear()
@@ -288,21 +228,13 @@ void carl::coupled_system::assemble_coupling_matrices(	const std::string BIG_nam
 	const std::vector<libMesh::dof_id_type>& micro_n_nz = dof_map_micro.get_n_nz();
 	const std::vector<libMesh::dof_id_type>& micro_n_oz = dof_map_micro.get_n_oz();
 
-	int max_nnz = *std::max_element(n_nz.begin(),n_nz.end());
-	int max_noz = *std::max_element(n_oz.begin(),n_oz.end());
-
-	int micro_max_nnz = *std::max_element(micro_n_nz.begin(),micro_n_nz.end());
-	int micro_max_noz = *std::max_element(micro_n_oz.begin(),micro_n_oz.end());
-
 	// TODO : correct memory allocation
-	int temp_diag_alloc = 600*max_nnz*micro_max_nnz;
-	int temp_off_alloc = max_noz*micro_max_noz + max_nnz*micro_max_noz + max_noz*micro_max_nnz;
 	couplingMatrix_restrict_micro.init(		restrict_M, micro_N,
 											restrict_M_local, micro_N_local,
-											temp_diag_alloc,temp_off_alloc);
+											micro_N_local,micro_N - micro_N_local);
 	couplingMatrix_restrict_BIG.init(		restrict_M, BIG_N,
 											restrict_M_local, BIG_N_local,
-											temp_diag_alloc,temp_off_alloc);
+											BIG_N_local,BIG_N - BIG_N_local);
 
 	couplingMatrix_restrict_restrict.attach_dof_map(dof_map_restrict);
 	couplingMatrix_restrict_restrict.init();
@@ -872,6 +804,41 @@ void carl::coupled_system::print_matrix_micro_info(const std::string& name)
 	std::cout << "| Restrict - Micro matrix -> " << name << std::endl;
 	print_matrix(CouplingTestMatrix);
 }
+
+void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const std::string type_name)
+{
+	// Get the systems
+	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
+	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
+
+	libMesh::ImplicitSystem& Sys_BIG =   libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_BIG.get_system(type_name));
+	libMesh::ImplicitSystem& Sys_micro = libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_micro.get_system(type_name));
+
+	// Assemble the systems
+	Sys_BIG.assemble();
+	Sys_BIG.matrix->close();
+	Sys_BIG.rhs->close();
+	m_bHasAssembled_BIG = true;
+
+	Sys_micro.assemble();
+	Sys_micro.matrix->close();
+	Sys_micro.rhs->close();
+	m_bHasAssembled_micro[micro_name] = true;
+
+	// Get the matrices
+	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_BIG.matrix);
+	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_micro.matrix);
+
+	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_restrict_BIG[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_restrict_micro[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_restrict_restrict[micro_name];
+
+	// Set the solver parameters
+	m_LATIN_solver.set_params(1,1,1,1);
+
+	// Set the solver matrices
+	m_LATIN_solver.set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
+};
 
 void carl::coupled_system::print_matrix_BIG_info(const std::string& name)
 {

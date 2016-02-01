@@ -71,8 +71,10 @@ set ( MESH_DIR                 ${COMMON_SRC_DIR}/triangular_mesh )
 set ( INTERSECTION_DIR         ${COMMON_SRC_DIR}/intersections )
 set ( LIBMESH_CODE_DIR         ${COMMON_SRC_DIR}/libmesh_code )
 
+set ( ASSEMBLE_FUNCTIONS_DIR   ${EXEC_SRC_DIR}/assemble_functions )
+
 # include for local directory
-set ( LIB_DIRS ${SOURCE_DIR} ${MESH_DIR} ${INTERSECTION_DIR} ${LIBMESH_CODE_DIR} )
+set ( LIB_DIRS ${SOURCE_DIR} ${MESH_DIR} ${INTERSECTION_DIR} ${LIBMESH_CODE_DIR} ${ASSEMBLE_FUNCTIONS_DIR})
 set ( EXEC_DIRS ${INTERSECTION_2D_EXEC_DIR} ${INTERSECTION_3D_EXEC_DIR} 
                 ${INTERSECTION_RESTRICT_3D_EXEC_DIR} ${MESHER_EXEC_DIR} 
                 ${TEST_IMPORT_EXEC_DIR} ${RESTRICTION_3D_EXEC_DIR} 
@@ -84,6 +86,7 @@ file ( GLOB COMMON_SOURCES "${SOURCE_DIR}/common*.h" "${SOURCE_DIR}/common*.cpp"
 file ( GLOB MESH_2D_SOURCES "${INTERSECTION_DIR}/*2.h" "${INTERSECTION_DIR}/*2.cpp" "${MESH_DIR}/*2.cpp" "${MESH_DIR}/*2.h")
 file ( GLOB MESH_3D_SOURCES "${INTERSECTION_DIR}/*3.h" "${INTERSECTION_DIR}/*3.cpp" "${MESH_DIR}/*3.cpp" "${MESH_DIR}/*3.h" "${RESTRICTION_3D_EXEC_DIR}/*3.h")
 file ( GLOB LIBMESH_CODE_SOURCES "${LIBMESH_CODE_DIR}/*.h" "${LIBMESH_CODE_DIR}/*.cpp" )
+file ( GLOB ASSEMBLE_FUNCTIONS_SOURCES "${ASSEMBLE_FUNCTIONS_DIR}/*.h" "${ASSEMBLE_FUNCTIONS_DIR}/*.cpp" )
 
 # set execs sources
 set ( INTERSECTION_2D_EXEC_SOURCES ${INTERSECTION_2D_EXEC_DIR}/main.cpp)
@@ -91,7 +94,7 @@ set ( INTERSECTION_3D_EXEC_SOURCES ${INTERSECTION_3D_EXEC_DIR}/main.cpp)
 set ( INTERSECTION_RESTRICT_3D_EXEC_SOURCES ${INTERSECTION_RESTRICT_3D_EXEC_DIR}/main.cpp)
 set ( TEST_IMPORT_EXEC_SOURCES ${TEST_IMPORT_EXEC_DIR}/main.cpp)
 set ( RESTRICTION_3D_EXEC_SOURCES ${RESTRICTION_3D_EXEC_DIR}/main.cpp )
-set ( CARL_LIBMESH_EXEC_SOURCES ${CARL_LIBMESH_EXEC_DIR}/main.cpp ${CARL_LIBMESH_EXEC_DIR}/assemble_functions_elasticity_3D.cpp )
+set ( CARL_LIBMESH_EXEC_SOURCES ${CARL_LIBMESH_EXEC_DIR}/main.cpp )
 set ( CARL_COUPLING_TEST_EXEC_SOURCES ${CARL_COUPLING_TEST_EXEC_DIR}/main.cpp )
 
 # Creating entries for target: intersections_2D
@@ -100,6 +103,7 @@ add_library( COMMON_OBJS OBJECT ${COMMON_SOURCES})
 add_library( MESH_3D_OBJS OBJECT ${MESH_3D_SOURCES})
 add_library( MESH_2D_OBJS OBJECT ${MESH_2D_SOURCES})
 add_library( LIBMESH_CODE_OBJS OBJECT ${LIBMESH_CODE_SOURCES})
+add_library( ASSEMBLE_FUNCTIONS_OBJS OBJECT ${ASSEMBLE_FUNCTIONS_SOURCES})
 
 add_executable( intersections_2D ${INTERSECTION_2D_EXEC_SOURCES} 
                                  $<TARGET_OBJECTS:MESH_2D_OBJS> 
@@ -120,11 +124,13 @@ add_executable( restrict_mesh_3D ${RESTRICTION_3D_EXEC_SOURCES}
 add_executable( carl_libmesh     ${CARL_LIBMESH_EXEC_SOURCES} 
                                  $<TARGET_OBJECTS:MESH_3D_OBJS> 
                                  $<TARGET_OBJECTS:LIBMESH_CODE_OBJS> 
-                                 $<TARGET_OBJECTS:COMMON_OBJS>)
+                                 $<TARGET_OBJECTS:COMMON_OBJS>
+                                 $<TARGET_OBJECTS:ASSEMBLE_FUNCTIONS_OBJS>)
 add_executable( carl_coupling_test     ${CARL_COUPLING_TEST_EXEC_SOURCES} 
                                        $<TARGET_OBJECTS:MESH_3D_OBJS> 
                                        $<TARGET_OBJECTS:LIBMESH_CODE_OBJS> 
-                                       $<TARGET_OBJECTS:COMMON_OBJS>)
+                                       $<TARGET_OBJECTS:COMMON_OBJS>
+                                       $<TARGET_OBJECTS:ASSEMBLE_FUNCTIONS_OBJS>)
 
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS intersections_2D )
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS intersections_3D )

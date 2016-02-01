@@ -13,18 +13,15 @@
 #include "common_functions.h"
 
 #include "weak_formulations.h"
+#include "LATIN_solver.h"
+#include "PETSC_matrix_operations.h"
 
 namespace carl
 {
 
-void lump_matrix(		libMesh::PetscMatrix<libMesh::Number>& matrixInput,
-						libMesh::PetscMatrix<libMesh::Number>& matrixOutput);
-
-void print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix);
-
 class coupled_system
 {
-private:
+protected:
 	// Members
 
 	// -> Equation system maps
@@ -38,17 +35,25 @@ private:
 	std::map<std::string, libMesh::PetscMatrix<libMesh::Number>* > m_couplingMatrixMap_restrict_BIG;
 	std::map<std::string, libMesh::PetscMatrix<libMesh::Number>* > m_couplingMatrixMap_restrict_restrict;
 
+	// -> Bools for assembly of the systems
+	std::map<std::string, bool > m_bHasAssembled_micro;
+	bool m_bHasAssembled_BIG;
+
 	typedef std::map<std::string, libMesh::EquationSystems* >::iterator EqSystem_iterator;
 	typedef std::map<std::string, libMesh::PetscMatrix<libMesh::Number>* >::iterator Matrix_iterator;
 
-	// Methods
+	PETSC_LATIN_solver m_LATIN_solver;
+
+private:
+	coupled_system();
 
 public:
 	// Members
 
 	// Constructors
-	coupled_system()
+	coupled_system(const libMesh::Parallel::Communicator& comm) : m_LATIN_solver { PETSC_LATIN_solver(comm) }, m_bHasAssembled_BIG { false }
 	{
+
 	};
 
 	// Destructor
@@ -89,6 +94,7 @@ public:
 			m_couplingMatrixMap_restrict_micro.insert (std::make_pair(name, Matrix_restrict_micro_Ptr));
 			m_couplingMatrixMap_restrict_BIG.insert (std::make_pair(name, Matrix_restrict_BIG_Ptr));
 			m_couplingMatrixMap_restrict_restrict.insert (std::make_pair(name, Matrix_restrict_restrict_Ptr));
+			m_bHasAssembled_micro.insert (std::make_pair(name,false));
 		}
 		else
 		{
@@ -162,6 +168,8 @@ public:
 											bool using_same_mesh_restrict_A,
 											bool bSameElemsType = true);
 
+	void set_LATIN_solver(const std::string micro_name, const std::string type_name);
+
 	libMesh::PetscMatrix<libMesh::Number>& get_micro_coupling_matrix(const std::string& name);
 
 	libMesh::PetscMatrix<libMesh::Number>& get_BIG_coupling_matrix(const std::string& name);
@@ -173,6 +181,16 @@ public:
 	void print_matrix_BIG_info(const std::string& name);
 
 	void print_matrix_restrict_info(const std::string& name);
+
+	void set_BIG_assemble_flag(bool bFlag)
+	{
+		m_bHasAssembled_BIG = bFlag;
+	};
+
+	void set_micro_assemble_flag(std::string name, bool bFlag)
+	{
+		m_bHasAssembled_micro[name] = bFlag;
+	};
 };
 
 }

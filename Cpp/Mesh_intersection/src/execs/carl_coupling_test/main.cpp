@@ -1,27 +1,5 @@
 #include "main.h"
 
-// Some functions to set up variables and co.
-libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
-												libMesh::Order order = libMesh::FIRST,
-												libMesh::FEFamily family = libMesh::LAGRANGE)
-{
-	libMesh::ExplicitSystem& physical_variables =
-			input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
-
-	// Physical constants are set as constant, monomial
-	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
-	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
-
-	libMesh::LinearImplicitSystem& elasticity_system =
-			input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
-
-	elasticity_system.add_variable("u", order, family);
-	elasticity_system.add_variable("v", order, family);
-	elasticity_system.add_variable("w", order, family);
-
-	return elasticity_system;
-}
-
 int main (int argc, char** argv)
 {
 	/* To Do list --------------------------------------------------------------
@@ -320,7 +298,7 @@ int main (int argc, char** argv)
 	// Associate the boundary conditions -> no boundary conditions!
 
 	// Generate the equation systems
-	carl::coupled_system CoupledTest;
+	carl::coupled_system CoupledTest(mesh_micro.comm());
 
 	libMesh::EquationSystems& equation_systems_BIG =
 					CoupledTest.set_BIG_EquationSystem("BigSys", mesh_BIG);
@@ -333,28 +311,28 @@ int main (int argc, char** argv)
 
 	// - Build the BIG system --------------------------------------------------
 
-	libMesh::LinearImplicitSystem& elasticity_system_BIG
-										= add_elasticity(equation_systems_BIG);
+	libMesh::ImplicitSystem& elasticity_system_BIG
+										= add_elasticity_with_assemble(equation_systems_BIG,assemble_elasticity);
 
 	equation_systems_BIG.init();
 
 	// - Build the micro system ------------------------------------------------
 
-	libMesh::LinearImplicitSystem& elasticity_system_micro
-										= add_elasticity(equation_systems_micro);
+	libMesh::ImplicitSystem& elasticity_system_micro
+										= add_elasticity_with_assemble(equation_systems_micro,assemble_elasticity);
 
 	equation_systems_micro.init();
 
 	// - Build the restrict system --------------------------------------------------
 
-	libMesh::LinearImplicitSystem& elasticity_system_restrict
+	libMesh::ImplicitSystem& elasticity_system_restrict
 										= add_elasticity(equation_systems_restrict);
 
 	equation_systems_restrict.init();
 
 	// - Build the dummy inter system ------------------------------------------
 
-	libMesh::LinearImplicitSystem& elasticity_system_inter
+	libMesh::ImplicitSystem& elasticity_system_inter
 										= add_elasticity(equation_systems_inter);
 
 	equation_systems_inter.init();
@@ -378,6 +356,8 @@ int main (int argc, char** argv)
 	std::cout << std::endl << "| Testing the lumping " << std::endl;
 	carl::print_matrix(LumpingTestOutput);
 
+	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
+	CoupledTest.set_LATIN_solver("MicroSys","Elasticity");
 
 	return 0;
 }
