@@ -23,6 +23,8 @@ void lump_matrix_and_invert(		libMesh::PetscMatrix<libMesh::Number>& matrixInput
 
 void print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix);
 
+void print_matrix_dim(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix);
+
 void solve_linear_PETSC(	libMesh::PetscMatrix<libMesh::Number>& A,
 							libMesh::PetscVector<libMesh::Number>& b,
 							libMesh::PetscVector<libMesh::Number>& x,

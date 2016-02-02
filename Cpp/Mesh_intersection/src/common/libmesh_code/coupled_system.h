@@ -170,6 +170,8 @@ public:
 
 	void set_LATIN_solver(const std::string micro_name, const std::string type_name);
 
+	void solve_LATIN();
+
 	libMesh::PetscMatrix<libMesh::Number>& get_micro_coupling_matrix(const std::string& name);
 
 	libMesh::PetscMatrix<libMesh::Number>& get_BIG_coupling_matrix(const std::string& name);

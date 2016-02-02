@@ -410,7 +410,7 @@ while ( LATINConv > LATINTol && iterCount < LATINIters-1)
 	phiBSum = phiB + phiBOld;
 
 	normDiff = sqrt(pow(phiADiff.l2,2) + pow(phiBDiff.l2,2));
-	normSum = sqrt(pow(phiASum.l2,2)  + pow(phiBSum.l2,2));
+	normSum = sqrt(pow(phiASum.l2,2) + pow(phiBSum.l2,2));
 
 	if(normSum < normTol)
 	{

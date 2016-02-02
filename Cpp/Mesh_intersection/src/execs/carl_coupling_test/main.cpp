@@ -81,6 +81,8 @@ int main (int argc, char** argv)
 	// - Start libmesh --------------------------------------------------------
 	libMesh::LibMeshInit init (argc, argv);
 
+	libMesh::PerfLog perf_log ("Main program");
+
 	// - Get inputs and set variables
 	GetPot command_line (argc, argv);
 
@@ -337,27 +339,28 @@ int main (int argc, char** argv)
 
 	equation_systems_inter.init();
 
+	perf_log.push("Build elasticity couplings");
+
 	CoupledTest.assemble_coupling_elasticity_3D(	"BigSys","MicroSys",
 													"InterSys","RestrictSys",
 													equivalence_table_restrict_A,
 													intersection_table_restrict_B,
 													intersection_table_I,
 													using_same_mesh_restrict_A);
+	perf_log.pop("Build elasticity couplings");
 
 	CoupledTest.print_matrix_micro_info("MicroSys");
 	CoupledTest.print_matrix_BIG_info("MicroSys");
 	CoupledTest.print_matrix_restrict_info("MicroSys");
 
-	libMesh::PetscMatrix<libMesh::Number>& LumpingTestInput = CoupledTest.get_restrict_coupling_matrix("MicroSys");
-	libMesh::PetscMatrix<libMesh::Number> LumpingTestOutput(LumpingTestInput.comm());
-
-	carl::lump_matrix(LumpingTestInput,LumpingTestOutput);
-
-	std::cout << std::endl << "| Testing the lumping " << std::endl;
-	carl::print_matrix(LumpingTestOutput);
-
 	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
+	perf_log.push("Set up","LATIN Solver:");
 	CoupledTest.set_LATIN_solver("MicroSys","Elasticity");
+	perf_log.pop("Set up","LATIN Solver:");
+
+	perf_log.push("Solve","LATIN Solver:");
+	CoupledTest.solve_LATIN();
+	perf_log.pop("Solve","LATIN Solver:");
 
 	return 0;
 }

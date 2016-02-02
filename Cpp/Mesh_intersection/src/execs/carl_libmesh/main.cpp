@@ -488,65 +488,64 @@ int main (int argc, char** argv)
 	 set_constant_physical_properties(equation_systems_BIG,BIG_E,BIG_Mu);
 	 perf_log.pop("Physical properties - macro");
 
-	// [MICRO] Solve
-	perf_log.push("Solve - micro");
-	elasticity_system_micro.solve();
-	perf_log.pop("Solve - micro");
-
-	// [MICRO] Calculate stress
-	perf_log.push("Compute stress - micro");
-	compute_stresses(equation_systems_micro);
-	perf_log.pop("Compute stress - micro");
-
-	// [MICRO] Export solution
-#ifdef LIBMESH_HAVE_EXODUS_API
-
-	libMesh::ExodusII_IO exo_io_micro(mesh_micro, /*single_precision=*/true);
-
-	std::set<std::string> system_names_micro;
-	system_names_micro.insert("Elasticity");
-	exo_io_micro.write_equation_systems(outputEXOFile_micro.c_str(),equation_systems_micro,&system_names_micro);
-
-	exo_io_micro.write_element_data(equation_systems_micro);
-
-#endif
-
-	// [MACRO] Solve
-	perf_log.push("Solve - macro");
-	elasticity_system_BIG.solve();
-	perf_log.pop("Solve - macro");
-
-	// [MACRO] Calculate stress
-	perf_log.push("Compute stress - macro");
-	compute_stresses(equation_systems_BIG);
-	perf_log.pop("Compute stress - macro");
-
-	// [MACRO] Export solution
-#ifdef LIBMESH_HAVE_EXODUS_API
-
-	libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
-
-	std::set<std::string> system_names_BIG;
-	system_names_BIG.insert("Elasticity");
-	exo_io_BIG.write_equation_systems(outputEXOFile_BIG.c_str(),equation_systems_BIG,&system_names_BIG);
-
-	exo_io_BIG.write_element_data(equation_systems_BIG);
-
-#endif
+//	// [MICRO] Solve
+//	perf_log.push("Solve - micro");
+//	elasticity_system_micro.solve();
+//	perf_log.pop("Solve - micro");
+//
+//	// [MICRO] Calculate stress
+//	perf_log.push("Compute stress - micro");
+//	compute_stresses(equation_systems_micro);
+//	perf_log.pop("Compute stress - micro");
+//
+//	// [MICRO] Export solution
+//#ifdef LIBMESH_HAVE_EXODUS_API
+//
+//	libMesh::ExodusII_IO exo_io_micro(mesh_micro, /*single_precision=*/true);
+//
+//	std::set<std::string> system_names_micro;
+//	system_names_micro.insert("Elasticity");
+//	exo_io_micro.write_equation_systems(outputEXOFile_micro.c_str(),equation_systems_micro,&system_names_micro);
+//
+//	exo_io_micro.write_element_data(equation_systems_micro);
+//
+//#endif
+//
+//	// [MACRO] Solve
+//	perf_log.push("Solve - macro");
+//	elasticity_system_BIG.solve();
+//	perf_log.pop("Solve - macro");
+//
+//	// [MACRO] Calculate stress
+//	perf_log.push("Compute stress - macro");
+//	compute_stresses(equation_systems_BIG);
+//	perf_log.pop("Compute stress - macro");
+//
+//	// [MACRO] Export solution
+//#ifdef LIBMESH_HAVE_EXODUS_API
+//
+//	libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
+//
+//	std::set<std::string> system_names_BIG;
+//	system_names_BIG.insert("Elasticity");
+//	exo_io_BIG.write_equation_systems(outputEXOFile_BIG.c_str(),equation_systems_BIG,&system_names_BIG);
+//
+//	exo_io_BIG.write_element_data(equation_systems_BIG);
+//
+//#endif
 
 	CoupledTest.print_matrix_micro_info("MicroSys");
 	CoupledTest.print_matrix_BIG_info("MicroSys");
 	CoupledTest.print_matrix_restrict_info("MicroSys");
 
-	libMesh::PetscMatrix<libMesh::Number>& LumpingTestInput = CoupledTest.get_restrict_coupling_matrix("MicroSys");
-	libMesh::PetscMatrix<libMesh::Number> LumpingTestOutput(LumpingTestInput.comm());
+	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
+	perf_log.push("Set up","LATIN Solver:");
+	CoupledTest.set_LATIN_solver("MicroSys","Elasticity");
+	perf_log.pop("Set up","LATIN Solver:");
 
-	perf_log.push("Lumping");
-	carl::lump_matrix(LumpingTestInput,LumpingTestOutput);
-	perf_log.pop("Lumping");
-
-	std::cout << std::endl << "| Testing the lumping " << std::endl;
-	carl::print_matrix(LumpingTestOutput);
+	perf_log.push("Solve","LATIN Solver:");
+	CoupledTest.solve_LATIN();
+	perf_log.pop("Solve","LATIN Solver:");
 
 	return 0;
 }

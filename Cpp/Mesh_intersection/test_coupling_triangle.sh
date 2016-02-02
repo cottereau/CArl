@@ -1,1 +1,1 @@
-./carl_coupling_test -info -mA meshes/3D/test_triangle_A.msh -mB meshes/3D/test_triangle_B.msh -mI meshes/3D/test_triangle_I.msh --tableB meshes/equivalence_tables/intersection_triangle_restrict_B.dat  --tableI meshes/equivalence_tables/intersection_triangle_I.dat
+./carl_coupling_test -mA meshes/3D/test_triangle_A.msh -mB meshes/3D/test_triangle_B.msh -mI meshes/3D/test_triangle_I.msh --tableB meshes/equivalence_tables/intersection_triangle_restrict_B.dat  --tableI meshes/equivalence_tables/intersection_triangle_I.dat

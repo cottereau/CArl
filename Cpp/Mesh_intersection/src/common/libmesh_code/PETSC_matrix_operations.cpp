@@ -90,6 +90,11 @@ void carl::print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatri
 	std::cout << "| Sum( M_i,j ) = " << accumulator << std::endl << std::endl;
 }
 
+void carl::print_matrix_dim(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix)
+{
+	std::cout << "| M_i,j : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl  << std::endl;
+}
+
 void carl::solve_linear_PETSC(	libMesh::PetscMatrix<libMesh::Number>& A,
 								libMesh::PetscVector<libMesh::Number>& b,
 								libMesh::PetscVector<libMesh::Number>& x,

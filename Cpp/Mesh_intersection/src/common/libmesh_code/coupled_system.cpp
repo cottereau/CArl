@@ -833,12 +833,24 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_restrict_micro[micro_name];
 	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_restrict_restrict[micro_name];
 
+	// Get the vectors
+	libMesh::PetscVector<libMesh::Number>& F_A = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_BIG.rhs);
+	libMesh::PetscVector<libMesh::Number>& F_B = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_micro.rhs);
+
 	// Set the solver parameters
-	m_LATIN_solver.set_params(1,1,1,1);
+	m_LATIN_solver.set_params(2.5,2.5,2.5,2.5);
 
 	// Set the solver matrices
 	m_LATIN_solver.set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
+
+	// Set the solver matrices
+	m_LATIN_solver.set_forces(F_A,F_B);
 };
+
+void carl::coupled_system::solve_LATIN()
+{
+	m_LATIN_solver.solve();
+}
 
 void carl::coupled_system::print_matrix_BIG_info(const std::string& name)
 {
