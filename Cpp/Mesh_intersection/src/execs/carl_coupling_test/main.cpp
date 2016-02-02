@@ -79,9 +79,10 @@ int main (int argc, char** argv)
 	double x_max_z_displ = 0;
 
 	// - Start libmesh --------------------------------------------------------
+	const bool MASTER_bPerfLog_carl_coupling_test = true;
 	libMesh::LibMeshInit init (argc, argv);
 
-	libMesh::PerfLog perf_log ("Main program");
+	libMesh::PerfLog perf_log ("Main program",MASTER_bPerfLog_carl_coupling_test);
 
 	// - Get inputs and set variables
 	GetPot command_line (argc, argv);
@@ -359,7 +360,7 @@ int main (int argc, char** argv)
 	perf_log.pop("Set up","LATIN Solver:");
 
 	perf_log.push("Solve","LATIN Solver:");
-	CoupledTest.solve_LATIN();
+	CoupledTest.solve_LATIN("MicroSys","Elasticity");
 	perf_log.pop("Solve","LATIN Solver:");
 
 	return 0;

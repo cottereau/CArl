@@ -66,6 +66,35 @@ void carl::lump_matrix_and_invert(		libMesh::PetscMatrix<libMesh::Number>& matri
 	matrixOutput.close();
 }
 
+void carl::lump_matrix_and_invert(		libMesh::PetscMatrix<libMesh::Number>& matrixInput,
+										libMesh::PetscVector<libMesh::Number>& vecOutput)
+{
+	if(vecOutput.initialized())
+	{
+		vecOutput.clear();
+	}
+
+	int M = matrixInput.m();
+	int N = matrixInput.n();
+
+	PetscInt local_M, local_N;
+
+	MatGetLocalSize(matrixInput.mat(),&local_M,&local_N);
+
+	// It will be a diagonal matrix, so no need of a heavy preallocation
+	vecOutput.init(M,local_M,false);
+
+	libMesh::PetscVector<libMesh::Number> UnityVec(matrixInput.comm(),M,local_M);
+
+	VecSet(UnityVec.vec(),1);
+
+	UnityVec.close();
+
+	matrixInput.vector_mult(vecOutput,UnityVec);
+
+	vecOutput.reciprocal();
+}
+
 
 void carl::print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix)
 {

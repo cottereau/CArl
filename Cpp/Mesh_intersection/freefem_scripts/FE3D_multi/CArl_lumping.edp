@@ -21,12 +21,12 @@ include "../CArlFreeFemMacros.idp"
 // - Preamble
 
 // --- "Defines" for the boundary conditions
-int BoundIDMinZ = 1;
-int BoundIDMinY = 2;
-int BoundIDMaxX = 3;
-int BoundIDMaxY = 4;
-int BoundIDMinX = 5;
-int BoundIDMaxZ = 6;
+int BoundIDMinZ = 22;
+int BoundIDMinY = 16;
+int BoundIDMaxX = 14;
+int BoundIDMaxY = 20;
+int BoundIDMinX = 18;
+int BoundIDMaxZ = 24;
 
 // Define system constants
 real tgv = 10^30;
@@ -77,9 +77,9 @@ func boundAXMinX   = 0;
 func boundAYMinX   = 0;
 func boundAZMinX   = 0;
 
-func boundAXMaxX   = 0.2;
-func boundAYMaxX   = 0.99984769515639123916*y+0.01745240643728351282*z - y;
-func boundAZMaxX   = -0.01745240643728351282*y+0.99984769515639123916*z - z;
+func boundAXMaxX   = 0.5;
+func boundAYMaxX   = 0;
+func boundAZMaxX   = 0;
 
 // Physical constant mask
 string crystalMask = getARGV("--centers","meshes/test__w_0_2__p_30_centers.dat");
@@ -251,11 +251,11 @@ CompactLines(CA);
 cout << "  -- Compacting CB lines" << endl;
 CompactLines(CB);
 
-ofstream compactedAFile("output/compacted_A.dat");
-compactedAFile << CA << endl;
-
-ofstream compactedBFile("output/compacted_B.dat");
-compactedBFile << CB << endl;
+//ofstream compactedAFile("output/compacted_A.dat");
+//compactedAFile << CA << endl;
+//
+//ofstream compactedBFile("output/compacted_B.dat");
+//compactedBFile << CB << endl;
 
 
 // - Projections
@@ -446,25 +446,25 @@ real coef = 10;
 mesh3 ThASol = movemesh3(ThA,transfo=[x+coef*uxA,y+coef*uyA,z+coef*uzA]);
 mesh3 ThBSol = movemesh3(ThB,transfo=[x+coef*uxB,y+coef*uyB,z+coef*uzB]);
 
-savemesh(ThASol,"output/deformed_A_lumping.mesh");
-savemesh(ThBSol,"output/deformed_B_lumping.mesh");
+savemesh(ThASol,"output/deformed_A_lumping_restrict.mesh");
+savemesh(ThBSol,"output/deformed_B_lumping_restrict.mesh");
 
 // Plot tolerance
-ofstream toleranceFile("output/FE3DLatin_tol_lumping.dat");
+ofstream toleranceFile("output/FE3DLatin_tol_lumping_restrict.dat");
 for (int iii = 0; iii <= iterCount; iii++)
 {
 	toleranceFile <<  iii + 1 << " " << LATINIndex[iii] << endl;
 }
 
-ofstream gnuplotFile("output/FE3DLatin_tol.gplot");
+ofstream gnuplotFile("output/FE3DLatin_tol_restrict.gplot");
 gnuplotFile	<< "set term eps" << endl
 			<< "set output \"output/CArl_tol_lumping.eps\" " << endl
 			<< "set title \"LATIN tolerance (lumping)\"" << endl
 			<< "set xrange [1:]" << endl
 		    << "set xlabel \"Iteration\"" << endl
 			<< "set ylabel \"Tolerance\"" << endl
-			<< "plot \"output/FE3DLatin_tol_lumping.dat\" w lp lc 1 notitle" << endl
-			<< "set output \"output/CArl_tol_lumping_zoom.eps\" " << endl
+			<< "plot \"output/FE3DLatin_tol_lumping_restrict.dat\" w lp lc 1 notitle" << endl
+			<< "set output \"output/CArl_tol_lumping_zoom_restrict.eps\" " << endl
 			<< "set title \"LATIN tolerance (lumping - zoom)\"" << endl
 			<< "set xrange [1:10]" << endl
 			<< "replot" << endl

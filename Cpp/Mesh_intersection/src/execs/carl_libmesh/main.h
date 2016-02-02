@@ -15,4 +15,6 @@
 #include "assemble_functions_elasticity_3D.h"
 #include "PETSC_matrix_operations.h"
 
+#include "CGAL_typedefs.h"
+
 #endif /* ELASTICITY_3D_ELASTICITY_3D_TEST_H_ */

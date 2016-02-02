@@ -50,8 +50,6 @@
 //	return elasticity_system;
 //}
 
-
-
 int main (int argc, char** argv)
 {
 	/* To Do list --------------------------------------------------------------
@@ -109,7 +107,7 @@ int main (int argc, char** argv)
 	 *
 	 *		TODO :  Implement the alpha mask reading
 	 *
-	 *		TODO :  Run examples with the multi-crystal case
+	 *		DONE :  Run examples with the multi-crystal case
 	 *
 	 * 		DONE :	Look for how libMesh deals with the matrix repartition
 	 * 				between the processors
@@ -120,15 +118,16 @@ int main (int argc, char** argv)
 	 *
 	 * 		DONE :	Implement a "lumping" projection matrix assembler
 	 *
-	 * 		TODO :	Implement a parallel LATIN solver, capable of using any of
+	 * 		DONE :	Implement a parallel LATIN solver, capable of using any of
 	 * 				the projection matrix assemblers
 	 *
 	 * ---------------------------------------------------------------------- */
 
 	// - Start libmesh --------------------------------------------------------
+	const bool MASTER_bPerfLog_carl_libmesh = true;
 	libMesh::LibMeshInit init (argc, argv);
 
-	libMesh::PerfLog perf_log ("Main program");
+	libMesh::PerfLog perf_log ("Main program",MASTER_bPerfLog_carl_libmesh);
 
 	// - Displacement conditions ----------------------------------------------
 	boundary_displacement x_max_BIG(0.5,0,0);
@@ -377,15 +376,6 @@ int main (int argc, char** argv)
 	libMesh::EquationSystems& equation_systems_BIG =
 					CoupledTest.set_BIG_EquationSystem("BigSys", mesh_BIG);
 
-
-
-	// [MACRO] Simple coupling
-//	// TODO correct the coupling!!!
-//	libMesh::LinearImplicitSystem& volume_BIG_system =
-//			equation_systems_BIG.add_system<libMesh::LinearImplicitSystem> ("VolTest");
-//
-//	unsigned int sillyVar_BIG = volume_BIG_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
-
 	// [MACRO] Set up the physical properties
 	libMesh::LinearImplicitSystem& elasticity_system_BIG
 										= add_elasticity_with_assemble(equation_systems_BIG,assemble_elasticity_heterogeneous);
@@ -408,13 +398,6 @@ int main (int argc, char** argv)
 
 	libMesh::EquationSystems& equation_systems_micro =
 					CoupledTest.add_micro_EquationSystem<libMesh::PetscMatrix<libMesh::Number> >("MicroSys", mesh_micro);
-
-	// [MICRO] Simple coupling
-	// TODO correct the coupling!!!
-//	libMesh::LinearImplicitSystem& volume_micro_system =
-//			equation_systems_micro.add_system<libMesh::LinearImplicitSystem> ("VolTest");
-//
-//	unsigned int sillyVar_micro = volume_micro_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
 
 	// [MICRO] Set up the physical properties
 	libMesh::LinearImplicitSystem& elasticity_system_micro
@@ -440,13 +423,6 @@ int main (int argc, char** argv)
 	libMesh::EquationSystems& equation_systems_restrict =
 					CoupledTest.add_restrict_EquationSystem("RestrictSys", mesh_restrict);
 
-	// [RESTRICT] Simple coupling
-	// TODO correct the coupling!!!
-//	libMesh::LinearImplicitSystem& volume_restrict_system =
-//			equation_systems_restrict.add_system<libMesh::LinearImplicitSystem> ("VolTest");
-//
-//	unsigned int sillyVar_restrict = volume_restrict_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
-
 	libMesh::LinearImplicitSystem& elasticity_system_restrict
 										= add_elasticity(equation_systems_restrict);
 
@@ -458,10 +434,6 @@ int main (int argc, char** argv)
 	// - Build the dummy inter system ------------------------------------------
 
 	perf_log.push("System initialization - inter");
-//	libMesh::LinearImplicitSystem& volume_inter_system =
-//			equation_systems_inter.add_system<libMesh::LinearImplicitSystem> ("VolTest");
-//
-//	unsigned int sillyVar_inter = volume_inter_system.add_variable("SillyVar", libMesh::FIRST, libMesh::LAGRANGE);
 
 	libMesh::LinearImplicitSystem& elasticity_system_inter
 										= add_elasticity(equation_systems_inter);
@@ -540,11 +512,12 @@ int main (int argc, char** argv)
 
 	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
 	perf_log.push("Set up","LATIN Solver:");
-	CoupledTest.set_LATIN_solver("MicroSys","Elasticity");
+//	CoupledTest.set_LATIN_solver("MicroSys","Elasticity");
+	CoupledTest.set_LATIN_solver("MicroSys","Elasticity",assemble_elasticity,assemble_elasticity_heterogeneous);
 	perf_log.pop("Set up","LATIN Solver:");
 
 	perf_log.push("Solve","LATIN Solver:");
-	CoupledTest.solve_LATIN();
+	CoupledTest.solve_LATIN("MicroSys","Elasticity");
 	perf_log.pop("Solve","LATIN Solver:");
 
 	return 0;

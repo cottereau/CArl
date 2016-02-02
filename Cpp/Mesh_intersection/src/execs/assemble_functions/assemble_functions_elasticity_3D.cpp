@@ -1,5 +1,4 @@
 #include "assemble_functions_elasticity_3D.h"
-// Some functions to set up variables and co.
 
 // Some boundary conditions functions
 void set_x_displacement(libMesh::ImplicitSystem& elasticity_system, boundary_displacement& displ, boundary_id_cube& boundary_ids)
@@ -270,7 +269,7 @@ void assemble_elasticity_heterogeneous(libMesh::EquationSystems& es,
 {
 	libmesh_assert_equal_to (system_name, "Elasticity");
 
-	libMesh::PerfLog perf_log ("Matrix Assembly");
+	libMesh::PerfLog perf_log ("Matrix Assembly",MASTER_bPerfLog_assemble_fem);
 
 	perf_log.push("Preamble");
 	// Set up mesh

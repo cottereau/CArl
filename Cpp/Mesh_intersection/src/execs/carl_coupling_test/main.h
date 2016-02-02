@@ -14,4 +14,6 @@
 #include "coupled_system.h"
 #include "assemble_functions_elasticity_3D.h"
 
+#include "CGAL_typedefs.h"
+
 #endif /* ELASTICITY_3D_ELASTICITY_3D_TEST_H_ */

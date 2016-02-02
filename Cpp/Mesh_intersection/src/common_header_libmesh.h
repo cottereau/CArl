@@ -36,6 +36,7 @@
 #include "libmesh/petsc_linear_solver.h"
 #include "libmesh/petsc_matrix.h"
 #include "libmesh/petsc_vector.h"
+#include "libmesh/point_locator_tree.h"
 
 #include <petscmat.h>
 #include <petscsys.h>

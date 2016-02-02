@@ -11,6 +11,8 @@
 #include "common_header_libmesh.h"
 #include "common_functions.h"
 
+const bool MASTER_bPerfLog_assemble_fem = false;
+
 // Some classes and functions dealing with the boundary conditions
 // ---> Border displacememnt
 class border_displacement : public libMesh::FunctionBase<libMesh::Number>

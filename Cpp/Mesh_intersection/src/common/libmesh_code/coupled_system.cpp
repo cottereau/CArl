@@ -81,6 +81,16 @@ void carl::coupled_system::clear()
 
 		m_couplingMatrixMap_restrict_restrict.erase(toClean);
 	}
+
+	while(!m_alpha_masks.empty())
+	{
+		alpha_mask_iterator toClean = m_alpha_masks.begin();
+
+		alpha_mask_locator *alpha = toClean->second;
+		alpha->clear();
+		delete alpha;
+		alpha = NULL;
+	}
 };
 
 void carl::coupled_system::assemble_coupling_matrices(	const std::string BIG_name,
@@ -847,9 +857,73 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 	m_LATIN_solver.set_forces(F_A,F_B);
 };
 
-void carl::coupled_system::solve_LATIN()
+void carl::coupled_system::set_LATIN_solver(	const std::string micro_name, const std::string type_name,
+												void fptr_BIG(		libMesh::EquationSystems& es,
+																	const std::string& name),
+												void fptr_micro(	libMesh::EquationSystems& es,
+																	const std::string& name))
 {
+	// Get the systems
+	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
+	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
+
+	libMesh::ImplicitSystem& Sys_BIG =   libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_BIG.get_system(type_name));
+	libMesh::ImplicitSystem& Sys_micro = libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_micro.get_system(type_name));
+
+	// Assemble the systems
+	fptr_BIG(EqSystems_BIG,type_name);
+	Sys_BIG.matrix->close();
+	Sys_BIG.rhs->close();
+	m_bHasAssembled_BIG = true;
+
+	fptr_micro(EqSystems_micro,type_name);
+	Sys_micro.matrix->close();
+	Sys_micro.rhs->close();
+	m_bHasAssembled_micro[micro_name] = true;
+
+	// Get the matrices
+	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_BIG.matrix);
+	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_micro.matrix);
+
+	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_restrict_BIG[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_restrict_micro[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_restrict_restrict[micro_name];
+
+	// Get the vectors
+	libMesh::PetscVector<libMesh::Number>& F_A = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_BIG.rhs);
+	libMesh::PetscVector<libMesh::Number>& F_B = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_micro.rhs);
+
+	// Set the solver parameters
+	m_LATIN_solver.set_params(2.5,2.5,2.5,2.5);
+
+	// Set the solver matrices
+	m_LATIN_solver.set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
+
+	// Set the solver matrices
+	m_LATIN_solver.set_forces(F_A,F_B);
+};
+
+void carl::coupled_system::solve_LATIN(const std::string micro_name, const std::string type_name)
+{
+	// Solve!
 	m_LATIN_solver.solve();
+
+	// Get the solutions
+	libMesh::NumericVector<libMesh::Number>& sol_BIG =
+			libMesh::cast_ref<libMesh::NumericVector<libMesh::Number>& >(m_LATIN_solver.get_solution_BIG());
+	libMesh::NumericVector<libMesh::Number>& sol_micro =
+			libMesh::cast_ref<libMesh::NumericVector<libMesh::Number>& >(m_LATIN_solver.get_solution_micro());
+
+	// Get the systems
+	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
+	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
+
+	libMesh::System& Sys_BIG =   libMesh::cast_ref<libMesh::System&>(EqSystems_BIG.get_system(type_name));
+	libMesh::System& Sys_micro = libMesh::cast_ref<libMesh::System&>(EqSystems_micro.get_system(type_name));
+
+	// Set the solutions!
+	*(Sys_BIG.solution) = sol_BIG;
+	*(Sys_micro.solution) = sol_micro;
 }
 
 void carl::coupled_system::print_matrix_BIG_info(const std::string& name)
@@ -866,4 +940,86 @@ void carl::coupled_system::print_matrix_restrict_info(const std::string& name)
 						* m_couplingMatrixMap_restrict_restrict[name];
 	std::cout << "| Restrict - Restrict matrix -> " << name << std::endl;
 	print_matrix(CouplingTestMatrix);
+}
+
+void set_alpha_mask(	libMesh::Mesh& alpha_mesh,
+						double alpha_eps, double alpha_coupled_BIG,
+						int subdomain_idx_micro, int subdomain_idx_BIG, int subdomain_idx_coupled)
+{
+
+//	// Set
+//	// Read the random data info
+//	std::ifstream physicalParamsIFS(physicalParamsFile);
+//	int NbOfSubdomains = -1;
+//
+//	physicalParamsIFS >> NbOfSubdomains;
+//
+//	std::vector<double> inputE(NbOfSubdomains,-1);
+//	std::vector<double> inputMu(NbOfSubdomains,-1);
+//	std::vector<int> 	inputIdx(NbOfSubdomains,-1);
+//
+//	meanE = 0;
+//	meanMu = 0;
+//
+//	for(int iii = 0; iii < NbOfSubdomains; ++iii)
+//	{
+//		physicalParamsIFS >> inputE[iii];
+//		physicalParamsIFS >> inputMu[iii];
+//		physicalParamsIFS >> inputIdx[iii];
+//
+//		meanE += inputE[iii];
+//		meanMu += inputMu[iii];
+//	}
+//	physicalParamsIFS.close();
+//
+//	// Mesh pointer
+//	const libMesh::MeshBase& mesh = es.get_mesh();
+//
+//	const unsigned int dim = mesh.mesh_dimension();
+//
+//	// Physical system and its "variables"
+//	libMesh::ExplicitSystem& physical_param_system = es.get_system<libMesh::ExplicitSystem>("PhysicalConstants");
+//	const libMesh::DofMap& physical_dof_map = physical_param_system.get_dof_map();
+//
+//	unsigned int physical_consts[2];
+//	physical_consts[0] = physical_param_system.variable_number ("E");
+//	physical_consts[1] = physical_param_system.variable_number ("mu");
+//
+//	std::vector<libMesh::dof_id_type> physical_dof_indices_var;
+//	libMesh::MeshBase::const_element_iterator       el     = mesh.active_local_elements_begin();
+//	const libMesh::MeshBase::const_element_iterator end_el = mesh.active_local_elements_end();
+//
+//	int currentSubdomain = -1;
+//
+//	for ( ; el != end_el; ++el)
+//	{
+//		const libMesh::Elem* elem = *el;
+//
+//		currentSubdomain = elem->subdomain_id()-1;
+//
+//		// Young modulus, E
+//		physical_dof_map.dof_indices(elem, physical_dof_indices_var, physical_consts[0]);
+//		libMesh::dof_id_type dof_index = physical_dof_indices_var[0];
+//
+//		if( (physical_param_system.solution->first_local_index() <= dof_index) &&
+//		(dof_index < physical_param_system.solution->last_local_index()) )
+//		{
+//			physical_param_system.solution->set(dof_index, inputE[currentSubdomain]);
+//		}
+//
+//		// Mu
+//		physical_dof_map.dof_indices (elem, physical_dof_indices_var, physical_consts[1]);
+//
+//		dof_index = physical_dof_indices_var[0];
+//
+//		if( (physical_param_system.solution->first_local_index() <= dof_index) &&
+//		(dof_index < physical_param_system.solution->last_local_index()) )
+//		{
+//			physical_param_system.solution->set(dof_index, inputMu[currentSubdomain]);
+//		}
+//
+//	}
+//
+//	physical_param_system.solution->close();
+//	physical_param_system.update();
 }

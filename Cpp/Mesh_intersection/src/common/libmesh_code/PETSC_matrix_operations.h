@@ -21,6 +21,9 @@ void lump_matrix(		libMesh::PetscMatrix<libMesh::Number>& matrixInput,
 void lump_matrix_and_invert(		libMesh::PetscMatrix<libMesh::Number>& matrixInput,
 									libMesh::PetscMatrix<libMesh::Number>& matrixOutput);
 
+void lump_matrix_and_invert(		libMesh::PetscMatrix<libMesh::Number>& matrixInput,
+									libMesh::PetscVector<libMesh::Number>& vecOutput);
+
 void print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix);
 
 void print_matrix_dim(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix);
