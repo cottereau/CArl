@@ -107,7 +107,8 @@ void Update_SubK(	libMesh::DenseSubMatrix<libMesh::Number>& SubK,
 					const unsigned int n_u_dofs,
 					const std::vector<libMesh::Real>& JxW,
 					libMesh::Number E,
-					libMesh::Number mu
+					libMesh::Number mu,
+					double cte
 					)
 {
 	for (unsigned int iii=0; iii<n_u_dofs; iii++)
@@ -118,7 +119,7 @@ void Update_SubK(	libMesh::DenseSubMatrix<libMesh::Number>& SubK,
 			{
 				for(unsigned int C_l=0; C_l<n_components; C_l++)
 				{
-					SubK(iii,jjj) += JxW[qp]*(eval_elasticity_tensor(C_i,C_j,C_k,C_l,E,mu) * dphi[iii][qp](C_j)*dphi[jjj][qp](C_l));
+					SubK(iii,jjj) += cte * JxW[qp]*(eval_elasticity_tensor(C_i,C_j,C_k,C_l,E,mu) * dphi[iii][qp](C_j)*dphi[jjj][qp](C_l));
 				}
 			}
 		}
@@ -130,10 +131,31 @@ void assemble_elasticity(libMesh::EquationSystems& es,
 {
 	libmesh_assert_equal_to(system_name, "Elasticity");
 
+	libMesh::PerfLog perf_log ("Matrix Assembly (Homogeneous elasticity)",MASTER_bPerfLog_assemble_fem);
+
+	perf_log.push("Preamble");
+
 	const libMesh::MeshBase& mesh = es.get_mesh();
 
 	const unsigned int dim = mesh.mesh_dimension();
 
+	// - Set up physical properties system ------------------------------------
+	libMesh::ExplicitSystem& physical_param_system = es.get_system<libMesh::ExplicitSystem>("PhysicalConstants");
+	const unsigned int young_var = physical_param_system.variable_number ("E");
+	const unsigned int mu_var = physical_param_system.variable_number ("mu");
+
+	const libMesh::DofMap& physical_dof_map = physical_param_system.get_dof_map();
+	std::vector<libMesh::dof_id_type> physical_dof_indices_var;
+
+	// The DoF and values of the physical system
+	const libMesh::Elem*  phys_elem   = *(mesh.active_local_elements_begin());
+	physical_dof_map.dof_indices(phys_elem, physical_dof_indices_var, young_var);
+	libMesh::Number localE = physical_param_system.current_solution(physical_dof_indices_var[0]);
+
+	physical_dof_map.dof_indices(phys_elem, physical_dof_indices_var, mu_var);
+	libMesh::Number localMu = physical_param_system.current_solution(physical_dof_indices_var[0]);
+
+	// - Set up elasticity system ---------------------------------------------
 	libMesh::LinearImplicitSystem& system = es.get_system<libMesh::LinearImplicitSystem>("Elasticity");
 
 	const unsigned int n_components = 3;
@@ -185,6 +207,7 @@ void assemble_elasticity(libMesh::EquationSystems& es,
 	libMesh::MeshBase::const_element_iterator       el     = mesh.active_local_elements_begin();
 	const libMesh::MeshBase::const_element_iterator end_el = mesh.active_local_elements_end();
 
+	perf_log.pop("Preamble");
 
 	// For each element
 	for ( ; el != end_el; ++el)
@@ -192,6 +215,7 @@ void assemble_elasticity(libMesh::EquationSystems& es,
 		// Get its pointer
 		const libMesh::Elem* elem = *el;
 
+		perf_log.push("Define DoF");
 		// The total DoF indices, and those associated to each variable
 		dof_map.dof_indices (elem, dof_indices);
 		dof_map.dof_indices (elem, dof_indices_u, u_var);
@@ -203,12 +227,15 @@ void assemble_elasticity(libMesh::EquationSystems& es,
 		const unsigned int n_v_dofs = dof_indices_v.size();
 		const unsigned int n_w_dofs = dof_indices_w.size();
 
+		perf_log.pop("Define DoF");
+
 		// Restart the FE to the "geometry" of the element
 		// -> Determines quadrature points, shape functions ...
 		// !!! User can change the points to be used (can use other mesh's points
 		//		instead of the quadrature points)
 		fe->reinit (elem);
 
+		perf_log.push("Matrix manipulations");
 		Ke.resize (n_dofs, n_dofs);
 		Fe.resize (n_dofs);
 
@@ -228,23 +255,27 @@ void assemble_elasticity(libMesh::EquationSystems& es,
 		Fu.reposition (u_var*n_u_dofs, n_u_dofs);
 		Fv.reposition (v_var*n_u_dofs, n_v_dofs);
 		Fw.reposition (w_var*n_u_dofs, n_w_dofs);
+		perf_log.push("Matrix manipulations");
 
 		// For each quadrature point determinate the sub-matrices elements
 		for (unsigned int qp=0; qp<qrule.n_points(); qp++)
 		{
 
+			perf_log.push("Rigidity","Matrix element calculations");
 			// Internal tension
-			Update_SubK(Kuu, qp, 0, 0, dphi, n_components, n_u_dofs, JxW);
-			Update_SubK(Kuv, qp, 0, 1, dphi, n_components, n_u_dofs, JxW);
-			Update_SubK(Kuw, qp, 0, 2, dphi, n_components, n_u_dofs, JxW);
+			Update_SubK(Kuu, qp, 0, 0, dphi, n_components, n_u_dofs, JxW, localE, localMu);
+			Update_SubK(Kuv, qp, 0, 1, dphi, n_components, n_u_dofs, JxW, localE, localMu);
+			Update_SubK(Kuw, qp, 0, 2, dphi, n_components, n_u_dofs, JxW, localE, localMu);
 
-			Update_SubK(Kvu, qp, 1, 0, dphi, n_components, n_u_dofs, JxW);
-			Update_SubK(Kvv, qp, 1, 1, dphi, n_components, n_u_dofs, JxW);
-			Update_SubK(Kvw, qp, 1, 2, dphi, n_components, n_u_dofs, JxW);
+			Update_SubK(Kvu, qp, 1, 0, dphi, n_components, n_u_dofs, JxW, localE, localMu);
+			Update_SubK(Kvv, qp, 1, 1, dphi, n_components, n_u_dofs, JxW, localE, localMu);
+			Update_SubK(Kvw, qp, 1, 2, dphi, n_components, n_u_dofs, JxW, localE, localMu);
 
-			Update_SubK(Kwu, qp, 2, 0, dphi, n_components, n_u_dofs, JxW);
-			Update_SubK(Kwv, qp, 2, 1, dphi, n_components, n_u_dofs, JxW);
-			Update_SubK(Kww, qp, 2, 2, dphi, n_components, n_u_dofs, JxW);
+			Update_SubK(Kwu, qp, 2, 0, dphi, n_components, n_u_dofs, JxW, localE, localMu);
+			Update_SubK(Kwv, qp, 2, 1, dphi, n_components, n_u_dofs, JxW, localE, localMu);
+			Update_SubK(Kww, qp, 2, 2, dphi, n_components, n_u_dofs, JxW, localE, localMu);
+
+			perf_log.pop("Rigidity","Matrix element calculations");
 
 			// Gravity
 			//		if(z_force)
@@ -257,10 +288,14 @@ void assemble_elasticity(libMesh::EquationSystems& es,
 		}
 
 		// Apply constraints
+		perf_log.push("Constraints","Matrix element calculations");
 		dof_map.heterogenously_constrain_element_matrix_and_vector(Ke, Fe, dof_indices);
+		perf_log.pop("Constraints","Matrix element calculations");
 
+		perf_log.push("Adding elements");
 		system.matrix->add_matrix (Ke, dof_indices);
 		system.rhs->add_vector    (Fe, dof_indices);
+		perf_log.pop("Adding elements");
 	}
 }
 
@@ -269,7 +304,7 @@ void assemble_elasticity_heterogeneous(libMesh::EquationSystems& es,
 {
 	libmesh_assert_equal_to (system_name, "Elasticity");
 
-	libMesh::PerfLog perf_log ("Matrix Assembly",MASTER_bPerfLog_assemble_fem);
+	libMesh::PerfLog perf_log ("Matrix Assembly (Heterogeneous elasticity)",MASTER_bPerfLog_assemble_fem);
 
 	perf_log.push("Preamble");
 	// Set up mesh
@@ -397,14 +432,14 @@ void assemble_elasticity_heterogeneous(libMesh::EquationSystems& es,
 		Fu.reposition (u_var*n_u_dofs, n_u_dofs);
 		Fv.reposition (v_var*n_u_dofs, n_v_dofs);
 		Fw.reposition (w_var*n_u_dofs, n_w_dofs);
-		perf_log.pop("Matrix manipulations");
+		perf_log.push("Matrix manipulations");
 
 		perf_log.push("Matrix element calculations");
 		// For each quadrature point determinate the sub-matrices elements
 		for (unsigned int qp=0; qp<qrule.n_points(); qp++)
 		{
 
-			perf_log.push("Matrix element calculations::Rigidity");
+			perf_log.push("Rigidity","Matrix element calculations");
 			// Internal tension
 			Update_SubK(Kuu, qp, 0, 0, dphi, n_components, n_u_dofs, JxW, localE, localMu);
 			Update_SubK(Kuv, qp, 0, 1, dphi, n_components, n_u_dofs, JxW, localE, localMu);
@@ -418,6 +453,7 @@ void assemble_elasticity_heterogeneous(libMesh::EquationSystems& es,
 			Update_SubK(Kwv, qp, 2, 1, dphi, n_components, n_u_dofs, JxW, localE, localMu);
 			Update_SubK(Kww, qp, 2, 2, dphi, n_components, n_u_dofs, JxW, localE, localMu);
 
+			perf_log.pop("Rigidity","Matrix element calculations");
 			// Gravity
 			//		if(z_force)
 			//		{
@@ -426,17 +462,383 @@ void assemble_elasticity_heterogeneous(libMesh::EquationSystems& es,
 			//				Fw(i) -= JxW[qp] * phi[i][qp];
 			//			  }
 			//		}
-			perf_log.pop("Matrix element calculations::Rigidity");
 		}
 
 
 
 		// Apply constraints
-		perf_log.push("Matrix element calculations::Constraints");
+		perf_log.push("Constraints","Matrix element calculations");
 		dof_map.heterogenously_constrain_element_matrix_and_vector(Ke, Fe, dof_indices);
-		perf_log.pop("Matrix element calculations::Constraints");
+		perf_log.pop("Constraints","Matrix element calculations");
 
-		perf_log.pop("Matrix element calculations");
+		perf_log.push("Adding elements");
+		system.matrix->add_matrix (Ke, dof_indices);
+		system.rhs->add_vector    (Fe, dof_indices);
+		perf_log.pop("Adding elements");
+	}
+}
+
+void assemble_elasticity_with_weight(	libMesh::EquationSystems& es,
+							const std::string& system_name,
+							carl::weight_parameter_function& weight_mask)
+{
+	libmesh_assert_equal_to(system_name, "Elasticity");
+
+	libMesh::PerfLog perf_log ("Matrix Assembly (Homogeneous elasticity)",MASTER_bPerfLog_assemble_fem);
+
+	perf_log.push("Preamble");
+
+	const libMesh::MeshBase& mesh = es.get_mesh();
+
+	const unsigned int dim = mesh.mesh_dimension();
+
+	// - Set up physical properties system ------------------------------------
+	libMesh::ExplicitSystem& physical_param_system = es.get_system<libMesh::ExplicitSystem>("PhysicalConstants");
+	const unsigned int young_var = physical_param_system.variable_number ("E");
+	const unsigned int mu_var = physical_param_system.variable_number ("mu");
+
+	const libMesh::DofMap& physical_dof_map = physical_param_system.get_dof_map();
+	std::vector<libMesh::dof_id_type> physical_dof_indices_var;
+
+	// The DoF and values of the physical system
+	const libMesh::Elem*  phys_elem   = *(mesh.active_local_elements_begin());
+	physical_dof_map.dof_indices(phys_elem, physical_dof_indices_var, young_var);
+	libMesh::Number localE = physical_param_system.current_solution(physical_dof_indices_var[0]);
+
+	physical_dof_map.dof_indices(phys_elem, physical_dof_indices_var, mu_var);
+	libMesh::Number localMu = physical_param_system.current_solution(physical_dof_indices_var[0]);
+
+	// - Set up elasticity system ---------------------------------------------
+	libMesh::LinearImplicitSystem& system = es.get_system<libMesh::LinearImplicitSystem>("Elasticity");
+
+	const unsigned int n_components = 3;
+	const unsigned int u_var = system.variable_number ("u");
+	const unsigned int v_var = system.variable_number ("v");
+	const unsigned int w_var = system.variable_number ("w");
+
+	const libMesh::DofMap& dof_map = system.get_dof_map();
+	libMesh::FEType fe_type = dof_map.variable_type(u_var);
+
+	// Set up pointers to FEBase's of dimension dim and FE type fe_type
+	// -> 3D elements
+	libMesh::AutoPtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
+	libMesh::QGauss qrule (dim, fe_type.default_quadrature_order());
+	fe->attach_quadrature_rule (&qrule);
+
+	// -> Faces
+	libMesh::AutoPtr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
+	libMesh::QGauss qface(dim-1, fe_type.default_quadrature_order());
+	fe_face->attach_quadrature_rule (&qface);
+
+	// Jacobian
+	const std::vector<libMesh::Real>& JxW = fe->get_JxW();
+
+	// Shape functions
+	const std::vector<std::vector<libMesh::Real> >& phi = fe->get_phi();
+
+	// Shape functions derivatives
+	const std::vector<std::vector<libMesh::RealGradient> >& dphi = fe->get_dphi();
+
+	// Quadrature points
+	const std::vector<libMesh::Point>& qp_points = fe->get_xyz();
+
+	// Weights for the Arlequin method
+	double alpha_BIG = 1;
+
+	libMesh::DenseMatrix<libMesh::Number> Ke;
+	libMesh::DenseVector<libMesh::Number> Fe;
+
+	libMesh::DenseSubMatrix<libMesh::Number>
+	Kuu(Ke), Kuv(Ke), Kuw(Ke),
+	Kvu(Ke), Kvv(Ke), Kvw(Ke),
+	Kwu(Ke), Kwv(Ke), Kww(Ke);
+
+	libMesh::DenseSubVector<libMesh::Number>
+	Fu(Fe),
+	Fv(Fe),
+	Fw(Fe);
+
+	std::vector<libMesh::dof_id_type> dof_indices;
+	std::vector<libMesh::dof_id_type> dof_indices_u;
+	std::vector<libMesh::dof_id_type> dof_indices_v;
+	std::vector<libMesh::dof_id_type> dof_indices_w;
+
+	libMesh::MeshBase::const_element_iterator       el     = mesh.active_local_elements_begin();
+	const libMesh::MeshBase::const_element_iterator end_el = mesh.active_local_elements_end();
+
+	perf_log.pop("Preamble");
+
+	// For each element
+	for ( ; el != end_el; ++el)
+	{
+		// Get its pointer
+		const libMesh::Elem* elem = *el;
+
+		perf_log.push("Define DoF");
+		// The total DoF indices, and those associated to each variable
+		dof_map.dof_indices (elem, dof_indices);
+		dof_map.dof_indices (elem, dof_indices_u, u_var);
+		dof_map.dof_indices (elem, dof_indices_v, v_var);
+		dof_map.dof_indices (elem, dof_indices_w, w_var);
+
+		const unsigned int n_dofs   = dof_indices.size();
+		const unsigned int n_u_dofs = dof_indices_u.size();
+		const unsigned int n_v_dofs = dof_indices_v.size();
+		const unsigned int n_w_dofs = dof_indices_w.size();
+
+		perf_log.pop("Define DoF");
+
+		// Restart the FE to the "geometry" of the element
+		// -> Determines quadrature points, shape functions ...
+		// !!! User can change the points to be used (can use other mesh's points
+		//		instead of the quadrature points)
+		fe->reinit (elem);
+
+		perf_log.push("Matrix manipulations");
+		Ke.resize (n_dofs, n_dofs);
+		Fe.resize (n_dofs);
+
+		// Set the positions of the sub-matrices
+		Kuu.reposition (u_var*n_u_dofs, u_var*n_u_dofs, n_u_dofs, n_u_dofs);
+		Kuv.reposition (u_var*n_u_dofs, v_var*n_u_dofs, n_u_dofs, n_v_dofs);
+		Kuw.reposition (u_var*n_u_dofs, w_var*n_u_dofs, n_u_dofs, n_w_dofs);
+
+		Kvu.reposition (v_var*n_u_dofs, u_var*n_u_dofs, n_v_dofs, n_u_dofs);
+		Kvv.reposition (v_var*n_u_dofs, v_var*n_u_dofs, n_v_dofs, n_v_dofs);
+		Kvw.reposition (v_var*n_u_dofs, w_var*n_u_dofs, n_v_dofs, n_w_dofs);
+
+		Kwu.reposition (w_var*n_u_dofs, u_var*n_u_dofs, n_w_dofs, n_u_dofs);
+		Kwv.reposition (w_var*n_u_dofs, v_var*n_u_dofs, n_w_dofs, n_v_dofs);
+		Kww.reposition (w_var*n_u_dofs, w_var*n_u_dofs, n_w_dofs, n_w_dofs);
+
+		Fu.reposition (u_var*n_u_dofs, n_u_dofs);
+		Fv.reposition (v_var*n_u_dofs, n_v_dofs);
+		Fw.reposition (w_var*n_u_dofs, n_w_dofs);
+		perf_log.push("Matrix manipulations");
+
+		// For each quadrature point determinate the sub-matrices elements
+		for (unsigned int qp=0; qp<qrule.n_points(); qp++)
+		{
+
+			perf_log.push("Rigidity","Matrix element calculations");
+			alpha_BIG = weight_mask.get_alpha_BIG(qp_points[qp]);
+
+			// Internal tension
+			Update_SubK(Kuu, qp, 0, 0, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_BIG);
+			Update_SubK(Kuv, qp, 0, 1, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_BIG);
+			Update_SubK(Kuw, qp, 0, 2, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_BIG);
+
+			Update_SubK(Kvu, qp, 1, 0, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_BIG);
+			Update_SubK(Kvv, qp, 1, 1, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_BIG);
+			Update_SubK(Kvw, qp, 1, 2, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_BIG);
+
+			Update_SubK(Kwu, qp, 2, 0, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_BIG);
+			Update_SubK(Kwv, qp, 2, 1, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_BIG);
+			Update_SubK(Kww, qp, 2, 2, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_BIG);
+
+			perf_log.pop("Rigidity","Matrix element calculations");
+
+			// Gravity
+			//		if(z_force)
+			//		{
+			//			for (unsigned int i=0; i<n_w_dofs; i++)
+			//			  {
+			//				Fw(i) -= JxW[qp] * phi[i][qp];
+			//			  }
+			//		}
+		}
+
+		// Apply constraints
+		perf_log.push("Constraints","Matrix element calculations");
+		dof_map.heterogenously_constrain_element_matrix_and_vector(Ke, Fe, dof_indices);
+		perf_log.pop("Constraints","Matrix element calculations");
+
+		perf_log.push("Adding elements");
+		system.matrix->add_matrix (Ke, dof_indices);
+		system.rhs->add_vector    (Fe, dof_indices);
+		perf_log.pop("Adding elements");
+	}
+}
+
+void assemble_elasticity_heterogeneous_with_weight(	libMesh::EquationSystems& es,
+							const std::string& system_name,
+							carl::weight_parameter_function& weight_mask)
+{
+	libmesh_assert_equal_to (system_name, "Elasticity");
+
+	libMesh::PerfLog perf_log ("Matrix Assembly (Heterogeneous elasticity)",MASTER_bPerfLog_assemble_fem);
+
+	perf_log.push("Preamble");
+	// Set up mesh
+	const libMesh::MeshBase& mesh = es.get_mesh();
+
+	const unsigned int dim = mesh.mesh_dimension();
+
+	// - Set up physical properties system ------------------------------------
+	libMesh::Number localE = -1;
+	libMesh::Number localMu = -1;
+
+	libMesh::ExplicitSystem& physical_param_system = es.get_system<libMesh::ExplicitSystem>("PhysicalConstants");
+	const unsigned int young_var = physical_param_system.variable_number ("E");
+	const unsigned int mu_var = physical_param_system.variable_number ("mu");
+
+	const libMesh::DofMap& physical_dof_map = physical_param_system.get_dof_map();
+	std::vector<libMesh::dof_id_type> physical_dof_indices_var;
+
+	// - Set up elasticity system ---------------------------------------------
+	libMesh::LinearImplicitSystem& system = es.get_system<libMesh::LinearImplicitSystem>("Elasticity");
+
+	const unsigned int n_components = 3;
+	const unsigned int u_var = system.variable_number ("u");
+	const unsigned int v_var = system.variable_number ("v");
+	const unsigned int w_var = system.variable_number ("w");
+
+	const libMesh::DofMap& dof_map = system.get_dof_map();
+	libMesh::FEType fe_type = dof_map.variable_type(u_var);
+
+	// Set up pointers to FEBase's of dimension dim and FE type fe_type
+	// -> 3D elements
+	libMesh::AutoPtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
+	libMesh::QGauss qrule (dim, fe_type.default_quadrature_order());
+	fe->attach_quadrature_rule (&qrule);
+
+	// -> Faces
+	libMesh::AutoPtr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
+	libMesh::QGauss qface(dim-1, fe_type.default_quadrature_order());
+	fe_face->attach_quadrature_rule (&qface);
+
+	// Jacobian
+	const std::vector<libMesh::Real>& JxW = fe->get_JxW();
+
+	// Shape functions
+	const std::vector<std::vector<libMesh::Real> >& phi = fe->get_phi();
+
+	// Shape functions derivatives
+	const std::vector<std::vector<libMesh::RealGradient> >& dphi = fe->get_dphi();
+
+	// Quadrature points
+	const std::vector<libMesh::Point>& qp_points = fe->get_xyz();
+
+	// Weights for the Arlequin method
+	double alpha_micro = 1;
+
+	libMesh::DenseMatrix<libMesh::Number> Ke;
+	libMesh::DenseVector<libMesh::Number> Fe;
+
+	libMesh::DenseSubMatrix<libMesh::Number>
+	Kuu(Ke), Kuv(Ke), Kuw(Ke),
+	Kvu(Ke), Kvv(Ke), Kvw(Ke),
+	Kwu(Ke), Kwv(Ke), Kww(Ke);
+
+	libMesh::DenseSubVector<libMesh::Number>
+	Fu(Fe),
+	Fv(Fe),
+	Fw(Fe);
+
+	std::vector<libMesh::dof_id_type> dof_indices;
+	std::vector<libMesh::dof_id_type> dof_indices_u;
+	std::vector<libMesh::dof_id_type> dof_indices_v;
+	std::vector<libMesh::dof_id_type> dof_indices_w;
+
+	libMesh::MeshBase::const_element_iterator       el     = mesh.active_local_elements_begin();
+	const libMesh::MeshBase::const_element_iterator end_el = mesh.active_local_elements_end();
+
+	perf_log.pop("Preamble");
+
+	// For each element
+	for ( ; el != end_el; ++el)
+	{
+		// Get its pointer
+		const libMesh::Elem* elem = *el;
+
+		perf_log.push("Define DoF");
+		// The total DoF indices, and those associated to each variable
+		dof_map.dof_indices (elem, dof_indices);
+		dof_map.dof_indices (elem, dof_indices_u, u_var);
+		dof_map.dof_indices (elem, dof_indices_v, v_var);
+		dof_map.dof_indices (elem, dof_indices_w, w_var);
+
+		const unsigned int n_dofs   = dof_indices.size();
+		const unsigned int n_u_dofs = dof_indices_u.size();
+		const unsigned int n_v_dofs = dof_indices_v.size();
+		const unsigned int n_w_dofs = dof_indices_w.size();
+
+		perf_log.pop("Define DoF");
+
+		perf_log.push("Define physical params");
+		// The DoF and values of the physical system
+		physical_dof_map.dof_indices(elem, physical_dof_indices_var, young_var);
+		localE = physical_param_system.current_solution(physical_dof_indices_var[0]);
+
+		physical_dof_map.dof_indices(elem, physical_dof_indices_var, mu_var);
+		localMu = physical_param_system.current_solution(physical_dof_indices_var[0]);
+		perf_log.pop("Define physical params");
+
+		// Restart the FE to the "geometry" of the element
+		// -> Determines quadrature points, shape functions ...
+		// !!! User can change the points to be used (can use other mesh's points
+		//		instead of the quadrature points)
+		fe->reinit (elem);
+
+		perf_log.push("Matrix manipulations");
+		Ke.resize (n_dofs, n_dofs);
+		Fe.resize (n_dofs);
+
+		// Set the positions of the sub-matrices
+		Kuu.reposition (u_var*n_u_dofs, u_var*n_u_dofs, n_u_dofs, n_u_dofs);
+		Kuv.reposition (u_var*n_u_dofs, v_var*n_u_dofs, n_u_dofs, n_v_dofs);
+		Kuw.reposition (u_var*n_u_dofs, w_var*n_u_dofs, n_u_dofs, n_w_dofs);
+
+		Kvu.reposition (v_var*n_u_dofs, u_var*n_u_dofs, n_v_dofs, n_u_dofs);
+		Kvv.reposition (v_var*n_u_dofs, v_var*n_u_dofs, n_v_dofs, n_v_dofs);
+		Kvw.reposition (v_var*n_u_dofs, w_var*n_u_dofs, n_v_dofs, n_w_dofs);
+
+		Kwu.reposition (w_var*n_u_dofs, u_var*n_u_dofs, n_w_dofs, n_u_dofs);
+		Kwv.reposition (w_var*n_u_dofs, v_var*n_u_dofs, n_w_dofs, n_v_dofs);
+		Kww.reposition (w_var*n_u_dofs, w_var*n_u_dofs, n_w_dofs, n_w_dofs);
+
+		Fu.reposition (u_var*n_u_dofs, n_u_dofs);
+		Fv.reposition (v_var*n_u_dofs, n_v_dofs);
+		Fw.reposition (w_var*n_u_dofs, n_w_dofs);
+		perf_log.push("Matrix manipulations");
+
+		perf_log.push("Matrix element calculations");
+		// For each quadrature point determinate the sub-matrices elements
+		for (unsigned int qp=0; qp<qrule.n_points(); qp++)
+		{
+
+			perf_log.push("Rigidity","Matrix element calculations");
+			// Internal tension
+			alpha_micro = weight_mask.get_alpha_micro(qp_points[qp]);
+
+			// Internal tension
+			Update_SubK(Kuu, qp, 0, 0, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_micro);
+			Update_SubK(Kuv, qp, 0, 1, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_micro);
+			Update_SubK(Kuw, qp, 0, 2, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_micro);
+
+			Update_SubK(Kvu, qp, 1, 0, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_micro);
+			Update_SubK(Kvv, qp, 1, 1, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_micro);
+			Update_SubK(Kvw, qp, 1, 2, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_micro);
+
+			Update_SubK(Kwu, qp, 2, 0, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_micro);
+			Update_SubK(Kwv, qp, 2, 1, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_micro);
+			Update_SubK(Kww, qp, 2, 2, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_micro);
+
+			perf_log.pop("Rigidity","Matrix element calculations");
+			// Gravity
+			//		if(z_force)
+			//		{
+			//			for (unsigned int i=0; i<n_w_dofs; i++)
+			//			  {
+			//				Fw(i) -= JxW[qp] * phi[i][qp];
+			//			  }
+			//		}
+		}
+
+		// Apply constraints
+		perf_log.push("Constraints","Matrix element calculations");
+		dof_map.heterogenously_constrain_element_matrix_and_vector(Ke, Fe, dof_indices);
+		perf_log.pop("Constraints","Matrix element calculations");
 
 		perf_log.push("Adding elements");
 		system.matrix->add_matrix (Ke, dof_indices);
@@ -636,7 +1038,11 @@ void set_physical_properties(libMesh::EquationSystems& es, std::string& physical
 
 		meanE += inputE[iii];
 		meanMu += inputMu[iii];
+
+		std::cout << inputMu[iii]*(inputE[iii] - 2*inputMu[iii])/(3*inputMu[iii]-inputE[iii]) << " " << inputMu[iii] << std::endl;
 	}
+	meanE /= NbOfSubdomains;
+	meanMu /= NbOfSubdomains;
 	physicalParamsIFS.close();
 
 	// Mesh pointer
@@ -687,6 +1093,9 @@ void set_physical_properties(libMesh::EquationSystems& es, std::string& physical
 
 	}
 
+
+
+
 	physical_param_system.solution->close();
 	physical_param_system.update();
 }
@@ -736,6 +1145,8 @@ void set_constant_physical_properties(libMesh::EquationSystems& es, double meanE
 		}
 
 	}
+
+	std::cout << meanMu*(meanE - 2*meanMu)/(3*meanMu-meanE) << " " << meanMu << std::endl;
 
 	physical_param_system.solution->close();
 	physical_param_system.update();

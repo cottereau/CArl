@@ -16,6 +16,13 @@
 namespace carl
 {
 
+void set_weight_function_domain_idx(	std::string &filename,
+										int& domain_Idx_BIG,
+										int& nb_of_domain_Idx_micro,
+										std::vector<int>& domain_Idx_micro,
+										std::vector<int>& domain_Idx_coupling
+										);
+
 void create_mesh_map(std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map);
 
 void build_mesh_map_Gmsh(std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map);

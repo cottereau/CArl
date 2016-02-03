@@ -15,64 +15,12 @@
 #include "weak_formulations.h"
 #include "LATIN_solver.h"
 #include "PETSC_matrix_operations.h"
+#include "weight_parameter_function.h"
 
 const bool MASTER_bPerfLog_assemble_coupling = false;
 
 namespace carl
 {
-
-class alpha_mask_locator
-{
-protected:
-	// Members
-	libMesh::PointLocatorTree m_alpha_mask_point_locator;
-
-	double m_alpha_eps;
-	int m_subdomain_idx_BIG;
-	int m_subdomain_idx_micro;
-	int m_subdomain_idx_coupling;
-
-	alpha_mask_locator();
-
-public:
-
-	// Constructor
-	alpha_mask_locator(	libMesh::Mesh& alpha_mesh, double alpha_eps,
-				int subdomain_idx_BIG, int subdomain_idx_micro, int subdomain_idx_coupling) :
-		m_alpha_mask_point_locator { libMesh::PointLocatorTree(alpha_mesh) },
-		m_alpha_eps { alpha_eps },
-		m_subdomain_idx_BIG { subdomain_idx_BIG },
-		m_subdomain_idx_micro { subdomain_idx_micro },
-		m_subdomain_idx_coupling { subdomain_idx_coupling }
-	{
-
-	};
-
-	alpha_mask_locator(	libMesh::Mesh& alpha_mesh ) :
-		m_alpha_mask_point_locator { libMesh::PointLocatorTree(alpha_mesh) },
-		m_alpha_eps { 10E-2 },
-		m_subdomain_idx_BIG { -1 },
-		m_subdomain_idx_micro { -1 },
-		m_subdomain_idx_coupling { -1 }
-	{
-
-	};
-
-	void set_parameters(double alpha_eps,
-						int subdomain_idx_BIG, int subdomain_idx_micro, int subdomain_idx_coupling)
-	{
-		m_alpha_eps = alpha_eps;
-		m_subdomain_idx_BIG  = subdomain_idx_BIG;
-		m_subdomain_idx_micro = subdomain_idx_micro;
-		m_subdomain_idx_coupling = subdomain_idx_coupling;
-	};
-
-	// Methods
-	void clear()
-	{
-		// Do nothing ... for now
-	};
-};
 
 class coupled_system
 {
@@ -91,7 +39,7 @@ protected:
 	std::map<std::string, libMesh::PetscMatrix<libMesh::Number>* > m_couplingMatrixMap_restrict_restrict;
 
 	// -> Point locators needed for the alpha masks
-	std::map<std::string, alpha_mask_locator* > m_alpha_masks;
+	std::map<std::string, weight_parameter_function* > m_alpha_masks;
 
 	// -> Bools for assembly of the systems
 	std::map<std::string, bool > m_bHasAssembled_micro;
@@ -99,7 +47,7 @@ protected:
 
 	typedef std::map<std::string, libMesh::EquationSystems* >::iterator EqSystem_iterator;
 	typedef std::map<std::string, libMesh::PetscMatrix<libMesh::Number>* >::iterator Matrix_iterator;
-	typedef std::map<std::string, alpha_mask_locator* >::iterator alpha_mask_iterator;
+	typedef std::map<std::string, weight_parameter_function* >::iterator alpha_mask_iterator;
 
 	// -> LATIN solver
 	PETSC_LATIN_solver m_LATIN_solver;
@@ -208,23 +156,37 @@ public:
 		return *EqSystemPtr;
 	};
 
-	void add_alpha_mask(const std::string& name, libMesh::Mesh& alpha_Mesh)
+	weight_parameter_function& add_alpha_mask(const std::string& name, libMesh::Mesh& alpha_Mesh)
 	{
+		weight_parameter_function * alpha_msk_Ptr = NULL;
+
 		if(!m_alpha_masks.count(name))
 		{
-			alpha_mask_locator * alpha_msk_Ptr = new alpha_mask_locator(alpha_Mesh);
+			alpha_msk_Ptr = new weight_parameter_function(alpha_Mesh);
 			m_alpha_masks.insert (std::make_pair(name, alpha_msk_Ptr));
 		}
 		else
 		{
 			std::cerr << " *** Warning: micro system " << name << " already has an alpha mask!" << std::endl;
+			alpha_msk_Ptr = m_alpha_masks[name];
 		}
+		return *alpha_msk_Ptr;
 	}
 
-	void set_alpha_mask_parameters(const std::string& name, double alpha_eps,
+	weight_parameter_function& get_alpha_mask(const std::string& name)
+	{
+		return * m_alpha_masks[name];
+	}
+
+	void set_alpha_mask_parameters(const std::string& name, double alpha_eps, double alpha_coupling_BIG,
 			int subdomain_idx_BIG, int subdomain_idx_micro, int subdomain_idx_coupling)
 	{
-		(m_alpha_masks[name])->set_parameters(alpha_eps,subdomain_idx_BIG,subdomain_idx_micro,subdomain_idx_coupling);
+		(m_alpha_masks[name])->set_parameters(alpha_eps,alpha_coupling_BIG,subdomain_idx_BIG,subdomain_idx_micro,subdomain_idx_coupling);
+	}
+
+	void set_alpha_mask_parameters(const std::string& name, int subdomain_idx_BIG, int subdomain_idx_micro, int subdomain_idx_coupling)
+	{
+		(m_alpha_masks[name])->set_parameters(10E-2,0.5,subdomain_idx_BIG,subdomain_idx_micro,subdomain_idx_coupling);
 	}
 
 	void clear();
@@ -251,11 +213,11 @@ public:
 
 	void set_LATIN_solver(const std::string micro_name, const std::string type_name);
 
-	void set_LATIN_solver(const std::string micro_name, const std::string type_name,
-													void fptr_BIG(		libMesh::EquationSystems& es,
-																		const std::string& name),
-													void fptr_micro(	libMesh::EquationSystems& es,
-																		const std::string& name));
+	void set_LATIN_solver(	const std::string micro_name, const std::string type_name,
+							void fptr_BIG(		libMesh::EquationSystems& es,
+												const std::string& name, weight_parameter_function& alpha_mask),
+							void fptr_micro(	libMesh::EquationSystems& es,
+												const std::string& name, weight_parameter_function& alpha_mask));
 
 	void solve_LATIN(const std::string micro_name, const std::string type_name);
 

@@ -11,6 +11,8 @@
 #include "common_header_libmesh.h"
 #include "common_functions.h"
 
+#include "weight_parameter_function.h"
+
 const bool MASTER_bPerfLog_assemble_fem = false;
 
 // Some classes and functions dealing with the boundary conditions
@@ -124,7 +126,8 @@ void Update_SubK(	libMesh::DenseSubMatrix<libMesh::Number>& SubK,
 					const unsigned int n_u_dofs,
 					const std::vector<libMesh::Real>& JxW,
 					libMesh::Number E = 1.0,
-					libMesh::Number mu = 0.4
+					libMesh::Number mu = 0.4,
+					double cte = 1
 					);
 
 void set_physical_properties(libMesh::EquationSystems& es, std::string& physicalParamsFile, double& meanE, double& meanMu);
@@ -136,6 +139,13 @@ void assemble_elasticity(libMesh::EquationSystems& es,
 
 void assemble_elasticity_heterogeneous(libMesh::EquationSystems& es,
 					   const std::string& system_name);
+
+void assemble_elasticity_with_weight(libMesh::EquationSystems& es,
+					   const std::string& system_name, carl::weight_parameter_function& weight_mask);
+
+void assemble_elasticity_heterogeneous_with_weight(libMesh::EquationSystems& es,
+					   const std::string& system_name, carl::weight_parameter_function& weight_mask);
+
 
 void compute_stresses(libMesh::EquationSystems& es);
 

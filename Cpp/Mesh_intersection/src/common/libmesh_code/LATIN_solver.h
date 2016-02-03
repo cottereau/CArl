@@ -382,29 +382,46 @@ public:
 		// Temporary solutions
 		libMesh::PetscVector<libMesh::Number> w_A(*m_comm, dim_R, dim_R_local);
 		libMesh::PetscVector<libMesh::Number> w_B(*m_comm, dim_R, dim_R_local);
+		w_A.zero();
+		w_B.zero();
 
 		libMesh::PetscVector<libMesh::Number> u_A(*m_comm, dim_A, dim_A_local);
 		libMesh::PetscVector<libMesh::Number> u_B(*m_comm, dim_B, dim_B_local);
+		u_A.zero();
+		u_B.zero();
 
 		// Effective forces
 		libMesh::PetscVector<libMesh::Number> f_eff_A(*m_comm, dim_A, dim_A_local);
 		libMesh::PetscVector<libMesh::Number> f_eff_B(*m_comm, dim_B, dim_B_local);
+		f_eff_A.zero();
+		f_eff_B.zero();
 
 		// Auxiliary vectors
 		libMesh::PetscVector<libMesh::Number> aux_A(*m_comm, dim_R, dim_R_local);
 		libMesh::PetscVector<libMesh::Number> aux_B(*m_comm, dim_R, dim_R_local);
+		aux_A.zero();
+		aux_B.zero();
 
 		libMesh::PetscVector<libMesh::Number> phi_cA(*m_comm, dim_R, dim_R_local);
 		libMesh::PetscVector<libMesh::Number> phi_cB(*m_comm, dim_R, dim_R_local);
+		phi_cA.zero();
+		phi_cB.zero();
 
 		libMesh::PetscVector<libMesh::Number> phi_dA(*m_comm, dim_R, dim_R_local);
 		libMesh::PetscVector<libMesh::Number> phi_dB(*m_comm, dim_R, dim_R_local);
+		phi_dA.zero();
+		phi_dB.zero();
 
 		libMesh::PetscVector<libMesh::Number> phi_diff_A(*m_comm, dim_R, dim_R_local);
 		libMesh::PetscVector<libMesh::Number> phi_diff_B(*m_comm, dim_R, dim_R_local);
+		phi_diff_A.zero();
+		phi_diff_B.zero();
 
 		libMesh::PetscVector<libMesh::Number> phi_sum_A(*m_comm, dim_R, dim_R_local);
 		libMesh::PetscVector<libMesh::Number> phi_sum_B(*m_comm, dim_R, dim_R_local);
+		phi_sum_A.zero();
+		phi_sum_B.zero();
+
 		perf_log.pop("Vector declarations","Initialization");
 
 		// Solvers
@@ -422,7 +439,9 @@ public:
 		// u_0,I = H_I^-1 * F_I (KSP SOLVER!)
 		perf_log.push("KSP solver","Initialization");
 		KSP_Solver_H_A.solve ( *m_H_A, m_sol_A, *m_F_A, m_KSP_A_eps, m_KSP_A_iter_max);
+		KSP_Solver_H_A.print_converged_reason();
 		KSP_Solver_H_B.solve ( *m_H_B, m_sol_B, *m_F_B, m_KSP_B_eps, m_KSP_B_iter_max);
+		KSP_Solver_H_B.print_converged_reason();
 		perf_log.pop("KSP solver","Initialization");
 
 		// w_0,I = P_I * u_0,I
@@ -434,8 +453,8 @@ public:
 		phi_dB.add(-m_k_dB,w_B);
 
 
-//		while (iter_eps > m_LATIN_conv_eps && iter_nb < m_LATIN_conv_max_n)
-		for(int iii = 0; iii < 5; ++iii)
+		while (iter_eps > m_LATIN_conv_eps && iter_nb < m_LATIN_conv_max_n)
+//		for(int iii = 0; iii < 5; ++iii)
 		{
 			// -> Coupled step
 			perf_log.push("Coupled iterations");
@@ -486,7 +505,9 @@ public:
 			perf_log.push("KSP solver","Decoupled - iterations");
 			// u_i,I = H_I^-1 * f_eff_i,I (KSP SOLVER!)
 			KSP_Solver_H_A.solve ( *m_H_A, u_A, f_eff_A, m_KSP_A_eps, m_KSP_A_iter_max);
+			KSP_Solver_H_A.print_converged_reason();
 			KSP_Solver_H_B.solve ( *m_H_B, u_B, f_eff_B, m_KSP_B_eps, m_KSP_B_iter_max);
+			KSP_Solver_H_B.print_converged_reason();
 			perf_log.pop("KSP solver","Decoupled - iterations");
 
 			// w_i,I = P_I * u_i,I

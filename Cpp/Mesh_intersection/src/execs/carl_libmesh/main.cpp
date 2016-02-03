@@ -1,55 +1,5 @@
 #include "main.h"
 
-
-//
-//// Some functions to set up variables and co.
-//libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
-//												libMesh::Order order = libMesh::FIRST,
-//												libMesh::FEFamily family = libMesh::LAGRANGE)
-//{
-//	libMesh::ExplicitSystem& physical_variables =
-//			input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
-//
-//	// Physical constants are set as constant, monomial
-//	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
-//	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
-//
-//	libMesh::LinearImplicitSystem& elasticity_system =
-//			input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
-//
-//	elasticity_system.add_variable("u", order, family);
-//	elasticity_system.add_variable("v", order, family);
-//	elasticity_system.add_variable("w", order, family);
-//
-//	return elasticity_system;
-//}
-//
-//// Some functions to set up variables and co.
-//libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
-//						void fptr(	libMesh::EquationSystems& es,
-//									const std::string& name),
-//						libMesh::Order order = libMesh::FIRST,
-//						libMesh::FEFamily family = libMesh::LAGRANGE)
-//{
-//	libMesh::ExplicitSystem& physical_variables =
-//			input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
-//
-//	// Physical constants are set as constant, monomial
-//	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
-//	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
-//
-//	libMesh::LinearImplicitSystem& elasticity_system =
-//			input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
-//
-//	elasticity_system.add_variable("u", order, family);
-//	elasticity_system.add_variable("v", order, family);
-//	elasticity_system.add_variable("w", order, family);
-//
-//	elasticity_system.attach_assemble_function(fptr);
-//
-//	return elasticity_system;
-//}
-
 int main (int argc, char** argv)
 {
 	/* To Do list --------------------------------------------------------------
@@ -173,15 +123,19 @@ int main (int argc, char** argv)
 	libMesh::Mesh mesh_micro(init.comm(), dim);
 	libMesh::Mesh mesh_restrict(init.comm(), dim);
 	libMesh::Mesh mesh_inter(init.comm(), dim);
+	libMesh::Mesh mesh_weight(init.comm(), dim);
 
 	std::string mesh_BIG_Filename;
 	std::string mesh_micro_Filename;
 	std::string mesh_restrict_Filename;
 	std::string mesh_inter_Filename;
+	std::string mesh_weight_Filename;
 
 	std::string equivalence_table_restrict_A_Filename;
 	std::string intersection_table_restrict_B_Filename;
 	std::string intersection_table_I_Filename;
+
+	std::string weight_domain_idx_Filename;
 
 	std::string extra_restrict_info = "";
 
@@ -203,12 +157,18 @@ int main (int argc, char** argv)
 	std::vector<std::pair<int,int> > intersection_table_restrict_B;
 	std::unordered_multimap<int,int> intersection_table_I;
 
-	bool using_same_mesh_restrict_A = false;
+	int domain_Idx_BIG = -1;
+	int nb_of_domain_Idx = 1;
+	std::vector<int> domain_Idx_micro;
+	std::vector<int> domain_Idx_coupling;
 
+	bool using_same_mesh_restrict_A = false;
 
 	if ( 	command_line.search(2, "--meshA", "-mA") &&
 			command_line.search(2, "--meshB", "-mB") &&
 			command_line.search(2, "--meshI", "-mI") &&
+			command_line.search(2, "--meshWeight", "-mW") &&
+			command_line.search(1, "--weightIdx") &&
 			command_line.search(1, "--tableB") &&
 			command_line.search(1, "--tableI"))
 	{
@@ -233,11 +193,24 @@ int main (int argc, char** argv)
 		mesh_inter.prepare_for_use();
 		carl::create_mesh_map(mesh_inter_Filename,mesh_inter_NodeMap,mesh_inter_ElemMap);
 
+		command_line.search(2, "--meshW", "-mW");
+		mesh_weight_Filename = command_line.next(mesh_weight_Filename);
+		libMesh::GmshIO meshBuffer_weight(mesh_weight);
+		meshBuffer_weight.read(mesh_weight_Filename);
+		mesh_weight.prepare_for_use();
+
 		command_line.search(1, "--tableB");
 		intersection_table_restrict_B_Filename = command_line.next(intersection_table_restrict_B_Filename);
 
 		command_line.search(1, "--tableI");
 		intersection_table_I_Filename = command_line.next(intersection_table_I_Filename);
+
+		command_line.search(1, "--weightIdx");
+		weight_domain_idx_Filename = command_line.next(weight_domain_idx_Filename);
+		carl::set_weight_function_domain_idx(	weight_domain_idx_Filename,
+												domain_Idx_BIG, nb_of_domain_Idx,
+												domain_Idx_micro, domain_Idx_coupling
+												);
 
 		if (command_line.search(2, "--meshR", "-mR") && command_line.search(1, "--tableA"))
 		{
@@ -356,18 +329,37 @@ int main (int argc, char** argv)
 
 		std::cout << "| Inter. table I  :" << std::endl;
 		std::cout << "|    filename     " << intersection_table_I_Filename << std::endl << std::endl;
+
+		std::cout << "| Mesh weight info :" << std::endl;
+		std::cout << "|    filename     " << mesh_weight_Filename << std::endl;
+		std::cout << "|    n_elem       " << mesh_weight.n_elem() << std::endl;
+		std::cout << "|    n_nodes      " << mesh_weight.n_nodes() << std::endl;
+		std::cout << "|    n_subdomains " << mesh_weight.n_subdomains() << " " << nb_of_domain_Idx << std::endl;
+		std::cout << "|    macro idx    " << domain_Idx_BIG << std::endl;
+		std::cout << "|    micro idx    ";
+		for(int iii = 0; iii < nb_of_domain_Idx; ++iii)
+		{
+			std::cout << domain_Idx_micro[iii] << " ";
+		}
+		std::cout << std::endl;
+		std::cout << "|    coupling idx ";
+		for(int iii = 0; iii < nb_of_domain_Idx; ++iii)
+		{
+			std::cout << domain_Idx_coupling[iii] << " ";
+		}
+		std::cout << std::endl << std::endl;
 	}
 	else
 	{
-		libmesh_error_msg("\n---> ERROR: Must give the three meshes and the intersection tables!\n");
+		libmesh_error_msg("\n---> ERROR: Must give the four meshes, the intersection tables and the weight domains files!\n");
 	}
 
 	// Generate the equation systems
 	carl::coupled_system CoupledTest(mesh_micro.comm());
 
-
 	libMesh::EquationSystems& equation_systems_inter =
 					CoupledTest.add_inter_EquationSystem("InterSys", mesh_inter);
+
 
 	// - Build the BIG system --------------------------------------------------
 
@@ -378,7 +370,7 @@ int main (int argc, char** argv)
 
 	// [MACRO] Set up the physical properties
 	libMesh::LinearImplicitSystem& elasticity_system_BIG
-										= add_elasticity_with_assemble(equation_systems_BIG,assemble_elasticity_heterogeneous);
+										= add_elasticity(equation_systems_BIG);
 
 	// [MACRO] Defining the boundaries with Dirichlet conditions
 	set_x_displacement(elasticity_system_BIG, x_max_BIG,boundary_ids);
@@ -401,10 +393,10 @@ int main (int argc, char** argv)
 
 	// [MICRO] Set up the physical properties
 	libMesh::LinearImplicitSystem& elasticity_system_micro
-										= add_elasticity_with_assemble(equation_systems_micro,assemble_elasticity_heterogeneous);
+										= add_elasticity(equation_systems_micro);
 
-	// [MICRO] Defining the boundaries with Dirichlet conditions
-	set_x_displacement(elasticity_system_micro, x_max_micro,boundary_ids);
+	// [MACRO] Defining the boundaries with Dirichlet conditions
+	set_x_displacement(elasticity_system_micro, x_max_BIG,boundary_ids);
 
 	// [MICRO] Build stress system
 	libMesh::ExplicitSystem& stress_system_micro
@@ -412,9 +404,18 @@ int main (int argc, char** argv)
 
 	equation_systems_micro.init();
 
+	// [MICRO] Add the weight function mesh
+	carl::weight_parameter_function& sillyalphas = CoupledTest.add_alpha_mask("MicroSys",mesh_weight);
+	CoupledTest.set_alpha_mask_parameters("MicroSys",domain_Idx_BIG,domain_Idx_micro[0],domain_Idx_coupling[0]);
+
+//	libMesh::Point pointA(1.5,0,0);
+//	libMesh::Point pointB(0.9,0,0);
+//	libMesh::Point pointC(0.5,0,0);
+//
+//	std::cout << sillyalphas.get_alpha_BIG(pointA) << " " << sillyalphas.get_alpha_BIG(pointB) << " " << sillyalphas.get_alpha_BIG(pointC) << std::endl;
+//	std::cout << sillyalphas.get_alpha_micro(pointA) << " " << sillyalphas.get_alpha_micro(pointB) << " " << sillyalphas.get_alpha_micro(pointC) << std::endl;
+
 	perf_log.pop("System initialization - micro");
-
-
 
 	// - Build the restrict system --------------------------------------------------
 
@@ -428,8 +429,6 @@ int main (int argc, char** argv)
 
 	equation_systems_restrict.init();
 	perf_log.pop("System initialization - restrict");
-
-
 
 	// - Build the dummy inter system ------------------------------------------
 
@@ -460,65 +459,61 @@ int main (int argc, char** argv)
 	 set_constant_physical_properties(equation_systems_BIG,BIG_E,BIG_Mu);
 	 perf_log.pop("Physical properties - macro");
 
-//	// [MICRO] Solve
-//	perf_log.push("Solve - micro");
-//	elasticity_system_micro.solve();
-//	perf_log.pop("Solve - micro");
-//
-//	// [MICRO] Calculate stress
-//	perf_log.push("Compute stress - micro");
-//	compute_stresses(equation_systems_micro);
-//	perf_log.pop("Compute stress - micro");
-//
-//	// [MICRO] Export solution
-//#ifdef LIBMESH_HAVE_EXODUS_API
-//
-//	libMesh::ExodusII_IO exo_io_micro(mesh_micro, /*single_precision=*/true);
-//
-//	std::set<std::string> system_names_micro;
-//	system_names_micro.insert("Elasticity");
-//	exo_io_micro.write_equation_systems(outputEXOFile_micro.c_str(),equation_systems_micro,&system_names_micro);
-//
-//	exo_io_micro.write_element_data(equation_systems_micro);
-//
-//#endif
-//
-//	// [MACRO] Solve
-//	perf_log.push("Solve - macro");
-//	elasticity_system_BIG.solve();
-//	perf_log.pop("Solve - macro");
-//
-//	// [MACRO] Calculate stress
-//	perf_log.push("Compute stress - macro");
-//	compute_stresses(equation_systems_BIG);
-//	perf_log.pop("Compute stress - macro");
-//
-//	// [MACRO] Export solution
-//#ifdef LIBMESH_HAVE_EXODUS_API
-//
-//	libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
-//
-//	std::set<std::string> system_names_BIG;
-//	system_names_BIG.insert("Elasticity");
-//	exo_io_BIG.write_equation_systems(outputEXOFile_BIG.c_str(),equation_systems_BIG,&system_names_BIG);
-//
-//	exo_io_BIG.write_element_data(equation_systems_BIG);
-//
-//#endif
-
 	CoupledTest.print_matrix_micro_info("MicroSys");
 	CoupledTest.print_matrix_BIG_info("MicroSys");
 	CoupledTest.print_matrix_restrict_info("MicroSys");
 
 	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
 	perf_log.push("Set up","LATIN Solver:");
-//	CoupledTest.set_LATIN_solver("MicroSys","Elasticity");
-	CoupledTest.set_LATIN_solver("MicroSys","Elasticity",assemble_elasticity,assemble_elasticity_heterogeneous);
+	CoupledTest.set_LATIN_solver("MicroSys","Elasticity",assemble_elasticity_with_weight,assemble_elasticity_heterogeneous_with_weight);
 	perf_log.pop("Set up","LATIN Solver:");
 
+//	// [MICRO] Solve
+//	perf_log.push("Solve - micro");
+//	elasticity_system_micro.assemble_before_solve = false;
+//	elasticity_system_micro.solve();
+//	perf_log.pop("Solve - micro");
+//
+//	// [MACRO] Solve
+//	perf_log.push("Solve - macro");
+//	elasticity_system_BIG.assemble_before_solve = false;
+//	elasticity_system_BIG.solve();
+//	perf_log.pop("Solve - macro");
+
+	// Solve !
 	perf_log.push("Solve","LATIN Solver:");
 	CoupledTest.solve_LATIN("MicroSys","Elasticity");
 	perf_log.pop("Solve","LATIN Solver:");
+
+	// Calculate stress
+	perf_log.push("Compute stress - micro");
+	compute_stresses(equation_systems_micro);
+	perf_log.pop("Compute stress - micro");
+
+	perf_log.push("Compute stress - macro");
+	compute_stresses(equation_systems_BIG);
+	perf_log.pop("Compute stress - macro");
+
+	// Export solution
+#ifdef LIBMESH_HAVE_EXODUS_API
+
+	libMesh::ExodusII_IO exo_io_micro(mesh_micro, /*single_precision=*/true);
+
+	std::set<std::string> system_names_micro;
+	system_names_micro.insert("Elasticity");
+	exo_io_micro.write_equation_systems(outputEXOFile_micro.c_str(),equation_systems_micro,&system_names_micro);
+
+	exo_io_micro.write_element_data(equation_systems_micro);
+
+	libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
+
+	std::set<std::string> system_names_BIG;
+	system_names_BIG.insert("Elasticity");
+	exo_io_BIG.write_equation_systems(outputEXOFile_BIG.c_str(),equation_systems_BIG,&system_names_BIG);
+
+	exo_io_BIG.write_element_data(equation_systems_BIG);
+
+#endif
 
 	return 0;
 }

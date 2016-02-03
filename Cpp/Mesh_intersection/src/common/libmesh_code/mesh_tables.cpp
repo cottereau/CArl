@@ -1,5 +1,55 @@
 #include "mesh_tables.h"
 
+void carl::set_weight_function_domain_idx(	std::string &filename,
+										int& domain_Idx_BIG,
+										int& nb_of_domain_Idx,
+										std::vector<int>& domain_Idx_micro,
+										std::vector<int>& domain_Idx_coupling
+										)
+{
+	std::ifstream dataF(filename);
+
+	// Buffer string
+	std::string bufferLine;
+	std::stringstream	dataBuffer;
+	int dummy_int = -1;
+
+	// Read info until the file ends
+	while(std::getline(dataF,bufferLine))
+	{
+		if(bufferLine.compare("$MacroDomainIdx")==0)
+		{
+			dataF >> domain_Idx_BIG;
+		}
+
+		if(bufferLine.compare("$NbOfMicroDomainIdx")==0)
+		{
+			dataF >> nb_of_domain_Idx;
+
+			domain_Idx_micro.resize(nb_of_domain_Idx);
+			domain_Idx_coupling.resize(nb_of_domain_Idx);
+		}
+
+		if(bufferLine.compare("$MicroDomainIdxs")==0)
+		{
+			for(int iii = 0; iii < nb_of_domain_Idx; ++iii )
+			{
+				dataF >> domain_Idx_micro[iii];
+			}
+		}
+
+		if(bufferLine.compare("$CouplingDomainIdxs")==0)
+		{
+			for(int iii = 0; iii < nb_of_domain_Idx; ++iii )
+			{
+				dataF >> domain_Idx_coupling[iii];
+			}
+		}
+	}
+
+	dataF.close();
+}
+
 void carl::create_mesh_map(std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map)
 {
 	/*
