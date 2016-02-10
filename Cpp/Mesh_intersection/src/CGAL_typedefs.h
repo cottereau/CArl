@@ -66,6 +66,7 @@ struct FaceInfo
 
 struct CellInfo
 {
+	int InternalIndex;
 	int ExtIndex;
 	int IntersectionIndex;
 	std::vector<int> faceHasNeighbour;

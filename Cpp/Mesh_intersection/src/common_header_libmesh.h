@@ -18,6 +18,7 @@
 #include "libmesh/linear_implicit_system.h"
 #include "libmesh/equation_systems.h"
 #include "libmesh/fe.h"
+#include "libmesh/fe_interface.h"
 #include "libmesh/quadrature_gauss.h"
 #include "libmesh/dof_map.h"
 #include "libmesh/sparse_matrix.h"
