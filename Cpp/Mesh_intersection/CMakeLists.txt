@@ -44,6 +44,7 @@ endif()
 
 message(STATUS "${CMAKE_MODULE_PATH}")
 message(STATUS "${CGAL_LIBRARIES}")
+message(STATUS "${CGAL_VERSION}")
 
 # libmesh commands
 execute_process(COMMAND libmesh-config --cppflags OUTPUT_VARIABLE LIBMESH_CPPFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)

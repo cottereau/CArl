@@ -479,6 +479,7 @@ int main (int argc, char** argv)
 
 	std::set<std::string> system_names_micro;
 	system_names_micro.insert("Elasticity");
+	system_names_micro.insert("Stress");
 	exo_io_micro.write_equation_systems(outputEXOFile_micro.c_str(),equation_systems_micro,&system_names_micro);
 
 	exo_io_micro.write_element_data(equation_systems_micro);
@@ -487,6 +488,7 @@ int main (int argc, char** argv)
 
 	std::set<std::string> system_names_BIG;
 	system_names_BIG.insert("Elasticity");
+	system_names_BIG.insert("Stress");
 	exo_io_BIG.write_equation_systems(outputEXOFile_BIG.c_str(),equation_systems_BIG,&system_names_BIG);
 
 	exo_io_BIG.write_element_data(equation_systems_BIG);

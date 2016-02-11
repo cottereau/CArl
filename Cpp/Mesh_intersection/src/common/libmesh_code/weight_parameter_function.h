@@ -15,7 +15,7 @@ class weight_parameter_function
 {
 protected:
 	// Members
-	mutable libMesh::UniquePtr<libMesh::PointLocatorBase>  m_alpha_mask_point_locator_Ptr;
+	const libMesh::PointLocatorBase& m_locator;
 
 	double m_alpha_eps;
 	double m_alpha_coupling_BIG;
@@ -36,10 +36,15 @@ public:
 		m_alpha_coupling_micro { 1. - alpha_coupling_BIG },
 		m_subdomain_idx_BIG { subdomain_idx_BIG },
 		m_subdomain_idx_micro { subdomain_idx_micro },
-		m_subdomain_idx_coupling { subdomain_idx_coupling }
+		m_subdomain_idx_coupling { subdomain_idx_coupling },
+		m_locator { alpha_mesh.point_locator() }
 	{
-		m_alpha_mask_point_locator_Ptr = libMesh::PointLocatorBase::build(libMesh::TREE,alpha_mesh);
 	};
+
+	~weight_parameter_function()
+	{
+		clear();
+	}
 
 	weight_parameter_function(	libMesh::Mesh& alpha_mesh ) :
 		m_alpha_eps { 10E-2 },
@@ -47,9 +52,9 @@ public:
 		m_alpha_coupling_micro { 0.5 },
 		m_subdomain_idx_BIG { -1 },
 		m_subdomain_idx_micro { -1 },
-		m_subdomain_idx_coupling { -1 }
+		m_subdomain_idx_coupling { -1 },
+		m_locator { alpha_mesh.point_locator() }
 	{
-		m_alpha_mask_point_locator_Ptr = libMesh::PointLocatorBase::build(libMesh::TREE,alpha_mesh);
 	};
 
 	void set_parameters(double alpha_eps, double alpha_coupling_BIG,
@@ -65,8 +70,7 @@ public:
 
 	double get_alpha_BIG(const libMesh::Point& qpoint)
 	{
-		libMesh::PointLocatorBase& locator = *m_alpha_mask_point_locator_Ptr.get();
-		const libMesh::Elem* elem = locator(qpoint);
+		const libMesh::Elem* elem = m_locator(qpoint);
 		double output = 0;
 
 		if(elem->subdomain_id() == m_subdomain_idx_BIG)
@@ -87,8 +91,7 @@ public:
 
 	double get_alpha_micro(const libMesh::Point& qpoint)
 	{
-		libMesh::PointLocatorBase& locator = *m_alpha_mask_point_locator_Ptr.get();
-		const libMesh::Elem* elem = locator(qpoint);
+		const libMesh::Elem* elem = m_locator(qpoint);
 		double output = 0;
 
 		if(elem->subdomain_id() == m_subdomain_idx_BIG)
@@ -110,13 +113,10 @@ public:
 	// Methods
 	void clear()
 	{
-		m_alpha_mask_point_locator_Ptr.reset(NULL);
 		// Nothing to do ... for now
 	};
 };
 
 }
-
-
 
 #endif /* COMMON_LIBMESH_CODE_WEIGHT_PARAMETER_FUNCTION_H_ */

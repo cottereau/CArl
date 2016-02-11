@@ -82,15 +82,16 @@ void carl::coupled_system::clear()
 		m_couplingMatrixMap_restrict_restrict.erase(toClean);
 	}
 
-	while(!m_alpha_masks.empty())
-	{
-		alpha_mask_iterator toClean = m_alpha_masks.begin();
+	// TODO : for some reason, the code doesn't complain of a leak here ...
+	//        -> CHECK IT!
 
-		weight_parameter_function *alpha = toClean->second;
-		alpha->clear();
-		delete alpha;
-		alpha = NULL;
-	}
+//	while(!m_alpha_masks.empty())
+//	{
+//		alpha_mask_iterator toClean = m_alpha_masks.begin();
+//
+//		weight_parameter_function *alpha = toClean->second;
+//		delete alpha;
+//	}
 };
 
 void carl::coupled_system::set_corrected_shapes(	const std::vector<std::vector<libMesh::Real> >& 	lambda_weights,
@@ -312,7 +313,11 @@ void carl::coupled_system::solve_LATIN(const std::string micro_name, const std::
 
 	// Set the solutions!
 	*(Sys_BIG.solution) = sol_BIG;
+	Sys_BIG.solution->close();
+	Sys_BIG.update();
 	*(Sys_micro.solution) = sol_micro;
+	Sys_BIG.solution->close();
+	Sys_BIG.update();
 }
 
 void carl::coupled_system::print_matrix_BIG_info(const std::string& name)
