@@ -1,15 +1,26 @@
 cl__1 = 1;
-L = 2.0;
-w = 0.1;
+Lx = 4.0;
+Ly = 2.0;
+Lz = 2.0;
 
-Point(1) = {-L/2, -L/2, -L/2, w};
-Point(2) = {L/2, -L/2, -L/2, w};
-Point(3) = {-L/2, L/2, -L/2, w};
-Point(4) = {-L/2, -L/2, L/2, w};
-Point(5) = {-L/2, L/2, L/2, w};
-Point(6) = {L/2, -L/2, L/2, w};
-Point(7) = {L/2, L/2, -L/2, w};
-Point(8) = {L/2, L/2, L/2, w};
+xt = 3.0;
+yt = 0.0;
+zt = 0.0;
+
+divx= 3;
+divy = 2;
+divz = 2;
+
+w = 10;
+
+Point(1) = {-Lx/2 + xt, -Ly/2 + yt, -Lz/2 + zt, w};
+Point(2) = { Lx/2 + xt, -Ly/2 + yt, -Lz/2 + zt, w};
+Point(3) = {-Lx/2 + xt,  Ly/2 + yt, -Lz/2 + zt, w};
+Point(4) = {-Lx/2 + xt, -Ly/2 + yt,  Lz/2 + zt, w};
+Point(5) = {-Lx/2 + xt,  Ly/2 + yt,  Lz/2 + zt, w};
+Point(6) = { Lx/2 + xt, -Ly/2 + yt,  Lz/2 + zt, w};
+Point(7) = { Lx/2 + xt,  Ly/2 + yt, -Lz/2 + zt, w};
+Point(8) = { Lx/2 + xt,  Ly/2 + yt,  Lz/2 + zt, w};
 
 Line(1) = {4, 6};
 Line(2) = {6, 8};
@@ -23,6 +34,10 @@ Line(9) = {7, 2};
 Line(10) = {5, 3};
 Line(11) = {3, 1};
 Line(12) = {7, 3};
+
+Transfinite Line {8, 12, 6, 1, 3} = divx Using Progression 1;
+Transfinite Line {2, 4, 9, 11} = divy Using Progression 1;
+Transfinite Line {8, 7, 5, 10} = divz Using Progression 1;
 
 Line Loop(14) = {2, 8, 9, 7};
 Plane Surface(14) = {14};

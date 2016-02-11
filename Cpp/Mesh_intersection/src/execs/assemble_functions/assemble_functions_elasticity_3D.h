@@ -149,6 +149,8 @@ void assemble_elasticity_heterogeneous_with_weight(libMesh::EquationSystems& es,
 
 void compute_stresses(libMesh::EquationSystems& es);
 
+libMesh::Real eval_lambda_1(libMesh::Real E, libMesh::Real mu);
+
 libMesh::Real eval_elasticity_tensor(unsigned int i,
 						  unsigned int j,
 						  unsigned int k,

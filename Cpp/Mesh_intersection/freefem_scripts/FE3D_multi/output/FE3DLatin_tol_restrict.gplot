@@ -1,0 +1,12 @@
+set term eps
+set output "output/CArl_tol_lumping.eps" 
+set title "LATIN tolerance (lumping)"
+set xrange [1:]
+set xlabel "Iteration"
+set ylabel "Tolerance"
+plot "output/FE3DLatin_tol_lumping_restrict.dat" w lp lc 1 notitle
+set output "output/CArl_tol_lumping_zoom_restrict.eps" 
+set title "LATIN tolerance (lumping - zoom)"
+set xrange [1:10]
+replot
+quit

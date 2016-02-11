@@ -55,7 +55,7 @@ int main (int argc, char** argv)
 	 * 				-> The only "serial" part of it is defined by the element
 	 * 				   index tables, so it should be easy to paralellize it.
 	 *
-	 *		TODO :  Implement the alpha mask reading
+	 *		DONE :  Implement the alpha mask reading
 	 *
 	 *		DONE :  Run examples with the multi-crystal case
 	 *
@@ -81,8 +81,6 @@ int main (int argc, char** argv)
 
 	// - Displacement conditions ----------------------------------------------
 	boundary_displacement x_max_BIG(0.5,0,0);
-	boundary_displacement x_max_micro(0.5,0,0);
-
 	boundary_id_cube boundary_ids;
 
 	// - Get inputs and set variables
@@ -108,15 +106,14 @@ int main (int argc, char** argv)
 	std::string outputEXOFile_micro = "meshes/3D/output/carl_multi_crystal_test_micro.exo";
 	std::string outputEXOFile_BIG  = "meshes/3D/output/carl_multi_crystal_test_macro.exo";
 
-//	if ( command_line.search(1, "-o","--output") )
-//	{
-//		outputEXOFile_micro = command_line.next(outputEXOFile_micro);
-//		outputEXOFile_micro = command_line.next(outputEXOFile_micro);
-//	}
-//	else
-//	{
-//		outputEXOFile_micro = "meshes/3D/output/carl_multi_crystal_test_micro.exo";
-//	}
+	if ( command_line.search(2, "-oA","--outputA") )
+	{
+		outputEXOFile_BIG = command_line.next(outputEXOFile_BIG);
+	}
+	if ( command_line.search(2, "-oB","--outputB") )
+	{
+		outputEXOFile_micro = command_line.next(outputEXOFile_micro);
+	}
 
 	// Set meshes
 	libMesh::Mesh mesh_BIG(init.comm(), dim);
@@ -380,9 +377,8 @@ int main (int argc, char** argv)
 										= add_stress(equation_systems_BIG);
 
 	equation_systems_BIG.init();
+
 	perf_log.pop("System initialization - BIG");
-
-
 
 	// - Build the micro system ------------------------------------------------
 
@@ -395,9 +391,6 @@ int main (int argc, char** argv)
 	libMesh::LinearImplicitSystem& elasticity_system_micro
 										= add_elasticity(equation_systems_micro);
 
-	// [MACRO] Defining the boundaries with Dirichlet conditions
-	set_x_displacement(elasticity_system_micro, x_max_BIG,boundary_ids);
-
 	// [MICRO] Build stress system
 	libMesh::ExplicitSystem& stress_system_micro
 										= add_stress(equation_systems_micro);
@@ -407,13 +400,6 @@ int main (int argc, char** argv)
 	// [MICRO] Add the weight function mesh
 	carl::weight_parameter_function& sillyalphas = CoupledTest.add_alpha_mask("MicroSys",mesh_weight);
 	CoupledTest.set_alpha_mask_parameters("MicroSys",domain_Idx_BIG,domain_Idx_micro[0],domain_Idx_coupling[0]);
-
-//	libMesh::Point pointA(1.5,0,0);
-//	libMesh::Point pointB(0.9,0,0);
-//	libMesh::Point pointC(0.5,0,0);
-//
-//	std::cout << sillyalphas.get_alpha_BIG(pointA) << " " << sillyalphas.get_alpha_BIG(pointB) << " " << sillyalphas.get_alpha_BIG(pointC) << std::endl;
-//	std::cout << sillyalphas.get_alpha_micro(pointA) << " " << sillyalphas.get_alpha_micro(pointB) << " " << sillyalphas.get_alpha_micro(pointC) << std::endl;
 
 	perf_log.pop("System initialization - micro");
 
@@ -428,6 +414,7 @@ int main (int argc, char** argv)
 										= add_elasticity(equation_systems_restrict);
 
 	equation_systems_restrict.init();
+
 	perf_log.pop("System initialization - restrict");
 
 	// - Build the dummy inter system ------------------------------------------
@@ -438,7 +425,19 @@ int main (int argc, char** argv)
 										= add_elasticity(equation_systems_inter);
 
 	equation_systems_inter.init();
+
 	perf_log.pop("System initialization - inter");
+
+	perf_log.push("Physical properties - micro");
+	double BIG_E = 0;
+	double BIG_Mu = 0;
+	double mean_distance = 0.2;
+	set_physical_properties(equation_systems_micro,physicalParamsFile,BIG_E,BIG_Mu);
+	perf_log.pop("Physical properties - micro");
+
+	perf_log.push("Physical properties - macro");
+	set_constant_physical_properties(equation_systems_BIG,BIG_E,BIG_Mu);
+	perf_log.pop("Physical properties - macro");
 
 	perf_log.push("Build elasticity couplings");
 	CoupledTest.assemble_coupling_elasticity_3D(	"BigSys","MicroSys",
@@ -446,18 +445,9 @@ int main (int argc, char** argv)
 													equivalence_table_restrict_A,
 													intersection_table_restrict_B,
 													intersection_table_I,
+													eval_lambda_1(BIG_E,BIG_Mu)/(mean_distance*mean_distance),
 													using_same_mesh_restrict_A);
 	perf_log.pop("Build elasticity couplings");
-
-	 perf_log.push("Physical properties - micro");
-	 double BIG_E = 0;
-	 double BIG_Mu = 0;
-	 set_physical_properties(equation_systems_micro,physicalParamsFile,BIG_E,BIG_Mu);
-	 perf_log.pop("Physical properties - micro");
-
-	 perf_log.push("Physical properties - macro");
-	 set_constant_physical_properties(equation_systems_BIG,BIG_E,BIG_Mu);
-	 perf_log.pop("Physical properties - macro");
 
 	CoupledTest.print_matrix_micro_info("MicroSys");
 	CoupledTest.print_matrix_BIG_info("MicroSys");
@@ -467,18 +457,6 @@ int main (int argc, char** argv)
 	perf_log.push("Set up","LATIN Solver:");
 	CoupledTest.set_LATIN_solver("MicroSys","Elasticity",assemble_elasticity_with_weight,assemble_elasticity_heterogeneous_with_weight);
 	perf_log.pop("Set up","LATIN Solver:");
-
-//	// [MICRO] Solve
-//	perf_log.push("Solve - micro");
-//	elasticity_system_micro.assemble_before_solve = false;
-//	elasticity_system_micro.solve();
-//	perf_log.pop("Solve - micro");
-//
-//	// [MACRO] Solve
-//	perf_log.push("Solve - macro");
-//	elasticity_system_BIG.assemble_before_solve = false;
-//	elasticity_system_BIG.solve();
-//	perf_log.pop("Solve - macro");
 
 	// Solve !
 	perf_log.push("Solve","LATIN Solver:");

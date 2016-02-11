@@ -354,14 +354,5 @@ int main (int argc, char** argv)
 	CoupledTest.print_matrix_BIG_info("MicroSys");
 	CoupledTest.print_matrix_restrict_info("MicroSys");
 
-	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
-	perf_log.push("Set up","LATIN Solver:");
-	CoupledTest.set_LATIN_solver("MicroSys","Elasticity");
-	perf_log.pop("Set up","LATIN Solver:");
-
-	perf_log.push("Solve","LATIN Solver:");
-	CoupledTest.solve_LATIN("MicroSys","Elasticity");
-	perf_log.pop("Solve","LATIN Solver:");
-
 	return 0;
 }

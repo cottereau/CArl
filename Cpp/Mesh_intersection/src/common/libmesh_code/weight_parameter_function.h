@@ -15,7 +15,7 @@ class weight_parameter_function
 {
 protected:
 	// Members
-	libMesh::UniquePtr<libMesh::PointLocatorBase>  m_alpha_mask_point_locator_Ptr;
+	mutable libMesh::UniquePtr<libMesh::PointLocatorBase>  m_alpha_mask_point_locator_Ptr;
 
 	double m_alpha_eps;
 	double m_alpha_coupling_BIG;
@@ -31,7 +31,6 @@ public:
 	weight_parameter_function(	libMesh::Mesh& alpha_mesh, double alpha_eps,
 						double alpha_coupling_BIG,
 						int subdomain_idx_BIG, int subdomain_idx_micro, int subdomain_idx_coupling) :
-		m_alpha_mask_point_locator_Ptr { NULL },
 		m_alpha_eps { alpha_eps },
 		m_alpha_coupling_BIG { alpha_coupling_BIG },
 		m_alpha_coupling_micro { 1. - alpha_coupling_BIG },
@@ -43,7 +42,6 @@ public:
 	};
 
 	weight_parameter_function(	libMesh::Mesh& alpha_mesh ) :
-		m_alpha_mask_point_locator_Ptr { NULL },
 		m_alpha_eps { 10E-2 },
 		m_alpha_coupling_BIG { 0.5 },
 		m_alpha_coupling_micro { 0.5 },
@@ -99,7 +97,7 @@ public:
 		}
 		else if(elem->subdomain_id() == m_subdomain_idx_micro)
 		{
-			output = 1;
+			output = 1 - m_alpha_eps;
 		}
 		else if(elem->subdomain_id() == m_subdomain_idx_coupling)
 		{

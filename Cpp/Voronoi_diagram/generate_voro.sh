@@ -1,1 +1,1 @@
-./voro3D -w 0.2 -p 20 -o test_multi_micro_w_0_2__p_20
+./voro3D -w 0.4 -p 5 -o test_multi_micro_w_0_4__p_5

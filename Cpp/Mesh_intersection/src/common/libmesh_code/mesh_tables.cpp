@@ -130,7 +130,7 @@ void carl::build_mesh_map_Gmsh(std::string &filename, std::unordered_map<int,int
 
 		if(bufferLine.compare("$Elements")==0)
 		{
-			// Read node indexes
+			// Read element indexes
 			hasElements = true;
 			dataF >> nbOfElements;
 
@@ -148,7 +148,6 @@ void carl::build_mesh_map_Gmsh(std::string &filename, std::unordered_map<int,int
 
 				dataBuffer 	>> gmshElemIndex;
 
-				// Add point to map
 				element_map[gmshElemIndex] = iii;
 			}
 		}
@@ -249,6 +248,10 @@ void carl::generate_intersection_tables_full(		std::string& equivalence_table_re
 	for(int iii = 0; iii < nbOfEquivalences_restrict_A; ++iii)
 	{
 		table_restrict_A_file >> extIdxR >> extIdxA;
+
+		// TODO : GAMBIARRA!!!!!
+//		extIdxA += 1490;
+
 		idxA = mesh_BIG_ElemMap[extIdxA];
 		idxRestrict = mesh_restrict_ElemMap[extIdxR];
 
@@ -267,6 +270,13 @@ void carl::generate_intersection_tables_full(		std::string& equivalence_table_re
 	for(int iii = 0; iii < nbOfIntersections_restrict_B; ++iii)
 	{
 		table_restrict_B_file >> dummyInt >> extIdxA >> extIdxB;
+
+		// TODO : MAIS GAMBIARRA!!!!!
+//		extIdxA += 1490;
+
+		// TODO : GA-GA-GA-GAMBIARRA!!!!!
+//		extIdxB += 548;
+
 		idxA = mesh_BIG_ElemMap[extIdxA];
 		intersection_table_restrict_B[iii].first = temp_equivalence_table_A_restrict[idxA];
 		intersection_table_restrict_B[iii].second = mesh_micro_ElemMap[extIdxB];

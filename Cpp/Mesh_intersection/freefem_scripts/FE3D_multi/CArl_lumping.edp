@@ -240,8 +240,8 @@ real eee   = 0.2;
 // Set up weak formulations
 varf vCoupling([ux,uy,uz],[vx,vy,vz]) = int3d(ThI)
 									( kappa/(eee*eee)*Mass3D(ux,uy,uz,vx,vy,vz)
-									+ kappa*Stiffness3D(ux,uy,uz,vx,vy,vz) );
-
+									);
+//+ kappa*Stiffness3D(ux,uy,uz,vx,vy,vz)
 // Build the coupling matrices
 matrix CA = vCoupling(VhA,VhA,tgv=tgv);
 matrix CB = vCoupling(VhB,VhA,tgv=tgv);
@@ -263,8 +263,8 @@ CompactLines(CB);
 // Set up weak formulations
 varf vProject([ux,uy,uz],[vx,vy,vz]) = int3d(ThI)
 							( kappa/(eee*eee)*Mass3D(ux,uy,uz,vx,vy,vz)
-							+ kappa*Stiffness3D(ux,uy,uz,vx,vy,vz) );
-
+							);
+// + kappa*Stiffness3D(ux,uy,uz,vx,vy,vz)
 // Mediator space coupling
 matrix CI = vProject(VhA,VhA,tgv=tgv);
 
@@ -301,7 +301,7 @@ FullLumpingProjection(lumpedCI,PB);
 
 // Search constants
 real k = 2.5;
-real kuA = k; real kuB = k; real kdA = k; real kdB = k;
+real kcA = k; real kcB = k; real kdA = k; real kdB = k;
 
 // Vectors
 real[int] solA(nA);		// solutions
@@ -363,15 +363,15 @@ while ( LATINConv > LATINTol && iterCount < LATINIters-1)
 	++iterCount;
 
 	// Coupled stage
-	auxA = kuA*wA - phiA;
-	auxB = kuB*wB - phiB;
+	auxA = kcA*wA - phiA;
+	auxB = kcB*wB - phiB;
 
 	wA = auxA + auxB;
-	wA = 1/(kuA+kuB)*wA;
+	wA = (1/(kcA+kcB))*wA;
 	wB = wA;
 
-	phiA = kuA*wA - auxA;
-	phiB = kuB*wB - auxB;
+	phiA = kcA*wA - auxA;
+	phiB = kcB*wB - auxB;
 
 	// Uncoupled stage
 	auxA = - kdA*wA - phiA;
@@ -441,7 +441,7 @@ uyB[] = solB;
 uzB[] = solB;
 
 // Prepare to plot
-real coef = 10;
+real coef = 1;
 
 mesh3 ThASol = movemesh3(ThA,transfo=[x+coef*uxA,y+coef*uyA,z+coef*uzA]);
 mesh3 ThBSol = movemesh3(ThB,transfo=[x+coef*uxB,y+coef*uyB,z+coef*uzB]);

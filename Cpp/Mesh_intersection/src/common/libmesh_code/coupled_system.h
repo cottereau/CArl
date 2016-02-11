@@ -186,7 +186,7 @@ public:
 
 	void set_alpha_mask_parameters(const std::string& name, int subdomain_idx_BIG, int subdomain_idx_micro, int subdomain_idx_coupling)
 	{
-		(m_alpha_masks[name])->set_parameters(10E-2,0.5,subdomain_idx_BIG,subdomain_idx_micro,subdomain_idx_coupling);
+		(m_alpha_masks[name])->set_parameters(1E-2,0.5,subdomain_idx_BIG,subdomain_idx_micro,subdomain_idx_coupling);
 	}
 
 	void clear();
@@ -198,6 +198,7 @@ public:
 										std::unordered_map<int,int>& equivalence_table_restrict_BIG,
 										std::vector<std::pair<int,int> >& intersection_table_restrict_micro,
 										std::unordered_multimap<int,int>& intersection_table_inter,
+										double coupling_const = 1.,
 										bool using_same_mesh_restrict_A = false,
 										bool bSameElemsType = true);
 
@@ -208,7 +209,30 @@ public:
 											std::unordered_map<int,int>& equivalence_table_restrict_BIG,
 											std::vector<std::pair<int,int> >& intersection_table_restrict_micro,
 											std::unordered_multimap<int,int>& intersection_table_inter,
-											bool using_same_mesh_restrict_A,
+											double coupling_const = 1.,
+											bool using_same_mesh_restrict_A = false,
+											bool bSameElemsType = true);
+
+	void assemble_coupling_matrices_old(	const std::string BIG_name,
+										const std::string micro_name,
+										const std::string inter_name,
+										const std::string restrict_name,
+										std::unordered_map<int,int>& equivalence_table_restrict_BIG,
+										std::vector<std::pair<int,int> >& intersection_table_restrict_micro,
+										std::unordered_multimap<int,int>& intersection_table_inter,
+										double coupling_const = 1.,
+										bool using_same_mesh_restrict_A = false,
+										bool bSameElemsType = true);
+
+	void assemble_coupling_elasticity_3D_old(	const std::string BIG_name,
+											const std::string micro_name,
+											const std::string inter_name,
+											const std::string restrict_name,
+											std::unordered_map<int,int>& equivalence_table_restrict_BIG,
+											std::vector<std::pair<int,int> >& intersection_table_restrict_micro,
+											std::unordered_multimap<int,int>& intersection_table_inter,
+											double coupling_const = 1.,
+											bool using_same_mesh_restrict_A = false,
 											bool bSameElemsType = true);
 
 	void set_LATIN_solver(const std::string micro_name, const std::string type_name);
@@ -227,11 +251,24 @@ public:
 
 	libMesh::PetscMatrix<libMesh::Number>& get_restrict_coupling_matrix(const std::string& name);
 
+	void set_corrected_shapes(	const std::vector<std::vector<libMesh::Real> >& 	lambda_weights,
+								const std::vector<std::vector<libMesh::Real> >& 	phi_inter,
+								std::vector<std::vector<libMesh::Real> >& 			phi_corrected);
+
+	void get_lambdas(	const unsigned int 							dim,
+						const libMesh::FEType& 						fe_t,
+						const libMesh::Elem* 						base_elem,
+						const std::vector<libMesh::Point>& 			phys_points,
+						std::vector<libMesh::Point>& 				ref_points,
+						std::vector<std::vector<libMesh::Real> >& 	lambda_weights);
+
 	void print_matrix_micro_info(const std::string& name);
 
 	void print_matrix_BIG_info(const std::string& name);
 
 	void print_matrix_restrict_info(const std::string& name);
+
+	void print_matrices_matlab(const std::string& name, const std::string& outputRoot = "coupling");
 
 	void set_BIG_assemble_flag(bool bFlag)
 	{

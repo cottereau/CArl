@@ -168,12 +168,12 @@ void assemble_elasticity(libMesh::EquationSystems& es,
 
 	// Set up pointers to FEBase's of dimension dim and FE type fe_type
 	// -> 3D elements
-	libMesh::AutoPtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
+	libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
 	libMesh::QGauss qrule (dim, fe_type.default_quadrature_order());
 	fe->attach_quadrature_rule (&qrule);
 
 	// -> Faces
-	libMesh::AutoPtr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
+	libMesh::UniquePtr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
 	libMesh::QGauss qface(dim-1, fe_type.default_quadrature_order());
 	fe_face->attach_quadrature_rule (&qface);
 
@@ -336,12 +336,12 @@ void assemble_elasticity_heterogeneous(libMesh::EquationSystems& es,
 
 	// Set up pointers to FEBase's of dimension dim and FE type fe_type
 	// -> 3D elements
-	libMesh::AutoPtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
+	libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
 	libMesh::QGauss qrule (dim, fe_type.default_quadrature_order());
 	fe->attach_quadrature_rule (&qrule);
 
 	// -> Faces
-	libMesh::AutoPtr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
+	libMesh::UniquePtr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
 	libMesh::QGauss qface(dim-1, fe_type.default_quadrature_order());
 	fe_face->attach_quadrature_rule (&qface);
 
@@ -521,12 +521,12 @@ void assemble_elasticity_with_weight(	libMesh::EquationSystems& es,
 
 	// Set up pointers to FEBase's of dimension dim and FE type fe_type
 	// -> 3D elements
-	libMesh::AutoPtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
+	libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
 	libMesh::QGauss qrule (dim, fe_type.default_quadrature_order());
 	fe->attach_quadrature_rule (&qrule);
 
 	// -> Faces
-	libMesh::AutoPtr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
+	libMesh::UniquePtr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
 	libMesh::QGauss qface(dim-1, fe_type.default_quadrature_order());
 	fe_face->attach_quadrature_rule (&qface);
 
@@ -698,12 +698,12 @@ void assemble_elasticity_heterogeneous_with_weight(	libMesh::EquationSystems& es
 
 	// Set up pointers to FEBase's of dimension dim and FE type fe_type
 	// -> 3D elements
-	libMesh::AutoPtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
+	libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
 	libMesh::QGauss qrule (dim, fe_type.default_quadrature_order());
 	fe->attach_quadrature_rule (&qrule);
 
 	// -> Faces
-	libMesh::AutoPtr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
+	libMesh::UniquePtr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
 	libMesh::QGauss qface(dim-1, fe_type.default_quadrature_order());
 	fe_face->attach_quadrature_rule (&qface);
 
@@ -872,7 +872,7 @@ void compute_stresses(libMesh::EquationSystems& es)
 	libMesh::FEType fe_type = elasticity_dof_map.variable_type(u_var);
 
 	// Build a FE to be used here and attach a default quadrature
-	libMesh::AutoPtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
+	libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
 	libMesh::QGauss qrule (dim, fe_type.default_quadrature_order());
 	fe->attach_quadrature_rule (&qrule);
 
@@ -1039,7 +1039,7 @@ void set_physical_properties(libMesh::EquationSystems& es, std::string& physical
 		meanE += inputE[iii];
 		meanMu += inputMu[iii];
 
-		std::cout << inputMu[iii]*(inputE[iii] - 2*inputMu[iii])/(3*inputMu[iii]-inputE[iii]) << " " << inputMu[iii] << std::endl;
+//		std::cout << inputMu[iii]*(inputE[iii] - 2*inputMu[iii])/(3*inputMu[iii]-inputE[iii]) << " " << inputMu[iii] << std::endl;
 	}
 	meanE /= NbOfSubdomains;
 	meanMu /= NbOfSubdomains;
@@ -1146,10 +1146,15 @@ void set_constant_physical_properties(libMesh::EquationSystems& es, double meanE
 
 	}
 
-	std::cout << meanMu*(meanE - 2*meanMu)/(3*meanMu-meanE) << " " << meanMu << std::endl;
+//	std::cout << meanMu*(meanE - 2*meanMu)/(3*meanMu-meanE) << " " << meanMu << std::endl;
 
 	physical_param_system.solution->close();
 	physical_param_system.update();
+}
+
+libMesh::Real eval_lambda_1(libMesh::Real E, libMesh::Real mu)
+{
+	return mu*(E - 2*mu)/(3*mu-E);
 }
 
 libMesh::Real eval_elasticity_tensor(unsigned int i,
@@ -1159,7 +1164,7 @@ libMesh::Real eval_elasticity_tensor(unsigned int i,
 						  libMesh::Number E,
 						  libMesh::Number mu)
 {
-	const libMesh::Real lambda_1 = mu*(E - 2*mu)/(3*mu-E);
+	const libMesh::Real lambda_1 = eval_lambda_1(E,mu);
 	const libMesh::Real lambda_2 = mu;
 
 	return lambda_1 * kronecker_delta(i,j) * kronecker_delta(k,l)
