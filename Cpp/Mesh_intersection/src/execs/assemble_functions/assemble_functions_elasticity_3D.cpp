@@ -7,8 +7,8 @@ void set_x_displacement(libMesh::ImplicitSystem& elasticity_system, boundary_dis
 	std::set<libMesh::boundary_id_type> boundary_ids_clamped;
 	std::set<libMesh::boundary_id_type> boundary_ids_displaced;
 
-	boundary_ids_displaced.insert(boundary_ids.MAX_X);
-	boundary_ids_clamped.insert(boundary_ids.MIN_X);
+	boundary_ids_displaced.insert(boundary_ids.MAX_Z);
+	boundary_ids_clamped.insert(boundary_ids.MIN_Z);
 
 	std::vector<unsigned int> variables(3);
 	variables[0] = elasticity_system.variable_number("u");

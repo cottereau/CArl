@@ -80,7 +80,7 @@ int main (int argc, char** argv)
 	libMesh::PerfLog perf_log ("Main program",MASTER_bPerfLog_carl_libmesh);
 
 	// - Displacement conditions ----------------------------------------------
-	boundary_displacement x_max_BIG(0.5,0,0);
+	boundary_displacement x_max_BIG(0,0,0.5);
 	boundary_id_cube boundary_ids;
 
 	// - Get inputs and set variables
@@ -372,7 +372,7 @@ int main (int argc, char** argv)
 	// [MACRO] Defining the boundaries with Dirichlet conditions
 	set_x_displacement(elasticity_system_BIG, x_max_BIG,boundary_ids);
 
-	// [MACRO] Build stress system --------------------------------------------------
+	// [MACRO] Build stress system
 	libMesh::ExplicitSystem& stress_system_BIG
 										= add_stress(equation_systems_BIG);
 
@@ -433,6 +433,7 @@ int main (int argc, char** argv)
 	double BIG_Mu = 0;
 	double mean_distance = 0.2;
 	set_physical_properties(equation_systems_micro,physicalParamsFile,BIG_E,BIG_Mu);
+	set_constant_physical_properties(equation_systems_micro,BIG_E,BIG_Mu);
 	perf_log.pop("Physical properties - micro");
 
 	perf_log.push("Physical properties - macro");
@@ -462,6 +463,18 @@ int main (int argc, char** argv)
 	perf_log.push("Solve","LATIN Solver:");
 	CoupledTest.solve_LATIN("MicroSys","Elasticity");
 	perf_log.pop("Solve","LATIN Solver:");
+//
+//	// [MICRO] Solve
+//	perf_log.push("Solve - micro");
+//	elasticity_system_micro.assemble_before_solve = false;
+//	elasticity_system_micro.solve();
+//	perf_log.pop("Solve - micro");
+//
+//	// [MACRO] Solve
+//	perf_log.push("Solve - macro");
+//	elasticity_system_BIG.assemble_before_solve = false;
+//	elasticity_system_BIG.solve();
+//	perf_log.pop("Solve - macro");
 
 	// Calculate stress
 	perf_log.push("Compute stress - micro");
@@ -479,7 +492,6 @@ int main (int argc, char** argv)
 
 	std::set<std::string> system_names_micro;
 	system_names_micro.insert("Elasticity");
-	system_names_micro.insert("Stress");
 	exo_io_micro.write_equation_systems(outputEXOFile_micro.c_str(),equation_systems_micro,&system_names_micro);
 
 	exo_io_micro.write_element_data(equation_systems_micro);
@@ -488,7 +500,6 @@ int main (int argc, char** argv)
 
 	std::set<std::string> system_names_BIG;
 	system_names_BIG.insert("Elasticity");
-	system_names_BIG.insert("Stress");
 	exo_io_BIG.write_equation_systems(outputEXOFile_BIG.c_str(),equation_systems_BIG,&system_names_BIG);
 
 	exo_io_BIG.write_element_data(equation_systems_BIG);

@@ -82,16 +82,16 @@ void carl::coupled_system::clear()
 		m_couplingMatrixMap_restrict_restrict.erase(toClean);
 	}
 
-	// TODO : for some reason, the code doesn't complain of a leak here ...
-	//        -> CHECK IT!
+	while(!m_alpha_masks.empty())
+	{
+		alpha_mask_iterator toClean = m_alpha_masks.begin();
 
-//	while(!m_alpha_masks.empty())
-//	{
-//		alpha_mask_iterator toClean = m_alpha_masks.begin();
-//
-//		weight_parameter_function *alpha = toClean->second;
-//		delete alpha;
-//	}
+		weight_parameter_function *alpha = toClean->second;
+		alpha->clear();
+		delete alpha;
+
+		m_alpha_masks.erase(toClean);
+	}
 };
 
 void carl::coupled_system::set_corrected_shapes(	const std::vector<std::vector<libMesh::Real> >& 	lambda_weights,
@@ -316,8 +316,8 @@ void carl::coupled_system::solve_LATIN(const std::string micro_name, const std::
 	Sys_BIG.solution->close();
 	Sys_BIG.update();
 	*(Sys_micro.solution) = sol_micro;
-	Sys_BIG.solution->close();
-	Sys_BIG.update();
+	Sys_micro.solution->close();
+	Sys_micro.update();
 }
 
 void carl::coupled_system::print_matrix_BIG_info(const std::string& name)
@@ -325,7 +325,7 @@ void carl::coupled_system::print_matrix_BIG_info(const std::string& name)
 	libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix =
 						* m_couplingMatrixMap_restrict_BIG[name];
 	std::cout << "| Restrict - Macro matrix -> " << name << std::endl;
-	print_matrix(CouplingTestMatrix);
+	print_matrix_dim(CouplingTestMatrix);
 }
 
 void carl::coupled_system::print_matrices_matlab(const std::string& name, const std::string& outputRoot)
@@ -347,5 +347,5 @@ void carl::coupled_system::print_matrix_restrict_info(const std::string& name)
 	libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix =
 						* m_couplingMatrixMap_restrict_restrict[name];
 	std::cout << "| Restrict - Restrict matrix -> " << name << std::endl;
-	print_matrix(CouplingTestMatrix);
+	print_matrix_dim(CouplingTestMatrix);
 }

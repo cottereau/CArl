@@ -22,6 +22,115 @@ const bool MASTER_bPerfLog_assemble_coupling = false;
 namespace carl
 {
 
+class libMesh_fe_addresses_3
+{
+private:
+	// Private default constructor
+	libMesh_fe_addresses_3();
+
+public:
+
+	// Constructor
+	libMesh_fe_addresses_3(		libMesh::LinearImplicitSystem& input_system,
+								const std::string u_var_name = "u",
+								const std::string v_var_name = "v",
+								const std::string w_var_name = "w") :
+		eq_system 			{ input_system },
+		mesh 				{ eq_system.get_mesh() },
+		dim					{ mesh.mesh_dimension() },
+		u_var				{ input_system.variable_number(u_var_name) },
+		v_var				{ input_system.variable_number(v_var_name) },
+		w_var				{ input_system.variable_number(w_var_name) },
+		dof_map				{ input_system.get_dof_map() },
+		fe_type				{ dof_map.variable_type(u_var) },
+		fe_unique_ptr		{ libMesh::FEBase::build(dim, fe_type) },
+		qrule				{ dim, fe_type.default_quadrature_order() },
+		n_dofs				{ 0 },
+		n_dofs_u			{ 0 },
+		n_dofs_v			{ 0 },
+		n_dofs_w			{ 0 }
+
+	{
+		fe_unique_ptr->attach_quadrature_rule (&qrule);
+	};
+
+	// Members set at initialization
+	libMesh::System& eq_system;
+	const libMesh::MeshBase& mesh;
+	const unsigned int dim;
+	const unsigned int u_var;
+	const unsigned int v_var;
+	const unsigned int w_var;
+	const libMesh::DofMap& dof_map;
+	libMesh::FEType fe_type;
+	libMesh::UniquePtr<libMesh::FEBase> fe_unique_ptr;
+	libMesh::QGauss	qrule;
+
+	// Members set with the set_dofs method
+	std::vector<libMesh::dof_id_type> dof_indices;
+	std::vector<libMesh::dof_id_type> dof_indices_u;
+	std::vector<libMesh::dof_id_type> dof_indices_v;
+	std::vector<libMesh::dof_id_type> dof_indices_w;
+
+	unsigned int n_dofs;
+	unsigned int n_dofs_u;
+	unsigned int n_dofs_v;
+	unsigned int n_dofs_w;
+
+	void set_DoFs(int idx = 0)
+	{
+		const libMesh::Elem* elem = mesh.elem(idx);
+		dof_map.dof_indices(elem, dof_indices);
+		dof_map.dof_indices(elem, dof_indices_u, u_var);
+		dof_map.dof_indices(elem, dof_indices_v, v_var);
+		dof_map.dof_indices(elem, dof_indices_w, w_var);
+		n_dofs   = dof_indices.size();
+		n_dofs_u = dof_indices_u.size();
+		n_dofs_v = dof_indices_v.size();
+		n_dofs_w = dof_indices_w.size();
+	};
+};
+
+class coupling_matrices_3
+{
+public:
+	libMesh::DenseMatrix<libMesh::Number> Me;
+	libMesh::DenseSubMatrix<libMesh::Number> 	Me_uu, Me_uv, Me_uw,
+												Me_vu, Me_vv, Me_vw,
+												Me_wu, Me_wv, Me_ww;
+
+	coupling_matrices_3() :
+		Me_uu { Me }, Me_uv { Me }, Me_uw { Me },
+		Me_vu { Me }, Me_vv { Me }, Me_vw { Me },
+		Me_wu { Me }, Me_wv { Me }, Me_ww { Me }
+	{
+
+	}
+
+	void set_matrices(	libMesh_fe_addresses_3& system_type_AAA,
+						libMesh_fe_addresses_3& system_type_BBB)
+	{
+		Me.resize (system_type_AAA.n_dofs, system_type_BBB.n_dofs);
+
+		Me_uu.reposition (system_type_AAA.u_var*system_type_AAA.n_dofs_u, system_type_BBB.u_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_u, system_type_BBB.n_dofs_u);
+		Me_uv.reposition (system_type_AAA.u_var*system_type_AAA.n_dofs_u, system_type_BBB.v_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_u, system_type_BBB.n_dofs_v);
+		Me_uw.reposition (system_type_AAA.u_var*system_type_AAA.n_dofs_u, system_type_BBB.w_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_u, system_type_BBB.n_dofs_w);
+
+		Me_vu.reposition (system_type_AAA.v_var*system_type_AAA.n_dofs_u, system_type_BBB.u_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_v, system_type_BBB.n_dofs_u);
+		Me_vv.reposition (system_type_AAA.v_var*system_type_AAA.n_dofs_u, system_type_BBB.v_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_v, system_type_BBB.n_dofs_v);
+		Me_vw.reposition (system_type_AAA.v_var*system_type_AAA.n_dofs_u, system_type_BBB.w_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_v, system_type_BBB.n_dofs_w);
+
+		Me_wu.reposition (system_type_AAA.w_var*system_type_AAA.n_dofs_u, system_type_BBB.u_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_w, system_type_BBB.n_dofs_u);
+		Me_wv.reposition (system_type_AAA.w_var*system_type_AAA.n_dofs_u, system_type_BBB.v_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_w, system_type_BBB.n_dofs_v);
+		Me_ww.reposition (system_type_AAA.w_var*system_type_AAA.n_dofs_u, system_type_BBB.w_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_w, system_type_BBB.n_dofs_w);
+	}
+
+	void zero()
+	{
+		Me.zero();
+	}
+};
+
 class coupled_system
 {
 protected:
@@ -281,6 +390,6 @@ public:
 	};
 };
 
-}
+};
 
 #endif /* ASSEMBLE_INTERSECTION_3D_H_ */

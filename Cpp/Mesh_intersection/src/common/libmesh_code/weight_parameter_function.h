@@ -15,7 +15,9 @@ class weight_parameter_function
 {
 protected:
 	// Members
-	const libMesh::PointLocatorBase& m_locator;
+//	const libMesh::PointLocatorBase& m_locator;
+	std::unique_ptr<libMesh::PointLocatorBase> m_locator_unique_ptr;
+	libMesh::Mesh& m_alpha_mesh;
 
 	double m_alpha_eps;
 	double m_alpha_coupling_BIG;
@@ -37,14 +39,10 @@ public:
 		m_subdomain_idx_BIG { subdomain_idx_BIG },
 		m_subdomain_idx_micro { subdomain_idx_micro },
 		m_subdomain_idx_coupling { subdomain_idx_coupling },
-		m_locator { alpha_mesh.point_locator() }
+		m_alpha_mesh{ alpha_mesh },
+		m_locator_unique_ptr { alpha_mesh.sub_point_locator() }
 	{
 	};
-
-	~weight_parameter_function()
-	{
-		clear();
-	}
 
 	weight_parameter_function(	libMesh::Mesh& alpha_mesh ) :
 		m_alpha_eps { 10E-2 },
@@ -53,9 +51,16 @@ public:
 		m_subdomain_idx_BIG { -1 },
 		m_subdomain_idx_micro { -1 },
 		m_subdomain_idx_coupling { -1 },
-		m_locator { alpha_mesh.point_locator() }
+		m_alpha_mesh{ alpha_mesh },
+		m_locator_unique_ptr { alpha_mesh.sub_point_locator() }
 	{
 	};
+
+	// Destructor
+	~weight_parameter_function()
+	{
+		clear();
+	}
 
 	void set_parameters(double alpha_eps, double alpha_coupling_BIG,
 						int subdomain_idx_BIG, int subdomain_idx_micro, int subdomain_idx_coupling)
@@ -70,7 +75,8 @@ public:
 
 	double get_alpha_BIG(const libMesh::Point& qpoint)
 	{
-		const libMesh::Elem* elem = m_locator(qpoint);
+		libMesh::PointLocatorBase& locator = *m_locator_unique_ptr.get();
+		const libMesh::Elem* elem = locator(qpoint);
 		double output = 0;
 
 		if(elem->subdomain_id() == m_subdomain_idx_BIG)
@@ -91,7 +97,8 @@ public:
 
 	double get_alpha_micro(const libMesh::Point& qpoint)
 	{
-		const libMesh::Elem* elem = m_locator(qpoint);
+		libMesh::PointLocatorBase& locator = *m_locator_unique_ptr.get();
+		const libMesh::Elem* elem = locator(qpoint);
 		double output = 0;
 
 		if(elem->subdomain_id() == m_subdomain_idx_BIG)
@@ -113,6 +120,7 @@ public:
 	// Methods
 	void clear()
 	{
+		m_locator_unique_ptr.reset(NULL);
 		// Nothing to do ... for now
 	};
 };
