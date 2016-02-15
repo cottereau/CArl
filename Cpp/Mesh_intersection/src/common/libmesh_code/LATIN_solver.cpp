@@ -47,7 +47,6 @@ void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Numbe
 	m_C_RB = &C_RB;
 	m_C_RR = &C_RR;
 
-
 	// -> Invert the C_RR matrix
 	if(m_bUseLumping)
 	{

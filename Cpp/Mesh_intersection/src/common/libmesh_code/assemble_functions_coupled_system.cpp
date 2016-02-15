@@ -370,6 +370,7 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 	std::vector<std::vector<libMesh::Real> > corrected_phi_BIG;
 	std::vector<std::vector<libMesh::Real> > corrected_phi_micro;
 	std::vector<std::vector<libMesh::Real> > corrected_phi_restrict;
+
 	unsigned int n_quadrature_pts = 0;
 
 	// Addresses to the matrices
@@ -381,6 +382,7 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 	restrict_addresses.set_DoFs();
 	BIG_addresses.set_DoFs();
 	micro_addresses.set_DoFs();
+	inter_addresses.set_DoFs();
 
 	// Local matrix
 	coupling_matrices_3 Me_restrict_micro;
@@ -528,13 +530,13 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 			for (unsigned int qp=0; qp < inter_addresses.qrule.n_points(); qp++)
 			{
 				// Restrict -> micro coupling
-				L2_Coupling(Me_restrict_micro.Me_uu,qp,corrected_phi_BIG,corrected_phi_micro,
+				L2_Coupling(Me_restrict_micro.Me_uu,qp,corrected_phi_restrict,corrected_phi_micro,
 							restrict_addresses.n_dofs_u,micro_addresses.n_dofs_u,JxW,coupling_const);
 
-				L2_Coupling(Me_restrict_micro.Me_vv,qp,corrected_phi_BIG,corrected_phi_micro,
+				L2_Coupling(Me_restrict_micro.Me_vv,qp,corrected_phi_restrict,corrected_phi_micro,
 							restrict_addresses.n_dofs_v,micro_addresses.n_dofs_v,JxW,coupling_const);
 
-				L2_Coupling(Me_restrict_micro.Me_ww,qp,corrected_phi_BIG,corrected_phi_micro,
+				L2_Coupling(Me_restrict_micro.Me_ww,qp,corrected_phi_restrict,corrected_phi_micro,
 							restrict_addresses.n_dofs_w,micro_addresses.n_dofs_w,JxW,coupling_const);
 
 				// Restrict -> BIG coupling

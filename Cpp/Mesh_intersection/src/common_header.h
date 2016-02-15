@@ -49,18 +49,15 @@
 extern boost::random::lagged_fibonacci607 m_rng;
 
 // A small homemade assert
-#ifndef NDEBUG
-	#define homemade_assert_msg(asserted, msg) do \
+#define homemade_assert_msg(asserted, msg) do \
+{ \
+	if (!(asserted)) \
 	{ \
-		if (!(asserted)) \
-		{ \
-			std::cerr << "Assertion `" #asserted "` failed in " << __FILE__ \
-                    << " line " << __LINE__ << ": " <<  msg << std::endl; \
-			std::exit(EXIT_FAILURE); \
-		} \
-	} while(false)
-#else
-	#define homemade_assert_msg(asserted, msg) do { } while (false)
-#endif
+		std::cerr << "Assertion `" #asserted "` failed in " << __FILE__ << std::endl\
+				<< " > line " << __LINE__ << ": " <<  msg << std::endl; \
+		std::exit(EXIT_FAILURE); \
+	} \
+} while(false)
+
 
 #endif /* COMMON_HEADER_H_ */

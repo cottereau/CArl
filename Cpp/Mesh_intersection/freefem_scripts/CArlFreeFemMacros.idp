@@ -19,6 +19,28 @@ macro FullLumpingCI(macroCI, macroLumpedCI)
 	macroLumpedCI = macroCI*macrodummyVector;
 } // End of macro FullLumpingCI
 
+macro PrintMatlab(macroMatrix, macroFilename, macroMatrixName)
+{
+	int[int] macroIII(1), macroJJJ(1);
+	real[int] macroVVV(1);
+
+	[macroIII,macroJJJ,macroVVV] = macroMatrix;
+
+	ofstream matlabFile(macroFilename);
+
+	matlabFile << " zzz = zeros(" << macroVVV.n << ",3);" << endl;
+	matlabFile << " zzz = [" << endl;
+
+	for(int kkk = 0; kkk < macroVVV.n; ++kkk)
+	{
+		matlabFile << macroIII[kkk] + 1 << " " << macroJJJ[kkk] + 1 << " " << macroVVV[kkk] << endl;
+	}
+
+	matlabFile << "];" << endl;
+
+	matlabFile << macroMatrixName << " = spconvert(zzz);" << endl;
+
+} // end of macro
 macro FullLumpingProjection(macroLumpedCI, macroP)
 {
 	int[int] macroIII(1), macroJJJ(1);

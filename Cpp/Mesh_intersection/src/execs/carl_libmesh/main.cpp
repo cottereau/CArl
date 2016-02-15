@@ -80,7 +80,8 @@ int main (int argc, char** argv)
 	libMesh::PerfLog perf_log ("Main program",MASTER_bPerfLog_carl_libmesh);
 
 	// - Displacement conditions ----------------------------------------------
-	boundary_displacement x_max_BIG(0,0,0.5);
+	boundary_displacement x_max_BIG(1.0,0,0);
+	boundary_displacement x_min_BIG(-0.25,0,0);
 	boundary_id_cube boundary_ids;
 
 	// - Get inputs and set variables
@@ -370,7 +371,10 @@ int main (int argc, char** argv)
 										= add_elasticity(equation_systems_BIG);
 
 	// [MACRO] Defining the boundaries with Dirichlet conditions
-	set_x_displacement(elasticity_system_BIG, x_max_BIG,boundary_ids);
+	set_displaced_border_translation(elasticity_system_BIG, x_max_BIG,boundary_ids.MAX_X);
+//	set_displaced_border_translation(elasticity_system_BIG, x_min_BIG,boundary_ids.MIN_X);
+	set_clamped_border(elasticity_system_BIG, boundary_ids.MIN_X);
+
 
 	// [MACRO] Build stress system
 	libMesh::ExplicitSystem& stress_system_BIG
@@ -432,8 +436,13 @@ int main (int argc, char** argv)
 	double BIG_E = 0;
 	double BIG_Mu = 0;
 	double mean_distance = 0.2;
+	double k_dA = 2.5;
+	double k_dB = 2.5;
+	double k_cA = 2.5;
+	double k_cB = 2.5;
+	double coupling_const = -1;
 	set_physical_properties(equation_systems_micro,physicalParamsFile,BIG_E,BIG_Mu);
-	set_constant_physical_properties(equation_systems_micro,BIG_E,BIG_Mu);
+	coupling_const = eval_lambda_1(BIG_E,BIG_Mu)/(mean_distance*mean_distance);
 	perf_log.pop("Physical properties - micro");
 
 	perf_log.push("Physical properties - macro");
@@ -446,9 +455,19 @@ int main (int argc, char** argv)
 													equivalence_table_restrict_A,
 													intersection_table_restrict_B,
 													intersection_table_I,
-													eval_lambda_1(BIG_E,BIG_Mu)/(mean_distance*mean_distance),
+													coupling_const,
 													using_same_mesh_restrict_A);
 	perf_log.pop("Build elasticity couplings");
+
+	std::cout << "| ---> Constants " << std::endl;
+	std::cout << "| Macro :" << std::endl;
+	std::cout << "|    E            : " << BIG_E << std::endl;
+	std::cout << "|    Mu (lamba_2) : " << BIG_Mu << std::endl;
+	std::cout << "|    lambda_1     : " << eval_lambda_1(BIG_E,BIG_Mu) << std::endl;
+	std::cout << "| LATIN :" << std::endl;
+	std::cout << "|    k_dA, k_dB   : " << k_dA << " " << k_dB << std::endl;
+	std::cout << "|    k_cA, k_cB   : " << k_cA << " " << k_cB << std::endl;
+	std::cout << "|    kappa / e^2  : " << coupling_const << std::endl << std::endl;
 
 	CoupledTest.print_matrix_micro_info("MicroSys");
 	CoupledTest.print_matrix_BIG_info("MicroSys");
@@ -456,8 +475,12 @@ int main (int argc, char** argv)
 
 	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
 	perf_log.push("Set up","LATIN Solver:");
-	CoupledTest.set_LATIN_solver("MicroSys","Elasticity",assemble_elasticity_with_weight,assemble_elasticity_heterogeneous_with_weight);
+	CoupledTest.set_LATIN_solver(	"MicroSys","Elasticity",
+									assemble_elasticity_with_weight,
+									assemble_elasticity_heterogeneous_with_weight,
+									k_dA, k_dB, k_cA, k_cB);
 	perf_log.pop("Set up","LATIN Solver:");
+
 
 	// Solve !
 	perf_log.push("Solve","LATIN Solver:");

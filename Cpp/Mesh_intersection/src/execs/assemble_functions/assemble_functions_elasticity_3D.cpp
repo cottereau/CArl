@@ -33,6 +33,52 @@ void set_x_displacement(libMesh::ImplicitSystem& elasticity_system, boundary_dis
 	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc_displaced);
 }
 
+// Some boundary conditions functions
+void set_displaced_border_translation(libMesh::ImplicitSystem& elasticity_system, boundary_displacement& displ, int boundary_id)
+{
+	// Defining the boundaries with Dirichlet conditions ...
+	std::set<libMesh::boundary_id_type> boundary_id_displacement;
+
+	boundary_id_displacement.insert(boundary_id);
+
+	std::vector<unsigned int> variables(3);
+	variables[0] = elasticity_system.variable_number("u");
+	variables[1] = elasticity_system.variable_number("v");
+	variables[2] = elasticity_system.variable_number("w");
+
+	border_displacement move_border(	variables[0],variables[1],variables[2],
+										displ.x_displ,displ.y_displ,displ.z_displ);
+
+	// ... and set them
+	libMesh::DirichletBoundary dirichlet_bc(	boundary_id_displacement,
+												variables,
+												&move_border);
+
+	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc);
+}
+
+void set_clamped_border(libMesh::ImplicitSystem& elasticity_system, int boundary_id)
+{
+	// Defining the boundaries with Dirichlet conditions ...
+	std::set<libMesh::boundary_id_type> boundary_id_displacement;
+
+	boundary_id_displacement.insert(boundary_id);
+
+	std::vector<unsigned int> variables(3);
+	variables[0] = elasticity_system.variable_number("u");
+	variables[1] = elasticity_system.variable_number("v");
+	variables[2] = elasticity_system.variable_number("w");
+
+	libMesh::ZeroFunction<> zero_function;
+
+	// ... and set them
+	libMesh::DirichletBoundary dirichlet_bc(	boundary_id_displacement,
+												variables,
+												&zero_function);
+
+	elasticity_system.get_dof_map().add_dirichlet_boundary(dirichlet_bc);
+}
+
 libMesh::ExplicitSystem& add_stress(libMesh::EquationSystems& input_systems)
 {
 	libMesh::ExplicitSystem& stress_system =

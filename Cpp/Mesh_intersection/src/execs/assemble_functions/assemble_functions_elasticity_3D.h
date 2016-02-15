@@ -104,6 +104,10 @@ public:
 
 void set_x_displacement(libMesh::ImplicitSystem& elasticity_system, boundary_displacement& displ, boundary_id_cube& boundary_ids);
 
+void set_displaced_border_translation(libMesh::ImplicitSystem& elasticity_system, boundary_displacement& displ, int boundary_id);
+
+void set_clamped_border(libMesh::ImplicitSystem& elasticity_system, int boundary_id);
+
 libMesh::ExplicitSystem& add_stress(libMesh::EquationSystems& input_systems);
 
 libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,

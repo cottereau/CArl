@@ -115,11 +115,10 @@ void carl::coupled_system::set_corrected_shapes(	const std::vector<std::vector<l
 
 	homemade_assert_msg(phi_inter_qp == phi_corrected_qp,
 					" Different numbers of quadrature points!");
-	homemade_assert_msg(lambda_corr_size == phi_corrected_dof,
+	libmesh_assert_msg(lambda_corr_size == phi_corrected_dof,
 					" Incompatible corrected shape table and barycentric coordinates!");
-	homemade_assert_msg(lambda_inter_size == phi_inter_dof,
+	libmesh_assert_msg(lambda_inter_size == phi_inter_dof,
 					" Incompatible intersection shape table and barycentric coordinates!");
-
 
 	// phi_A,i (qp) = l_i,1 * phi_I,1 (qp) + l_i,2 * phi_I,2 (qp) ...
 	//			    = sum [ l_i,j * phi_I,j (qp) ]
@@ -130,7 +129,7 @@ void carl::coupled_system::set_corrected_shapes(	const std::vector<std::vector<l
 			phi_corrected[iii][qp] = 0;
 			for(unsigned int jjj = 0; jjj < phi_inter_dof; ++jjj)
 			{
-				phi_corrected[iii][qp] += phi_inter[jjj][qp];
+				phi_corrected[iii][qp] += lambda_weights[iii][jjj]*phi_inter[jjj][qp];
 			}
 		}
 	}
@@ -161,6 +160,21 @@ void carl::coupled_system::get_lambdas(	const unsigned int 							dim,
 
 	// Convert the points
 	libMesh::FEInterface::inverse_map(dim, fe_t, base_elem, phys_points, ref_points);
+
+	bool test_barycentric = true;
+
+//	for(unsigned int iii = 0; iii < ref_points.size(); ++iii)
+//	{
+//		test_barycentric = 	ref_points[iii](0) < 1 + 1E-16 &&
+//							ref_points[iii](0) > - 1E-16 &&
+//							ref_points[iii](1) < 1 + 1E-16 &&
+//							ref_points[iii](1) > - 1E-16 &&
+//							ref_points[iii](2) < 1 + 1E-16 &&
+//							ref_points[iii](2) > - 1E-16;
+//
+//			homemade_assert_msg(test_barycentric,
+//						" One of the barycentric coordinates is wrong!");
+//	}
 
 	// Calculate the lambdas
 	// -> lines : DoF from base
@@ -199,10 +213,11 @@ void carl::coupled_system::print_matrix_micro_info(const std::string& name)
 	libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix =
 						* m_couplingMatrixMap_restrict_micro[name];
 	std::cout << "| Restrict - Micro matrix -> " << name << std::endl;
-	print_matrix_dim(CouplingTestMatrix);
+	print_matrix(CouplingTestMatrix);
 }
 
-void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const std::string type_name)
+void carl::coupled_system::set_LATIN_solver(const std::string micro_name,
+		const std::string type_name, double k_dA, double k_dB, double k_cA, double k_cB)
 {
 	// Get the systems
 	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
@@ -235,7 +250,7 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 	libMesh::PetscVector<libMesh::Number>& F_B = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_micro.rhs);
 
 	// Set the solver parameters
-	m_LATIN_solver.set_params(2.5,2.5,2.5,2.5);
+	m_LATIN_solver.set_params(k_dA,k_dB,k_cA,k_cB);
 
 	// Set the solver matrices
 	m_LATIN_solver.set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
@@ -248,7 +263,8 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 												void fptr_BIG(		libMesh::EquationSystems& es,
 																	const std::string& name, weight_parameter_function& weight_mask),
 												void fptr_micro(	libMesh::EquationSystems& es,
-																	const std::string& name, weight_parameter_function& weight_mask))
+																	const std::string& name, weight_parameter_function& weight_mask),
+												double k_dA, double k_dB, double k_cA, double k_cB)
 {
 	// Get the systems
 	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
@@ -284,7 +300,7 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 	libMesh::PetscVector<libMesh::Number>& F_B = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_micro.rhs);
 
 	// Set the solver parameters
-	m_LATIN_solver.set_params(2.5,2.5,2.5,2.5);
+	m_LATIN_solver.set_params(k_dA,k_dB,k_cA,k_cB);
 
 	// Set the solver matrices
 	m_LATIN_solver.set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
@@ -325,7 +341,7 @@ void carl::coupled_system::print_matrix_BIG_info(const std::string& name)
 	libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix =
 						* m_couplingMatrixMap_restrict_BIG[name];
 	std::cout << "| Restrict - Macro matrix -> " << name << std::endl;
-	print_matrix_dim(CouplingTestMatrix);
+	print_matrix(CouplingTestMatrix);
 }
 
 void carl::coupled_system::print_matrices_matlab(const std::string& name, const std::string& outputRoot)
@@ -347,5 +363,5 @@ void carl::coupled_system::print_matrix_restrict_info(const std::string& name)
 	libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix =
 						* m_couplingMatrixMap_restrict_restrict[name];
 	std::cout << "| Restrict - Restrict matrix -> " << name << std::endl;
-	print_matrix_dim(CouplingTestMatrix);
+	print_matrix(CouplingTestMatrix);
 }

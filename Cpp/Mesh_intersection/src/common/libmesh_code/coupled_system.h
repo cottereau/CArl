@@ -112,17 +112,52 @@ public:
 	{
 		Me.resize (system_type_AAA.n_dofs, system_type_BBB.n_dofs);
 
-		Me_uu.reposition (system_type_AAA.u_var*system_type_AAA.n_dofs_u, system_type_BBB.u_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_u, system_type_BBB.n_dofs_u);
-		Me_uv.reposition (system_type_AAA.u_var*system_type_AAA.n_dofs_u, system_type_BBB.v_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_u, system_type_BBB.n_dofs_v);
-		Me_uw.reposition (system_type_AAA.u_var*system_type_AAA.n_dofs_u, system_type_BBB.w_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_u, system_type_BBB.n_dofs_w);
+		Me_uu.reposition (	system_type_AAA.u_var*system_type_AAA.n_dofs_u,
+							system_type_BBB.u_var*system_type_BBB.n_dofs_u,
+							system_type_AAA.n_dofs_u,
+							system_type_BBB.n_dofs_u);
 
-		Me_vu.reposition (system_type_AAA.v_var*system_type_AAA.n_dofs_u, system_type_BBB.u_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_v, system_type_BBB.n_dofs_u);
-		Me_vv.reposition (system_type_AAA.v_var*system_type_AAA.n_dofs_u, system_type_BBB.v_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_v, system_type_BBB.n_dofs_v);
-		Me_vw.reposition (system_type_AAA.v_var*system_type_AAA.n_dofs_u, system_type_BBB.w_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_v, system_type_BBB.n_dofs_w);
+		Me_uv.reposition (	system_type_AAA.u_var*system_type_AAA.n_dofs_u,
+							system_type_BBB.v_var*system_type_BBB.n_dofs_v,
+							system_type_AAA.n_dofs_u,
+							system_type_BBB.n_dofs_v);
 
-		Me_wu.reposition (system_type_AAA.w_var*system_type_AAA.n_dofs_u, system_type_BBB.u_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_w, system_type_BBB.n_dofs_u);
-		Me_wv.reposition (system_type_AAA.w_var*system_type_AAA.n_dofs_u, system_type_BBB.v_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_w, system_type_BBB.n_dofs_v);
-		Me_ww.reposition (system_type_AAA.w_var*system_type_AAA.n_dofs_u, system_type_BBB.w_var*system_type_BBB.n_dofs_u, system_type_AAA.n_dofs_w, system_type_BBB.n_dofs_w);
+		Me_uw.reposition (	system_type_AAA.u_var*system_type_AAA.n_dofs_u,
+							system_type_BBB.w_var*system_type_BBB.n_dofs_w,
+							system_type_AAA.n_dofs_u,
+							system_type_BBB.n_dofs_w);
+
+
+		Me_vu.reposition (	system_type_AAA.v_var*system_type_AAA.n_dofs_v,
+							system_type_BBB.u_var*system_type_BBB.n_dofs_u,
+							system_type_AAA.n_dofs_v,
+							system_type_BBB.n_dofs_u);
+
+		Me_vv.reposition (	system_type_AAA.v_var*system_type_AAA.n_dofs_v,
+							system_type_BBB.v_var*system_type_BBB.n_dofs_v,
+							system_type_AAA.n_dofs_v,
+							system_type_BBB.n_dofs_v);
+
+		Me_vw.reposition (	system_type_AAA.v_var*system_type_AAA.n_dofs_v,
+							system_type_BBB.w_var*system_type_BBB.n_dofs_w,
+							system_type_AAA.n_dofs_v,
+							system_type_BBB.n_dofs_w);
+
+
+		Me_wu.reposition (	system_type_AAA.w_var*system_type_AAA.n_dofs_w,
+							system_type_BBB.u_var*system_type_BBB.n_dofs_u,
+							system_type_AAA.n_dofs_w,
+							system_type_BBB.n_dofs_u);
+
+		Me_wv.reposition (	system_type_AAA.w_var*system_type_AAA.n_dofs_w,
+							system_type_BBB.v_var*system_type_BBB.n_dofs_v,
+							system_type_AAA.n_dofs_w,
+							system_type_BBB.n_dofs_v);
+
+		Me_ww.reposition (	system_type_AAA.w_var*system_type_AAA.n_dofs_w,
+							system_type_BBB.w_var*system_type_BBB.n_dofs_w,
+							system_type_AAA.n_dofs_w,
+							system_type_BBB.n_dofs_w);
 	}
 
 	void zero()
@@ -293,7 +328,8 @@ public:
 		(m_alpha_masks[name])->set_parameters(alpha_eps,alpha_coupling_BIG,subdomain_idx_BIG,subdomain_idx_micro,subdomain_idx_coupling);
 	}
 
-	void set_alpha_mask_parameters(const std::string& name, int subdomain_idx_BIG, int subdomain_idx_micro, int subdomain_idx_coupling)
+	void set_alpha_mask_parameters(const std::string& name,
+			int subdomain_idx_BIG, int subdomain_idx_micro, int subdomain_idx_coupling)
 	{
 		(m_alpha_masks[name])->set_parameters(1E-2,0.5,subdomain_idx_BIG,subdomain_idx_micro,subdomain_idx_coupling);
 	}
@@ -344,13 +380,15 @@ public:
 											bool using_same_mesh_restrict_A = false,
 											bool bSameElemsType = true);
 
-	void set_LATIN_solver(const std::string micro_name, const std::string type_name);
+	void set_LATIN_solver(const std::string micro_name, const std::string type_name,
+			double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5);
 
 	void set_LATIN_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es,
 												const std::string& name, weight_parameter_function& alpha_mask),
 							void fptr_micro(	libMesh::EquationSystems& es,
-												const std::string& name, weight_parameter_function& alpha_mask));
+												const std::string& name, weight_parameter_function& alpha_mask),
+							double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5);
 
 	void solve_LATIN(const std::string micro_name, const std::string type_name);
 

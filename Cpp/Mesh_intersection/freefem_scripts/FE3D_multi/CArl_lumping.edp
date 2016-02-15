@@ -239,7 +239,8 @@ real eee   = 0.2;
 
 // Set up weak formulations
 varf vCoupling([ux,uy,uz],[vx,vy,vz]) = int3d(ThI)
-									( kappa/(eee*eee)*Mass3D(ux,uy,uz,vx,vy,vz)
+//									( kappa/(eee*eee)*Mass3D(ux,uy,uz,vx,vy,vz)
+									( 1*Mass3D(ux,uy,uz,vx,vy,vz)
 									);
 //+ kappa*Stiffness3D(ux,uy,uz,vx,vy,vz)
 // Build the coupling matrices
@@ -250,6 +251,9 @@ cout << "  -- Compacting CA lines" << endl;
 CompactLines(CA);
 cout << "  -- Compacting CB lines" << endl;
 CompactLines(CB);
+
+PrintMatlab(CA, "coupling_freefem_RA.m", "CouplRAfreefem");
+PrintMatlab(CB, "coupling_freefem_RB.m", "CouplRBfreefem");
 
 //ofstream compactedAFile("output/compacted_A.dat");
 //compactedAFile << CA << endl;

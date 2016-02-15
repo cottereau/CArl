@@ -119,6 +119,33 @@ void carl::print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatri
 	std::cout << "| Sum( M_i,j ) = " << accumulator << std::endl << std::endl;
 }
 
+void carl::print_matrix_col_line_sum(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix, const std::string name_base)
+{
+	libMesh::Real accumulator = 0;
+
+	libMesh::PetscVector<libMesh::Number> col_sum(CouplingTestMatrix.comm(),CouplingTestMatrix.m());
+	libMesh::PetscVector<libMesh::Number> row_sum(CouplingTestMatrix.comm(),CouplingTestMatrix.n());
+
+	for(unsigned int iii = 0; iii < CouplingTestMatrix.m(); ++iii)
+	{
+		for(unsigned int jjj = 0; jjj < CouplingTestMatrix.n(); ++jjj)
+		{
+			col_sum.add(iii,CouplingTestMatrix(iii,jjj));
+			row_sum.add(jjj,CouplingTestMatrix(iii,jjj));
+		}
+	}
+
+	col_sum.print_matlab(name_base + "_col.m");
+	row_sum.print_matlab(name_base + "_row.m");
+}
+
+void carl::print_matrix_matlab(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix, const std::string name_base)
+{
+	std::cout << "| M_i,j : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl;
+
+	CouplingTestMatrix.print_matlab(name_base);
+}
+
 void carl::print_matrix_dim(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix)
 {
 	std::cout << "| M_i,j : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl  << std::endl;

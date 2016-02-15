@@ -28,6 +28,10 @@ void print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix);
 
 void print_matrix_dim(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix);
 
+void print_matrix_col_line_sum(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix, const std::string name_base);
+
+void print_matrix_matlab(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix, const std::string name_base);
+
 void solve_linear_PETSC(	libMesh::PetscMatrix<libMesh::Number>& A,
 							libMesh::PetscVector<libMesh::Number>& b,
 							libMesh::PetscVector<libMesh::Number>& x,
