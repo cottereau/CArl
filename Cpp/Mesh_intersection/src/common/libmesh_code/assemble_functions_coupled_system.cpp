@@ -327,10 +327,11 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 															std::unordered_map<int,int>& equivalence_table_restrict_BIG,
 															std::vector<std::pair<int,int> >& intersection_table_restrict_micro,
 															std::unordered_multimap<int,int>& intersection_table_inter,
-															double coupling_const,
 															bool using_same_mesh_restrict_A,
 															bool bSameElemsType)
 {
+	const unsigned int n_components = 3;
+
 	// Addresses to the eq. systems
 	libMesh::EquationSystems& restrict_eq_system = * m_restrict_EquationSystemMap[restrict_name];
 	libMesh::EquationSystems& BIG_eq_system = * m_BIG_EquationSystem.second;
@@ -371,12 +372,23 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 	std::vector<std::vector<libMesh::Real> > corrected_phi_micro;
 	std::vector<std::vector<libMesh::Real> > corrected_phi_restrict;
 
+	// Shape functions gradients
+	const std::vector<std::vector<libMesh::RealGradient> >& dphi_inter = inter_addresses.fe_unique_ptr->get_dphi();
+	std::vector<std::vector<libMesh::RealGradient> > corrected_dphi_BIG;
+	std::vector<std::vector<libMesh::RealGradient> > corrected_dphi_micro;
+	std::vector<std::vector<libMesh::RealGradient> > corrected_dphi_restrict;
+
 	unsigned int n_quadrature_pts = 0;
 
 	// Addresses to the matrices
 	libMesh::PetscMatrix<libMesh::Number>& couplingMatrix_restrict_BIG = * m_couplingMatrixMap_restrict_BIG[micro_name];
 	libMesh::PetscMatrix<libMesh::Number>& couplingMatrix_restrict_micro = * m_couplingMatrixMap_restrict_micro[micro_name];
 	libMesh::PetscMatrix<libMesh::Number>& couplingMatrix_restrict_restrict = * m_couplingMatrixMap_restrict_restrict[micro_name];
+
+	// Values of the coupling constants
+	double L2_coupling_const =
+			m_coupling_constantMap[micro_name]/(m_coupling_lengthMap[micro_name]*m_coupling_lengthMap[micro_name]);
+	double H1_coupling_const = m_coupling_constantMap[micro_name];
 
 	// DoF vectors and ranges
 	restrict_addresses.set_DoFs();
@@ -405,6 +417,13 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 		corrected_phi_BIG.resize(BIG_addresses.n_dofs_u,std::vector<libMesh::Real>(n_quadrature_pts,0));
 		corrected_phi_restrict.resize(restrict_addresses.n_dofs_u,std::vector<libMesh::Real>(n_quadrature_pts,0));
 		corrected_phi_micro.resize(micro_addresses.n_dofs_u,std::vector<libMesh::Real>(n_quadrature_pts,0));
+
+		if(m_bUseH1Coupling[micro_name])
+		{
+			corrected_dphi_BIG.resize(BIG_addresses.n_dofs_u,std::vector<libMesh::RealGradient>(n_quadrature_pts));
+			corrected_dphi_restrict.resize(restrict_addresses.n_dofs_u,std::vector<libMesh::RealGradient>(n_quadrature_pts));
+			corrected_dphi_micro.resize(micro_addresses.n_dofs_u,std::vector<libMesh::RealGradient>(n_quadrature_pts));
+		}
 	}
 
 	// Vectors containing the lambda weights
@@ -492,6 +511,13 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 			corrected_phi_BIG.resize(BIG_addresses.n_dofs_u,std::vector<libMesh::Real>(n_quadrature_pts,0));
 			corrected_phi_restrict.resize(restrict_addresses.n_dofs_u,std::vector<libMesh::Real>(n_quadrature_pts,0));
 			corrected_phi_micro.resize(micro_addresses.n_dofs_u,std::vector<libMesh::Real>(n_quadrature_pts,0));
+
+			if(m_bUseH1Coupling[micro_name])
+			{
+				corrected_dphi_BIG.resize(BIG_addresses.n_dofs_u,std::vector<libMesh::RealGradient>(n_quadrature_pts));
+				corrected_dphi_restrict.resize(restrict_addresses.n_dofs_u,std::vector<libMesh::RealGradient>(n_quadrature_pts));
+				corrected_dphi_micro.resize(micro_addresses.n_dofs_u,std::vector<libMesh::RealGradient>(n_quadrature_pts));
+			}
 		}
 
 		Me_restrict_micro.zero();
@@ -548,38 +574,54 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 			set_corrected_shapes(lambda_weight_micro,phi_inter,corrected_phi_micro);
 			set_corrected_shapes(lambda_weight_restrict,phi_inter,corrected_phi_restrict);
 
+			if(m_bUseH1Coupling[micro_name])
+			{
+				set_corrected_shape_gradients(lambda_weight_BIG,dphi_inter,corrected_dphi_BIG);
+				set_corrected_shape_gradients(lambda_weight_micro,dphi_inter,corrected_dphi_micro);
+				set_corrected_shape_gradients(lambda_weight_restrict,dphi_inter,corrected_dphi_restrict);
+			}
+
 			// For each quadrature point determinate the sub-matrices elements
 			for (unsigned int qp=0; qp < inter_addresses.qrule.n_points(); qp++)
 			{
 				// Restrict -> micro coupling
-				L2_Coupling(Me_restrict_micro.Me_uu,qp,corrected_phi_restrict,corrected_phi_micro,
-							restrict_addresses.n_dofs_u,micro_addresses.n_dofs_u,JxW,coupling_const);
-
-				L2_Coupling(Me_restrict_micro.Me_vv,qp,corrected_phi_restrict,corrected_phi_micro,
-							restrict_addresses.n_dofs_v,micro_addresses.n_dofs_v,JxW,coupling_const);
-
-				L2_Coupling(Me_restrict_micro.Me_ww,qp,corrected_phi_restrict,corrected_phi_micro,
-							restrict_addresses.n_dofs_w,micro_addresses.n_dofs_w,JxW,coupling_const);
+				Me_restrict_micro.build_L2_coupling_matrix(
+											restrict_addresses, micro_addresses, qp,
+											corrected_phi_restrict, corrected_phi_micro,
+											JxW, L2_coupling_const);
 
 				// Restrict -> BIG coupling
-				L2_Coupling(Me_restrict_BIG.Me_uu,qp,corrected_phi_restrict,corrected_phi_BIG,
-							restrict_addresses.n_dofs_u,BIG_addresses.n_dofs_u,JxW,coupling_const);
-
-				L2_Coupling(Me_restrict_BIG.Me_vv,qp,corrected_phi_restrict,corrected_phi_BIG,
-							restrict_addresses.n_dofs_v,BIG_addresses.n_dofs_v,JxW,coupling_const);
-
-				L2_Coupling(Me_restrict_BIG.Me_ww,qp,corrected_phi_restrict,corrected_phi_BIG,
-							restrict_addresses.n_dofs_w,BIG_addresses.n_dofs_w,JxW,coupling_const);
+				Me_restrict_BIG.build_L2_coupling_matrix(
+											restrict_addresses, BIG_addresses, qp,
+											corrected_phi_restrict, corrected_phi_BIG,
+											JxW, L2_coupling_const);
 
 				// Restrict -> Restrict coupling
-				L2_Coupling(Me_restrict_restrict.Me_uu,qp,corrected_phi_restrict,corrected_phi_restrict,
-							restrict_addresses.n_dofs_u,restrict_addresses.n_dofs_u,JxW,coupling_const);
+				Me_restrict_restrict.build_L2_coupling_matrix(
+											restrict_addresses, restrict_addresses, qp,
+											corrected_phi_restrict, corrected_phi_restrict,
+											JxW, L2_coupling_const);
 
-				L2_Coupling(Me_restrict_restrict.Me_vv,qp,corrected_phi_restrict,corrected_phi_restrict,
-							restrict_addresses.n_dofs_v,restrict_addresses.n_dofs_v,JxW,coupling_const);
+				if(m_bUseH1Coupling[micro_name])
+				{
+					// Then we must also build the strain terms
 
-				L2_Coupling(Me_restrict_restrict.Me_ww,qp,corrected_phi_restrict,corrected_phi_restrict,
-							restrict_addresses.n_dofs_w,restrict_addresses.n_dofs_w,JxW,coupling_const);
+					// Restrict -> micro coupling
+					Me_restrict_micro.add_H1_coupling_matrix(
+											restrict_addresses, micro_addresses, qp,
+											corrected_dphi_restrict, corrected_dphi_micro,
+											JxW, H1_coupling_const);
+
+					Me_restrict_BIG.add_H1_coupling_matrix(
+											restrict_addresses, BIG_addresses, qp,
+											corrected_dphi_restrict, corrected_dphi_BIG,
+											JxW, H1_coupling_const);
+
+					Me_restrict_restrict.add_H1_coupling_matrix(
+											restrict_addresses, restrict_addresses, qp,
+											corrected_dphi_restrict, corrected_dphi_restrict,
+											JxW, H1_coupling_const);
+				}
 			}
 		}
 

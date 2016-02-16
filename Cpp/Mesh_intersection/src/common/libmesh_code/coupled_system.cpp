@@ -135,6 +135,47 @@ void carl::coupled_system::set_corrected_shapes(	const std::vector<std::vector<l
 	}
 }
 
+void carl::coupled_system::set_corrected_shape_gradients(	const std::vector<std::vector<libMesh::Real> >& 	lambda_weights,
+		const std::vector<std::vector<libMesh::RealGradient> >& 	dphi_inter,
+		std::vector<std::vector<libMesh::RealGradient> >& 			dphi_corrected)
+{
+	unsigned int lambda_corr_size  	= lambda_weights.size();
+	unsigned int lambda_inter_size 	= lambda_weights[0].size();
+
+	unsigned int phi_inter_dof		= dphi_inter.size();
+	unsigned int phi_inter_qp		= dphi_inter[0].size();
+
+	unsigned int phi_corrected_dof		= dphi_corrected.size();
+	unsigned int phi_corrected_qp		= dphi_corrected[0].size();
+
+	/*
+	 * 		lambda 	: [ n_dofs_corr ] x [ n_dofs_inter ]
+	 * 		inter  	: [ n_dofs_inter ] x [ n_qp ]
+	 * 		corr	: [ n_dofs_corr ] x [ n_qp ]
+	 */
+
+	homemade_assert_msg(phi_inter_qp == phi_corrected_qp,
+					" Different numbers of quadrature points!");
+	homemade_assert_msg(lambda_corr_size == phi_corrected_dof,
+					" Incompatible corrected shape table and barycentric coordinates!");
+	homemade_assert_msg(lambda_inter_size == phi_inter_dof,
+					" Incompatible intersection shape table and barycentric coordinates!");
+
+	// phi_A,i (qp) = l_i,1 * phi_I,1 (qp) + l_i,2 * phi_I,2 (qp) ...
+	//			    = sum [ l_i,j * phi_I,j (qp) ]
+	for(unsigned int qp = 0; qp < phi_inter_qp; ++qp)
+	{
+		for(unsigned int iii = 0; iii < phi_corrected_dof; ++iii)
+		{
+			dphi_corrected[iii][qp] = 0;
+			for(unsigned int jjj = 0; jjj < phi_inter_dof; ++jjj)
+			{
+				dphi_corrected[iii][qp] += lambda_weights[iii][jjj]*dphi_inter[jjj][qp];
+			}
+		}
+	}
+};
+
 void carl::coupled_system::get_lambdas(	const unsigned int 							dim,
 					const libMesh::FEType& 						fe_t,
 					const libMesh::Elem* 						base_elem,

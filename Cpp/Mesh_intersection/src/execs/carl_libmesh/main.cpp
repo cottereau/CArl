@@ -442,7 +442,7 @@ int main (int argc, char** argv)
 	double k_cB = 2.5;
 	double coupling_const = -1;
 	set_physical_properties(equation_systems_micro,physicalParamsFile,BIG_E,BIG_Mu);
-	coupling_const = eval_lambda_1(BIG_E,BIG_Mu)/(mean_distance*mean_distance);
+	coupling_const = eval_lambda_1(BIG_E,BIG_Mu);
 	perf_log.pop("Physical properties - micro");
 
 	perf_log.push("Physical properties - macro");
@@ -450,12 +450,13 @@ int main (int argc, char** argv)
 	perf_log.pop("Physical properties - macro");
 
 	perf_log.push("Build elasticity couplings");
+	CoupledTest.set_coupling_parameters("MicroSys",coupling_const,mean_distance);
+//	CoupledTest.use_H1_coupling("MicroSys");
 	CoupledTest.assemble_coupling_elasticity_3D(	"BigSys","MicroSys",
 													"InterSys","RestrictSys",
 													equivalence_table_restrict_A,
 													intersection_table_restrict_B,
 													intersection_table_I,
-													coupling_const,
 													using_same_mesh_restrict_A);
 	perf_log.pop("Build elasticity couplings");
 
@@ -467,7 +468,8 @@ int main (int argc, char** argv)
 	std::cout << "| LATIN :" << std::endl;
 	std::cout << "|    k_dA, k_dB   : " << k_dA << " " << k_dB << std::endl;
 	std::cout << "|    k_cA, k_cB   : " << k_cA << " " << k_cB << std::endl;
-	std::cout << "|    kappa / e^2  : " << coupling_const << std::endl << std::endl;
+	std::cout << "|    kappa        : " << coupling_const << std::endl;
+	std::cout << "|    e            : " << mean_distance << std::endl;
 
 	CoupledTest.print_matrix_micro_info("MicroSys");
 	CoupledTest.print_matrix_BIG_info("MicroSys");

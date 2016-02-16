@@ -161,6 +161,80 @@ public:
 							system_type_BBB.n_dofs_w);
 	}
 
+	void build_L2_coupling_matrix(	const libMesh_fe_addresses_3& system_type_AAA,
+									const libMesh_fe_addresses_3& system_type_BBB,
+									int qp,
+									const std::vector<std::vector<libMesh::Real> >& corrected_phi_AAA,
+									const std::vector<std::vector<libMesh::Real> >& corrected_phi_BBB,
+									const std::vector<libMesh::Real>& JxW,
+									double L2_coupling_const)
+	{
+		L2_Coupling(Me_uu,qp,corrected_phi_AAA,corrected_phi_BBB,
+				system_type_AAA.n_dofs_u,system_type_BBB.n_dofs_u,JxW,L2_coupling_const);
+
+		L2_Coupling(Me_vv,qp,corrected_phi_AAA,corrected_phi_BBB,
+				system_type_AAA.n_dofs_v,system_type_BBB.n_dofs_v,JxW,L2_coupling_const);
+
+		L2_Coupling(Me_ww,qp,corrected_phi_AAA,corrected_phi_BBB,
+				system_type_AAA.n_dofs_w,system_type_BBB.n_dofs_w,JxW,L2_coupling_const);
+	}
+
+	void add_H1_coupling_matrix(	const libMesh_fe_addresses_3& system_type_AAA,
+									const libMesh_fe_addresses_3& system_type_BBB,
+									int qp,
+									const std::vector<std::vector<libMesh::RealGradient> >& corrected_dphi_sysAAA,
+									const std::vector<std::vector<libMesh::RealGradient> >& corrected_dphi_sysBBB,
+									const std::vector<libMesh::Real>& JxW,
+									const libMesh::Number H1_coupling_const)
+	{
+		int n_components = 3;
+
+		H1_Coupling_Extra_Term(	Me_uu, qp, 0, 0, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+								n_components, n_components,
+								system_type_AAA.n_dofs_u,system_type_BBB.n_dofs_u,
+								JxW,H1_coupling_const);
+
+		H1_Coupling_Extra_Term(	Me_uv, qp, 0, 1, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+								n_components, n_components,
+								system_type_AAA.n_dofs_u,system_type_BBB.n_dofs_v,
+								JxW,H1_coupling_const);
+
+		H1_Coupling_Extra_Term(	Me_uw, qp, 0, 2, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+								n_components, n_components,
+								system_type_AAA.n_dofs_u,system_type_BBB.n_dofs_w,
+								JxW,H1_coupling_const);
+
+		H1_Coupling_Extra_Term(	Me_vu, qp, 1, 0, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+								n_components, n_components,
+								system_type_AAA.n_dofs_v,system_type_BBB.n_dofs_u,
+								JxW,H1_coupling_const);
+
+		H1_Coupling_Extra_Term(	Me_vv, qp, 1, 1, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+								n_components, n_components,
+								system_type_AAA.n_dofs_v,system_type_BBB.n_dofs_v,
+								JxW,H1_coupling_const);
+
+		H1_Coupling_Extra_Term(	Me_vw, qp, 1, 2, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+								n_components, n_components,
+								system_type_AAA.n_dofs_v,system_type_BBB.n_dofs_w,
+								JxW,H1_coupling_const);
+
+		H1_Coupling_Extra_Term(	Me_wu, qp, 2, 0, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+								n_components, n_components,
+								system_type_AAA.n_dofs_w,system_type_BBB.n_dofs_u,
+								JxW,H1_coupling_const);
+
+		H1_Coupling_Extra_Term(	Me_wv, qp, 2, 1, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+										n_components, n_components,
+										system_type_AAA.n_dofs_w,system_type_BBB.n_dofs_v,
+										JxW,H1_coupling_const);
+
+		H1_Coupling_Extra_Term(	Me_ww, qp, 2, 2, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+										n_components, n_components,
+										system_type_AAA.n_dofs_w,system_type_BBB.n_dofs_w,
+										JxW,H1_coupling_const);
+	};
+
 	void zero()
 	{
 		Me.zero();
@@ -188,8 +262,14 @@ protected:
 
 	// -> Bools for assembly of the systems
 	std::map<std::string, bool > m_bHasAssembled_micro;
+	std::map<std::string, bool > m_bUseH1Coupling;
 	bool m_bHasAssembled_BIG;
 
+	// -> Coupling constant maps
+	std::map<std::string, bool > m_coupling_constantMap;
+	std::map<std::string, bool > m_coupling_lengthMap;
+
+	// -> Typedefs of the destructor iterators
 	typedef std::map<std::string, libMesh::EquationSystems* >::iterator EqSystem_iterator;
 	typedef std::map<std::string, libMesh::PetscMatrix<libMesh::Number>* >::iterator Matrix_iterator;
 	typedef std::map<std::string, weight_parameter_function* >::iterator alpha_mask_iterator;
@@ -250,6 +330,7 @@ public:
 			m_couplingMatrixMap_restrict_BIG.insert (std::make_pair(name, Matrix_restrict_BIG_Ptr));
 			m_couplingMatrixMap_restrict_restrict.insert (std::make_pair(name, Matrix_restrict_restrict_Ptr));
 			m_bHasAssembled_micro.insert (std::make_pair(name,false));
+			m_bUseH1Coupling.insert (std::make_pair(name,false));
 		}
 		else
 		{
@@ -335,6 +416,12 @@ public:
 		(m_alpha_masks[name])->set_parameters(1E-2,0.5,subdomain_idx_BIG,subdomain_idx_micro,subdomain_idx_coupling);
 	}
 
+	void set_coupling_parameters(const std::string& name, double coupling_constant, double coupling_length)
+	{
+		m_coupling_constantMap[name] = coupling_constant;
+		m_coupling_lengthMap[name] = coupling_length;
+	}
+
 	void clear();
 
 	void assemble_coupling_matrices(	const std::string BIG_name,
@@ -355,7 +442,6 @@ public:
 											std::unordered_map<int,int>& equivalence_table_restrict_BIG,
 											std::vector<std::pair<int,int> >& intersection_table_restrict_micro,
 											std::unordered_multimap<int,int>& intersection_table_inter,
-											double coupling_const = 1.,
 											bool using_same_mesh_restrict_A = false,
 											bool bSameElemsType = true);
 
@@ -403,6 +489,11 @@ public:
 								const std::vector<std::vector<libMesh::Real> >& 	phi_inter,
 								std::vector<std::vector<libMesh::Real> >& 			phi_corrected);
 
+
+	void set_corrected_shape_gradients(	const std::vector<std::vector<libMesh::Real> >& 	lambda_weights,
+			const std::vector<std::vector<libMesh::RealGradient> >& 	phi_inter,
+			std::vector<std::vector<libMesh::RealGradient> >& 			phi_corrected);
+
 	void get_lambdas(	const unsigned int 							dim,
 						const libMesh::FEType& 						fe_t,
 						const libMesh::Elem* 						base_elem,
@@ -427,6 +518,16 @@ public:
 	{
 		m_bHasAssembled_micro[name] = bFlag;
 	};
+
+	void use_H1_coupling(std::string name)
+	{
+		m_bUseH1Coupling[name] = true;
+	};
+
+	void use_L2_coupling(std::string name)
+	{
+		m_bUseH1Coupling[name] = false;
+	}
 };
 
 };
