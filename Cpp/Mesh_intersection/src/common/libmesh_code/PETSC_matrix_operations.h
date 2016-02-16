@@ -37,6 +37,13 @@ void solve_linear_PETSC(	libMesh::PetscMatrix<libMesh::Number>& A,
 							libMesh::PetscVector<libMesh::Number>& x,
 							KSP& ksp, PC& pc);
 
+void check_coupling_matrix( libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix ,
+		libMesh::Mesh& IntersectionMesh,
+		libMesh::Real CouplingScale,
+		const std::string matrixtype,
+		int n_var = 3);
+
+
 }
 
 #endif /* COMMON_LIBMESH_CODE_PETSC_MATRIX_OPERATIONS_H_ */

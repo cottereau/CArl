@@ -165,3 +165,40 @@ void carl::solve_linear_PETSC(	libMesh::PetscMatrix<libMesh::Number>& A,
 	// Set up inital variables
 }
 
+void carl::check_coupling_matrix(	libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix,
+									libMesh::Mesh& IntersectionMesh,
+									libMesh::Real CouplingScale,
+									const std::string matrixType,
+									int n_var)
+{
+	std::cout << "| " << matrixType << std::endl;
+	libMesh::Real accumulator = 0;
+
+	std::cout << "| M_i,j : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl;
+	for(unsigned int iii = 0; iii < CouplingTestMatrix.m(); ++iii)
+	{
+		for(unsigned int jjj = 0; jjj < CouplingTestMatrix.n(); ++jjj)
+		{
+			accumulator += CouplingTestMatrix(iii,jjj);
+		}
+	}
+
+	libMesh::Real vol = 0;
+	libMesh::Elem* silly_elem;
+	for(libMesh::MeshBase::element_iterator itBegin = IntersectionMesh.elements_begin();
+											itBegin != IntersectionMesh.elements_end();
+											++itBegin)
+	{
+		silly_elem = *itBegin;
+		vol += silly_elem->volume();
+	}
+
+	libMesh::Real difference = accumulator - n_var*CouplingScale*vol;
+
+	std::cout << "|" << std::endl;
+	std::cout << "|    Sum( M_i,j )   = " << accumulator << std::endl;
+	std::cout << "|    n * C * Volume = " << n_var*CouplingScale*vol << std::endl;
+	std::cout << "| >  Difference     = " << difference << std::endl << std::endl;
+
+
+}

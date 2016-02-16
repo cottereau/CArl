@@ -448,6 +448,11 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 	int elem_inter_idx = -1;
 	std::unordered_multimap<int,int>::iterator it_inter_idx;
 
+	// DEBUG CODE !!!
+	int DEBUG_max_inter_idx = -1;
+	int DEBUG_nb_of_inter_elems = 0;
+	double DEBUG_vol = 0;
+
 	// For each intersection
 	for(int iii = 0; iii < nb_of_intersections; ++iii)
 	{
@@ -502,7 +507,24 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 		{
 			// Get the intersection mesh pointer
 			elem_inter_idx = it_inter_idx->second;
+
+			// DEBUG!!!
+			if(MASTER_debug_coupling_assemble)
+			{
+				if(elem_inter_idx > DEBUG_max_inter_idx)
+				{
+					DEBUG_max_inter_idx = elem_inter_idx;
+				}
+			}
+
 			const libMesh::Elem* elem_inter = inter_addresses.mesh.elem(elem_inter_idx);
+
+			// DEBUG !!!
+			if(MASTER_debug_coupling_assemble)
+			{
+				DEBUG_vol += elem_inter->volume();
+				++DEBUG_nb_of_inter_elems;
+			}
 
 			// Restart the element
 			inter_addresses.fe_unique_ptr->reinit(elem_inter);
@@ -569,4 +591,14 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 	couplingMatrix_restrict_micro.close();
 	couplingMatrix_restrict_BIG.close();
 	couplingMatrix_restrict_restrict.close();
+
+	if(MASTER_debug_coupling_assemble)
+	{
+		std::cout << "> COUPLING DEBUG !!! " << std::endl;
+		std::cout << ">" << std::endl;
+		std::cout << ">    nb_of_intersections     = " << nb_of_intersections << std::endl;
+		std::cout << ">    DEBUG_max_inter_idx     = " << DEBUG_max_inter_idx << std::endl;
+		std::cout << ">    DEBUG_nb_of_inter_elems = " << DEBUG_nb_of_inter_elems << std::endl;
+		std::cout << ">    DEBUG_vol               = " << DEBUG_vol << std::endl << std::endl;
+	}
 };

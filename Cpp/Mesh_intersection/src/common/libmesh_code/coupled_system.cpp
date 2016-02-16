@@ -115,9 +115,9 @@ void carl::coupled_system::set_corrected_shapes(	const std::vector<std::vector<l
 
 	homemade_assert_msg(phi_inter_qp == phi_corrected_qp,
 					" Different numbers of quadrature points!");
-	libmesh_assert_msg(lambda_corr_size == phi_corrected_dof,
+	homemade_assert_msg(lambda_corr_size == phi_corrected_dof,
 					" Incompatible corrected shape table and barycentric coordinates!");
-	libmesh_assert_msg(lambda_inter_size == phi_inter_dof,
+	homemade_assert_msg(lambda_inter_size == phi_inter_dof,
 					" Incompatible intersection shape table and barycentric coordinates!");
 
 	// phi_A,i (qp) = l_i,1 * phi_I,1 (qp) + l_i,2 * phi_I,2 (qp) ...

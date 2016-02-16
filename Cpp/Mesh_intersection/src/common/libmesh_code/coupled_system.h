@@ -18,6 +18,7 @@
 #include "weight_parameter_function.h"
 
 const bool MASTER_bPerfLog_assemble_coupling = false;
+const bool MASTER_debug_coupling_assemble = false;
 
 namespace carl
 {

@@ -473,6 +473,21 @@ int main (int argc, char** argv)
 	CoupledTest.print_matrix_BIG_info("MicroSys");
 	CoupledTest.print_matrix_restrict_info("MicroSys");
 
+//	carl::check_coupling_matrix(CoupledTest.get_micro_coupling_matrix("MicroSys"),
+//										mesh_inter,
+//										coupling_const ,
+//										"Restrict - Micro : coupling check");
+//
+//	carl::check_coupling_matrix(CoupledTest.get_BIG_coupling_matrix("MicroSys"),
+//										mesh_inter,
+//										coupling_const ,
+//										"Restrict - BIG : coupling check");
+//
+//	carl::check_coupling_matrix(CoupledTest.get_restrict_coupling_matrix("MicroSys"),
+//										mesh_inter,
+//										coupling_const ,
+//										"Restrict - Restrict : coupling check");
+
 	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
 	perf_log.push("Set up","LATIN Solver:");
 	CoupledTest.set_LATIN_solver(	"MicroSys","Elasticity",

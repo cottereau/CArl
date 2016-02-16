@@ -87,9 +87,6 @@ void GenerateNefRestrictedRegion(std::string& filenamePoints, Nef_Polyhedron& ou
 			{
 				std::getline(filePoints,bufferLine);
 
-				bEndOfSection = bufferLine.find("$EndRestrictionNodes")!=std::string::npos;
-				homemade_assert_msg(!bEndOfSection,"Nodes section ended before reading all nodes!");
-
 				dataBuffer.str("");
 				dataBuffer.clear();
 				dataBuffer << bufferLine;
@@ -122,9 +119,6 @@ void GenerateNefRestrictedRegion(std::string& filenamePoints, Nef_Polyhedron& ou
 			for(unsigned int iii = 0; iii < nbOfOuterShells; ++iii)
 			{
 				std::getline(filePoints,bufferLine);
-
-				bEndOfSection = bufferLine.find("$EndRestrictionOuterShell")!=std::string::npos;
-				homemade_assert_msg(!bEndOfSection,"Shell section ended before reading all components!");
 
 				dataBuffer.str("");
 				dataBuffer.clear();
@@ -177,9 +171,6 @@ void GenerateNefRestrictedRegion(std::string& filenamePoints, Nef_Polyhedron& ou
 			{
 				std::getline(filePoints,bufferLine);
 
-				bEndOfSection = bufferLine.find("$EndRestrictionHoles")!=std::string::npos;
-				homemade_assert_msg(!bEndOfSection,"Holes section ended before reading all components!");
-
 				dataBuffer.str("");
 				dataBuffer.clear();
 				dataBuffer << bufferLine;
@@ -212,8 +203,8 @@ void GenerateNefRestrictedRegion(std::string& filenamePoints, Nef_Polyhedron& ou
 		}
 	}
 
-	homemade_assert_msg(!bHasNodes,"No nodes section!");
-	homemade_assert_msg(!bHasOuterShell,"No shell section!");
+	homemade_assert_msg(bHasNodes,"No nodes section!");
+	homemade_assert_msg(bHasOuterShell,"No shell section!");
 	// The holes are optional
 
 	// Finally: compute (outer_shell - holes), if needed

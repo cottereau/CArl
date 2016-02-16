@@ -252,9 +252,6 @@ CompactLines(CA);
 cout << "  -- Compacting CB lines" << endl;
 CompactLines(CB);
 
-PrintMatlab(CA, "coupling_freefem_RA.m", "CouplRAfreefem");
-PrintMatlab(CB, "coupling_freefem_RB.m", "CouplRBfreefem");
-
 //ofstream compactedAFile("output/compacted_A.dat");
 //compactedAFile << CA << endl;
 //
