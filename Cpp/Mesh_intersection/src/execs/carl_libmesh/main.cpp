@@ -451,7 +451,9 @@ int main (int argc, char** argv)
 
 	perf_log.push("Build elasticity couplings");
 	CoupledTest.set_coupling_parameters("MicroSys",coupling_const,mean_distance);
-//	CoupledTest.use_H1_coupling("MicroSys");
+
+	CoupledTest.use_H1_coupling("MicroSys");
+
 	CoupledTest.assemble_coupling_elasticity_3D(	"BigSys","MicroSys",
 													"InterSys","RestrictSys",
 													equivalence_table_restrict_A,

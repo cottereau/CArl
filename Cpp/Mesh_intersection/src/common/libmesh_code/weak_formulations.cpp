@@ -19,15 +19,6 @@ void Mass(	libMesh::DenseMatrix<libMesh::Number>& Mass,
 	}
 };
 
-libMesh::Real eval_strain_coeff(unsigned int i,
-						  unsigned int j,
-						  unsigned int k,
-						  unsigned int l)
-{
-	return  (kronecker_delta(i,k) * kronecker_delta(j,l)
-					+ kronecker_delta(i,l) * kronecker_delta(j,k))/2.;
-};
-
 // --- Vectors
 
 // --- Arlequin coupling matrices
@@ -73,10 +64,10 @@ void H1_Coupling_Extra_Term(	libMesh::DenseSubMatrix<libMesh::Number>& Coupl,
 								unsigned int qp,
 								unsigned int C_i,
 								unsigned int C_k,
+								unsigned int n_components_A,
+								unsigned int n_components_B,
 								const std::vector<std::vector<libMesh::RealGradient> >& dphi_sysA,
 								const std::vector<std::vector<libMesh::RealGradient> >& dphi_sysB,
-								const unsigned int n_components_A,
-								const unsigned int n_components_B,
 								const unsigned int n_dofs_sysA,
 								const unsigned int n_dofs_sysB,
 								const std::vector<libMesh::Real>& JxW,
@@ -87,11 +78,13 @@ void H1_Coupling_Extra_Term(	libMesh::DenseSubMatrix<libMesh::Number>& Coupl,
 	{
 		for (unsigned int jjj=0; jjj < n_dofs_sysB; jjj++)
 		{
-			for(unsigned int C_j=0; C_j < n_components_A; C_j++)
+			for(unsigned int C_j=0; C_j<n_components_A; C_j++)
 			{
-				for(unsigned int C_l=0; C_l< n_components_B; C_l++)
+				for(unsigned int C_l=0; C_l<n_components_B; C_l++)
 				{
-					Coupl(iii,jjj) += cte * JxW[qp]*(eval_strain_coeff(C_i,C_j,C_k,C_l) * dphi_sysA[iii][qp](C_j)*dphi_sysB[jjj][qp](C_l));
+					Coupl(iii,jjj) += cte*JxW[qp]* dphi_sysA[iii][qp](C_j)*dphi_sysB[jjj][qp](C_l) *
+											( kronecker_delta(C_i,C_k) * kronecker_delta(C_j,C_l) +
+											  kronecker_delta(C_i,C_l) * kronecker_delta(C_j,C_k));
 				}
 			}
 		}

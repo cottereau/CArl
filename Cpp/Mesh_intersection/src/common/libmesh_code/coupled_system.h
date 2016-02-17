@@ -187,52 +187,69 @@ public:
 									const std::vector<libMesh::Real>& JxW,
 									const libMesh::Number H1_coupling_const)
 	{
-		int n_components = 3;
-
-		H1_Coupling_Extra_Term(	Me_uu, qp, 0, 0, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+		unsigned int n_components = 3;
+		H1_Coupling_Extra_Term(	Me_uu, qp,
+								system_type_AAA.u_var, system_type_BBB.u_var,
 								n_components, n_components,
+								corrected_dphi_sysAAA, corrected_dphi_sysBBB,
 								system_type_AAA.n_dofs_u,system_type_BBB.n_dofs_u,
 								JxW,H1_coupling_const);
 
-		H1_Coupling_Extra_Term(	Me_uv, qp, 0, 1, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+		H1_Coupling_Extra_Term(	Me_uv, qp,
+								system_type_AAA.u_var, system_type_BBB.v_var,
 								n_components, n_components,
+								corrected_dphi_sysAAA, corrected_dphi_sysBBB,
 								system_type_AAA.n_dofs_u,system_type_BBB.n_dofs_v,
 								JxW,H1_coupling_const);
 
-		H1_Coupling_Extra_Term(	Me_uw, qp, 0, 2, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+		H1_Coupling_Extra_Term(	Me_uw, qp,
+								system_type_AAA.u_var, system_type_BBB.w_var,
 								n_components, n_components,
+								corrected_dphi_sysAAA, corrected_dphi_sysBBB,
 								system_type_AAA.n_dofs_u,system_type_BBB.n_dofs_w,
 								JxW,H1_coupling_const);
 
-		H1_Coupling_Extra_Term(	Me_vu, qp, 1, 0, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+		H1_Coupling_Extra_Term(	Me_vu, qp,
+								system_type_AAA.v_var, system_type_BBB.u_var,
 								n_components, n_components,
+								corrected_dphi_sysAAA, corrected_dphi_sysBBB,
 								system_type_AAA.n_dofs_v,system_type_BBB.n_dofs_u,
 								JxW,H1_coupling_const);
 
-		H1_Coupling_Extra_Term(	Me_vv, qp, 1, 1, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+		H1_Coupling_Extra_Term(	Me_vv, qp,
+								system_type_AAA.v_var, system_type_BBB.v_var,
 								n_components, n_components,
+								corrected_dphi_sysAAA, corrected_dphi_sysBBB,
 								system_type_AAA.n_dofs_v,system_type_BBB.n_dofs_v,
 								JxW,H1_coupling_const);
 
-		H1_Coupling_Extra_Term(	Me_vw, qp, 1, 2, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+		H1_Coupling_Extra_Term(	Me_vw, qp,
+								system_type_AAA.v_var, system_type_BBB.w_var,
 								n_components, n_components,
+								corrected_dphi_sysAAA, corrected_dphi_sysBBB,
 								system_type_AAA.n_dofs_v,system_type_BBB.n_dofs_w,
 								JxW,H1_coupling_const);
 
-		H1_Coupling_Extra_Term(	Me_wu, qp, 2, 0, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+		H1_Coupling_Extra_Term(	Me_wu, qp,
+								system_type_AAA.w_var, system_type_BBB.u_var,
 								n_components, n_components,
+								corrected_dphi_sysAAA, corrected_dphi_sysBBB,
 								system_type_AAA.n_dofs_w,system_type_BBB.n_dofs_u,
 								JxW,H1_coupling_const);
 
-		H1_Coupling_Extra_Term(	Me_wv, qp, 2, 1, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
-										n_components, n_components,
-										system_type_AAA.n_dofs_w,system_type_BBB.n_dofs_v,
-										JxW,H1_coupling_const);
+		H1_Coupling_Extra_Term(	Me_wv, qp,
+								system_type_AAA.w_var, system_type_BBB.v_var,
+								n_components, n_components,
+								corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+								system_type_AAA.n_dofs_w,system_type_BBB.n_dofs_v,
+								JxW,H1_coupling_const);
 
-		H1_Coupling_Extra_Term(	Me_ww, qp, 2, 2, corrected_dphi_sysAAA, corrected_dphi_sysBBB,
-										n_components, n_components,
-										system_type_AAA.n_dofs_w,system_type_BBB.n_dofs_w,
-										JxW,H1_coupling_const);
+		H1_Coupling_Extra_Term(	Me_ww, qp,
+								system_type_AAA.w_var, system_type_BBB.w_var,
+								n_components, n_components,
+								corrected_dphi_sysAAA, corrected_dphi_sysBBB,
+								system_type_AAA.n_dofs_w,system_type_BBB.n_dofs_w,
+								JxW,H1_coupling_const);
 	};
 
 	void zero()
@@ -266,8 +283,8 @@ protected:
 	bool m_bHasAssembled_BIG;
 
 	// -> Coupling constant maps
-	std::map<std::string, bool > m_coupling_constantMap;
-	std::map<std::string, bool > m_coupling_lengthMap;
+	std::map<std::string, double > m_coupling_constantMap;
+	std::map<std::string, double > m_coupling_lengthMap;
 
 	// -> Typedefs of the destructor iterators
 	typedef std::map<std::string, libMesh::EquationSystems* >::iterator EqSystem_iterator;
