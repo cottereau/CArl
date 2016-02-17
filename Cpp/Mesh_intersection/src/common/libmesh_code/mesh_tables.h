@@ -23,9 +23,9 @@ void set_weight_function_domain_idx(	std::string &filename,
 										std::vector<int>& domain_Idx_coupling
 										);
 
-void create_mesh_map(std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map);
+void create_mesh_map(const std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map);
 
-void build_mesh_map_Gmsh(std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map);
+void build_mesh_map_Gmsh(const std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map);
 
 void generate_intersection_tables_partial(	std::string& intersection_table_restrict_B_Filename,
 		std::string& intersection_table_I_Filename,

@@ -1,0 +1,23 @@
+# Physical parameter file
+PhysicalParameters data/3D/test_multi_micro_w_0_2__p_30_physical.dat
+
+# Mesh files
+MeshA meshes/3D/test_multi_macro.msh
+MeshB meshes/3D/test_multi_micro_w_0_2__p_30.msh
+MeshInter meshes/3D/output/test_multi_I_w_0_2__p_30_full.msh
+MeshWeight meshes/3D/test_restriction_mask.msh
+
+# Weight parameter function file
+WeightIndexes data/3D/test_multi_weight_idx.dat
+
+# Intersection tables
+IntersectionPairsTable meshes/equivalence_tables/intersection_multi_carl_restrict_B_w_0_2__p_30_full.dat
+IntersectionElementsTable meshes/equivalence_tables/intersection_multi_carl_I_w_0_2__p_30_full.dat
+
+# Mediator space files
+MeshMediator meshes/3D/output/test_multi_restriction_full.msh
+MediatorEquivalenceTableFile meshes/equivalence_tables/equivalence_multi_carl_restrict_A_full.dat
+
+# Output files
+OutputEXOFileA meshes/3D/output/carl_multi_crystal_test_macro_w_0_2__p_30_full.exo
+OutputEXOFileB meshes/3D/output/carl_multi_crystal_test_micro_w_0_2__p_30_full.exo

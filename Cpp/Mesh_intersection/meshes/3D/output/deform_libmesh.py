@@ -6,8 +6,8 @@ paraview.simple._DisableFirstRenderCameraReset()
 
 nb_of_blocks = 30
 
-carl_multi_crystal_test_macro_filename = '/Users/breubreubreu/Programming/CArl/Cpp/Mesh_intersection/meshes/3D/output/carl_multi_crystal_test_macro_w_0_2__p_30_ref.exo'
-carl_multi_crystal_test_micro_filename = '/Users/breubreubreu/Programming/CArl/Cpp/Mesh_intersection/meshes/3D/output/carl_multi_crystal_test_micro_w_0_2__p_30_ref.exo'
+carl_multi_crystal_test_macro_filename = '/Users/breubreubreu/Programming/CArl/Cpp/Mesh_intersection/meshes/3D/output/carl_multi_crystal_test_macro_w_0_2__p_20.exo'
+carl_multi_crystal_test_micro_filename = '/Users/breubreubreu/Programming/CArl/Cpp/Mesh_intersection/meshes/3D/output/carl_multi_crystal_test_micro_w_0_2__p_20.exo'
 
 # Create a new 'Render View'
 renderView1 = GetRenderView()

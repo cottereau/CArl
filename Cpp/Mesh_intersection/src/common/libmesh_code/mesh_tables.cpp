@@ -50,7 +50,7 @@ void carl::set_weight_function_domain_idx(	std::string &filename,
 	dataF.close();
 }
 
-void carl::create_mesh_map(std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map)
+void carl::create_mesh_map(const std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map)
 {
 	/*
 	 *  libmesh : nodes and elements start at 0, and are continuous
@@ -69,7 +69,7 @@ void carl::create_mesh_map(std::string &filename, std::unordered_map<int,int> &n
 	}
 }
 
-void carl::build_mesh_map_Gmsh(std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map)
+void carl::build_mesh_map_Gmsh(const std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map)
 {
 	if(!(boost::filesystem::path(filename).extension().string().compare(".msh")==0))
 	{

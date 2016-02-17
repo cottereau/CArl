@@ -1,5 +1,161 @@
 #include "main.h"
 
+struct carl_input_params
+{
+	std::string physical_params_file;
+
+	std::string output_file_BIG;
+	std::string output_file_micro;
+
+	std::string mesh_BIG_file;
+	std::string mesh_micro_file;
+	std::string mesh_restrict_file;
+	std::string mesh_inter_file;
+	std::string mesh_weight_file;
+
+	std::string equivalence_table_restrict_A_file;
+	std::string intersection_table_restrict_B_file;
+	std::string intersection_table_I_file;
+
+	std::string weight_domain_idx_file;
+
+	bool b_UseMeshAAsMediator;
+};
+
+void get_input_params(GetPot& field_parser, carl_input_params& input_params)
+{
+	// Set constant parameters
+	if ( field_parser.search(3, "-p","--parameters","PhysicalParameters") )
+	{
+		input_params.physical_params_file = field_parser.next(input_params.physical_params_file);
+	}
+	else
+	{
+		homemade_error_msg("Missing the physical parameters file!");
+	}
+
+	// Set mesh files
+	if ( field_parser.search(3, "--meshA", "-mA", "MeshA") )
+	{
+		input_params.mesh_BIG_file = field_parser.next(input_params.mesh_BIG_file);
+	}
+	else
+	{
+		homemade_error_msg("Missing the A mesh file!");
+	}
+
+	if ( field_parser.search(3, "--meshB", "-mB", "MeshB") )
+	{
+		input_params.mesh_micro_file = field_parser.next(input_params.mesh_micro_file);
+	}
+	else
+	{
+		homemade_error_msg("Missing the B mesh file!");
+	}
+
+	if ( field_parser.search(3, "--meshI", "-mI", "MeshInter") )
+	{
+		input_params.mesh_inter_file = field_parser.next(input_params.mesh_inter_file);
+	}
+	else
+	{
+		homemade_error_msg("Missing the intersection mesh file!");
+	}
+
+	if ( field_parser.search(3, "--meshWeight", "-mW", "MeshWeight") )
+	{
+		input_params.mesh_weight_file = field_parser.next(input_params.mesh_weight_file);
+	}
+	else
+	{
+		homemade_error_msg("Missing the weight mesh file!");
+	}
+
+	if ( field_parser.search(3, "--meshR", "-mR", "MeshMediator") && field_parser.search(2, "--tableA", "MediatorEquivalenceTableFile") )
+	{
+		// Then we have an external mediator mesh
+		field_parser.search(3, "--meshR", "-mR", "MeshMediator");
+		input_params.mesh_restrict_file = field_parser.next(input_params.mesh_restrict_file);
+
+		field_parser.search(2, "--tableA", "MediatorEquivalenceTableFile");
+		input_params.equivalence_table_restrict_A_file = field_parser.next(input_params.equivalence_table_restrict_A_file);
+
+		input_params.b_UseMeshAAsMediator = false;
+	}
+	else if ( !field_parser.search(3, "--meshR", "-mR", "MeshMediator") && !field_parser.search(2, "--tableA", "MediatorEquivalenceTableFile") )
+	{
+		// Then use the mesh A as the mediator
+		input_params.mesh_restrict_file = input_params.mesh_BIG_file;
+		input_params.equivalence_table_restrict_A_file = "";
+
+		input_params.b_UseMeshAAsMediator = true;
+	}
+	else if ( !field_parser.search(3, "--meshR", "-mR", "MeshMediator") )
+	{
+		homemade_error_msg("Missing the mediator mesh file!");
+	}
+	else if ( !field_parser.search(2, "--tableA", "MediatorEquivalenceTableFile") )
+	{
+		homemade_error_msg("Missing the mediator / A meshes equivalence file!");
+	}
+
+	// Set table files
+	if( field_parser.search(2, "--weightIdx", "WeightIndexes") )
+	{
+		input_params.weight_domain_idx_file = field_parser.next(input_params.weight_domain_idx_file);
+	}
+	else
+	{
+		homemade_error_msg("Missing the weight value file!");
+	}
+
+	if( field_parser.search(2, "--tableB", "IntersectionPairsTable") )
+	{
+		input_params.intersection_table_restrict_B_file = field_parser.next(input_params.intersection_table_restrict_B_file);
+	}
+	else
+	{
+		homemade_error_msg("Missing the intersection pairs file!");
+	}
+
+	if(	field_parser.search(2, "--tableI", "IntersectionElementsTable") )
+	{
+		input_params.intersection_table_I_file = field_parser.next(input_params.intersection_table_I_file);
+	}
+	else
+	{
+		homemade_error_msg("Missing the intersection elements file!");
+	}
+
+	// Set output files
+	input_params.output_file_BIG = "meshes/3D/output/carl_multi_crystal_test_micro.exo";
+	input_params.output_file_micro = "meshes/3D/output/carl_multi_crystal_test_macro.exo";
+	if ( field_parser.search(3, "-oA","--outputA", "OutputEXOFileA") )
+	{
+		input_params.output_file_BIG = field_parser.next(input_params.output_file_BIG);
+	}
+	if ( field_parser.search(3, "-oB","--outputB", "OutputEXOFileB") )
+	{
+		input_params.output_file_micro = field_parser.next(input_params.output_file_micro);
+	}
+};
+
+void set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file,
+					std::unordered_map<int,int>& mesh_NodeMap, std::unordered_map<int,int>& mesh_ElemMap)
+{
+	libMesh::GmshIO meshBuffer(mesh);
+	meshBuffer.read(mesh_file);
+	mesh.prepare_for_use();
+	carl::create_mesh_map(mesh_file,mesh_NodeMap,mesh_ElemMap);
+};
+
+void set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file)
+{
+	libMesh::GmshIO meshBuffer(mesh);
+	meshBuffer.read(mesh_file);
+	mesh.prepare_for_use();
+};
+
 int main (int argc, char** argv)
 {
 	/* To Do list --------------------------------------------------------------
@@ -84,273 +240,184 @@ int main (int argc, char** argv)
 	boundary_displacement x_min_BIG(-0.25,0,0);
 	boundary_id_cube boundary_ids;
 
-	// - Get inputs and set variables
+	// - Set up inputs
 	GetPot command_line (argc, argv);
+	GetPot field_parser;
+	std::string input_filename;
+
+	if( command_line.search(1, "--inputfile") )
+	{
+		input_filename = command_line.next(input_filename);
+		field_parser.parse_input_file(input_filename,"#","\n"," \t\n");
+	}
+	else
+	{
+		field_parser = command_line;
+	}
+
+	carl_input_params input_params;
+	get_input_params(field_parser, input_params);
 
 	const unsigned int dim = 3;
 
 	libmesh_example_requires(dim == LIBMESH_DIM, "3D support");
 
-	// Set constant parameters
-	std::string physicalParamsFile;
-	if ( command_line.search(2, "-p","--parameters") )
-	{
-		physicalParamsFile = command_line.next(physicalParamsFile);
-	}
-	else
-	{
-		std::cerr << "Need a physical parameter file!" << std::endl;
-		return 0;
-	}
-
-	// Set output
-	std::string outputEXOFile_micro = "meshes/3D/output/carl_multi_crystal_test_micro.exo";
-	std::string outputEXOFile_BIG  = "meshes/3D/output/carl_multi_crystal_test_macro.exo";
-
-	if ( command_line.search(2, "-oA","--outputA") )
-	{
-		outputEXOFile_BIG = command_line.next(outputEXOFile_BIG);
-	}
-	if ( command_line.search(2, "-oB","--outputB") )
-	{
-		outputEXOFile_micro = command_line.next(outputEXOFile_micro);
-	}
-
-	// Set meshes
+	// - Set meshes -----------------------------------------------------------
 	libMesh::Mesh mesh_BIG(init.comm(), dim);
-	libMesh::Mesh mesh_micro(init.comm(), dim);
-	libMesh::Mesh mesh_restrict(init.comm(), dim);
-	libMesh::Mesh mesh_inter(init.comm(), dim);
-	libMesh::Mesh mesh_weight(init.comm(), dim);
-
-	std::string mesh_BIG_Filename;
-	std::string mesh_micro_Filename;
-	std::string mesh_restrict_Filename;
-	std::string mesh_inter_Filename;
-	std::string mesh_weight_Filename;
-
-	std::string equivalence_table_restrict_A_Filename;
-	std::string intersection_table_restrict_B_Filename;
-	std::string intersection_table_I_Filename;
-
-	std::string weight_domain_idx_Filename;
-
-	std::string extra_restrict_info = "";
-
-	// Read meshes ...
-
 	std::unordered_map<int,int> mesh_BIG_NodeMap;
 	std::unordered_map<int,int> mesh_BIG_ElemMap;
+	set_mesh_Gmsh(mesh_BIG,input_params.mesh_BIG_file,mesh_BIG_NodeMap,mesh_BIG_ElemMap);
 
+	libMesh::Mesh mesh_micro(init.comm(), dim);
 	std::unordered_map<int,int> mesh_micro_NodeMap;
 	std::unordered_map<int,int> mesh_micro_ElemMap;
+	set_mesh_Gmsh(mesh_micro,input_params.mesh_micro_file,mesh_micro_NodeMap,mesh_micro_ElemMap);
 
-	std::unordered_map<int,int> mesh_restrict_NodeMap;
-	std::unordered_map<int,int> mesh_restrict_ElemMap;
-
+	libMesh::Mesh mesh_inter(init.comm(), dim);
 	std::unordered_map<int,int> mesh_inter_NodeMap;
 	std::unordered_map<int,int> mesh_inter_ElemMap;
+	set_mesh_Gmsh(mesh_inter,input_params.mesh_inter_file,mesh_inter_NodeMap,mesh_inter_ElemMap);
 
+	libMesh::Mesh mesh_weight(init.comm(), dim);
+	set_mesh_Gmsh(mesh_weight,input_params.mesh_weight_file);
+
+	// - Set mediator mesh and index tables -----------------------------------
 	std::unordered_map<int,int> equivalence_table_restrict_A;
 	std::vector<std::pair<int,int> > intersection_table_restrict_B;
 	std::unordered_multimap<int,int> intersection_table_I;
 
+	libMesh::Mesh mesh_restrict(init.comm(), dim);
+	std::unordered_map<int,int> mesh_restrict_NodeMap;
+	std::unordered_map<int,int> mesh_restrict_ElemMap;
+	if ( !input_params.b_UseMeshAAsMediator )
+	{
+		set_mesh_Gmsh(mesh_restrict,input_params.mesh_restrict_file,mesh_restrict_NodeMap,mesh_restrict_ElemMap);
+
+		carl::generate_intersection_tables_full(
+				input_params.equivalence_table_restrict_A_file,
+				input_params.intersection_table_restrict_B_file,
+				input_params.intersection_table_I_file,
+				mesh_restrict_ElemMap,
+				mesh_micro_ElemMap,
+				mesh_BIG_ElemMap,
+				mesh_inter_ElemMap,
+				equivalence_table_restrict_A,
+				intersection_table_restrict_B,
+				intersection_table_I);
+	}
+	else
+	{
+		mesh_restrict.copy_nodes_and_elements(mesh_BIG);
+		input_params.mesh_restrict_file = input_params.mesh_BIG_file;
+		mesh_restrict_NodeMap = mesh_BIG_NodeMap;
+		mesh_restrict_ElemMap = mesh_BIG_ElemMap;
+
+		carl::generate_intersection_tables_partial(
+				input_params.intersection_table_restrict_B_file,
+				input_params.intersection_table_I_file,
+				mesh_restrict_ElemMap,
+				mesh_micro_ElemMap,
+				mesh_inter_ElemMap,
+				intersection_table_restrict_B,
+				intersection_table_I);
+	}
+
+	// Set weight functions
 	int domain_Idx_BIG = -1;
 	int nb_of_domain_Idx = 1;
 	std::vector<int> domain_Idx_micro;
 	std::vector<int> domain_Idx_coupling;
 
-	bool using_same_mesh_restrict_A = false;
+	carl::set_weight_function_domain_idx(	input_params.weight_domain_idx_file,
+											domain_Idx_BIG, nb_of_domain_Idx,
+											domain_Idx_micro, domain_Idx_coupling
+											);
 
-	if ( 	command_line.search(2, "--meshA", "-mA") &&
-			command_line.search(2, "--meshB", "-mB") &&
-			command_line.search(2, "--meshI", "-mI") &&
-			command_line.search(2, "--meshWeight", "-mW") &&
-			command_line.search(1, "--weightIdx") &&
-			command_line.search(1, "--tableB") &&
-			command_line.search(1, "--tableI"))
-	{
-		command_line.search(2, "--meshA", "-mA");
-		mesh_BIG_Filename = command_line.next(mesh_BIG_Filename);
-		libMesh::GmshIO meshBuffer_BIG(mesh_BIG);
-		meshBuffer_BIG.read(mesh_BIG_Filename);
-		mesh_BIG.prepare_for_use();
-		carl::create_mesh_map(mesh_BIG_Filename,mesh_BIG_NodeMap,mesh_BIG_ElemMap);
-
-		command_line.search(2, "--meshB", "-mB");
-		mesh_micro_Filename = command_line.next(mesh_micro_Filename);
-		libMesh::GmshIO meshBuffer_micro(mesh_micro);
-		meshBuffer_micro.read(mesh_micro_Filename);
-		mesh_micro.prepare_for_use();
-		carl::create_mesh_map(mesh_micro_Filename,mesh_micro_NodeMap,mesh_micro_ElemMap);
-
-		command_line.search(2, "--meshI", "-mI");
-		mesh_inter_Filename = command_line.next(mesh_inter_Filename);
-		libMesh::GmshIO meshBuffer_inter(mesh_inter);
-		meshBuffer_inter.read(mesh_inter_Filename);
-		mesh_inter.prepare_for_use();
-		carl::create_mesh_map(mesh_inter_Filename,mesh_inter_NodeMap,mesh_inter_ElemMap);
-
-		command_line.search(2, "--meshW", "-mW");
-		mesh_weight_Filename = command_line.next(mesh_weight_Filename);
-		libMesh::GmshIO meshBuffer_weight(mesh_weight);
-		meshBuffer_weight.read(mesh_weight_Filename);
-		mesh_weight.prepare_for_use();
-
-		command_line.search(1, "--tableB");
-		intersection_table_restrict_B_Filename = command_line.next(intersection_table_restrict_B_Filename);
-
-		command_line.search(1, "--tableI");
-		intersection_table_I_Filename = command_line.next(intersection_table_I_Filename);
-
-		command_line.search(1, "--weightIdx");
-		weight_domain_idx_Filename = command_line.next(weight_domain_idx_Filename);
-		carl::set_weight_function_domain_idx(	weight_domain_idx_Filename,
-												domain_Idx_BIG, nb_of_domain_Idx,
-												domain_Idx_micro, domain_Idx_coupling
-												);
-
-		if (command_line.search(2, "--meshR", "-mR") && command_line.search(1, "--tableA"))
-		{
-			command_line.search(2, "--meshR", "-mR");
-			mesh_restrict_Filename = command_line.next(mesh_restrict_Filename);
-			libMesh::GmshIO meshBuffer_restrict(mesh_restrict);
-			meshBuffer_restrict.read(mesh_restrict_Filename);
-			mesh_restrict.prepare_for_use();
-			carl::create_mesh_map(mesh_restrict_Filename,mesh_restrict_NodeMap,mesh_restrict_ElemMap);
-
-			command_line.search(1, "--tableA");
-			equivalence_table_restrict_A_Filename = command_line.next(equivalence_table_restrict_A_Filename);
-
-			carl::generate_intersection_tables_full(	equivalence_table_restrict_A_Filename,
-												intersection_table_restrict_B_Filename,
-												intersection_table_I_Filename,
-												mesh_restrict_ElemMap,
-												mesh_micro_ElemMap,
-												mesh_BIG_ElemMap,
-												mesh_inter_ElemMap,
-												equivalence_table_restrict_A,
-												intersection_table_restrict_B,
-												intersection_table_I);
-		}
-		else if(!command_line.search(2, "--meshR", "-mR") && !command_line.search(1, "--tableA"))
-		{
-			mesh_restrict.copy_nodes_and_elements(mesh_BIG);
-			mesh_restrict_Filename = mesh_BIG_Filename;
-			mesh_restrict_NodeMap = mesh_BIG_NodeMap;
-			mesh_restrict_ElemMap = mesh_BIG_ElemMap;
-
-			using_same_mesh_restrict_A = true;
-
-			extra_restrict_info = " (Same as A)";
-			equivalence_table_restrict_A_Filename = " --- ";
-
-			carl::generate_intersection_tables_partial(	intersection_table_restrict_B_Filename,
-													intersection_table_I_Filename,
-													mesh_restrict_ElemMap,
-													mesh_micro_ElemMap,
-													mesh_inter_ElemMap,
-													intersection_table_restrict_B,
-													intersection_table_I);
-		}
-		else if(!command_line.search(2, "--meshR", "-mR"))
-		{
-			libmesh_error_msg("\n---> ERROR: Missing restrition mesh file");
-		}
-		else if(!command_line.search(1, "--tableA"))
-		{
-			libmesh_error_msg("\n---> ERROR: Missing restrition table file");
-		}
-
+	// - Print info about the meshes and tables -------------------------------
 		double vol = 0;
-		libMesh::Elem* silly_elem;
-		for(libMesh::MeshBase::element_iterator itBegin = mesh_BIG.elements_begin();
-				itBegin != mesh_BIG.elements_end(); ++itBegin)
-		{
-			silly_elem = *itBegin;
-			vol += silly_elem->volume();
-		}
-		std::cout << "| Mesh BIG info :" << std::endl;
-		std::cout << "|    filename     " << mesh_BIG_Filename << std::endl;
-		std::cout << "|    n_elem       " << mesh_BIG.n_elem() << std::endl;
-		std::cout << "|    n_nodes      " << mesh_BIG.n_nodes() << std::endl;
-		std::cout << "|    n_subdomains " << mesh_BIG.n_subdomains() << std::endl;
-		std::cout << "|    volume       " << vol << std::endl << std::endl;
-
-		vol = 0;
-		for(libMesh::MeshBase::element_iterator itBegin = mesh_micro.elements_begin();
-				itBegin != mesh_micro.elements_end(); ++itBegin)
-		{
-			silly_elem = *itBegin;
-			vol += silly_elem->volume();
-		}
-		std::cout << "| Mesh micro info :" << std::endl;
-		std::cout << "|    filename     " << mesh_micro_Filename << std::endl;
-		std::cout << "|    n_elem       " << mesh_micro.n_elem() << std::endl;
-		std::cout << "|    n_nodes      " << mesh_micro.n_nodes() << std::endl;
-		std::cout << "|    n_subdomains " << mesh_micro.n_subdomains() << std::endl;
-		std::cout << "|    volume       " << vol << std::endl << std::endl;
-
-		vol = 0;
-		for(libMesh::MeshBase::element_iterator itBegin = mesh_inter.elements_begin();
-				itBegin != mesh_inter.elements_end(); ++itBegin)
-		{
-			silly_elem = *itBegin;
-			vol += silly_elem->volume();
-		}
-		std::cout << "| Mesh inter info :" << std::endl;
-		std::cout << "|    filename     " << mesh_inter_Filename << std::endl;
-		std::cout << "|    n_elem       " << mesh_inter.n_elem() << std::endl;
-		std::cout << "|    n_nodes      " << mesh_inter.n_nodes() << std::endl;
-		std::cout << "|    n_subdomains " << mesh_inter.n_subdomains() << std::endl;
-		std::cout << "|    volume       " << vol << std::endl << std::endl;
-
-		vol = 0;
-		for(libMesh::MeshBase::element_iterator itBegin = mesh_restrict.elements_begin();
-				itBegin != mesh_restrict.elements_end(); ++itBegin)
-		{
-			silly_elem = *itBegin;
-			vol += silly_elem->volume();
-		}
-		std::cout << "| Mesh restriction info :" << extra_restrict_info << std::endl;
-		std::cout << "|    filename     " << mesh_restrict_Filename << std::endl;
-		std::cout << "|    n_elem       " << mesh_restrict.n_elem() << std::endl;
-		std::cout << "|    n_nodes      " << mesh_restrict.n_nodes() << std::endl;
-		std::cout << "|    n_subdomains " << mesh_restrict.n_subdomains() << std::endl;
-		std::cout << "|    volume       " << vol << std::endl << std::endl;
-
-		std::cout << "| Inter. table restrict / A :" << std::endl;
-		std::cout << "|    filename     " << equivalence_table_restrict_A_Filename << std::endl << std::endl;
-
-		std::cout << "| Inter. table restrict / B :" << std::endl;
-		std::cout << "|    filename     " << intersection_table_restrict_B_Filename << std::endl << std::endl;
-
-		std::cout << "| Inter. table I  :" << std::endl;
-		std::cout << "|    filename     " << intersection_table_I_Filename << std::endl << std::endl;
-
-		std::cout << "| Mesh weight info :" << std::endl;
-		std::cout << "|    filename     " << mesh_weight_Filename << std::endl;
-		std::cout << "|    n_elem       " << mesh_weight.n_elem() << std::endl;
-		std::cout << "|    n_nodes      " << mesh_weight.n_nodes() << std::endl;
-		std::cout << "|    n_subdomains " << mesh_weight.n_subdomains() << " " << nb_of_domain_Idx << std::endl;
-		std::cout << "|    macro idx    " << domain_Idx_BIG << std::endl;
-		std::cout << "|    micro idx    ";
-		for(int iii = 0; iii < nb_of_domain_Idx; ++iii)
-		{
-			std::cout << domain_Idx_micro[iii] << " ";
-		}
-		std::cout << std::endl;
-		std::cout << "|    coupling idx ";
-		for(int iii = 0; iii < nb_of_domain_Idx; ++iii)
-		{
-			std::cout << domain_Idx_coupling[iii] << " ";
-		}
-		std::cout << std::endl << std::endl;
-	}
-	else
+	libMesh::Elem* silly_elem;
+	for(libMesh::MeshBase::element_iterator itBegin = mesh_BIG.elements_begin();
+			itBegin != mesh_BIG.elements_end(); ++itBegin)
 	{
-		libmesh_error_msg("\n---> ERROR: Must give the four meshes, the intersection tables and the weight domains files!\n");
+		silly_elem = *itBegin;
+		vol += silly_elem->volume();
 	}
+	std::cout << "| Mesh BIG info :" << std::endl;
+	std::cout << "|    filename     " << input_params.mesh_BIG_file << std::endl;
+	std::cout << "|    n_elem       " << mesh_BIG.n_elem() << std::endl;
+	std::cout << "|    n_nodes      " << mesh_BIG.n_nodes() << std::endl;
+	std::cout << "|    n_subdomains " << mesh_BIG.n_subdomains() << std::endl;
+	std::cout << "|    volume       " << vol << std::endl << std::endl;
+
+	vol = 0;
+	for(libMesh::MeshBase::element_iterator itBegin = mesh_micro.elements_begin();
+			itBegin != mesh_micro.elements_end(); ++itBegin)
+	{
+		silly_elem = *itBegin;
+		vol += silly_elem->volume();
+	}
+	std::cout << "| Mesh micro info :" << std::endl;
+	std::cout << "|    filename     " << input_params.mesh_micro_file << std::endl;
+	std::cout << "|    n_elem       " << mesh_micro.n_elem() << std::endl;
+	std::cout << "|    n_nodes      " << mesh_micro.n_nodes() << std::endl;
+	std::cout << "|    n_subdomains " << mesh_micro.n_subdomains() << std::endl;
+	std::cout << "|    volume       " << vol << std::endl << std::endl;
+
+	vol = 0;
+	for(libMesh::MeshBase::element_iterator itBegin = mesh_inter.elements_begin();
+			itBegin != mesh_inter.elements_end(); ++itBegin)
+	{
+		silly_elem = *itBegin;
+		vol += silly_elem->volume();
+	}
+	std::cout << "| Mesh inter info :" << std::endl;
+	std::cout << "|    filename     " << input_params.mesh_inter_file << std::endl;
+	std::cout << "|    n_elem       " << mesh_inter.n_elem() << std::endl;
+	std::cout << "|    n_nodes      " << mesh_inter.n_nodes() << std::endl;
+	std::cout << "|    n_subdomains " << mesh_inter.n_subdomains() << std::endl;
+	std::cout << "|    volume       " << vol << std::endl << std::endl;
+
+	vol = 0;
+	for(libMesh::MeshBase::element_iterator itBegin = mesh_restrict.elements_begin();
+			itBegin != mesh_restrict.elements_end(); ++itBegin)
+	{
+		silly_elem = *itBegin;
+		vol += silly_elem->volume();
+	}
+	std::cout << "| Mesh restriction info :" << std::endl;
+	std::cout << "|    filename     " << input_params.mesh_restrict_file << std::endl;
+	std::cout << "|    n_elem       " << mesh_restrict.n_elem() << std::endl;
+	std::cout << "|    n_nodes      " << mesh_restrict.n_nodes() << std::endl;
+	std::cout << "|    n_subdomains " << mesh_restrict.n_subdomains() << std::endl;
+	std::cout << "|    volume       " << vol << std::endl << std::endl;
+
+	std::cout << "| Inter. table restrict / A :" << std::endl;
+	std::cout << "|    filename     " << input_params.equivalence_table_restrict_A_file << std::endl << std::endl;
+
+	std::cout << "| Inter. table restrict / B :" << std::endl;
+	std::cout << "|    filename     " << input_params.intersection_table_restrict_B_file << std::endl << std::endl;
+
+	std::cout << "| Inter. table I  :" << std::endl;
+	std::cout << "|    filename     " << input_params.intersection_table_I_file << std::endl << std::endl;
+
+	std::cout << "| Mesh weight info :" << std::endl;
+	std::cout << "|    filename     " << input_params.mesh_weight_file << std::endl;
+	std::cout << "|    n_elem       " << mesh_weight.n_elem() << std::endl;
+	std::cout << "|    n_nodes      " << mesh_weight.n_nodes() << std::endl;
+	std::cout << "|    n_subdomains " << mesh_weight.n_subdomains() << " " << nb_of_domain_Idx << std::endl;
+	std::cout << "|    macro idx    " << domain_Idx_BIG << std::endl;
+	std::cout << "|    micro idx    ";
+	for(int iii = 0; iii < nb_of_domain_Idx; ++iii)
+	{
+		std::cout << domain_Idx_micro[iii] << " ";
+	}
+	std::cout << std::endl;
+	std::cout << "|    coupling idx ";
+	for(int iii = 0; iii < nb_of_domain_Idx; ++iii)
+	{
+		std::cout << domain_Idx_coupling[iii] << " ";
+	}
+	std::cout << std::endl << std::endl;
 
 	// Generate the equation systems
 	carl::coupled_system CoupledTest(mesh_micro.comm());
@@ -441,7 +508,7 @@ int main (int argc, char** argv)
 	double k_cA = 2.5;
 	double k_cB = 2.5;
 	double coupling_const = -1;
-	set_physical_properties(equation_systems_micro,physicalParamsFile,BIG_E,BIG_Mu);
+	set_physical_properties(equation_systems_micro,input_params.physical_params_file,BIG_E,BIG_Mu);
 	coupling_const = eval_lambda_1(BIG_E,BIG_Mu);
 	perf_log.pop("Physical properties - micro");
 
@@ -459,7 +526,7 @@ int main (int argc, char** argv)
 													equivalence_table_restrict_A,
 													intersection_table_restrict_B,
 													intersection_table_I,
-													using_same_mesh_restrict_A);
+													input_params.b_UseMeshAAsMediator);
 	perf_log.pop("Build elasticity couplings");
 
 	std::cout << "| ---> Constants " << std::endl;
@@ -534,7 +601,7 @@ int main (int argc, char** argv)
 
 	std::set<std::string> system_names_micro;
 	system_names_micro.insert("Elasticity");
-	exo_io_micro.write_equation_systems(outputEXOFile_micro.c_str(),equation_systems_micro,&system_names_micro);
+	exo_io_micro.write_equation_systems(input_params.output_file_micro,equation_systems_micro,&system_names_micro);
 
 	exo_io_micro.write_element_data(equation_systems_micro);
 
@@ -542,7 +609,7 @@ int main (int argc, char** argv)
 
 	std::set<std::string> system_names_BIG;
 	system_names_BIG.insert("Elasticity");
-	exo_io_BIG.write_equation_systems(outputEXOFile_BIG.c_str(),equation_systems_BIG,&system_names_BIG);
+	exo_io_BIG.write_equation_systems(input_params.output_file_BIG,equation_systems_BIG,&system_names_BIG);
 
 	exo_io_BIG.write_element_data(equation_systems_BIG);
 
