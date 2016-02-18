@@ -258,7 +258,8 @@ void carl::coupled_system::print_matrix_micro_info(const std::string& name)
 }
 
 void carl::coupled_system::set_LATIN_solver(const std::string micro_name,
-		const std::string type_name, double k_dA, double k_dB, double k_cA, double k_cB)
+		const std::string type_name, double k_dA, double k_dB, double k_cA, double k_cB,
+		double eps, int convIter, double relax)
 {
 	// Get the systems
 	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
@@ -298,6 +299,10 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name,
 
 	// Set the solver matrices
 	m_LATIN_solver.set_forces(F_A,F_B);
+
+	// Set LATIN parameters (convergence, relaxation ... )
+	m_LATIN_solver.set_convergence_limits(eps,convIter);
+	m_LATIN_solver.set_relaxation(relax);
 };
 
 void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const std::string type_name,
@@ -305,7 +310,8 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 																	const std::string& name, weight_parameter_function& weight_mask),
 												void fptr_micro(	libMesh::EquationSystems& es,
 																	const std::string& name, weight_parameter_function& weight_mask),
-												double k_dA, double k_dB, double k_cA, double k_cB)
+												double k_dA, double k_dB, double k_cA, double k_cB,
+												double eps, int convIter, double relax)
 {
 	// Get the systems
 	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
@@ -348,9 +354,13 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 
 	// Set the solver matrices
 	m_LATIN_solver.set_forces(F_A,F_B);
+
+	// Set LATIN parameters (convergence, relaxation ... )
+	m_LATIN_solver.set_convergence_limits(eps,convIter);
+	m_LATIN_solver.set_relaxation(relax);
 };
 
-void carl::coupled_system::solve_LATIN(const std::string micro_name, const std::string type_name)
+void carl::coupled_system::solve_LATIN(const std::string micro_name, const std::string type_name, const std::string conv_name)
 {
 	// Solve!
 	m_LATIN_solver.solve();
@@ -375,6 +385,8 @@ void carl::coupled_system::solve_LATIN(const std::string micro_name, const std::
 	*(Sys_micro.solution) = sol_micro;
 	Sys_micro.solution->close();
 	Sys_micro.update();
+
+	print_LATIN_convergence(conv_name);
 }
 
 void carl::coupled_system::print_matrix_BIG_info(const std::string& name)
@@ -405,4 +417,12 @@ void carl::coupled_system::print_matrix_restrict_info(const std::string& name)
 						* m_couplingMatrixMap_restrict_restrict[name];
 	std::cout << "| Restrict - Restrict matrix -> " << name << std::endl;
 	print_matrix(CouplingTestMatrix);
+}
+
+void carl::coupled_system::print_LATIN_convergence(const std::string& filename)
+{
+	std::ofstream convergenceOut(filename);
+	m_LATIN_solver.print_convergence(convergenceOut);
+	convergenceOut.close();
+
 }

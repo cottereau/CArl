@@ -20,6 +20,19 @@ struct carl_input_params
 	std::string weight_domain_idx_file;
 
 	bool b_UseMeshAAsMediator;
+
+	double mean_distance;
+
+	double k_dA;
+	double k_dB;
+	double k_cA;
+	double k_cB;
+
+	double LATIN_eps;
+	int LATIN_conv_max;
+	double LATIN_relax;
+
+	std::string LATIN_convergence_output;
 };
 
 void get_input_params(GetPot& field_parser, carl_input_params& input_params)
@@ -127,6 +140,86 @@ void get_input_params(GetPot& field_parser, carl_input_params& input_params)
 		homemade_error_msg("Missing the intersection elements file!");
 	}
 
+	// Set coupling parameters
+	bool bUseSameSearchCoeff = false;
+
+	input_params.mean_distance = 0.2;
+
+	input_params.k_dA = 2.5;
+	input_params.k_dB = 2.5;
+	input_params.k_cA = 2.5;
+	input_params.k_cB = 2.5;
+
+	if( field_parser.search(1,"LATINUseSameSearchParameters") )
+	{
+		bUseSameSearchCoeff = field_parser.next(bUseSameSearchCoeff);
+	}
+
+	if( bUseSameSearchCoeff )
+	{
+		if( field_parser.search(2, "-k","LATINk") )
+		{
+			input_params.k_dA = field_parser.next(input_params.k_dA);
+			input_params.k_dB = input_params.k_dA;
+			input_params.k_cA = input_params.k_dA;
+			input_params.k_cB = input_params.k_dA;
+		}
+	}
+	else
+	{
+		if( field_parser.search(2, "-kdA","LATINkDecoupledA") )
+		{
+			input_params.k_dA = field_parser.next(input_params.k_dA);
+		}
+
+		if( field_parser.search(2, "-kdB","LATINkDecoupledB") )
+		{
+			input_params.k_dB = field_parser.next(input_params.k_dB);
+		}
+
+		if( field_parser.search(2, "-kcA","LATINkCoupledA") )
+		{
+			input_params.k_cA = field_parser.next(input_params.k_cA);
+		}
+
+		if( field_parser.search(2, "-kcB","LATINkCoupledB") )
+		{
+			input_params.k_cB = field_parser.next(input_params.k_cB);
+		}
+	}
+
+	if( field_parser.search(2, "--dist","LATINCouplingMeshScale") )
+	{
+		input_params.mean_distance = field_parser.next(input_params.mean_distance);
+	}
+
+	// Set LATIN parameters
+	input_params.LATIN_eps = 1E-2;
+	input_params.LATIN_conv_max = 10000;
+	input_params.LATIN_relax = 0.8;
+
+	input_params.LATIN_convergence_output = "LATIN_convergence.dat";
+
+	if( field_parser.search(2, "--LATINeps","LATINEps") )
+	{
+		input_params.LATIN_eps = field_parser.next(input_params.LATIN_eps);
+	}
+
+	if( field_parser.search(2, "--LATINconv","LATINConvergneceLimit") )
+	{
+		input_params.LATIN_conv_max = field_parser.next(input_params.LATIN_conv_max);
+	}
+
+	if( field_parser.search(2, "--LATINrelax","LATINRelax") )
+	{
+		input_params.LATIN_relax = field_parser.next(input_params.LATIN_relax);
+	}
+
+	if( field_parser.search(2, "--LATINconvOutput","LATINConvergneceOutput") )
+	{
+		input_params.LATIN_convergence_output = field_parser.next(input_params.LATIN_convergence_output);
+	}
+
 	// Set output files
 	input_params.output_file_BIG = "meshes/3D/output/carl_multi_crystal_test_micro.exo";
 	input_params.output_file_micro = "meshes/3D/output/carl_multi_crystal_test_macro.exo";
@@ -138,22 +231,8 @@ void get_input_params(GetPot& field_parser, carl_input_params& input_params)
 	{
 		input_params.output_file_micro = field_parser.next(input_params.output_file_micro);
 	}
-};
 
-void set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file,
-					std::unordered_map<int,int>& mesh_NodeMap, std::unordered_map<int,int>& mesh_ElemMap)
-{
-	libMesh::GmshIO meshBuffer(mesh);
-	meshBuffer.read(mesh_file);
-	mesh.prepare_for_use();
-	carl::create_mesh_map(mesh_file,mesh_NodeMap,mesh_ElemMap);
-};
 
-void set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file)
-{
-	libMesh::GmshIO meshBuffer(mesh);
-	meshBuffer.read(mesh_file);
-	mesh.prepare_for_use();
 };
 
 int main (int argc, char** argv)
@@ -170,62 +249,11 @@ int main (int argc, char** argv)
 	 *
 	 * -------------------------------------------------------------------------
 	 *
-	 *		--->	CGAL -> MESH TREATMENT
-	 *
-	 * 		DONE : 	Build with CGAL a BIG mesh restrictor, to build the
-	 * 				interface space mesh
-	 *
-	 * 				>>>	It's an external program. Adapted the input so that it
-	 * 				   	can use a "restricted" mesh input
-	 *
-	 * 		DONE : 	Verify if libMesh conserves the indexes of the input meshes.
-	 * 				If so, build list of intersection relations between BIG and
-	 * 				micro
-	 *
-	 * 				->	Gmsh file reading method :
-	 * 					https://libmesh.github.io/doxygen/gmsh__io_8C_source.html#l00145
-	 *
-	 * 				->	Huh, Gmsh has a "$PhysicalNames" section, might be handy
-	 *
-	 * 				->	libMesh creates an INTERNAL map between its node indices
-	 * 					and the Gmsh indices, and doesn't save the element
-	 * 					indices ...
-	 *
-	 * 				->	Are the micro meshes going to be from the Abaqus format?
-	 * 					If so, this might be a bit tricky. Abaqus support is
-	 * 					preliminary (since 2011 ...) and only has a read
-	 * 					function. Still, its code could be useful for rolling
-	 * 					out the parser for the rest of the data ...
-	 *
-	 * 				>>>	Created mesh reading functions that build maps between
-	 * 				    the input files and libmesh indexes. It's a local
-	 * 				    unordered map (hash table) so no easy data scatter, but
-	 * 				    it should work for now.
-	 *
-	 * -------------------------------------------------------------------------
-	 *
 	 *		--->	COUPLING MATRIX AND LATIN METHOD
-	 *
-	 * 		DONE :	Build a (for now) serial coupling matrix assembler
-	 *
-	 * 				-> The only "serial" part of it is defined by the element
-	 * 				   index tables, so it should be easy to paralellize it.
-	 *
-	 *		DONE :  Implement the alpha mask reading
-	 *
-	 *		DONE :  Run examples with the multi-crystal case
-	 *
-	 * 		DONE :	Look for how libMesh deals with the matrix repartition
-	 * 				between the processors
 	 *
 	 * 		TODO :	Analyze the costs of inverting a matrix with PETSc and co.
 	 * 				(hint: it's huge) and implement an "exact" projection matrix
 	 * 				assembler
-	 *
-	 * 		DONE :	Implement a "lumping" projection matrix assembler
-	 *
-	 * 		DONE :	Implement a parallel LATIN solver, capable of using any of
-	 * 				the projection matrix assemblers
 	 *
 	 * ---------------------------------------------------------------------- */
 
@@ -266,20 +294,20 @@ int main (int argc, char** argv)
 	libMesh::Mesh mesh_BIG(init.comm(), dim);
 	std::unordered_map<int,int> mesh_BIG_NodeMap;
 	std::unordered_map<int,int> mesh_BIG_ElemMap;
-	set_mesh_Gmsh(mesh_BIG,input_params.mesh_BIG_file,mesh_BIG_NodeMap,mesh_BIG_ElemMap);
+	carl::set_mesh_Gmsh(mesh_BIG,input_params.mesh_BIG_file,mesh_BIG_NodeMap,mesh_BIG_ElemMap);
 
 	libMesh::Mesh mesh_micro(init.comm(), dim);
 	std::unordered_map<int,int> mesh_micro_NodeMap;
 	std::unordered_map<int,int> mesh_micro_ElemMap;
-	set_mesh_Gmsh(mesh_micro,input_params.mesh_micro_file,mesh_micro_NodeMap,mesh_micro_ElemMap);
+	carl::set_mesh_Gmsh(mesh_micro,input_params.mesh_micro_file,mesh_micro_NodeMap,mesh_micro_ElemMap);
 
 	libMesh::Mesh mesh_inter(init.comm(), dim);
 	std::unordered_map<int,int> mesh_inter_NodeMap;
 	std::unordered_map<int,int> mesh_inter_ElemMap;
-	set_mesh_Gmsh(mesh_inter,input_params.mesh_inter_file,mesh_inter_NodeMap,mesh_inter_ElemMap);
+	carl::set_mesh_Gmsh(mesh_inter,input_params.mesh_inter_file,mesh_inter_NodeMap,mesh_inter_ElemMap);
 
 	libMesh::Mesh mesh_weight(init.comm(), dim);
-	set_mesh_Gmsh(mesh_weight,input_params.mesh_weight_file);
+	carl::set_mesh_Gmsh(mesh_weight,input_params.mesh_weight_file);
 
 	// - Set mediator mesh and index tables -----------------------------------
 	std::unordered_map<int,int> equivalence_table_restrict_A;
@@ -291,7 +319,7 @@ int main (int argc, char** argv)
 	std::unordered_map<int,int> mesh_restrict_ElemMap;
 	if ( !input_params.b_UseMeshAAsMediator )
 	{
-		set_mesh_Gmsh(mesh_restrict,input_params.mesh_restrict_file,mesh_restrict_NodeMap,mesh_restrict_ElemMap);
+		carl::set_mesh_Gmsh(mesh_restrict,input_params.mesh_restrict_file,mesh_restrict_NodeMap,mesh_restrict_ElemMap);
 
 		carl::generate_intersection_tables_full(
 				input_params.equivalence_table_restrict_A_file,
@@ -334,7 +362,7 @@ int main (int argc, char** argv)
 											);
 
 	// - Print info about the meshes and tables -------------------------------
-		double vol = 0;
+	double vol = 0;
 	libMesh::Elem* silly_elem;
 	for(libMesh::MeshBase::element_iterator itBegin = mesh_BIG.elements_begin();
 			itBegin != mesh_BIG.elements_end(); ++itBegin)
@@ -502,11 +530,14 @@ int main (int argc, char** argv)
 	perf_log.push("Physical properties - micro");
 	double BIG_E = 0;
 	double BIG_Mu = 0;
-	double mean_distance = 0.2;
-	double k_dA = 2.5;
-	double k_dB = 2.5;
-	double k_cA = 2.5;
-	double k_cB = 2.5;
+
+//	double mean_distance = 0.2;
+//
+//	double k_dA = 2.5;
+//	double k_dB = 2.5;
+//	double k_cA = 2.5;
+//	double k_cB = 2.5;
+
 	double coupling_const = -1;
 	set_physical_properties(equation_systems_micro,input_params.physical_params_file,BIG_E,BIG_Mu);
 	coupling_const = eval_lambda_1(BIG_E,BIG_Mu);
@@ -517,7 +548,7 @@ int main (int argc, char** argv)
 	perf_log.pop("Physical properties - macro");
 
 	perf_log.push("Build elasticity couplings");
-	CoupledTest.set_coupling_parameters("MicroSys",coupling_const,mean_distance);
+	CoupledTest.set_coupling_parameters("MicroSys",coupling_const,input_params.mean_distance);
 
 	CoupledTest.use_H1_coupling("MicroSys");
 
@@ -535,10 +566,10 @@ int main (int argc, char** argv)
 	std::cout << "|    Mu (lamba_2) : " << BIG_Mu << std::endl;
 	std::cout << "|    lambda_1     : " << eval_lambda_1(BIG_E,BIG_Mu) << std::endl;
 	std::cout << "| LATIN :" << std::endl;
-	std::cout << "|    k_dA, k_dB   : " << k_dA << " " << k_dB << std::endl;
-	std::cout << "|    k_cA, k_cB   : " << k_cA << " " << k_cB << std::endl;
+	std::cout << "|    k_dA, k_dB   : " << input_params.k_dA << " " << input_params.k_dB << std::endl;
+	std::cout << "|    k_cA, k_cB   : " << input_params.k_cA << " " << input_params.k_cB << std::endl;
 	std::cout << "|    kappa        : " << coupling_const << std::endl;
-	std::cout << "|    e            : " << mean_distance << std::endl;
+	std::cout << "|    e            : " << input_params.mean_distance << std::endl;
 
 	CoupledTest.print_matrix_micro_info("MicroSys");
 	CoupledTest.print_matrix_BIG_info("MicroSys");
@@ -564,13 +595,15 @@ int main (int argc, char** argv)
 	CoupledTest.set_LATIN_solver(	"MicroSys","Elasticity",
 									assemble_elasticity_with_weight,
 									assemble_elasticity_heterogeneous_with_weight,
-									k_dA, k_dB, k_cA, k_cB);
+									input_params.k_dA, input_params.k_dB, input_params.k_cA, input_params.k_cB,
+									input_params.LATIN_eps, input_params.LATIN_conv_max, input_params.LATIN_relax);
 	perf_log.pop("Set up","LATIN Solver:");
 
 
 	// Solve !
 	perf_log.push("Solve","LATIN Solver:");
-	CoupledTest.solve_LATIN("MicroSys","Elasticity");
+	CoupledTest.solve_LATIN("MicroSys","Elasticity",input_params.LATIN_convergence_output);
+
 	perf_log.pop("Solve","LATIN Solver:");
 //
 //	// [MICRO] Solve

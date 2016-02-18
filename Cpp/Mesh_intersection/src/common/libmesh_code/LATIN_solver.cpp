@@ -126,9 +126,23 @@ void carl::PETSC_LATIN_solver::set_forces(	libMesh::PetscVector<libMesh::Number>
 	m_bForcesSetUp = true;
 };
 
+void carl::PETSC_LATIN_solver::set_convergence_limits(double eps, int convIter)
+{
+	m_LATIN_conv_eps = eps;
+	m_LATIN_conv_max_n = convIter;
+};
+
+void carl::PETSC_LATIN_solver::set_relaxation(double relax)
+{
+	m_LATIN_relax = relax;
+}
+
 void carl::PETSC_LATIN_solver::solve()
 {
 	libMesh::PerfLog perf_log("Solve",MASTER_bPerfLog_LATIN_solver_solve);
+
+	std::cout << "| LATIN solver: " << std::endl;
+	std::cout << "|     Initialization ..."; std::cout.flush();
 
 	// -> Test if the parameters are set up
 	libmesh_assert_msg( m_bParamsSetUp , "   solve : LATIN parameters not set up!");
@@ -228,16 +242,10 @@ void carl::PETSC_LATIN_solver::solve()
 	// u_0,I = H_I^-1 * F_I (KSP SOLVER!)
 
 	perf_log.push("KSP solver","Initialization");
-	std::cout << " INIT" << std::endl;
 	KSP_Solver_H_A.solve ( *m_H_A, m_sol_A, *m_F_A, m_KSP_A_eps, m_KSP_A_iter_max);
-	std::cout << " > ";
-	KSP_Solver_H_A.print_converged_reason();
 	KSP_Solver_H_B.solve ( *m_H_B, m_sol_B, *m_F_B, m_KSP_B_eps, m_KSP_B_iter_max);
-	std::cout << " > " ;
-	KSP_Solver_H_B.print_converged_reason();
 	perf_log.pop("KSP solver","Initialization");
 
-	std::cout << std::endl;
 	// w_0,I = P_I * u_0,I
 	m_P_A->vector_mult(w_A,m_sol_A);
 	m_P_B->vector_mult(w_B,m_sol_B);
@@ -248,7 +256,8 @@ void carl::PETSC_LATIN_solver::solve()
 
 	while (iter_eps > m_LATIN_conv_eps && iter_nb < m_LATIN_conv_max_n)
 	{
-		std::cout << " ITER NO. " << iter_nb << std::endl;
+		clear_line();
+		std::cout << "|     Iter no. " << iter_nb; std::cout.flush();
 		// -> Coupled step
 		perf_log.push("Coupled iterations");
 
@@ -302,11 +311,7 @@ void carl::PETSC_LATIN_solver::solve()
 		perf_log.push("KSP solver","Decoupled - iterations");
 		// u_i,I = H_I^-1 * f_eff_i,I (KSP SOLVER!)
 		KSP_Solver_H_A.solve ( *m_H_A, u_A, f_eff_A, m_KSP_A_eps, m_KSP_A_iter_max);
-		std::cout << " > ";
-		KSP_Solver_H_A.print_converged_reason();
 		KSP_Solver_H_B.solve ( *m_H_B, u_B, f_eff_B, m_KSP_B_eps, m_KSP_B_iter_max);
-		std::cout << " > ";
-		KSP_Solver_H_B.print_converged_reason();
 		perf_log.pop("KSP solver","Decoupled - iterations");
 
 		// w_i,I = P_I * u_i,I
@@ -354,11 +359,11 @@ void carl::PETSC_LATIN_solver::solve()
 
 		iter_eps = 2*norm_diff / norm_sum;
 		m_LATIN_Index[iter_nb] = iter_eps;
-		std::cout << " > EPS : " << iter_eps << std::endl << std::endl;
 		++iter_nb;
 	}
 
-	std::cout << "| LATIN solver: " << std::endl;
+	m_LATIN_conv_n = iter_nb;
+	clear_line();
 	std::cout << "|     nb. of iterations : " << iter_nb;
 	if(iter_nb == m_LATIN_conv_max_n)
 	{
@@ -366,6 +371,9 @@ void carl::PETSC_LATIN_solver::solve()
 	}
 	std::cout << std::endl;
 	std::cout << "|     eps               : " << iter_eps << std::endl << std::endl;
+
+	m_bSolved = true;
+
 }
 
 void carl::PETSC_LATIN_solver::check_dimensions()
@@ -454,4 +462,15 @@ libMesh::PetscVector<libMesh::Number>& carl::PETSC_LATIN_solver::get_solution_BI
 libMesh::PetscVector<libMesh::Number>& carl::PETSC_LATIN_solver::get_solution_micro()
 {
 	return m_sol_B;
+}
+
+void carl::PETSC_LATIN_solver::print_convergence(std::ostream& convergenceOut)
+{
+	if(m_bSolved)
+	{
+		for(int iii = 0; iii < m_LATIN_conv_n; ++iii)
+		{
+			convergenceOut << iii << " " << m_LATIN_Index[iii] << std::endl;
+		}
+	}
 }

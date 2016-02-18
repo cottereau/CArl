@@ -13,4 +13,5 @@
 libMesh::Real kronecker_delta(unsigned int i,
 				   unsigned int j);
 
+void clear_line();
 #endif /* COMMON_COMMON_FUNCTIONS_H_ */

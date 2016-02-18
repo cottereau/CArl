@@ -18,6 +18,17 @@ IntersectionElementsTable meshes/equivalence_tables/intersection_multi_carl_I_w_
 MeshMediator meshes/3D/output/test_multi_restriction.msh
 MediatorEquivalenceTableFile meshes/equivalence_tables/equivalence_multi_carl_restrict_A.dat
 
+# LATIN - Coupling parameters
+LATINUseSameSearchParameters True
+LATINk 2.5
+LATINCouplingMeshScale 0.2
+
+# LATIN - Convergence parameters
+LATINEps 0.01
+LATINConvergneceLimit 10000
+LATINRelax 0.8
+LATINConvergneceOutput convergence_lumping_w_0_4__p_5.dat
+
 # Output files
 OutputEXOFileA meshes/3D/output/carl_multi_crystal_test_macro_w_0_4__p_5.exo
 OutputEXOFileB meshes/3D/output/carl_multi_crystal_test_micro_w_0_4__p_5.exo

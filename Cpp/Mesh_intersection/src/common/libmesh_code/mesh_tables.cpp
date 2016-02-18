@@ -249,9 +249,6 @@ void carl::generate_intersection_tables_full(		std::string& equivalence_table_re
 	{
 		table_restrict_A_file >> extIdxR >> extIdxA;
 
-		// TODO : GAMBIARRA!!!!!
-//		extIdxA += 1490;
-
 		idxA = mesh_BIG_ElemMap[extIdxA];
 		idxRestrict = mesh_restrict_ElemMap[extIdxR];
 
@@ -271,12 +268,6 @@ void carl::generate_intersection_tables_full(		std::string& equivalence_table_re
 	{
 		table_restrict_B_file >> dummyInt >> extIdxA >> extIdxB;
 
-		// TODO : MAIS GAMBIARRA!!!!!
-//		extIdxA += 1490;
-
-		// TODO : GA-GA-GA-GAMBIARRA!!!!!
-//		extIdxB += 548;
-
 		idxA = mesh_BIG_ElemMap[extIdxA];
 		intersection_table_restrict_B[iii].first = temp_equivalence_table_A_restrict[idxA];
 		intersection_table_restrict_B[iii].second = mesh_micro_ElemMap[extIdxB];
@@ -293,4 +284,20 @@ void carl::generate_intersection_tables_full(		std::string& equivalence_table_re
 	table_restrict_A_file.close();
 	table_restrict_B_file.close();
 	table_I_file.close();
+};
+
+void carl::set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file,
+					std::unordered_map<int,int>& mesh_NodeMap, std::unordered_map<int,int>& mesh_ElemMap)
+{
+	libMesh::GmshIO meshBuffer(mesh);
+	meshBuffer.read(mesh_file);
+	mesh.prepare_for_use();
+	create_mesh_map(mesh_file,mesh_NodeMap,mesh_ElemMap);
+};
+
+void carl::set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file)
+{
+	libMesh::GmshIO meshBuffer(mesh);
+	meshBuffer.read(mesh_file);
+	mesh.prepare_for_use();
 };

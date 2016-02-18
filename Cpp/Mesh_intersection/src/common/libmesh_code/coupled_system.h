@@ -485,16 +485,20 @@ public:
 											bool bSameElemsType = true);
 
 	void set_LATIN_solver(const std::string micro_name, const std::string type_name,
-			double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5);
+			double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,
+			double eps  = 1E-2, int convIter = 10000, double relax = 0.8);
 
 	void set_LATIN_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es,
 												const std::string& name, weight_parameter_function& alpha_mask),
 							void fptr_micro(	libMesh::EquationSystems& es,
 												const std::string& name, weight_parameter_function& alpha_mask),
-							double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5);
+							double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,
+							double eps  = 1E-2, int convIter = 10000, double relax = 0.8);
 
-	void solve_LATIN(const std::string micro_name, const std::string type_name);
+	void print_LATIN_convergence(const std::string& filename);
+
+	void solve_LATIN(const std::string micro_name, const std::string type_name, const std::string conv_name);
 
 	libMesh::PetscMatrix<libMesh::Number>& get_micro_coupling_matrix(const std::string& name);
 

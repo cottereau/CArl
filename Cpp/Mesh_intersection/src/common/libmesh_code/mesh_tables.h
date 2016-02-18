@@ -47,7 +47,16 @@ void generate_intersection_tables_full(		std::string& equivalence_table_restrict
 		std::vector<std::pair<int,int> >& intersection_table_restrict_B,
 		std::unordered_multimap<int,int>& intersection_table_I
 		);
-}
+
+void set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file,
+					std::unordered_map<int,int>& mesh_NodeMap, std::unordered_map<int,int>& mesh_ElemMap);
+
+void set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file);
+
+};
+
+
+
 
 
 #endif /* COMMON_LIBMESH_CODE_MESH_TABLES_H_ */
