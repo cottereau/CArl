@@ -1,0 +1,27 @@
+# Mesh files
+MeshA meshes/parallel_test/test_multi_macro.msh
+MeshB meshes/parallel_test/test_multi_micro_w_0_4__p_5.msh
+
+Mesh_A_Restriction meshes/parallel_test/test_restriction_macro.msh
+Mesh_B_Restriction meshes/parallel_test/test_restriction_micro_w_0_4__p_5.msh
+
+MeshInter meshes/parallel_test/test_intersection_AB.msh
+
+# Equivalence table files
+Mesh_A_RestrictionEquivalenceTable meshes/parallel_test/equivalence_carl_restrict_macro.dat
+Mesh_B_RestrictionEquivalenceTable meshes/parallel_test/equivalence_carl_restrict_micro_w_0_4__p_5.dat
+
+# Intersection tables
+IntersectionPairsTable meshes/parallel_test/intersection_pairs_AB.dat
+IntersectionElementsTable meshes/parallel_test/intersection_I_AB.dat
+
+# Mediator space files
+Use_A_AsMediator # Use the system A as the mediator
+
+# Coupling parameters
+PhysicalParameters meshes/parallel_test/test_multi_micro_w_0_4__p_5_physical.dat
+CouplingMeshScale 0.2
+
+# Output files
+OutputMatrixA meshes/parallel_test/output/coupling_matrix_mediator_A_w_0_4__p_5.dat
+OutputMatrixB meshes/parallel_test/output/coupling_matrix_mediator_B_w_0_4__p_5.dat
