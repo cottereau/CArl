@@ -1094,8 +1094,6 @@ void set_physical_properties(libMesh::EquationSystems& es, std::string& physical
 	// Mesh pointer
 	const libMesh::MeshBase& mesh = es.get_mesh();
 
-	const unsigned int dim = mesh.mesh_dimension();
-
 	// Physical system and its "variables"
 	libMesh::ExplicitSystem& physical_param_system = es.get_system<libMesh::ExplicitSystem>("PhysicalConstants");
 	const libMesh::DofMap& physical_dof_map = physical_param_system.get_dof_map();
@@ -1139,19 +1137,41 @@ void set_physical_properties(libMesh::EquationSystems& es, std::string& physical
 
 	}
 
-
-
-
 	physical_param_system.solution->close();
 	physical_param_system.update();
+}
+
+void calculate_average_params(std::string& physicalParamsFile, double& meanE, double& meanMu)
+{
+	// Read the random data info
+	std::ifstream physicalParamsIFS(physicalParamsFile);
+	int NbOfSubdomains = -1;
+
+	physicalParamsIFS >> NbOfSubdomains;
+
+	double dummy_E = 0;
+	double dummy_mu = 0;
+
+	meanE = 0;
+	meanMu = 0;
+
+	for(int iii = 0; iii < NbOfSubdomains; ++iii)
+	{
+		physicalParamsIFS >> dummy_E;
+		physicalParamsIFS >> dummy_mu;
+
+		meanE += dummy_E;
+		meanMu += dummy_mu;
+	}
+	meanE /= NbOfSubdomains;
+	meanMu /= NbOfSubdomains;
+	physicalParamsIFS.close();
 }
 
 void set_constant_physical_properties(libMesh::EquationSystems& es, double meanE, double meanMu)
 {
 	// Mesh pointer
 	const libMesh::MeshBase& mesh = es.get_mesh();
-
-	const unsigned int dim = mesh.mesh_dimension();
 
 	// Physical system and its "variables"
 	libMesh::ExplicitSystem& physical_param_system = es.get_system<libMesh::ExplicitSystem>("PhysicalConstants");

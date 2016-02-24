@@ -11,6 +11,8 @@ void carl::lump_matrix(		libMesh::PetscMatrix<libMesh::Number>& matrixInput,
 	int M = matrixInput.m();
 	int N = matrixInput.n();
 
+	homemade_assert_msg(M == N, "Lumping: the matrix must be a square matrix");
+
 	PetscInt local_M, local_N;
 
 	MatGetLocalSize(matrixInput.mat(),&local_M,&local_N);
@@ -42,6 +44,8 @@ void carl::lump_matrix_and_invert(		libMesh::PetscMatrix<libMesh::Number>& matri
 
 	int M = matrixInput.m();
 	int N = matrixInput.n();
+
+	homemade_assert_msg(M == N, "Lumping: the matrix must be a square matrix");
 
 	PetscInt local_M, local_N;
 
@@ -76,6 +80,8 @@ void carl::lump_matrix_and_invert(		libMesh::PetscMatrix<libMesh::Number>& matri
 
 	int M = matrixInput.m();
 	int N = matrixInput.n();
+
+	homemade_assert_msg(M == N, "Lumping: the matrix must be a square matrix");
 
 	PetscInt local_M, local_N;
 
@@ -121,8 +127,6 @@ void carl::print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatri
 
 void carl::print_matrix_col_line_sum(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix, const std::string name_base)
 {
-	libMesh::Real accumulator = 0;
-
 	libMesh::PetscVector<libMesh::Number> col_sum(CouplingTestMatrix.comm(),CouplingTestMatrix.m());
 	libMesh::PetscVector<libMesh::Number> row_sum(CouplingTestMatrix.comm(),CouplingTestMatrix.n());
 

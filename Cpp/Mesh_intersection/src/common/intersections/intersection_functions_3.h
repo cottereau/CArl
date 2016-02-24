@@ -532,14 +532,6 @@ void FindFirstPair(
  * 		intersection operations and the inexact constructions kernels.
  *
  */
-//bool tetra_intersection(
-//		const Triangular_Mesh_3& 	dtA,
-//		const Cell_handle_3 		cellA,
-//		const Triangular_Mesh_3& 	dtB,
-//		const Cell_handle_3 		cellB,
-//		Polyhedron& polyOut,
-//		IntersectionPointsVisitor_3&	visPointList
-//		);
 
 bool tetra_intersection(
 						const Triangular_Mesh_3& 	dtA,
@@ -548,7 +540,8 @@ bool tetra_intersection(
 						const Cell_handle_3 		cellB,
 						std::vector<Polyhedron>&	polyOut,
 						int& 						nbOfPolys,
-						IntersectionPointsVisitor_3& visPointList
+						IntersectionPointsVisitor_3& visPointList,
+						bool						bTestedBbox = false
 						);
 
 /*

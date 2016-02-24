@@ -202,8 +202,6 @@ void carl::coupled_system::get_lambdas(	const unsigned int 							dim,
 	// Convert the points
 	libMesh::FEInterface::inverse_map(dim, fe_t, base_elem, phys_points, ref_points);
 
-	bool test_barycentric = true;
-
 //	for(unsigned int iii = 0; iii < ref_points.size(); ++iii)
 //	{
 //		test_barycentric = 	ref_points[iii](0) < 1 + 1E-16 &&

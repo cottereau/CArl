@@ -68,6 +68,8 @@ struct CellInfo
 {
 	int InternalIndex;
 	int ExtIndex;
+	int ExtType;
+	std::vector<int> ExtTags;
 	int IntersectionIndex;
 	std::vector<int> faceHasNeighbour;
 	bool ToAdd;

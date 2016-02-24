@@ -82,6 +82,7 @@ protected:
 	bool m_bCheckDimensions;
 	bool m_bDeallocateMatrices;
 	bool m_bSolved;
+
 	// System_names
 	std::string m_ksp_name_A;
 	std::string m_ksp_name_B;
@@ -94,25 +95,6 @@ public:
 	// Constructors
 	PETSC_LATIN_solver(const libMesh::Parallel::Communicator& comm) :
 							m_comm { &comm },
-
-							m_LATIN_relax { 0.8 },
-							m_LATIN_conv_eps { 1E-2 },
-							m_LATIN_conv_max_n { 10000 },
-							m_LATIN_conv_n { 0 },
-
-							m_KSP_A_eps { 1E-8 },
-							m_KSP_A_iter_max { 10000 },
-
-							m_KSP_B_eps { 1E-8 },
-							m_KSP_B_iter_max { 10000 },
-
-							m_bUseLumping { true },
-							m_bMatricesSetUp { false },
-							m_bForcesSetUp { false },
-							m_bParamsSetUp { false },
-							m_bCheckDimensions { false },
-							m_bDeallocateMatrices { false },
-							m_bSolved {false},
 
 							m_C_RA { NULL },
 							m_C_RB { NULL },
@@ -134,6 +116,25 @@ public:
 							m_sol_A { libMesh::PetscVector<libMesh::Number>(comm) },
 							m_sol_B { libMesh::PetscVector<libMesh::Number>(comm) },
 
+							m_LATIN_relax { 0.8 },
+							m_LATIN_conv_eps { 1E-2 },
+							m_LATIN_conv_max_n { 10000 },
+							m_LATIN_conv_n { 0 },
+
+							m_KSP_A_eps { 1E-8 },
+							m_KSP_A_iter_max { 10000 },
+
+							m_KSP_B_eps { 1E-8 },
+							m_KSP_B_iter_max { 10000 },
+
+							m_bUseLumping { true },
+							m_bMatricesSetUp { false },
+							m_bForcesSetUp { false },
+							m_bParamsSetUp { false },
+							m_bCheckDimensions { false },
+							m_bDeallocateMatrices { false },
+							m_bSolved {false},
+
 							m_ksp_name_A { "macro_sys" },
 							m_ksp_name_B { "micro_sys" }
 	{
@@ -142,25 +143,6 @@ public:
 
 	PETSC_LATIN_solver(double i_k_dA, double i_k_dB, double i_k_cA, double i_k_cB, const libMesh::Parallel::Communicator& comm )  :
 			m_comm { &comm },
-
-			m_LATIN_relax { 0.8 },
-			m_LATIN_conv_eps { 1E-2 },
-			m_LATIN_conv_max_n { 10000 },
-			m_LATIN_conv_n { 0 },
-
-			m_KSP_A_eps { 1E-8 },
-			m_KSP_A_iter_max { 10000 },
-
-			m_KSP_B_eps { 1E-8 },
-			m_KSP_B_iter_max { 10000 },
-
-			m_bUseLumping { true },
-			m_bMatricesSetUp { false },
-			m_bForcesSetUp { false },
-			m_bParamsSetUp { true },
-			m_bCheckDimensions { false },
-			m_bDeallocateMatrices { false },
-			m_bSolved {false},
 
 			m_C_RA { NULL },
 			m_C_RB { NULL },
@@ -182,13 +164,32 @@ public:
 			m_sol_A { libMesh::PetscVector<libMesh::Number>(comm) },
 			m_sol_B { libMesh::PetscVector<libMesh::Number>(comm) },
 
-			m_ksp_name_A { "macro_sys_" },
-			m_ksp_name_B { "micro_sys_" },
-
 			m_k_dA { i_k_dA },
 			m_k_dB { i_k_dB },
 			m_k_cA { i_k_cA },
-			m_k_cB { i_k_cB }
+			m_k_cB { i_k_cB },
+
+			m_LATIN_relax { 0.8 },
+			m_LATIN_conv_eps { 1E-2 },
+			m_LATIN_conv_max_n { 10000 },
+			m_LATIN_conv_n { 0 },
+
+			m_KSP_A_eps { 1E-8 },
+			m_KSP_A_iter_max { 10000 },
+
+			m_KSP_B_eps { 1E-8 },
+			m_KSP_B_iter_max { 10000 },
+
+			m_bUseLumping { true },
+			m_bMatricesSetUp { false },
+			m_bForcesSetUp { false },
+			m_bParamsSetUp { true },
+			m_bCheckDimensions { false },
+			m_bDeallocateMatrices { false },
+			m_bSolved {false},
+
+			m_ksp_name_A { "macro_sys_" },
+			m_ksp_name_B { "micro_sys_" }
 	{
 		m_LATIN_Index.resize(m_LATIN_conv_max_n);
 	};

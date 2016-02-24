@@ -200,6 +200,23 @@ public:
 
 	int get_nb_of_vertices() const;
 
+	double get_volume()
+	{
+		double vol = 0;
+		Tetrahedron dummyTetrahedron;
+
+		for(Finite_cells_iterator_3	itCell = mesh.finite_cells_begin();
+									itCell != mesh.finite_cells_end();
+									++itCell)
+		{
+			dummyTetrahedron = Tetrahedron(	itCell->vertex(0)->point(),
+											itCell->vertex(1)->point(),
+											itCell->vertex(2)->point(),
+											itCell->vertex(3)->point());
+			vol += dummyTetrahedron.volume();
+		}
+		return vol;
+	}
 	/*
 	 *  --- DEBUG: print all the vertices and the faces in an human-readable
 	 *  	format.
@@ -252,9 +269,13 @@ public:
 	/*
 	 *  --- Insert a vertex in the structure
 	 */
-	void Add_Vertex(Point_3& inputPoint, int inputIdx);
+	Vertex_handle_3 Add_Vertex(Point_3& inputPoint, int inputIdx);
 
-	void Add_Cell(std::vector<int>& inputVertexList, int inputIdx);
+	Cell_handle_3 Add_Cell(std::vector<int>& inputVertexList, int inputIdx);
+
+	Cell_handle_3 Add_Cell(	std::vector<int>& inputVertexList, int inputIdx,
+							int bufferElementType, int Ntags,
+							std::vector<int>& tags);
 
 	void ConvertToTriangulation_3(Polyhedron& t)
 	{

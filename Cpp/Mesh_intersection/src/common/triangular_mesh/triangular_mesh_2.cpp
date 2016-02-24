@@ -740,7 +740,6 @@ void Triangular_Mesh_2::ImportMedit(std::string &ifName)
 	Initialize();
 
 	// Set up safety booleans
-	bool hasHeader = false;
 	bool hasNodes = false;
 	bool hasElements = false;
 

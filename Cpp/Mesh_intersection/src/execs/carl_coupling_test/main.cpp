@@ -74,9 +74,9 @@ int main (int argc, char** argv)
 	 * ---------------------------------------------------------------------- */
 
 	// - Displacement conditions ----------------------------------------------
-	double x_max_x_displ = 0.5;
-	double x_max_y_displ = 0;
-	double x_max_z_displ = 0;
+//	double x_max_x_displ = 0.5;
+//	double x_max_y_displ = 0;
+//	double x_max_z_displ = 0;
 
 	// - Start libmesh --------------------------------------------------------
 	const bool MASTER_bPerfLog_carl_coupling_test = true;

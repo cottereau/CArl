@@ -126,31 +126,31 @@ void carl::coupled_system::assemble_coupling_matrices(	const std::string BIG_nam
 
 	//    If all elements are of the same type, do the index "extraction",
 	// the matrices resizes and repositions here
+	const libMesh::Elem* dummy_elem_restrict = mesh_restrict.elem(0);
+	dof_map_restrict.dof_indices(dummy_elem_restrict, dof_indices_restrict);
+	n_dofs_restrict   = dof_indices_restrict.size();
+
+	const libMesh::Elem* dummy_elem_BIG = mesh_BIG.elem(0);
+	dof_map_BIG.dof_indices(dummy_elem_BIG, dof_indices_BIG);
+	n_dofs_BIG   = dof_indices_BIG.size();
+
+	const libMesh::Elem* dummy_elem_micro = mesh_micro.elem(0);
+	dof_map_micro.dof_indices(dummy_elem_micro, dof_indices_micro);
+	n_dofs_micro   = dof_indices_micro.size();
+
+	const libMesh::Elem* dummy_elem_inter = mesh_inter.elem(0);
+	dof_map_inter.dof_indices(dummy_elem_inter, dof_indices_inter);
+	n_dofs_inter   = dof_indices_inter.size();
+
 	if(bSameElemsType)
 	{
-		const libMesh::Elem* elem_restrict = mesh_restrict.elem(0);
-		dof_map_restrict.dof_indices(elem_restrict, dof_indices_restrict);
-		n_dofs_restrict   = dof_indices_restrict.size();
-
-		const libMesh::Elem* elem_BIG = mesh_BIG.elem(0);
-		dof_map_BIG.dof_indices(elem_BIG, dof_indices_BIG);
-		n_dofs_BIG   = dof_indices_BIG.size();
-
-		const libMesh::Elem* elem_micro = mesh_micro.elem(0);
-		dof_map_micro.dof_indices(elem_micro, dof_indices_micro);
-		n_dofs_micro   = dof_indices_micro.size();
-
-		const libMesh::Elem* elem_inter = mesh_inter.elem(0);
-		dof_map_inter.dof_indices(elem_inter, dof_indices_inter);
-		n_dofs_inter   = dof_indices_inter.size();
-
 		// Resize matrices
 		Me_BIG.resize (n_dofs_restrict, n_dofs_BIG);
 		Me_micro.resize (n_dofs_restrict, n_dofs_micro);
 		Me_restrict.resize (n_dofs_restrict, n_dofs_restrict);
 
 		// Set up corrected shape vectors
-		fe_inter->reinit(elem_inter);
+		fe_inter->reinit(dummy_elem_inter);
 		n_quadrature_pts = fe_inter->n_quadrature_points();
 
 		corrected_phi_BIG.resize(n_dofs_BIG,std::vector<libMesh::Real>(n_quadrature_pts,0));
@@ -330,8 +330,6 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(	const std::string BI
 															bool using_same_mesh_restrict_A,
 															bool bSameElemsType)
 {
-	const unsigned int n_components = 3;
-
 	// Addresses to the eq. systems
 	libMesh::EquationSystems& restrict_eq_system = * m_restrict_EquationSystemMap[restrict_name];
 	libMesh::EquationSystems& BIG_eq_system = * m_BIG_EquationSystem.second;

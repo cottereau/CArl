@@ -303,8 +303,8 @@ public:
 
 	// Constructors
 	coupled_system(const libMesh::Parallel::Communicator& comm) :
-		m_LATIN_solver { PETSC_LATIN_solver(comm) },
-		m_bHasAssembled_BIG { false }
+		m_bHasAssembled_BIG { false },
+		m_LATIN_solver { PETSC_LATIN_solver(comm) }
 	{
 	};
 

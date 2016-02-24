@@ -136,6 +136,8 @@ void Update_SubK(	libMesh::DenseSubMatrix<libMesh::Number>& SubK,
 
 void set_physical_properties(libMesh::EquationSystems& es, std::string& physicalParamsFile, double& meanE, double& meanMu);
 
+void calculate_average_params(std::string& physicalParamsFile, double& meanE, double& meanMu);
+
 void set_constant_physical_properties(libMesh::EquationSystems& es, double meanE, double meanMu);
 
 void assemble_elasticity(libMesh::EquationSystems& es,

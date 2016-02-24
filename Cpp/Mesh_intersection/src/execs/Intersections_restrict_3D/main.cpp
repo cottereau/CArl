@@ -9,6 +9,22 @@
 
 #include <tuple>
 
+/*
+ *
+ * 		WARNING! BIG CAVEAT OF THE GANDER ALGORITHM!
+ *
+ * 		Essentially, the algorithm cannot guarantee the correct construction of
+ * 	the intersections if one of the meshes is non-convex or non-connected.
+ *
+ * 		The basis of the algorithm is to define a "frontier" over which it can
+ * 	build the intersections. It supposes that, for a given element B_i, all of
+ * 	its intersecting elements {A_j} are in a connected ensemble - form a
+ * 	"frontier". If the mesh A is non-convex (and moreso if it is non-connected),
+ * 	we can find elements B_i intersecting two or more non-connected regions of
+ * 	the mesh A, and since B_i will be marked as "already visited" when building
+ * 	the intersections with the first region, the other ones will be ignored.
+ *
+ */
 int main(int argc, char *argv[])
 {
 	// Declare meshes
@@ -138,10 +154,13 @@ int main(int argc, char *argv[])
 	elapsed_seconds_export = timing_end-timing_start;
 	elapsed_seconds_total  = timing_end_total - timing_start_total;
 
+	double volume  = tallyFastVector.IntersectionTDS_3.get_volume();
+
 	std::cout << " ---> Timing : " << std::endl;
 	std::cout 	<< dtA.get_nb_of_cells() << " "
 				<< dtB.get_nb_of_cells() << " "
 				<< tallyFastVector.IntersectionTDS_3.get_nb_of_cells() << " "
+				<< volume << " "
 				<< elapsed_seconds_input.count() << " "
 				<< elapsed_seconds_intersections.count() << " "
 				<< elapsed_seconds_export.count() << " "

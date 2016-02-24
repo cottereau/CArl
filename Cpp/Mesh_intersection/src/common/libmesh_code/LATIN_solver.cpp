@@ -409,8 +409,8 @@ void carl::PETSC_LATIN_solver::check_dimensions()
 	P_B_mmm = m_P_B->m(); P_B_nnn = m_P_B->n();
 	MatGetLocalSize(m_P_B->mat(),&P_B_local_mmm,&P_B_local_nnn);
 
-	F_A_size = m_F_A->size(); F_A_size = m_F_A->local_size();
-	F_B_size = m_F_B->size(); F_B_size = m_F_B->local_size();
+	F_A_size = m_F_A->size(); F_A_local_size = m_F_A->local_size();
+	F_B_size = m_F_B->size(); F_B_local_size = m_F_B->local_size();
 
 	// Test if the matrices are squared
 	libmesh_assert_msg( H_A_mmm == H_A_nnn , "   check_dimensions : H_A.m() != H_A.n() !");

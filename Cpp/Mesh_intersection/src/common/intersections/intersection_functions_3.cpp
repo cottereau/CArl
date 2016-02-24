@@ -49,15 +49,24 @@ bool tetra_intersection(
 						const Cell_handle_3 		cellB,
 						std::vector<Polyhedron>&	polyOut,
 						int& 						nbOfPolys,
-						IntersectionPointsVisitor_3& visPointList
+						IntersectionPointsVisitor_3& visPointList,
+						bool						bTestedBbox
 						)
 {
 
 	// Fast intersection test, using bbox
-	bool bPreliminary = CGAL::do_intersect(
+	bool bPreliminary = false;
+	if(!bTestedBbox)
+	{
+		bPreliminary = CGAL::do_intersect(
 								dtA.mesh.tetrahedron(cellA).bbox(),
 								dtB.mesh.tetrahedron(cellB).bbox()
 								);
+	}
+	else
+	{
+		 bPreliminary = true;
+	}
 
 	bool bTriangleIntersect  = false;
 
@@ -463,6 +472,7 @@ void BuildMeshIntersections(
 	// --- Finish - Timing and debug
 	timing_end   = std::chrono::system_clock::now();
 	elapsed_seconds_total = timing_end-timing_start;
+
 };
 
 void IntersectTetrahedrons(
@@ -496,7 +506,8 @@ void IntersectTetrahedrons(
 										workingTetrahedronB,
 										output,
 										nbOfPolys,
-										visPointList
+										visPointList,
+										true
 									   );
 	}
 

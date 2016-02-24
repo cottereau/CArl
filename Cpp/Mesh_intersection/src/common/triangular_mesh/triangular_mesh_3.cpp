@@ -41,6 +41,7 @@ Cell_handle_3 Triangular_Mesh_3::Create_Cell_3(int i0, int i1, int i2, int i3, i
 
 	// Set external index
 	outputHandle->info().ExtIndex = idx;
+	outputHandle->info().ExtTags.resize(0);
 
 	return outputHandle;
 }
@@ -66,6 +67,7 @@ Cell_handle_3 Triangular_Mesh_3::Create_Cell_3(std::vector<int>& vertices, int i
 
 	// Set external index
 	outputHandle->info().ExtIndex = idx;
+	outputHandle->info().ExtTags.resize(0);
 
 	return outputHandle;
 }
@@ -87,6 +89,7 @@ Cell_handle_3 Triangular_Mesh_3::Create_Cell_3(std::vector<Vertex_handle_3>& ver
 
 	// Set external index
 	outputHandle->info().ExtIndex = idx;
+	outputHandle->info().ExtTags.resize(0);
 
 	return outputHandle;
 }
@@ -108,6 +111,7 @@ Cell_handle_3 Triangular_Mesh_3::Create_Cell_3(Vertex_handle_3 v0, Vertex_handle
 
 	// Set external index
 	outputHandle->info().ExtIndex = idx;
+	outputHandle->info().ExtTags.resize(0);
 
 	return outputHandle;
 }
@@ -137,6 +141,7 @@ Cell_handle_3 Triangular_Mesh_3::Create_Infinite_Cell_3(int i0, int i1, int i2)
 
 	// Set external index
 	outputHandle->info().ExtIndex = mSize_cells;
+	outputHandle->info().ExtTags.resize(0);
 
 	return outputHandle;
 }
@@ -690,24 +695,37 @@ void Triangular_Mesh_3::Finalize()
 	set_nb_of_cells();
 }
 
-void Triangular_Mesh_3::Add_Vertex(Point_3& inputPoint, int inputIdx)
+Vertex_handle_3 Triangular_Mesh_3::Add_Vertex(Point_3& inputPoint, int inputIdx)
 {
 	UpdateBbox(inputPoint);
 	mVertexHandleIndexMap[inputIdx] = Create_Vertex_3(inputPoint,inputIdx);
+	return mVertexHandleIndexMap[inputIdx];
 }
 
-void Triangular_Mesh_3::Add_Cell(std::vector<int>& inputVertexList, int inputIdx)
+Cell_handle_3 Triangular_Mesh_3::Add_Cell(std::vector<int>& inputVertexList, int inputIdx)
 {
 	mCellHandleIndexMap[inputIdx] = Create_Cell_3(inputVertexList,inputIdx);
+	return mCellHandleIndexMap[inputIdx];
+}
+
+Cell_handle_3 Triangular_Mesh_3::Add_Cell(	std::vector<int>& inputVertexList,
+		 int inputIdx, int bufferElementType, int Ntags, std::vector<int>& tags)
+{
+	mCellHandleIndexMap[inputIdx] = Create_Cell_3(inputVertexList,inputIdx);
+	mCellHandleIndexMap[inputIdx]->info().ExtTags.resize(Ntags,0);
+	mCellHandleIndexMap[inputIdx]->info().ExtType = bufferElementType;
+	for(int iii = 0; iii < Ntags; ++iii)
+	{
+		mCellHandleIndexMap[inputIdx]->info().ExtTags[iii] = tags[iii];
+	}
+
+	return mCellHandleIndexMap[inputIdx];
 }
 
 void Triangular_Mesh_3::RestrictMesh(Nef_Polyhedron& nefRestriction, Triangular_Mesh_3& outputMesh, const std::string tableFilename)
 {
 	// Initialize the mesh
 	outputMesh.Initialize(mesh.number_of_vertices(), mesh.number_of_finite_cells());
-
-	// Set up safety booleans
-	bool hasIntersection = false;
 
 	// Variables needed by gmsh
 	int 				bufferNodeIndex = 1;
@@ -775,7 +793,8 @@ void Triangular_Mesh_3::RestrictMesh(Nef_Polyhedron& nefRestriction, Triangular_
 				}
 			}
 
-			outputMesh.Add_Cell(vertexIdxList,bufferElementIndex);
+			outputMesh.Add_Cell(vertexIdxList,bufferElementIndex,
+					itCell->info().ExtType,itCell->info().ExtTags.size(),itCell->info().ExtTags);
 			RestrictedToFullCellMap[bufferElementIndex] = itCell->info().ExtIndex;
 			++bufferElementIndex;
 		}
@@ -848,7 +867,7 @@ void Triangular_Mesh_3::ImportGmsh(std::string &ifName)
 	// Variables needed by gmsh
 	unsigned int		gmshNumberOfNodes = 0;
 	unsigned int 		gmshNumberOfElements = 0;
-	unsigned int 		gmshDimension = 0;
+
 	double				bufferX = 1;
 	double				bufferY = 1;
 	double				bufferZ = 1;
@@ -957,7 +976,8 @@ void Triangular_Mesh_3::ImportGmsh(std::string &ifName)
 					}
 
 					// Create the triangle
-					Add_Cell(bufferElementNodes,dummyExtIndex);
+					Add_Cell(bufferElementNodes,dummyExtIndex,bufferElementType,bufferElementTagNumber,bufferElementTags);
+					// Set tags
 					++dummyExtIndex;
 				}
 			}
@@ -1010,7 +1030,6 @@ void Triangular_Mesh_3::ImportMedit(std::string &ifName)
 	Initialize();
 
 	// Set up safety booleans
-	bool hasHeader = false;
 	bool hasNodes = false;
 	bool hasElements = false;
 
@@ -1174,7 +1193,12 @@ void Triangular_Mesh_3::ExportGmsh(std::string &ofName)
 								++itCell)
 	{
 		dataF << itCell->info().ExtIndex + 1 << " " ; // Gmsh index starts at 1
-		dataF << "4 2 1 1 "; // dummy tags
+		dataF << itCell->info().ExtType << " ";
+		dataF << itCell->info().ExtTags.size() << " ";
+		for(unsigned int iii = 0; iii < itCell->info().ExtTags.size(); ++iii)
+		{
+			dataF << itCell->info().ExtTags[iii] << " ";
+		}
 		for(int iii = 0; iii < 4; ++ iii)
 		{
 			dataF << itCell->vertex(iii)->info().ExtIndex << " ";

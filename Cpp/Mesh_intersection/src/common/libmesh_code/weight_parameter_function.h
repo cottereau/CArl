@@ -16,8 +16,8 @@ class weight_parameter_function
 protected:
 	// Members
 //	const libMesh::PointLocatorBase& m_locator;
-	std::unique_ptr<libMesh::PointLocatorBase> m_locator_unique_ptr;
 	libMesh::Mesh& m_alpha_mesh;
+	std::unique_ptr<libMesh::PointLocatorBase> m_locator_unique_ptr;
 
 	double m_alpha_eps;
 	double m_alpha_coupling_BIG;
@@ -33,26 +33,26 @@ public:
 	weight_parameter_function(	libMesh::Mesh& alpha_mesh, double alpha_eps,
 						double alpha_coupling_BIG,
 						int subdomain_idx_BIG, int subdomain_idx_micro, int subdomain_idx_coupling) :
+		m_alpha_mesh{ alpha_mesh },
+		m_locator_unique_ptr { alpha_mesh.sub_point_locator() },
 		m_alpha_eps { alpha_eps },
 		m_alpha_coupling_BIG { alpha_coupling_BIG },
 		m_alpha_coupling_micro { 1. - alpha_coupling_BIG },
 		m_subdomain_idx_BIG { subdomain_idx_BIG },
 		m_subdomain_idx_micro { subdomain_idx_micro },
-		m_subdomain_idx_coupling { subdomain_idx_coupling },
-		m_alpha_mesh{ alpha_mesh },
-		m_locator_unique_ptr { alpha_mesh.sub_point_locator() }
+		m_subdomain_idx_coupling { subdomain_idx_coupling }
 	{
 	};
 
 	weight_parameter_function(	libMesh::Mesh& alpha_mesh ) :
+		m_alpha_mesh{ alpha_mesh },
+		m_locator_unique_ptr { alpha_mesh.sub_point_locator() },
 		m_alpha_eps { 10E-2 },
 		m_alpha_coupling_BIG { 0.5 },
 		m_alpha_coupling_micro { 0.5 },
 		m_subdomain_idx_BIG { -1 },
 		m_subdomain_idx_micro { -1 },
-		m_subdomain_idx_coupling { -1 },
-		m_alpha_mesh{ alpha_mesh },
-		m_locator_unique_ptr { alpha_mesh.sub_point_locator() }
+		m_subdomain_idx_coupling { -1 }
 	{
 	};
 

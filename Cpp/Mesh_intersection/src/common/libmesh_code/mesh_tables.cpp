@@ -12,7 +12,6 @@ void carl::set_weight_function_domain_idx(	std::string &filename,
 	// Buffer string
 	std::string bufferLine;
 	std::stringstream	dataBuffer;
-	int dummy_int = -1;
 
 	// Read info until the file ends
 	while(std::getline(dataF,bufferLine))

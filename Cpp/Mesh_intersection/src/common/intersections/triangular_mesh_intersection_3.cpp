@@ -125,6 +125,8 @@ bool Intersection_Mesh_3::AddPolyhedron(Polyhedron& t, double dummyVolume, int i
 
 				// Create the cell
 				dummyCell = Create_Cell_3(bufferHandle0,bufferHandle1,bufferHandle2,bufferHandle3,mInterCellDummyIndex);
+				dummyCell->info().ExtType = 4;
+				dummyCell->info().ExtTags.resize(2,1);
 				dummyCell->info().IntersectionIndex = intersectionIdx;
 
 				// Set up neighbours

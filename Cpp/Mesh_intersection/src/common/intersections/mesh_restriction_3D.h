@@ -80,7 +80,6 @@ void GenerateNefRestrictedRegion(std::string& filenamePoints, Nef_Polyhedron& ou
 
 			filePoints >> nbOfPoints;
 			exactPointsVector.resize(nbOfPoints);
-			bool bEndOfSection = false;
 
 			std::getline(filePoints,bufferLine);
 			for(unsigned int iii = 0; iii < nbOfPoints; ++iii)
@@ -113,7 +112,6 @@ void GenerateNefRestrictedRegion(std::string& filenamePoints, Nef_Polyhedron& ou
 			Nef_Polyhedron dummyNefPolyhedron;
 
 			filePoints >> nbOfOuterShells;
-			bool bEndOfSection = false;
 
 			std::getline(filePoints,bufferLine);
 			for(unsigned int iii = 0; iii < nbOfOuterShells; ++iii)
@@ -164,7 +162,6 @@ void GenerateNefRestrictedRegion(std::string& filenamePoints, Nef_Polyhedron& ou
 			Nef_Polyhedron dummyNefPolyhedron;
 
 			filePoints >> nbOfHoles;
-			bool bEndOfSection = false;
 
 			std::getline(filePoints,bufferLine);
 			for(unsigned int iii = 0; iii < nbOfHoles; ++iii)
