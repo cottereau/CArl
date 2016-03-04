@@ -13,7 +13,7 @@ Mesh_B_RestrictionEquivalenceTable meshes/parallel_test/equivalence_carl_restric
 
 # Intersection tables
 IntersectionPairsTable meshes/parallel_test/intersection_pairs_AB.dat
-IntersectionElementsTable meshes/parallel_test/intersection_I_AB.dat
+FullIntersectionElementsTable meshes/parallel_test/intersection_Full_AB.dat
 
 # Mediator space files
 Use_A_AsMediator # Use the system A as the mediator

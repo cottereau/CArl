@@ -70,9 +70,11 @@ struct carl_coupling_generation_input_params {
 
 	std::string equivalence_table_restrict_BIG_file;
 	std::string equivalence_table_restrict_micro_file;
+	std::string equivalence_table_mediator;
 
 	std::string intersection_table_BIG_micro_file;
 	std::string intersection_table_I_file;
+	std::string intersection_table_full;
 
 	bool b_UseMesh_BIG_AsMediator;
 	bool b_UseMesh_micro_AsMediator;
@@ -148,11 +150,11 @@ void get_input_params(GetPot& field_parser,
 		homemade_error_msg("Missing the intersection pairs file!");
 	}
 
-	if (field_parser.search(2, "--tableI", "IntersectionElementsTable")) {
-		input_params.intersection_table_I_file = field_parser.next(
-				input_params.intersection_table_I_file);
+	if (field_parser.search(2, "--tableFullI", "FullIntersectionElementsTable")) {
+		input_params.intersection_table_full = field_parser.next(
+				input_params.intersection_table_full);
 	} else {
-		homemade_error_msg("Missing the intersection elements file!");
+		homemade_error_msg("Missing the full intersection elements file!");
 	}
 
 	// Set the mediator mesh
@@ -181,19 +183,22 @@ void get_input_params(GetPot& field_parser,
 	if(input_params.b_UseMesh_BIG_AsMediator)
 	{
 		input_params.mesh_mediator_file = input_params.mesh_restrict_BIG_file;
+		input_params.equivalence_table_mediator = input_params.equivalence_table_restrict_BIG_file;
 	}
 	if(input_params.b_UseMesh_micro_AsMediator)
 	{
 		input_params.mesh_mediator_file = input_params.mesh_restrict_micro_file;
+		input_params.equivalence_table_mediator = input_params.equivalence_table_restrict_micro_file;
 	}
 	if(input_params.b_UseMesh_extra_AsMediator)
 	{
-		if (field_parser.search(3, "--meshM", "-mM", "MeshMediator")) {
-			input_params.mesh_mediator_file = field_parser.next(
-					input_params.mesh_mediator_file);
-		} else {
-			homemade_error_msg("Missing the mediator mesh file!");
-		}
+//		if (field_parser.search(3, "--meshM", "-mM", "MeshMediator")) {
+//			input_params.mesh_mediator_file = field_parser.next(
+//					input_params.mesh_mediator_file);
+//		} else {
+//			homemade_error_msg("Missing the mediator mesh file!");
+//		}
+		libmesh_not_implemented_msg("Still implementing the external mesh case!");
 	}
 
 	// Set constant parameters
@@ -250,16 +255,11 @@ void get_input_params(GetPot& field_parser,
 
 int main(int argc, char** argv) {
 
-	// - Start libmesh --------------------------------------------------------
+	// - Start libmesh ---------------------------------------------------------
 	const bool MASTER_bPerfLog_carl_libmesh = true;
 	libMesh::LibMeshInit init(argc, argv);
 
 	libMesh::PerfLog perf_log("Main program", MASTER_bPerfLog_carl_libmesh);
-
-	// - Displacement conditions ----------------------------------------------
-	boundary_displacement x_max_BIG(1.0, 0, 0);
-	boundary_displacement x_min_BIG(-0.25, 0, 0);
-	boundary_id_cube boundary_ids;
 
 	// - Set up inputs
 	GetPot command_line(argc, argv);
@@ -275,6 +275,210 @@ int main(int argc, char** argv) {
 
 	carl_coupling_generation_input_params input_params;
 	get_input_params(field_parser, input_params);
+
+	const unsigned int dim = 3;
+
+	libmesh_example_requires(dim == LIBMESH_DIM, "3D support");
+
+	// Set up the communicator and the rank variables
+	libMesh::Parallel::Communicator& WorldComm = init.comm();
+	libMesh::Parallel::Communicator LocalComm;
+
+	int rank = WorldComm.rank();
+	int nodes = WorldComm.size();
+
+	WorldComm.split(rank,rank,LocalComm);
+
+	// - Read the meshes -------------------------------------------------------
+
+	// - Global meshes: A, B and mediator
+	libMesh::Mesh mesh_BIG(WorldComm, dim);
+	std::unordered_map<int,int> mesh_BIG_NodeMap;
+	std::unordered_map<int,int> mesh_BIG_ElemMap;
+	carl::set_mesh_Gmsh(mesh_BIG,input_params.mesh_BIG_file);
+	carl::create_mesh_map(input_params.mesh_BIG_file,
+			mesh_BIG_NodeMap,mesh_BIG_ElemMap,WorldComm);
+
+	libMesh::Mesh mesh_micro(WorldComm, dim);
+	std::unordered_map<int,int> mesh_micro_NodeMap;
+	std::unordered_map<int,int> mesh_micro_ElemMap;
+	carl::set_mesh_Gmsh(mesh_micro,input_params.mesh_micro_file);
+	carl::create_mesh_map(input_params.mesh_micro_file,
+			mesh_micro_NodeMap,mesh_micro_ElemMap,WorldComm);
+
+	libMesh::Mesh mesh_inter(WorldComm, dim);
+	std::unordered_map<int,int> mesh_inter_NodeMap_table_to_libmesh;
+	std::unordered_map<int,int> mesh_inter_NodeMap_libmesh_to_table;
+	std::unordered_map<int,int> mesh_inter_ElemMap_table_to_libmesh;
+	std::unordered_map<int,int> mesh_inter_ElemMap_libmesh_to_table;
+
+	carl::set_mesh_Gmsh(mesh_inter,input_params.mesh_inter_file);
+	carl::create_mesh_map(input_params.mesh_inter_file,
+			mesh_inter_NodeMap_table_to_libmesh,mesh_inter_NodeMap_libmesh_to_table,
+			mesh_inter_ElemMap_table_to_libmesh,mesh_inter_ElemMap_libmesh_to_table,WorldComm);
+
+	// - Test: print info per proc
+	std::ofstream mesh_info_ofstream;
+	mesh_info_ofstream.open("meshes/parallel_test/output/mesh_A_" + std::to_string(rank) + "_info.txt");
+	mesh_BIG.print_info(mesh_info_ofstream);
+	mesh_info_ofstream.close();
+
+	WorldComm.barrier();
+
+	mesh_info_ofstream.open("meshes/parallel_test/output/mesh_B_" + std::to_string(rank) + "_info.txt");
+	mesh_micro.print_info(mesh_info_ofstream);
+	mesh_info_ofstream.close();
+
+	WorldComm.barrier();
+
+	mesh_info_ofstream.open("meshes/parallel_test/output/mesh_inter_" + std::to_string(rank) + "_info.txt");
+	mesh_inter.print_info(mesh_info_ofstream);
+	mesh_info_ofstream.close();
+
+	WorldComm.barrier();
+
+	// - Local meshes: restrict A, restrict B and (gasp!) intersection
+
+	// -> TODO : 	create decent mesh reader. For now, each processor reads the
+	//				mesh independently ... (aïe ...)
+
+	libMesh::Mesh mesh_R_BIG(LocalComm, dim);
+	std::unordered_map<int,int> mesh_R_BIG_NodeMap;
+	std::unordered_map<int,int> mesh_R_BIG_ElemMap;
+	carl::set_mesh_Gmsh(mesh_R_BIG,input_params.mesh_restrict_BIG_file);
+	carl::create_mesh_map(input_params.mesh_restrict_BIG_file,
+			mesh_R_BIG_NodeMap,mesh_R_BIG_ElemMap,WorldComm);
+
+	libMesh::Mesh mesh_R_micro(LocalComm, dim);
+	std::unordered_map<int,int> mesh_R_micro_NodeMap;
+	std::unordered_map<int,int> mesh_R_micro_ElemMap;
+	carl::set_mesh_Gmsh(mesh_R_micro,input_params.mesh_restrict_micro_file);
+	carl::create_mesh_map(input_params.mesh_restrict_micro_file,
+			mesh_R_micro_NodeMap,mesh_R_micro_ElemMap,WorldComm);
+
+	libMesh::Mesh mesh_mediator(LocalComm, dim);
+	std::unordered_map<int,int> mesh_mediator_NodeMap;
+	std::unordered_map<int,int> mesh_mediator_ElemMap;
+	carl::set_mesh_Gmsh(mesh_mediator,input_params.mesh_mediator_file);
+	carl::create_mesh_map(input_params.mesh_mediator_file,
+			mesh_mediator_NodeMap,mesh_mediator_ElemMap,WorldComm);
+
+	// - Test: print info per proc
+	mesh_info_ofstream.open("meshes/parallel_test/output/mesh_RA_" + std::to_string(rank) + "_info.txt");
+	mesh_R_BIG.print_info(mesh_info_ofstream);
+	mesh_info_ofstream.close();
+
+	WorldComm.barrier();
+
+	mesh_info_ofstream.open("meshes/parallel_test/output/mesh_RB_" + std::to_string(rank) + "_info.txt");
+	mesh_R_micro.print_info(mesh_info_ofstream);
+	mesh_info_ofstream.close();
+
+	WorldComm.barrier();
+
+	mesh_info_ofstream.open("meshes/parallel_test/output/mesh_mediator_" + std::to_string(rank) + "_info.txt");
+	mesh_mediator.print_info(mesh_info_ofstream);
+	mesh_info_ofstream.close();
+
+	std::ofstream mesh_data;
+	mesh_data.open("meshes/parallel_test/output/mesh_A_data_" + std::to_string(rank)  + ".dat");
+	libMesh::MeshBase::const_element_iterator       el     = mesh_BIG.active_local_elements_begin();
+	const libMesh::MeshBase::const_element_iterator end_el = mesh_BIG.active_local_elements_end();
+
+	for ( ; el != end_el; ++el)
+	{
+		const libMesh::Elem* elem = *el;
+		mesh_data << elem->id() << " " << elem->point(0) << " " << elem->point(1) << " " << elem->point(2)<< " " << elem->point(3)<< std::endl;
+	}
+	mesh_data.close();
+
+	/* 		To do on the first proc
+	 * 		- Read and build the equivalence tables between R_X and X, e_X - DONE
+	 * 		- Read and build the intersection pairs table between A and B, p_AB - DONE
+	 *		- Read and build the intersection indexes table, I_F - DONE
+	 *
+	 * 		Broadcast e_X, p_AB, I_F - DONE
+	 *
+	 * 		Build on each proc
+	 * 		- The restricted intersection pairs table, p_R,AB- DONE
+	 * 		- A local intersection indexes table, I_L - DONE
+	 *
+	 * 		Convert the pairs table to the libMesh indexing - TODO
+	 */
+
+	std::unordered_map<int,std::pair<int,int> > full_intersection_pairs_map;
+	std::unordered_map<int,std::pair<int,int> > full_intersection_restricted_pairs_map;
+	std::unordered_map<int,int> local_intersection_meshI_to_inter_map;
+
+	std::unordered_map<int,int> equivalence_table_BIG_to_R_BIG;
+	std::unordered_map<int,int> equivalence_table_micro_to_R_micro;
+	std::unordered_map<int,int> equivalence_table_R_BIG_to_BIG;
+	std::unordered_map<int,int> equivalence_table_R_micro_to_micro;
+
+	//	Start by reading and broadcasting the equivalence tables
+	carl::set_equivalence_tables(
+			WorldComm,
+			input_params.equivalence_table_restrict_BIG_file,
+			input_params.equivalence_table_restrict_micro_file,
+			equivalence_table_BIG_to_R_BIG,
+			equivalence_table_micro_to_R_micro,
+			equivalence_table_R_BIG_to_BIG,
+			equivalence_table_R_micro_to_micro);
+
+	if(input_params.b_UseMesh_BIG_AsMediator)
+	{
+		carl::set_intersection_tables(
+				WorldComm,
+				mesh_inter,
+				input_params.intersection_table_full,
+				input_params.equivalence_table_restrict_BIG_file,
+				input_params.equivalence_table_restrict_micro_file,
+				mesh_inter_ElemMap_libmesh_to_table,
+
+				equivalence_table_BIG_to_R_BIG,
+				equivalence_table_micro_to_R_micro,
+
+				full_intersection_pairs_map,
+				full_intersection_restricted_pairs_map,
+				local_intersection_meshI_to_inter_map);
+	}
+	else if(input_params.b_UseMesh_micro_AsMediator)
+	{
+		carl::set_intersection_tables(
+				WorldComm,
+				mesh_inter,
+				input_params.intersection_table_full,
+				input_params.equivalence_table_restrict_micro_file,
+				input_params.equivalence_table_restrict_BIG_file,
+				mesh_inter_ElemMap_libmesh_to_table,
+
+				equivalence_table_micro_to_R_micro,
+				equivalence_table_BIG_to_R_BIG,
+
+				full_intersection_pairs_map,
+				full_intersection_restricted_pairs_map,
+				local_intersection_meshI_to_inter_map);
+	}
+
+	// TODO Convert the tables to libMesh's notation
+	// TODO Parallelize it!
+	// For now only doing this for the restricted stuff
+//	carl::convert_equivalence_to_libmesh(mesh_BIG_ElemMap,mesh_R_BIG_ElemMap,
+//			equivalence_table_BIG_to_R_BIG,equivalence_table_R_BIG_to_BIG);
+//
+//	carl::convert_equivalence_to_libmesh(mesh_micro_ElemMap,mesh_R_micro_ElemMap,
+//			equivalence_table_micro_to_R_micro,equivalence_table_R_micro_to_micro);
+//
+//	if(input_params.b_UseMesh_BIG_AsMediator)
+//	{
+//		carl::convert_pairs_to_libmesh(mesh_R_BIG_ElemMap,mesh_R_micro_ElemMap
+//				full_intersection_restricted_pairs_map);
+//	}
+//	else if(input_params.b_UseMesh_micro_AsMediator)
+//	{
+//		carl::convert_pairs_to_libmesh(mesh_R_micro_ElemMap,mesh_R_BIG_ElemMap
+//				full_intersection_restricted_pairs_map);
+//	}
 
 	return 0;
 }

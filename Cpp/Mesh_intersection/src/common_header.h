@@ -37,6 +37,7 @@
 #include <vector>
 #include <iterator>
 #include <algorithm>
+#include <tuple>
 
 // --- C++ strings
 #include <string>

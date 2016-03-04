@@ -14,5 +14,10 @@
 namespace carl
 {
 
+void broadcast_index_unordered_map(
+		std::unordered_map<int,int>& index_map,
+		const libMesh::Parallel::Communicator& CommComm,
+		int origin_rank = 0);
+
 }
 #endif /* COMMON_LIBMESH_CODE_MPI_CARL_TOOLS_H_ */

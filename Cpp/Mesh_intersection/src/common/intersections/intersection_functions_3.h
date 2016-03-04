@@ -9,6 +9,7 @@
 #define INTERSECTION_FUNCTIONS_3_H_
 
 #include "common_header.h"
+#include "common_functions.h"
 #include "CGAL_typedefs.h"
 #include "triangular_mesh_3.h"
 #include "triangular_mesh_intersection_3.h"
@@ -41,6 +42,7 @@ extern Nef_Polyhedron cheatingNef;
  * 		that it is well formated for FreeFem++
  *
  */
+
 class IntersectionPointsVisitor_3
 	: public boost::static_visitor<void>
 {
@@ -333,6 +335,12 @@ public:
 	 */
 	std::unordered_multimap<int,int> IntersectionListsFromI;
 
+	/*
+	 * 		Another mapping with the pairs of intersections between meshes A and
+	 *  B, but now associating each pair to a tetrahedron of the intersection.
+	 */
+//	std::vector<carl::IntersectionData> IntersectionDetailedPairsFromAB;
+
 	int dummyIntersectionNumber;
 	int dummyTotalNbOfinterTetras;
 
@@ -385,15 +393,59 @@ public:
 		IntersectionTDS_3.CleanUp();
 		IntersectionTDS_3.CreateIntersectionIndexMap(IntersectionListsFromI);
 		dummyTotalNbOfinterTetras = IntersectionTDS_3.mesh.number_of_finite_cells();
+
+		std::unordered_multimap<int,int>::iterator itInterTetras;
+
+//		IntersectionDetailedPairsFromAB.resize(dummyTotalNbOfinterTetras);
+//		int idxA = -1;
+//		int idxB = -1;
+//		for(int iii = 0; iii < dummyIntersectionNumber; ++iii)
+//		{
+//			auto itRange = IntersectionListsFromI.equal_range(iii);
+//			idxA = IntersectionPairsFromAB[iii].first;
+//			idxB = IntersectionPairsFromAB[iii].second;
+//
+//			for( 	itInterTetras = itRange.first;
+//					itInterTetras != itRange.second;
+//					++itInterTetras)
+//
+//			{
+//				IntersectionDetailedPairsFromAB[itInterTetras->second].AMeshIdx = idxA;
+//				IntersectionDetailedPairsFromAB[itInterTetras->second].BMeshIdx = idxB;
+//				IntersectionDetailedPairsFromAB[itInterTetras->second].InterMeshIdx = itInterTetras->second;
+//				IntersectionDetailedPairsFromAB[itInterTetras->second].IntersectionID = iii;
+//			}
+//		}
 	};
 
 	void PrintIntersectionTables(const std::string filenameBase = "intersection_tables")
 	{
 		std::string filenameAB = filenameBase + "_restrict_B.dat";
 		std::string filenameI = filenameBase + "_I.dat";
+		std::string filenameFullI = filenameBase + "_Full_I.dat";
 
 		std::ofstream fileAB(filenameAB,std::ios::trunc);
 		std::ofstream fileI(filenameI,std::ios::trunc);
+		std::ofstream fileFullI(filenameFullI,std::ios::trunc);
+
+		/*	fileAB structure :
+		 * 		first line: [nb. of intersections]
+		 * 		[intersection idx] [idxA + 1] [idxB + 1]
+		 *
+		 * 	fileI structure :
+		 * 		first line: [nb. of intersections] [nb. of tetra in I]
+		 * 		[intersection idx] [nb. of tetra in intersection] [idxI +1 list]
+		 *
+		 *	fileFullI structure :
+		 * 		first line: [nb. of intersections] [nb. of tetra in I]
+		 * 		[intersection idx] [idxA + 1] [idxB + 1] [nb. of tetra in intersection] [idxI +1 list]
+		 *
+		 * 	The +1's are due to the index difference between the mesh files and
+		 * 	libMesh.
+		 *
+		 * 	fileFullI is more compact and should be used in general, the other
+		 * 	two are kept for now due to compatibility with the older code.
+		 */
 
 		std::unordered_multimap<int,int>::iterator itInterTetras;
 
@@ -401,26 +453,46 @@ public:
 		fileI 	<< dummyIntersectionNumber << " "
 				<< dummyTotalNbOfinterTetras << std::endl;
 
+		fileFullI 	<< dummyIntersectionNumber << " "
+					<< dummyTotalNbOfinterTetras << std::endl;
+
 		for(int iii = 0; iii < dummyIntersectionNumber; ++iii)
 		{
-			// The +1 is due to the indexing difference between CGAL and Gmsh
 			fileAB 	<< iii << " " << IntersectionPairsFromAB[iii].first + 1 << " "
 					<< IntersectionPairsFromAB[iii].second + 1 << std::endl;
 
+			fileFullI 	<< iii << " " << IntersectionPairsFromAB[iii].first + 1
+						<< " " << IntersectionPairsFromAB[iii].second + 1 << " ";
+
 			auto itRange = IntersectionListsFromI.equal_range(iii);
 			fileI 	<< iii << " " << IntersectionListsFromI.count(iii) << " ";
+			fileFullI << IntersectionListsFromI.count(iii) << " ";
 
 			for( 	itInterTetras = itRange.first;
 					itInterTetras != itRange.second;
 					++itInterTetras)
 			{
 				fileI << itInterTetras->second + 1 << " ";
+				fileFullI 	<< itInterTetras->second + 1 << " ";
 			}
 			fileI << std::endl;
+			fileFullI << std::endl;
 		}
 
 		fileAB.close();
 		fileI.close();
+		fileFullI.close();
+//
+//		for(int iii = 0; iii < dummyTotalNbOfinterTetras; ++iii)
+//		{
+//			fileFullI << IntersectionDetailedPairsFromAB[iii].InterMeshIdx + 1
+//					<< " " << IntersectionDetailedPairsFromAB[iii].AMeshIdx + 1
+//					<< " " << IntersectionDetailedPairsFromAB[iii].BMeshIdx + 1
+//					<< " " << IntersectionDetailedPairsFromAB[iii].IntersectionID
+//					<< std::endl;
+//		}
+
+
 	}
 };
 
