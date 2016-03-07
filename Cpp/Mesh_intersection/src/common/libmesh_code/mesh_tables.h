@@ -140,11 +140,16 @@ void set_equivalence_tables(
 		const std::string& equivalence_table_A_Filename,
 		const std::string& equivalence_table_B_Filename,
 
+		const std::unordered_map<int,int>& mesh_A_ElemMap,
+		const std::unordered_map<int,int>& mesh_RA_ElemMap,
+
+		const std::unordered_map<int,int>& mesh_B_ElemMap,
+		const std::unordered_map<int,int>& mesh_RB_ElemMap,
+
 		std::unordered_map<int,int>& equivalence_table_A_to_R_A,
 		std::unordered_map<int,int>& equivalence_table_B_to_R_B,
 		std::unordered_map<int,int>& equivalence_table_R_A_to_A,
-		std::unordered_map<int,int>& equivalence_table_R_B_to_B
-		);
+		std::unordered_map<int,int>& equivalence_table_R_B_to_B );
 
 void set_restricted_intersection_pairs_table(
 		const std::unordered_map<int,std::pair<int,int> >&  full_intersection_pairs_map,
@@ -155,6 +160,10 @@ void set_restricted_intersection_pairs_table(
 void set_full_intersection_tables(
 		const libMesh::Parallel::Communicator& WorldComm,
 		const std::string& intersection_full_table_Filename,
+
+		const std::unordered_map<int,int>& mesh_A_ElemMap,
+		const std::unordered_map<int,int>& mesh_B_ElemMap,
+
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_pairs_map,
 		std::unordered_map<int,int>& full_intersection_meshI_to_inter_map);
 
@@ -168,6 +177,9 @@ void set_intersection_tables(
 
 		const std::unordered_map<int,int>& equivalence_table_A_to_R_A,
 		const std::unordered_map<int,int>& equivalence_table_B_to_R_B,
+
+		const std::unordered_map<int,int>& mesh_A_ElemMap,
+		const std::unordered_map<int,int>& mesh_B_ElemMap,
 
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_pairs_map,
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_restricted_pairs_map,

@@ -717,6 +717,12 @@ void carl::set_equivalence_tables(
 		const std::string& equivalence_table_A_Filename,
 		const std::string& equivalence_table_B_Filename,
 
+		const std::unordered_map<int,int>& mesh_A_ElemMap,
+		const std::unordered_map<int,int>& mesh_RA_ElemMap,
+
+		const std::unordered_map<int,int>& mesh_B_ElemMap,
+		const std::unordered_map<int,int>& mesh_RB_ElemMap,
+
 		std::unordered_map<int,int>& equivalence_table_A_to_R_A,
 		std::unordered_map<int,int>& equivalence_table_B_to_R_B,
 		std::unordered_map<int,int>& equivalence_table_R_A_to_A,
@@ -735,6 +741,9 @@ void carl::set_equivalence_tables(
 	// Read files with proc 0
 	if(rank == 0)
 	{
+		int temp_RX = -1;
+		int temp_X = -1;
+
 		std::ifstream equivalence_A_file(equivalence_table_A_Filename);
 
 		equivalence_A_file >> nbOfRestricted_A_Elems;
@@ -742,8 +751,11 @@ void carl::set_equivalence_tables(
 
 		for(int iii = 0; iii < nbOfRestricted_A_Elems; ++iii)
 		{
-			equivalence_A_file	>> dummy_equivalence_table_A[2*iii]
-								>> dummy_equivalence_table_A[2*iii + 1];
+			equivalence_A_file	>> temp_RX
+								>> temp_X;
+
+			dummy_equivalence_table_A[2*iii] = mesh_RA_ElemMap.at(temp_RX);
+			dummy_equivalence_table_A[2*iii + 1] = mesh_A_ElemMap.at(temp_X);
 		}
 		equivalence_A_file.close();
 
@@ -754,8 +766,11 @@ void carl::set_equivalence_tables(
 
 		for(int iii = 0; iii < nbOfRestricted_B_Elems; ++iii)
 		{
-			equivalence_B_file	>> dummy_equivalence_table_B[2*iii]
-								>> dummy_equivalence_table_B[2*iii + 1];
+			equivalence_B_file	>> temp_RX
+								>> temp_X;
+
+			dummy_equivalence_table_B[2*iii] = mesh_RB_ElemMap.at(temp_RX);
+			dummy_equivalence_table_B[2*iii + 1] = mesh_B_ElemMap.at(temp_X);
 		}
 		equivalence_B_file.close();
 	}
@@ -875,6 +890,10 @@ void carl::set_restricted_intersection_pairs_table(
 void carl::set_full_intersection_tables(
 		const libMesh::Parallel::Communicator& WorldComm,
 		const std::string& intersection_full_table_Filename,
+
+		const std::unordered_map<int,int>& mesh_A_ElemMap,
+		const std::unordered_map<int,int>& mesh_B_ElemMap,
+
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_pairs_map,
 		std::unordered_map<int,int>& full_intersection_meshI_to_inter_map)
 {
@@ -918,8 +937,8 @@ void carl::set_full_intersection_tables(
 									>> temp_nbOfInter;
 
 			dummy_intersections_IDs[iii]			  = temp_interID;
-			dummy_intersection_pairs_table[2*iii]     = temp_idxA;
-			dummy_intersection_pairs_table[2*iii + 1] = temp_idxB;
+			dummy_intersection_pairs_table[2*iii]     = mesh_A_ElemMap.at(temp_idxA);
+			dummy_intersection_pairs_table[2*iii + 1] = mesh_B_ElemMap.at(temp_idxB);
 			dummy_intersections_sizes_table[iii]      = temp_nbOfInter;
 
 			for(int jjj = 0; jjj < temp_nbOfInter; ++jjj)
@@ -1018,6 +1037,9 @@ void carl::set_intersection_tables(
 		const std::unordered_map<int,int>& equivalence_table_A_to_R_A,
 		const std::unordered_map<int,int>& equivalence_table_B_to_R_B,
 
+		const std::unordered_map<int,int>& mesh_A_ElemMap,
+		const std::unordered_map<int,int>& mesh_B_ElemMap,
+
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_pairs_map,
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_restricted_pairs_map,
 		std::unordered_map<int,int>& local_intersection_meshI_to_inter_map
@@ -1031,12 +1053,13 @@ void carl::set_intersection_tables(
 	std::unordered_map<int,int> full_intersection_meshI_to_inter_map;
 
 	set_full_intersection_tables(WorldComm,intersection_full_table_Filename,
+			mesh_A_ElemMap, mesh_B_ElemMap,
 			full_intersection_pairs_map,full_intersection_meshI_to_inter_map);
 
 	// Set up the restricted intersection pairs table
-	 set_restricted_intersection_pairs_table(full_intersection_pairs_map,
-			equivalence_table_A_to_R_A,equivalence_table_B_to_R_B,
-			full_intersection_restricted_pairs_map);
+	set_restricted_intersection_pairs_table(full_intersection_pairs_map,
+		equivalence_table_A_to_R_A,equivalence_table_B_to_R_B,
+		full_intersection_restricted_pairs_map);
 
 //	// DEBUG Print all this into a file
 //	std::string debug_inter_table = "debug_restriction_libmesh_" +

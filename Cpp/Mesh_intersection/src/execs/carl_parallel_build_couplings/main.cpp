@@ -292,6 +292,7 @@ int main(int argc, char** argv) {
 	// - Read the meshes -------------------------------------------------------
 
 	// - Global meshes: A, B and mediator
+	//   Elem / node maps : key = external index, value = libMesh's index
 	libMesh::Mesh mesh_BIG(WorldComm, dim);
 	std::unordered_map<int,int> mesh_BIG_NodeMap;
 	std::unordered_map<int,int> mesh_BIG_ElemMap;
@@ -403,7 +404,7 @@ int main(int argc, char** argv) {
 	 * 		- The restricted intersection pairs table, p_R,AB- DONE
 	 * 		- A local intersection indexes table, I_L - DONE
 	 *
-	 * 		Convert the pairs table to the libMesh indexing - TODO
+	 * 		Convert the pairs table to the libMesh indexing - DONE
 	 */
 
 	std::unordered_map<int,std::pair<int,int> > full_intersection_pairs_map;
@@ -420,6 +421,13 @@ int main(int argc, char** argv) {
 			WorldComm,
 			input_params.equivalence_table_restrict_BIG_file,
 			input_params.equivalence_table_restrict_micro_file,
+
+			mesh_BIG_ElemMap,
+			mesh_R_BIG_ElemMap,
+
+			mesh_micro_ElemMap,
+			mesh_R_micro_ElemMap,
+
 			equivalence_table_BIG_to_R_BIG,
 			equivalence_table_micro_to_R_micro,
 			equivalence_table_R_BIG_to_BIG,
@@ -438,6 +446,9 @@ int main(int argc, char** argv) {
 				equivalence_table_BIG_to_R_BIG,
 				equivalence_table_micro_to_R_micro,
 
+				mesh_BIG_ElemMap,
+				mesh_micro_ElemMap,
+
 				full_intersection_pairs_map,
 				full_intersection_restricted_pairs_map,
 				local_intersection_meshI_to_inter_map);
@@ -455,30 +466,13 @@ int main(int argc, char** argv) {
 				equivalence_table_micro_to_R_micro,
 				equivalence_table_BIG_to_R_BIG,
 
+				mesh_micro_ElemMap,
+				mesh_BIG_ElemMap,
+
 				full_intersection_pairs_map,
 				full_intersection_restricted_pairs_map,
 				local_intersection_meshI_to_inter_map);
 	}
-
-	// TODO Convert the tables to libMesh's notation
-	// TODO Parallelize it!
-	// For now only doing this for the restricted stuff
-//	carl::convert_equivalence_to_libmesh(mesh_BIG_ElemMap,mesh_R_BIG_ElemMap,
-//			equivalence_table_BIG_to_R_BIG,equivalence_table_R_BIG_to_BIG);
-//
-//	carl::convert_equivalence_to_libmesh(mesh_micro_ElemMap,mesh_R_micro_ElemMap,
-//			equivalence_table_micro_to_R_micro,equivalence_table_R_micro_to_micro);
-//
-//	if(input_params.b_UseMesh_BIG_AsMediator)
-//	{
-//		carl::convert_pairs_to_libmesh(mesh_R_BIG_ElemMap,mesh_R_micro_ElemMap
-//				full_intersection_restricted_pairs_map);
-//	}
-//	else if(input_params.b_UseMesh_micro_AsMediator)
-//	{
-//		carl::convert_pairs_to_libmesh(mesh_R_micro_ElemMap,mesh_R_BIG_ElemMap
-//				full_intersection_restricted_pairs_map);
-//	}
 
 	return 0;
 }
