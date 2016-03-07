@@ -261,6 +261,11 @@ int main(int argc, char** argv) {
 
 	libMesh::PerfLog perf_log("Main program", MASTER_bPerfLog_carl_libmesh);
 
+	// - Displacement conditions -----------------------------------------------
+	boundary_displacement x_max_BIG(1.0,0,0);
+	boundary_displacement x_min_BIG(-0.25,0,0);
+	boundary_id_cube boundary_ids;
+
 	// - Set up inputs
 	GetPot command_line(argc, argv);
 	GetPot field_parser;
@@ -291,8 +296,10 @@ int main(int argc, char** argv) {
 
 	// - Read the meshes -------------------------------------------------------
 
-	// - Global meshes: A, B and mediator
+	// - Parallelized meshes: A, B, intersection and mediator
 	//   Elem / node maps : key = external index, value = libMesh's index
+
+	perf_log.push("Read meshes - parallel","Main program");
 	libMesh::Mesh mesh_BIG(WorldComm, dim);
 	std::unordered_map<int,int> mesh_BIG_NodeMap;
 	std::unordered_map<int,int> mesh_BIG_ElemMap;
@@ -308,41 +315,48 @@ int main(int argc, char** argv) {
 			mesh_micro_NodeMap,mesh_micro_ElemMap,WorldComm);
 
 	libMesh::Mesh mesh_inter(WorldComm, dim);
-	std::unordered_map<int,int> mesh_inter_NodeMap_table_to_libmesh;
-	std::unordered_map<int,int> mesh_inter_NodeMap_libmesh_to_table;
-	std::unordered_map<int,int> mesh_inter_ElemMap_table_to_libmesh;
-	std::unordered_map<int,int> mesh_inter_ElemMap_libmesh_to_table;
-
+	std::unordered_map<int,int> mesh_inter_NodeMap;
+	std::unordered_map<int,int> mesh_inter_ElemMap;
 	carl::set_mesh_Gmsh(mesh_inter,input_params.mesh_inter_file);
 	carl::create_mesh_map(input_params.mesh_inter_file,
-			mesh_inter_NodeMap_table_to_libmesh,mesh_inter_NodeMap_libmesh_to_table,
-			mesh_inter_ElemMap_table_to_libmesh,mesh_inter_ElemMap_libmesh_to_table,WorldComm);
+			mesh_inter_NodeMap,mesh_inter_ElemMap,WorldComm);
 
-	// - Test: print info per proc
-	std::ofstream mesh_info_ofstream;
-	mesh_info_ofstream.open("meshes/parallel_test/output/mesh_A_" + std::to_string(rank) + "_info.txt");
-	mesh_BIG.print_info(mesh_info_ofstream);
-	mesh_info_ofstream.close();
+	libMesh::Mesh mesh_mediator(WorldComm, dim);
+	std::unordered_map<int,int> mesh_mediator_NodeMap;
+	std::unordered_map<int,int> mesh_mediator_ElemMap;
+	carl::set_mesh_Gmsh(mesh_mediator,input_params.mesh_mediator_file);
+	carl::create_mesh_map(input_params.mesh_mediator_file,
+			mesh_mediator_NodeMap,mesh_mediator_ElemMap,WorldComm);
 
-	WorldComm.barrier();
+	// DEBUG - Test: print info per proc
+	{
+		std::ofstream mesh_info_ofstream;
+		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_A_" + std::to_string(rank) + "_info.txt");
+		mesh_BIG.print_info(mesh_info_ofstream);
+		mesh_info_ofstream.close();
 
-	mesh_info_ofstream.open("meshes/parallel_test/output/mesh_B_" + std::to_string(rank) + "_info.txt");
-	mesh_micro.print_info(mesh_info_ofstream);
-	mesh_info_ofstream.close();
+		WorldComm.barrier();
 
-	WorldComm.barrier();
+		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_B_" + std::to_string(rank) + "_info.txt");
+		mesh_micro.print_info(mesh_info_ofstream);
+		mesh_info_ofstream.close();
 
-	mesh_info_ofstream.open("meshes/parallel_test/output/mesh_inter_" + std::to_string(rank) + "_info.txt");
-	mesh_inter.print_info(mesh_info_ofstream);
-	mesh_info_ofstream.close();
+		WorldComm.barrier();
 
-	WorldComm.barrier();
+		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_inter_" + std::to_string(rank) + "_info.txt");
+		mesh_inter.print_info(mesh_info_ofstream);
+		mesh_info_ofstream.close();
+
+		WorldComm.barrier();
+	}
+
+	perf_log.pop("Read meshes - parallel","Main program");
 
 	// - Local meshes: restrict A, restrict B and (gasp!) intersection
 
 	// -> TODO : 	create decent mesh reader. For now, each processor reads the
 	//				mesh independently ... (aïe ...)
-
+	perf_log.push("Read meshes - serial","Main program");
 	libMesh::Mesh mesh_R_BIG(LocalComm, dim);
 	std::unordered_map<int,int> mesh_R_BIG_NodeMap;
 	std::unordered_map<int,int> mesh_R_BIG_ElemMap;
@@ -357,43 +371,41 @@ int main(int argc, char** argv) {
 	carl::create_mesh_map(input_params.mesh_restrict_micro_file,
 			mesh_R_micro_NodeMap,mesh_R_micro_ElemMap,WorldComm);
 
-	libMesh::Mesh mesh_mediator(LocalComm, dim);
-	std::unordered_map<int,int> mesh_mediator_NodeMap;
-	std::unordered_map<int,int> mesh_mediator_ElemMap;
-	carl::set_mesh_Gmsh(mesh_mediator,input_params.mesh_mediator_file);
-	carl::create_mesh_map(input_params.mesh_mediator_file,
-			mesh_mediator_NodeMap,mesh_mediator_ElemMap,WorldComm);
-
-	// - Test: print info per proc
-	mesh_info_ofstream.open("meshes/parallel_test/output/mesh_RA_" + std::to_string(rank) + "_info.txt");
-	mesh_R_BIG.print_info(mesh_info_ofstream);
-	mesh_info_ofstream.close();
-
-	WorldComm.barrier();
-
-	mesh_info_ofstream.open("meshes/parallel_test/output/mesh_RB_" + std::to_string(rank) + "_info.txt");
-	mesh_R_micro.print_info(mesh_info_ofstream);
-	mesh_info_ofstream.close();
-
-	WorldComm.barrier();
-
-	mesh_info_ofstream.open("meshes/parallel_test/output/mesh_mediator_" + std::to_string(rank) + "_info.txt");
-	mesh_mediator.print_info(mesh_info_ofstream);
-	mesh_info_ofstream.close();
-
-	std::ofstream mesh_data;
-	mesh_data.open("meshes/parallel_test/output/mesh_A_data_" + std::to_string(rank)  + ".dat");
-	libMesh::MeshBase::const_element_iterator       el     = mesh_BIG.active_local_elements_begin();
-	const libMesh::MeshBase::const_element_iterator end_el = mesh_BIG.active_local_elements_end();
-
-	for ( ; el != end_el; ++el)
+	// DEBUG - Test: print info per proc
 	{
-		const libMesh::Elem* elem = *el;
-		mesh_data << elem->id() << " " << elem->point(0) << " " << elem->point(1) << " " << elem->point(2)<< " " << elem->point(3)<< std::endl;
-	}
-	mesh_data.close();
+		std::ofstream mesh_info_ofstream;
+		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_RA_" + std::to_string(rank) + "_info.txt");
+		mesh_R_BIG.print_info(mesh_info_ofstream);
+		mesh_info_ofstream.close();
 
-	/* 		To do on the first proc
+		WorldComm.barrier();
+
+		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_RB_" + std::to_string(rank) + "_info.txt");
+		mesh_R_micro.print_info(mesh_info_ofstream);
+		mesh_info_ofstream.close();
+
+		WorldComm.barrier();
+
+		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_mediator_" + std::to_string(rank) + "_info.txt");
+		mesh_mediator.print_info(mesh_info_ofstream);
+		mesh_info_ofstream.close();
+
+		std::ofstream mesh_data;
+		mesh_data.open("meshes/parallel_test/output/mesh_A_data_" + std::to_string(rank)  + ".dat");
+		libMesh::MeshBase::const_element_iterator       el     = mesh_BIG.active_local_elements_begin();
+		const libMesh::MeshBase::const_element_iterator end_el = mesh_BIG.active_local_elements_end();
+
+		for ( ; el != end_el; ++el)
+		{
+			const libMesh::Elem* elem = *el;
+			mesh_data << elem->id() << " " << elem->point(0) << " " << elem->point(1) << " " << elem->point(2)<< " " << elem->point(3)<< std::endl;
+		}
+		mesh_data.close();
+	}
+	perf_log.pop("Read meshes - serial","Main program");
+
+	/*
+	 * 		To do on the first proc
 	 * 		- Read and build the equivalence tables between R_X and X, e_X - DONE
 	 * 		- Read and build the intersection pairs table between A and B, p_AB - DONE
 	 *		- Read and build the intersection indexes table, I_F - DONE
@@ -407,6 +419,7 @@ int main(int argc, char** argv) {
 	 * 		Convert the pairs table to the libMesh indexing - DONE
 	 */
 
+	perf_log.push("Equivalence / intersection tables","Main program");
 	std::unordered_map<int,std::pair<int,int> > full_intersection_pairs_map;
 	std::unordered_map<int,std::pair<int,int> > full_intersection_restricted_pairs_map;
 	std::unordered_map<int,int> local_intersection_meshI_to_inter_map;
@@ -441,13 +454,13 @@ int main(int argc, char** argv) {
 				input_params.intersection_table_full,
 				input_params.equivalence_table_restrict_BIG_file,
 				input_params.equivalence_table_restrict_micro_file,
-				mesh_inter_ElemMap_libmesh_to_table,
 
 				equivalence_table_BIG_to_R_BIG,
 				equivalence_table_micro_to_R_micro,
 
 				mesh_BIG_ElemMap,
 				mesh_micro_ElemMap,
+				mesh_inter_ElemMap,
 
 				full_intersection_pairs_map,
 				full_intersection_restricted_pairs_map,
@@ -461,18 +474,141 @@ int main(int argc, char** argv) {
 				input_params.intersection_table_full,
 				input_params.equivalence_table_restrict_micro_file,
 				input_params.equivalence_table_restrict_BIG_file,
-				mesh_inter_ElemMap_libmesh_to_table,
 
 				equivalence_table_micro_to_R_micro,
 				equivalence_table_BIG_to_R_BIG,
 
 				mesh_micro_ElemMap,
 				mesh_BIG_ElemMap,
+				mesh_inter_ElemMap,
 
 				full_intersection_pairs_map,
 				full_intersection_restricted_pairs_map,
 				local_intersection_meshI_to_inter_map);
 	}
+	perf_log.pop("Equivalence / intersection tables","Main program");
 
+	// - Generate the equation systems -----------------------------------------
+	carl::coupled_system CoupledTest(WorldComm);
+
+	libMesh::EquationSystems& equation_systems_inter =
+					CoupledTest.add_inter_EquationSystem("InterSys", mesh_inter);
+
+	// - Build the BIG system --------------------------------------------------
+
+	perf_log.push("System initialization - BIG","Main program");
+	libMesh::EquationSystems& equation_systems_BIG =
+					CoupledTest.set_BIG_EquationSystem("BigSys", mesh_BIG);
+
+	// [MACRO] Set up the physical properties
+	libMesh::LinearImplicitSystem& elasticity_system_BIG
+										= add_elasticity(equation_systems_BIG);
+
+	// [MACRO] Defining the boundaries with Dirichlet conditions
+	set_displaced_border_translation(elasticity_system_BIG, x_max_BIG,boundary_ids.MAX_X);
+	set_clamped_border(elasticity_system_BIG, boundary_ids.MIN_X);
+
+	// [MACRO] Build stress system
+	libMesh::ExplicitSystem& stress_system_BIG
+										= add_stress(equation_systems_BIG);
+
+	equation_systems_BIG.init();
+
+	perf_log.pop("System initialization - BIG","Main program");
+
+	// - Build the micro system ------------------------------------------------
+
+	perf_log.push("System initialization - micro","Main program");
+
+	libMesh::EquationSystems& equation_systems_micro =
+					CoupledTest.add_micro_EquationSystem<libMesh::PetscMatrix<libMesh::Number> >("MicroSys", mesh_micro);
+
+	// [MICRO] Set up the physical properties
+	libMesh::LinearImplicitSystem& elasticity_system_micro
+										= add_elasticity(equation_systems_micro);
+
+	// [MICRO] Build stress system
+	libMesh::ExplicitSystem& stress_system_micro
+										= add_stress(equation_systems_micro);
+
+	equation_systems_micro.init();
+	perf_log.pop("System initialization - micro","Main program");
+
+	// - Build the BIG system --------------------------------------------------
+
+	perf_log.push("System initialization - Restricted BIG","Main program");
+	libMesh::EquationSystems& equation_systems_R_BIG =
+					CoupledTest.set_Restricted_BIG_EquationSystem("BigSys", mesh_R_BIG);
+
+	// [R. MACRO] Set up the physical properties
+	libMesh::LinearImplicitSystem& elasticity_system_R_BIG
+										= add_elasticity(equation_systems_R_BIG);
+
+	equation_systems_R_BIG.init();
+
+	perf_log.pop("System initialization - Restricted BIG","Main program");
+
+	// - Build the micro system ------------------------------------------------
+
+	perf_log.push("System initialization - Restricted micro","Main program");
+
+	libMesh::EquationSystems& equation_systems_R_micro =
+					CoupledTest.add_Restricted_micro_EquationSystem("MicroSys", mesh_R_micro);
+
+	// [R. MICRO] Set up the physical properties
+	libMesh::LinearImplicitSystem& elasticity_system_R_micro
+										= add_elasticity(equation_systems_R_micro);
+
+	equation_systems_R_micro.init();
+	perf_log.pop("System initialization - Restricted micro","Main program");
+
+	// - Build the mediator system ---------------------------------------------
+
+	perf_log.push("System initialization - mediator","Main program");
+
+	libMesh::EquationSystems& equation_systems_mediator =
+					CoupledTest.add_mediator_EquationSystem("MediatorSys", mesh_mediator);
+
+	libMesh::LinearImplicitSystem& elasticity_system_mediator
+										= add_elasticity(equation_systems_mediator);
+
+	equation_systems_mediator.init();
+
+	perf_log.pop("System initialization - mediator","Main program");
+
+	// - Build the dummy inter system ------------------------------------------
+
+	perf_log.push("System initialization - inter","Main program");
+
+	libMesh::LinearImplicitSystem& elasticity_system_inter
+										= add_elasticity(equation_systems_inter);
+
+	equation_systems_inter.init();
+
+	perf_log.pop("System initialization - inter","Main program");
+
+	// - Set the coupling matrix -----------------------------------------------
+	perf_log.push("Build elasticity couplings","Main program");
+	CoupledTest.set_coupling_parameters("MicroSys",input_params.coupling_const,input_params.mean_distance);
+
+	std::cout << " ---> Coupling const = " << input_params.coupling_const << std::endl;
+
+	CoupledTest.use_H1_coupling("MicroSys");
+	CoupledTest.assemble_coupling_elasticity_3D_parallel("BigSys","MicroSys",
+			"InterSys","MediatorSys",
+			mesh_R_BIG, mesh_R_micro,
+			full_intersection_pairs_map,
+			full_intersection_restricted_pairs_map,
+			local_intersection_meshI_to_inter_map);
+	perf_log.pop("Build elasticity couplings","Main program");
+
+	CoupledTest.print_matrix_micro_info("MicroSys");
+	CoupledTest.print_matrix_BIG_info("MicroSys");
+	CoupledTest.print_matrix_mediator_info("MicroSys");
+
+
+	std::ofstream perf_log_file("meshes/parallel_test/output/perf_log_" + std::to_string(rank)  + ".txt");
+	perf_log_file << perf_log.get_log();
+	perf_log_file.close();
 	return 0;
 }

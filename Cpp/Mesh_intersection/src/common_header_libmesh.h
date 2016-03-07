@@ -40,6 +40,7 @@
 #include "libmesh/point_locator_tree.h"
 
 #include <petscmat.h>
+#include <petscvec.h>
 #include <petscsys.h>
 #include <petscksp.h>
 

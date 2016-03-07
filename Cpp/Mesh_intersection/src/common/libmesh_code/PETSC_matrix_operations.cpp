@@ -105,22 +105,30 @@ void carl::lump_matrix_and_invert(		libMesh::PetscMatrix<libMesh::Number>& matri
 void carl::print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix)
 {
 	libMesh::Real accumulator = 0;
+	const libMesh::Parallel::Communicator& MatrixComm =  CouplingTestMatrix.comm();
+
 	std::cout << "| M_i,j : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl;
-	for(unsigned int iii = 0; iii < CouplingTestMatrix.m(); ++iii)
+
+	int nodes = MatrixComm.size();
+	PetscInt local_M, local_N;
+	MatGetLocalSize(CouplingTestMatrix.mat(),&local_M,&local_N);
+
+	bool bPrintOnTerminal = CouplingTestMatrix.m() < 101 && CouplingTestMatrix.n() < 101 && nodes > 1;
+	if(bPrintOnTerminal)
 	{
-		for(unsigned int jjj = 0; jjj < CouplingTestMatrix.n(); ++jjj)
+		for(unsigned int iii = 0; iii < CouplingTestMatrix.m(); ++iii)
 		{
-			accumulator += CouplingTestMatrix(iii,jjj);
-			if(CouplingTestMatrix.m() < 101 && CouplingTestMatrix.n() < 101)
+			for(unsigned int jjj = 0; jjj < CouplingTestMatrix.n(); ++jjj)
 			{
 				std::cout << " " << CouplingTestMatrix(iii,jjj);
 			}
-		}
-		if(CouplingTestMatrix.m() < 101 && CouplingTestMatrix.n() < 101)
-		{
 			std::cout << std::endl;
 		}
 	}
+
+	libMesh::PetscVector<libMesh::Number> dummy_vec(MatrixComm,CouplingTestMatrix.n(),local_N);
+	MatGetRowSum(CouplingTestMatrix.mat(),dummy_vec.vec());
+	VecSum(dummy_vec.vec(),&accumulator);
 	std::cout << "|" << std::endl;
 	std::cout << "| Sum( M_i,j ) = " << accumulator << std::endl << std::endl;
 }

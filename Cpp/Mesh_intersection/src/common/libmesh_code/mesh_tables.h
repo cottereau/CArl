@@ -124,17 +124,6 @@ void generate_intersection_tables_full(		std::string& equivalence_table_restrict
 		std::unordered_multimap<int,int>& intersection_table_I
 		);
 
-void convert_intersection_table_to_mediator(
-		const libMesh::Parallel::Communicator& WorldComm,
-		const libMesh::Mesh& mesh_intersection,
-		const std::unordered_map<int,int>& mesh_intersection_ElemMap,
-		const std::vector<carl::IntersectionData>& intersection_full_table,
-		const std::unordered_map<int,int>& equivalence_table_A_to_R_A,
-		const std::unordered_map<int,int>& equivalence_table_B_to_R_B,
-		const std::unordered_map<int,int>& equivalence_table_mediator,
-		std::vector<carl::IntersectionData>& local_intersection_table
-		);
-
 void set_equivalence_tables(
 		const libMesh::Parallel::Communicator& WorldComm,
 		const std::string& equivalence_table_A_Filename,
@@ -163,6 +152,7 @@ void set_full_intersection_tables(
 
 		const std::unordered_map<int,int>& mesh_A_ElemMap,
 		const std::unordered_map<int,int>& mesh_B_ElemMap,
+		const std::unordered_map<int,int>& mesh_I_ElemMap,
 
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_pairs_map,
 		std::unordered_map<int,int>& full_intersection_meshI_to_inter_map);
@@ -173,28 +163,18 @@ void set_intersection_tables(
 		const std::string& intersection_full_table_Filename,
 		const std::string& equivalence_table_A_Filename,
 		const std::string& equivalence_table_B_Filename,
-		const std::unordered_map<int,int>& mesh_I_libmesh_to_table_ElemMap,
 
 		const std::unordered_map<int,int>& equivalence_table_A_to_R_A,
 		const std::unordered_map<int,int>& equivalence_table_B_to_R_B,
 
 		const std::unordered_map<int,int>& mesh_A_ElemMap,
 		const std::unordered_map<int,int>& mesh_B_ElemMap,
+		const std::unordered_map<int,int>& mesh_I_ElemMap,
 
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_pairs_map,
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_restricted_pairs_map,
 		std::unordered_map<int,int>& local_intersection_meshI_to_inter_map
-
 		);
-
-
-//void convert_intersection_table_to_mediator(
-//		const libMesh::Mesh& mesh_mediator,
-//		const std::string& equivalence_table_mediator_original_Filename,
-//		const std::string& intersection_pairs_mediator_other_system_Filename,
-//		const std::unordered_map<int,int>& mesh_mediator_ElemMap,
-//		const std::unordered_map<int,int>& mesh_other_system_ElemMap,
-//		std::vector<std::pair<int,int> >& local_corrected_intersection_pairs );
 };
 
 

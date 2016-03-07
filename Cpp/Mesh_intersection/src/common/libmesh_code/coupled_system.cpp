@@ -22,6 +22,27 @@ void carl::coupled_system::clear()
 		m_micro_EquationSystemMap.erase(toClean);
 	}
 
+	if(m_bHasDefinedMeshRestrictions)
+	{
+		libMesh::EquationSystems *EqRBIGSys = m_R_BIG_EquationSystem.second;
+		EqRBIGSys->clear();
+		delete EqRBIGSys;
+		EqRBIGSys = NULL;
+		m_R_BIG_EquationSystem.second = NULL;
+
+		while(!m_R_micro_EquationSystemMap.empty())
+		{
+			EqSystem_iterator toClean = m_R_micro_EquationSystemMap.begin();
+
+			libMesh::EquationSystems *EqSys = toClean->second;
+			EqSys->clear();
+			delete EqSys;
+			EqSys = NULL;
+
+			m_R_micro_EquationSystemMap.erase(toClean);
+		}
+	}
+
 	while(!m_inter_EquationSystemMap.empty())
 	{
 		EqSystem_iterator toClean = m_inter_EquationSystemMap.begin();
@@ -34,52 +55,52 @@ void carl::coupled_system::clear()
 		m_inter_EquationSystemMap.erase(toClean);
 	}
 
-	while(!m_restrict_EquationSystemMap.empty())
+	while(!m_mediator_EquationSystemMap.empty())
 	{
-		EqSystem_iterator toClean = m_restrict_EquationSystemMap.begin();
+		EqSystem_iterator toClean = m_mediator_EquationSystemMap.begin();
 
 		libMesh::EquationSystems *EqSys = toClean->second;
 		EqSys->clear();
 		delete EqSys;
 		EqSys = NULL;
 
-		m_restrict_EquationSystemMap.erase(toClean);
+		m_mediator_EquationSystemMap.erase(toClean);
 	}
 
-	while(!m_couplingMatrixMap_restrict_micro.empty())
+	while(!m_couplingMatrixMap_mediator_micro.empty())
 	{
-		Matrix_iterator toClean = m_couplingMatrixMap_restrict_micro.begin();
+		Matrix_iterator toClean = m_couplingMatrixMap_mediator_micro.begin();
 
 		libMesh::PetscMatrix<libMesh::Number> *Mat = toClean->second;
 		Mat->clear();
 		delete Mat;
 		Mat = NULL;
 
-		m_couplingMatrixMap_restrict_micro.erase(toClean);
+		m_couplingMatrixMap_mediator_micro.erase(toClean);
 	}
 
-	while(!m_couplingMatrixMap_restrict_BIG.empty())
+	while(!m_couplingMatrixMap_mediator_BIG.empty())
 	{
-		Matrix_iterator toClean = m_couplingMatrixMap_restrict_BIG.begin();
+		Matrix_iterator toClean = m_couplingMatrixMap_mediator_BIG.begin();
 
 		libMesh::PetscMatrix<libMesh::Number> *Mat = toClean->second;
 		Mat->clear();
 		delete Mat;
 		Mat = NULL;
 
-		m_couplingMatrixMap_restrict_BIG.erase(toClean);
+		m_couplingMatrixMap_mediator_BIG.erase(toClean);
 	}
 
-	while(!m_couplingMatrixMap_restrict_restrict.empty())
+	while(!m_couplingMatrixMap_mediator_mediator.empty())
 	{
-		Matrix_iterator toClean = m_couplingMatrixMap_restrict_restrict.begin();
+		Matrix_iterator toClean = m_couplingMatrixMap_mediator_mediator.begin();
 
 		libMesh::PetscMatrix<libMesh::Number> *Mat = toClean->second;
 		Mat->clear();
 		delete Mat;
 		Mat = NULL;
 
-		m_couplingMatrixMap_restrict_restrict.erase(toClean);
+		m_couplingMatrixMap_mediator_mediator.erase(toClean);
 	}
 
 	while(!m_alpha_masks.empty())
@@ -234,23 +255,23 @@ void carl::coupled_system::get_lambdas(	const unsigned int 							dim,
 
 libMesh::PetscMatrix<libMesh::Number>& carl::coupled_system::get_micro_coupling_matrix(const std::string& name)
 {
-	return * m_couplingMatrixMap_restrict_micro[name];
+	return * m_couplingMatrixMap_mediator_micro[name];
 }
 
 libMesh::PetscMatrix<libMesh::Number>& carl::coupled_system::get_BIG_coupling_matrix(const std::string& name)
 {
-	return * m_couplingMatrixMap_restrict_BIG[name];
+	return * m_couplingMatrixMap_mediator_BIG[name];
 }
 
-libMesh::PetscMatrix<libMesh::Number>& carl::coupled_system::get_restrict_coupling_matrix(const std::string& name)
+libMesh::PetscMatrix<libMesh::Number>& carl::coupled_system::get_mediator_coupling_matrix(const std::string& name)
 {
-	return * m_couplingMatrixMap_restrict_restrict[name];
+	return * m_couplingMatrixMap_mediator_mediator[name];
 }
 
 void carl::coupled_system::print_matrix_micro_info(const std::string& name)
 {
 	libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix =
-						* m_couplingMatrixMap_restrict_micro[name];
+						* m_couplingMatrixMap_mediator_micro[name];
 	std::cout << "| Restrict - Micro matrix -> " << name << std::endl;
 	print_matrix(CouplingTestMatrix);
 }
@@ -281,9 +302,9 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name,
 	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_BIG.matrix);
 	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_micro.matrix);
 
-	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_restrict_BIG[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_restrict_micro[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_restrict_restrict[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
 
 	// Get the vectors
 	libMesh::PetscVector<libMesh::Number>& F_A = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_BIG.rhs);
@@ -336,9 +357,9 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_BIG.matrix);
 	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_micro.matrix);
 
-	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_restrict_BIG[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_restrict_micro[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_restrict_restrict[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
 
 	// Get the vectors
 	libMesh::PetscVector<libMesh::Number>& F_A = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_BIG.rhs);
@@ -390,7 +411,7 @@ void carl::coupled_system::solve_LATIN(const std::string micro_name, const std::
 void carl::coupled_system::print_matrix_BIG_info(const std::string& name)
 {
 	libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix =
-						* m_couplingMatrixMap_restrict_BIG[name];
+						* m_couplingMatrixMap_mediator_BIG[name];
 	std::cout << "| Restrict - Macro matrix -> " << name << std::endl;
 	print_matrix(CouplingTestMatrix);
 }
@@ -398,21 +419,21 @@ void carl::coupled_system::print_matrix_BIG_info(const std::string& name)
 void carl::coupled_system::print_matrices_matlab(const std::string& name, const std::string& outputRoot)
 {
 	libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix_BIG =
-							* m_couplingMatrixMap_restrict_BIG[name];
+							* m_couplingMatrixMap_mediator_BIG[name];
 	libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix_micro=
-							* m_couplingMatrixMap_restrict_micro[name];
-	libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix_restrict=
-							* m_couplingMatrixMap_restrict_restrict[name];
+							* m_couplingMatrixMap_mediator_micro[name];
+	libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix_mediator=
+							* m_couplingMatrixMap_mediator_mediator[name];
 
 	CouplingTestMatrix_BIG.print_matlab(outputRoot + "_BIG.m");
 	CouplingTestMatrix_micro.print_matlab(outputRoot + "_micro.m");
-	CouplingTestMatrix_restrict.print_matlab(outputRoot + "_restrict.m");
+	CouplingTestMatrix_mediator.print_matlab(outputRoot + "_mediator.m");
 }
 
-void carl::coupled_system::print_matrix_restrict_info(const std::string& name)
+void carl::coupled_system::print_matrix_mediator_info(const std::string& name)
 {
 	libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix =
-						* m_couplingMatrixMap_restrict_restrict[name];
+						* m_couplingMatrixMap_mediator_mediator[name];
 	std::cout << "| Restrict - Restrict matrix -> " << name << std::endl;
 	print_matrix(CouplingTestMatrix);
 }

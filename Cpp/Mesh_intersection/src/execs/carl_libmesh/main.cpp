@@ -9,12 +9,12 @@ struct carl_input_params
 
 	std::string mesh_BIG_file;
 	std::string mesh_micro_file;
-	std::string mesh_restrict_file;
+	std::string mesh_mediator_file;
 	std::string mesh_inter_file;
 	std::string mesh_weight_file;
 
-	std::string equivalence_table_restrict_A_file;
-	std::string intersection_table_restrict_B_file;
+	std::string equivalence_table_mediator_A_file;
+	std::string intersection_table_mediator_B_file;
 	std::string intersection_table_I_file;
 
 	std::string weight_domain_idx_file;
@@ -88,18 +88,18 @@ void get_input_params(GetPot& field_parser, carl_input_params& input_params)
 	{
 		// Then we have an external mediator mesh
 		field_parser.search(3, "--meshR", "-mR", "MeshMediator");
-		input_params.mesh_restrict_file = field_parser.next(input_params.mesh_restrict_file);
+		input_params.mesh_mediator_file = field_parser.next(input_params.mesh_mediator_file);
 
 		field_parser.search(2, "--tableA", "MediatorEquivalenceTableFile");
-		input_params.equivalence_table_restrict_A_file = field_parser.next(input_params.equivalence_table_restrict_A_file);
+		input_params.equivalence_table_mediator_A_file = field_parser.next(input_params.equivalence_table_mediator_A_file);
 
 		input_params.b_UseMeshAAsMediator = false;
 	}
 	else if ( !field_parser.search(3, "--meshR", "-mR", "MeshMediator") && !field_parser.search(2, "--tableA", "MediatorEquivalenceTableFile") )
 	{
 		// Then use the mesh A as the mediator
-		input_params.mesh_restrict_file = input_params.mesh_BIG_file;
-		input_params.equivalence_table_restrict_A_file = "";
+		input_params.mesh_mediator_file = input_params.mesh_BIG_file;
+		input_params.equivalence_table_mediator_A_file = "";
 
 		input_params.b_UseMeshAAsMediator = true;
 	}
@@ -124,7 +124,7 @@ void get_input_params(GetPot& field_parser, carl_input_params& input_params)
 
 	if( field_parser.search(2, "--tableB", "IntersectionPairsTable") )
 	{
-		input_params.intersection_table_restrict_B_file = field_parser.next(input_params.intersection_table_restrict_B_file);
+		input_params.intersection_table_mediator_B_file = field_parser.next(input_params.intersection_table_mediator_B_file);
 	}
 	else
 	{
@@ -310,43 +310,43 @@ int main (int argc, char** argv)
 	carl::set_mesh_Gmsh(mesh_weight,input_params.mesh_weight_file);
 
 	// - Set mediator mesh and index tables -----------------------------------
-	std::unordered_map<int,int> equivalence_table_restrict_A;
-	std::vector<std::pair<int,int> > intersection_table_restrict_B;
+	std::unordered_map<int,int> equivalence_table_mediator_A;
+	std::vector<std::pair<int,int> > intersection_table_mediator_B;
 	std::unordered_multimap<int,int> intersection_table_I;
 
-	libMesh::Mesh mesh_restrict(init.comm(), dim);
-	std::unordered_map<int,int> mesh_restrict_NodeMap;
-	std::unordered_map<int,int> mesh_restrict_ElemMap;
+	libMesh::Mesh mesh_mediator(init.comm(), dim);
+	std::unordered_map<int,int> mesh_mediator_NodeMap;
+	std::unordered_map<int,int> mesh_mediator_ElemMap;
 	if ( !input_params.b_UseMeshAAsMediator )
 	{
-		carl::set_mesh_Gmsh(mesh_restrict,input_params.mesh_restrict_file,mesh_restrict_NodeMap,mesh_restrict_ElemMap);
+		carl::set_mesh_Gmsh(mesh_mediator,input_params.mesh_mediator_file,mesh_mediator_NodeMap,mesh_mediator_ElemMap);
 
 		carl::generate_intersection_tables_full(
-				input_params.equivalence_table_restrict_A_file,
-				input_params.intersection_table_restrict_B_file,
+				input_params.equivalence_table_mediator_A_file,
+				input_params.intersection_table_mediator_B_file,
 				input_params.intersection_table_I_file,
-				mesh_restrict_ElemMap,
+				mesh_mediator_ElemMap,
 				mesh_micro_ElemMap,
 				mesh_BIG_ElemMap,
 				mesh_inter_ElemMap,
-				equivalence_table_restrict_A,
-				intersection_table_restrict_B,
+				equivalence_table_mediator_A,
+				intersection_table_mediator_B,
 				intersection_table_I);
 	}
 	else
 	{
-		mesh_restrict.copy_nodes_and_elements(mesh_BIG);
-		input_params.mesh_restrict_file = input_params.mesh_BIG_file;
-		mesh_restrict_NodeMap = mesh_BIG_NodeMap;
-		mesh_restrict_ElemMap = mesh_BIG_ElemMap;
+		mesh_mediator.copy_nodes_and_elements(mesh_BIG);
+		input_params.mesh_mediator_file = input_params.mesh_BIG_file;
+		mesh_mediator_NodeMap = mesh_BIG_NodeMap;
+		mesh_mediator_ElemMap = mesh_BIG_ElemMap;
 
 		carl::generate_intersection_tables_partial(
-				input_params.intersection_table_restrict_B_file,
+				input_params.intersection_table_mediator_B_file,
 				input_params.intersection_table_I_file,
-				mesh_restrict_ElemMap,
+				mesh_mediator_ElemMap,
 				mesh_micro_ElemMap,
 				mesh_inter_ElemMap,
-				intersection_table_restrict_B,
+				intersection_table_mediator_B,
 				intersection_table_I);
 	}
 
@@ -406,24 +406,24 @@ int main (int argc, char** argv)
 	std::cout << "|    volume       " << vol << std::endl << std::endl;
 
 	vol = 0;
-	for(libMesh::MeshBase::element_iterator itBegin = mesh_restrict.elements_begin();
-			itBegin != mesh_restrict.elements_end(); ++itBegin)
+	for(libMesh::MeshBase::element_iterator itBegin = mesh_mediator.elements_begin();
+			itBegin != mesh_mediator.elements_end(); ++itBegin)
 	{
 		silly_elem = *itBegin;
 		vol += silly_elem->volume();
 	}
-	std::cout << "| Mesh restriction info :" << std::endl;
-	std::cout << "|    filename     " << input_params.mesh_restrict_file << std::endl;
-	std::cout << "|    n_elem       " << mesh_restrict.n_elem() << std::endl;
-	std::cout << "|    n_nodes      " << mesh_restrict.n_nodes() << std::endl;
-	std::cout << "|    n_subdomains " << mesh_restrict.n_subdomains() << std::endl;
+	std::cout << "| Mesh mediatorion info :" << std::endl;
+	std::cout << "|    filename     " << input_params.mesh_mediator_file << std::endl;
+	std::cout << "|    n_elem       " << mesh_mediator.n_elem() << std::endl;
+	std::cout << "|    n_nodes      " << mesh_mediator.n_nodes() << std::endl;
+	std::cout << "|    n_subdomains " << mesh_mediator.n_subdomains() << std::endl;
 	std::cout << "|    volume       " << vol << std::endl << std::endl;
 
-	std::cout << "| Inter. table restrict / A :" << std::endl;
-	std::cout << "|    filename     " << input_params.equivalence_table_restrict_A_file << std::endl << std::endl;
+	std::cout << "| Inter. table mediator / A :" << std::endl;
+	std::cout << "|    filename     " << input_params.equivalence_table_mediator_A_file << std::endl << std::endl;
 
-	std::cout << "| Inter. table restrict / B :" << std::endl;
-	std::cout << "|    filename     " << input_params.intersection_table_restrict_B_file << std::endl << std::endl;
+	std::cout << "| Inter. table mediator / B :" << std::endl;
+	std::cout << "|    filename     " << input_params.intersection_table_mediator_B_file << std::endl << std::endl;
 
 	std::cout << "| Inter. table I  :" << std::endl;
 	std::cout << "|    filename     " << input_params.intersection_table_I_file << std::endl << std::endl;
@@ -495,26 +495,25 @@ int main (int argc, char** argv)
 										= add_stress(equation_systems_micro);
 
 	equation_systems_micro.init();
+	perf_log.pop("System initialization - micro");
 
 	// [MICRO] Add the weight function mesh
 	carl::weight_parameter_function& sillyalphas = CoupledTest.add_alpha_mask("MicroSys",mesh_weight);
 	CoupledTest.set_alpha_mask_parameters("MicroSys",domain_Idx_BIG,domain_Idx_micro[0],domain_Idx_coupling[0]);
 
-	perf_log.pop("System initialization - micro");
+	// - Build the mediator system --------------------------------------------------
 
-	// - Build the restrict system --------------------------------------------------
+	perf_log.push("System initialization - mediator");
 
-	perf_log.push("System initialization - restrict");
+	libMesh::EquationSystems& equation_systems_mediator =
+					CoupledTest.add_mediator_EquationSystem("MediatorSys", mesh_mediator);
 
-	libMesh::EquationSystems& equation_systems_restrict =
-					CoupledTest.add_restrict_EquationSystem("RestrictSys", mesh_restrict);
+	libMesh::LinearImplicitSystem& elasticity_system_mediator
+										= add_elasticity(equation_systems_mediator);
 
-	libMesh::LinearImplicitSystem& elasticity_system_restrict
-										= add_elasticity(equation_systems_restrict);
+	equation_systems_mediator.init();
 
-	equation_systems_restrict.init();
-
-	perf_log.pop("System initialization - restrict");
+	perf_log.pop("System initialization - mediator");
 
 	// - Build the dummy inter system ------------------------------------------
 
@@ -553,9 +552,9 @@ int main (int argc, char** argv)
 	CoupledTest.use_H1_coupling("MicroSys");
 
 	CoupledTest.assemble_coupling_elasticity_3D(	"BigSys","MicroSys",
-													"InterSys","RestrictSys",
-													equivalence_table_restrict_A,
-													intersection_table_restrict_B,
+													"InterSys","MediatorSys",
+													equivalence_table_mediator_A,
+													intersection_table_mediator_B,
 													intersection_table_I,
 													input_params.b_UseMeshAAsMediator);
 	perf_log.pop("Build elasticity couplings");
@@ -573,22 +572,22 @@ int main (int argc, char** argv)
 
 	CoupledTest.print_matrix_micro_info("MicroSys");
 	CoupledTest.print_matrix_BIG_info("MicroSys");
-	CoupledTest.print_matrix_restrict_info("MicroSys");
+	CoupledTest.print_matrix_mediator_info("MicroSys");
 
 //	carl::check_coupling_matrix(CoupledTest.get_micro_coupling_matrix("MicroSys"),
 //										mesh_inter,
 //										coupling_const ,
-//										"Restrict - Micro : coupling check");
+//										"Mediator - Micro : coupling check");
 //
 //	carl::check_coupling_matrix(CoupledTest.get_BIG_coupling_matrix("MicroSys"),
 //										mesh_inter,
 //										coupling_const ,
-//										"Restrict - BIG : coupling check");
+//										"Mediator - BIG : coupling check");
 //
-//	carl::check_coupling_matrix(CoupledTest.get_restrict_coupling_matrix("MicroSys"),
+//	carl::check_coupling_matrix(CoupledTest.get_mediator_coupling_matrix("MicroSys"),
 //										mesh_inter,
 //										coupling_const ,
-//										"Restrict - Restrict : coupling check");
+//										"Mediator - Mediator : coupling check");
 
 	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
 	perf_log.push("Set up","LATIN Solver:");

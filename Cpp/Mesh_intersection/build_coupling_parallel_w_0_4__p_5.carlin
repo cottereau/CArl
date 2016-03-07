@@ -19,8 +19,9 @@ FullIntersectionElementsTable meshes/parallel_test/intersection_Full_AB.dat
 Use_A_AsMediator # Use the system A as the mediator
 
 # Coupling parameters
-PhysicalParameters meshes/parallel_test/test_multi_micro_w_0_4__p_5_physical.dat
+# PhysicalParameters meshes/parallel_test/test_multi_micro_w_0_4__p_5_physical.dat
 CouplingMeshScale 0.2
+CouplingConstant 75.5822
 
 # Output files
 OutputMatrixA meshes/parallel_test/output/coupling_matrix_mediator_A_w_0_4__p_5.dat
