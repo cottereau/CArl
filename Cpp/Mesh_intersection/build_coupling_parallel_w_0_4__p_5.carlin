@@ -7,6 +7,11 @@ Mesh_B_Restriction meshes/parallel_test/test_restriction_micro_w_0_4__p_5.msh
 
 MeshInter meshes/parallel_test/test_intersection_AB.msh
 
+MeshWeight meshes/parallel_test/test_restriction_mask.msh
+
+# Weight parameter function file
+WeightIndexes meshes/parallel_test/test_multi_weight_idx.dat
+
 # Equivalence table files
 Mesh_A_RestrictionEquivalenceTable meshes/parallel_test/equivalence_carl_restrict_macro.dat
 Mesh_B_RestrictionEquivalenceTable meshes/parallel_test/equivalence_carl_restrict_micro_w_0_4__p_5.dat
@@ -19,10 +24,8 @@ FullIntersectionElementsTable meshes/parallel_test/intersection_Full_AB.dat
 Use_A_AsMediator # Use the system A as the mediator
 
 # Coupling parameters
-# PhysicalParameters meshes/parallel_test/test_multi_micro_w_0_4__p_5_physical.dat
-CouplingMeshScale 0.2
-CouplingConstant 75.5822
+PhysicalParameters meshes/parallel_test/test_multi_micro_w_0_4__p_5_physical.dat
 
 # Output files
-OutputMatrixA meshes/parallel_test/output/coupling_matrix_mediator_A_w_0_4__p_5.dat
-OutputMatrixB meshes/parallel_test/output/coupling_matrix_mediator_B_w_0_4__p_5.dat
+OutputEXOFileA meshes/parallel_test/output/carl_multi_crystal_test_macro_w_0_4__p_5.exo
+OutputEXOFileB meshes/parallel_test/output/carl_multi_crystal_test_micro_w_0_4__p_5.exo

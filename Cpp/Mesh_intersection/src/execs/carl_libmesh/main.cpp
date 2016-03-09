@@ -498,7 +498,7 @@ int main (int argc, char** argv)
 	perf_log.pop("System initialization - micro");
 
 	// [MICRO] Add the weight function mesh
-	carl::weight_parameter_function& sillyalphas = CoupledTest.add_alpha_mask("MicroSys",mesh_weight);
+	CoupledTest.add_alpha_mask("MicroSys",mesh_weight);
 	CoupledTest.set_alpha_mask_parameters("MicroSys",domain_Idx_BIG,domain_Idx_micro[0],domain_Idx_coupling[0]);
 
 	// - Build the mediator system --------------------------------------------------
@@ -529,13 +529,6 @@ int main (int argc, char** argv)
 	perf_log.push("Physical properties - micro");
 	double BIG_E = 0;
 	double BIG_Mu = 0;
-
-//	double mean_distance = 0.2;
-//
-//	double k_dA = 2.5;
-//	double k_dB = 2.5;
-//	double k_cA = 2.5;
-//	double k_cB = 2.5;
 
 	double coupling_const = -1;
 	set_physical_properties(equation_systems_micro,input_params.physical_params_file,BIG_E,BIG_Mu);
@@ -571,8 +564,8 @@ int main (int argc, char** argv)
 	std::cout << "|    e            : " << input_params.mean_distance << std::endl;
 
 	CoupledTest.print_matrix_micro_info("MicroSys");
-	CoupledTest.print_matrix_BIG_info("MicroSys");
-	CoupledTest.print_matrix_mediator_info("MicroSys");
+//	CoupledTest.print_matrix_BIG_info("MicroSys");
+//	CoupledTest.print_matrix_mediator_info("MicroSys");
 
 //	carl::check_coupling_matrix(CoupledTest.get_micro_coupling_matrix("MicroSys"),
 //										mesh_inter,

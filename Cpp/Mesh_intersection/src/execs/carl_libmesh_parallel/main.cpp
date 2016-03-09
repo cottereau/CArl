@@ -1,59 +1,32 @@
 #include "main.h"
 
 /*
- * 		Sketch of the first version of the program -----------------------------
+ * 		Sketch of the second version of the program ----------------------------
  *
  * 		-> Read the meshes A, B and the coupling region file.
  *
  * 		-> Read the intersection mesh I.
  *
- * 		-> Read the mediator mesh, M. (!)
+ * 		-> Read the mediator mesh, M.
  *
  * 		-> Read the mesh restrictions, R_A and R_B, and the equivalence tables
  * 		   between them and the original meshes, t_R_A->A and t_R_B->B.
  *
- * 		-> Copy R_A, R_B and I to all processors. (!)
+ * 		-> A, B, M and I are partitioned over all processors, while each one
+ * 		   will have a copy of R_A and R_B.
  *
- * 		-> Run the coupling assemble program using the mediator space as the
+ * 		TODO : For now, each processor will read the whole mesh R_A and R_B!
+ * 		       This is not practical for large systems!
+ *
+ * 		-> Run the coupling assemble program using the intersection mesh as the
  * 		   main loop index.
  *
- * 		-> Use the equivalence tables to fill the coupling matrices.
+ *		-> The reduced meshes will be used to calculate the values, while the
+ *		   equivalence tables will be used to convert them to the full meshes.
  *
- * 		-> Export them using PETSc MatView methods.
- *
- * 		Optimizations ----------------------------------------------------------
- *
- * 		-> Optimize the partitioning of M using MeshTools: build a weighting
- * 		   vector for the intersections, w_I, convert it to a w_M weighting, and
- * 		   partition M.
- *
- * 		-> Partition I by hand using this information.
- *
- * 		-> Partition R_A and R_B using this information.
- *
- * 		Functions I'll need ----------------------------------------------------
- *
- * 		TODO :	read meshes A, B and I in a way to make a single copy on each
- * 				processor - watch out for collisions!
- *
- * 		TODO :	read the intersection and the restriction equivalence tables.
- * 				Divide them on processor-by-processor tables.
- *
- * 		TODO :	adapt the coupling assemble methods in a way such that the main
- * 				loop is ran over the mediator mesh, and not the intersection
- * 				mesh.
- *
- * 		TODO :	export the matrix using Petsc interfaces.
- *
- * 		TODO :	build a matrix import function.
- *
- * 		Things to watch out for ------------------------------------------------
- *
- * 		-> Matrix renumerotations during the prepare_for_use step:
- * 		   This is done before the partitioning, and, according to the
- * 		   documentation, is done to guarantee that the elements are organized
- * 		   in contiguous blocks. From this, and from the current tests, it
- * 		   SHOULD not be a problem ... but still, watch out ...
+ *		-> Solve the system using the LATIN method. Since the matrices are
+ *		   associated to A, B and M (which were properly partitioned), no
+ *		   further steps are needed to paralellize the solver.
  */
 
 struct carl_coupling_generation_input_params {
@@ -68,6 +41,8 @@ struct carl_coupling_generation_input_params {
 	std::string mesh_mediator_file;
 	std::string mesh_inter_file;
 
+	std::string mesh_weight_file;
+
 	std::string equivalence_table_restrict_BIG_file;
 	std::string equivalence_table_restrict_micro_file;
 	std::string equivalence_table_mediator;
@@ -76,17 +51,27 @@ struct carl_coupling_generation_input_params {
 	std::string intersection_table_I_file;
 	std::string intersection_table_full;
 
+	std::string weight_domain_idx_file;
+
 	bool b_UseMesh_BIG_AsMediator;
 	bool b_UseMesh_micro_AsMediator;
 	bool b_UseMesh_extra_AsMediator;
 
-	double meanE;
-	double meanMu;
-	double coupling_const;
 	double mean_distance;
 
-	std::string output_coupling_matrix_med_BIG;
-	std::string output_coupling_matrix_med_micro;
+	double k_dA;
+	double k_dB;
+	double k_cA;
+	double k_cB;
+
+	double LATIN_eps;
+	int LATIN_conv_max;
+	double LATIN_relax;
+
+	std::string LATIN_convergence_output;
+
+	std::string output_file_BIG;
+	std::string output_file_micro;
 };
 
 void get_input_params(GetPot& field_parser,
@@ -128,6 +113,15 @@ void get_input_params(GetPot& field_parser,
 		homemade_error_msg("Missing the intersection mesh file!");
 	}
 
+	if ( field_parser.search(3, "--meshWeight", "-mW", "MeshWeight") )
+	{
+		input_params.mesh_weight_file = field_parser.next(input_params.mesh_weight_file);
+	}
+	else
+	{
+		homemade_error_msg("Missing the weight mesh file!");
+	}
+
 	// Set the equivalence and intersection tables
 	if (field_parser.search(2, "--tableRA", "Mesh_A_RestrictionEquivalenceTable")) {
 		input_params.equivalence_table_restrict_BIG_file = field_parser.next(
@@ -155,6 +149,16 @@ void get_input_params(GetPot& field_parser,
 				input_params.intersection_table_full);
 	} else {
 		homemade_error_msg("Missing the full intersection elements file!");
+	}
+
+	// Set table files
+	if( field_parser.search(2, "--weightIdx", "WeightIndexes") )
+	{
+		input_params.weight_domain_idx_file = field_parser.next(input_params.weight_domain_idx_file);
+	}
+	else
+	{
+		homemade_error_msg("Missing the weight value file!");
 	}
 
 	// Set the mediator mesh
@@ -202,31 +206,13 @@ void get_input_params(GetPot& field_parser,
 	}
 
 	// Set constant parameters
-	if (field_parser.search(3, "-p", "--parameters", "PhysicalParameters")) {
-		input_params.physical_params_file = field_parser.next(
-				input_params.physical_params_file);
-		calculate_average_params(input_params.physical_params_file,
-				input_params.meanE,input_params.meanMu);
-		input_params.coupling_const = eval_lambda_1(input_params.meanE,
-				input_params.meanMu);
-	}
-	else if (field_parser.search(2, "--meanE", "MeanE") &&
-			field_parser.search(2, "--meanMu", "MeanMu")) {
-		field_parser.search(2, "--meanE", "MeanE");
-		input_params.meanE = field_parser.next(input_params.meanE);
-		field_parser.search(2, "--meanMu", "MeanMu");
-		input_params.meanMu = field_parser.next(input_params.meanMu);
-		input_params.coupling_const = eval_lambda_1(input_params.meanE,
-				input_params.meanMu);
-	}
-	else if (field_parser.search(2, "--coupling", "CouplingConstant"))
+	if ( field_parser.search(3, "-p","--parameters","PhysicalParameters") )
 	{
-		input_params.coupling_const = field_parser.next(
-				input_params.coupling_const);
+		input_params.physical_params_file = field_parser.next(input_params.physical_params_file);
 	}
 	else
 	{
-		homemade_error_msg("Missing the coupling constant");
+		homemade_error_msg("Missing the physical parameters file!");
 	}
 
 	input_params.mean_distance = 0.2;
@@ -236,18 +222,96 @@ void get_input_params(GetPot& field_parser,
 				input_params.mean_distance);
 	}
 
-	// Set output files
-	input_params.output_coupling_matrix_med_BIG =
-			"meshes/parallel_test/output/coupling_matrix_mediator_A.dat";
-	input_params.output_coupling_matrix_med_micro =
-			"meshes/parallel_test/output/coupling_matrix_mediator_B.dat";
-	if (field_parser.search(3, "-oA", "--outputA", "OutputMatrixA")) {
-		input_params.output_coupling_matrix_med_BIG = field_parser.next(
-				input_params.output_coupling_matrix_med_BIG);
+	// Set coupling parameters
+	bool bUseSameSearchCoeff = false;
+
+	input_params.mean_distance = 0.2;
+
+	input_params.k_dA = 2.5;
+	input_params.k_dB = 2.5;
+	input_params.k_cA = 2.5;
+	input_params.k_cB = 2.5;
+
+	if( field_parser.search(1,"LATINUseSameSearchParameters") )
+	{
+		bUseSameSearchCoeff = field_parser.next(bUseSameSearchCoeff);
 	}
-	if (field_parser.search(3, "-oB", "--outputB", "OutputMatrixB")) {
-		input_params.output_coupling_matrix_med_micro = field_parser.next(
-				input_params.output_coupling_matrix_med_micro);
+
+	if( bUseSameSearchCoeff )
+	{
+		if( field_parser.search(2, "-k","LATINk") )
+		{
+			input_params.k_dA = field_parser.next(input_params.k_dA);
+			input_params.k_dB = input_params.k_dA;
+			input_params.k_cA = input_params.k_dA;
+			input_params.k_cB = input_params.k_dA;
+		}
+	}
+	else
+	{
+		if( field_parser.search(2, "-kdA","LATINkDecoupledA") )
+		{
+			input_params.k_dA = field_parser.next(input_params.k_dA);
+		}
+
+		if( field_parser.search(2, "-kdB","LATINkDecoupledB") )
+		{
+			input_params.k_dB = field_parser.next(input_params.k_dB);
+		}
+
+		if( field_parser.search(2, "-kcA","LATINkCoupledA") )
+		{
+			input_params.k_cA = field_parser.next(input_params.k_cA);
+		}
+
+		if( field_parser.search(2, "-kcB","LATINkCoupledB") )
+		{
+			input_params.k_cB = field_parser.next(input_params.k_cB);
+		}
+	}
+
+	if( field_parser.search(2, "--dist","LATINCouplingMeshScale") )
+	{
+		input_params.mean_distance = field_parser.next(input_params.mean_distance);
+	}
+
+	// Set LATIN parameters
+	input_params.LATIN_eps = 1E-2;
+	input_params.LATIN_conv_max = 10000;
+	input_params.LATIN_relax = 0.8;
+
+	input_params.LATIN_convergence_output = "LATIN_convergence.dat";
+
+	if( field_parser.search(2, "--LATINeps","LATINEps") )
+	{
+		input_params.LATIN_eps = field_parser.next(input_params.LATIN_eps);
+	}
+
+	if( field_parser.search(2, "--LATINconv","LATINConvergneceLimit") )
+	{
+		input_params.LATIN_conv_max = field_parser.next(input_params.LATIN_conv_max);
+	}
+
+	if( field_parser.search(2, "--LATINrelax","LATINRelax") )
+	{
+		input_params.LATIN_relax = field_parser.next(input_params.LATIN_relax);
+	}
+
+	if( field_parser.search(2, "--LATINconvOutput","LATINConvergneceOutput") )
+	{
+		input_params.LATIN_convergence_output = field_parser.next(input_params.LATIN_convergence_output);
+	}
+
+	// Set output files
+	input_params.output_file_BIG = "meshes/3D/output/carl_multi_crystal_test_micro.exo";
+	input_params.output_file_micro = "meshes/3D/output/carl_multi_crystal_test_macro.exo";
+	if ( field_parser.search(3, "-oA","--outputA", "OutputEXOFileA") )
+	{
+		input_params.output_file_BIG = field_parser.next(input_params.output_file_BIG);
+	}
+	if ( field_parser.search(3, "-oB","--outputB", "OutputEXOFileB") )
+	{
+		input_params.output_file_micro = field_parser.next(input_params.output_file_micro);
 	}
 
 }
@@ -296,10 +360,10 @@ int main(int argc, char** argv) {
 
 	// - Read the meshes -------------------------------------------------------
 
-	// - Parallelized meshes: A, B, intersection and mediator
+	// - Parallelized meshes: A, B, intersection, mediator and weight
 	//   Elem / node maps : key = external index, value = libMesh's index
 
-	perf_log.push("Read meshes - parallel","Main program");
+	perf_log.push("Meshes - Parallel","Read files:");
 	libMesh::Mesh mesh_BIG(WorldComm, dim);
 	std::unordered_map<int,int> mesh_BIG_NodeMap;
 	std::unordered_map<int,int> mesh_BIG_ElemMap;
@@ -328,35 +392,38 @@ int main(int argc, char** argv) {
 	carl::create_mesh_map(input_params.mesh_mediator_file,
 			mesh_mediator_NodeMap,mesh_mediator_ElemMap,WorldComm);
 
-	// DEBUG - Test: print info per proc
-	{
-		std::ofstream mesh_info_ofstream;
-		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_A_" + std::to_string(rank) + "_info.txt");
-		mesh_BIG.print_info(mesh_info_ofstream);
-		mesh_info_ofstream.close();
+	libMesh::Mesh mesh_weight(WorldComm, dim);
+	carl::set_mesh_Gmsh(mesh_weight,input_params.mesh_weight_file);
 
-		WorldComm.barrier();
+//	// DEBUG - Test: print info per proc
+//	{
+//		std::ofstream mesh_info_ofstream;
+//		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_A_" + std::to_string(rank) + "_info.txt");
+//		mesh_BIG.print_info(mesh_info_ofstream);
+//		mesh_info_ofstream.close();
+//
+//		WorldComm.barrier();
+//
+//		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_B_" + std::to_string(rank) + "_info.txt");
+//		mesh_micro.print_info(mesh_info_ofstream);
+//		mesh_info_ofstream.close();
+//
+//		WorldComm.barrier();
+//
+//		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_inter_" + std::to_string(rank) + "_info.txt");
+//		mesh_inter.print_info(mesh_info_ofstream);
+//		mesh_info_ofstream.close();
+//
+//		WorldComm.barrier();
+//	}
 
-		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_B_" + std::to_string(rank) + "_info.txt");
-		mesh_micro.print_info(mesh_info_ofstream);
-		mesh_info_ofstream.close();
+	perf_log.pop("Meshes - Parallel","Read files:");
 
-		WorldComm.barrier();
-
-		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_inter_" + std::to_string(rank) + "_info.txt");
-		mesh_inter.print_info(mesh_info_ofstream);
-		mesh_info_ofstream.close();
-
-		WorldComm.barrier();
-	}
-
-	perf_log.pop("Read meshes - parallel","Main program");
-
-	// - Local meshes: restrict A, restrict B and (gasp!) intersection
+	// - Local meshes: restrict A and restrict B
 
 	// -> TODO : 	create decent mesh reader. For now, each processor reads the
 	//				mesh independently ... (aïe ...)
-	perf_log.push("Read meshes - serial","Main program");
+	perf_log.push("Meshes - Serial (!)","Read files:");
 	libMesh::Mesh mesh_R_BIG(LocalComm, dim);
 	std::unordered_map<int,int> mesh_R_BIG_NodeMap;
 	std::unordered_map<int,int> mesh_R_BIG_ElemMap;
@@ -371,38 +438,38 @@ int main(int argc, char** argv) {
 	carl::create_mesh_map(input_params.mesh_restrict_micro_file,
 			mesh_R_micro_NodeMap,mesh_R_micro_ElemMap,WorldComm);
 
-	// DEBUG - Test: print info per proc
-	{
-		std::ofstream mesh_info_ofstream;
-		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_RA_" + std::to_string(rank) + "_info.txt");
-		mesh_R_BIG.print_info(mesh_info_ofstream);
-		mesh_info_ofstream.close();
-
-		WorldComm.barrier();
-
-		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_RB_" + std::to_string(rank) + "_info.txt");
-		mesh_R_micro.print_info(mesh_info_ofstream);
-		mesh_info_ofstream.close();
-
-		WorldComm.barrier();
-
-		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_mediator_" + std::to_string(rank) + "_info.txt");
-		mesh_mediator.print_info(mesh_info_ofstream);
-		mesh_info_ofstream.close();
-
-		std::ofstream mesh_data;
-		mesh_data.open("meshes/parallel_test/output/mesh_A_data_" + std::to_string(rank)  + ".dat");
-		libMesh::MeshBase::const_element_iterator       el     = mesh_BIG.active_local_elements_begin();
-		const libMesh::MeshBase::const_element_iterator end_el = mesh_BIG.active_local_elements_end();
-
-		for ( ; el != end_el; ++el)
-		{
-			const libMesh::Elem* elem = *el;
-			mesh_data << elem->id() << " " << elem->point(0) << " " << elem->point(1) << " " << elem->point(2)<< " " << elem->point(3)<< std::endl;
-		}
-		mesh_data.close();
-	}
-	perf_log.pop("Read meshes - serial","Main program");
+//	// DEBUG - Test: print info per proc
+//	{
+//		std::ofstream mesh_info_ofstream;
+//		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_RA_" + std::to_string(rank) + "_info.txt");
+//		mesh_R_BIG.print_info(mesh_info_ofstream);
+//		mesh_info_ofstream.close();
+//
+//		WorldComm.barrier();
+//
+//		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_RB_" + std::to_string(rank) + "_info.txt");
+//		mesh_R_micro.print_info(mesh_info_ofstream);
+//		mesh_info_ofstream.close();
+//
+//		WorldComm.barrier();
+//
+//		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_mediator_" + std::to_string(rank) + "_info.txt");
+//		mesh_mediator.print_info(mesh_info_ofstream);
+//		mesh_info_ofstream.close();
+//
+//		std::ofstream mesh_data;
+//		mesh_data.open("meshes/parallel_test/output/mesh_A_data_" + std::to_string(rank)  + ".dat");
+//		libMesh::MeshBase::const_element_iterator       el     = mesh_BIG.active_local_elements_begin();
+//		const libMesh::MeshBase::const_element_iterator end_el = mesh_BIG.active_local_elements_end();
+//
+//		for ( ; el != end_el; ++el)
+//		{
+//			const libMesh::Elem* elem = *el;
+//			mesh_data << elem->id() << " " << elem->point(0) << " " << elem->point(1) << " " << elem->point(2)<< " " << elem->point(3)<< std::endl;
+//		}
+//		mesh_data.close();
+//	}
+	perf_log.pop("Meshes - Serial (!)","Read files:");
 
 	/*
 	 * 		To do on the first proc
@@ -419,7 +486,7 @@ int main(int argc, char** argv) {
 	 * 		Convert the pairs table to the libMesh indexing - DONE
 	 */
 
-	perf_log.push("Equivalence / intersection tables","Main program");
+	perf_log.push("Equivalence / intersection tables","Read files:");
 	std::unordered_map<int,std::pair<int,int> > full_intersection_pairs_map;
 	std::unordered_map<int,std::pair<int,int> > full_intersection_restricted_pairs_map;
 	std::unordered_map<int,int> local_intersection_meshI_to_inter_map;
@@ -486,17 +553,39 @@ int main(int argc, char** argv) {
 				full_intersection_restricted_pairs_map,
 				local_intersection_meshI_to_inter_map);
 	}
-	perf_log.pop("Equivalence / intersection tables","Main program");
+
+	perf_log.pop("Equivalence / intersection tables","Read files:");
+
+	perf_log.push("Weight function domain","Read files:");
+
+	// Set weight functions
+	int domain_Idx_BIG = -1;
+	int nb_of_domain_Idx = 1;
+	std::vector<int> domain_Idx_micro;
+	std::vector<int> domain_Idx_coupling;
+
+	carl::set_weight_function_domain_idx(	input_params.weight_domain_idx_file,
+											domain_Idx_BIG, nb_of_domain_Idx,
+											domain_Idx_micro, domain_Idx_coupling
+											);
+	perf_log.pop("Weight function domain","Read files:");
+
 
 	// - Generate the equation systems -----------------------------------------
+	perf_log.push("Initialization","System initialization:");
 	carl::coupled_system CoupledTest(WorldComm);
 
 	libMesh::EquationSystems& equation_systems_inter =
 					CoupledTest.add_inter_EquationSystem("InterSys", mesh_inter);
 
+	// Add the weight function mesh
+	CoupledTest.add_alpha_mask("MicroSys",mesh_weight);
+	CoupledTest.set_alpha_mask_parameters("MicroSys",domain_Idx_BIG,domain_Idx_micro[0],domain_Idx_coupling[0]);
+	perf_log.pop("Initialization","System initialization:");
+
 	// - Build the BIG system --------------------------------------------------
 
-	perf_log.push("System initialization - BIG","Main program");
+	perf_log.push("Macro system","System initialization:");
 	libMesh::EquationSystems& equation_systems_BIG =
 					CoupledTest.set_BIG_EquationSystem("BigSys", mesh_BIG);
 
@@ -514,11 +603,11 @@ int main(int argc, char** argv) {
 
 	equation_systems_BIG.init();
 
-	perf_log.pop("System initialization - BIG","Main program");
+	perf_log.pop("Macro system","System initialization:");
 
 	// - Build the micro system ------------------------------------------------
 
-	perf_log.push("System initialization - micro","Main program");
+	perf_log.push("Micro system","System initialization:");
 
 	libMesh::EquationSystems& equation_systems_micro =
 					CoupledTest.add_micro_EquationSystem<libMesh::PetscMatrix<libMesh::Number> >("MicroSys", mesh_micro);
@@ -532,11 +621,11 @@ int main(int argc, char** argv) {
 										= add_stress(equation_systems_micro);
 
 	equation_systems_micro.init();
-	perf_log.pop("System initialization - micro","Main program");
+	perf_log.pop("Micro system","System initialization:");
 
-	// - Build the BIG system --------------------------------------------------
+	// - Build the RESTRICTED BIG system ---------------------------------------
 
-	perf_log.push("System initialization - Restricted BIG","Main program");
+	perf_log.push("RESTRICTED macro system","System initialization:");
 	libMesh::EquationSystems& equation_systems_R_BIG =
 					CoupledTest.set_Restricted_BIG_EquationSystem("BigSys", mesh_R_BIG);
 
@@ -546,11 +635,11 @@ int main(int argc, char** argv) {
 
 	equation_systems_R_BIG.init();
 
-	perf_log.pop("System initialization - Restricted BIG","Main program");
+	perf_log.pop("RESTRICTED macro system","System initialization:");
 
-	// - Build the micro system ------------------------------------------------
+	// - Build the RESTRICTED micro system ------------------------------------------------
 
-	perf_log.push("System initialization - Restricted micro","Main program");
+	perf_log.push("RESTRICTED micro system","System initialization:");
 
 	libMesh::EquationSystems& equation_systems_R_micro =
 					CoupledTest.add_Restricted_micro_EquationSystem("MicroSys", mesh_R_micro);
@@ -560,11 +649,11 @@ int main(int argc, char** argv) {
 										= add_elasticity(equation_systems_R_micro);
 
 	equation_systems_R_micro.init();
-	perf_log.pop("System initialization - Restricted micro","Main program");
+	perf_log.pop("RESTRICTED micro system","System initialization:");
 
 	// - Build the mediator system ---------------------------------------------
 
-	perf_log.push("System initialization - mediator","Main program");
+	perf_log.push("Mediator system","System initialization:");
 
 	libMesh::EquationSystems& equation_systems_mediator =
 					CoupledTest.add_mediator_EquationSystem("MediatorSys", mesh_mediator);
@@ -574,24 +663,34 @@ int main(int argc, char** argv) {
 
 	equation_systems_mediator.init();
 
-	perf_log.pop("System initialization - mediator","Main program");
+	perf_log.pop("Mediator system","System initialization:");
 
 	// - Build the dummy inter system ------------------------------------------
 
-	perf_log.push("System initialization - inter","Main program");
+	perf_log.push("Intersection system","System initialization:");
 
 	libMesh::LinearImplicitSystem& elasticity_system_inter
 										= add_elasticity(equation_systems_inter);
 
 	equation_systems_inter.init();
 
-	perf_log.pop("System initialization - inter","Main program");
+	perf_log.pop("Intersection system","System initialization:");
+
+	perf_log.push("Physical properties","System initialization:");
+	double BIG_E = 0;
+	double BIG_Mu = 0;
+
+	double coupling_const = -1;
+	set_physical_properties(equation_systems_micro,input_params.physical_params_file,BIG_E,BIG_Mu);
+
+
+	set_constant_physical_properties(equation_systems_BIG,BIG_E,BIG_Mu);
+	perf_log.pop("Physical properties","System initialization:");
 
 	// - Set the coupling matrix -----------------------------------------------
-	perf_log.push("Build elasticity couplings","Main program");
-	CoupledTest.set_coupling_parameters("MicroSys",input_params.coupling_const,input_params.mean_distance);
-
-	std::cout << " ---> Coupling const = " << input_params.coupling_const << std::endl;
+	perf_log.push("Set coupling matrices");
+	coupling_const = eval_lambda_1(BIG_E,BIG_Mu);
+	CoupledTest.set_coupling_parameters("MicroSys",coupling_const,input_params.mean_distance);
 
 	CoupledTest.use_H1_coupling("MicroSys");
 	CoupledTest.assemble_coupling_elasticity_3D_parallel("BigSys","MicroSys",
@@ -600,11 +699,68 @@ int main(int argc, char** argv) {
 			full_intersection_pairs_map,
 			full_intersection_restricted_pairs_map,
 			local_intersection_meshI_to_inter_map);
-	perf_log.pop("Build elasticity couplings","Main program");
+	perf_log.pop("Set coupling matrices");
 
-	CoupledTest.print_matrix_micro_info("MicroSys");
-	CoupledTest.print_matrix_BIG_info("MicroSys");
-	CoupledTest.print_matrix_mediator_info("MicroSys");
+	std::cout << std::endl;
+	std::cout << "| ---> Constants " << std::endl;
+	std::cout << "| Macro :" << std::endl;
+	std::cout << "|    E            : " << BIG_E << std::endl;
+	std::cout << "|    Mu (lamba_2) : " << BIG_Mu << std::endl;
+	std::cout << "|    lambda_1     : " << eval_lambda_1(BIG_E,BIG_Mu) << std::endl;
+	std::cout << "| LATIN :" << std::endl;
+	std::cout << "|    k_dA, k_dB   : " << input_params.k_dA << " " << input_params.k_dB << std::endl;
+	std::cout << "|    k_cA, k_cB   : " << input_params.k_cA << " " << input_params.k_cB << std::endl;
+	std::cout << "|    kappa        : " << coupling_const << std::endl;
+	std::cout << "|    e            : " << input_params.mean_distance << std::endl;
+
+//	CoupledTest.print_matrix_micro_info("MicroSys");
+//	CoupledTest.print_matrix_BIG_info("MicroSys");
+//	CoupledTest.print_matrix_mediator_info("MicroSys");
+
+	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
+	perf_log.push("Set up","LATIN Solver:");
+	CoupledTest.set_LATIN_solver(	"MicroSys","Elasticity",
+									assemble_elasticity_with_weight,
+									assemble_elasticity_heterogeneous_with_weight,
+									input_params.k_dA, input_params.k_dB, input_params.k_cA, input_params.k_cB,
+									input_params.LATIN_eps, input_params.LATIN_conv_max, input_params.LATIN_relax);
+	perf_log.pop("Set up","LATIN Solver:");
+
+
+	// Solve !
+	perf_log.push("Solve","LATIN Solver:");
+	CoupledTest.solve_LATIN("MicroSys","Elasticity",input_params.LATIN_convergence_output);
+	perf_log.pop("Solve","LATIN Solver:");
+
+	// Calculate stress
+	perf_log.push("Compute stress - micro","Output:");
+	compute_stresses(equation_systems_micro);
+	perf_log.pop("Compute stress - micro","Output:");
+
+	perf_log.push("Compute stress - macro","Output:");
+	compute_stresses(equation_systems_BIG);
+	perf_log.pop("Compute stress - macro","Output:");
+
+	// Export solution
+#ifdef LIBMESH_HAVE_EXODUS_API
+	perf_log.push("Save output","Output:");
+	libMesh::ExodusII_IO exo_io_micro(mesh_micro, /*single_precision=*/true);
+
+	std::set<std::string> system_names_micro;
+	system_names_micro.insert("Elasticity");
+	exo_io_micro.write_equation_systems(input_params.output_file_micro,equation_systems_micro,&system_names_micro);
+
+	exo_io_micro.write_element_data(equation_systems_micro);
+
+	libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
+
+	std::set<std::string> system_names_BIG;
+	system_names_BIG.insert("Elasticity");
+	exo_io_BIG.write_equation_systems(input_params.output_file_BIG,equation_systems_BIG,&system_names_BIG);
+
+	exo_io_BIG.write_element_data(equation_systems_BIG);
+	perf_log.pop("Save output","Output:");
+#endif
 
 
 	std::ofstream perf_log_file("meshes/parallel_test/output/perf_log_" + std::to_string(rank)  + ".txt");

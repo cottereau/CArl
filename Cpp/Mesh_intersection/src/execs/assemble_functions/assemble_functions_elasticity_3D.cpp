@@ -1063,33 +1063,58 @@ void compute_stresses(libMesh::EquationSystems& es)
 
 void set_physical_properties(libMesh::EquationSystems& es, std::string& physicalParamsFile, double& meanE, double& meanMu)
 {
+	const libMesh::Parallel::Communicator& SysComm = es.comm();
+	int rank = SysComm.rank();
+	int nodes = SysComm.size();
+
 	// Read the random data info
-	std::ifstream physicalParamsIFS(physicalParamsFile);
+	std::vector<double> inputE;
+	std::vector<double> inputMu;
+	std::vector<int> 	inputIdx;
+
 	int NbOfSubdomains = -1;
-
-	physicalParamsIFS >> NbOfSubdomains;
-
-	std::vector<double> inputE(NbOfSubdomains,-1);
-	std::vector<double> inputMu(NbOfSubdomains,-1);
-	std::vector<int> 	inputIdx(NbOfSubdomains,-1);
 
 	meanE = 0;
 	meanMu = 0;
 
-	for(int iii = 0; iii < NbOfSubdomains; ++iii)
+	if(rank == 0)
 	{
-		physicalParamsIFS >> inputE[iii];
-		physicalParamsIFS >> inputMu[iii];
-		physicalParamsIFS >> inputIdx[iii];
+		std::ifstream physicalParamsIFS(physicalParamsFile);
+		physicalParamsIFS >> NbOfSubdomains;
+		inputE.resize(NbOfSubdomains);
+		inputMu.resize(NbOfSubdomains);
+		inputIdx.resize(NbOfSubdomains);
 
-		meanE += inputE[iii];
-		meanMu += inputMu[iii];
+		for(int iii = 0; iii < NbOfSubdomains; ++iii)
+		{
+			physicalParamsIFS >> inputE[iii];
+			physicalParamsIFS >> inputMu[iii];
+			physicalParamsIFS >> inputIdx[iii];
 
-//		std::cout << inputMu[iii]*(inputE[iii] - 2*inputMu[iii])/(3*inputMu[iii]-inputE[iii]) << " " << inputMu[iii] << std::endl;
+			meanE += inputE[iii];
+			meanMu += inputMu[iii];
+		}
+		meanE /= NbOfSubdomains;
+		meanMu /= NbOfSubdomains;
+		physicalParamsIFS.close();
 	}
-	meanE /= NbOfSubdomains;
-	meanMu /= NbOfSubdomains;
-	physicalParamsIFS.close();
+
+	if(nodes > 1)
+	{
+		SysComm.broadcast(NbOfSubdomains);
+		SysComm.broadcast(meanE);
+		SysComm.broadcast(meanMu);
+
+		if(rank != 0)
+		{
+			inputE.resize(NbOfSubdomains);
+			inputMu.resize(NbOfSubdomains);
+			inputIdx.resize(NbOfSubdomains);
+		}
+		SysComm.broadcast(inputE);
+		SysComm.broadcast(inputMu);
+		SysComm.broadcast(inputIdx);
+	}
 
 	// Mesh pointer
 	const libMesh::MeshBase& mesh = es.get_mesh();

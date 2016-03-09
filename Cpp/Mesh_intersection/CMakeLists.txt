@@ -68,9 +68,9 @@ set ( CARL_COUPLING_TEST_EXEC_DIR       ${EXEC_SRC_DIR}/carl_coupling_test )
 set ( CARL_LIBMESH_EXEC_DIR             ${EXEC_SRC_DIR}/carl_libmesh )
 
 set ( CARL_PARALLEL_TEST_EXEC_DIR       ${EXEC_SRC_DIR}/carl_parallel_test )
-set ( CARL_PARALLEL_COUPLING_EXEC_DIR   ${EXEC_SRC_DIR}/carl_parallel_build_couplings )
+set ( CARL_LIBMESH_PARALLEL_EXEC_DIR    ${EXEC_SRC_DIR}/carl_libmesh_parallel )
 
-set ( COMMON_SRC_DIR ${SOURCE_DIR}/common )
+set ( COMMON_SRC_DIR           ${SOURCE_DIR}/common )
 set ( MESH_DIR                 ${COMMON_SRC_DIR}/triangular_mesh )
 set ( INTERSECTION_DIR         ${COMMON_SRC_DIR}/intersections )
 set ( LIBMESH_CODE_DIR         ${COMMON_SRC_DIR}/libmesh_code )
@@ -83,7 +83,7 @@ set ( EXEC_DIRS ${INTERSECTION_2D_EXEC_DIR} ${INTERSECTION_3D_EXEC_DIR}
                 ${INTERSECTION_RESTRICT_3D_EXEC_DIR} ${MESHER_EXEC_DIR} 
                 ${TEST_IMPORT_EXEC_DIR} ${RESTRICTION_3D_EXEC_DIR} 
                 ${CARL_LIBMESH_EXEC_DIR} ${CARL_COUPLING_TEST_EXEC_DIR} 
-                ${CARL_PARALLEL_TEST_EXEC_DIR} ${CARL_PARALLEL_COUPLING_EXEC_DIR})
+                ${CARL_PARALLEL_TEST_EXEC_DIR} ${CARL_LIBMESH_PARALLEL_EXEC_DIR})
 include_directories( ${LIB_DIRS} ${EXEC_DIR} )
 
 # set source sets
@@ -103,7 +103,7 @@ set ( CARL_LIBMESH_EXEC_SOURCES ${CARL_LIBMESH_EXEC_DIR}/main.cpp )
 set ( CARL_COUPLING_TEST_EXEC_SOURCES ${CARL_COUPLING_TEST_EXEC_DIR}/main.cpp )
 
 set ( CARL_PARALLEL_TEST_EXEC_SOURCES ${CARL_PARALLEL_TEST_EXEC_DIR}/main.cpp )
-set ( CARL_PARALLEL_COUPLING_EXEC_SOURCES ${CARL_PARALLEL_COUPLING_EXEC_DIR}/main.cpp )
+set ( CARL_LIBMESH_PARALLEL_EXEC_SOURCES ${CARL_LIBMESH_PARALLEL_EXEC_DIR}/main.cpp )
 
 # Creating entries for target: intersections_2D
 # ############################
@@ -142,7 +142,7 @@ add_executable( carl_coupling_test     ${CARL_COUPLING_TEST_EXEC_SOURCES}
                                        
 add_executable( carl_parallel_test     ${CARL_PARALLEL_TEST_EXEC_SOURCES} )
 
-add_executable( carl_parallel_build_couplings     ${CARL_PARALLEL_COUPLING_EXEC_SOURCES} 
+add_executable( carl_libmesh_parallel     ${CARL_LIBMESH_PARALLEL_EXEC_SOURCES} 
                                                   $<TARGET_OBJECTS:MESH_3D_OBJS> 
                                                   $<TARGET_OBJECTS:LIBMESH_CODE_OBJS> 
                                                   $<TARGET_OBJECTS:COMMON_OBJS>
@@ -156,7 +156,7 @@ add_to_cached_list( CGAL_EXECUTABLE_TARGETS restrict_mesh_3D )
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS carl_libmesh )
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS carl_coupling_test )
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS carl_parallel_test )
-add_to_cached_list( CGAL_EXECUTABLE_TARGETS carl_parallel_build_couplings )
+add_to_cached_list( CGAL_EXECUTABLE_TARGETS carl_libmesh_parallel )
 
 set ( LIB_DIR /opt/local/lib)
 set ( BOOST_LIBRARIES ${LIB_DIR}/libboost_filesystem-mt.dylib) 
@@ -170,4 +170,4 @@ target_link_libraries(restrict_mesh_3D ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CG
 target_link_libraries(carl_libmesh ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 target_link_libraries(carl_coupling_test ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 target_link_libraries(carl_parallel_test ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
-target_link_libraries(carl_parallel_build_couplings ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+target_link_libraries(carl_libmesh_parallel ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )

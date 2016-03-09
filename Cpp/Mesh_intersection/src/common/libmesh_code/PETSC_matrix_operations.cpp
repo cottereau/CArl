@@ -110,6 +110,8 @@ void carl::print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatri
 	std::cout << "| M_i,j : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl;
 
 	int nodes = MatrixComm.size();
+	int rank = MatrixComm.rank();
+
 	PetscInt local_M, local_N;
 	MatGetLocalSize(CouplingTestMatrix.mat(),&local_M,&local_N);
 
@@ -128,6 +130,7 @@ void carl::print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatri
 
 	libMesh::PetscVector<libMesh::Number> dummy_vec(MatrixComm,CouplingTestMatrix.n(),local_N);
 	MatGetRowSum(CouplingTestMatrix.mat(),dummy_vec.vec());
+//	dummy_vec.print_matlab("row_sum_"+std::to_string(rank)+".m");
 	VecSum(dummy_vec.vec(),&accumulator);
 	std::cout << "|" << std::endl;
 	std::cout << "| Sum( M_i,j ) = " << accumulator << std::endl << std::endl;
