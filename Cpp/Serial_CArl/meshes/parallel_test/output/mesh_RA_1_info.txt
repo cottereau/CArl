@@ -1,0 +1,14 @@
+ Mesh Information:
+  elem_dimensions()={3}
+  spatial_dimension()=3
+  n_nodes()=181
+    n_local_nodes()=75
+  n_elem()=536
+    n_local_elem()=268
+    n_active_elem()=536
+  n_subdomains()=1
+  n_partitions()=2
+  n_processors()=2
+  n_threads()=1
+  processor_id()=1
+
