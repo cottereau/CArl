@@ -43,6 +43,9 @@ protected:
 
 	CGAL::Convex_hull_traits_3<ExactKernel> ExactHullTraits;
 
+	Kernel_to_ExactKernel ConvertInexactToExact;
+	ExactKernel_to_Kernel ConvertExactToInexact;
+
 public:
 	Intersection_Tools()
 	{
@@ -97,6 +100,29 @@ public:
 			{
 				bElemIntersect = false;
 			}
+		}
+		else
+		{
+			bElemIntersect = false;
+		}
+
+		return bElemIntersect;
+	}
+
+	/*
+	 * 		Build two elements intersection
+	 */
+	bool libMesh_exact_intersection(const libMesh::Elem * elem_A,
+									const libMesh::Elem * elem_B,
+									ExactPolyhedron poly_out)
+	{
+		// Test the intersection and build the Nef polyhedron (if true)
+		bool bElemIntersect = libMesh_exact_do_intersect(elem_A,elem_B);
+
+		if(bElemIntersect)
+		{
+			Nef_Polyhedron::Volume_const_iterator itVol = ++m_nef_I.volumes_begin();
+			m_nef_I.convert_inner_shell_to_polyhedron(itVol->shells_begin(), poly_out);
 		}
 
 		return bElemIntersect;

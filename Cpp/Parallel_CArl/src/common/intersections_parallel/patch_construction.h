@@ -106,6 +106,7 @@ public:
 	{
 		bool bDoIntersect = false;
 		const libMesh::Elem		* First_Patch_elem = FindFirstIntersection(Query_elem);
+		Patch_Indexes.clear();
 
 		// Deque containing the indices of the elements to test
 		std::deque<int> Patch_Test_Queue;
