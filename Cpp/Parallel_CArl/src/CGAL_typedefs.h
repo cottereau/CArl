@@ -151,6 +151,9 @@ typedef CGAL::Triangulation_cell_base_with_info_3<CellInfo,Kernel>	CbInfo_3;
 typedef CGAL::Triangulation_data_structure_3<VbInfo_3,CbInfo_3> Tds_3;
 typedef CGAL::Delaunay_triangulation_3<Kernel,Tds_3> DT_3;
 
+typedef CGAL::Delaunay_triangulation_3<Kernel> DelaunayTri_3;
+typedef CGAL::Delaunay_triangulation_3<ExactKernel> ExactDelaunayTri_3;
+
 // --- 3D Triangulation iterator typedefs
 typedef DT_3::Vertex 					Vertex_3;
 typedef DT_3::Edge						Edge_3;

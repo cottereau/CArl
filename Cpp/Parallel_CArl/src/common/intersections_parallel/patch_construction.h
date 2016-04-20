@@ -75,7 +75,7 @@ public:
 			// Better check all the vertices ...
 			unsigned int elem_nb_nodes = Query_elem->n_nodes();
 			libMesh::Point dummyPoint;
-			bool bOutsideTheMesh = false;
+			bool bInsideTheMesh = true;
 
 			// Just to be sure, check if one of the points intersect the mesh
 			for(unsigned int iii = 0; iii < elem_nb_nodes; ++iii)
@@ -85,12 +85,12 @@ public:
 
 				if(Patch_elem == NULL)
 				{
-					bOutsideTheMesh = true;
+					bInsideTheMesh = false;
 					break;
 				}
 			}
 
-			homemade_assert_msg(!bOutsideTheMesh, "Query element is outside tested mesh!\n");
+			homemade_assert_msg(bInsideTheMesh, "Query element is not fully inside tested mesh!\n");
 		}
 
 		return locator(Query_elem->point(0));
@@ -175,9 +175,10 @@ public:
 			}
 		}
 
-		std::cout << " -> Positives / tests          : " << nbOfPositiveTests << " / " << nbOfTests << std::endl;
-
-		std::cout << " -> Nb. of intersections found : " << Patch_Indexes.size() << std::endl;
+		std::cout << "    DEBUG: patch search results" << std::endl;
+		std::cout << " -> Positives / tests          : " << nbOfPositiveTests << " / " << nbOfTests
+				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl;
+		std::cout << " -> Nb. of intersections found : " << Patch_Indexes.size() << std::endl << std::endl;
 	}
 };
 }

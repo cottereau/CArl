@@ -50,6 +50,12 @@ protected:
 
 public:
 
+	enum SearchMethod
+	{
+		BRUTE,
+		FRONT
+	};
+
 	Intersection_Search(const libMesh::Mesh & mesh_A,
 						const libMesh::Mesh & mesh_B,
 						const libMesh::Mesh & mesh_Coupling,
@@ -89,35 +95,76 @@ public:
 		m_Patch_Constructor_B.BuildPatch(Query_elem,m_Patch_Set_B);
 	}
 
-	void BuildPatchIntersections_Brute()
+	void BuildPatchIntersections_Brute(const libMesh::Elem 	* Query_elem)
 	{
+		// TODO: For now it is more of a "find" than a build ...
+
 		// Code for the brute force intersection tests
 		m_Intersection_Pairs.clear();
 
 		// Dummy polyhedron containing the intersection
-		ExactPolyhedron dummy_poly;
+		Polyhedron dummy_poly;
 
 		// Intersection_Tools
-		Intersection_Tools intersection_test;
+		Intersection_Tools intersection_test(Query_elem);
+
+		// Boolean: do they intersect?
+		bool bDoIntersect = false;
+
+		// Debug vars
+		int nbOfTests = 0;
+		int nbOfPositiveTests = 0;
 
 		std::unordered_set<int>::iterator it_patch_A;
 		std::unordered_set<int>::iterator it_patch_B;
+
+		double total_volume = 0;
 		for(	it_patch_A =  m_Patch_Set_A.begin();
 				it_patch_A != m_Patch_Set_A.end();
 				++it_patch_A)
 		{
+			const libMesh::Elem * elem_A = m_Mesh_A.elem(*it_patch_A);
+
 			for(	it_patch_B =  m_Patch_Set_B.begin();
 					it_patch_B != m_Patch_Set_B.end();
 					++it_patch_B)
 			{
-				// For now I do nothing ...
+				++nbOfTests;
+				const libMesh::Elem * elem_B = m_Mesh_B.elem(*it_patch_B);
+
+				bDoIntersect = intersection_test.libMesh_exact_intersection_inside_coupling(elem_A,elem_B,dummy_poly);
+
+				if(bDoIntersect)
+				{
+					total_volume += m_Mesh_Intersection.get_polyhedron_volume(dummy_poly);
+					m_Intersection_Pairs[nbOfPositiveTests] = std::pair<int,int>(*it_patch_A,*it_patch_B);
+					++nbOfPositiveTests;
+				}
 			}
 		}
+		std::cout << "    DEBUG: brute force search results" << std::endl;
+		std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
+				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl;
+		std::cout << " -> Intersection / element volume : " << total_volume << " / " << Query_elem->volume() << std::endl << std::endl;
 	}
 
 	void BuildPatchIntersections_Front()
 	{
 
+	}
+
+	void BuildIntersections(SearchMethod = BRUTE)
+	{
+		// Prepare iterators
+		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.elements_begin();
+		libMesh::Mesh::const_element_iterator it_coupl_end = m_Mesh_Coupling.elements_end();
+
+		for( ; it_coupl != it_coupl_end; ++it_coupl)
+		{
+			const libMesh::Elem * Query_elem = * it_coupl;
+			BuildCoupledPatches(Query_elem);
+			BuildPatchIntersections_Brute(Query_elem);
+		}
 	}
 };
 }
