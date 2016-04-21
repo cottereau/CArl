@@ -102,8 +102,8 @@ public:
 		// Code for the brute force intersection tests
 		m_Intersection_Pairs.clear();
 
-		// Dummy polyhedron containing the intersection
-		Polyhedron dummy_poly;
+		// Set containing all the intersection points
+		std::set<Point_3> intersection_vertices;
 
 		// Intersection_Tools
 		Intersection_Tools intersection_test(Query_elem);
@@ -132,11 +132,12 @@ public:
 				++nbOfTests;
 				const libMesh::Elem * elem_B = m_Mesh_B.elem(*it_patch_B);
 
-				bDoIntersect = intersection_test.libMesh_exact_intersection_inside_coupling(elem_A,elem_B,dummy_poly);
+				intersection_vertices.clear();
+				bDoIntersect = intersection_test.libMesh_exact_intersection_inside_coupling(elem_A,elem_B,intersection_vertices);
 
-				if(bDoIntersect)
+				if(bDoIntersect && intersection_vertices.size() >= 4)
 				{
-					total_volume += m_Mesh_Intersection.get_polyhedron_volume(dummy_poly);
+					total_volume += m_Mesh_Intersection.get_intersection_volume(intersection_vertices);
 					m_Intersection_Pairs[nbOfPositiveTests] = std::pair<int,int>(*it_patch_A,*it_patch_B);
 					++nbOfPositiveTests;
 				}

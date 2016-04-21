@@ -41,6 +41,7 @@
 #include "libmesh/petsc_vector.h"
 #include "libmesh/point_locator_tree.h"
 #include "libmesh/mesh_communication.h"
+#include "libmesh/mesh_tetgen_interface.h"
 
 #include <petscmat.h>
 #include <petscvec.h>

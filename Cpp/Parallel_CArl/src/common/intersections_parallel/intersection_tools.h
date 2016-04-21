@@ -286,16 +286,23 @@ public:
 	 */
 	bool libMesh_exact_intersection_inside_coupling(const libMesh::Elem * elem_A,
 													const libMesh::Elem * elem_B,
-													Polyhedron & poly_out)
+													std::set<Point_3> & points_out)
 	{
 		// Test the intersection and build the Nef polyhedron (if true)
 		bool bElemIntersect = libMesh_exact_do_intersect_inside_coupling(elem_A,elem_B);
 
 		if(bElemIntersect && m_nef_I.number_of_volumes() > 1)
 		{
-			Nef_Polyhedron::Volume_const_iterator itVol = ++m_nef_I.volumes_begin();
-			m_nef_I.convert_inner_shell_to_polyhedron(itVol->shells_begin(), m_dummyPoly);
-			poly_copy(poly_out,m_dummyPoly);
+			for(Nef_Polyhedron::Vertex_const_iterator it_vertex = m_nef_I.vertices_begin();
+					it_vertex != m_nef_I.vertices_end();
+					++it_vertex)
+			{
+				points_out.insert(ConvertExactToInexact(it_vertex->point()));
+			}
+		}
+		else
+		{
+			bElemIntersect = false;
 		}
 
 		return bElemIntersect;

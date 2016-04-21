@@ -28,51 +28,60 @@ namespace carl
 class	Mesh_Intersection
 {
 protected:
-	libMesh::Mesh&				   m_libMesh_Mesh;
-	const libMesh::Parallel::Communicator& m_comm;
+	const libMesh::Parallel::Communicator& 	m_comm;
+	int 									m_rank;
 
-	DelaunayTri_3			   	m_temp_triangulation;
-	Tetrahedron                	m_dummyTetrahedron;
+	libMesh::SerialMesh&				   	m_libMesh_Mesh;
+	libMesh::SerialMesh					   	m_libMesh_PolyhedronMesh;
+
+	libMesh::TetGenMeshInterface 			m_TetGenInterface;
 
 	Kernel_to_ExactKernel 		   ConvertInexactToExact;
 	ExactKernel_to_Kernel 		   ConvertExactToInexact;
 
 public:
 
-	Mesh_Intersection(libMesh::Mesh & mesh) :
+	Mesh_Intersection(libMesh::SerialMesh & mesh) :
+		m_comm { mesh.comm() },
 		m_libMesh_Mesh { mesh },
-		m_comm { m_libMesh_Mesh.comm() }
-
+		m_libMesh_PolyhedronMesh { libMesh::SerialMesh(m_comm) },
+		m_TetGenInterface { libMesh::TetGenMeshInterface(m_libMesh_PolyhedronMesh) }
 	{
+		m_rank = m_comm.rank();
 	};
 
-	const libMesh::Mesh & mesh()
+	const libMesh::SerialMesh & mesh()
 	{
 		return m_libMesh_Mesh;
 	}
 
-	void triangulate_polyhedron(Polyhedron & input_poly)
+	void triangulate_intersection(std::set<Point_3> & input_points)
 	{
-		m_temp_triangulation.clear();
-		m_temp_triangulation.insert(input_poly.points_begin(),input_poly.points_end());
+		m_libMesh_PolyhedronMesh.clear();
+		libMesh::Point	dummy_point;
+
+		for(std::set<Point_3>::const_iterator it_set = input_points.begin();
+				it_set != input_points.end();
+				++it_set)
+		{
+			dummy_point = libMesh::Point(it_set->x(),it_set->y(),it_set->z());
+			m_libMesh_PolyhedronMesh.add_point(dummy_point);
+		}
+		m_TetGenInterface.triangulate_pointset();
 	}
 
-	double get_polyhedron_volume(Polyhedron & input_poly)
+	double get_intersection_volume(std::set<Point_3> & input_points)
 	{
 		double volume = 0;
-		triangulate_polyhedron(input_poly);
-//		if(!input_poly.is_empty())
-//			std::cout << " Empty polyhedron ..." << std::endl;
 
-		for(DelaunayTri_3::Finite_cells_iterator it_cell = m_temp_triangulation.finite_cells_begin();
-			it_cell != m_temp_triangulation.finite_cells_end();
-			++it_cell)
+		triangulate_intersection(input_points);
+
+		for(libMesh::SerialMesh::element_iterator it_elem = m_libMesh_PolyhedronMesh.elements_begin();
+				it_elem != m_libMesh_PolyhedronMesh.elements_end();
+				++it_elem)
 		{
-			m_dummyTetrahedron = Tetrahedron(	it_cell->vertex(0)->point(),
-					it_cell->vertex(1)->point(),
-					it_cell->vertex(2)->point(),
-					it_cell->vertex(3)->point());
-			volume += std::abs(m_dummyTetrahedron.volume());
+			const libMesh::Elem * elem = * it_elem;
+			volume += elem->volume();
 		}
 
 		return volume;
