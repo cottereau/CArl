@@ -57,12 +57,22 @@ public:
 		return m_Mesh;
 	}
 
+	std::unordered_set<unsigned int> & patch_indexes()
+	{
+		return m_Patch_Indexes;
+	};
+
+	std::unordered_map<unsigned int,std::set<unsigned int> > & patch_elem_neighbours()
+	{
+		return m_Patch_Neighbours;
+	}
+
 	/*
 	 * 			Implementation of the patch construction algorithm without any
 	 * 		neighboring information concerning the query element.
 	 *
 	 */
-	void BuildPatch(const libMesh::Elem 	* Query_elem, std::unordered_set<unsigned int> & Patch_Indexes)
+	void BuildPatch(const libMesh::Elem 	* Query_elem)
 	{
 		bool bDoIntersect = false;
 		const libMesh::Elem		* First_Patch_elem = m_Intersection_Test.FindFirstIntersection(Query_elem,m_Patch_Point_Locator);
@@ -177,9 +187,9 @@ public:
 		std::cout << " -> Nb. of tests               : " << nbOfTests << std::endl;
 		std::cout << " -> Nb. of positive tests      : " << nbOfPositiveTests << std::endl;
 		std::cout << " -> Positive %                 : " << 100.*nbOfPositiveTests/nbOfTests << " %" << std::endl << std::endl;
-
-		Patch_Indexes = m_Patch_Indexes;
 	}
+
+
 };
 }
 

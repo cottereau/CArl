@@ -276,13 +276,20 @@ public:
 	 */
 	bool libMesh_exact_intersection(const libMesh::Elem * elem_A,
 									const libMesh::Elem * elem_B,
-									std::set<Point_3> & points_out)
+									std::set<Point_3> & points_out,
+									bool bTestNeeded = true)
 	{
-		// Test the intersection and build the Nef polyhedron (if true)
-		bool bElemIntersect = libMesh_exact_do_intersect(elem_A,elem_B);
+		bool bElemIntersect = true;
+
+		if(bTestNeeded)
+		{
+			// Test the intersection and build the Nef polyhedron (if true)
+			bool bElemIntersect = libMesh_exact_do_intersect(elem_A,elem_B);
+		}
 
 		if(bElemIntersect && m_nef_I.number_of_volumes() > 1)
 		{
+			points_out.clear();
 			for(Nef_Polyhedron::Vertex_const_iterator it_vertex = m_nef_I.vertices_begin();
 					it_vertex != m_nef_I.vertices_end();
 					++it_vertex)
@@ -376,10 +383,20 @@ public:
 	 */
 	bool libMesh_exact_intersection_inside_coupling(const libMesh::Elem * elem_A,
 													const libMesh::Elem * elem_B,
-													std::set<Point_3> & points_out)
+													std::set<Point_3> & points_out,
+													bool bTestNeeded = true)
 	{
-		// Test the intersection and build the Nef polyhedron (if true)
-		bool bElemIntersect = libMesh_exact_do_intersect_inside_coupling(elem_A,elem_B);
+		bool bElemIntersect = true;
+		if(!bTestNeeded)
+		{
+			// Test the intersection and build the Nef polyhedron
+			bool bElemIntersect = libMesh_exact_do_intersect_inside_coupling(elem_A,elem_B);
+		}
+		else
+		{
+			// Update test to the restriction
+			m_nef_I = m_nef_I*m_nef_C;
+		}
 
 		if(bElemIntersect && m_nef_I.number_of_volumes() > 1)
 		{
@@ -387,6 +404,7 @@ public:
 					it_vertex != m_nef_I.vertices_end();
 					++it_vertex)
 			{
+				points_out.clear();
 				points_out.insert(ConvertExactToInexact(it_vertex->point()));
 			}
 		}
