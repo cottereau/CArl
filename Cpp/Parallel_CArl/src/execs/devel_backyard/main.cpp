@@ -57,7 +57,8 @@ int main(int argc, char *argv[])
 	test_mesh_C.print_info();
 
 	carl::Intersection_Search search_coupling_intersections(test_mesh_A,test_mesh_B,test_mesh_C,test_mesh_I);
-	search_coupling_intersections.BuildIntersections();
+//	search_coupling_intersections.BuildIntersections(carl::BRUTE);
+	search_coupling_intersections.BuildIntersections(carl::FRONT);
 //	const libMesh::Elem * query_elem_1 = test_mesh_C.elem(0);
 //	search_coupling_intersections.BuildCoupledPatches(query_elem_1);
 //

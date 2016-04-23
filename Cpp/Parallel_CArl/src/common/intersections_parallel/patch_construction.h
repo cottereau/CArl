@@ -36,6 +36,9 @@ protected:
 
 	const libMesh::Parallel::Communicator& m_comm;
 
+	std::unordered_set<unsigned int> 							m_Patch_Indexes;
+	std::unordered_map<unsigned int,std::set<unsigned int> >	m_Patch_Neighbours;
+
 public:
 
 	Patch_construction(const libMesh::Mesh & mesh) :
@@ -55,58 +58,15 @@ public:
 	}
 
 	/*
-	 * 			Find a element from the mesh intersecting the query element.
-	 * 		Does so while doing a test to be sure that the query element does
-	 * 		indeed intersect the tested mesh. The test can be bypassed using a
-	 * 		boolean.
-	 *
-	 */
-	const libMesh::Elem * FindFirstIntersection(	const libMesh::Elem * Query_elem,
-								bool				bGuaranteeQueryIsInMesh = false)
-	{
-		libMesh::PointLocatorBase& locator = *m_Patch_Point_Locator.get();
-		if(!bGuaranteeQueryIsInMesh)
-		{
-			// Then we are sure that the query element is inside the mesh, only
-			// one search needed
-		}
-		else
-		{
-			// Better check all the vertices ...
-			unsigned int elem_nb_nodes = Query_elem->n_nodes();
-			libMesh::Point dummyPoint;
-			bool bInsideTheMesh = true;
-
-			// Just to be sure, check if one of the points intersect the mesh
-			for(unsigned int iii = 0; iii < elem_nb_nodes; ++iii)
-			{
-				dummyPoint = Query_elem->point(iii);
-				const libMesh::Elem * Patch_elem = locator(Query_elem->point(iii));
-
-				if(Patch_elem == NULL)
-				{
-					bInsideTheMesh = false;
-					break;
-				}
-			}
-
-			homemade_assert_msg(bInsideTheMesh, "Query element is not fully inside tested mesh!\n");
-		}
-
-		return locator(Query_elem->point(0));
-	};
-
-	/*
 	 * 			Implementation of the patch construction algorithm without any
 	 * 		neighboring information concerning the query element.
 	 *
 	 */
-	void BuildPatch(const libMesh::Elem 	* Query_elem,
-					std::unordered_set<int> & Patch_Indexes)
+	void BuildPatch(const libMesh::Elem 	* Query_elem, std::unordered_set<unsigned int> & Patch_Indexes)
 	{
 		bool bDoIntersect = false;
-		const libMesh::Elem		* First_Patch_elem = FindFirstIntersection(Query_elem);
-		Patch_Indexes.clear();
+		const libMesh::Elem		* First_Patch_elem = m_Intersection_Test.FindFirstIntersection(Query_elem,m_Patch_Point_Locator);
+		m_Patch_Indexes.clear();
 
 		// Deque containing the indices of the elements to test
 		std::deque<int> Patch_Test_Queue;
@@ -122,7 +82,7 @@ public:
 
 		// First element is ok!
 		Treated_From_Mesh.insert(First_Patch_elem->id());
-		Patch_Indexes.insert(First_Patch_elem->id());
+		m_Patch_Indexes.insert(First_Patch_elem->id());
 
 		libMesh::Elem * elem_candidate;
 		for(unsigned int iii = 0; iii < First_Patch_elem->n_neighbors(); ++iii)
@@ -156,7 +116,7 @@ public:
 				++nbOfPositiveTests;
 
 				// Add it to the output list ...
-				Patch_Indexes.insert(Tested_idx);
+				m_Patch_Indexes.insert(Tested_idx);
 
 				// ... And add its neighbours (if they weren't tested yet)
 				for(unsigned int iii = 0; iii < Tested_elem->n_neighbors(); ++iii)
@@ -175,15 +135,52 @@ public:
 			}
 		}
 
+		// Now, let us build the patch's neighbour table
+		std::set<unsigned int> dummy_neighbour_set;
+
+		std::unordered_set<unsigned int>::iterator it_set = m_Patch_Indexes.begin();
+		std::unordered_set<unsigned int>::iterator it_set_end = m_Patch_Indexes.end();
+		m_Patch_Neighbours.reserve(m_Patch_Indexes.size());
+
+		libMesh::Elem * elem_neighbour;
+		unsigned int elem_neighbour_id;
+
+		for( ; it_set != it_set_end; ++it_set)
+		{
+			const libMesh::Elem 	* elem = m_Mesh.elem(*it_set);
+			dummy_neighbour_set.clear();
+
+			for(unsigned int iii = 0; iii < elem->n_neighbors(); ++iii)
+			{
+				elem_neighbour = elem->neighbor(iii);
+
+				if(elem_neighbour != NULL)
+				{
+					// Then test if it is inside the patch
+					elem_neighbour_id = elem_neighbour->id();
+					if(m_Patch_Indexes.find(elem_neighbour_id) != m_Patch_Indexes.end())
+					{
+						// Then the neighbor is inside the patch, insert it
+						dummy_neighbour_set.insert(elem_neighbour->id());
+					}
+				}
+			}
+			m_Patch_Neighbours.insert(std::pair<unsigned int,std::set<unsigned int> >(*it_set,dummy_neighbour_set));
+		}
+
 		std::cout << "    DEBUG: patch search results" << std::endl;
-		std::cout << " -> Positives / tests          : " << nbOfPositiveTests << " / " << nbOfTests
-				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl;
-		std::cout << " -> Nb. of intersections found : " << Patch_Indexes.size() << std::endl << std::endl;
+		std::cout << " -> Nb. of intersections found : " << m_Patch_Indexes.size() << std::endl << std::endl;
+
+		std::cout << " -> Nb. of mesh elements       : " << m_Mesh.n_elem() << std::endl;
+		std::cout << " -> Patch size %               : " << 100.*m_Patch_Indexes.size()/m_Mesh.n_elem() << " %" << std::endl << std::endl;
+
+		std::cout << " -> Nb. of tests               : " << nbOfTests << std::endl;
+		std::cout << " -> Nb. of positive tests      : " << nbOfPositiveTests << std::endl;
+		std::cout << " -> Positive %                 : " << 100.*nbOfPositiveTests/nbOfTests << " %" << std::endl << std::endl;
+
+		Patch_Indexes = m_Patch_Indexes;
 	}
 };
 }
-
-
-
 
 #endif /* COMMON_INTERSECTIONS_PARALLEL_PATCH_CONSTRUCTION_H_ */

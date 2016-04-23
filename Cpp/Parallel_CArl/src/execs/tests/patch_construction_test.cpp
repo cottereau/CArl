@@ -74,14 +74,14 @@ int main(int argc, char *argv[])
 	const libMesh::Elem * query_elem = query_mesh.elem(0);
 
 	// Get intersection!
-	std::unordered_set<int> Patch_Indexes;
+	std::unordered_set<unsigned int> Patch_Indexes;
 	Patch_Indexes.reserve(test_mesh.n_elem());
 
 	carl::Patch_construction test_patch(test_mesh);
 	test_patch.BuildPatch(query_elem,Patch_Indexes);
 
 	std::cout << " -> Intersection indexes: " << std::endl;
-	for(std::unordered_set<int>::iterator 	it_begin = Patch_Indexes.begin();
+	for(std::unordered_set<unsigned int>::iterator 	it_begin = Patch_Indexes.begin();
 											it_begin != Patch_Indexes.end();
 											++it_begin)
 	{

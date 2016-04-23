@@ -129,10 +129,92 @@ public:
 	{
 		m_exact_points_A.resize(8);
 		m_exact_points_B.resize(8);
+		m_exact_points_C.resize(8);
 
 		m_dummyPoly.reserve(8,18,12);
 
 		m_nef_C.clear(Nef_Polyhedron::EMPTY);
+	};
+
+	/*
+	 * 			Find a element from the mesh intersecting the query element.
+	 * 		Does so while doing a test to be sure that the query element does
+	 * 		indeed intersect the tested mesh. The test can be bypassed using a
+	 * 		boolean.
+	 *
+	 */
+	const libMesh::Elem * FindFirstIntersection(	const libMesh::Elem * Query_elem,
+								std::unique_ptr<libMesh::PointLocatorBase> & point_locator,
+								bool				bGuaranteeQueryIsInMesh = false)
+	{
+		libMesh::PointLocatorBase& locator = *point_locator.get();
+		if(!bGuaranteeQueryIsInMesh)
+		{
+			// Then we are sure that the query element is inside the mesh, only
+			// one search needed
+		}
+		else
+		{
+			// Better check all the vertices ...
+			unsigned int elem_nb_nodes = Query_elem->n_nodes();
+			libMesh::Point dummyPoint;
+			bool bInsideTheMesh = true;
+
+			// Just to be sure, check if one of the points intersect the mesh
+			for(unsigned int iii = 0; iii < elem_nb_nodes; ++iii)
+			{
+				dummyPoint = Query_elem->point(iii);
+				const libMesh::Elem * Patch_elem = locator(Query_elem->point(iii));
+
+				if(Patch_elem == NULL)
+				{
+					bInsideTheMesh = false;
+					break;
+				}
+			}
+
+			homemade_assert_msg(bInsideTheMesh, "Query element is not fully inside tested mesh!\n");
+		}
+
+		return locator(Query_elem->point(0));
+	};
+
+	/*
+	 * 			Find all elements from the mesh intersecting the query element.
+	 * 		Does so while doing a test to be sure that the query element does
+	 * 		indeed intersect the tested mesh.
+	 *
+	 */
+	void FindAllIntersection(	const libMesh::Elem * Query_elem,
+								std::unique_ptr<libMesh::PointLocatorBase> & point_locator,
+								std::set<const libMesh::Elem *>	&	Intersecting_elems)
+	{
+		libMesh::PointLocatorBase& locator = *point_locator.get();
+
+		// Clear output
+		Intersecting_elems.clear();
+
+		// Search each vertex
+		unsigned int elem_nb_nodes = Query_elem->n_nodes();
+		libMesh::Point dummyPoint;
+		bool bInsideTheMesh = true;
+
+		int nbOfInters = 0;
+
+		// Just to be sure, check if one of the points intersect the mesh
+		for(unsigned int iii = 0; iii < elem_nb_nodes; ++iii)
+		{
+			dummyPoint = Query_elem->point(iii);
+			const libMesh::Elem * Patch_elem = locator(Query_elem->point(iii));
+
+			if(Patch_elem != NULL)
+			{
+				Intersecting_elems.insert(Patch_elem);
+				++nbOfInters;
+			}
+		}
+
+		homemade_assert_msg(nbOfInters != 0, "Query element is not fully inside tested mesh!\n");
 	};
 
 	/*
@@ -194,15 +276,23 @@ public:
 	 */
 	bool libMesh_exact_intersection(const libMesh::Elem * elem_A,
 									const libMesh::Elem * elem_B,
-									ExactPolyhedron & poly_out)
+									std::set<Point_3> & points_out)
 	{
 		// Test the intersection and build the Nef polyhedron (if true)
 		bool bElemIntersect = libMesh_exact_do_intersect(elem_A,elem_B);
 
-		if(bElemIntersect)
+		if(bElemIntersect && m_nef_I.number_of_volumes() > 1)
 		{
-			Nef_Polyhedron::Volume_const_iterator itVol = ++m_nef_I.volumes_begin();
-			m_nef_I.convert_inner_shell_to_polyhedron(itVol->shells_begin(), poly_out);
+			for(Nef_Polyhedron::Vertex_const_iterator it_vertex = m_nef_I.vertices_begin();
+					it_vertex != m_nef_I.vertices_end();
+					++it_vertex)
+			{
+				points_out.insert(ConvertExactToInexact(it_vertex->point()));
+			}
+		}
+		else
+		{
+			bElemIntersect = false;
 		}
 
 		return bElemIntersect;
