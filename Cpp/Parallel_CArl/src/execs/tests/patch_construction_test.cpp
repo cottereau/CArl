@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 	// Get intersection!
 	carl::Patch_construction test_patch(test_mesh);
 	test_patch.BuildPatch(query_elem);
-	std::unordered_set<unsigned int> & Patch_Indexes = test_patch.patch_indexes();
+	std::unordered_set<unsigned int> & Patch_Indexes = test_patch.indexes();
 
 	std::cout << " -> Intersection indexes: " << std::endl;
 	for(std::unordered_set<unsigned int>::iterator 	it_begin = Patch_Indexes.begin();

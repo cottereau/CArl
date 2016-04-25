@@ -36,8 +36,19 @@ protected:
 
 	const libMesh::Parallel::Communicator& m_comm;
 
-	std::unordered_set<unsigned int> 							m_Patch_Indexes;
-	std::unordered_map<unsigned int,std::set<unsigned int> >	m_Patch_Neighbours;
+	std::unordered_set<unsigned int> 									m_Patch_Indexes;
+	std::unordered_map<unsigned int,std::unordered_set<unsigned int> >	m_Patch_Neighbours;
+
+	// Data structures used by the advancing front intersection search
+	unsigned int 		m_working_element_id;
+	bool				m_bTestNeighsForNewPairs;
+	std::deque<int> 	m_element_intersection_queue;
+	std::deque<int> 	m_element_test_queue;
+	std::vector<int> 	m_element_already_treated;
+	std::vector<int> 	m_element_inside_intersection_queue;
+
+	std::unordered_set<unsigned int>	m_element_neighbours_to_search;
+
 
 public:
 
@@ -50,6 +61,9 @@ public:
 		// 		Instruction needed to avoid the code from crashing if a query
 		//	is outside the mesh
 		m_Patch_Point_Locator->enable_out_of_mesh_mode();
+
+		m_working_element_id = 0;
+		m_bTestNeighsForNewPairs = true;
 	};
 
 	const libMesh::Mesh & mesh()
@@ -57,12 +71,22 @@ public:
 		return m_Mesh;
 	}
 
-	std::unordered_set<unsigned int> & patch_indexes()
+	std::unordered_set<unsigned int> & indexes()
 	{
 		return m_Patch_Indexes;
 	};
 
-	std::unordered_map<unsigned int,std::set<unsigned int> > & patch_elem_neighbours()
+	unsigned int size()
+	{
+		return m_Patch_Indexes.size();
+	}
+
+	const libMesh::Elem * elem(unsigned int idx)
+	{
+		return m_Mesh.elem(idx);
+	}
+
+	std::unordered_map<unsigned int,std::unordered_set<unsigned int> > & patch_elem_neighbours()
 	{
 		return m_Patch_Neighbours;
 	}
@@ -146,7 +170,7 @@ public:
 		}
 
 		// Now, let us build the patch's neighbour table
-		std::set<unsigned int> dummy_neighbour_set;
+		std::unordered_set<unsigned int> dummy_neighbour_set(12);
 
 		std::unordered_set<unsigned int>::iterator it_set = m_Patch_Indexes.begin();
 		std::unordered_set<unsigned int>::iterator it_set_end = m_Patch_Indexes.end();
@@ -175,7 +199,7 @@ public:
 					}
 				}
 			}
-			m_Patch_Neighbours.insert(std::pair<unsigned int,std::set<unsigned int> >(*it_set,dummy_neighbour_set));
+			m_Patch_Neighbours.insert(std::pair<unsigned int,std::unordered_set<unsigned int> >(*it_set,dummy_neighbour_set));
 		}
 
 		std::cout << "    DEBUG: patch search results" << std::endl;
@@ -189,7 +213,175 @@ public:
 		std::cout << " -> Positive %                 : " << 100.*nbOfPositiveTests/nbOfTests << " %" << std::endl << std::endl;
 	}
 
+	/*
+	 *
+	 * 		Methods and getters associated to the advancing front search method.
+	 *
+	 */
 
+	/*
+	 * 	Getters, setters and extractors
+	 */
+	void intersection_queue_push_back(unsigned int elem_id)
+	{
+		m_element_intersection_queue.push_back(elem_id);
+	}
+
+	void set_elem_as_treated(unsigned int elem_id)
+	{
+		m_element_already_treated[elem_id] = 1;
+	}
+
+	void set_elem_as_inside_queue(unsigned int elem_id)
+	{
+		m_element_inside_intersection_queue[elem_id] = 1;
+	}
+
+	bool intersection_queue_empty()
+	{
+		return m_element_intersection_queue.empty();
+	}
+
+	bool test_queue_empty()
+	{
+		return m_element_intersection_queue.empty();
+	}
+
+	unsigned int intersection_queue_extract_front_elem()
+	{
+		m_working_element_id = m_element_intersection_queue[0];
+		m_element_intersection_queue.pop_front();
+		return m_working_element_id;
+	}
+
+	unsigned int test_queue_extract_front_elem()
+	{
+		m_working_element_id = m_element_test_queue[0];
+		m_element_test_queue.pop_front();
+		return m_working_element_id;
+	};
+
+	unsigned int current_elem_id()
+	{
+		return m_working_element_id;
+	};
+
+	const libMesh::Elem * current_elem_pointer()
+	{
+		return m_Mesh.elem(m_working_element_id);
+	}
+
+	std::unordered_set<unsigned int> & neighbors_to_search_next_pair()
+	{
+		return m_element_neighbours_to_search;
+	}
+
+	// Determinate which neighbors need to be tested
+	bool set_neighbors_to_search_next_pairs()
+	{
+		m_bTestNeighsForNewPairs = true;
+
+		// Iterator over all the neighbors
+		std::unordered_set<unsigned int>::iterator it_neigh, it_neigh_end;
+		it_neigh 		= m_Patch_Neighbours[m_working_element_id].begin();
+		it_neigh_end	= m_Patch_Neighbours[m_working_element_id].end();
+
+		// Clear the "to test" set
+		m_element_neighbours_to_search.clear();
+
+		// And fill it, if needed
+		for( ; it_neigh != it_neigh_end; ++ it_neigh)
+		{
+			if( m_element_inside_intersection_queue[*it_neigh] == 0 )
+			{
+				// This element does not have an initial intersection pair,
+				// add it to the list
+				m_element_neighbours_to_search.insert(*it_neigh);
+			}
+		}
+
+		if(m_element_neighbours_to_search.empty())
+		{
+			// Then do not do the intersection test!
+			m_bTestNeighsForNewPairs = false;
+		}
+
+		return m_bTestNeighsForNewPairs;
+	}
+
+	void add_neighbors_to_test_list()
+	{
+		std::unordered_set<unsigned int>::iterator it_neigh, it_neigh_end;
+		it_neigh 		= m_Patch_Neighbours[m_working_element_id].begin();
+		it_neigh_end	= m_Patch_Neighbours[m_working_element_id].end();
+
+		for( ; it_neigh != it_neigh_end; ++ it_neigh)
+		{
+			if( m_element_already_treated[*it_neigh] == 0 )
+			{
+				// New element!
+				m_element_test_queue.push_back(*it_neigh);
+				m_element_already_treated[*it_neigh] = 1;
+			}
+		}
+	};
+
+	/*
+	 * 	Initialize the deques, vectors and sets
+	 */
+	void FrontSearch_initialize()
+	{
+		homemade_assert_msg(!m_Patch_Indexes.empty(),"Patch is empty!");
+
+		m_element_intersection_queue.clear();
+		m_element_test_queue.clear();
+
+		m_element_already_treated.resize(m_Patch_Indexes.size(),0);
+		m_element_inside_intersection_queue.resize(m_Patch_Indexes.size(),0);
+
+		m_element_neighbours_to_search.reserve(12);
+
+		for(unsigned int iii = 0; iii < m_Patch_Indexes.size(); ++iii)
+		{
+			m_element_already_treated[iii] = 0;
+			m_element_inside_intersection_queue[iii] = 0;
+		}
+
+		m_working_element_id = 0;
+	}
+
+	/*
+	 * 	Reset everything, with the exception of the intersection queue
+	 */
+	void FrontSearch_reset()
+	{
+		homemade_assert_msg(!m_Patch_Indexes.empty(),"Patch is empty!");
+
+		m_element_test_queue.clear();
+
+		for(unsigned int iii = 0; iii < m_Patch_Indexes.size(); ++iii)
+		{
+			m_element_already_treated[iii] = 0;
+			m_element_inside_intersection_queue[iii] = 0;
+		}
+
+		m_working_element_id = 0;
+	}
+
+	/*
+	 * 	Prepare the patch for a new round of tests
+	 */
+	unsigned int FrontSearch_prepare_for_probed_test()
+	{
+		// Extract the intersection queue's first element
+		intersection_queue_extract_front_elem();
+
+		// Add it to the test queue
+		m_element_test_queue.clear();
+		m_element_test_queue.push_back(m_working_element_id);
+
+		return m_working_element_id;
+	}
 };
 }
 

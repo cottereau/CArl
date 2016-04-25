@@ -197,7 +197,6 @@ public:
 		// Search each vertex
 		unsigned int elem_nb_nodes = Query_elem->n_nodes();
 		libMesh::Point dummyPoint;
-		bool bInsideTheMesh = true;
 
 		int nbOfInters = 0;
 
@@ -284,7 +283,7 @@ public:
 		if(bTestNeeded)
 		{
 			// Test the intersection and build the Nef polyhedron (if true)
-			bool bElemIntersect = libMesh_exact_do_intersect(elem_A,elem_B);
+			bElemIntersect = libMesh_exact_do_intersect(elem_A,elem_B);
 		}
 
 		if(bElemIntersect && m_nef_I.number_of_volumes() > 1)
@@ -387,10 +386,10 @@ public:
 													bool bTestNeeded = true)
 	{
 		bool bElemIntersect = true;
-		if(!bTestNeeded)
+		if(bTestNeeded)
 		{
 			// Test the intersection and build the Nef polyhedron
-			bool bElemIntersect = libMesh_exact_do_intersect_inside_coupling(elem_A,elem_B);
+			bElemIntersect = libMesh_exact_do_intersect_inside_coupling(elem_A,elem_B);
 		}
 		else
 		{
@@ -400,11 +399,11 @@ public:
 
 		if(bElemIntersect && m_nef_I.number_of_volumes() > 1)
 		{
+			points_out.clear();
 			for(Nef_Polyhedron::Vertex_const_iterator it_vertex = m_nef_I.vertices_begin();
 					it_vertex != m_nef_I.vertices_end();
 					++it_vertex)
 			{
-				points_out.clear();
 				points_out.insert(ConvertExactToInexact(it_vertex->point()));
 			}
 		}

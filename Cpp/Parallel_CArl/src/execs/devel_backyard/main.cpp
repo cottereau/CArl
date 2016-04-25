@@ -52,38 +52,11 @@ int main(int argc, char *argv[])
 	test_mesh_B.read("meshes/3D/tests/test_intersection_B_1.msh");
 	test_mesh_C.read("meshes/3D/tests/test_intersection_C_1.msh");
 
-	test_mesh_A.print_info();
-	test_mesh_B.print_info();
-	test_mesh_C.print_info();
-
+	// Set up the search
 	carl::Intersection_Search search_coupling_intersections(test_mesh_A,test_mesh_B,test_mesh_C,test_mesh_I);
-//	search_coupling_intersections.BuildIntersections(carl::BRUTE);
+
+	// Search!
 	search_coupling_intersections.BuildIntersections(carl::FRONT);
-//	const libMesh::Elem * query_elem_1 = test_mesh_C.elem(0);
-//	search_coupling_intersections.BuildCoupledPatches(query_elem_1);
-//
-//	const libMesh::Elem * query_elem_2 = test_mesh_C.elem(1);
-//	search_coupling_intersections.BuildCoupledPatches(query_elem_2);
-//
-//	// First, let us test with only one element
-//	const libMesh::Elem * query_elem = query_mesh.elem(0);
-//
-//	// Get intersection!
-//	std::unordered_set<int> Patch_Indexes;
-//	Patch_Indexes.reserve(test_mesh.n_elem());
-//
-//	carl::Patch_construction test_patch(test_mesh);
-//	test_patch.BuildPatch(query_elem,Patch_Indexes);
-//
-//	std::cout << " -> Intersection indexes: " << std::endl;
-//	for(std::unordered_set<int>::iterator 	it_begin = Patch_Indexes.begin();
-//											it_begin != Patch_Indexes.end();
-//											++it_begin)
-//	{
-//		std:: cout << " " << *it_begin + 1;
-//	}
-//	std::cout << std::endl;
-//
 
 	return 0;
 }

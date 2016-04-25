@@ -109,8 +109,8 @@ public:
 		// Boolean: do they intersect?
 		bool bDoIntersect = false;
 
-		std::unordered_set<unsigned int> & Patch_Set_A = m_Patch_Constructor_A.patch_indexes();
-		std::unordered_set<unsigned int> & Patch_Set_B = m_Patch_Constructor_B.patch_indexes();
+		std::unordered_set<unsigned int> & Patch_Set_A = m_Patch_Constructor_A.indexes();
+		std::unordered_set<unsigned int> & Patch_Set_B = m_Patch_Constructor_B.indexes();
 
 		std::unordered_set<unsigned int>::iterator it_patch_A;
 		std::unordered_set<unsigned int>::iterator it_patch_B;
@@ -150,21 +150,31 @@ public:
 		std::cout << " -> Intersection / element volume : " << total_volume << " / " << Query_elem->volume() << std::endl << std::endl;
 	}
 
-	void FindFirstPair(		std::unordered_set<unsigned int> & 	Patch_guide,
-							std::unordered_set<unsigned int> & 	Patch_probed,
-							const libMesh::Mesh *  		Mesh_guide,
-							const libMesh::Mesh *		Mesh_probed,
+	/*
+	 * 		Find the first intersecting pair from a patch
+	 *
+	 * 		output: std::pair( guide_elem_id, probed_elem_id )
+	 *
+	 */
+	void FindFirstPair(		Patch_construction * 	Patch_guide,
+							Patch_construction * 	Patch_probed,
 							std::pair<unsigned int,unsigned int> &		First_intersection)
 	{
+		// Set up some references for a simpler code
+		std::unordered_set<unsigned int> & 	Patch_guide_ids  = Patch_guide->indexes();
+		std::unordered_set<unsigned int> & 	Patch_probed_ids = Patch_probed->indexes();
+		const libMesh::Mesh&  		Mesh_guide	= Patch_guide->mesh();
+		const libMesh::Mesh&		Mesh_probed	= Patch_probed->mesh();
+
 		// Set up locator for the first intersecting pair
-		std::unique_ptr<libMesh::PointLocatorBase> Patch_guide_Locator = Mesh_guide->sub_point_locator();
+		std::unique_ptr<libMesh::PointLocatorBase> Patch_guide_Locator = Mesh_guide.sub_point_locator();
 
 		// Instruction needed to avoid the code from crashing if a query is
 		// outside the mesh
 		Patch_guide_Locator->enable_out_of_mesh_mode();
 
 		// Find the first pair
-		const libMesh::Elem * Patch_probed_first_elem = Mesh_probed->elem(*Patch_probed.begin());
+		const libMesh::Elem * Patch_probed_first_elem = Mesh_probed.elem(*Patch_probed_ids.begin());
 		unsigned int Patch_probed_first_elem_id = Patch_probed_first_elem->id();
 
 		// Set of intersecting terms
@@ -179,7 +189,7 @@ public:
 				++it_inter)
 		{
 			Patch_guide_first_elem_id = (*it_inter)->id();
-			if(Patch_guide.find(Patch_guide_first_elem_id) != Patch_guide.end())
+			if(Patch_guide_ids.find(Patch_guide_first_elem_id) != Patch_guide_ids.end())
 			{
 				// Found one !
 				bFoundFirstInter = true;
@@ -191,6 +201,11 @@ public:
 
 		homemade_assert_msg(bFoundFirstInter, "Couldn't find a first intersecting pair!\n");
 	};
+
+//	bool FrontSearch_SetGuideNeighbours()
+//	{
+//
+//	}
 
 	void BuildPatchIntersections_Front(const libMesh::Elem 	* Query_elem)
 	{
@@ -210,28 +225,16 @@ public:
 
 		// First, determinate which patch will be the guide, and which will be
 		// the probed
-		std::unordered_set<unsigned int> & Patch_guide	= m_Patch_Constructor_A.patch_indexes();
-		std::unordered_set<unsigned int> & Patch_probed	= m_Patch_Constructor_B.patch_indexes();
-
-		std::unordered_map<unsigned int,std::set<unsigned int> > & Patch_guide_neighbors = m_Patch_Constructor_A.patch_elem_neighbours();
-		std::unordered_map<unsigned int,std::set<unsigned int> > & Patch_probed_neighbors = m_Patch_Constructor_B.patch_elem_neighbours();
-
-		const libMesh::Mesh *	  Mesh_guide	= &m_Mesh_A;
-		const libMesh::Mesh *	  Mesh_probed	= &m_Mesh_B;
+		Patch_construction * Patch_guide  = &m_Patch_Constructor_A;
+		Patch_construction * Patch_probed = &m_Patch_Constructor_B;
 
 		// Exchange them if the guide is smaller
-		bool bGuidedByB = Patch_guide.size() > Patch_probed.size();
+		bool bGuidedByB = Patch_guide->size() > Patch_probed->size();
 		if(bGuidedByB)
 		{
 			std::cout << "    DEBUG:     Probe: A     |     Guide: B" << std::endl;
-			Patch_guide 	= m_Patch_Constructor_B.patch_indexes();
-			Patch_probed 	= m_Patch_Constructor_A.patch_indexes();
-
-			std::unordered_map<unsigned int,std::set<unsigned int> > & Patch_guide_neighbors = m_Patch_Constructor_B.patch_elem_neighbours();
-			std::unordered_map<unsigned int,std::set<unsigned int> > & Patch_probed_neighbors = m_Patch_Constructor_A.patch_elem_neighbours();
-
-			Mesh_guide		= &m_Mesh_B;
-			Mesh_probed		= &m_Mesh_A;
+			Patch_guide  = &m_Patch_Constructor_B;
+			Patch_probed = &m_Patch_Constructor_A;
 		}
 		else
 		{
@@ -242,46 +245,35 @@ public:
 		unsigned int Guide_working_elem_id;
 		unsigned int Probed_working_elem_id;
 
-		// Find the first pair
+		// Find the first pair, (guide, probed)
 		std::pair<unsigned int,unsigned int> First_intersection;
-		FindFirstPair(Patch_guide,Patch_probed,Mesh_guide,Mesh_probed,First_intersection);
+		FindFirstPair(Patch_guide,Patch_probed,First_intersection);
 
-		// Deques containing the lists of the next elements to be treated.
-		std::deque<int> Patch_guide_Queue;
-		std::deque<int> Patch_probed_Queue;
-
-		// Marker vector, used to indicate if a tetrahedron from the guide was
-		// already treated (=1) or not (=0).
-		std::vector<int> 					Treated_from_guide(Patch_guide.size(),0);
-
-		// Marker unordered set,used to indicate if a tetrahedron from the probe
-		// was already treated (=1) or not (=0).
-		std::unordered_set<unsigned int> 	Treated_from_probed(Patch_probed.size());
-
-		// Deque of the elements from the probed mesh to be tested
-		std::deque<unsigned int>	Patch_probed_to_test;
-
-		// Indexes of the elements that might be added to Patch_probed_to_test
-		std::vector<unsigned int> candidates_probed(6);
-
-		// Marker vectors, used to determinate if an element must be added
-		// to Patch_probed_to_test
-		std::vector<int> candidates_probed_Update(6,0);
-		std::vector<int> candidates_probed_IsOccupied(6,0);
+		// Index and iterators guide neighbor elements to be tested
+		unsigned int guide_neighbor_index = 0;
+		std::unordered_set<unsigned int>::iterator it_neigh, it_neigh_end;
 
 		// Boolean saying if two elements intersect (exactly)
 		bool bDoIntersect = false;
 
+		// Boolean saying if a neighbor element intersects (exactly)
+		bool bDoNeighborIntersect = false;
+
 		// Boolean saying if the two elements intersect inside the coupling
 		bool bDoIntersectInsideCoupling = false;
 
+		// Boolean used to short-circuit the neighbor search test if all
+		// the concerned elements already have neighbours.
+		bool bDoTestGuideNeighbours = true;
+
 		// --- Preamble - initializations
 		// Insert the first elements in the queues
-		Patch_guide_Queue.push_back(First_intersection.first);
-		Patch_probed_Queue.push_back(First_intersection.second);
+		Patch_guide->FrontSearch_initialize();
+		Patch_probed->FrontSearch_initialize();
 
-		// Mark the first element from the guide as "treated"
-		Treated_from_guide[First_intersection.first] = 1;
+		Patch_guide->intersection_queue_push_back(First_intersection.first);
+		Patch_probed->intersection_queue_push_back(First_intersection.second);
+		Patch_guide->set_elem_as_inside_queue(First_intersection.first);
 
 		// Debug vars
 		int nbOfGuideElemsTested = 0;
@@ -289,36 +281,34 @@ public:
 		int nbOfPositiveTests = 0;
 		double total_volume = 0;
 
-		while(!Patch_guide_Queue.empty())
+		while(!Patch_guide->intersection_queue_empty())
 		{
-			// Pop out the first elem from Patch_guide_Queue
-			Guide_working_elem_id = Patch_guide_Queue[0];
-			Patch_guide_Queue.pop_front();
+			// Pop out the first element from the guide intersection queue
+			Guide_working_elem_id = Patch_guide->intersection_queue_extract_front_elem();
+			Patch_guide->set_elem_as_treated(Guide_working_elem_id);
 
-			const libMesh::Elem * elem_guide = Mesh_guide->elem(Guide_working_elem_id);
+			// Get its pointer
+			const libMesh::Elem * elem_guide = Patch_guide->current_elem_pointer();
 
 			++nbOfGuideElemsTested;
 
+			// Set up the neighbor test short-circuits
+			bDoTestGuideNeighbours = Patch_guide->set_neighbors_to_search_next_pairs();
+
 			// Clear and initialize the probed patch lists
-			Patch_probed_to_test.clear();
-			Patch_probed_to_test.push_back(Patch_probed_Queue[0]);
-			Patch_probed_Queue.pop_front();
+			Patch_probed->FrontSearch_reset();
 
-			Treated_from_probed.clear();
-			Treated_from_probed.insert(Patch_probed_Queue[0]);
+			// Pop out the first element from the probed intersection queue, and
+			// insert it inside the test queue
+			Patch_probed->FrontSearch_prepare_for_probed_test();
 
-			for(int iii = 0; iii < 6; ++iii)
-			{
-				candidates_probed_IsOccupied[iii] = 0;
-			}
-
-			while(!Patch_probed_Queue.empty())
+			while(!Patch_probed->test_queue_empty())
 			{
 				// Pop out the first elem to be tested
-				Probed_working_elem_id = Patch_probed_to_test[0];
-				Patch_probed_to_test.pop_front();
+				Probed_working_elem_id = Patch_probed->test_queue_extract_front_elem();
+				Patch_probed->set_elem_as_treated(Probed_working_elem_id);
 
-				const libMesh::Elem * elem_probed = Mesh_probed->elem(Probed_working_elem_id);
+				const libMesh::Elem * elem_probed = Patch_probed->current_elem_pointer();
 
 				// Test the intersection
 				bDoIntersect = m_Intersection_test.libMesh_exact_do_intersect(elem_guide,elem_probed);
@@ -339,30 +329,46 @@ public:
 					}
 
 					// 2) add elem_probed's neighbors, if not treated yet
-					std::set<unsigned int> & Probed_elem_neighbours = Patch_probed_neighbors[Probed_working_elem_id];
+					Patch_probed->add_neighbors_to_test_list();
 
-					std::set<unsigned int>::iterator it_neigh = Probed_elem_neighbours.begin();
-					std::set<unsigned int>::iterator it_neigh_end = Probed_elem_neighbours.end();
-
-					for( ; it_neigh != it_neigh_end; ++ it_neigh)
+					// 3) determinate if any of the guide neighbors are good
+					//    candidates with the probed element.
+					if(bDoTestGuideNeighbours)
 					{
-						if(Treated_from_probed.find(*it_neigh) == Treated_from_probed.end())
+						it_neigh = Patch_guide->neighbors_to_search_next_pair().begin();
+						it_neigh_end = Patch_guide->neighbors_to_search_next_pair().end();
+
+						for( ; it_neigh != it_neigh_end; ++it_neigh )
 						{
-							// New element!
-							Patch_probed_Queue.push_back(*it_neigh);
-							Treated_from_probed.insert(*it_neigh);
-													}
+							// This element doesn't have an intersecting pair
+							// yet, test it.
+							guide_neighbor_index = *it_neigh;
+							const libMesh::Elem * elem_neigh = Patch_guide->elem(guide_neighbor_index);
+							bDoNeighborIntersect = m_Intersection_test.libMesh_exact_do_intersect(elem_neigh,elem_probed);
+
+							if(bDoNeighborIntersect)
+							{
+								// Now it has an intersecting pair!
+								Patch_guide->intersection_queue_push_back(guide_neighbor_index);
+								Patch_probed->intersection_queue_push_back(Probed_working_elem_id);
+
+								// Set the guide elements as "already inside the queue"
+								Patch_guide->set_elem_as_inside_queue(guide_neighbor_index);
+							}
+						}
+
+						bDoTestGuideNeighbours = Patch_guide->set_neighbors_to_search_next_pairs();
 					}
-
-					// 3) determinate if any of the probed neighbors are good
-					//    candidates for the guide neighbors.
-
-					// TODO : still need to complete here
 				}
 			}
-
-			// TODO : still need to complete here
 		}
+
+		std::cout << "    DEBUG: advancing front search results" << std::endl;
+		std::cout << " -> Guide elements tested / all   : " << nbOfGuideElemsTested << " / " << Patch_guide->size() << std::endl;
+		std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
+				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl;
+		std::cout << " -> Intersection / element volume : " << total_volume << " / " << Query_elem->volume() << std::endl << std::endl;
+
 	}
 
 	void BuildIntersections(SearchMethod search_type = BRUTE)
