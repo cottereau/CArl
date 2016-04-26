@@ -44,11 +44,9 @@ protected:
 	bool				m_bTestNeighsForNewPairs;
 	std::deque<int> 	m_element_intersection_queue;
 	std::deque<int> 	m_element_test_queue;
-	std::vector<int> 	m_element_already_treated;
-	std::vector<int> 	m_element_inside_intersection_queue;
-
-	std::unordered_set<unsigned int>	m_element_neighbours_to_search;
-
+	std::unordered_map<unsigned int,int>  	m_element_already_treated;
+	std::unordered_map<unsigned int,int> 	m_element_inside_intersection_queue;
+	std::unordered_set<unsigned int>		m_element_neighbours_to_search;
 
 public:
 
@@ -101,6 +99,7 @@ public:
 		bool bDoIntersect = false;
 		const libMesh::Elem		* First_Patch_elem = m_Intersection_Test.FindFirstIntersection(Query_elem,m_Patch_Point_Locator);
 		m_Patch_Indexes.clear();
+		m_Patch_Neighbours.clear();
 
 		// Deque containing the indices of the elements to test
 		std::deque<int> Patch_Test_Queue;
@@ -244,7 +243,7 @@ public:
 
 	bool test_queue_empty()
 	{
-		return m_element_intersection_queue.empty();
+		return m_element_test_queue.empty();
 	}
 
 	unsigned int intersection_queue_extract_front_elem()
@@ -283,6 +282,7 @@ public:
 
 		// Iterator over all the neighbors
 		std::unordered_set<unsigned int>::iterator it_neigh, it_neigh_end;
+
 		it_neigh 		= m_Patch_Neighbours[m_working_element_id].begin();
 		it_neigh_end	= m_Patch_Neighbours[m_working_element_id].end();
 
@@ -312,6 +312,7 @@ public:
 	void add_neighbors_to_test_list()
 	{
 		std::unordered_set<unsigned int>::iterator it_neigh, it_neigh_end;
+
 		it_neigh 		= m_Patch_Neighbours[m_working_element_id].begin();
 		it_neigh_end	= m_Patch_Neighbours[m_working_element_id].end();
 
@@ -336,15 +337,23 @@ public:
 		m_element_intersection_queue.clear();
 		m_element_test_queue.clear();
 
-		m_element_already_treated.resize(m_Patch_Indexes.size(),0);
-		m_element_inside_intersection_queue.resize(m_Patch_Indexes.size(),0);
+		m_element_already_treated.clear();
+		m_element_inside_intersection_queue.clear();
+
+		m_element_already_treated.reserve(2*m_Patch_Indexes.size());
+		m_element_inside_intersection_queue.reserve(2*m_Patch_Indexes.size());
 
 		m_element_neighbours_to_search.reserve(12);
+		m_element_neighbours_to_search.clear();
 
-		for(unsigned int iii = 0; iii < m_Patch_Indexes.size(); ++iii)
+		std::unordered_set<unsigned int>::iterator it_idx, it_idx_end;
+		it_idx 		= m_Patch_Indexes.begin();
+		it_idx_end	= m_Patch_Indexes.end();
+
+		for( ; it_idx != it_idx_end; ++it_idx)
 		{
-			m_element_already_treated[iii] = 0;
-			m_element_inside_intersection_queue[iii] = 0;
+			m_element_already_treated[*it_idx] = 0;
+			m_element_inside_intersection_queue[*it_idx] = 0;
 		}
 
 		m_working_element_id = 0;
@@ -359,10 +368,14 @@ public:
 
 		m_element_test_queue.clear();
 
-		for(unsigned int iii = 0; iii < m_Patch_Indexes.size(); ++iii)
+		std::unordered_set<unsigned int>::iterator it_idx, it_idx_end;
+		it_idx 		= m_Patch_Indexes.begin();
+		it_idx_end	= m_Patch_Indexes.end();
+
+		for( ; it_idx != it_idx_end; ++it_idx)
 		{
-			m_element_already_treated[iii] = 0;
-			m_element_inside_intersection_queue[iii] = 0;
+			m_element_already_treated[*it_idx] = 0;
+			m_element_inside_intersection_queue[*it_idx] = 0;
 		}
 
 		m_working_element_id = 0;

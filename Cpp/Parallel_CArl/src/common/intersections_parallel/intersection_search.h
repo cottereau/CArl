@@ -23,7 +23,8 @@ namespace carl
 enum SearchMethod
 {
 	BRUTE,
-	FRONT
+	FRONT,
+	BOTH
 };
 
 /*
@@ -54,19 +55,23 @@ protected:
 
 	Intersection_Tools m_Intersection_test;
 
+	bool MASTER_bPerfLog_intersection_search;
+
 public:
 
 	Intersection_Search(const libMesh::Mesh & mesh_A,
 						const libMesh::Mesh & mesh_B,
 						const libMesh::Mesh & mesh_Coupling,
-						libMesh::Mesh & mesh_I) :
+						libMesh::Mesh & mesh_I,
+						bool  perf_log = true) :
 		m_Mesh_A { mesh_A },
 		m_Mesh_B { mesh_B },
 		m_Mesh_Coupling { mesh_Coupling },
 		m_comm { m_Mesh_Coupling.comm() },
 		m_Patch_Constructor_A { Patch_construction(m_Mesh_A)},
 		m_Patch_Constructor_B { Patch_construction(m_Mesh_B)},
-		m_Mesh_Intersection { Mesh_Intersection(mesh_I) }
+		m_Mesh_Intersection { Mesh_Intersection(mesh_I)},
+		MASTER_bPerfLog_intersection_search {perf_log}
 	{
 		// Reserve space for the unordered sets
 		m_Intersection_Pairs.reserve(mesh_A.n_elem()*mesh_B.n_elem());
@@ -91,6 +96,14 @@ public:
 	{
 		m_Patch_Constructor_A.BuildPatch(Query_elem);
 		m_Patch_Constructor_B.BuildPatch(Query_elem);
+
+//		std::unordered_set<unsigned int>::iterator it_idx_A, it_idx_A_end;
+//		it_idx_A = m_Patch_Constructor_A.indexes().begin();
+//		it_idx_A_end = m_Patch_Constructor_A.indexes().end();
+//		for( ; it_idx_A != it_idx_A_end; ++it_idx_A)
+//		{
+//			std::cout << 749 + *it_idx_A << std::endl;
+//		}
 	}
 
 	void BuildPatchIntersections_Brute(const libMesh::Elem 	* Query_elem)
@@ -202,14 +215,8 @@ public:
 		homemade_assert_msg(bFoundFirstInter, "Couldn't find a first intersecting pair!\n");
 	};
 
-//	bool FrontSearch_SetGuideNeighbours()
-//	{
-//
-//	}
-
 	void BuildPatchIntersections_Front(const libMesh::Elem 	* Query_elem)
 	{
-		homemade_error_msg("Incomplete code! You should not have called me!\n");
 		// TODO: For now it is more of a "find" than a build ...
 
 		// Code for the front intersection tests
@@ -373,6 +380,8 @@ public:
 
 	void BuildIntersections(SearchMethod search_type = BRUTE)
 	{
+		libMesh::PerfLog perf_log("Intersection search", MASTER_bPerfLog_intersection_search);
+
 		// Prepare iterators
 		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.elements_begin();
 		libMesh::Mesh::const_element_iterator it_coupl_end = m_Mesh_Coupling.elements_end();
@@ -381,12 +390,26 @@ public:
 		{
 			const libMesh::Elem * Query_elem = * it_coupl;
 
+			perf_log.push("Build patches");
 			BuildCoupledPatches(Query_elem);
+			perf_log.pop("Build patches");
+
 			switch (search_type)
 			{
-				case BRUTE : 	BuildPatchIntersections_Brute(Query_elem);
+				case BRUTE : 	perf_log.push("Find intersections - brute");
+								BuildPatchIntersections_Brute(Query_elem);
+								perf_log.pop("Find intersections - brute");
 								break;
-				case FRONT : 	BuildPatchIntersections_Front(Query_elem);
+				case FRONT : 	perf_log.push("Find intersections - advancing front");
+								BuildPatchIntersections_Front(Query_elem);
+								perf_log.pop("Find intersections - advancing front");
+								break;
+				case BOTH : 	perf_log.push("Find intersections - brute");
+								BuildPatchIntersections_Brute(Query_elem);
+								perf_log.pop("Find intersections - brute");
+								perf_log.push("Find intersections - advancing front");
+								BuildPatchIntersections_Front(Query_elem);
+								perf_log.pop("Find intersections - advancing front");
 								break;
 			}
 		}
