@@ -326,7 +326,7 @@ public:
 				{
 					// 1) test if the intersection is inside the coupling
 					//    element. If true, process it.
-					bDoIntersectInsideCoupling =  m_Intersection_test.libMesh_exact_intersection_inside_coupling(elem_guide,elem_probed,intersection_vertices,true);
+					bDoIntersectInsideCoupling =  m_Intersection_test.libMesh_exact_intersection_inside_coupling(elem_guide,elem_probed,intersection_vertices,false,false);
 
 					if(bDoIntersectInsideCoupling)
 					{
@@ -375,7 +375,6 @@ public:
 		std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
 				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl;
 		std::cout << " -> Intersection / element volume : " << total_volume << " / " << Query_elem->volume() << std::endl << std::endl;
-
 	}
 
 	void BuildIntersections(SearchMethod search_type = BRUTE)

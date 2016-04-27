@@ -343,8 +343,8 @@ public:
 		m_element_already_treated.reserve(2*m_Patch_Indexes.size());
 		m_element_inside_intersection_queue.reserve(2*m_Patch_Indexes.size());
 
-		m_element_neighbours_to_search.reserve(12);
 		m_element_neighbours_to_search.clear();
+		m_element_neighbours_to_search.reserve(12);
 
 		std::unordered_set<unsigned int>::iterator it_idx, it_idx_end;
 		it_idx 		= m_Patch_Indexes.begin();

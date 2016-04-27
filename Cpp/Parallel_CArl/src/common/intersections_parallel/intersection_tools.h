@@ -17,71 +17,6 @@
 namespace carl
 {
 
-// Can be used to convert polyhedron from exact to inexact and vice-versa
-template <class Polyhedron_input,
-class Polyhedron_output>
-struct Copy_polyhedron_to
-        : public CGAL::Modifier_base<typename Polyhedron_output::HalfedgeDS>
-{
-        Copy_polyhedron_to(const Polyhedron_input& in_poly)
-                : in_poly(in_poly) {}
-
-        void operator()(typename Polyhedron_output::HalfedgeDS& out_hds)
-        {
-                typedef typename Polyhedron_output::HalfedgeDS Output_HDS;
-//                typedef typename Polyhedron_input::HalfedgeDS Input_HDS;
-
-                CGAL::Polyhedron_incremental_builder_3<Output_HDS> builder(out_hds);
-
-                typedef typename Polyhedron_input::Vertex_const_iterator Vertex_const_iterator;
-                typedef typename Polyhedron_input::Facet_const_iterator  Facet_const_iterator;
-                typedef typename Polyhedron_input::Halfedge_around_facet_const_circulator HFCC;
-
-                builder.begin_surface(in_poly.size_of_vertices(),
-                        in_poly.size_of_facets(),
-                        in_poly.size_of_halfedges());
-
-                for(Vertex_const_iterator
-                        vi = in_poly.vertices_begin(), end = in_poly.vertices_end();
-                        vi != end ; ++vi)
-                {
-                        typename Polyhedron_output::Point_3 p(::CGAL::to_double( vi->point().x()),
-                                ::CGAL::to_double( vi->point().y()),
-                                ::CGAL::to_double( vi->point().z()));
-                        builder.add_vertex(p);
-                }
-
-                typedef CGAL::Inverse_index<Vertex_const_iterator> Index;
-                Index index( in_poly.vertices_begin(), in_poly.vertices_end());
-
-                for(Facet_const_iterator
-                        fi = in_poly.facets_begin(), end = in_poly.facets_end();
-                        fi != end; ++fi)
-                {
-                        HFCC hc = fi->facet_begin();
-                        HFCC hc_end = hc;
-                        builder.begin_facet ();
-                        do {
-                                builder.add_vertex_to_facet(index[hc->vertex()]);
-                                ++hc;
-                        } while( hc != hc_end);
-                        builder.end_facet();
-                }
-                builder.end_surface();
-        } // end operator()(..)
-private:
-        const Polyhedron_input& in_poly;
-}; // end Copy_polyhedron_to<>
-
-template <class Poly_B, class Poly_A>
-void poly_copy(Poly_B& poly_b, const Poly_A& poly_a)
-{
-        poly_b.clear();
-        Copy_polyhedron_to<Poly_A, Poly_B> modifier(poly_a);
-        poly_b.delegate(modifier);
-}
-
-
 /*
  * 		Intersection_tools
  *
@@ -90,8 +25,6 @@ void poly_copy(Poly_B& poly_b, const Poly_A& poly_a)
  * 		of functions to reduce the amount of calls to constructors of CGAL data
  * 		exact data structures.
  *
- *		TODO : 	optimize the code by converting this class to one that saves
- *				all the exact geometry of a mesh for reuse.
  */
 
 class	Intersection_Tools
@@ -113,6 +46,170 @@ protected:
 	Kernel_to_ExactKernel ConvertInexactToExact;
 	ExactKernel_to_Kernel ConvertExactToInexact;
 
+	std::vector<std::vector<unsigned int> > m_tetra_tetrahedrons;
+	std::vector<std::vector<unsigned int> > m_tetra_triangles;
+	std::vector<std::vector<unsigned int> > m_tetra_edges;
+
+	std::vector<std::vector<unsigned int> > m_hex_tetrahedrons;
+	std::vector<std::vector<unsigned int> > m_hex_triangles;
+	std::vector<std::vector<unsigned int> > m_hex_edges;
+
+	std::vector<std::vector<unsigned int> > * m_elem_C_tetras;
+	std::vector<std::vector<unsigned int> > * m_elem_C_triangles;
+
+	ExactTetrahedron m_test_tetra;
+	ExactTriangle_3 m_test_triangle;
+
+	void p_set_element_indexes()
+	{
+		m_tetra_tetrahedrons.resize(1,std::vector<unsigned int>(4,0));
+		m_tetra_triangles.resize(4,std::vector<unsigned int>(3,0));
+		m_tetra_edges.resize(6,std::vector<unsigned int>(2,0));
+
+		m_hex_tetrahedrons.resize(5,std::vector<unsigned int>(4,0));
+		m_hex_triangles.resize(12,std::vector<unsigned int>(3,0));
+		m_hex_edges.resize(12,std::vector<unsigned int>(2,0));
+
+		// Set up tetra tetrahedrons (...)
+		m_tetra_tetrahedrons[0] = {0, 1, 2, 3};
+
+		// Set up tetra triangles
+		m_tetra_triangles[0] = {0, 1, 2};
+		m_tetra_triangles[1] = {1, 2, 3};
+		m_tetra_triangles[2] = {0, 1, 3};
+		m_tetra_triangles[3] = {0, 2, 3};
+
+		// Set up tetra edges
+		m_tetra_edges[0] = {0, 1};
+		m_tetra_edges[1] = {0, 2};
+		m_tetra_edges[2] = {0, 3};
+		m_tetra_edges[3] = {1, 3};
+		m_tetra_edges[4] = {3, 2};
+		m_tetra_edges[5] = {2, 1};
+
+		// Set up hex tetrahedrons
+		m_hex_tetrahedrons[0] = {0, 1, 3, 4};
+		m_hex_tetrahedrons[1] = {5, 1, 4, 6};
+		m_hex_tetrahedrons[2] = {7, 3, 4, 6};
+		m_hex_tetrahedrons[3] = {2, 6, 1, 3};
+
+		m_hex_tetrahedrons[4] = {1, 4, 6, 3};
+
+		// Set up hex triangles
+		m_hex_triangles[0] = {0, 1, 2};
+		m_hex_triangles[1] = {0, 3, 2};
+
+		m_hex_triangles[2] = {0, 1, 5};
+		m_hex_triangles[3] = {0, 4, 5};
+
+		m_hex_triangles[4] = {0, 3, 7};
+		m_hex_triangles[5] = {0, 4, 7};
+
+		m_hex_triangles[6] = {6, 5, 4};
+		m_hex_triangles[7] = {6, 7, 4};
+
+		m_hex_triangles[8]  = {6, 5, 1};
+		m_hex_triangles[9]  = {6, 2, 1};
+
+		m_hex_triangles[10] = {6, 7, 3};
+		m_hex_triangles[11] = {6, 2, 3};
+
+		// Set up hex edges
+		m_hex_edges[0] = {0, 1};
+		m_hex_edges[1] = {1, 2};
+		m_hex_edges[2] = {2, 3};
+		m_hex_edges[3] = {3, 0};
+
+		m_hex_edges[4] = {4, 5};
+		m_hex_edges[5] = {5, 6};
+		m_hex_edges[6] = {6, 7};
+		m_hex_edges[7] = {7, 4};
+
+		m_hex_edges[8]  = {0, 4};
+		m_hex_edges[9]  = {1, 5};
+		m_hex_edges[10] = {2, 6};
+		m_hex_edges[11] = {3, 7};
+	}
+
+	bool p_elements_do_intersect(
+			std::vector<ExactPoint_3> & elem_C_points,
+			std::vector<std::vector<unsigned int> > & elem_C_tetras,
+			std::vector<std::vector<unsigned int> > & elem_C_triangles,
+			std::vector<ExactPoint_3> & elem_D_points,
+			std::vector<std::vector<unsigned int> > & elem_D_tetras,
+			std::vector<std::vector<unsigned int> > & elem_D_triangles)
+	{
+		bool bElemIntersect = false;
+
+		// Test intersections between C's tetrahedrons and D's triangles
+		for(unsigned int jjj = 0; jjj < elem_D_triangles.size(); ++jjj)
+		{
+			std::vector<unsigned int> & work_triangle = elem_D_triangles[jjj];
+			m_test_triangle = ExactTriangle_3(elem_D_points[work_triangle[0]],
+					elem_D_points[work_triangle[1]],
+					elem_D_points[work_triangle[2]]);
+
+			for(unsigned int iii = 0; iii < elem_C_tetras.size(); ++iii)
+			{
+				std::vector<unsigned int> & work_tetra = elem_C_tetras[iii];
+				m_test_tetra = ExactTetrahedron(	elem_C_points[work_tetra[0]],
+						elem_C_points[work_tetra[1]],
+						elem_C_points[work_tetra[2]],
+						elem_C_points[work_tetra[3]]);
+
+				bElemIntersect = CGAL::do_intersect(m_test_triangle,m_test_tetra);
+
+				if(bElemIntersect)
+				{
+					// Found intersection!
+					break;
+				}
+			}
+
+			if(bElemIntersect)
+			{
+				// Found intersection!
+				break;
+			}
+		}
+
+		if(!bElemIntersect)
+		{
+			// Test intersections between D's tetrahedrons and C's triangles
+			for(unsigned int jjj = 0; jjj < elem_C_triangles.size(); ++jjj)
+			{
+				std::vector<unsigned int> & work_triangle = elem_C_triangles[jjj];
+				m_test_triangle = ExactTriangle_3(elem_C_points[work_triangle[0]],
+						elem_C_points[work_triangle[1]],
+						elem_C_points[work_triangle[2]]);
+
+				for(unsigned int iii = 0; iii < elem_D_tetras.size(); ++iii)
+				{
+					std::vector<unsigned int> & work_tetra = elem_D_tetras.at(iii);
+					m_test_tetra = ExactTetrahedron(	elem_D_points[work_tetra[0]],
+							elem_D_points[work_tetra[1]],
+							elem_D_points[work_tetra[2]],
+							elem_D_points[work_tetra[3]]);
+
+					bElemIntersect = CGAL::do_intersect(m_test_triangle,m_test_tetra);
+
+					if(bElemIntersect)
+					{
+						// Found intersection!
+						break;
+					}
+				}
+
+				if(bElemIntersect)
+				{
+					// Found intersection!
+					break;
+				}
+			}
+		}
+		return bElemIntersect;
+	}
+
 public:
 	Intersection_Tools(const libMesh::Elem * elem_C)
 	{
@@ -123,6 +220,11 @@ public:
 		m_dummyPoly.reserve(8,18,12);
 
 		libmesh_set_coupling_nef_polyhedron(elem_C);
+
+		p_set_element_indexes();
+
+		m_elem_C_tetras = NULL;
+		m_elem_C_triangles = NULL;
 	};
 
 	Intersection_Tools()
@@ -134,6 +236,11 @@ public:
 		m_dummyPoly.reserve(8,18,12);
 
 		m_nef_C.clear(Nef_Polyhedron::EMPTY);
+
+		p_set_element_indexes();
+
+		m_elem_C_tetras = NULL;
+		m_elem_C_triangles = NULL;
 	};
 
 	/*
@@ -222,6 +329,8 @@ public:
 	bool libMesh_exact_do_intersect(const libMesh::Elem * elem_A,
 									const libMesh::Elem * elem_B)
 	{
+		// The booleans
+		bool bBboxIntersect = false;
 		bool bElemIntersect = false;
 
 		unsigned int n_nodes_A = elem_A->n_nodes();
@@ -238,29 +347,55 @@ public:
 		Bbox_3 exact_bbox_A = CGAL::bbox_3(exact_points_A_begin,exact_points_A_begin + n_nodes_A);
 		Bbox_3 exact_bbox_B = CGAL::bbox_3(exact_points_B_begin,exact_points_B_begin + n_nodes_B);
 
-		bool bBboxIntersect = CGAL::do_intersect(exact_bbox_A,exact_bbox_B);
+		bBboxIntersect = CGAL::do_intersect(exact_bbox_A,exact_bbox_B);
 
-		// If they do intersect, we'll need to do a better test
 		if(bBboxIntersect)
 		{
-			// Convert to Nef polyhedron ... ouch
-			convert_exact_points_to_Nef(	exact_points_A_begin,
-											exact_points_A_begin + n_nodes_A,
-											m_nef_A);
+			// Bbox intersect, test intersection between tetrahedrons and triangles
 
-			convert_exact_points_to_Nef(	exact_points_B_begin,
-											exact_points_B_begin + n_nodes_B,
-											m_nef_B);
+			// Pointers that will depend on the element type;
+			std::vector<std::vector<unsigned int> > * elem_A_tetras    = NULL;
+			std::vector<std::vector<unsigned int> > * elem_A_triangles = NULL;
 
-			m_nef_I = m_nef_A*m_nef_B;
-			if(!m_nef_I.is_empty())
+			std::vector<std::vector<unsigned int> > * elem_B_tetras    = NULL;
+			std::vector<std::vector<unsigned int> > * elem_B_triangles = NULL;
+
+			if(elem_A->type() == libMesh::TET4)
 			{
-				bElemIntersect = true;
+				// Use tetrahedron geometry
+				elem_A_tetras = &m_tetra_tetrahedrons;
+				elem_A_triangles = &m_tetra_triangles;
+			}
+			else if(elem_A->type() == libMesh::HEX8)
+			{
+				// Use hexaedron geometry
+				elem_A_tetras = &m_hex_tetrahedrons;
+				elem_A_triangles = &m_hex_triangles;
 			}
 			else
 			{
-				bElemIntersect = false;
+				homemade_error_msg("Unsupported element type! Must be either TET4 or HEX8");
 			}
+
+			if(elem_B->type() == libMesh::TET4)
+			{
+				// Use tetrahedron geometry
+				elem_B_tetras = &m_tetra_tetrahedrons;
+				elem_B_triangles = &m_tetra_triangles;
+			}
+			else if(elem_B->type() == libMesh::HEX8)
+			{
+				// Use hexaedron geometry
+				elem_B_tetras = &m_hex_tetrahedrons;
+				elem_B_triangles = &m_hex_triangles;
+			}
+			else
+			{
+				homemade_error_msg("Unsupported element type! Must be either TET4 or HEX8");
+			}
+
+			bElemIntersect = p_elements_do_intersect(m_exact_points_A, *elem_A_tetras, *elem_A_triangles,
+					m_exact_points_B, *elem_B_tetras, *elem_B_triangles);
 		}
 		else
 		{
@@ -276,29 +411,128 @@ public:
 	bool libMesh_exact_intersection(const libMesh::Elem * elem_A,
 									const libMesh::Elem * elem_B,
 									std::set<Point_3> & points_out,
+									bool bConvertPoints = true,
 									bool bTestNeeded = true)
 	{
 		bool bElemIntersect = true;
 
 		if(bTestNeeded)
 		{
-			// Test the intersection and build the Nef polyhedron (if true)
+			// Test the intersection beforehand
 			bElemIntersect = libMesh_exact_do_intersect(elem_A,elem_B);
 		}
-
-		if(bElemIntersect && m_nef_I.number_of_volumes() > 1)
+		else if(bConvertPoints)
 		{
-			points_out.clear();
-			for(Nef_Polyhedron::Vertex_const_iterator it_vertex = m_nef_I.vertices_begin();
-					it_vertex != m_nef_I.vertices_end();
-					++it_vertex)
+			// Test already made somewhere else, but we need to set up the exact
+			// points.
+			convert_elem_to_exact_points(elem_A,m_exact_points_A);
+			convert_elem_to_exact_points(elem_B,m_exact_points_B);
+		}
+
+		if(bElemIntersect)
+		{
+			// Generate the Nef polyhedrons
+			unsigned int n_nodes_A = elem_A->n_nodes();
+			unsigned int n_nodes_B = elem_B->n_nodes();
+
+			std::vector<ExactPoint_3>::const_iterator exact_points_A_begin = m_exact_points_A.begin();
+			std::vector<ExactPoint_3>::const_iterator exact_points_B_begin = m_exact_points_B.begin();
+
+			convert_exact_points_to_Nef(	exact_points_A_begin,
+											exact_points_A_begin + n_nodes_A,
+											m_nef_A);
+
+			convert_exact_points_to_Nef(	exact_points_B_begin,
+											exact_points_B_begin + n_nodes_B,
+											m_nef_B);
+
+			// Intersect them
+			m_nef_I = m_nef_A*m_nef_B;
+			if(!m_nef_I.is_empty())
 			{
-				points_out.insert(ConvertExactToInexact(it_vertex->point()));
+				// Intersection exists! Create output
+				bElemIntersect = true;
+
+				points_out.clear();
+				for(Nef_Polyhedron::Vertex_const_iterator it_vertex = m_nef_I.vertices_begin();
+						it_vertex != m_nef_I.vertices_end();
+						++it_vertex)
+				{
+					points_out.insert(ConvertExactToInexact(it_vertex->point()));
+				}
+			}
+			else
+			{
+				bElemIntersect = false;
 			}
 		}
-		else
+
+		return bElemIntersect;
+	}
+
+	/*
+	 * 		Build two elements intersection inside the coupling region
+	 */
+	bool libMesh_exact_intersection_inside_coupling(const libMesh::Elem * elem_A,
+													const libMesh::Elem * elem_B,
+													std::set<Point_3> & points_out,
+													bool bConvertPoints = true,
+													bool bTestNeeded = true)
+	{
+		bool bElemIntersect = true;
+
+		// Assert if C was built
+		homemade_assert_msg(!m_nef_C.is_empty(), "Coupling restriction element was not set yet!\n");
+
+		if(bTestNeeded)
 		{
-			bElemIntersect = false;
+			// Test the intersection beforehand
+			bElemIntersect = libMesh_exact_do_intersect(elem_A,elem_B);
+		}
+		else if(bConvertPoints)
+		{
+			// Test already made somewhere else, but we need to set up the exact
+			// points.
+			convert_elem_to_exact_points(elem_A,m_exact_points_A);
+			convert_elem_to_exact_points(elem_B,m_exact_points_B);
+		}
+
+		if(bElemIntersect)
+		{
+			// Generate the Nef polyhedrons
+			unsigned int n_nodes_A = elem_A->n_nodes();
+			unsigned int n_nodes_B = elem_B->n_nodes();
+
+			std::vector<ExactPoint_3>::const_iterator exact_points_A_begin = m_exact_points_A.begin();
+			std::vector<ExactPoint_3>::const_iterator exact_points_B_begin = m_exact_points_B.begin();
+
+			convert_exact_points_to_Nef(	exact_points_A_begin,
+											exact_points_A_begin + n_nodes_A,
+											m_nef_A);
+
+			convert_exact_points_to_Nef(	exact_points_B_begin,
+											exact_points_B_begin + n_nodes_B,
+											m_nef_B);
+
+			// Intersect them
+			m_nef_I = m_nef_A*m_nef_B*m_nef_C;
+			if(!m_nef_I.is_empty() && m_nef_I.number_of_volumes() > 1)
+			{
+				// Intersection exists! Create output
+				bElemIntersect = true;
+
+				points_out.clear();
+				for(Nef_Polyhedron::Vertex_const_iterator it_vertex = m_nef_I.vertices_begin();
+						it_vertex != m_nef_I.vertices_end();
+						++it_vertex)
+				{
+					points_out.insert(ConvertExactToInexact(it_vertex->point()));
+				}
+			}
+			else
+			{
+				bElemIntersect = false;
+			}
 		}
 
 		return bElemIntersect;
@@ -314,105 +548,29 @@ public:
 		// First, convert the element to a CGAL exact point vector
 		convert_elem_to_exact_points(elem_C,m_exact_points_C);
 
-		// Then convert to Nef
+		// Second, convert to Nef
 		std::vector<ExactPoint_3>::const_iterator exact_points_C_begin = m_exact_points_C.begin();
 		convert_exact_points_to_Nef(	exact_points_C_begin,
 										exact_points_C_begin + n_nodes_C,
 										m_nef_C);
-	}
 
-	/*
-	 * 		Test if two elements intersect inside the coupling region
-	 */
-	bool libMesh_exact_do_intersect_inside_coupling(const libMesh::Elem * elem_A,
-													const libMesh::Elem * elem_B)
-	{
-		homemade_assert_msg(!m_nef_C.is_empty(), "Coupling restriction element was not set yet!\n");
-
-		bool bElemIntersect = false;
-
-		unsigned int n_nodes_A = elem_A->n_nodes();
-		unsigned int n_nodes_B = elem_B->n_nodes();
-
-		// First, convert both elements to CGAL exact point vectors
-		convert_elem_to_exact_points(elem_A,m_exact_points_A);
-		convert_elem_to_exact_points(elem_B,m_exact_points_B);
-
-		// Fast check: bounding boxes
-		std::vector<ExactPoint_3>::const_iterator exact_points_A_begin = m_exact_points_A.begin();
-		std::vector<ExactPoint_3>::const_iterator exact_points_B_begin = m_exact_points_B.begin();
-
-		Bbox_3 exact_bbox_A = CGAL::bbox_3(exact_points_A_begin,exact_points_A_begin + n_nodes_A);
-		Bbox_3 exact_bbox_B = CGAL::bbox_3(exact_points_B_begin,exact_points_B_begin + n_nodes_B);
-
-		bool bBboxIntersect = CGAL::do_intersect(exact_bbox_A,exact_bbox_B);
-
-		// If they do intersect, we'll need to do a better test
-		if(bBboxIntersect)
+		// And, finally, associate the tetra and triangle tables to it
+		if(elem_C->type() == libMesh::TET4)
 		{
-			// Convert to Nef polyhedron ... ouch
-			convert_exact_points_to_Nef(	exact_points_A_begin,
-											exact_points_A_begin + n_nodes_A,
-											m_nef_A);
-
-			convert_exact_points_to_Nef(	exact_points_B_begin,
-											exact_points_B_begin + n_nodes_B,
-											m_nef_B);
-
-			m_nef_I = m_nef_A*m_nef_B*m_nef_C;
-			if(!m_nef_I.is_empty())
-			{
-				bElemIntersect = true;
-			}
-			else
-			{
-				bElemIntersect = false;
-			}
+			// Use tetrahedron geometry
+			m_elem_C_tetras = &m_tetra_tetrahedrons;
+			m_elem_C_triangles = &m_tetra_triangles;
+		}
+		else if(elem_C->type() == libMesh::HEX8)
+		{
+			// Use hexaedron geometry
+			m_elem_C_tetras = &m_hex_tetrahedrons;
+			m_elem_C_triangles = &m_hex_triangles;
 		}
 		else
 		{
-			bElemIntersect = false;
+			homemade_error_msg("Unsupported element type! Must be either TET4 or HEX8");
 		}
-
-		return bElemIntersect;
-	}
-
-	/*
-	 * 		Build two elements intersection inside the coupling region
-	 */
-	bool libMesh_exact_intersection_inside_coupling(const libMesh::Elem * elem_A,
-													const libMesh::Elem * elem_B,
-													std::set<Point_3> & points_out,
-													bool bTestNeeded = true)
-	{
-		bool bElemIntersect = true;
-		if(bTestNeeded)
-		{
-			// Test the intersection and build the Nef polyhedron
-			bElemIntersect = libMesh_exact_do_intersect_inside_coupling(elem_A,elem_B);
-		}
-		else
-		{
-			// Update test to the restriction
-			m_nef_I = m_nef_I*m_nef_C;
-		}
-
-		if(bElemIntersect && m_nef_I.number_of_volumes() > 1)
-		{
-			points_out.clear();
-			for(Nef_Polyhedron::Vertex_const_iterator it_vertex = m_nef_I.vertices_begin();
-					it_vertex != m_nef_I.vertices_end();
-					++it_vertex)
-			{
-				points_out.insert(ConvertExactToInexact(it_vertex->point()));
-			}
-		}
-		else
-		{
-			bElemIntersect = false;
-		}
-
-		return bElemIntersect;
 	}
 
 	/*
