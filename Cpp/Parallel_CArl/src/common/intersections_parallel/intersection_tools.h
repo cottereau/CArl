@@ -294,7 +294,7 @@ public:
 	 */
 	void FindAllIntersection(	const libMesh::Elem * Query_elem,
 								std::unique_ptr<libMesh::PointLocatorBase> & point_locator,
-								std::set<const libMesh::Elem *>	&	Intersecting_elems)
+								std::set<unsigned int>	&	Intersecting_elems)
 	{
 		libMesh::PointLocatorBase& locator = *point_locator.get();
 
@@ -315,7 +315,7 @@ public:
 
 			if(Patch_elem != NULL)
 			{
-				Intersecting_elems.insert(Patch_elem);
+				Intersecting_elems.insert(Patch_elem->id());
 				++nbOfInters;
 			}
 		}
@@ -460,6 +460,54 @@ public:
 				{
 					points_out.insert(ConvertExactToInexact(it_vertex->point()));
 				}
+			}
+			else
+			{
+				bElemIntersect = false;
+			}
+		}
+
+		return bElemIntersect;
+	}
+
+	/*
+	 * 		Test if two elements intersect inside the coupling region
+	 */
+	bool libMesh_exact_do_intersect_inside_coupling(const libMesh::Elem * elem_A,
+													const libMesh::Elem * elem_B)
+	{
+		bool bElemIntersect = true;
+
+		// Assert if C was built
+		homemade_assert_msg(!m_nef_C.is_empty(), "Coupling restriction element was not set yet!\n");
+
+		// Test the intersection beforehand. This also generates the exact
+		// points needed.
+		bElemIntersect = libMesh_exact_do_intersect(elem_A,elem_B);
+
+		if(bElemIntersect)
+		{
+			// Generate the Nef polyhedrons
+			unsigned int n_nodes_A = elem_A->n_nodes();
+			unsigned int n_nodes_B = elem_B->n_nodes();
+
+			std::vector<ExactPoint_3>::const_iterator exact_points_A_begin = m_exact_points_A.begin();
+			std::vector<ExactPoint_3>::const_iterator exact_points_B_begin = m_exact_points_B.begin();
+
+			convert_exact_points_to_Nef(	exact_points_A_begin,
+											exact_points_A_begin + n_nodes_A,
+											m_nef_A);
+
+			convert_exact_points_to_Nef(	exact_points_B_begin,
+											exact_points_B_begin + n_nodes_B,
+											m_nef_B);
+
+			// Intersect them
+			m_nef_I = m_nef_A*m_nef_B*m_nef_C;
+			if(!m_nef_I.is_empty() && m_nef_I.number_of_volumes() > 1)
+			{
+				// Intersection exists!
+				bElemIntersect = true;
 			}
 			else
 			{

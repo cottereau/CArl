@@ -40,10 +40,10 @@ protected:
 	std::unordered_map<unsigned int,std::unordered_set<unsigned int> >	m_Patch_Neighbours;
 
 	// Data structures used by the advancing front intersection search
-	unsigned int 		m_working_element_id;
-	bool				m_bTestNeighsForNewPairs;
-	std::deque<int> 	m_element_intersection_queue;
-	std::deque<int> 	m_element_test_queue;
+	unsigned int 							m_working_element_id;
+	bool									m_bTestNeighsForNewPairs;
+	std::deque<int> 						m_element_intersection_queue;
+	std::deque<int> 						m_element_test_queue;
 	std::unordered_map<unsigned int,int>  	m_element_already_treated;
 	std::unordered_map<unsigned int,int> 	m_element_inside_intersection_queue;
 	std::unordered_set<unsigned int>		m_element_neighbours_to_search;

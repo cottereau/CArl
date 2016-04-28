@@ -53,6 +53,8 @@ protected:
 
 	std::unordered_map<unsigned int,std::pair<unsigned int,unsigned int> > m_Intersection_Pairs;
 
+	std::unordered_map<unsigned int,std::set<unsigned int> > m_DEBUG_Intersection_Pairs;
+
 	Intersection_Tools m_Intersection_test;
 
 	bool MASTER_bPerfLog_intersection_search;
@@ -75,6 +77,7 @@ public:
 	{
 		// Reserve space for the unordered sets
 		m_Intersection_Pairs.reserve(mesh_A.n_elem()*mesh_B.n_elem());
+		m_DEBUG_Intersection_Pairs.reserve(mesh_A.n_elem()*mesh_B.n_elem());
 	};
 
 	const libMesh::Mesh & mesh_A()
@@ -153,6 +156,7 @@ public:
 				{
 					total_volume += m_Mesh_Intersection.get_intersection_volume(intersection_vertices);
 					m_Intersection_Pairs[nbOfPositiveTests] = std::pair<int,int>(*it_patch_A,*it_patch_B);
+					m_DEBUG_Intersection_Pairs[*it_patch_A].insert(*it_patch_B);
 					++nbOfPositiveTests;
 				}
 			}
@@ -161,6 +165,21 @@ public:
 		std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
 				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl;
 		std::cout << " -> Intersection / element volume : " << total_volume << " / " << Query_elem->volume() << std::endl << std::endl;
+
+		// DEBUG intersection list
+//		auto it_patch_A_debug = Patch_Set_A.begin();
+//		std::ofstream out_debug("DEBUG_intersections_brute.dat");
+//		for( ; it_patch_A_debug != Patch_Set_A.end(); ++it_patch_A_debug)
+//		{
+//			out_debug << *it_patch_A_debug;
+//			auto it_inter_debug = m_DEBUG_Intersection_Pairs[*it_patch_A_debug].begin();
+//			for( ; it_inter_debug != m_DEBUG_Intersection_Pairs[*it_patch_A_debug].end(); ++it_inter_debug)
+//			{
+//				out_debug << " " << *it_inter_debug;
+//			}
+//			out_debug << std::endl;
+//		}
+//		out_debug.close();
 	}
 
 	/*
@@ -191,17 +210,19 @@ public:
 		unsigned int Patch_probed_first_elem_id = Patch_probed_first_elem->id();
 
 		// Set of intersecting terms
-		std::set<const libMesh::Elem *> Intersecting_elems;
+		std::set<unsigned int> Intersecting_elems;
 		m_Intersection_test.FindAllIntersection(Patch_probed_first_elem,Patch_guide_Locator,Intersecting_elems);
 
 		// Search for one intersecting term inside the guide patch
 		unsigned int Patch_guide_first_elem_id;
 		bool bFoundFirstInter = false;
-		for(std::set<const libMesh::Elem *>::iterator it_inter = Intersecting_elems.begin();
+
+		std::cout << Intersecting_elems.size() << " : " << *Intersecting_elems.begin() << " " << Patch_probed_first_elem_id << std::endl;
+		for(std::set<unsigned int>::iterator it_inter = Intersecting_elems.begin();
 				it_inter != Intersecting_elems.end();
 				++it_inter)
 		{
-			Patch_guide_first_elem_id = (*it_inter)->id();
+			Patch_guide_first_elem_id = (*it_inter);
 			if(Patch_guide_ids.find(Patch_guide_first_elem_id) != Patch_guide_ids.end())
 			{
 				// Found one !
@@ -224,6 +245,7 @@ public:
 
 		// Set containing all the intersection points
 		std::set<Point_3> intersection_vertices;
+		std::set<Point_3> dummy_intersection_vertices;
 
 		// Intersection_Tools
 		m_Intersection_test.libmesh_set_coupling_nef_polyhedron(Query_elem);
@@ -332,6 +354,7 @@ public:
 					{
 						// TODO For now, just add the volume
 						total_volume += m_Mesh_Intersection.get_intersection_volume(intersection_vertices);
+						m_DEBUG_Intersection_Pairs[Guide_working_elem_id].insert(Probed_working_elem_id);
 						++nbOfPositiveTests;
 					}
 
@@ -348,10 +371,11 @@ public:
 						for( ; it_neigh != it_neigh_end; ++it_neigh )
 						{
 							// This element doesn't have an intersecting pair
-							// yet, test it.
+							// yet. Test it, but only save it if it is inside
+							// the coupling region
 							guide_neighbor_index = *it_neigh;
 							const libMesh::Elem * elem_neigh = Patch_guide->elem(guide_neighbor_index);
-							bDoNeighborIntersect = m_Intersection_test.libMesh_exact_do_intersect(elem_neigh,elem_probed);
+							bDoNeighborIntersect = m_Intersection_test.libMesh_exact_do_intersect_inside_coupling(elem_neigh,elem_probed);
 
 							if(bDoNeighborIntersect)
 							{
@@ -375,6 +399,21 @@ public:
 		std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
 				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl;
 		std::cout << " -> Intersection / element volume : " << total_volume << " / " << Query_elem->volume() << std::endl << std::endl;
+
+		// DEBUG intersection list
+//		auto it_patch_A_debug = Patch_guide->indexes().begin();
+//		std::ofstream out_debug("DEBUG_intersections_front.dat");
+//		for( ; it_patch_A_debug != Patch_guide->indexes().end(); ++it_patch_A_debug)
+//		{
+//			out_debug << *it_patch_A_debug;
+//			auto it_inter_debug = m_DEBUG_Intersection_Pairs[*it_patch_A_debug].begin();
+//			for( ; it_inter_debug != m_DEBUG_Intersection_Pairs[*it_patch_A_debug].end(); ++it_inter_debug)
+//			{
+//				out_debug << " " << *it_inter_debug;
+//			}
+//			out_debug << std::endl;
+//		}
+//		out_debug.close();
 	}
 
 	void BuildIntersections(SearchMethod search_type = BRUTE)
@@ -396,17 +435,23 @@ public:
 			switch (search_type)
 			{
 				case BRUTE : 	perf_log.push("Find intersections - brute");
+								m_DEBUG_Intersection_Pairs.clear();
 								BuildPatchIntersections_Brute(Query_elem);
 								perf_log.pop("Find intersections - brute");
+
 								break;
 				case FRONT : 	perf_log.push("Find intersections - advancing front");
+								m_DEBUG_Intersection_Pairs.clear();
 								BuildPatchIntersections_Front(Query_elem);
 								perf_log.pop("Find intersections - advancing front");
 								break;
 				case BOTH : 	perf_log.push("Find intersections - brute");
+								m_DEBUG_Intersection_Pairs.clear();
 								BuildPatchIntersections_Brute(Query_elem);
 								perf_log.pop("Find intersections - brute");
+
 								perf_log.push("Find intersections - advancing front");
+								m_DEBUG_Intersection_Pairs.clear();
 								BuildPatchIntersections_Front(Query_elem);
 								perf_log.pop("Find intersections - advancing front");
 								break;
