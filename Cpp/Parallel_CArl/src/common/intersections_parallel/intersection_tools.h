@@ -35,6 +35,8 @@ protected:
 	Nef_Polyhedron m_nef_I;
 	Nef_Polyhedron m_nef_C;
 
+	Nef_Polyhedron m_nef_I_AC;
+
 	std::vector<ExactPoint_3> m_exact_points_A;
 	std::vector<ExactPoint_3> m_exact_points_B;
 	std::vector<ExactPoint_3> m_exact_points_C;
@@ -59,6 +61,10 @@ protected:
 
 	ExactTetrahedron m_test_tetra;
 	ExactTriangle_3 m_test_triangle;
+
+	bool MASTER_bPerfLog_intersection_tools;
+
+	libMesh::PerfLog m_perf_log;
 
 	void p_set_element_indexes()
 	{
@@ -211,7 +217,9 @@ protected:
 	}
 
 public:
-	Intersection_Tools(const libMesh::Elem * elem_C)
+	Intersection_Tools(const libMesh::Elem * elem_C, bool bDoPerf_log = true) :
+		MASTER_bPerfLog_intersection_tools {bDoPerf_log},
+		m_perf_log { libMesh::PerfLog("Intersection tools", MASTER_bPerfLog_intersection_tools) }
 	{
 		m_exact_points_A.resize(8);
 		m_exact_points_B.resize(8);
@@ -227,7 +235,9 @@ public:
 		m_elem_C_triangles = NULL;
 	};
 
-	Intersection_Tools()
+	Intersection_Tools(bool bDoPerf_log = true) :
+		MASTER_bPerfLog_intersection_tools {bDoPerf_log},
+		m_perf_log { libMesh::PerfLog("Intersection tools", MASTER_bPerfLog_intersection_tools) }
 	{
 		m_exact_points_A.resize(8);
 		m_exact_points_B.resize(8);
@@ -411,6 +421,7 @@ public:
 	bool libMesh_exact_intersection(const libMesh::Elem * elem_A,
 									const libMesh::Elem * elem_B,
 									std::set<Point_3> & points_out,
+									bool bCreateNewNefForA = true,
 									bool bConvertPoints = true,
 									bool bTestNeeded = true)
 	{
@@ -419,14 +430,21 @@ public:
 		if(bTestNeeded)
 		{
 			// Test the intersection beforehand
+			m_perf_log.push("Test intersection","Exact intersection construction");
 			bElemIntersect = libMesh_exact_do_intersect(elem_A,elem_B);
+			m_perf_log.pop("Test intersection","Exact intersection construction");
 		}
 		else if(bConvertPoints)
 		{
 			// Test already made somewhere else, but we need to set up the exact
 			// points.
-			convert_elem_to_exact_points(elem_A,m_exact_points_A);
+			m_perf_log.push("Point conversion to exact","Exact intersection construction");
+			if(bCreateNewNefForA)
+			{
+				convert_elem_to_exact_points(elem_A,m_exact_points_A);
+			}
 			convert_elem_to_exact_points(elem_B,m_exact_points_B);
+			m_perf_log.pop("Point conversion to exact","Exact intersection construction");
 		}
 
 		if(bElemIntersect)
@@ -438,16 +456,30 @@ public:
 			std::vector<ExactPoint_3>::const_iterator exact_points_A_begin = m_exact_points_A.begin();
 			std::vector<ExactPoint_3>::const_iterator exact_points_B_begin = m_exact_points_B.begin();
 
-			convert_exact_points_to_Nef(	exact_points_A_begin,
-											exact_points_A_begin + n_nodes_A,
-											m_nef_A);
+			m_perf_log.push("Nef polyhedron construction","Exact intersection construction");
+			if(bCreateNewNefForA)
+			{
+				convert_exact_points_to_Nef(	exact_points_A_begin,
+												exact_points_A_begin + n_nodes_A,
+												m_nef_A);
+			}
+			else
+			{
+				homemade_assert_msg(!m_nef_A.is_empty(), "Intersection base is empty!\n");
+			}
 
 			convert_exact_points_to_Nef(	exact_points_B_begin,
 											exact_points_B_begin + n_nodes_B,
 											m_nef_B);
 
+			m_perf_log.pop("Nef polyhedron construction","Exact intersection construction");
+
 			// Intersect them
+			m_perf_log.push("Nef polyhedron intersection","Exact intersection construction");
 			m_nef_I = m_nef_A*m_nef_B;
+			m_perf_log.pop("Nef polyhedron intersection","Exact intersection construction");
+
+			m_perf_log.push("Point set output","Exact intersection construction");
 			if(!m_nef_I.is_empty())
 			{
 				// Intersection exists! Create output
@@ -465,6 +497,7 @@ public:
 			{
 				bElemIntersect = false;
 			}
+			m_perf_log.pop("Point set output","Exact intersection construction");
 		}
 
 		return bElemIntersect;
@@ -474,7 +507,8 @@ public:
 	 * 		Test if two elements intersect inside the coupling region
 	 */
 	bool libMesh_exact_do_intersect_inside_coupling(const libMesh::Elem * elem_A,
-													const libMesh::Elem * elem_B)
+													const libMesh::Elem * elem_B,
+													bool bCreateNewNefForA = true)
 	{
 		bool bElemIntersect = true;
 
@@ -494,16 +528,25 @@ public:
 			std::vector<ExactPoint_3>::const_iterator exact_points_A_begin = m_exact_points_A.begin();
 			std::vector<ExactPoint_3>::const_iterator exact_points_B_begin = m_exact_points_B.begin();
 
-			convert_exact_points_to_Nef(	exact_points_A_begin,
-											exact_points_A_begin + n_nodes_A,
-											m_nef_A);
-
+			if(bCreateNewNefForA)
+			{
+				// A was updated, must also update A*C
+				convert_exact_points_to_Nef(	exact_points_A_begin,
+												exact_points_A_begin + n_nodes_A,
+												m_nef_A);
+				m_nef_I_AC = m_nef_A*m_nef_C;
+			}
+			else
+			{
+				homemade_assert_msg(!m_nef_I_AC.is_empty(), "Intersection base is empty!\n");
+			}
 			convert_exact_points_to_Nef(	exact_points_B_begin,
 											exact_points_B_begin + n_nodes_B,
 											m_nef_B);
 
 			// Intersect them
-			m_nef_I = m_nef_A*m_nef_B*m_nef_C;
+			m_nef_I = m_nef_I_AC*m_nef_B;
+
 			if(!m_nef_I.is_empty() && m_nef_I.number_of_volumes() > 1)
 			{
 				// Intersection exists!
@@ -524,6 +567,7 @@ public:
 	bool libMesh_exact_intersection_inside_coupling(const libMesh::Elem * elem_A,
 													const libMesh::Elem * elem_B,
 													std::set<Point_3> & points_out,
+													bool bCreateNewNefForA = true,
 													bool bConvertPoints = true,
 													bool bTestNeeded = true)
 	{
@@ -535,14 +579,18 @@ public:
 		if(bTestNeeded)
 		{
 			// Test the intersection beforehand
+			m_perf_log.push("Test intersection","Exact intersection construction inside coupling");
 			bElemIntersect = libMesh_exact_do_intersect(elem_A,elem_B);
+			m_perf_log.pop("Test intersection","Exact intersection construction inside coupling");
 		}
 		else if(bConvertPoints)
 		{
 			// Test already made somewhere else, but we need to set up the exact
 			// points.
+			m_perf_log.push("Point conversion to exact","Exact intersection construction inside coupling");
 			convert_elem_to_exact_points(elem_A,m_exact_points_A);
 			convert_elem_to_exact_points(elem_B,m_exact_points_B);
+			m_perf_log.pop("Point conversion to exact","Exact intersection construction inside coupling");
 		}
 
 		if(bElemIntersect)
@@ -554,16 +602,33 @@ public:
 			std::vector<ExactPoint_3>::const_iterator exact_points_A_begin = m_exact_points_A.begin();
 			std::vector<ExactPoint_3>::const_iterator exact_points_B_begin = m_exact_points_B.begin();
 
-			convert_exact_points_to_Nef(	exact_points_A_begin,
-											exact_points_A_begin + n_nodes_A,
-											m_nef_A);
+			m_perf_log.push("Nef polyhedron construction","Exact intersection construction inside coupling");
+			if(bCreateNewNefForA)
+			{
+				// Then we need to build a new nef polyhedron
+				convert_exact_points_to_Nef(	exact_points_A_begin,
+												exact_points_A_begin + n_nodes_A,
+												m_nef_A);
+				m_nef_I_AC = m_nef_A*m_nef_C;
+			}
+			else
+			{
+				homemade_assert_msg(!m_nef_I_AC.is_empty(), "Intersection base is empty!\n");
+			}
 
 			convert_exact_points_to_Nef(	exact_points_B_begin,
 											exact_points_B_begin + n_nodes_B,
 											m_nef_B);
+			m_perf_log.pop("Nef polyhedron construction","Exact intersection construction inside coupling");
 
 			// Intersect them
-			m_nef_I = m_nef_A*m_nef_B*m_nef_C;
+			m_perf_log.push("Nef polyhedron intersection","Exact intersection construction inside coupling");
+
+			m_nef_I = m_nef_B*m_nef_I_AC;
+
+			m_perf_log.pop("Nef polyhedron intersection","Exact intersection construction inside coupling");
+
+			m_perf_log.push("Point set output","Exact intersection construction inside coupling");
 			if(!m_nef_I.is_empty() && m_nef_I.number_of_volumes() > 1)
 			{
 				// Intersection exists! Create output
@@ -581,6 +646,7 @@ public:
 			{
 				bElemIntersect = false;
 			}
+			m_perf_log.pop("Point set output","Exact intersection construction inside coupling");
 		}
 
 		return bElemIntersect;
