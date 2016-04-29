@@ -102,9 +102,6 @@ public:
 
 	void BuildCoupledPatches(const libMesh::Elem 	* Query_elem, int patch_counter)
 	{
-//		libMesh::SerialMesh mesh_out(m_Mesh_A.comm(),3);
-//		mesh_out.prepare_for_use();
-
 		m_Patch_Constructor_A.BuildPatch(Query_elem);
 		std::string filename = "patch_mesh_A_" + std::to_string(patch_counter);
 		m_Patch_Constructor_A.export_patch_mesh(filename);
@@ -112,14 +109,6 @@ public:
 		m_Patch_Constructor_B.BuildPatch(Query_elem);
 		filename = "patch_mesh_B_" + std::to_string(patch_counter);
 		m_Patch_Constructor_B.export_patch_mesh(filename);
-
-//		std::unordered_set<unsigned int>::iterator it_idx_A, it_idx_A_end;
-//		it_idx_A = m_Patch_Constructor_A.indexes().begin();
-//		it_idx_A_end = m_Patch_Constructor_A.indexes().end();
-//		for( ; it_idx_A != it_idx_A_end; ++it_idx_A)
-//		{
-//			std::cout << 749 + *it_idx_A << std::endl;
-//		}
 	}
 
 	void BuildPatchIntersections_Brute(const libMesh::Elem 	* Query_elem)
@@ -208,35 +197,46 @@ public:
 	{
 		// Set up some references for a simpler code
 		std::unordered_set<unsigned int> & 	Patch_guide_ids  = Patch_guide->elem_indexes();
-		std::unordered_set<unsigned int> & 	Patch_probed_ids = Patch_probed->elem_indexes();
-		const libMesh::Mesh&  		Mesh_guide	= Patch_guide->mesh();
-		const libMesh::Mesh&		Mesh_probed	= Patch_probed->mesh();
+
+		libMesh::Mesh&  		Mesh_patch_guide	= Patch_guide->patch_mesh();
+		libMesh::Mesh&		Mesh_patch_probed	= Patch_probed->patch_mesh();
 
 		// Set up locator for the first intersecting pair
-		std::unique_ptr<libMesh::PointLocatorBase> Patch_guide_Locator = Mesh_guide.sub_point_locator();
+		std::unique_ptr<libMesh::PointLocatorBase> Patch_guide_Locator = Mesh_patch_guide.sub_point_locator();
 
 		// Instruction needed to avoid the code from crashing if a query is
 		// outside the mesh
 		Patch_guide_Locator->enable_out_of_mesh_mode();
 
 		// Find the first pair
-		const libMesh::Elem * Patch_probed_first_elem = Mesh_probed.elem(*Patch_probed_ids.begin());
-		unsigned int Patch_probed_first_elem_id = Patch_probed_first_elem->id();
+		libMesh::Elem * Patch_probed_first_elem = NULL;
+		unsigned int Patch_probed_first_elem_id = 0;
 
 		// Set of intersecting terms
 		std::set<unsigned int> Intersecting_elems;
-		m_Intersection_test.FindAllIntersection(Patch_probed_first_elem,Patch_guide_Locator,Intersecting_elems);
+		bool bFoundIntersection = false;
+		for(libMesh::Mesh::element_iterator element_probed_it = Mesh_patch_probed.elements_begin();
+				 element_probed_it != Mesh_patch_probed.elements_end();
+				 ++element_probed_it)
+		{
+			Patch_probed_first_elem = * element_probed_it;
+			Patch_probed_first_elem_id = Patch_probed->convert_patch_to_global_elem_id(Patch_probed_first_elem->id());
+			bFoundIntersection = m_Intersection_test.FindAllIntersection(Patch_probed_first_elem,Patch_guide_Locator,Intersecting_elems);
+			if(bFoundIntersection)
+			{
+				break;
+			}
+		}
 
 		// Search for one intersecting term inside the guide patch
 		unsigned int Patch_guide_first_elem_id;
 		bool bFoundFirstInter = false;
 
-		std::cout << Intersecting_elems.size() << " : " << *Intersecting_elems.begin() << " " << Patch_probed_first_elem_id << std::endl;
 		for(std::set<unsigned int>::iterator it_inter = Intersecting_elems.begin();
 				it_inter != Intersecting_elems.end();
 				++it_inter)
 		{
-			Patch_guide_first_elem_id = (*it_inter);
+			Patch_guide_first_elem_id = Patch_guide->convert_patch_to_global_elem_id(*it_inter);
 			if(Patch_guide_ids.find(Patch_guide_first_elem_id) != Patch_guide_ids.end())
 			{
 				// Found one !

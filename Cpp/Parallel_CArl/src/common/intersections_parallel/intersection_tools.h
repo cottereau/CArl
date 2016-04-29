@@ -302,7 +302,7 @@ public:
 	 * 		indeed intersect the tested mesh.
 	 *
 	 */
-	void FindAllIntersection(	const libMesh::Elem * Query_elem,
+	bool FindAllIntersection(	const libMesh::Elem * Query_elem,
 								std::unique_ptr<libMesh::PointLocatorBase> & point_locator,
 								std::set<unsigned int>	&	Intersecting_elems)
 	{
@@ -330,7 +330,7 @@ public:
 			}
 		}
 
-		homemade_assert_msg(nbOfInters != 0, "Query element is not fully inside tested mesh!\n");
+		return nbOfInters != 0;
 	};
 
 	/*

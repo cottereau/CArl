@@ -303,6 +303,16 @@ public:
 		return m_working_element_id;
 	};
 
+	unsigned int convert_global_to_patch_elem_id(unsigned int input)
+	{
+		return m_elem_map_Global_Output[input];
+	}
+
+	unsigned int convert_patch_to_global_elem_id(unsigned int input)
+	{
+		return m_elem_map_Output_Global[input];
+	}
+
 	const libMesh::Elem * current_elem_pointer()
 	{
 		return m_Mesh.elem(m_working_element_id);
