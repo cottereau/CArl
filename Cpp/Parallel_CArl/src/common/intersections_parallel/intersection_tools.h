@@ -629,12 +629,16 @@ public:
 			m_perf_log.pop("Nef polyhedron intersection","Exact intersection construction inside coupling");
 
 			m_perf_log.push("Point set output","Exact intersection construction inside coupling");
-			if(!m_nef_I.is_empty() && m_nef_I.number_of_volumes() > 1)
+			if(		!m_nef_I.is_empty() &&
+					 m_nef_I.number_of_volumes() > 1 &&
+					 m_nef_I.number_of_vertices() > 3 &&
+					 m_nef_I.number_of_facets() > 1)
 			{
 				// Intersection exists! Create output
 				bElemIntersect = true;
 
 				points_out.clear();
+
 				for(Nef_Polyhedron::Vertex_const_iterator it_vertex = m_nef_I.vertices_begin();
 						it_vertex != m_nef_I.vertices_end();
 						++it_vertex)

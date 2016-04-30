@@ -11,7 +11,9 @@
  *
  * 		- DONE: create and test a first intersection search algorithm
  * 		- DONE: create and test a patch construction algorithm
- * 		- TODO: create a FindIntersections algorithm
+ * 		- DONE: create a FindIntersections algorithm
+ * 		- TODO: decouple the intersection search from the intersection
+ * 		        construction
  * 		- TODO: expand it to build the intersections
  * 		- TODO: assemble these algorithms for a single proc
  *
@@ -22,18 +24,6 @@
  * 		            n_p files
  * 		- TODO: (P) either read several meshes in the assemble step, or stitch
  * 		            them all together ...
- *
- * 		Classes that I'll need:
- *
- * 		- patch_construction: methods to build the intersection patch
- * 		                   -> no equivalent in current code
- *
- * 		- mesh_intersection_methods: methods to build the intersection mesh
- * 		  				          -> corresponds to "triangular_mesh_*"
- *
- * 		- intersection_search: methods to search and build the intersections
- * 		                    -> corresponds to an encapsulated version of
- * 		                       "intersection_functions_*"
  *
  */
 int main(int argc, char *argv[])
@@ -56,7 +46,7 @@ int main(int argc, char *argv[])
 	carl::Intersection_Search search_coupling_intersections(test_mesh_A,test_mesh_B,test_mesh_C,test_mesh_I);
 
 	// Search!
-	search_coupling_intersections.BuildIntersections(carl::BOTH);
+	search_coupling_intersections.BuildIntersections(carl::FRONT);
 
 	return 0;
 }
