@@ -516,8 +516,8 @@ public:
 				{
 					bCreateNewNefForA = false;
 					m_perf_log.push("Calculate volume","Build intersections");
-					dummy_vol =  m_Mesh_Intersection.get_intersection_volume(points_out);
-					total_volume += dummy_vol;
+					m_Mesh_Intersection.increase_intersection_mesh(points_out);
+//					total_volume += dummy_vol;
 					m_perf_log.pop("Calculate volume","Build intersections");
 					++nbOfPositiveTests;
 				}
