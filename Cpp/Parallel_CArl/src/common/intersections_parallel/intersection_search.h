@@ -56,6 +56,8 @@ protected:
 	Intersection_Tools m_Intersection_test;
 	Intersection_Tools m_Intersection_test_neighbors;
 
+	double m_Min_Inter_Volume;
+
 	bool MASTER_bPerfLog_intersection_search;
 
 	libMesh::PerfLog m_perf_log;
@@ -66,6 +68,7 @@ public:
 						libMesh::Mesh & mesh_B,
 						libMesh::Mesh & mesh_Coupling,
 						libMesh::Mesh & mesh_I,
+						double Min_Inter_Volume = 1E-15,
 						bool  bDoPerf_log = true) :
 		m_Mesh_A { mesh_A },
 		m_Mesh_B { mesh_B },
@@ -75,11 +78,13 @@ public:
 		m_Patch_Constructor_B { Patch_construction(m_Mesh_B)},
 		m_Mesh_Intersection { Mesh_Intersection(mesh_I)},
 		MASTER_bPerfLog_intersection_search {bDoPerf_log},
+		m_Min_Inter_Volume { Min_Inter_Volume },
 		m_perf_log { libMesh::PerfLog("Intersection search", MASTER_bPerfLog_intersection_search) }
 
 	{
 		// Reserve space for the intersection multimap
 		m_Intersection_Pairs_multimap.reserve(mesh_A.n_elem()*mesh_B.n_elem());
+		m_Mesh_Intersection.set_grid_contraints(m_Mesh_A,m_Mesh_B);
 	};
 
 	libMesh::Mesh & mesh_A()
@@ -477,10 +482,11 @@ public:
 		bool bDoIntersect = true;
 		bool bCreateNewNefForA = true;
 		double total_volume = 0;
+		double dummy_vol = 0;
 
 		m_Intersection_test.libmesh_set_coupling_nef_polyhedron(Query_elem);
 
-		std::set<Point_3> points_out;
+		std::set<libMesh::Point> points_out;
 
 		// Debug vars
 		int nbOfTests = 0;
@@ -510,7 +516,8 @@ public:
 				{
 					bCreateNewNefForA = false;
 					m_perf_log.push("Calculate volume","Build intersections");
-					total_volume += m_Mesh_Intersection.get_intersection_volume(points_out);
+					dummy_vol =  m_Mesh_Intersection.get_intersection_volume(points_out);
+					total_volume += dummy_vol;
 					m_perf_log.pop("Calculate volume","Build intersections");
 					++nbOfPositiveTests;
 				}

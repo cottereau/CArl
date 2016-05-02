@@ -62,6 +62,8 @@ protected:
 	ExactTetrahedron m_test_tetra;
 	ExactTriangle_3 m_test_triangle;
 
+	double m_Min_Inter_Volume;
+
 	bool MASTER_bPerfLog_intersection_tools;
 
 	libMesh::PerfLog m_perf_log;
@@ -217,7 +219,8 @@ protected:
 	}
 
 public:
-	Intersection_Tools(const libMesh::Elem * elem_C, bool bDoPerf_log = true) :
+	Intersection_Tools(const libMesh::Elem * elem_C, double Min_Inter_Volume = 1E-15, bool bDoPerf_log = true) :
+		m_Min_Inter_Volume { Min_Inter_Volume },
 		MASTER_bPerfLog_intersection_tools {bDoPerf_log},
 		m_perf_log { libMesh::PerfLog("Intersection tools", MASTER_bPerfLog_intersection_tools) }
 	{
@@ -235,7 +238,8 @@ public:
 		m_elem_C_triangles = NULL;
 	};
 
-	Intersection_Tools(bool bDoPerf_log = true) :
+	Intersection_Tools(double Min_Inter_Volume = 1E-15, bool bDoPerf_log = true) :
+		m_Min_Inter_Volume { Min_Inter_Volume },
 		MASTER_bPerfLog_intersection_tools {bDoPerf_log},
 		m_perf_log { libMesh::PerfLog("Intersection tools", MASTER_bPerfLog_intersection_tools) }
 	{
@@ -566,7 +570,7 @@ public:
 	 */
 	bool libMesh_exact_intersection_inside_coupling(const libMesh::Elem * elem_A,
 													const libMesh::Elem * elem_B,
-													std::set<Point_3> & points_out,
+													std::set<libMesh::Point> & points_out,
 													bool bCreateNewNefForA = true,
 													bool bConvertPoints = true,
 													bool bTestNeeded = true)
@@ -575,6 +579,9 @@ public:
 
 		// Assert if C was built
 		homemade_assert_msg(!m_nef_C.is_empty(), "Coupling restriction element was not set yet!\n");
+
+		// Dummy CGAL point
+		Point_3		dummy_CGAL_point;
 
 		if(bTestNeeded)
 		{
@@ -634,7 +641,7 @@ public:
 					 m_nef_I.number_of_vertices() > 3 &&
 					 m_nef_I.number_of_facets() > 1)
 			{
-				// Intersection exists! Create output
+				// Intersection exists! Create output, if the volume is big enough
 				bElemIntersect = true;
 
 				points_out.clear();
@@ -643,7 +650,8 @@ public:
 						it_vertex != m_nef_I.vertices_end();
 						++it_vertex)
 				{
-					points_out.insert(ConvertExactToInexact(it_vertex->point()));
+					dummy_CGAL_point = ConvertExactToInexact(it_vertex->point());
+					points_out.insert(libMesh::Point(dummy_CGAL_point.x(),dummy_CGAL_point.y(),dummy_CGAL_point.z()));
 				}
 			}
 			else
