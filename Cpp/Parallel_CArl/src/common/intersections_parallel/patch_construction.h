@@ -238,16 +238,17 @@ public:
 		std::cout << " -> Nb. of intersections found : " << m_Patch_Elem_indexes.size() << std::endl << std::endl;
 
 		std::cout << " -> Nb. of mesh elements       : " << m_Mesh.n_elem() << std::endl;
-		std::cout << " -> Nb. of patch elements      : " << m_Patch_Elem_indexes.size() << std::endl;
-		std::cout << " -> Patch elem %               : " << 100.*m_Patch_Elem_indexes.size()/m_Mesh.n_elem() << " %" << std::endl << std::endl;
+//		std::cout << " -> Nb. of patch elements      : " << m_Patch_Elem_indexes.size() << std::endl;
+//		std::cout << " -> Patch elem %               : " << 100.*m_Patch_Elem_indexes.size()/m_Mesh.n_elem() << " %" << std::endl << std::endl;
 
 		std::cout << " -> Nb. of mesh nodes          : " << m_Mesh.n_nodes() << std::endl;
-		std::cout << " -> Nb. of patch nodes         : " << m_Patch_Node_indexes.size() << std::endl;
-		std::cout << " -> Patch node %               : " << 100.*m_Patch_Node_indexes.size()/m_Mesh.n_nodes() << " %" << std::endl << std::endl;
+//		std::cout << " -> Nb. of patch nodes         : " << m_Patch_Node_indexes.size() << std::endl;
+//		std::cout << " -> Patch node %               : " << 100.*m_Patch_Node_indexes.size()/m_Mesh.n_nodes() << " %" << std::endl << std::endl;
 
-		std::cout << " -> Nb. of tests               : " << nbOfTests << std::endl;
-		std::cout << " -> Nb. of positive tests      : " << nbOfPositiveTests << std::endl;
-		std::cout << " -> Positive %                 : " << 100.*nbOfPositiveTests/nbOfTests << " %" << std::endl << std::endl;
+//		std::cout << " -> Nb. of tests               : " << nbOfTests << std::endl;
+//		std::cout << " -> Nb. of positive tests      : " << nbOfPositiveTests << std::endl;
+//		std::cout << " -> Positive %                 : " << 100.*nbOfPositiveTests/nbOfTests << " %" << std::endl << std::endl;
+		std::cout <<std::endl;
 	}
 
 	/*

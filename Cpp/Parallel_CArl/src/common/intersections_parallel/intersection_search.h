@@ -104,12 +104,12 @@ public:
 	void BuildCoupledPatches(const libMesh::Elem 	* Query_elem, int patch_counter)
 	{
 		m_Patch_Constructor_A.BuildPatch(Query_elem);
-		std::string filename = "patch_mesh_A_" + std::to_string(patch_counter);
-		m_Patch_Constructor_A.export_patch_mesh(filename);
+//		std::string filename = "patch_mesh_A_" + std::to_string(patch_counter);
+//		m_Patch_Constructor_A.export_patch_mesh(filename);
 
 		m_Patch_Constructor_B.BuildPatch(Query_elem);
-		filename = "patch_mesh_B_" + std::to_string(patch_counter);
-		m_Patch_Constructor_B.export_patch_mesh(filename);
+//		filename = "patch_mesh_B_" + std::to_string(patch_counter);
+//		m_Patch_Constructor_B.export_patch_mesh(filename);
 	}
 
 	void FindPatchIntersections_Brute(const libMesh::Elem 	* Query_elem)
@@ -430,23 +430,28 @@ public:
 		{
 			const libMesh::Elem * Query_elem = * it_coupl;
 
-			m_perf_log.push("Build patches");
+			m_perf_log.push("Build patches","Brute force");
 			BuildCoupledPatches(Query_elem,patch_counter);
-			m_perf_log.pop("Build patches");
+			m_perf_log.pop("Build patches","Brute force");
 
 			++patch_counter;
 
 			real_volume += Query_elem->volume();
-			m_perf_log.push("Find intersections - brute");
+			m_perf_log.push("Find intersections","Brute force");
 			FindPatchIntersections_Brute(Query_elem);
-			m_perf_log.pop("Find intersections - brute");
-			m_perf_log.push("Build intersections - brute");
+			m_perf_log.pop("Find intersections","Brute force");
+			m_perf_log.push("Build intersections","Brute force");
 			UpdateCouplingIntersection(Query_elem);
-			m_perf_log.pop("Build intersections - brute");
+			m_perf_log.pop("Build intersections","Brute force");
 		};
 
+		m_perf_log.push("Prepare mesh","Brute force");
 		m_Mesh_Intersection.prepare_for_use();
+		m_perf_log.pop("Prepare mesh","Brute force");
+		m_perf_log.push("Calculate volume","Brute force");
 		double total_volume = m_Mesh_Intersection.get_total_volume();
+		m_perf_log.push("Calculate volume","Brute force");
+
 
 		std::cout << "    DEBUG: calculate the TOTAL volume (BRUTE)" << std::endl;
 		std::cout << " -> Mesh elems, nodes             : " << m_Mesh_Intersection.mesh().n_elem() << " , " << m_Mesh_Intersection.mesh().n_nodes() << std::endl;
@@ -468,23 +473,27 @@ public:
 		{
 			const libMesh::Elem * Query_elem = * it_coupl;
 
-			m_perf_log.push("Build patches");
+			m_perf_log.push("Build patches","Advancing front");
 			BuildCoupledPatches(Query_elem,patch_counter);
-			m_perf_log.pop("Build patches");
+			m_perf_log.pop("Build patches","Advancing front");
 
 			++patch_counter;
 
 			real_volume += Query_elem->volume();
-			m_perf_log.push("Find intersections - advancing front");
+			m_perf_log.push("Find intersections","Advancing front");
 			FindPatchIntersections_Front(Query_elem);
-			m_perf_log.pop("Find intersections - advancing front");
-			m_perf_log.push("Build intersections - advancing front");
+			m_perf_log.pop("Find intersections","Advancing front");
+			m_perf_log.push("Build intersections","Advancing front");
 			UpdateCouplingIntersection(Query_elem);
-			m_perf_log.pop("Build intersections - advancing front");
+			m_perf_log.pop("Build intersections","Advancing front");
 		};
 
+		m_perf_log.push("Prepare mesh","Advancing front");
 		m_Mesh_Intersection.prepare_for_use();
+		m_perf_log.pop("Prepare mesh","Advancing front");
+		m_perf_log.push("Calculate volume","Advancing front");
 		double total_volume = m_Mesh_Intersection.get_total_volume();
+		m_perf_log.push("Calculate volume","Advancing front");
 
 		std::cout << "    DEBUG: calculate the TOTAL volume (FRONT)" << std::endl;
 		std::cout << " -> Mesh elems, nodes             : " << m_Mesh_Intersection.mesh().n_elem() << " , " << m_Mesh_Intersection.mesh().n_nodes() << std::endl;

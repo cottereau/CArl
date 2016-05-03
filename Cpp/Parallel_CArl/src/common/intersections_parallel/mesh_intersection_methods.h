@@ -55,8 +55,6 @@ protected:
 	unsigned int m_nb_of_elements;
 	unsigned int m_nb_of_vertices;
 
-	std::unordered_multimap<unsigned int, unsigned int>	m_Future_elements_map;
-
 	std::vector<unsigned int> 	m_intersection_point_indexes;
 	unsigned int 				m_nb_of_points;
 
@@ -64,7 +62,6 @@ protected:
 	bool m_bMeshFinalized;
 
 	Mesh_Intersection();
-
 
 	void update_intersection_vertices(	const std::set<libMesh::Point> & input_points)
 	{
@@ -156,7 +153,8 @@ public:
 
 		set_grid_contraints(mesh_A,mesh_B);
 
-		m_Future_elements_map.reserve(mesh_A.n_elem()*mesh_B.n_elem());
+		m_libMesh_Mesh.reserve_nodes(map_preallocation);
+		m_libMesh_Mesh.reserve_elem(10*map_preallocation);
 
 		m_libMesh_Mesh.allow_renumbering(false);
 	};
@@ -226,7 +224,6 @@ public:
 		// vertices.
 		update_intersection_mesh();
 	}
-
 
 	void prepare_for_use()
 	{
