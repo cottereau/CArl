@@ -76,15 +76,14 @@ public:
 		m_comm { m_Mesh_Coupling.comm() },
 		m_Patch_Constructor_A { Patch_construction(m_Mesh_A)},
 		m_Patch_Constructor_B { Patch_construction(m_Mesh_B)},
-		m_Mesh_Intersection { Mesh_Intersection(mesh_I)},
-		MASTER_bPerfLog_intersection_search {bDoPerf_log},
+		m_Mesh_Intersection { Mesh_Intersection(mesh_I,m_Mesh_A,m_Mesh_B)},
 		m_Min_Inter_Volume { Min_Inter_Volume },
+		MASTER_bPerfLog_intersection_search {bDoPerf_log},
 		m_perf_log { libMesh::PerfLog("Intersection search", MASTER_bPerfLog_intersection_search) }
 
 	{
 		// Reserve space for the intersection multimap
 		m_Intersection_Pairs_multimap.reserve(mesh_A.n_elem()*mesh_B.n_elem());
-		m_Mesh_Intersection.set_grid_contraints(m_Mesh_A,m_Mesh_B);
 	};
 
 	libMesh::Mesh & mesh_A()
@@ -283,9 +282,6 @@ public:
 		// Boolean saying if a neighbor element intersects (exactly)
 		bool bDoNeighborIntersect = false;
 
-		// Boolean saying if the two elements intersect inside the coupling
-		bool bDoIntersectInsideCoupling = false;
-
 		// Boolean used to short-circuit the neighbor search test if all
 		// the concerned elements already have neighbours.
 		bool bDoTestGuideNeighbours = true;
@@ -419,13 +415,16 @@ public:
 				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl  << std::endl;
 	}
 
-	void BuildIntersections(SearchMethod search_type = BRUTE)
+	void BuildIntersections_Brute()
 	{
 		// Prepare iterators
 		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.elements_begin();
 		libMesh::Mesh::const_element_iterator it_coupl_end = m_Mesh_Coupling.elements_end();
 
 		int patch_counter = 0;
+		double real_volume = 0;
+
+		m_Mesh_Intersection.initialize();
 
 		for( ; it_coupl != it_coupl_end; ++it_coupl)
 		{
@@ -437,39 +436,74 @@ public:
 
 			++patch_counter;
 
-			switch (search_type)
-			{
-				case BRUTE : 	m_perf_log.push("Find intersections - brute");
-								FindPatchIntersections_Brute(Query_elem);
-								m_perf_log.pop("Find intersections - brute");
-								m_perf_log.push("Build intersections - brute");
-								CalculateIntersectionVolume(Query_elem);
-								m_perf_log.pop("Build intersections - brute");
-								break;
+			real_volume += Query_elem->volume();
+			m_perf_log.push("Find intersections - brute");
+			FindPatchIntersections_Brute(Query_elem);
+			m_perf_log.pop("Find intersections - brute");
+			m_perf_log.push("Build intersections - brute");
+			UpdateCouplingIntersection(Query_elem);
+			m_perf_log.pop("Build intersections - brute");
+		};
 
-				case FRONT : 	m_perf_log.push("Find intersections - advancing front");
-								FindPatchIntersections_Front(Query_elem);
-								m_perf_log.pop("Find intersections - advancing front");
-								m_perf_log.push("Build intersections - advancing front");
-								CalculateIntersectionVolume(Query_elem);
-								m_perf_log.pop("Build intersections - advancing front");
-								break;
+		m_Mesh_Intersection.prepare_for_use();
+		double total_volume = m_Mesh_Intersection.get_total_volume();
 
-				case BOTH : 	m_perf_log.push("Find intersections - brute");
-								FindPatchIntersections_Brute(Query_elem);
-								m_perf_log.pop("Find intersections - brute");
-								m_perf_log.push("Build intersections - brute");
-								CalculateIntersectionVolume(Query_elem);
-								m_perf_log.pop("Build intersections - brute");
+		std::cout << "    DEBUG: calculate the TOTAL volume (BRUTE)" << std::endl;
+		std::cout << " -> Mesh elems, nodes             : " << m_Mesh_Intersection.mesh().n_elem() << " , " << m_Mesh_Intersection.mesh().n_nodes() << std::endl;
+		std::cout << " -> Intersection volume / real    : " << total_volume << " / " << real_volume << std::endl << std::endl;
+	}
 
-								m_perf_log.push("Find intersections - advancing front");
-								FindPatchIntersections_Front(Query_elem);
-								m_perf_log.pop("Find intersections - advancing front");
-								m_perf_log.push("Build intersections - advancing front");
-								CalculateIntersectionVolume(Query_elem);
-								m_perf_log.pop("Build intersections - advancing front");
-								break;
-			}
+	void BuildIntersections_Front()
+	{
+		// Prepare iterators
+		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.elements_begin();
+		libMesh::Mesh::const_element_iterator it_coupl_end = m_Mesh_Coupling.elements_end();
+
+		int patch_counter = 0;
+		double real_volume = 0;
+
+		m_Mesh_Intersection.initialize();
+
+		for( ; it_coupl != it_coupl_end; ++it_coupl)
+		{
+			const libMesh::Elem * Query_elem = * it_coupl;
+
+			m_perf_log.push("Build patches");
+			BuildCoupledPatches(Query_elem,patch_counter);
+			m_perf_log.pop("Build patches");
+
+			++patch_counter;
+
+			real_volume += Query_elem->volume();
+			m_perf_log.push("Find intersections - advancing front");
+			FindPatchIntersections_Front(Query_elem);
+			m_perf_log.pop("Find intersections - advancing front");
+			m_perf_log.push("Build intersections - advancing front");
+			UpdateCouplingIntersection(Query_elem);
+			m_perf_log.pop("Build intersections - advancing front");
+		};
+
+		m_Mesh_Intersection.prepare_for_use();
+		double total_volume = m_Mesh_Intersection.get_total_volume();
+
+		std::cout << "    DEBUG: calculate the TOTAL volume (FRONT)" << std::endl;
+		std::cout << " -> Mesh elems, nodes             : " << m_Mesh_Intersection.mesh().n_elem() << " , " << m_Mesh_Intersection.mesh().n_nodes() << std::endl;
+		std::cout << " -> Intersection volume / real    : " << total_volume << " / " << real_volume << std::endl << std::endl;
+	}
+
+	void BuildIntersections(SearchMethod search_type = BRUTE)
+	{
+		switch (search_type)
+		{
+			case BRUTE :	BuildIntersections_Brute();
+							break;
+
+			case FRONT :	BuildIntersections_Front();
+							break;
+
+			case BOTH :		BuildIntersections_Brute();
+							BuildIntersections_Front();
+							break;
 		}
 	}
 
@@ -481,8 +515,61 @@ public:
 
 		bool bDoIntersect = true;
 		bool bCreateNewNefForA = true;
+
+		m_Intersection_test.libmesh_set_coupling_nef_polyhedron(Query_elem);
+
+		std::set<libMesh::Point> points_out;
 		double total_volume = 0;
-		double dummy_vol = 0;
+
+		// Debug vars
+		int nbOfTests = 0;
+		int nbOfPositiveTests = 0;
+		for(	it_patch_A =  Patch_Set_A.begin();
+				it_patch_A != Patch_Set_A.end();
+				++it_patch_A)
+		{
+			auto iterator_pair = m_Intersection_Pairs_multimap.equal_range(*it_patch_A);
+
+			const libMesh::Elem * elem_A = m_Mesh_A.elem(*it_patch_A);
+			bCreateNewNefForA = true;
+
+			for(auto it_patch_B = iterator_pair.first ;
+					 it_patch_B != iterator_pair.second ;
+					 ++it_patch_B )
+			{
+				const libMesh::Elem * elem_B = m_Mesh_B.elem(it_patch_B->second);
+				points_out.clear();
+
+				m_perf_log.push("Build intersection polyhedron","Build intersections");
+				bDoIntersect = m_Intersection_test.libMesh_exact_intersection_inside_coupling(elem_A,elem_B,points_out,bCreateNewNefForA,true,false);
+				m_perf_log.pop("Build intersection polyhedron","Build intersections");
+				++nbOfTests;
+
+				if(bDoIntersect)
+				{
+					bCreateNewNefForA = false;
+					m_perf_log.push("Calculate volume","Build intersections");
+					total_volume += m_Mesh_Intersection.get_intersection_volume(points_out);
+					m_perf_log.pop("Calculate volume","Build intersections");
+					++nbOfPositiveTests;
+				}
+			}
+		}
+
+		std::cout << "    DEBUG: calculate the volume" << std::endl;
+		std::cout << " -> Intersection volume / real    : " << total_volume << " / " << Query_elem->volume() << std::endl << std::endl;
+		std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
+				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl  << std::endl;
+	}
+
+	void UpdateCouplingIntersection(const libMesh::Elem 	* Query_elem)
+	{
+		std::unordered_set<unsigned int> & Patch_Set_A = m_Patch_Constructor_A.elem_indexes();
+
+		std::unordered_set<unsigned int>::iterator it_patch_A;
+
+		bool bDoIntersect = true;
+		bool bCreateNewNefForA = true;
 
 		m_Intersection_test.libmesh_set_coupling_nef_polyhedron(Query_elem);
 
@@ -515,17 +602,15 @@ public:
 				if(bDoIntersect)
 				{
 					bCreateNewNefForA = false;
-					m_perf_log.push("Calculate volume","Build intersections");
+					m_perf_log.push("Update intersection","Build intersections");
 					m_Mesh_Intersection.increase_intersection_mesh(points_out);
-//					total_volume += dummy_vol;
-					m_perf_log.pop("Calculate volume","Build intersections");
+					m_perf_log.pop("Update intersection","Build intersections");
 					++nbOfPositiveTests;
 				}
 			}
 		}
 
-		std::cout << "    DEBUG: calculate the volume" << std::endl;
-		std::cout << " -> Intersection volume / real    : " << total_volume << " / " << Query_elem->volume() << std::endl << std::endl;
+		std::cout << "    DEBUG: update intersection mesh" << std::endl;
 		std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
 				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl  << std::endl;
 	}

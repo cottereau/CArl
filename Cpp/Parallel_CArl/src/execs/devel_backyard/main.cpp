@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 	carl::Intersection_Search search_coupling_intersections(test_mesh_A,test_mesh_B,test_mesh_C,test_mesh_I);
 
 	// Search!
-	search_coupling_intersections.BuildIntersections(carl::FRONT);
+	search_coupling_intersections.BuildIntersections(carl::BOTH);
 
 	return 0;
 }
