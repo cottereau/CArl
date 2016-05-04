@@ -1,0 +1,10 @@
+# Mesh files
+MeshA meshes/3D/tests/test_intersection_A_1.msh
+MeshB meshes/3D/tests/test_intersection_B_1.msh
+MeshC meshes/3D/tests/test_intersection_C_2.msh
+
+# Output files
+MeshI meshes/3D/tests/output/test_intersection_I_2.msh
+
+# Search type
+SearchType Front

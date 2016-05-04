@@ -103,10 +103,12 @@ public:
 
 	void BuildCoupledPatches(const libMesh::Elem 	* Query_elem, int patch_counter)
 	{
+		// Unbreakable Patches!
 		m_Patch_Constructor_A.BuildPatch(Query_elem);
 //		std::string filename = "patch_mesh_A_" + std::to_string(patch_counter);
 //		m_Patch_Constructor_A.export_patch_mesh(filename);
 
+		// Trusty Patches!
 		m_Patch_Constructor_B.BuildPatch(Query_elem);
 //		filename = "patch_mesh_B_" + std::to_string(patch_counter);
 //		m_Patch_Constructor_B.export_patch_mesh(filename);
@@ -182,7 +184,7 @@ public:
 		// Set up some references for a simpler code
 		std::unordered_set<unsigned int> & 	Patch_guide_ids  = Patch_guide->elem_indexes();
 
-		libMesh::Mesh&  		Mesh_patch_guide	= Patch_guide->patch_mesh();
+		libMesh::Mesh&  	Mesh_patch_guide	= Patch_guide->patch_mesh();
 		libMesh::Mesh&		Mesh_patch_probed	= Patch_probed->patch_mesh();
 
 		// Set up locator for the first intersecting pair
@@ -196,8 +198,8 @@ public:
 		libMesh::Elem * Patch_probed_first_elem = NULL;
 		unsigned int Patch_probed_first_elem_id = 0;
 
-		// Set of intersecting terms
-		std::set<unsigned int> Intersecting_elems;
+		// Set of intersecting terms:
+		std::set<unsigned int> Intersecting_guide_elems;
 		bool bFoundIntersection = false;
 		for(libMesh::Mesh::element_iterator element_probed_it = Mesh_patch_probed.elements_begin();
 				 element_probed_it != Mesh_patch_probed.elements_end();
@@ -205,7 +207,7 @@ public:
 		{
 			Patch_probed_first_elem = * element_probed_it;
 			Patch_probed_first_elem_id = Patch_probed->convert_patch_to_global_elem_id(Patch_probed_first_elem->id());
-			bFoundIntersection = m_Intersection_test.FindAllIntersection(Patch_probed_first_elem,Patch_guide_Locator,Intersecting_elems);
+			bFoundIntersection = m_Intersection_test.FindAllIntersection(Patch_probed_first_elem,Patch_guide_Locator,Intersecting_guide_elems);
 			if(bFoundIntersection)
 			{
 				break;
@@ -216,8 +218,8 @@ public:
 		unsigned int Patch_guide_first_elem_id;
 		bool bFoundFirstInter = false;
 
-		for(std::set<unsigned int>::iterator it_inter = Intersecting_elems.begin();
-				it_inter != Intersecting_elems.end();
+		for(std::set<unsigned int>::iterator it_inter = Intersecting_guide_elems.begin();
+				it_inter != Intersecting_guide_elems.end();
 				++it_inter)
 		{
 			Patch_guide_first_elem_id = Patch_guide->convert_patch_to_global_elem_id(*it_inter);
@@ -231,8 +233,56 @@ public:
 			}
 		}
 
-		homemade_assert_msg(bFoundFirstInter, "Couldn't find a first intersecting pair!\n");
+		if(!bFoundFirstInter)
+		{
+			// Couldn't find the first intersection using a point search ...
+			// Will have to do the things the hard way ...
+			std::cout << " -> Fast first pair search failed, using full scan method" << std::endl;
+			BruteForce_FindFirstPair(Patch_guide,Patch_probed,First_intersection);
+		}
 	};
+
+	void BruteForce_FindFirstPair(	Patch_construction * 	Patch_guide,
+									Patch_construction * 	Patch_probed,
+									std::pair<unsigned int,unsigned int> &		First_intersection)
+	{
+		bool bFoundFirstInter = false;
+		std::unordered_set<unsigned int> & Patch_Set_Guide = Patch_guide->elem_indexes();
+		std::unordered_set<unsigned int> & Patch_Set_Probed = Patch_probed->elem_indexes();
+
+		libMesh::Mesh&  	Mesh_patch_guide	= Patch_guide->mesh();
+		libMesh::Mesh&		Mesh_patch_probed	= Patch_probed->mesh();
+
+		std::unordered_set<unsigned int>::iterator it_patch_Guide;
+		std::unordered_set<unsigned int>::iterator it_patch_Probed;
+
+		for(	it_patch_Guide =  Patch_Set_Guide.begin();
+				it_patch_Guide != Patch_Set_Guide.end();
+				++it_patch_Guide)
+		{
+			const libMesh::Elem * elem_Guide = Mesh_patch_guide.elem(*it_patch_Guide);
+
+			for(	it_patch_Probed =  Patch_Set_Probed.begin();
+					it_patch_Probed != Patch_Set_Probed.end();
+					++it_patch_Probed)
+			{
+				const libMesh::Elem * elem_Probed = Mesh_patch_probed.elem(*it_patch_Probed);
+
+				std::cout << *it_patch_Guide << " " << *it_patch_Probed << std::endl;
+				bFoundFirstInter = m_Intersection_test.libMesh_exact_do_intersect_inside_coupling(elem_Guide,elem_Probed);
+
+				if(bFoundFirstInter)
+				{
+					std::cout << " Found a pair!" << std::endl;
+					First_intersection.first = *it_patch_Guide;
+					First_intersection.second = *it_patch_Probed;
+					return;
+				}
+			}
+		}
+
+		homemade_assert_msg(bFoundFirstInter,"Could't find a first intersecting pair. Are you sure that the patches do intersect?\n");
+	}
 
 	void FindPatchIntersections_Front(const libMesh::Elem 	* Query_elem)
 	{

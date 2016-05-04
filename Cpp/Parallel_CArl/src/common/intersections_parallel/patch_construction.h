@@ -110,6 +110,15 @@ public:
 		return m_Patch_Elem_Neighbours;
 	}
 
+	void insert_patch_element(const libMesh::Elem		* Patch_elem)
+	{
+		m_Patch_Elem_indexes.insert(Patch_elem->id());
+		for(unsigned int iii = 0; iii < Patch_elem->n_nodes(); ++iii)
+		{
+			m_Patch_Node_indexes.insert(Patch_elem->node(iii));
+		}
+	}
+
 	/*
 	 * 			Implementation of the patch construction algorithm without any
 	 * 		neighboring information concerning the query element.
@@ -118,7 +127,10 @@ public:
 	void BuildPatch(const libMesh::Elem 	* Query_elem)
 	{
 		bool bDoIntersect = false;
-		const libMesh::Elem		* First_Patch_elem = m_Intersection_Test.FindFirstIntersection(Query_elem,m_Patch_Point_Locator);
+
+		std::set<unsigned int> Intersecting_elems;
+		m_Intersection_Test.FindAllIntersection(Query_elem,m_Patch_Point_Locator,Intersecting_elems);
+
 		m_Patch_Elem_indexes.clear();
 		m_Patch_Node_indexes.clear();
 		m_Patch_Elem_Neighbours.clear();
@@ -136,21 +148,23 @@ public:
 		unsigned int 	Candidate_idx;
 
 		// First element is ok!
-		Treated_From_Mesh.insert(First_Patch_elem->id());
-		m_Patch_Elem_indexes.insert(First_Patch_elem->id());
-		for(unsigned int iii = 0; iii < First_Patch_elem->n_nodes(); ++iii)
+		libMesh::Elem * 	First_Patch_elems = NULL;
+		libMesh::Elem * 	elem_candidate = NULL;
+		std::set<unsigned int>::iterator it_set_start = Intersecting_elems.begin();
+		for( ; it_set_start != Intersecting_elems.end(); ++it_set_start)
 		{
-			m_Patch_Node_indexes.insert(First_Patch_elem->node(iii));
-		}
+			Treated_From_Mesh.insert(*it_set_start);
+			First_Patch_elems = m_Mesh.elem(*it_set_start);
+			insert_patch_element(First_Patch_elems);
 
-		libMesh::Elem * elem_candidate;
-		for(unsigned int iii = 0; iii < First_Patch_elem->n_neighbors(); ++iii)
-		{
-			elem_candidate = First_Patch_elem->neighbor(iii);
-			if(elem_candidate != NULL)
+			for(unsigned int iii = 0; iii < First_Patch_elems->n_neighbors(); ++iii)
 			{
-				Patch_Test_Queue.push_back(elem_candidate->id());
-				Treated_From_Mesh.insert(elem_candidate->id());
+				elem_candidate = First_Patch_elems->neighbor(iii);
+				if(elem_candidate != NULL)
+				{
+					Patch_Test_Queue.push_back(elem_candidate->id());
+					Treated_From_Mesh.insert(elem_candidate->id());
+				}
 			}
 		}
 
@@ -175,11 +189,12 @@ public:
 				++nbOfPositiveTests;
 
 				// Add it to the output list ...
-				m_Patch_Elem_indexes.insert(Tested_idx);
-				for(unsigned int iii = 0; iii < Tested_elem->n_nodes(); ++iii)
-				{
-					m_Patch_Node_indexes.insert(Tested_elem->node(iii));
-				}
+				insert_patch_element(Tested_elem);
+//				m_Patch_Elem_indexes.insert(Tested_idx);
+//				for(unsigned int iii = 0; iii < Tested_elem->n_nodes(); ++iii)
+//				{
+//					m_Patch_Node_indexes.insert(Tested_elem->node(iii));
+//				}
 
 				// ... And add its neighbours (if they weren't tested yet)
 				for(unsigned int iii = 0; iii < Tested_elem->n_neighbors(); ++iii)
@@ -237,18 +252,17 @@ public:
 		std::cout << "    DEBUG: patch search results" << std::endl;
 		std::cout << " -> Nb. of intersections found : " << m_Patch_Elem_indexes.size() << std::endl << std::endl;
 
-		std::cout << " -> Nb. of mesh elements       : " << m_Mesh.n_elem() << std::endl;
+//		std::cout << " -> Nb. of mesh elements       : " << m_Mesh.n_elem() << std::endl;
 //		std::cout << " -> Nb. of patch elements      : " << m_Patch_Elem_indexes.size() << std::endl;
 //		std::cout << " -> Patch elem %               : " << 100.*m_Patch_Elem_indexes.size()/m_Mesh.n_elem() << " %" << std::endl << std::endl;
 
-		std::cout << " -> Nb. of mesh nodes          : " << m_Mesh.n_nodes() << std::endl;
+//		std::cout << " -> Nb. of mesh nodes          : " << m_Mesh.n_nodes() << std::endl;
 //		std::cout << " -> Nb. of patch nodes         : " << m_Patch_Node_indexes.size() << std::endl;
 //		std::cout << " -> Patch node %               : " << 100.*m_Patch_Node_indexes.size()/m_Mesh.n_nodes() << " %" << std::endl << std::endl;
 
 //		std::cout << " -> Nb. of tests               : " << nbOfTests << std::endl;
 //		std::cout << " -> Nb. of positive tests      : " << nbOfPositiveTests << std::endl;
 //		std::cout << " -> Positive %                 : " << 100.*nbOfPositiveTests/nbOfTests << " %" << std::endl << std::endl;
-		std::cout <<std::endl;
 	}
 
 	/*
@@ -454,6 +468,7 @@ public:
 		homemade_assert_msg(!m_Patch_Elem_indexes.empty() || !m_Patch_Node_indexes.empty(),"Patch is empty!");
 
 		// Clear the input mesh
+		m_Mesh_patch.clear();
 		m_Mesh_patch.reserve_elem(m_Patch_Elem_indexes.size());
 		m_Mesh_patch.reserve_nodes(m_Patch_Node_indexes.size());
 
