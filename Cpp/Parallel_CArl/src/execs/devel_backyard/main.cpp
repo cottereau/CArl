@@ -31,7 +31,7 @@ struct parallel_intersection_test_params {
 	std::string mesh_A;
 	std::string mesh_B;
 	std::string mesh_C;
-	std::string mesh_I;
+	std::string output_base;
 
 	carl::SearchMethod search_type;
 };
@@ -61,11 +61,11 @@ void get_input_params(GetPot& field_parser,
 		input_params.mesh_C = "meshes/3D/tests/test_intersection_C_1.msh";
 	}
 
-	if (field_parser.search(3, "--meshI", "-mI", "MeshI")) {
-		input_params.mesh_I = field_parser.next(
-				input_params.mesh_I);
+	if (field_parser.search(3, "--output", "-mO", "OutputBase")) {
+		input_params.output_base = field_parser.next(
+				input_params.output_base);
 	} else {
-		input_params.mesh_I = "meshes/3D/tests/output/test_intersection_I_1.msh";
+		input_params.output_base = "meshes/3D/tests/output/test";
 	}
 
 	std::string search_type;
@@ -128,12 +128,10 @@ int main(int argc, char *argv[])
 	test_mesh_C.read(input_params.mesh_C);
 
 	// Set up the search
-	carl::Intersection_Search search_coupling_intersections(test_mesh_A,test_mesh_B,test_mesh_C,test_mesh_I);
+	carl::Intersection_Search search_coupling_intersections(test_mesh_A,test_mesh_B,test_mesh_C,test_mesh_I,input_params.output_base);
 
 	// Search!
 	search_coupling_intersections.BuildIntersections(input_params.search_type);
-
-	test_mesh_I.write(input_params.mesh_I);
 
 	return 0;
 }

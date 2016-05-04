@@ -58,9 +58,12 @@ protected:
 
 	double m_Min_Inter_Volume;
 
+	std::string m_Output_filename_base;
 	bool MASTER_bPerfLog_intersection_search;
 
 	libMesh::PerfLog m_perf_log;
+
+	bool m_bPrintDebug;
 
 public:
 
@@ -68,8 +71,10 @@ public:
 						libMesh::Mesh & mesh_B,
 						libMesh::Mesh & mesh_Coupling,
 						libMesh::Mesh & mesh_I,
+						const std::string & output_base = std::string("test"),
 						double Min_Inter_Volume = 1E-15,
-						bool  bDoPerf_log = true) :
+						bool  bDoPerf_log = true,
+						bool debugOutput = false) :
 		m_Mesh_A { mesh_A },
 		m_Mesh_B { mesh_B },
 		m_Mesh_Coupling { mesh_Coupling },
@@ -78,9 +83,10 @@ public:
 		m_Patch_Constructor_B { Patch_construction(m_Mesh_B)},
 		m_Mesh_Intersection { Mesh_Intersection(mesh_I,m_Mesh_A,m_Mesh_B)},
 		m_Min_Inter_Volume { Min_Inter_Volume },
+		m_Output_filename_base { output_base },
 		MASTER_bPerfLog_intersection_search {bDoPerf_log},
-		m_perf_log { libMesh::PerfLog("Intersection search", MASTER_bPerfLog_intersection_search) }
-
+		m_perf_log { libMesh::PerfLog("Intersection search", MASTER_bPerfLog_intersection_search) },
+		m_bPrintDebug { debugOutput }
 	{
 		// Reserve space for the intersection multimap
 		m_Intersection_Pairs_multimap.reserve(mesh_A.n_elem()*mesh_B.n_elem());
@@ -105,13 +111,17 @@ public:
 	{
 		// Unbreakable Patches!
 		m_Patch_Constructor_A.BuildPatch(Query_elem);
-//		std::string filename = "patch_mesh_A_" + std::to_string(patch_counter);
-//		m_Patch_Constructor_A.export_patch_mesh(filename);
 
 		// Trusty Patches!
 		m_Patch_Constructor_B.BuildPatch(Query_elem);
-//		filename = "patch_mesh_B_" + std::to_string(patch_counter);
-//		m_Patch_Constructor_B.export_patch_mesh(filename);
+
+		if(m_bPrintDebug)
+		{
+			std::string filename = "/meshes/3D/tests/output/patch_mesh_A_" + std::to_string(patch_counter);
+			m_Patch_Constructor_A.export_patch_mesh(filename);
+			filename = "/meshes/3D/tests/output/patch_mesh_B_" + std::to_string(patch_counter);
+			m_Patch_Constructor_B.export_patch_mesh(filename);
+		}
 	}
 
 	void FindPatchIntersections_Brute(const libMesh::Elem 	* Query_elem)
@@ -166,9 +176,12 @@ public:
 				}
 			}
 		}
-		std::cout << "    DEBUG: brute force search results" << std::endl;
-		std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
-				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl  << std::endl;
+		if(m_bPrintDebug)
+		{
+			std::cout << "    DEBUG: brute force search results" << std::endl;
+			std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
+					  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl  << std::endl;
+		}
 	}
 
 	/*
@@ -305,13 +318,19 @@ public:
 		bool bGuidedByB = Patch_guide->size() > Patch_probed->size();
 		if(bGuidedByB)
 		{
-			std::cout << "    DEBUG:     Probe: A     |     Guide: B" << std::endl;
+			if(m_bPrintDebug)
+			{
+				std::cout << "    DEBUG:     Probe: A     |     Guide: B" << std::endl;
+			}
 			Patch_guide  = &m_Patch_Constructor_B;
 			Patch_probed = &m_Patch_Constructor_A;
 		}
 		else
 		{
-			std::cout << "    DEBUG:     Probe: B     |     Guide: A" << std::endl;
+			if(m_bPrintDebug)
+			{
+				std::cout << "    DEBUG:     Probe: B     |     Guide: A" << std::endl;
+			}
 		}
 
 		// Ids of the working elements
@@ -459,10 +478,13 @@ public:
 			}
 		}
 
-		std::cout << "    DEBUG: advancing front search results" << std::endl;
-		std::cout << " -> Guide elements tested / all   : " << nbOfGuideElemsTested << " / " << Patch_guide->size() << std::endl;
-		std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
-				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl  << std::endl;
+		if(m_bPrintDebug)
+		{
+			std::cout << "    DEBUG: advancing front search results" << std::endl;
+			std::cout << " -> Guide elements tested / all   : " << nbOfGuideElemsTested << " / " << Patch_guide->size() << std::endl;
+			std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
+					  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl  << std::endl;
+		}
 	}
 
 	void BuildIntersections_Brute()
@@ -502,8 +524,7 @@ public:
 		double total_volume = m_Mesh_Intersection.get_total_volume();
 		m_perf_log.push("Calculate volume","Brute force");
 
-
-		std::cout << "    DEBUG: calculate the TOTAL volume (BRUTE)" << std::endl;
+		std::cout << "    TOTAL volume (BRUTE)" << std::endl;
 		std::cout << " -> Mesh elems, nodes             : " << m_Mesh_Intersection.mesh().n_elem() << " , " << m_Mesh_Intersection.mesh().n_nodes() << std::endl;
 		std::cout << " -> Intersection volume / real    : " << total_volume << " / " << real_volume << std::endl << std::endl;
 	}
@@ -545,7 +566,7 @@ public:
 		double total_volume = m_Mesh_Intersection.get_total_volume();
 		m_perf_log.push("Calculate volume","Advancing front");
 
-		std::cout << "    DEBUG: calculate the TOTAL volume (FRONT)" << std::endl;
+		std::cout << "    TOTAL volume (FRONT)" << std::endl;
 		std::cout << " -> Mesh elems, nodes             : " << m_Mesh_Intersection.mesh().n_elem() << " , " << m_Mesh_Intersection.mesh().n_nodes() << std::endl;
 		std::cout << " -> Intersection volume / real    : " << total_volume << " / " << real_volume << std::endl << std::endl;
 	}
@@ -564,6 +585,8 @@ public:
 							BuildIntersections_Front();
 							break;
 		}
+
+		m_Mesh_Intersection.export_intersection_data(m_Output_filename_base);
 	}
 
 	void CalculateIntersectionVolume(const libMesh::Elem 	* Query_elem)
@@ -615,10 +638,13 @@ public:
 			}
 		}
 
-		std::cout << "    DEBUG: calculate the volume" << std::endl;
-		std::cout << " -> Intersection volume / real    : " << total_volume << " / " << Query_elem->volume() << std::endl << std::endl;
-		std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
-				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl  << std::endl;
+		if(m_bPrintDebug)
+		{
+			std::cout << "    DEBUG: calculate the volume" << std::endl;
+			std::cout << " -> Intersection volume / real    : " << total_volume << " / " << Query_elem->volume() << std::endl << std::endl;
+			std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
+					  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl  << std::endl;
+		}
 	}
 
 	void UpdateCouplingIntersection(const libMesh::Elem 	* Query_elem)
@@ -662,16 +688,19 @@ public:
 				{
 					bCreateNewNefForA = false;
 					m_perf_log.push("Update intersection","Build intersections");
-					m_Mesh_Intersection.increase_intersection_mesh(points_out);
+					m_Mesh_Intersection.increase_intersection_mesh(points_out,*it_patch_A,it_patch_B->second);
 					m_perf_log.pop("Update intersection","Build intersections");
 					++nbOfPositiveTests;
 				}
 			}
 		}
 
-		std::cout << "    DEBUG: update intersection mesh" << std::endl;
-		std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
-				  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl  << std::endl;
+		if(m_bPrintDebug)
+		{
+			std::cout << "    DEBUG: update intersection mesh" << std::endl;
+			std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
+					  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl  << std::endl;
+		}
 	}
 };
 }

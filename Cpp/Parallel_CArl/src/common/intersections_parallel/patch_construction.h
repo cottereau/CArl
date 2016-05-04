@@ -55,12 +55,17 @@ protected:
 	std::unordered_map<unsigned int,int>				m_elem_map_Global_Output;
 	std::unordered_map<unsigned int,int>				m_elem_map_Output_Global;
 
+	bool m_bPrintDebug;
+
+	Patch_construction();
+
 public:
 
-	Patch_construction(libMesh::Mesh & mesh) :
+	Patch_construction(libMesh::Mesh & mesh, bool debugOutput = false) :
 		m_Mesh { mesh },
 		m_Mesh_patch { m_Mesh.comm() },
-		m_comm { m_Mesh.comm() }
+		m_comm { m_Mesh.comm() },
+		m_bPrintDebug { debugOutput }
 	{
 		m_Patch_Point_Locator = m_Mesh.sub_point_locator();
 
@@ -190,11 +195,6 @@ public:
 
 				// Add it to the output list ...
 				insert_patch_element(Tested_elem);
-//				m_Patch_Elem_indexes.insert(Tested_idx);
-//				for(unsigned int iii = 0; iii < Tested_elem->n_nodes(); ++iii)
-//				{
-//					m_Patch_Node_indexes.insert(Tested_elem->node(iii));
-//				}
 
 				// ... And add its neighbours (if they weren't tested yet)
 				for(unsigned int iii = 0; iii < Tested_elem->n_neighbors(); ++iii)
@@ -249,20 +249,23 @@ public:
 		// Build the patch mesh
 		build_patch_mesh();
 
-		std::cout << "    DEBUG: patch search results" << std::endl;
-		std::cout << " -> Nb. of intersections found : " << m_Patch_Elem_indexes.size() << std::endl << std::endl;
+		if(m_bPrintDebug)
+		{
+			std::cout << "    DEBUG: patch search results" << std::endl;
+			std::cout << " -> Nb. of intersections found : " << m_Patch_Elem_indexes.size() << std::endl << std::endl;
 
-//		std::cout << " -> Nb. of mesh elements       : " << m_Mesh.n_elem() << std::endl;
-//		std::cout << " -> Nb. of patch elements      : " << m_Patch_Elem_indexes.size() << std::endl;
-//		std::cout << " -> Patch elem %               : " << 100.*m_Patch_Elem_indexes.size()/m_Mesh.n_elem() << " %" << std::endl << std::endl;
+			std::cout << " -> Nb. of mesh elements       : " << m_Mesh.n_elem() << std::endl;
+			std::cout << " -> Nb. of patch elements      : " << m_Patch_Elem_indexes.size() << std::endl;
+			std::cout << " -> Patch elem %               : " << 100.*m_Patch_Elem_indexes.size()/m_Mesh.n_elem() << " %" << std::endl << std::endl;
 
-//		std::cout << " -> Nb. of mesh nodes          : " << m_Mesh.n_nodes() << std::endl;
-//		std::cout << " -> Nb. of patch nodes         : " << m_Patch_Node_indexes.size() << std::endl;
-//		std::cout << " -> Patch node %               : " << 100.*m_Patch_Node_indexes.size()/m_Mesh.n_nodes() << " %" << std::endl << std::endl;
+			std::cout << " -> Nb. of mesh nodes          : " << m_Mesh.n_nodes() << std::endl;
+			std::cout << " -> Nb. of patch nodes         : " << m_Patch_Node_indexes.size() << std::endl;
+			std::cout << " -> Patch node %               : " << 100.*m_Patch_Node_indexes.size()/m_Mesh.n_nodes() << " %" << std::endl << std::endl;
 
-//		std::cout << " -> Nb. of tests               : " << nbOfTests << std::endl;
-//		std::cout << " -> Nb. of positive tests      : " << nbOfPositiveTests << std::endl;
-//		std::cout << " -> Positive %                 : " << 100.*nbOfPositiveTests/nbOfTests << " %" << std::endl << std::endl;
+			std::cout << " -> Nb. of tests               : " << nbOfTests << std::endl;
+			std::cout << " -> Nb. of positive tests      : " << nbOfPositiveTests << std::endl;
+			std::cout << " -> Positive %                 : " << 100.*nbOfPositiveTests/nbOfTests << " %" << std::endl << std::endl;
+		}
 	}
 
 	/*

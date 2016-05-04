@@ -39,9 +39,13 @@ protected:
 	Kernel_to_ExactKernel 		   ConvertInexactToExact;
 	ExactKernel_to_Kernel 		   ConvertExactToInexact;
 
+	// Data structures used to save and control the intersection tables
+	unsigned int 					m_nb_of_intersections;
+	std::unordered_map<unsigned int, std::pair<unsigned int, unsigned int> > m_intersection_pairs;
+	std::unordered_map<unsigned int, std::pair<unsigned int, unsigned int> > m_intersection_element_range;
+
 	//	Data structure and variables associated to the "grid" used to collapse
 	//  elements that are too small.
-
 	double		m_eps;
 
 	std::vector<long > m_GridN;
@@ -60,6 +64,8 @@ protected:
 
 	//	Boolean controlling if the intersection mesh was finished or not
 	bool m_bMeshFinalized;
+
+	bool m_bPrintDebug;
 
 	Mesh_Intersection();
 
@@ -131,13 +137,26 @@ protected:
 		}
 	}
 
+	void update_intersection_pairs(unsigned int elem_idx_A, unsigned int elem_idx_B, unsigned int inter_id)
+	{
+		m_intersection_pairs[inter_id] = std::make_pair(elem_idx_A, elem_idx_B);
+	}
+
+	void update_intersection_element_range(unsigned int range_start, unsigned int range_end, unsigned int inter_id)
+	{
+		m_intersection_element_range[inter_id] = std::make_pair(range_start, range_end);
+	}
+
 public:
 
-	Mesh_Intersection(libMesh::SerialMesh & mesh, const libMesh::Mesh & mesh_A, const libMesh::Mesh & mesh_B, int map_preallocation = 1E6) :
+	Mesh_Intersection(	libMesh::SerialMesh & mesh, const libMesh::Mesh & mesh_A,
+						const libMesh::Mesh & mesh_B,
+						int map_preallocation = 1E6, bool debugOutput = false) :
 		m_comm { mesh.comm() },
 		m_libMesh_Mesh { mesh },
 		m_libMesh_PolyhedronMesh { libMesh::SerialMesh(m_comm) },
 		m_TetGenInterface { libMesh::TetGenMeshInterface(m_libMesh_PolyhedronMesh) },
+		m_nb_of_intersections { 0 },
 		m_eps { -1 },
 		m_GridN { std::vector<long >(3,-1) },
 		m_Grid_MinPoint { libMesh::Point(0,0,0) },
@@ -145,7 +164,8 @@ public:
 		m_nb_of_elements { 0 },
 		m_nb_of_vertices { 0 },
 		m_nb_of_points { 0 },
-		m_bMeshFinalized { false }
+		m_bMeshFinalized { false },
+		m_bPrintDebug { debugOutput }
 	{
 		m_rank = m_comm.rank();
 		m_Grid_to_mesh_vertex_idx.reserve(map_preallocation);
@@ -156,6 +176,9 @@ public:
 		m_libMesh_Mesh.reserve_nodes(map_preallocation);
 		m_libMesh_Mesh.reserve_elem(10*map_preallocation);
 
+		m_intersection_pairs.reserve(map_preallocation);
+		m_intersection_element_range.reserve(map_preallocation);
+
 		m_libMesh_Mesh.allow_renumbering(false);
 	};
 
@@ -164,6 +187,9 @@ public:
 		m_libMesh_Mesh.clear();
 		m_Grid_to_mesh_vertex_idx.clear();
 		m_bMeshFinalized = false;
+		m_intersection_pairs.clear();
+		m_intersection_element_range.clear();
+		m_nb_of_intersections = 0;
 		m_nb_of_elements = 0 ;
 		m_nb_of_vertices = 0 ;
 		m_nb_of_points = 0 ;
@@ -198,9 +224,12 @@ public:
 			m_GridN[iii] = (m_Grid_MaxPoint(iii) - m_Grid_MinPoint(iii)) / m_eps + 1;
 		}
 
-		std::cout << "    DEBUG: discrete grid" << std::endl;
-		std::cout << " -> eps             : " << m_eps << std::endl;
-		std::cout << " -> Grid dimensions : " << m_GridN[0] << " " << m_GridN[1] << " " << m_GridN[2] << " " << std::endl  << std::endl;
+		if(m_bPrintDebug)
+		{
+			std::cout << "    DEBUG: discrete grid" << std::endl;
+			std::cout << " -> eps             : " << m_eps << std::endl;
+			std::cout << " -> Grid dimensions : " << m_GridN[0] << " " << m_GridN[1] << " " << m_GridN[2] << " " << std::endl  << std::endl;
+		}
 	}
 
 	const libMesh::SerialMesh & mesh()
@@ -208,9 +237,10 @@ public:
 		return m_libMesh_Mesh;
 	}
 
-	void increase_intersection_mesh(	const std::set<libMesh::Point> & input_points)
+	void increase_intersection_mesh(	const std::set<libMesh::Point> & input_points, unsigned int elem_idx_A, unsigned int elem_idx_B)
 	{
 		m_bMeshFinalized = false;
+		unsigned int intersection_range_start = m_nb_of_elements;
 
 		// 	First, add the points to the grid-to-mesh map, and create new
 		// vertices if needed.
@@ -219,10 +249,53 @@ public:
 		//	Second, triagulate the point set
 		triangulate_intersection(input_points);
 
+		//  Third, update the intersection mesh
 		// 	The sets conserve the order, so there is no need of an equivalence
 		// table between the m_libMesh_PolyhedronMesh and m_libMesh_Mesh
 		// vertices.
 		update_intersection_mesh();
+
+		//	And finally, update the intersection pairs, if needed
+
+		if(m_libMesh_PolyhedronMesh.n_elem() != 0)
+		{
+			unsigned int intersection_range_end = m_nb_of_elements;
+			update_intersection_pairs(elem_idx_A, elem_idx_B,m_nb_of_intersections);
+			update_intersection_element_range(intersection_range_start,intersection_range_end,m_nb_of_intersections);
+			++m_nb_of_intersections;
+		}
+	}
+
+	void export_intersection_data(const std::string & filename_base, const std::string & mesh_format = std::string(".msh"))
+	{
+		homemade_assert_msg(m_bMeshFinalized, "Mesh not prepared for use yet!\n");
+
+		// Set the filenames depending on the processor rank
+		std::string mesh_file_out = filename_base + "_r_" + std::to_string(m_rank) + mesh_format;
+		std::string table_file_out = filename_base + "_inter_table_Full_r_" + std::to_string(m_rank) + ".dat";
+
+		// Print the mesh
+		m_libMesh_Mesh.write(mesh_file_out);
+
+		// Print the intersection table
+		std::ofstream table_out(table_file_out);
+		unsigned int nb_of_inter_elements = 0;
+		table_out << m_nb_of_intersections << " " << m_libMesh_Mesh.n_elem() << std::endl;
+
+		for(unsigned int iii = 0; iii < m_nb_of_intersections; ++iii)
+		{
+			nb_of_inter_elements = m_intersection_element_range[iii].second
+								 - m_intersection_element_range[iii].first;
+			table_out << iii << " " << m_intersection_pairs[iii].first << " "
+					                << m_intersection_pairs[iii].second  << " "
+									<< nb_of_inter_elements;
+			for(unsigned int jjj = 0; jjj < nb_of_inter_elements; ++jjj)
+			{
+				table_out << " " << m_intersection_element_range[iii].first + jjj;
+			}
+			table_out << std::endl;
+		}
+		table_out.close();
 	}
 
 	void prepare_for_use()
