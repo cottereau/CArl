@@ -101,6 +101,12 @@ int main(int argc, char *argv[])
 	// Initialize libMesh
 	libMesh::LibMeshInit init(argc, argv);
 	libMesh::Parallel::Communicator& WorldComm = init.comm();
+	unsigned int nodes = WorldComm.size();
+	unsigned int rank =  WorldComm.rank();
+	libMesh::Parallel::Communicator LocalComm;
+	WorldComm.split(rank,0,LocalComm);
+
+	libMesh::PerfLog perf_log("Main program");
 
 	// Set up inputs
 	GetPot command_line(argc, argv);
@@ -121,17 +127,51 @@ int main(int argc, char *argv[])
 	libMesh::Mesh test_mesh_A(WorldComm);
 	libMesh::Mesh test_mesh_B(WorldComm);
 	libMesh::Mesh test_mesh_C(WorldComm);
-	libMesh::Mesh test_mesh_I(WorldComm);
+
+	// And set the (single processor) output mesh
+	libMesh::Mesh test_mesh_I(LocalComm);
 
 	test_mesh_A.read(input_params.mesh_A);
 	test_mesh_B.read(input_params.mesh_B);
 	test_mesh_C.read(input_params.mesh_C);
 
+	// Set the processor ids for the coupling mesh elements
+	unsigned int nb_coupling_elems = test_mesh_C.n_elem();
+	std::vector<unsigned int> nb_coupling_elements_per_node(nodes,nb_coupling_elems/nodes);
+	nb_coupling_elements_per_node[nodes - 1] = nb_coupling_elems - (nodes - 1)*(nb_coupling_elems/nodes);
+	unsigned int coupling_counter = 0;
+	for(unsigned int iii = 0; iii < nodes; ++iii)
+	{
+		for(unsigned int jjj = 0; jjj < nb_coupling_elements_per_node[iii]; ++jjj)
+		{
+			test_mesh_C.elem(coupling_counter)->processor_id(iii);
+			++coupling_counter;
+		}
+	}
+
+	// Debug output - libMesh automatically suppresses output from  processors
+	// other the rank == 0.
+	std::cout << " -> Nb. of processors                 : " << nodes << std::endl;
+	std::cout << " -> Nb. coupling elements (partition) : " << nb_coupling_elems << " ( ";
+	for(unsigned int iii = 0; iii < nodes; ++iii)
+	{
+		std::cout << nb_coupling_elements_per_node[iii] << " ";
+	}
+	std::cout << ")" << std::endl << std::endl;
+
 	// Set up the search
+	perf_log.push("Set up");
 	carl::Intersection_Search search_coupling_intersections(test_mesh_A,test_mesh_B,test_mesh_C,test_mesh_I,input_params.output_base);
+	perf_log.pop("Set up");
 
 	// Search!
+	perf_log.push("Search intersection");
 	search_coupling_intersections.BuildIntersections(input_params.search_type);
+	perf_log.pop("Search intersection");
+
+	std::ofstream perf_log_file("meshes/3D/tests/perf_log_intersection_r_" + std::to_string(rank) + "_n_" + std::to_string(nodes) +".txt");
+	perf_log_file << perf_log.get_log();
+	perf_log_file.close();
 
 	return 0;
 }

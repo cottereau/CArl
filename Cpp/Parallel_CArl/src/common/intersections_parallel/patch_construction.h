@@ -30,12 +30,16 @@ namespace carl
 class	Patch_construction
 {
 protected:
+	const libMesh::Parallel::Communicator&  m_comm;
+	const unsigned int 						m_nodes;
+	const unsigned int 						m_rank;
+
+	const libMesh::Parallel::Communicator&  m_local_comm;
+
 	libMesh::Mesh&				   					m_Mesh;
 	libMesh::Mesh									m_Mesh_patch;
 	std::unique_ptr<libMesh::PointLocatorBase>      m_Patch_Point_Locator;
 	Intersection_Tools								m_Intersection_Test;
-
-	const libMesh::Parallel::Communicator& m_comm;
 
 	std::unordered_set<unsigned int> 									m_Patch_Elem_indexes;
 	std::unordered_set<unsigned int>									m_Patch_Node_indexes;
@@ -46,6 +50,7 @@ protected:
 	bool									m_bTestNeighsForNewPairs;
 	std::deque<int> 						m_element_intersection_queue;
 	std::deque<int> 						m_element_test_queue;
+
 	std::unordered_map<unsigned int,int>  	m_element_already_treated;
 	std::unordered_map<unsigned int,int> 	m_element_inside_intersection_queue;
 	std::unordered_set<unsigned int>		m_element_neighbours_to_search;
@@ -57,14 +62,19 @@ protected:
 
 	bool m_bPrintDebug;
 
+
 	Patch_construction();
 
 public:
 
-	Patch_construction(libMesh::Mesh & mesh, bool debugOutput = false) :
+	Patch_construction(libMesh::Mesh & mesh, const libMesh::Parallel::Communicator& local_comm, bool debugOutput = false) :
+		m_comm { mesh.comm() },
+		m_nodes { m_comm.size() },
+		m_rank { m_comm.rank() },
+		m_local_comm {  local_comm },
 		m_Mesh { mesh },
-		m_Mesh_patch { m_Mesh.comm() },
-		m_comm { m_Mesh.comm() },
+		m_Mesh_patch { libMesh::Mesh(m_local_comm) },
+
 		m_bPrintDebug { debugOutput }
 	{
 		m_Patch_Point_Locator = m_Mesh.sub_point_locator();
@@ -472,6 +482,7 @@ public:
 
 		// Clear the input mesh
 		m_Mesh_patch.clear();
+
 		m_Mesh_patch.reserve_elem(m_Patch_Elem_indexes.size());
 		m_Mesh_patch.reserve_nodes(m_Patch_Node_indexes.size());
 

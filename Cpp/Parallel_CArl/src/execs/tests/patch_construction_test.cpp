@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 	const libMesh::Elem * query_elem = query_mesh.elem(0);
 
 	// Get intersection!
-	carl::Patch_construction test_patch(test_mesh);
+	carl::Patch_construction test_patch(test_mesh,WorldComm);
 	test_patch.BuildPatch(query_elem);
 	std::unordered_set<unsigned int> & Patch_Indexes = test_patch.elem_indexes();
 

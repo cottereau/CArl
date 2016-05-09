@@ -45,6 +45,10 @@ protected:
 	libMesh::Mesh&				   m_Mesh_Coupling;
 
 	const libMesh::Parallel::Communicator& m_comm;
+	const unsigned int					   m_nodes;
+	const unsigned int					   m_rank;
+
+	const libMesh::Parallel::Communicator& m_local_comm;
 
 	Patch_construction					   m_Patch_Constructor_A;
 	Patch_construction					   m_Patch_Constructor_B;
@@ -74,19 +78,22 @@ public:
 						const std::string & output_base = std::string("test"),
 						double Min_Inter_Volume = 1E-15,
 						bool  bDoPerf_log = true,
-						bool debugOutput = false) :
+						bool  bDebugOutput = false) :
 		m_Mesh_A { mesh_A },
 		m_Mesh_B { mesh_B },
 		m_Mesh_Coupling { mesh_Coupling },
 		m_comm { m_Mesh_Coupling.comm() },
-		m_Patch_Constructor_A { Patch_construction(m_Mesh_A)},
-		m_Patch_Constructor_B { Patch_construction(m_Mesh_B)},
+		m_nodes { m_comm.size() },
+		m_rank { m_comm.rank() },
+		m_local_comm { mesh_I.comm() },
+		m_Patch_Constructor_A { Patch_construction(m_Mesh_A,m_local_comm)},
+		m_Patch_Constructor_B { Patch_construction(m_Mesh_B,m_local_comm)},
 		m_Mesh_Intersection { Mesh_Intersection(mesh_I,m_Mesh_A,m_Mesh_B)},
 		m_Min_Inter_Volume { Min_Inter_Volume },
-		m_Output_filename_base { output_base },
+		m_Output_filename_base { output_base + "_r_" + std::to_string(m_rank) + "_n_" + std::to_string(m_nodes) + "_"},
 		MASTER_bPerfLog_intersection_search {bDoPerf_log},
 		m_perf_log { libMesh::PerfLog("Intersection search", MASTER_bPerfLog_intersection_search) },
-		m_bPrintDebug { debugOutput }
+		m_bPrintDebug { bDebugOutput }
 	{
 		// Reserve space for the intersection multimap
 		m_Intersection_Pairs_multimap.reserve(mesh_A.n_elem()*mesh_B.n_elem());
@@ -107,7 +114,10 @@ public:
 		return m_Mesh_Coupling;
 	}
 
-	void BuildCoupledPatches(const libMesh::Elem 	* Query_elem, int patch_counter)
+	/*
+	 * 		Build both patches associated to the query element
+	 */
+	void BuildCoupledPatches(const libMesh::Elem 	* Query_elem, int patch_counter = 0)
 	{
 		// Unbreakable Patches!
 		m_Patch_Constructor_A.BuildPatch(Query_elem);
@@ -117,13 +127,18 @@ public:
 
 		if(m_bPrintDebug)
 		{
-			std::string filename = "/meshes/3D/tests/output/patch_mesh_A_" + std::to_string(patch_counter);
+			std::string filename = "/meshes/3D/tests/output/patch_mesh_A_" + std::to_string(patch_counter) + "_" + std::to_string(m_rank);
 			m_Patch_Constructor_A.export_patch_mesh(filename);
-			filename = "/meshes/3D/tests/output/patch_mesh_B_" + std::to_string(patch_counter);
+			filename = "/meshes/3D/tests/output/patch_mesh_B_" + std::to_string(patch_counter) + "_" + std::to_string(m_rank);
 			m_Patch_Constructor_B.export_patch_mesh(filename);
 		}
 	}
 
+	/*
+	 * 		Find all the intersections between the patches, using a brute force
+	 * 	method (all elements from a patch are tested against all the elements
+	 * 	from the other patch).
+	 */
 	void FindPatchIntersections_Brute(const libMesh::Elem 	* Query_elem)
 	{
 		m_perf_log.push("Preamble","Brute force algorithm");
@@ -185,18 +200,19 @@ public:
 	}
 
 	/*
-	 * 		Find the first intersecting pair from a patch
+	 * 		Find the first intersecting pair from a patch. Do so by :
 	 *
-	 * 		output: std::pair( guide_elem_id, probed_elem_id )
-	 *
+	 * 		a) locating the elements from the guide patch that contain the
+	 * 		vertices of an element from the probed patch.
+	 * 		b) for each one of these guide elements, find the one that
+	 * 		intersects the probed element inside the coupling.
+	 * 		c) if this fails, use a brute force search method.
 	 */
 	void FindFirstPair(		Patch_construction * 	Patch_guide,
 							Patch_construction * 	Patch_probed,
 							std::pair<unsigned int,unsigned int> &		First_intersection)
 	{
 		// Set up some references for a simpler code
-		std::unordered_set<unsigned int> & 	Patch_guide_ids  = Patch_guide->elem_indexes();
-
 		libMesh::Mesh&  	Mesh_patch_guide	= Patch_guide->patch_mesh();
 		libMesh::Mesh&		Mesh_patch_probed	= Patch_probed->patch_mesh();
 
@@ -228,6 +244,7 @@ public:
 		}
 
 		// Search for one intersecting term inside the guide patch
+		libMesh::Elem * Patch_guide_first_elem = NULL;
 		unsigned int Patch_guide_first_elem_id;
 		bool bFoundFirstInter = false;
 
@@ -235,11 +252,14 @@ public:
 				it_inter != Intersecting_guide_elems.end();
 				++it_inter)
 		{
+			Patch_guide_first_elem = Mesh_patch_guide.elem(*it_inter);
 			Patch_guide_first_elem_id = Patch_guide->convert_patch_to_global_elem_id(*it_inter);
-			if(Patch_guide_ids.find(Patch_guide_first_elem_id) != Patch_guide_ids.end())
+
+			// Must test if the intersection is inside the coupling region
+			bFoundFirstInter = m_Intersection_test_neighbors.libMesh_exact_do_intersect_inside_coupling(Patch_probed_first_elem,Patch_guide_first_elem);
+
+			if(bFoundFirstInter)
 			{
-				// Found one !
-				bFoundFirstInter = true;
 				First_intersection.first = Patch_guide_first_elem_id;
 				First_intersection.second = Patch_probed_first_elem_id;
 				break;
@@ -255,6 +275,11 @@ public:
 		}
 	};
 
+	/*
+	 * 		Find the first intersecting pair from a patch, doing a full scan of
+	 * 	the patches (essentially, a brute force algorithm set to stop after the
+	 * 	first positive test).
+	 */
 	void BruteForce_FindFirstPair(	Patch_construction * 	Patch_guide,
 									Patch_construction * 	Patch_probed,
 									std::pair<unsigned int,unsigned int> &		First_intersection)
@@ -281,12 +306,10 @@ public:
 			{
 				const libMesh::Elem * elem_Probed = Mesh_patch_probed.elem(*it_patch_Probed);
 
-				std::cout << *it_patch_Guide << " " << *it_patch_Probed << std::endl;
 				bFoundFirstInter = m_Intersection_test.libMesh_exact_do_intersect_inside_coupling(elem_Guide,elem_Probed);
 
 				if(bFoundFirstInter)
 				{
-					std::cout << " Found a pair!" << std::endl;
 					First_intersection.first = *it_patch_Guide;
 					First_intersection.second = *it_patch_Probed;
 					return;
@@ -297,6 +320,10 @@ public:
 		homemade_assert_msg(bFoundFirstInter,"Could't find a first intersecting pair. Are you sure that the patches do intersect?\n");
 	}
 
+	/*
+	 * 		Find all the intersections between the patches, using an advancing
+	 * 	front method.
+	 */
 	void FindPatchIntersections_Front(const libMesh::Elem 	* Query_elem)
 	{
 		m_perf_log.push("Preamble","Advancing front algorithm");
@@ -434,6 +461,7 @@ public:
 					m_perf_log.push("Update test queue","Advancing front algorithm");
 					// 2) add elem_probed's neighbors, if not treated yet
 					Patch_probed->add_neighbors_to_test_list();
+
 					m_perf_log.pop("Update test queue","Advancing front algorithm");
 
 					m_perf_log.push("Update intersection queue","Advancing front algorithm");
@@ -487,11 +515,15 @@ public:
 		}
 	}
 
+	/*
+	 * 		For each coupling element, build the patches and find their
+	 * 	intersections, using the brute force method.
+	 */
 	void BuildIntersections_Brute()
 	{
 		// Prepare iterators
-		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.elements_begin();
-		libMesh::Mesh::const_element_iterator it_coupl_end = m_Mesh_Coupling.elements_end();
+		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.local_elements_begin();
+		libMesh::Mesh::const_element_iterator it_coupl_end = m_Mesh_Coupling.local_elements_end();
 
 		int patch_counter = 0;
 		double real_volume = 0;
@@ -529,11 +561,15 @@ public:
 		std::cout << " -> Intersection volume / real    : " << total_volume << " / " << real_volume << std::endl << std::endl;
 	}
 
+	/*
+	 * 		For each coupling element, build the patches and find their
+	 * 	intersections, using the advancing front method.
+	 */
 	void BuildIntersections_Front()
 	{
 		// Prepare iterators
-		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.elements_begin();
-		libMesh::Mesh::const_element_iterator it_coupl_end = m_Mesh_Coupling.elements_end();
+		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.local_elements_begin();
+		libMesh::Mesh::const_element_iterator it_coupl_end = m_Mesh_Coupling.local_elements_end();
 
 		int patch_counter = 0;
 		double real_volume = 0;
@@ -571,6 +607,12 @@ public:
 		std::cout << " -> Intersection volume / real    : " << total_volume << " / " << real_volume << std::endl << std::endl;
 	}
 
+	/*
+	 * 		Interface for the user to build the intersections. By default, it
+	 * 	uses the brute force algorithm, but the argument can be changed to
+	 * 	carl::FRONT to use the advancing front method, of to carl::BOTH to use
+	 * 	both methods (useful for benchmarking).
+	 */
 	void BuildIntersections(SearchMethod search_type = BRUTE)
 	{
 		switch (search_type)
@@ -589,6 +631,10 @@ public:
 		m_Mesh_Intersection.export_intersection_data(m_Output_filename_base);
 	}
 
+	/*
+	 * 		Legacy function, used to calculate the volume of the intersections
+	 * 	without updating the intersection mesh.
+	 */
 	void CalculateIntersectionVolume(const libMesh::Elem 	* Query_elem)
 	{
 		std::unordered_set<unsigned int> & Patch_Set_A = m_Patch_Constructor_A.elem_indexes();
@@ -647,15 +693,17 @@ public:
 		}
 	}
 
+	/*
+	 * 		Take the intersection tables info and update the intersection mesh.
+	 */
 	void UpdateCouplingIntersection(const libMesh::Elem 	* Query_elem)
 	{
+		// Preamble
 		std::unordered_set<unsigned int> & Patch_Set_A = m_Patch_Constructor_A.elem_indexes();
-
 		std::unordered_set<unsigned int>::iterator it_patch_A;
 
 		bool bDoIntersect = true;
 		bool bCreateNewNefForA = true;
-
 		m_Intersection_test.libmesh_set_coupling_nef_polyhedron(Query_elem);
 
 		std::set<libMesh::Point> points_out;
@@ -663,6 +711,8 @@ public:
 		// Debug vars
 		int nbOfTests = 0;
 		int nbOfPositiveTests = 0;
+
+		// For each element inside patch A ...
 		for(	it_patch_A =  Patch_Set_A.begin();
 				it_patch_A != Patch_Set_A.end();
 				++it_patch_A)
@@ -672,6 +722,7 @@ public:
 			const libMesh::Elem * elem_A = m_Mesh_A.elem(*it_patch_A);
 			bCreateNewNefForA = true;
 
+			// ... get the intersections with patch B ...
 			for(auto it_patch_B = iterator_pair.first ;
 					 it_patch_B != iterator_pair.second ;
 					 ++it_patch_B )
@@ -679,6 +730,7 @@ public:
 				const libMesh::Elem * elem_B = m_Mesh_B.elem(it_patch_B->second);
 				points_out.clear();
 
+				// ... test if they intersect inside the coupling region ...
 				m_perf_log.push("Build intersection polyhedron","Build intersections");
 				bDoIntersect = m_Intersection_test.libMesh_exact_intersection_inside_coupling(elem_A,elem_B,points_out,bCreateNewNefForA,true,false);
 				m_perf_log.pop("Build intersection polyhedron","Build intersections");
@@ -686,9 +738,10 @@ public:
 
 				if(bDoIntersect)
 				{
+					// ... and, if they do, update the intersection mesh!
 					bCreateNewNefForA = false;
 					m_perf_log.push("Update intersection","Build intersections");
-					m_Mesh_Intersection.increase_intersection_mesh(points_out,*it_patch_A,it_patch_B->second);
+					m_Mesh_Intersection.increase_intersection_mesh(points_out,*it_patch_A,it_patch_B->second,Query_elem->id());
 					m_perf_log.pop("Update intersection","Build intersections");
 					++nbOfPositiveTests;
 				}

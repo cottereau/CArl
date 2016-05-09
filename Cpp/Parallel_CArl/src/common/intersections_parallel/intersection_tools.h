@@ -301,10 +301,9 @@ public:
 	};
 
 	/*
-	 * 			Find all elements from the mesh intersecting the query element.
-	 * 		Does so while doing a test to be sure that the query element does
-	 * 		indeed intersect the tested mesh.
-	 *
+	 * 		Find all elements from the mesh intersecting the query element.
+	 * 	Does so while doing a test to be sure that the query element does
+	 * 	indeed intersect the tested mesh.
 	 */
 	bool FindAllIntersection(	const libMesh::Elem * Query_elem,
 								std::unique_ptr<libMesh::PointLocatorBase> & point_locator,

@@ -14,6 +14,8 @@
 
 #include "CGAL_typedefs.h"
 
+#include "algorithm"
+
 namespace carl
 {
 
@@ -29,7 +31,12 @@ class	Mesh_Intersection
 {
 protected:
 	const libMesh::Parallel::Communicator& 	m_comm;
-	int 									m_rank;
+	const unsigned int						m_nodes;
+	const unsigned int 						m_rank;
+
+	const libMesh::Parallel::Communicator& 	m_global_comm;
+	const unsigned int						m_global_nodes;
+	const unsigned int 						m_global_rank;
 
 	libMesh::SerialMesh&				   	m_libMesh_Mesh;
 	libMesh::SerialMesh					   	m_libMesh_PolyhedronMesh;
@@ -42,6 +49,7 @@ protected:
 	// Data structures used to save and control the intersection tables
 	unsigned int 					m_nb_of_intersections;
 	std::unordered_map<unsigned int, std::pair<unsigned int, unsigned int> > m_intersection_pairs;
+	std::unordered_map<unsigned int, unsigned int>  						 m_intersection_couplings;
 	std::unordered_map<unsigned int, std::pair<unsigned int, unsigned int> > m_intersection_element_range;
 
 	//	Data structure and variables associated to the "grid" used to collapse
@@ -153,6 +161,11 @@ public:
 						const libMesh::Mesh & mesh_B,
 						int map_preallocation = 1E6, bool debugOutput = false) :
 		m_comm { mesh.comm() },
+		m_nodes { m_comm.size() },
+		m_rank { m_comm.rank() },
+		m_global_comm { mesh_A.comm() },
+		m_global_nodes { m_global_comm.size() },
+		m_global_rank { m_global_comm.rank() },
 		m_libMesh_Mesh { mesh },
 		m_libMesh_PolyhedronMesh { libMesh::SerialMesh(m_comm) },
 		m_TetGenInterface { libMesh::TetGenMeshInterface(m_libMesh_PolyhedronMesh) },
@@ -167,7 +180,6 @@ public:
 		m_bMeshFinalized { false },
 		m_bPrintDebug { debugOutput }
 	{
-		m_rank = m_comm.rank();
 		m_Grid_to_mesh_vertex_idx.reserve(map_preallocation);
 		m_intersection_point_indexes.resize(24);
 
@@ -177,6 +189,7 @@ public:
 		m_libMesh_Mesh.reserve_elem(10*map_preallocation);
 
 		m_intersection_pairs.reserve(map_preallocation);
+		m_intersection_couplings.reserve(map_preallocation);
 		m_intersection_element_range.reserve(map_preallocation);
 
 		m_libMesh_Mesh.allow_renumbering(false);
@@ -188,6 +201,7 @@ public:
 		m_Grid_to_mesh_vertex_idx.clear();
 		m_bMeshFinalized = false;
 		m_intersection_pairs.clear();
+		m_intersection_couplings.clear();
 		m_intersection_element_range.clear();
 		m_nb_of_intersections = 0;
 		m_nb_of_elements = 0 ;
@@ -237,7 +251,10 @@ public:
 		return m_libMesh_Mesh;
 	}
 
-	void increase_intersection_mesh(	const std::set<libMesh::Point> & input_points, unsigned int elem_idx_A, unsigned int elem_idx_B)
+	void increase_intersection_mesh(	const std::set<libMesh::Point> & input_points,
+										unsigned int elem_idx_A,
+										unsigned int elem_idx_B,
+										unsigned int elem_idx_C)
 	{
 		m_bMeshFinalized = false;
 		unsigned int intersection_range_start = m_nb_of_elements;
@@ -261,6 +278,7 @@ public:
 		{
 			unsigned int intersection_range_end = m_nb_of_elements;
 			update_intersection_pairs(elem_idx_A, elem_idx_B,m_nb_of_intersections);
+			m_intersection_couplings[m_nb_of_intersections] = elem_idx_C;
 			update_intersection_element_range(intersection_range_start,intersection_range_end,m_nb_of_intersections);
 			++m_nb_of_intersections;
 		}
@@ -271,8 +289,8 @@ public:
 		homemade_assert_msg(m_bMeshFinalized, "Mesh not prepared for use yet!\n");
 
 		// Set the filenames depending on the processor rank
-		std::string mesh_file_out = filename_base + "_r_" + std::to_string(m_rank) + mesh_format;
-		std::string table_file_out = filename_base + "_inter_table_Full_r_" + std::to_string(m_rank) + ".dat";
+		std::string mesh_file_out = filename_base + mesh_format;
+		std::string table_file_out = filename_base + "_inter_table_Full.dat";
 
 		// Print the mesh
 		m_libMesh_Mesh.write(mesh_file_out);
@@ -288,6 +306,7 @@ public:
 								 - m_intersection_element_range[iii].first;
 			table_out << iii << " " << m_intersection_pairs[iii].first << " "
 					                << m_intersection_pairs[iii].second  << " "
+//									<< m_intersection_couplings[iii] << " "
 									<< nb_of_inter_elements;
 			for(unsigned int jjj = 0; jjj < nb_of_inter_elements; ++jjj)
 			{

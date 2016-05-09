@@ -1,0 +1,36 @@
+
+ ------------------------------------------------------------------------------------------------------------------
+| Processor id:   0                                                                                                |
+| Num Processors: 2                                                                                                |
+| Time:           Mon May  9 18:11:29 2016                                                                         |
+| OS:             Darwin                                                                                           |
+| HostName:       Thiagos-MacBook-Air.local                                                                        |
+| OS Release:     14.5.0                                                                                           |
+| OS Version:     Darwin Kernel Version 14.5.0: Wed Jul 29 02:26:53 PDT 2015; root:xnu-2782.40.9~1/RELEASE_X86_64  |
+| Machine:        x86_64                                                                                           |
+| Username:       breubreubreu                                                                                     |
+| Configuration:  ./configure  '--with-vtk-include=/opt/local/include/vtk-5.10/'                                   |
+|  '--with-vtk-lib=/opt/local/lib/vtk-5.10/'                                                                       |
+|  '--with-vtk=yes'                                                                                                |
+|  '--with-cxx=clang++'                                                                                            |
+|  '--with-mpi=/opt/local/'                                                                                        |
+|  '--enable-unique-ptr'                                                                                           |
+|  '--enable-tetgen'                                                                                               |
+|  '--disable-strict-lgpl'                                                                                         |
+|  'PETSC_DIR=/Users/breubreubreu/Execs/petsc-3.6.2'                                                               |
+|  'PETSC_ARCH=arch-darwin-c'                                                                                      |
+|  'SLEPC_DIR=/Users/breubreubreu/Execs/slepc-3.6.1'                                                               |
+|  'HDF5_DIR=/opt/local/include'                                                                                   |
+ ------------------------------------------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------------------------------------
+| Main program Performance: Alive time=102.777, Active time=102.657                                          |
+ ------------------------------------------------------------------------------------------------------------
+| Event                         nCalls     Total Time  Avg Time    Total Time  Avg Time    % of Active Time  |
+|                                          w/o Sub     w/o Sub     With Sub    With Sub    w/o S    With S   |
+|------------------------------------------------------------------------------------------------------------|
+|                                                                                                            |
+| Search intersection           1          102.5121    102.512053  102.5121    102.512053  99.86    99.86    |
+| Set up                        1          0.1446      0.144595    0.1446      0.144595    0.14     0.14     |
+ ------------------------------------------------------------------------------------------------------------
+| Totals:                       2          102.6566                                        100.00            |
+ ------------------------------------------------------------------------------------------------------------
