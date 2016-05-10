@@ -17,10 +17,10 @@
  * 		- DONE: expand it to build the intersections
  * 		- DONE: assemble these algorithms for a single proc
  *
- * 		- TODO: (P) create a partitioner for \Omega_C
- * 		- TODO: (P) call the assembled algorithm for each part, printing each
+ * 		- DONE: (P) create a partitioner for \Omega_C
+ * 		- DONE: (P) call the assembled algorithm for each part, printing each
  * 		            intersection mesh to a file ( |\Omega_C| files )
- * 		- TODO: (P) stitch the intersection meshes of a processor, printing now
+ * 		- DONE: (P) stitch the intersection meshes of a processor, printing now
  * 		            n_p files
  * 		- TODO: (P) either read several meshes in the assemble step, or stitch
  * 		            them all together ...
@@ -167,11 +167,8 @@ int main(int argc, char *argv[])
 	// Search!
 	perf_log.push("Search intersection");
 	search_coupling_intersections.BuildIntersections(input_params.search_type);
+	search_coupling_intersections.CalculateGlobalVolume();
 	perf_log.pop("Search intersection");
-
-	std::ofstream perf_log_file("meshes/3D/tests/perf_log_intersection_r_" + std::to_string(rank) + "_n_" + std::to_string(nodes) +".txt");
-	perf_log_file << perf_log.get_log();
-	perf_log_file.close();
 
 	return 0;
 }

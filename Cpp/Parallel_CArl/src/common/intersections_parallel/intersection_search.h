@@ -60,6 +60,8 @@ protected:
 	Intersection_Tools m_Intersection_test;
 	Intersection_Tools m_Intersection_test_neighbors;
 
+	bool m_bIntersectionsBuilt;
+
 	double m_Min_Inter_Volume;
 
 	std::string m_Output_filename_base;
@@ -89,6 +91,7 @@ public:
 		m_Patch_Constructor_A { Patch_construction(m_Mesh_A,m_local_comm)},
 		m_Patch_Constructor_B { Patch_construction(m_Mesh_B,m_local_comm)},
 		m_Mesh_Intersection { Mesh_Intersection(mesh_I,m_Mesh_A,m_Mesh_B)},
+		m_bIntersectionsBuilt { false },
 		m_Min_Inter_Volume { Min_Inter_Volume },
 		m_Output_filename_base { output_base + "_r_" + std::to_string(m_rank) + "_n_" + std::to_string(m_nodes) + "_"},
 		MASTER_bPerfLog_intersection_search {bDoPerf_log},
@@ -540,7 +543,10 @@ public:
 
 			++patch_counter;
 
-			real_volume += Query_elem->volume();
+			if(m_bPrintDebug)
+			{
+				real_volume += Query_elem->volume();
+			}
 			m_perf_log.push("Find intersections","Brute force");
 			FindPatchIntersections_Brute(Query_elem);
 			m_perf_log.pop("Find intersections","Brute force");
@@ -552,13 +558,17 @@ public:
 		m_perf_log.push("Prepare mesh","Brute force");
 		m_Mesh_Intersection.prepare_for_use();
 		m_perf_log.pop("Prepare mesh","Brute force");
-		m_perf_log.push("Calculate volume","Brute force");
-		double total_volume = m_Mesh_Intersection.get_total_volume();
-		m_perf_log.push("Calculate volume","Brute force");
 
-		std::cout << "    TOTAL volume (BRUTE)" << std::endl;
-		std::cout << " -> Mesh elems, nodes             : " << m_Mesh_Intersection.mesh().n_elem() << " , " << m_Mesh_Intersection.mesh().n_nodes() << std::endl;
-		std::cout << " -> Intersection volume / real    : " << total_volume << " / " << real_volume << std::endl << std::endl;
+		if(m_bPrintDebug)
+		{
+			m_perf_log.push("Calculate volume","Brute force");
+			double total_volume = m_Mesh_Intersection.get_total_volume();
+			m_perf_log.push("Calculate volume","Brute force");
+
+			std::cout << "    DEBUG volume on proc. " << m_rank << "(BRUTE)" << std::endl;
+			std::cout << " -> Mesh elems, nodes             : " << m_Mesh_Intersection.mesh().n_elem() << " , " << m_Mesh_Intersection.mesh().n_nodes() << std::endl;
+			std::cout << " -> Intersection volume / real    : " << total_volume << " / " << real_volume << std::endl << std::endl;
+		}
 	}
 
 	/*
@@ -586,7 +596,10 @@ public:
 
 			++patch_counter;
 
-			real_volume += Query_elem->volume();
+			if(m_bPrintDebug)
+			{
+				real_volume += Query_elem->volume();
+			}
 			m_perf_log.push("Find intersections","Advancing front");
 			FindPatchIntersections_Front(Query_elem);
 			m_perf_log.pop("Find intersections","Advancing front");
@@ -598,13 +611,17 @@ public:
 		m_perf_log.push("Prepare mesh","Advancing front");
 		m_Mesh_Intersection.prepare_for_use();
 		m_perf_log.pop("Prepare mesh","Advancing front");
-		m_perf_log.push("Calculate volume","Advancing front");
-		double total_volume = m_Mesh_Intersection.get_total_volume();
-		m_perf_log.push("Calculate volume","Advancing front");
 
-		std::cout << "    TOTAL volume (FRONT)" << std::endl;
-		std::cout << " -> Mesh elems, nodes             : " << m_Mesh_Intersection.mesh().n_elem() << " , " << m_Mesh_Intersection.mesh().n_nodes() << std::endl;
-		std::cout << " -> Intersection volume / real    : " << total_volume << " / " << real_volume << std::endl << std::endl;
+		if(m_bPrintDebug)
+		{
+			m_perf_log.push("Calculate volume","Advancing front");
+			double total_volume = m_Mesh_Intersection.get_total_volume();
+			m_perf_log.push("Calculate volume","Advancing front");
+
+			std::cout << "    DEBUG volume on proc. " << m_rank << "(FRONT)" << std::endl;
+			std::cout << " -> Mesh elems, nodes             : " << m_Mesh_Intersection.mesh().n_elem() << " , " << m_Mesh_Intersection.mesh().n_nodes() << std::endl;
+			std::cout << " -> Intersection volume / real    : " << total_volume << " / " << real_volume << std::endl << std::endl;
+		}
 	}
 
 	/*
@@ -615,6 +632,7 @@ public:
 	 */
 	void BuildIntersections(SearchMethod search_type = BRUTE)
 	{
+		m_bIntersectionsBuilt = false;
 		switch (search_type)
 		{
 			case BRUTE :	BuildIntersections_Brute();
@@ -629,8 +647,42 @@ public:
 		}
 
 		m_Mesh_Intersection.export_intersection_data(m_Output_filename_base);
+
+		m_bIntersectionsBuilt = true;
 	}
 
+	/*
+	 * 		Calculate the volume over all the processors
+	 */
+	void CalculateGlobalVolume()
+	{
+		// Use a barrier to guarantee that all procs are in the same position
+		m_comm.barrier();
+
+		// Calculate the volume of the intersection on each processor
+		double global_volume = m_Mesh_Intersection.get_total_volume();
+
+		// Add it!
+		m_comm.sum(global_volume);
+
+		// Calculate the volume of the coupling region on each processor
+		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.local_elements_begin();
+		libMesh::Mesh::const_element_iterator it_coupl_end = m_Mesh_Coupling.local_elements_end();
+		double real_volume = 0;
+
+		for( ; it_coupl != it_coupl_end; ++it_coupl)
+		{
+			const libMesh::Elem * Query_elem = * it_coupl;
+			real_volume += Query_elem->volume();
+		}
+
+		// Add it!
+		m_comm.sum(real_volume);
+
+		std::cout << "    TOTAL volume, proc. " << m_rank << std::endl;
+		std::cout << " -> Intersection volume / real    : " << global_volume << " / " << real_volume << std::endl << std::endl;
+
+	}
 	/*
 	 * 		Legacy function, used to calculate the volume of the intersections
 	 * 	without updating the intersection mesh.
