@@ -1,35 +1,35 @@
- -> Nb. of processors                 : 3
- -> Nb. coupling elements (partition) : 16 ( 5 5 6 )
+ -> Nb. of processors                 : 8
+ -> Nb. coupling elements (partition) : 16 ( 2 2 2 2 2 2 2 2 )
 
     TOTAL volume, proc. 1
  -> Intersection volume / real    : 0.166667 / 0.166667
 
 
- ------------------------------------------------------------------------------------------------------------------
-| Processor id:   1                                                                                                |
-| Num Processors: 3                                                                                                |
-| Time:           Tue May 10 16:10:22 2016                                                                         |
-| OS:             Darwin                                                                                           |
-| HostName:       dhcp-97-148.wifi-auth.ecp.fr                                                                     |
-| OS Release:     14.5.0                                                                                           |
-| OS Version:     Darwin Kernel Version 14.5.0: Wed Jul 29 02:26:53 PDT 2015; root:xnu-2782.40.9~1/RELEASE_X86_64  |
-| Machine:        x86_64                                                                                           |
-| Username:       breubreubreu                                                                                     |
-| Configuration:  ./configure  '--with-vtk-include=/opt/local/include/vtk-5.10/'                                   |
-|  '--with-vtk-lib=/opt/local/lib/vtk-5.10/'                                                                       |
-|  '--with-vtk=yes'                                                                                                |
-|  '--with-cxx=clang++'                                                                                            |
-|  '--with-mpi=/opt/local/'                                                                                        |
-|  '--enable-unique-ptr'                                                                                           |
-|  '--enable-tetgen'                                                                                               |
-|  '--disable-strict-lgpl'                                                                                         |
-|  'PETSC_DIR=/Users/breubreubreu/Execs/petsc-3.6.2'                                                               |
-|  'PETSC_ARCH=arch-darwin-c'                                                                                      |
-|  'SLEPC_DIR=/Users/breubreubreu/Execs/slepc-3.6.1'                                                               |
-|  'HDF5_DIR=/opt/local/include'                                                                                   |
- ------------------------------------------------------------------------------------------------------------------
+ --------------------------------------------------------------------------
+| Processor id:   1                                                        |
+| Num Processors: 8                                                        |
+| Time:           Wed May 11 22:49:26 2016                                 |
+| OS:             Linux                                                    |
+| HostName:       r2i0n3                                                   |
+| OS Release:     3.0.74-0.6.10-default                                    |
+| OS Version:     #1 SMP Fri May 24 09:05:40 UTC 2013 (590b33a)            |
+| Machine:        x86_64                                                   |
+| Username:       schlittlt                                                |
+| Configuration:  ./configure  '--with-vtk=yes'                            |
+|  '--with-hdf5=/opt/san/bibliotheques/hdf5/1.8.13-gnu4.8'                 |
+|  '--with-cxx=mpicxx'                                                     |
+|  '--enable-unique-ptr'                                                   |
+|  '--with-mpi=/opt/san/intel15/impi/5.1.0.079/intel64/bin'                |
+|  '--with-cc=mpicc'                                                       |
+|  '--with-boost=/opt/san/bibliotheques/boost/1.57.0'                      |
+|  '--prefix=/home/schlittlt/local_libs/libmesh/libmesh_gcc_4.9.0_mpi_5.1.0'|
+|  'PETSC_DIR=/home/schlittlt/local_libs/petsc-3.6.3'                      |
+|  'PETSC_ARCH=igloo_gcc_4.9.0'                                            |
+|  'SLEPC_DIR=/home/schlittlt/local_libs/slepc-3.6.3'                      |
+|  '--disable-strict-lgpl'                                                 |
+ --------------------------------------------------------------------------
  --------------------------------------------------------------------------------------------------------------
-| Intersection search Performance: Alive time=108.448, Active time=89.3031                                     |
+| Intersection search Performance: Alive time=24.6857, Active time=21.34                                       |
  --------------------------------------------------------------------------------------------------------------
 | Event                           nCalls     Total Time  Avg Time    Total Time  Avg Time    % of Active Time  |
 |                                            w/o Sub     w/o Sub     With Sub    With Sub    w/o S    With S   |
@@ -37,27 +37,27 @@
 |                                                                                                              |
 |                                                                                                              |
 | Advancing front                                                                                              |
-|   Build intersections           5          0.0242      0.004831    76.3532     15.270648   0.03     85.50    |
-|   Build patches                 5          0.0489      0.009772    0.0489      0.009772    0.05     0.05     |
-|   Find intersections            5          0.0144      0.002885    12.8627     2.572539    0.02     14.40    |
-|   Prepare mesh                  1          0.0400      0.040008    0.0400      0.040008    0.04     0.04     |
+|   Build intersections           2          0.0050      0.002485    19.0372     9.518605    0.02     89.21    |
+|   Build patches                 2          0.0122      0.006122    0.0122      0.006122    0.06     0.06     |
+|   Find intersections            2          0.0015      0.000767    2.2839      1.141949    0.01     10.70    |
+|   Prepare mesh                  1          0.0071      0.007118    0.0071      0.007118    0.03     0.03     |
 |                                                                                                              |
 | Advancing front algorithm                                                                                    |
-|   Find intersection             3293       0.0454      0.000014    0.0454      0.000014    0.05     0.05     |
-|   Preamble                      5          0.7048      0.140957    0.7048      0.140957    0.79     0.79     |
-|   Set up new guide element      77         0.0020      0.000027    0.0020      0.000027    0.00     0.00     |
-|   Update intersection queue     2365       12.0921     0.005113    12.0921     0.005113    13.54    13.54    |
-|   Update test queue             2365       0.0029      0.000001    0.0029      0.000001    0.00     0.00     |
+|   Find intersection             1279       0.0097      0.000008    0.0097      0.000008    0.05     0.05     |
+|   Preamble                      2          0.0982      0.049115    0.0982      0.049115    0.46     0.46     |
+|   Set up new guide element      25         0.0004      0.000018    0.0004      0.000018    0.00     0.00     |
+|   Update intersection queue     929        2.1730      0.002339    2.1730      0.002339    10.18    10.18    |
+|   Update test queue             929        0.0007      0.000001    0.0007      0.000001    0.00     0.00     |
 |                                                                                                              |
 | Build intersections                                                                                          |
-|   Build intersection polyhedron 2365       76.1326     0.032191    76.1326     0.032191    85.25    85.25    |
-|   Update intersection           1732       0.1959      0.000113    0.1959      0.000113    0.22     0.22     |
+|   Build intersection polyhedron 929        18.9600     0.020409    18.9600     0.020409    88.85    88.85    |
+|   Update intersection           713        0.0720      0.000101    0.0720      0.000101    0.34     0.34     |
  --------------------------------------------------------------------------------------------------------------
-| Totals:                         12218      89.3031                                         100.00            |
+| Totals:                         4813       21.3400                                         100.00            |
  --------------------------------------------------------------------------------------------------------------
 
  ------------------------------------------------------------------------------------------------------------
-| Intersection tools Performance: Alive time=108.451, Active time=76.1053                                    |
+| Intersection tools Performance: Alive time=24.687, Active time=18.9535                                     |
  ------------------------------------------------------------------------------------------------------------
 | Event                         nCalls     Total Time  Avg Time    Total Time  Avg Time    % of Active Time  |
 |                                          w/o Sub     w/o Sub     With Sub    With Sub    w/o S    With S   |
@@ -65,24 +65,24 @@
 |                                                                                                            |
 |                                                                                                            |
 | Exact intersection construction inside coupling                                                            |
-|   Nef polyhedron construction 2365       11.4227     0.004830    11.4227     0.004830    15.01    15.01    |
-|   Nef polyhedron intersection 2365       64.6529     0.027337    64.6529     0.027337    84.95    84.95    |
-|   Point conversion to exact   2365       0.0119      0.000005    0.0119      0.000005    0.02     0.02     |
-|   Point set output            2365       0.0178      0.000008    0.0178      0.000008    0.02     0.02     |
+|   Nef polyhedron construction 929        3.4465      0.003710    3.4465      0.003710    18.18    18.18    |
+|   Nef polyhedron intersection 929        15.5006     0.016685    15.5006     0.016685    81.78    81.78    |
+|   Point conversion to exact   929        0.0030      0.000003    0.0030      0.000003    0.02     0.02     |
+|   Point set output            929        0.0034      0.000004    0.0034      0.000004    0.02     0.02     |
  ------------------------------------------------------------------------------------------------------------
-| Totals:                       9460       76.1053                                         100.00            |
+| Totals:                       3716       18.9535                                         100.00            |
  ------------------------------------------------------------------------------------------------------------
 
  ------------------------------------------------------------------------------------------------------------
-| Main program Performance: Alive time=108.852, Active time=108.535                                          |
+| Main program Performance: Alive time=24.8461, Active time=24.7175                                          |
  ------------------------------------------------------------------------------------------------------------
 | Event                         nCalls     Total Time  Avg Time    Total Time  Avg Time    % of Active Time  |
 |                                          w/o Sub     w/o Sub     With Sub    With Sub    w/o S    With S   |
 |------------------------------------------------------------------------------------------------------------|
 |                                                                                                            |
-| Search intersection           1          108.2389    108.238907  108.2389    108.238907  99.73    99.73    |
-| Set up                        1          0.2962      0.296209    0.2962      0.296209    0.27     0.27     |
+| Search intersection           1          24.6597     24.659689   24.6597     24.659689   99.77    99.77    |
+| Set up                        1          0.0578      0.057797    0.0578      0.057797    0.23     0.23     |
  ------------------------------------------------------------------------------------------------------------
-| Totals:                       2          108.5351                                        100.00            |
+| Totals:                       2          24.7175                                         100.00            |
  ------------------------------------------------------------------------------------------------------------
 

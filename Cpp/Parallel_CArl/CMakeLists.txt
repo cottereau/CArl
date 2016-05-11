@@ -42,13 +42,25 @@ message(STATUS "This project requires the Boost library, and will not be compile
 return()
 endif()
 
-message(STATUS "CGAL version: ${CGAL_VERSION}")
+message(STATUS "CGAL version : ${CGAL_VERSION}")
+message(STATUS "CGAL dir     : ${CGAL_DIR}")
 
 # libmesh commands
-execute_process(COMMAND libmesh-config --cppflags OUTPUT_VARIABLE LIBMESH_CPPFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND libmesh-config --cxxflags OUTPUT_VARIABLE LIBMESH_CXXFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND libmesh-config --include OUTPUT_VARIABLE LIBMESH_INCLUDE OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND libmesh-config --libs OUTPUT_VARIABLE LIBMESH_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
+if ( NOT LIBMESH_DIR )
+   set (LIBMESH_DIR "/usr/local/lib")
+endif()
+
+if ( NOT LIBMESH_CONFIG_DIR )
+   set (LIBMESH_CONFIG_DIR "/usr/local/lib")
+endif()
+
+message (STATUS "Using ${LIBMESH_DIR} as the libMesh directory")
+
+set ( LIBMESH_CONFIG ${LIBMESH_CONFIG_DIR}/libmesh-config )
+execute_process(COMMAND ${LIBMESH_CONFIG} --cppflags OUTPUT_VARIABLE LIBMESH_CPPFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND ${LIBMESH_CONFIG} --cxxflags OUTPUT_VARIABLE LIBMESH_CXXFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND ${LIBMESH_CONFIG} --include OUTPUT_VARIABLE LIBMESH_INCLUDE OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND ${LIBMESH_CONFIG} --libs OUTPUT_VARIABLE LIBMESH_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LIBMESH_CPPFLAGS} ${LIBMESH_CXXFLAGS} ${LIBMESH_INCLUDE} -Wall" )
 set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LIBMESH_INCLUDE} ${LIBMESH_LIBS}" ) 
@@ -120,8 +132,8 @@ add_executable( test_devel_parallel     ${DEVEL_BACKYARD_EXEC_SOURCES}
                                                   $<TARGET_OBJECTS:ASSEMBLE_FUNCTIONS_OBJS>)
 
 
-set ( LIB_DIR /opt/local/lib)
-set ( BOOST_LIBRARIES ${LIB_DIR}/libboost_filesystem-mt.dylib) 
+#set ( LIB_DIR /opt/local/lib)
+#set ( BOOST_LIBRARIES ${LIB_DIR}/libboost_filesystem-mt.dylib) 
 
 # Set up the test files                                           
 foreach( test_source_file ${TEST_EXECS} )

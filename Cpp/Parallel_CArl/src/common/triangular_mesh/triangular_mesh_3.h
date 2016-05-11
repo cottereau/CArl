@@ -150,16 +150,16 @@ public:
 		mPointMax = Point_3(0,0,0);
 
 		// TODO : better method to identify the mesh: read the first line
-		if(boost::filesystem::path(fileName).extension().string().compare(".msh")==0)
-		{
+		//if(boost::filesystem::path(fileName).extension().string().compare(".msh")==0)
+		//{
 			// Its a Gmsh .msh file
 			ImportGmsh(fileName);
-		}
-		else if(boost::filesystem::path(fileName).extension().string().compare(".mesh")==0)
-		{
+		//}
+		//else if(boost::filesystem::path(fileName).extension().string().compare(".mesh")==0)
+		//{
 //			Its a Medit file
-			ImportMedit(fileName);
-		}
+		//	ImportMedit(fileName);
+		//}
 	}
 
 	// Methods
@@ -328,16 +328,16 @@ public:
 
 	void ExportMesh_3(std::string &ofName)
 	{
-		if(boost::filesystem::path(ofName).extension().string().compare(".msh")==0)
-		{
+		//if(boost::filesystem::path(ofName).extension().string().compare(".msh")==0)
+		//{
 			// Its a Gmsh .msh file
 			ExportGmsh(ofName);
-		}
-		else if(boost::filesystem::path(ofName).extension().string().compare(".mesh")==0)
-		{
+		//}
+		//else if(boost::filesystem::path(ofName).extension().string().compare(".mesh")==0)
+		//{
 			// Its a Medit file
-			ExportMedit(ofName);
-		}
+		//	ExportMedit(ofName);
+		//}
 	}
 
 	/*

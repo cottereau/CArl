@@ -20,14 +20,14 @@
 #include <boost/random/lagged_fibonacci.hpp>
 
 // --- Boost/variant and functional
-#include <boost/variant/apply_visitor.hpp>
-#include <functional>
+//#include <boost/variant/apply_visitor.hpp>
+//#include <functional>
 
 // --- Boost/hash
-#include <boost/functional/hash.hpp>
+//#include <boost/functional/hash.hpp>
 
 // --- Boost/filesystem
-#include <boost/filesystem.hpp>
+//#include <boost/filesystem.hpp>
 
 // --- IO
 #include <fstream>

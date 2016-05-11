@@ -51,7 +51,7 @@ void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Numbe
 	if(m_bUseLumping)
 	{
 		perf_log.push("Lumping");
-		lump_matrix_and_invert(* m_C_RR,m_invC_RR_vec);
+		lump_matrix_and_invert(* m_C_RR,* m_invC_RR_vec);
 		perf_log.pop("Lumping");
 	}
 	else
@@ -74,8 +74,8 @@ void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Numbe
 	MatConvert(m_C_RA->mat(),MATSAME,MAT_INITIAL_MATRIX,&m_PETSC_P_A);
 	MatConvert(m_C_RB->mat(),MATSAME,MAT_INITIAL_MATRIX,&m_PETSC_P_B);
 
-	MatDiagonalScale(m_PETSC_P_A,m_invC_RR_vec.vec(),PETSC_NULL);
-	MatDiagonalScale(m_PETSC_P_B,m_invC_RR_vec.vec(),PETSC_NULL);
+	MatDiagonalScale(m_PETSC_P_A,m_invC_RR_vec->vec(),PETSC_NULL);
+	MatDiagonalScale(m_PETSC_P_B,m_invC_RR_vec->vec(),PETSC_NULL);
 //		MatMatMult(m_invC_RR.mat(), m_C_RA->mat(), MAT_INITIAL_MATRIX, product_prealloc_P_A, &m_PETSC_P_A);
 //		MatMatMult(m_invC_RR.mat(), m_C_RB->mat(), MAT_INITIAL_MATRIX, product_prealloc_P_B, &m_PETSC_P_B);
 
@@ -179,8 +179,8 @@ void carl::PETSC_LATIN_solver::solve()
 	double norm_sum = 0;
 
 	perf_log.push("Vector declarations","Initialization");
-	m_sol_A.init(dim_A,dim_A_local);
-	m_sol_B.init(dim_B,dim_B_local);
+	m_sol_A->init(dim_A,dim_A_local);
+	m_sol_B->init(dim_B,dim_B_local);
 
 	// Temporary solutions
 	libMesh::PetscVector<libMesh::Number> w_A(*m_comm, dim_R, dim_R_local);
@@ -242,13 +242,13 @@ void carl::PETSC_LATIN_solver::solve()
 	// u_0,I = H_I^-1 * F_I (KSP SOLVER!)
 
 	perf_log.push("KSP solver","Initialization");
-	KSP_Solver_H_A.solve ( *m_H_A, m_sol_A, *m_F_A, m_KSP_A_eps, m_KSP_A_iter_max);
-	KSP_Solver_H_B.solve ( *m_H_B, m_sol_B, *m_F_B, m_KSP_B_eps, m_KSP_B_iter_max);
+	KSP_Solver_H_A.solve ( *m_H_A, *m_sol_A, *m_F_A, m_KSP_A_eps, m_KSP_A_iter_max);
+	KSP_Solver_H_B.solve ( *m_H_B, *m_sol_B, *m_F_B, m_KSP_B_eps, m_KSP_B_iter_max);
 	perf_log.pop("KSP solver","Initialization");
 
 	// w_0,I = P_I * u_0,I
-	m_P_A->vector_mult(w_A,m_sol_A);
-	m_P_B->vector_mult(w_B,m_sol_B);
+	m_P_A->vector_mult(w_A,*m_sol_A);
+	m_P_B->vector_mult(w_B,*m_sol_B);
 
 	// phi_d0,I = - k_dI * w_0,I
 	phi_dA.add(-m_k_dA,w_A);
@@ -330,11 +330,11 @@ void carl::PETSC_LATIN_solver::solve()
 		phi_dB.add( - m_k_dB,w_B);
 
 		// Relaxation : sol_i,I = LATINRelax*u_i,I + (1 - LATINRelax)*sol_i-1,I;
-		m_sol_A.scale(1 - m_LATIN_relax);
-		m_sol_A.add(m_LATIN_relax,u_A);
+		m_sol_A->scale(1 - m_LATIN_relax);
+		m_sol_A->add(m_LATIN_relax,u_A);
 
-		m_sol_B.scale(1 - m_LATIN_relax);
-		m_sol_B.add(m_LATIN_relax,u_B);
+		m_sol_B->scale(1 - m_LATIN_relax);
+		m_sol_B->add(m_LATIN_relax,u_B);
 
 		// -> Test convergence over the phi's
 		phi_diff_A = phi_dA;
@@ -456,12 +456,12 @@ void carl::PETSC_LATIN_solver::check_dimensions()
 
 libMesh::PetscVector<libMesh::Number>& carl::PETSC_LATIN_solver::get_solution_BIG()
 {
-	return m_sol_A;
+	return *m_sol_A;
 }
 
 libMesh::PetscVector<libMesh::Number>& carl::PETSC_LATIN_solver::get_solution_micro()
 {
-	return m_sol_B;
+	return *m_sol_B;
 }
 
 void carl::PETSC_LATIN_solver::print_convergence(std::ostream& convergenceOut)

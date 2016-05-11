@@ -31,7 +31,7 @@ protected:
 	libMesh::PetscMatrix<libMesh::Number> * m_C_RA;
 	libMesh::PetscMatrix<libMesh::Number> * m_C_RB;
 	libMesh::PetscMatrix<libMesh::Number> * m_C_RR;
-	libMesh::PetscVector<libMesh::Number> m_invC_RR_vec;
+	libMesh::PetscVector<libMesh::Number> * m_invC_RR_vec;
 
 	libMesh::PetscMatrix<libMesh::Number> * m_M_A;
 	libMesh::PetscMatrix<libMesh::Number> * m_M_B;
@@ -51,8 +51,8 @@ protected:
 	libMesh::PetscVector<libMesh::Number> * m_F_B;
 
 	// Solution
-	libMesh::PetscVector<libMesh::Number> m_sol_A;
-	libMesh::PetscVector<libMesh::Number> m_sol_B;
+	libMesh::PetscVector<libMesh::Number> * m_sol_A;
+	libMesh::PetscVector<libMesh::Number> * m_sol_B;
 
 	// Constants
 	double m_k_dA;
@@ -99,8 +99,8 @@ public:
 							m_C_RA { NULL },
 							m_C_RB { NULL },
 							m_C_RR { NULL },
-							m_invC_RR_vec { libMesh::PetscVector<libMesh::Number>(comm) },
-
+						//	m_invC_RR_vec { libMesh::PetscVector<libMesh::Number>(comm) },
+							m_invC_RR_vec { NULL },
 							m_M_A { NULL },
 							m_M_B { NULL },
 
@@ -113,9 +113,11 @@ public:
 							m_F_A { NULL },
 							m_F_B { NULL },
 
-							m_sol_A { libMesh::PetscVector<libMesh::Number>(comm) },
-							m_sol_B { libMesh::PetscVector<libMesh::Number>(comm) },
+							// m_sol_A { libMesh::PetscVector<libMesh::Number>(comm) },
+							// m_sol_B { libMesh::PetscVector<libMesh::Number>(comm) },
 
+							m_sol_A { NULL },
+							m_sol_B { NULL },
 							m_LATIN_relax { 0.8 },
 							m_LATIN_conv_eps { 1E-2 },
 							m_LATIN_conv_max_n { 10000 },
@@ -139,6 +141,11 @@ public:
 							m_ksp_name_B { "micro_sys" }
 	{
 		m_LATIN_Index.resize(m_LATIN_conv_max_n);
+
+                m_invC_RR_vec = new libMesh::PetscVector<libMesh::Number>(comm);
+
+                m_sol_A = new libMesh::PetscVector<libMesh::Number>(comm);
+                m_sol_B = new libMesh::PetscVector<libMesh::Number>(comm);
 	};
 
 	PETSC_LATIN_solver(double i_k_dA, double i_k_dB, double i_k_cA, double i_k_cB, const libMesh::Parallel::Communicator& comm )  :
@@ -147,8 +154,9 @@ public:
 			m_C_RA { NULL },
 			m_C_RB { NULL },
 			m_C_RR { NULL },
-			m_invC_RR_vec { libMesh::PetscVector<libMesh::Number>(comm) },
+//			m_invC_RR_vec { libMesh::PetscVector<libMesh::Number>(comm) },
 
+			m_invC_RR_vec { NULL },
 			m_M_A { NULL },
 			m_M_B { NULL },
 
@@ -161,9 +169,11 @@ public:
 			m_F_A { NULL },
 			m_F_B { NULL },
 
-			m_sol_A { libMesh::PetscVector<libMesh::Number>(comm) },
-			m_sol_B { libMesh::PetscVector<libMesh::Number>(comm) },
+//			m_sol_A { libMesh::PetscVector<libMesh::Number>(comm) },
+//			m_sol_B { libMesh::PetscVector<libMesh::Number>(comm) },
 
+			m_sol_A { NULL },
+			m_sol_B { NULL },
 			m_k_dA { i_k_dA },
 			m_k_dB { i_k_dB },
 			m_k_cA { i_k_cA },
@@ -192,6 +202,11 @@ public:
 			m_ksp_name_B { "micro_sys_" }
 	{
 		m_LATIN_Index.resize(m_LATIN_conv_max_n);
+
+                m_invC_RR_vec = new libMesh::PetscVector<libMesh::Number>(comm);
+
+		m_sol_A = new libMesh::PetscVector<libMesh::Number>(comm);
+		m_sol_B = new libMesh::PetscVector<libMesh::Number>(comm);
 	};
 
 	// Destructor
@@ -210,6 +225,13 @@ public:
 
 			delete m_H_B;
 			m_H_B = NULL;
+
+			delete m_sol_A;
+			delete m_sol_B;
+			delete m_invC_RR_vec;
+			m_sol_A = NULL;
+			m_sol_B = NULL;
+			m_invC_RR_vec = NULL;
 		}
 	};
 

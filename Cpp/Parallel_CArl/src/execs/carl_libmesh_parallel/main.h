@@ -15,6 +15,6 @@
 #include "assemble_functions_elasticity_3D.h"
 #include "PETSC_matrix_operations.h"
 
-#include "CGAL_typedefs.h"
+//#include "CGAL_typedefs.h"
 
 #endif /* EXECS_CARL_PARALLEL_COUPLING_MAIN_H_ */

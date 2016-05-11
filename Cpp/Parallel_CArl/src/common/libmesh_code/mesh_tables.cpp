@@ -62,14 +62,14 @@ void carl::create_mesh_map(
 	 *            differently from the method used for GMSH
 	 */
 
-	if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
-	{
+	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
+	//{
 		build_mesh_map_Gmsh(filename,node_map,element_map);
-	}
-	else
-	{
-		libmesh_error_msg("Error: unknown filetype");
-	}
+	//}
+	//else
+	//{
+	//	libmesh_error_msg("Error: unknown filetype");
+	//}
 }
 
 void carl::create_mesh_map(
@@ -87,15 +87,15 @@ void carl::create_mesh_map(
 	 *            differently from the method used for GMSH
 	 */
 
-	if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
-	{
+	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
+	//{
 		build_mesh_map_Gmsh(filename,node_gmsh_to_libmesh_map,node_libmesh_to_gmsh_map,
 				element_gmsh_to_libmesh_map,element_libmesh_to_gmsh_map);
-	}
-	else
-	{
-		libmesh_error_msg("Error: unknown filetype");
-	}
+	//}
+	//else
+	//{
+	//	libmesh_error_msg("Error: unknown filetype");
+	//}
 };
 
 void carl::create_mesh_map(
@@ -111,8 +111,8 @@ void carl::create_mesh_map(
 	 *            differently from the method used for GMSH
 	 */
 
-	if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
-	{
+	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
+	//{
 		int rank = MeshComm.rank();
 
 		if(rank == 0)
@@ -121,11 +121,11 @@ void carl::create_mesh_map(
 		}
 		carl::broadcast_index_unordered_map(node_map,MeshComm);
 		carl::broadcast_index_unordered_map(element_map,MeshComm);
-	}
-	else
-	{
-		libmesh_error_msg("Error: unknown filetype");
-	}
+	//}
+	//else
+	//{
+	//	libmesh_error_msg("Error: unknown filetype");
+	//}
 }
 
 void carl::create_mesh_map(
@@ -144,8 +144,8 @@ void carl::create_mesh_map(
 	 *            differently from the method used for GMSH
 	 */
 
-	if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
-	{
+	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
+	//{
 		int rank = MeshComm.rank();
 
 		if(rank == 0)
@@ -186,19 +186,19 @@ void carl::create_mesh_map(
 //			std::cout << std::endl;
 //		}
 //		MeshComm.barrier();
-	}
-	else
-	{
-		libmesh_error_msg("Error: unknown filetype");
-	}
+	//}
+	//else
+	//{
+	//	libmesh_error_msg("Error: unknown filetype");
+	//}
 };
 
 void carl::build_mesh_map_Gmsh(const std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map)
 {
-	if(!(boost::filesystem::path(filename).extension().string().compare(".msh")==0))
-	{
-		libmesh_error_msg("Error: expected Gmsh filetype");
-	}
+	//if(!(boost::filesystem::path(filename).extension().string().compare(".msh")==0))
+	//{
+	//	libmesh_error_msg("Error: expected Gmsh filetype");
+	//}
 
 	// Open file
 	std::ifstream dataF(filename);
@@ -289,10 +289,10 @@ void carl::build_mesh_map_Gmsh(const std::string &filename,
 		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
 		std::unordered_map<int,int> &element_libmesh_to_gmsh_map)
 {
-	if(!(boost::filesystem::path(filename).extension().string().compare(".msh")==0))
-	{
-		libmesh_error_msg("Error: expected Gmsh filetype");
-	}
+	//if(!(boost::filesystem::path(filename).extension().string().compare(".msh")==0))
+	//{
+	//	libmesh_error_msg("Error: expected Gmsh filetype");
+	//}
 
 	// Open file
 	std::ifstream dataF(filename);
