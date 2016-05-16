@@ -6,27 +6,6 @@
  */
 #include "main.h"
 
-/*
- * 		What do I have to do:
- *
- * 		- DONE: create and test a first intersection search algorithm
- * 		- DONE: create and test a patch construction algorithm
- * 		- DONE: create a FindIntersections algorithm
- * 		- DONE: decouple the intersection search from the intersection
- * 		        construction
- * 		- DONE: expand it to build the intersections
- * 		- DONE: assemble these algorithms for a single proc
- *
- * 		- DONE: (P) create a partitioner for \Omega_C
- * 		- DONE: (P) call the assembled algorithm for each part, printing each
- * 		            intersection mesh to a file ( |\Omega_C| files )
- * 		- DONE: (P) stitch the intersection meshes of a processor, printing now
- * 		            n_p files
- * 		- TODO: (P) either read several meshes in the assemble step, or stitch
- * 		            them all together ...
- *
- */
-
 struct parallel_intersection_test_params {
 	std::string mesh_A;
 	std::string mesh_B;
