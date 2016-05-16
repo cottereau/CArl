@@ -51,7 +51,7 @@ if ( NOT LIBMESH_DIR )
 endif()
 
 if ( NOT LIBMESH_CONFIG_DIR )
-   set (LIBMESH_CONFIG_DIR "/usr/local/lib")
+   set (LIBMESH_CONFIG_DIR "/usr/local/bin")
 endif()
 
 message (STATUS "Using ${LIBMESH_DIR} as the libMesh directory")
@@ -139,7 +139,11 @@ add_executable( test_devel_parallel     ${DEVEL_BACKYARD_EXEC_SOURCES}
 foreach( test_source_file ${TEST_EXECS} )
     string ( REPLACE ".cpp" "" full_test_exec_name ${test_source_file} )
     string ( REPLACE "${CMAKE_CURRENT_LIST_DIR}/${TEST_CASES_EXEC_DIR}/" "" test_exec_name ${full_test_exec_name} )
-    add_executable ( ${test_exec_name} ${test_source_file} )
+    add_executable ( ${test_exec_name} ${test_source_file} $<TARGET_OBJECTS:MESH_3D_OBJS> 
+                                                           $<TARGET_OBJECTS:INTERSECTION_PARALLEL_OBJS> 
+                                                           $<TARGET_OBJECTS:LIBMESH_CODE_OBJS> 
+                                                           $<TARGET_OBJECTS:COMMON_OBJS>
+                                                           $<TARGET_OBJECTS:ASSEMBLE_FUNCTIONS_OBJS>)
     add_to_cached_list( CGAL_EXECUTABLE_TARGETS ${test_exec_name} )
     target_link_libraries( ${test_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 endforeach( test_source_file ${TEST_EXECS} )
