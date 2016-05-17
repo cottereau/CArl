@@ -170,7 +170,7 @@ public:
 		m_Mesh_Intersection { Mesh_Intersection(mesh_I,m_Mesh_A,m_Mesh_B)},
 		m_bIntersectionsBuilt { false },
 		m_Min_Inter_Volume { Min_Inter_Volume },
-		m_Output_filename_base { output_base + "_r_" + std::to_string(m_rank) + "_n_" + std::to_string(m_nodes) + "_"},
+		m_Output_filename_base { output_base + "_r_" + std::to_string(m_rank) + "_n_" + std::to_string(m_nodes)},
 		MASTER_bPerfLog_intersection_search {bDoPerf_log},
 		m_perf_log { libMesh::PerfLog("Intersection search", MASTER_bPerfLog_intersection_search) },
 		m_bPrintDebug { bDebugOutput }

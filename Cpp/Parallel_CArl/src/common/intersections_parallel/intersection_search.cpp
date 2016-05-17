@@ -37,9 +37,9 @@ namespace carl
 
 		if(m_bPrintDebug)
 		{
-			std::string filename = "/meshes/3D/tests/output/patch_mesh_A_" + std::to_string(patch_counter) + "_" + std::to_string(m_rank);
+			std::string filename = "meshes/3D/tests/output/patch_mesh_A_" + std::to_string(patch_counter) + "_" + std::to_string(m_rank);
 			m_Patch_Constructor_A.export_patch_mesh(filename);
-			filename = "/meshes/3D/tests/output/patch_mesh_B_" + std::to_string(patch_counter) + "_" + std::to_string(m_rank);
+			filename = "meshes/3D/tests/output/patch_mesh_B_" + std::to_string(patch_counter) + "_" + std::to_string(m_rank);
 			m_Patch_Constructor_B.export_patch_mesh(filename);
 		}
 	}

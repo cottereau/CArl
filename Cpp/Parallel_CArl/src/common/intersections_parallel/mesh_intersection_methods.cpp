@@ -59,15 +59,19 @@ void Mesh_Intersection::update_intersection_mesh()
 			++it_poly_mesh)
 	{
 		libMesh::Elem * poly_elem = * it_poly_mesh;
-		libMesh::Elem * mesh_elem = m_libMesh_Mesh.add_elem(new libMesh::Tet4);
 
-		// Set the element's nodes
-		for(unsigned int iii = 0; iii < 4; ++iii)
+		if(std::abs(poly_elem->volume()) > m_vol_tol)
 		{
-			dummy_node_idx = poly_elem->node(iii);
-			mesh_elem->set_node(iii) = m_libMesh_Mesh.node_ptr(m_intersection_point_indexes[dummy_node_idx]);
+			libMesh::Elem * mesh_elem = m_libMesh_Mesh.add_elem(new libMesh::Tet4);
+
+			// Set the element's nodes
+			for(unsigned int iii = 0; iii < 4; ++iii)
+			{
+				dummy_node_idx = poly_elem->node(iii);
+				mesh_elem->set_node(iii) = m_libMesh_Mesh.node_ptr(m_intersection_point_indexes[dummy_node_idx]);
+			}
+			++m_nb_of_elements;
 		}
-		++m_nb_of_elements;
 	}
 }
 
@@ -124,6 +128,8 @@ void Mesh_Intersection::set_grid_constraints(const libMesh::Mesh & mesh_A, const
 
 	m_eps = *std::min_element(eps_candidates.begin(),eps_candidates.end());
 
+	m_vol_tol = std::pow(m_eps,2);
+
 	for(unsigned int iii = 0; iii < 3; ++iii)
 	{
 		m_GridN[iii] = (m_Grid_MaxPoint(iii) - m_Grid_MinPoint(iii)) / m_eps + 1;
@@ -133,6 +139,7 @@ void Mesh_Intersection::set_grid_constraints(const libMesh::Mesh & mesh_A, const
 	{
 		std::cout << "    DEBUG: discrete grid" << std::endl;
 		std::cout << " -> eps             : " << m_eps << std::endl;
+		std::cout << " -> volume          : " << m_vol_tol << std::endl;
 		std::cout << " -> Grid dimensions : " << m_GridN[0] << " " << m_GridN[1] << " " << m_GridN[2] << " " << std::endl  << std::endl;
 	}
 }
@@ -159,7 +166,6 @@ void Mesh_Intersection::increase_intersection_mesh(	const std::set<libMesh::Poin
 	update_intersection_mesh();
 
 	//	And finally, update the intersection pairs, if needed
-
 	if(m_libMesh_PolyhedronMesh.n_elem() != 0)
 	{
 		unsigned int intersection_range_end = m_nb_of_elements;
@@ -248,6 +254,7 @@ long Mesh_Intersection::convert_to_grid(const libMesh::Point iPoint)
 				+ lround( (iPoint(1) -  m_Grid_MinPoint(1) )/m_eps) * m_GridN[1]
 				+ lround( (iPoint(2) -  m_Grid_MinPoint(2) )/m_eps);
 	homemade_assert_msg(dummy > -1, "Negative grid index!\n");
+
 	return dummy;
 }
 }

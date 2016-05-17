@@ -110,7 +110,7 @@ protected:
 public:
 
 	// Constructors
-	Intersection_Tools(const libMesh::Elem * elem_C, double Min_Inter_Volume = 1E-15, bool bDoPerf_log = true) :
+	Intersection_Tools(const libMesh::Elem * elem_C, double Min_Inter_Volume = 1E-15, bool bDoPerf_log = false) :
 		m_Min_Inter_Volume { Min_Inter_Volume },
 		MASTER_bPerfLog_intersection_tools {bDoPerf_log},
 		m_perf_log { libMesh::PerfLog("Intersection tools", MASTER_bPerfLog_intersection_tools) }
@@ -129,7 +129,7 @@ public:
 		m_elem_C_triangles = NULL;
 	};
 
-	Intersection_Tools(double Min_Inter_Volume = 1E-15, bool bDoPerf_log = true) :
+	Intersection_Tools(double Min_Inter_Volume = 1E-15, bool bDoPerf_log = false) :
 		m_Min_Inter_Volume { Min_Inter_Volume },
 		MASTER_bPerfLog_intersection_tools {bDoPerf_log},
 		m_perf_log { libMesh::PerfLog("Intersection tools", MASTER_bPerfLog_intersection_tools) }

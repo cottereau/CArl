@@ -1,5 +1,0 @@
-WARNING! There are options you set that were not used!
-WARNING! could be spelling mistake, etc!
-Option left: name:--inputfile value: intersection_test_2.devel_test
-Option left: name:--keep-cout (no value)
-Option left: name:--redirect-stdout (no value)

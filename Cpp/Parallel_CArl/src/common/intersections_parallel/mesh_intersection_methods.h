@@ -67,6 +67,9 @@ protected:
 	// Precision
 	double		m_eps;
 
+	// Minimum volume
+	double		m_vol_tol;
+
 	// Number of integers over each dimension of the grid
 	std::vector<long > m_GridN;
 
