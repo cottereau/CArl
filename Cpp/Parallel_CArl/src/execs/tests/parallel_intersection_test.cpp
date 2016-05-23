@@ -113,8 +113,9 @@ int main(int argc, char *argv[])
 	test_mesh_A.read(input_params.mesh_A);
 	test_mesh_B.read(input_params.mesh_B);
 	test_mesh_C.read(input_params.mesh_C);
-
-	// Set the processor ids for the coupling mesh elements
+        test_mesh_C.prepare_for_use();
+        test_mesh_C.partition(nodes);
+/*	// Set the processor ids for the coupling mesh elements
 	unsigned int nb_coupling_elems = test_mesh_C.n_elem();
 	std::vector<unsigned int> nb_coupling_elements_per_node(nodes,nb_coupling_elems/nodes);
 	nb_coupling_elements_per_node[nodes - 1] = nb_coupling_elems - (nodes - 1)*(nb_coupling_elems/nodes);
@@ -137,6 +138,14 @@ int main(int argc, char *argv[])
 		std::cout << nb_coupling_elements_per_node[iii] << " ";
 	}
 	std::cout << ")" << std::endl << std::endl;
+*/
+
+        std::cout << " -> Nb. coupling elements (partition) : " << test_mesh_C.n_partitions() << " ( ";
+        for(unsigned int iii = 0; iii < nodes; ++iii)
+        {
+                std::cout << test_mesh_C.n_elem_on_proc(iii) << " ";
+        }
+        std::cout << ")" << std::endl << std::endl;
 
 	// Set up the search
 	perf_log.push("Set up");

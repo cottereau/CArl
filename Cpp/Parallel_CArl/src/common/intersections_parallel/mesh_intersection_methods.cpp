@@ -46,6 +46,45 @@ void Mesh_Intersection::triangulate_intersection(const std::set<libMesh::Point> 
 
 void Mesh_Intersection::update_intersection_mesh()
 {
+	// Test which elements must be added, and insert their vertices
+	libMesh::SerialMesh::element_iterator   it_poly_mesh = m_libMesh_PolyhedronMesh.elements_begin();
+	long dummy_long_int = 0;
+	for(	; it_poly_mesh != m_libMesh_PolyhedronMesh.elements_end();
+			++it_poly_mesh)
+	{
+		libMesh::Elem * poly_elem = * it_poly_mesh;
+
+		if(std::abs(poly_elem->volume()) > m_vol_tol)
+		{
+			// Add a new element!
+			libMesh::Elem * mesh_elem = m_libMesh_Mesh.add_elem(new libMesh::Tet4);
+			
+			// -> First, add the nodes
+			for(unsigned int iii = 0; iii < 4; ++iii)
+			{
+				dummy_long_int = convert_to_grid(poly_elem->point(iii));
+				if(m_Grid_to_mesh_vertex_idx.find(dummy_long_int)==m_Grid_to_mesh_vertex_idx.end())
+				{
+					// New vertex! Add it to the mesh
+					m_Grid_to_mesh_vertex_idx[dummy_long_int] = m_nb_of_vertices;
+					m_libMesh_Mesh.add_point(poly_elem->point(iii),m_nb_of_vertices);
+					mesh_elem->set_node(iii) = m_libMesh_Mesh.node_ptr(m_nb_of_vertices);
+					++m_nb_of_vertices;
+				}
+
+				// Associate vertex to the new element
+				mesh_elem->set_node(iii) = m_libMesh_Mesh.node_ptr(m_Grid_to_mesh_vertex_idx[dummy_long_int]);
+			}
+			// Increase the number of elements
+			++m_nb_of_elements;
+		}
+	}	
+}
+
+/*
+
+void Mesh_Intersection::update_intersection_mesh()
+{
 	// - The vertices have been added
 	// - The polyhedron mesh has been set
 	// - m_intersection_point_indexes has been set up to m_nb_of_points
@@ -74,6 +113,7 @@ void Mesh_Intersection::update_intersection_mesh()
 		}
 	}
 }
+*/
 
 void Mesh_Intersection::update_intersection_pairs(unsigned int elem_idx_A, unsigned int elem_idx_B, unsigned int inter_id)
 {
@@ -121,12 +161,18 @@ void Mesh_Intersection::set_grid_constraints(const libMesh::Mesh & mesh_A, const
 	std::vector<double> eps_candidates(3,0);
 	for(unsigned int iii = 0; iii < 3; ++iii)
 	{
-		m_Grid_MinPoint(iii) = std::max(bbox_A.min()(iii),bbox_B.min()(iii)) - 1E-6;
-		m_Grid_MaxPoint(iii) = std::min(bbox_A.max()(iii),bbox_B.max()(iii)) + 1E-6;
+		m_Grid_MinPoint(iii) = std::max(bbox_A.min()(iii),bbox_B.min()(iii));
+		m_Grid_MaxPoint(iii) = std::min(bbox_A.max()(iii),bbox_B.max()(iii));
 		eps_candidates[iii] = (m_Grid_MaxPoint(iii) - m_Grid_MinPoint(iii))/m_GridN_min;
 	}
 
 	m_eps = *std::min_element(eps_candidates.begin(),eps_candidates.end());
+
+	for(unsigned int iii = 0; iii < 3; ++iii)
+	{
+		m_Grid_MinPoint(iii) -= 2*m_eps;
+		m_Grid_MaxPoint(iii) += 2*m_eps;
+	}
 
 	m_vol_tol = std::pow(m_eps,2);
 
@@ -152,7 +198,14 @@ void Mesh_Intersection::increase_intersection_mesh(	const std::set<libMesh::Poin
 	m_bMeshFinalized = false;
 	unsigned int intersection_range_start = m_nb_of_elements;
 
-	// 	First, add the points to the grid-to-mesh map, and create new
+	//	First, triangulate the point set!
+	triangulate_intersection(input_points);
+
+	//	Second, add the points to the grid-to-mesh map and update the intersection mesh,
+	// taking into account if the associated elements are big enough.
+	update_intersection_mesh();
+
+/*	/i/ 	First, add the points to the grid-to-mesh map, and create new
 	// vertices if needed.
 	update_intersection_vertices(input_points);
 
@@ -164,11 +217,11 @@ void Mesh_Intersection::increase_intersection_mesh(	const std::set<libMesh::Poin
 	// table between the m_libMesh_PolyhedronMesh and m_libMesh_Mesh
 	// vertices.
 	update_intersection_mesh();
-
-	//	And finally, update the intersection pairs, if needed
-	if(m_libMesh_PolyhedronMesh.n_elem() != 0)
+*/
+	//	Third, update the intersection pairs, if needed
+	unsigned int intersection_range_end = m_nb_of_elements;
+	if(intersection_range_end != intersection_range_start)
 	{
-		unsigned int intersection_range_end = m_nb_of_elements;
 		update_intersection_pairs(elem_idx_A, elem_idx_B,m_nb_of_intersections);
 		m_intersection_couplings[m_nb_of_intersections] = elem_idx_C;
 		update_intersection_element_range(intersection_range_start,intersection_range_end,m_nb_of_intersections);

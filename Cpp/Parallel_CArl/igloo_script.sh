@@ -15,4 +15,4 @@ module load intel-mpi/5.1.0
 # On se place dans le repertoire depuis lequel le job a ete soumis
 cd $PBS_O_WORKDIR
 
-mpirun -np 8 ./test_devel_parallel --inputfile intersection_test_2.devel_test --redirect-stdout --keep-cout
+mpirun -np 8 ./parallel_intersection_test --inputfile intersection_test_2.inter_test --redirect-stdout --keep-cout
