@@ -144,6 +144,7 @@ public:
 		m_eps { -1 },
 		m_GridN { std::vector<long >(3,-1) },
 		m_Grid_MinPoint { libMesh::Point(0,0,0) },
+		m_Grid_MaxPoint { libMesh::Point(1,1,1) },
 		m_GridN_min { static_cast<long>(1E6)},
 		m_nb_of_elements { 0 },
 		m_nb_of_vertices { 0 },
@@ -168,6 +169,11 @@ public:
 
 	// Getters
 	const libMesh::SerialMesh & mesh();
+	libMesh::Point & min_point();
+	libMesh::Point & max_point();
+	double eps();
+	std::vector<long> & grid_sizes();
+	long grid_min_size();
 
 	// PUBLIC methods
 	/*

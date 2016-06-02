@@ -81,40 +81,6 @@ void Mesh_Intersection::update_intersection_mesh()
 	}	
 }
 
-/*
-
-void Mesh_Intersection::update_intersection_mesh()
-{
-	// - The vertices have been added
-	// - The polyhedron mesh has been set
-	// - m_intersection_point_indexes has been set up to m_nb_of_points
-
-	// -> Must copy the tetrahedrons from m_libMesh_PolyhedronMesh to
-	//    m_libMesh_Mesh
-	libMesh::SerialMesh::element_iterator 	it_poly_mesh = m_libMesh_PolyhedronMesh.elements_begin();
-	unsigned int dummy_node_idx;
-
-	for(	; it_poly_mesh != m_libMesh_PolyhedronMesh.elements_end();
-			++it_poly_mesh)
-	{
-		libMesh::Elem * poly_elem = * it_poly_mesh;
-
-		if(std::abs(poly_elem->volume()) > m_vol_tol)
-		{
-			libMesh::Elem * mesh_elem = m_libMesh_Mesh.add_elem(new libMesh::Tet4);
-
-			// Set the element's nodes
-			for(unsigned int iii = 0; iii < 4; ++iii)
-			{
-				dummy_node_idx = poly_elem->node(iii);
-				mesh_elem->set_node(iii) = m_libMesh_Mesh.node_ptr(m_intersection_point_indexes[dummy_node_idx]);
-			}
-			++m_nb_of_elements;
-		}
-	}
-}
-*/
-
 void Mesh_Intersection::update_intersection_pairs(unsigned int elem_idx_A, unsigned int elem_idx_B, unsigned int inter_id)
 {
 	m_intersection_pairs[inter_id] = std::make_pair(elem_idx_A, elem_idx_B);
@@ -128,6 +94,31 @@ void Mesh_Intersection::update_intersection_element_range(unsigned int range_sta
 const libMesh::SerialMesh & Mesh_Intersection::mesh()
 {
 	return m_libMesh_Mesh;
+}
+
+libMesh::Point & Mesh_Intersection::min_point()
+{
+	return m_Grid_MinPoint;
+}
+
+libMesh::Point & Mesh_Intersection::max_point()
+{
+	return m_Grid_MaxPoint;
+}
+
+double Mesh_Intersection::eps()
+{
+	return m_eps;
+}
+
+std::vector<long> & Mesh_Intersection::grid_sizes()
+{
+	return m_GridN;
+}
+
+long Mesh_Intersection::grid_min_size()
+{
+	return m_GridN_min;
 }
 
 void Mesh_Intersection::initialize()
@@ -243,7 +234,7 @@ void Mesh_Intersection::export_intersection_data(const std::string & filename_ba
 	// Print the intersection table
 	std::ofstream table_out(table_file_out);
 	unsigned int nb_of_inter_elements = 0;
-	table_out << m_nb_of_intersections << " " << m_libMesh_Mesh.n_elem() << std::endl;
+	table_out << m_nb_of_intersections << " " << m_libMesh_Mesh.n_elem() << " " << m_libMesh_Mesh.n_nodes() << std::endl;
 
 	for(unsigned int iii = 0; iii < m_nb_of_intersections; ++iii)
 	{

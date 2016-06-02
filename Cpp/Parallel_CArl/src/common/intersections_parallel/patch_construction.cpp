@@ -54,11 +54,6 @@ void Patch_construction::insert_patch_element(const libMesh::Elem		* Patch_elem)
 	}
 }
 
-/*
- * 			Implementation of the patch construction algorithm without any
- * 		neighboring information concerning the query element.
- *
- */
 void Patch_construction::BuildPatch(const libMesh::Elem 	* Query_elem)
 {
 	bool bDoIntersect = false;

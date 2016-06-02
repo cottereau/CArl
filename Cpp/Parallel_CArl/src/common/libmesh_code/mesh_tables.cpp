@@ -939,6 +939,9 @@ void carl::set_full_intersection_tables(
 
 		for(int iii = 0; iii < nbOfIntersections; ++iii)
 		{
+			// For each line, read ...
+
+			// ... the inter ID, A and B's elements, and the number of I's elements ...
 			intersection_full_file 	>> temp_interID
 									>> temp_idxA >> temp_idxB
 									>> temp_nbOfInter;
@@ -948,6 +951,7 @@ void carl::set_full_intersection_tables(
 			dummy_intersection_pairs_table[2*iii + 1] = mesh_B_ElemMap.at(temp_idxB);
 			dummy_intersections_sizes_table[iii]      = temp_nbOfInter;
 
+			// ... and all of I's elements
 			for(int jjj = 0; jjj < temp_nbOfInter; ++jjj)
 			{
 				intersection_full_file >> temp_idxI;

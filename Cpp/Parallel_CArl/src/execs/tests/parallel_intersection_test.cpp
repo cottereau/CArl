@@ -158,6 +158,11 @@ int main(int argc, char *argv[])
 	search_coupling_intersections.CalculateGlobalVolume();
 	perf_log.pop("Search intersection");
 
+	// Stitch the meshes!
+	perf_log.push("Stitch intersection meshes");
+
+	perf_log.pop("Stitch intersection meshes");
+
 	return 0;
 }
 
