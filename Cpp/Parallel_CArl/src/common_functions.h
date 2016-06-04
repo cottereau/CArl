@@ -9,6 +9,7 @@
 #define COMMON_COMMON_FUNCTIONS_H_
 
 #include "common_header_libmesh.h"
+#include "common_header.h"
 
 libMesh::Real kronecker_delta(unsigned int i,
 				   unsigned int j);
@@ -25,6 +26,14 @@ namespace carl
 void invert_index_unordered_map(
 		const std::unordered_map<int,int>& input_map,
 		std::unordered_map<int,int>& output_map);
+
+template<typename T>
+void jump_lines(T& filestream, unsigned int numberOfLines = 1)
+{
+	std::string dummy;
+	for(int iii = 0; iii < numberOfLines; ++iii)
+		std::getline(filestream,dummy);
+};
 
 struct IntersectionData
 {

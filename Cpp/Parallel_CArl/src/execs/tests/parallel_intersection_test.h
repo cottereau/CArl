@@ -16,6 +16,7 @@
 #include "intersection_search.h"
 #include "patch_construction.h"
 #include "mesh_intersection_methods.h"
+#include "stitch_meshes.h"
 
 
 

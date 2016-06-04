@@ -9,10 +9,34 @@
 
 namespace carl
 {
-void Stitch_Intersection_Meshes::set_base_filenames(const std::string & filename_base, const std::string & mesh_format, int nb_of_files )
+const libMesh::SerialMesh & Stitch_Intersection_Meshes::mesh()
+{
+	return m_Stitched_mesh;
+}
+
+void Stitch_Intersection_Meshes::set_base_filenames(std::vector<std::string> & mesh_filenames, std::vector<std::string> & table_filenames)
+{
+	homemade_assert_msg(mesh_filenames.size() == table_filenames.size(), "File lists have different sizes!\n");
+
+	m_nb_files = table_filenames.size();
+
+	// Resize the string vectors
+	m_mesh_filenames.resize(m_nb_files);
+	m_table_filenames.resize(m_nb_files);
+
+	for(unsigned int iii = 0; iii < m_nb_files; ++iii)
+	{
+		m_mesh_filenames[iii] = mesh_filenames[iii];
+		m_table_filenames[iii] = table_filenames[iii];
+	}
+
+	m_bFilenamesSet = true;
+}
+
+void Stitch_Intersection_Meshes::set_base_filenames(const std::string & filename_base, const std::string & mesh_format, unsigned int nb_of_files )
 {
 	// Set the number of files
-	if(nb_of_files < 0)
+	if(nb_of_files == 0)
 	{
 		m_nb_files = m_nodes;
 	}
@@ -25,48 +49,16 @@ void Stitch_Intersection_Meshes::set_base_filenames(const std::string & filename
 	m_mesh_filenames.resize(m_nb_files);
 	m_table_filenames.resize(m_nb_files);
 
-	// Create the filenames!
-	std::ifstream table_file;
-	m_nb_of_intersections = 0;
-	m_nb_of_elements = 0;
-	m_nb_of_vertices = 0;
-
-	unsigned int temp_nb_of_intersections = 0;
-	unsigned int temp_nb_of_elements = 0;
-	unsigned int temp_nb_of_vertices = 0;
-	for(int iii = 0; iii < m_nb_files; ++iii)
+	for(unsigned int iii = 0; iii < m_nb_files; ++iii)
 	{
-		m_mesh_filenames[iii] = filename_base + std::to_string(iii) + "_n_" + std::to_string(m_nb_files) + mesh_format;
-		m_table_filenames[iii] = filename_base + std::to_string(iii) + "_n_" + std::to_string(m_nb_files) + "_inter_table_Full.dat";
-
-		// Read the first line of each intersection table file, to get the preallocations
-		if(m_rank == 0)
-		{
-			table_file.open(m_table_filenames[iii]);
-			table_file >> temp_nb_of_intersections;
-			table_file >> temp_nb_of_elements;
-			table_file >> temp_nb_of_vertices;
-			table_file.close();
-
-			m_nb_of_intersections += temp_nb_of_intersections;
-			m_nb_of_elements += temp_nb_of_elements;
-			m_nb_of_vertices += temp_nb_of_vertices;
-		}
+		m_mesh_filenames[iii] = filename_base + "_r_" + std::to_string(iii) + "_n_" + std::to_string(m_nb_files) + mesh_format;
+		m_table_filenames[iii] = filename_base + "_r_" + std::to_string(iii) + "_n_" + std::to_string(m_nb_files) + "_inter_table_Full.dat";
 	}
 
-	// Filenames have been set
+	m_mesh_output = m_base_output + ".msh";
+	m_table_output= m_base_output + "_inter_table_Full.dat";
+
 	m_bFilenamesSet = true;
-
-	// Broadcast the data
-	m_comm.broadcast(m_nb_of_intersections);
-	m_comm.broadcast(m_nb_of_elements);
-	m_comm.broadcast(m_nb_of_vertices);
-
-	// Preallocate the data - for now, only in proc 0!
-	if(m_rank == 0)
-	{
-		preallocate_grid(2*m_nb_of_vertices);
-	}
 }
 
 void Stitch_Intersection_Meshes::preallocate_grid(int map_preallocation)
@@ -136,6 +128,177 @@ void Stitch_Intersection_Meshes::set_grid_constraints(Mesh_Intersection & mesh_i
 	}
 }
 
+void Stitch_Intersection_Meshes::stitch_meshes()
+{
+	// Check if the grids and files were set, and if the grid was preallocated
+	homemade_assert_msg(m_bGridDefined,"Grid not set!\n");
+	homemade_assert_msg(m_bFilenamesSet,"Filenames not set!\n");
+
+	// -> First, read the intersection tables files, to get the grid hash
+	//    function preallocation.
+
+	std::ifstream table_file;
+	m_nb_of_intersections = 0;
+	m_nb_of_elements = 0;
+	m_maximum_nb_of_nodes = 0;
+
+	unsigned int temp_nb_of_intersections = 0;
+	unsigned int temp_nb_of_elements = 0;
+	unsigned int temp_nb_of_nodes = 0;
+	for(unsigned int iii = 0; iii < m_nb_files; ++iii)
+	{
+		table_file.open(m_table_filenames[iii]);
+		table_file >> temp_nb_of_intersections;
+		table_file >> temp_nb_of_elements;
+		table_file >> temp_nb_of_nodes;
+		table_file.close();
+
+		m_nb_of_intersections += temp_nb_of_intersections;
+		m_nb_of_elements += temp_nb_of_elements;
+		m_maximum_nb_of_nodes += temp_nb_of_nodes;
+	}
+
+	// -> Preallocate the data structures
+	preallocate_grid(2*m_maximum_nb_of_nodes);
+
+	m_Stitched_mesh.reserve_elem(m_nb_of_elements);
+	m_Stitched_mesh.reserve_nodes(m_maximum_nb_of_nodes);
+
+	m_intersection_pairs.resize(m_nb_of_intersections);
+	m_intersection_nb_of_elements.resize(m_nb_of_intersections);
+
+	// -> Second, read the data that will be used to reconstruct the
+	//    intersection tables in the end: intersection pairs, and number of
+	//    elements per intersection.
+	unsigned int intersection_idx = 0;
+	unsigned int dummy_uint = 0;
+	for(unsigned int iii = 0; iii < m_nb_files; ++iii)
+	{
+		table_file.open(m_table_filenames[iii]);
+		table_file >> temp_nb_of_intersections;
+		table_file >> temp_nb_of_elements;
+		table_file >> temp_nb_of_nodes;
+
+		for(unsigned int jjj = 0; jjj < temp_nb_of_intersections; ++jjj)
+		{
+			table_file 	>> dummy_uint;
+			table_file 	>> m_intersection_pairs[intersection_idx].first
+						>> m_intersection_pairs[intersection_idx].second;
+			table_file 	>> m_intersection_nb_of_elements[intersection_idx];
+			carl::jump_lines(table_file);
+			++intersection_idx;
+		}
+
+		table_file.close();
+	}
+
+	homemade_assert_msg(m_bGridPreallocated,"Grid not preallocated!\n");
+
+	// -> Third, stitch the meshes
+	libMesh::SerialMesh temp_mesh(m_world_comm,3);
+	temp_mesh.allow_renumbering(false);
+	long grid_value = 0;
+
+	unsigned int full_mesh_nb_elems = 0;
+	unsigned int full_mesh_nb_nodes = 0;
+	unsigned int partial_mesh_nb_elems = 0;
+	unsigned int partial_mesh_nb_nodes = 0;
+
+	libMesh::Elem * copy_elem = NULL;
+	libMesh::Elem * mesh_elem = NULL;
+	libMesh::Node * mesh_node = NULL;
+
+	double dummy_volume = 0;
+
+	// -> Stitch!
+	for(unsigned int iii = 0; iii < m_nb_files; ++iii)
+	{
+		// -> Open mesh file
+		temp_mesh.read(m_mesh_filenames[iii]);
+
+		partial_mesh_nb_elems = temp_mesh.n_elem();
+		partial_mesh_nb_nodes = temp_mesh.n_nodes();
+
+		// -> Insert nodes
+		libMesh::SerialMesh::element_iterator it_mesh = temp_mesh.elements_begin();
+		for( ; it_mesh != temp_mesh.elements_end(); ++it_mesh)
+		{
+			copy_elem = * it_mesh;
+
+			// -> Each element is unique, so no tests for insertion
+			mesh_elem = libMesh::Elem::build(libMesh::TET4).release();
+			mesh_elem->set_id(full_mesh_nb_elems);
+			mesh_elem->processor_id(0);
+
+			// -> First, add the nodes
+			for(unsigned int jjj = 0; jjj < 4; ++jjj)
+			{
+				grid_value = convert_to_grid(copy_elem->point(jjj));
+				if(m_Grid_to_mesh_vertex_idx.find(grid_value)==m_Grid_to_mesh_vertex_idx.end())
+				{
+					// New vertex! Add it to the mesh
+					m_Grid_to_mesh_vertex_idx[grid_value] = full_mesh_nb_nodes;
+					mesh_node = m_Stitched_mesh.add_point(copy_elem->point(jjj),full_mesh_nb_nodes,0);
+					++full_mesh_nb_nodes;
+				}
+				else
+				{
+					mesh_node = m_Stitched_mesh.node_ptr(m_Grid_to_mesh_vertex_idx[grid_value]);
+				}
+
+				// Associate vertex to the new element
+				mesh_elem->set_node(jjj) = mesh_node;
+
+			}
+
+			m_Stitched_mesh.add_elem(mesh_elem);
+			dummy_volume += mesh_elem->volume();
+
+			++full_mesh_nb_elems;
+		}
+	}
+
+	m_Stitched_mesh.prepare_for_use();
+	m_Stitched_mesh.write(m_mesh_output);
+
+	// -> Fourth, re-build the intersection tables
+	unsigned int intersection_elem_idx = 0;
+
+	std::ofstream joined_tables_file(m_table_output);
+	joined_tables_file 	<< m_nb_of_intersections << " "
+						<< m_Stitched_mesh.n_elem() << " "
+						<< m_Stitched_mesh.n_nodes() << std::endl;
+	for(unsigned int iii = 0; iii < m_nb_of_intersections; ++iii)
+	{
+		joined_tables_file 	<< iii << " "
+							<< m_intersection_pairs[iii].first << " "
+							<< m_intersection_pairs[iii].second << " "
+							<< m_intersection_nb_of_elements[iii] << " ";
+		for(unsigned jjj = 0; jjj < m_intersection_nb_of_elements[iii]; ++jjj)
+		{
+			joined_tables_file 	<< intersection_elem_idx << " ";
+			++intersection_elem_idx;
+		}
+		joined_tables_file 	<< std::endl;
+	}
+	joined_tables_file.close();
+
+	if(m_bPrintDebug)
+	{
+		std::cout << "    DEBUG: stitched mesh" << std::endl;
+		std::cout << " -> Volume : " << dummy_volume << std::endl  << std::endl;
+	}
+};
+
+long Stitch_Intersection_Meshes::convert_to_grid(const libMesh::Point iPoint)
+{
+	long dummy =  lround( (iPoint(0) -  m_Grid_MinPoint(0) )/m_eps) * m_GridN[1]*m_GridN[2]
+				+ lround( (iPoint(1) -  m_Grid_MinPoint(1) )/m_eps) * m_GridN[1]
+				+ lround( (iPoint(2) -  m_Grid_MinPoint(2) )/m_eps);
+	homemade_assert_msg(dummy > -1, "Negative grid index!\n");
+
+	return dummy;
+}
 }
 
 

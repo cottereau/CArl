@@ -113,39 +113,16 @@ int main(int argc, char *argv[])
 	test_mesh_A.read(input_params.mesh_A);
 	test_mesh_B.read(input_params.mesh_B);
 	test_mesh_C.read(input_params.mesh_C);
-        test_mesh_C.prepare_for_use();
-        test_mesh_C.partition(nodes);
-/*	// Set the processor ids for the coupling mesh elements
-	unsigned int nb_coupling_elems = test_mesh_C.n_elem();
-	std::vector<unsigned int> nb_coupling_elements_per_node(nodes,nb_coupling_elems/nodes);
-	nb_coupling_elements_per_node[nodes - 1] = nb_coupling_elems - (nodes - 1)*(nb_coupling_elems/nodes);
-	unsigned int coupling_counter = 0;
-	for(unsigned int iii = 0; iii < nodes; ++iii)
-	{
-		for(unsigned int jjj = 0; jjj < nb_coupling_elements_per_node[iii]; ++jjj)
-		{
-			test_mesh_C.elem(coupling_counter)->processor_id(iii);
-			++coupling_counter;
-		}
-	}
 
-	// Debug output - libMesh automatically suppresses output from  processors
-	// other the rank == 0.
-	std::cout << " -> Nb. of processors                 : " << nodes << std::endl;
-	std::cout << " -> Nb. coupling elements (partition) : " << nb_coupling_elems << " ( ";
+	test_mesh_C.prepare_for_use();
+	test_mesh_C.partition(nodes);
+
+	std::cout << " -> Nb. coupling elements (partition) : " << test_mesh_C.n_partitions() << " ( ";
 	for(unsigned int iii = 0; iii < nodes; ++iii)
 	{
-		std::cout << nb_coupling_elements_per_node[iii] << " ";
+			std::cout << test_mesh_C.n_elem_on_proc(iii) << " ";
 	}
 	std::cout << ")" << std::endl << std::endl;
-*/
-
-        std::cout << " -> Nb. coupling elements (partition) : " << test_mesh_C.n_partitions() << " ( ";
-        for(unsigned int iii = 0; iii < nodes; ++iii)
-        {
-                std::cout << test_mesh_C.n_elem_on_proc(iii) << " ";
-        }
-        std::cout << ")" << std::endl << std::endl;
 
 	// Set up the search
 	perf_log.push("Set up");
@@ -160,8 +137,17 @@ int main(int argc, char *argv[])
 
 	// Stitch the meshes!
 	perf_log.push("Stitch intersection meshes");
+	libMesh::Mesh test_mesh_full_I(LocalComm,3);
+	carl::Stitch_Intersection_Meshes	join_meshes(test_mesh_full_I,input_params.output_base + "_stitched",true);
+	join_meshes.set_grid_constraints(test_mesh_A,test_mesh_B);
 
+	if(rank == 0)
+	{
+		join_meshes.set_base_filenames(input_params.output_base,".msh",nodes);
+		join_meshes.stitch_meshes();
+	}
 	perf_log.pop("Stitch intersection meshes");
+
 
 	return 0;
 }

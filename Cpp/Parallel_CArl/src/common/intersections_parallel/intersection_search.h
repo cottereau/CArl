@@ -197,7 +197,6 @@ public:
 	 * 		Calculate the volume over all the processors
 	 */
 	void CalculateGlobalVolume();
-
 };
 }
 
