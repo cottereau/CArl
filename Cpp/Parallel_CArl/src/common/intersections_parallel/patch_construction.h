@@ -42,14 +42,14 @@ protected:
 	const libMesh::Parallel::Communicator&  m_local_comm;
 
 	// Meshes and point locators
-	libMesh::Mesh&				   					m_Mesh;
-	libMesh::Mesh									m_Mesh_patch;
+	libMesh::SerialMesh&						   	m_Mesh;
+	libMesh::SerialMesh								m_Mesh_patch;
 	std::unique_ptr<libMesh::PointLocatorBase>      m_Patch_Point_Locator;
 
 	// Object used to do the intersection tests
 	Intersection_Tools								m_Intersection_Test;
 
-	// Data structurs used to build the patch
+	// Data structures used to build the patch
 	std::unordered_set<unsigned int> 									m_Patch_Elem_indexes;
 	std::unordered_set<unsigned int>									m_Patch_Node_indexes;
 	std::unordered_map<unsigned int,std::unordered_set<unsigned int> >	m_Patch_Elem_Neighbours;
@@ -90,7 +90,7 @@ public:
 		m_rank { m_comm.rank() },
 		m_local_comm {  local_comm },
 		m_Mesh { mesh },
-		m_Mesh_patch { libMesh::Mesh(m_local_comm) },
+		m_Mesh_patch { libMesh::SerialMesh(m_local_comm) },
 
 		m_bPrintDebug { debugOutput }
 	{
@@ -108,8 +108,8 @@ public:
 	};
 
 	// Getters
-	libMesh::Mesh & mesh();
-	libMesh::Mesh & patch_mesh();
+	libMesh::SerialMesh & mesh();
+	libMesh::SerialMesh & patch_mesh();
 	std::unordered_set<unsigned int> & elem_indexes();
 	std::unordered_set<unsigned int> & node_indexes();
 	unsigned int size();
@@ -165,6 +165,7 @@ public:
 	void FrontSearch_reset();
 	unsigned int FrontSearch_prepare_for_probed_test();
 };
+
 }
 
 #endif /* COMMON_INTERSECTIONS_PARALLEL_PATCH_CONSTRUCTION_H_ */

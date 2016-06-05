@@ -193,6 +193,8 @@ public:
 	 */
 	void BuildIntersections(SearchMethod search_type = BRUTE);
 
+
+
 	/*
 	 * 		Calculate the volume over all the processors
 	 */

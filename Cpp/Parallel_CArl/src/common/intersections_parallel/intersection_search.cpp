@@ -123,8 +123,8 @@ namespace carl
 							std::pair<unsigned int,unsigned int> &		First_intersection)
 	{
 		// Set up some references for a simpler code
-		libMesh::Mesh&  	Mesh_patch_guide	= Patch_guide->patch_mesh();
-		libMesh::Mesh&		Mesh_patch_probed	= Patch_probed->patch_mesh();
+		libMesh::SerialMesh&  	Mesh_patch_guide	= Patch_guide->patch_mesh();
+		libMesh::SerialMesh&		Mesh_patch_probed	= Patch_probed->patch_mesh();
 
 		// Set up locator for the first intersecting pair
 		std::unique_ptr<libMesh::PointLocatorBase> Patch_guide_Locator = Mesh_patch_guide.sub_point_locator();
@@ -140,7 +140,7 @@ namespace carl
 		// Set of intersecting terms:
 		std::set<unsigned int> Intersecting_guide_elems;
 		bool bFoundIntersection = false;
-		for(libMesh::Mesh::element_iterator element_probed_it = Mesh_patch_probed.elements_begin();
+		for(libMesh::SerialMesh::element_iterator element_probed_it = Mesh_patch_probed.elements_begin();
 				 element_probed_it != Mesh_patch_probed.elements_end();
 				 ++element_probed_it)
 		{
@@ -198,8 +198,8 @@ namespace carl
 		std::unordered_set<unsigned int> & Patch_Set_Guide = Patch_guide->elem_indexes();
 		std::unordered_set<unsigned int> & Patch_Set_Probed = Patch_probed->elem_indexes();
 
-		libMesh::Mesh&  	Mesh_patch_guide	= Patch_guide->mesh();
-		libMesh::Mesh&		Mesh_patch_probed	= Patch_probed->mesh();
+		libMesh::SerialMesh&  	Mesh_patch_guide	= Patch_guide->mesh();
+		libMesh::SerialMesh&		Mesh_patch_probed	= Patch_probed->mesh();
 
 		std::unordered_set<unsigned int>::iterator it_patch_Guide;
 		std::unordered_set<unsigned int>::iterator it_patch_Probed;

@@ -10,12 +10,12 @@
 namespace carl
 {
 // Getters
-libMesh::Mesh & Patch_construction::mesh()
+libMesh::SerialMesh & Patch_construction::mesh()
 {
 	return m_Mesh;
 }
 
-libMesh::Mesh & Patch_construction::patch_mesh()
+libMesh::SerialMesh & Patch_construction::patch_mesh()
 {
 	return m_Mesh_patch;
 }
@@ -200,7 +200,7 @@ void Patch_construction::BuildPatch(const libMesh::Elem 	* Query_elem)
  */
 
 /*
- * 	Getters, setters and extractors
+ * 		Getters, setters and extractors
  */
 void Patch_construction::intersection_queue_push_back(unsigned int elem_id)
 {
