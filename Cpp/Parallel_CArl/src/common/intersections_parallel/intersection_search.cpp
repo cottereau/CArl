@@ -52,6 +52,7 @@ namespace carl
 	void Intersection_Search::FindPatchIntersections_Brute(const libMesh::Elem 	* Query_elem)
 	{
 		m_perf_log.push("Preamble","Brute force algorithm");
+
 		// Code for the brute force intersection tests
 		m_Intersection_Pairs_multimap.clear();
 
@@ -70,6 +71,7 @@ namespace carl
 		// Debug vars
 		int nbOfTests = 0;
 		int nbOfPositiveTests = 0;
+
 		m_perf_log.pop("Preamble","Brute force algorithm");
 
 		bool bCreateNewNefForA = true;
@@ -96,11 +98,19 @@ namespace carl
 				{
 					bCreateNewNefForA = false;
 
-					m_Intersection_Pairs_multimap.insert(std::pair<unsigned int, unsigned int>(*it_patch_A,*it_patch_B));
+					if(m_bSaveInterData)
+					{
+						m_Intersection_Pairs_multimap.insert(std::pair<unsigned int, unsigned int>(*it_patch_A,*it_patch_B));
+					}
 					++nbOfPositiveTests;
 				}
 			}
 		}
+
+		// Partitioning vars
+		unsigned int query_idx = Query_elem->id();
+		m_Nb_Of_Intersections_Elem_C[query_idx] = nbOfPositiveTests;
+
 		if(m_bPrintDebug)
 		{
 			std::cout << "    DEBUG: brute force search results" << std::endl;
@@ -358,20 +368,22 @@ namespace carl
 				{
 					// 1) add elements to intersection multimap, watching out
 					//    for the element order
-					if(bGuidedByB)
+					if(m_bSaveInterData)
 					{
-						m_Intersection_Pairs_multimap.insert(std::pair<unsigned int, unsigned int>(Probed_working_elem_id,Guide_working_elem_id));
-					}
-					else
-					{
-						m_Intersection_Pairs_multimap.insert(std::pair<unsigned int, unsigned int>(Guide_working_elem_id,Probed_working_elem_id));
+						if(bGuidedByB)
+						{
+							m_Intersection_Pairs_multimap.insert(std::pair<unsigned int, unsigned int>(Probed_working_elem_id,Guide_working_elem_id));
+						}
+						else
+						{
+							m_Intersection_Pairs_multimap.insert(std::pair<unsigned int, unsigned int>(Guide_working_elem_id,Probed_working_elem_id));
+						}
 					}
 					++nbOfPositiveTests;
 
 					m_perf_log.push("Update test queue","Advancing front algorithm");
 					// 2) add elem_probed's neighbors, if not treated yet
 					Patch_probed->add_neighbors_to_test_list();
-
 					m_perf_log.pop("Update test queue","Advancing front algorithm");
 
 					m_perf_log.push("Update intersection queue","Advancing front algorithm");
@@ -415,6 +427,10 @@ namespace carl
 				}
 			}
 		}
+
+		// Partitioning vars
+		unsigned int query_idx = Query_elem->id();
+		m_Nb_Of_Intersections_Elem_C[query_idx] = nbOfPositiveTests;
 
 		if(m_bPrintDebug)
 		{
@@ -478,6 +494,30 @@ namespace carl
 		}
 	}
 
+	void Intersection_Search::PrepareIntersections_Brute()
+	{
+		// Prepare iterators
+		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.local_elements_begin();
+		libMesh::Mesh::const_element_iterator it_coupl_end = m_Mesh_Coupling.local_elements_end();
+
+		int patch_counter = 0;
+
+		for( ; it_coupl != it_coupl_end; ++it_coupl)
+		{
+			const libMesh::Elem * Query_elem = * it_coupl;
+
+			m_perf_log.push("Build patches","Brute force (preamble run)");
+			BuildCoupledPatches(Query_elem,patch_counter);
+			m_perf_log.pop("Build patches","Brute force (preamble run)");
+
+			++patch_counter;
+
+			m_perf_log.push("Find intersections","Brute force (preamble run)");
+			FindPatchIntersections_Brute(Query_elem);
+			m_perf_log.pop("Find intersections","Brute force (preamble run)");
+		};
+	}
+
 	/*
 	 * 		For each coupling element, build the patches and find their
 	 * 	intersections, using the advancing front method.
@@ -531,6 +571,87 @@ namespace carl
 		}
 	}
 
+	void Intersection_Search::PrepareIntersections_Front()
+	{
+		// Prepare iterators
+		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.local_elements_begin();
+		libMesh::Mesh::const_element_iterator it_coupl_end = m_Mesh_Coupling.local_elements_end();
+
+		int patch_counter = 0;
+
+		for( ; it_coupl != it_coupl_end; ++it_coupl)
+		{
+			const libMesh::Elem * Query_elem = * it_coupl;
+
+			m_perf_log.push("Build patches (preamble)","Advancing front (preamble run)");
+			BuildCoupledPatches(Query_elem,patch_counter);
+			m_perf_log.pop("Build patches","Advancing front (preamble run)");
+
+			++patch_counter;
+
+			m_perf_log.push("Find intersections","Advancing front (preamble run)");
+			FindPatchIntersections_Front(Query_elem);
+			m_perf_log.pop("Find intersections","Advancing front (preamble run)");
+		};
+	}
+
+	/*
+	 * 		Preallocate run. It essentially does the intersection run, but
+	 * 	without saving the data or building the intersections themselves.
+	 *
+	 */
+	void Intersection_Search::PreparePreallocationAndLoad(SearchMethod search_type)
+	{
+		m_bSaveInterData = false;
+		m_bIntersectionsBuilt = false;
+		switch (search_type)
+		{
+			case BRUTE :	PrepareIntersections_Brute();
+							break;
+
+			case FRONT :	PrepareIntersections_Front();
+							break;
+
+			case BOTH :		PrepareIntersections_Brute();
+							PrepareIntersections_Front();
+							break;
+		}
+		m_bIntersectionsBuilt = true;
+
+		m_comm.sum(m_Nb_Of_Intersections_Elem_C);
+
+		m_bPreparedPreallocation = true;
+	}
+
+	void Intersection_Search::PreallocateAndPartitionCoupling()
+	{
+		if(m_bPreparedPreallocation)
+		{
+			// Redo the partitioning
+			m_coupling_weights.resize(m_Nb_Of_Intersections_Elem_C.size());
+
+			for(unsigned int iii = 0; iii < m_Nb_Of_Intersections_Elem_C.size(); ++iii)
+			{
+				m_coupling_weights[iii] = m_Nb_Of_Intersections_Elem_C[iii];
+			}
+			libMesh::Partitioner * dummy_partitioner = m_Mesh_Coupling.partitioner().get();
+			dummy_partitioner->attach_weights(&m_coupling_weights);
+			m_Mesh_Coupling.partition(m_nodes);
+
+			// Allocate the intersection maps
+			unsigned int dummy_nb_of_inters = 0;
+			libMesh::Mesh::const_element_iterator it_local = m_Mesh_Coupling.local_elements_begin();
+			libMesh::Mesh::const_element_iterator it_local_end = m_Mesh_Coupling.local_elements_end();
+			for( ; it_local != it_local_end; ++ it_local)
+			{
+				const libMesh::Elem * dummy_elem = * it_local;
+				dummy_nb_of_inters += m_coupling_weights[dummy_elem->id()];
+			}
+			m_Intersection_Pairs_multimap.reserve(2*dummy_nb_of_inters);
+			m_bDidPreallocation = true;
+		}
+	}
+
 	/*
 	 * 		Interface for the user to build the intersections. By default, it
 	 * 	uses the brute force algorithm, but the argument can be changed to
@@ -539,6 +660,13 @@ namespace carl
 	 */
 	void Intersection_Search::BuildIntersections(SearchMethod search_type)
 	{
+		if(!m_bDidPreallocation)
+		{
+			// Must do an preeeety expensive preallocation. Ouch ...
+			m_Intersection_Pairs_multimap.reserve(m_Mesh_A.n_elem()*m_Mesh_B.n_elem());
+		}
+
+		m_bSaveInterData = true;
 		m_bIntersectionsBuilt = false;
 		switch (search_type)
 		{

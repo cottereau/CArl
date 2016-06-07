@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 	test_mesh_C.prepare_for_use();
 	test_mesh_C.partition(nodes);
 
-	std::cout << " -> Nb. coupling elements (partition) : " << test_mesh_C.n_partitions() << " ( ";
+	std::cout << " -> Nb. coupling elements (simple partition) : " << test_mesh_C.n_partitions() << " ( ";
 	for(unsigned int iii = 0; iii < nodes; ++iii)
 	{
 			std::cout << test_mesh_C.n_elem_on_proc(iii) << " ";
@@ -128,6 +128,18 @@ int main(int argc, char *argv[])
 	perf_log.push("Set up");
 	carl::Intersection_Search search_coupling_intersections(test_mesh_A,test_mesh_B,test_mesh_C,test_mesh_I,input_params.output_base);
 	perf_log.pop("Set up");
+
+	// Preallocate the data
+	perf_log.push("Prepare intersection load");
+	search_coupling_intersections.PreparePreallocationAndLoad(input_params.search_type);
+	perf_log.push("Prepare intersection load");
+
+	std::cout << " -> Nb. coupling elements (intersection partition) : " << test_mesh_C.n_partitions() << " ( ";
+	for(unsigned int iii = 0; iii < nodes; ++iii)
+	{
+			std::cout << test_mesh_C.n_elem_on_proc(iii) << " ";
+	}
+	std::cout << ")" << std::endl << std::endl;
 
 	// Search!
 	perf_log.push("Search intersection");

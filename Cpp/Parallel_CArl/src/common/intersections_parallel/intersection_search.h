@@ -69,6 +69,20 @@ protected:
 	Intersection_Tools m_Intersection_test;
 	Intersection_Tools m_Intersection_test_neighbors;
 
+	// Vector saving the number of intersections found inside each of the
+	// coupling mesh elements
+	std::vector<unsigned int> m_Nb_Of_Intersections_Elem_C;
+	libMesh::ErrorVector m_coupling_weights;
+
+	// Boolean flag determining if we should save the intersection data or not
+	bool m_bSaveInterData;
+
+	// Boolean flag determining if we did a preallocation run or not
+	bool m_bPreparedPreallocation;
+
+	// Boolean flag determining if we did a preallocation run or not
+	bool m_bDidPreallocation;
+
 	// Boolean flag indicating if the intersections were built
 	bool m_bIntersectionsBuilt;
 
@@ -129,12 +143,14 @@ protected:
 	 * 	intersections, using the brute force method.
 	 */
 	void BuildIntersections_Brute();
+	void PrepareIntersections_Brute();
 
 	/*
 	 * 		For each coupling element, build the patches and find their
 	 * 	intersections, using the advancing front method.
 	 */
 	void BuildIntersections_Front();
+	void PrepareIntersections_Front();
 
 	/*
 	 * 		Legacy function, used to calculate the volume of the intersections
@@ -168,6 +184,9 @@ public:
 		m_Patch_Constructor_A { Patch_construction(m_Mesh_A,m_local_comm)},
 		m_Patch_Constructor_B { Patch_construction(m_Mesh_B,m_local_comm)},
 		m_Mesh_Intersection { Mesh_Intersection(mesh_I,m_Mesh_A,m_Mesh_B)},
+		m_bSaveInterData { true },
+		m_bPreparedPreallocation { false },
+		m_bDidPreallocation { false },
 		m_bIntersectionsBuilt { false },
 		m_Min_Inter_Volume { Min_Inter_Volume },
 		m_Output_filename_base { output_base + "_r_" + std::to_string(m_rank) + "_n_" + std::to_string(m_nodes)},
@@ -176,7 +195,8 @@ public:
 		m_bPrintDebug { bDebugOutput }
 	{
 		// Reserve space for the intersection multimap
-		m_Intersection_Pairs_multimap.reserve(mesh_A.n_elem()*mesh_B.n_elem());
+		m_Nb_Of_Intersections_Elem_C.resize(mesh_Coupling.n_elem(),0);
+		// m_Intersection_Pairs_multimap.reserve(mesh_A.n_elem()*mesh_B.n_elem());
 	};
 
 	// Getters
@@ -186,14 +206,20 @@ public:
 
 	// PUBLIC Methods
 	/*
+	 * 		Preallocate run. It essentially does the intersection run, but
+	 * 	without saving the data or building the intersections themselves.
+	 *
+	 */
+	void PreparePreallocationAndLoad(SearchMethod search_type = BRUTE);
+	void PreallocateAndPartitionCoupling();
+
+	/*
 	 * 		Interface for the user to build the intersections. By default, it
 	 * 	uses the brute force algorithm, but the argument can be changed to
 	 * 	carl::FRONT to use the advancing front method, of to carl::BOTH to use
 	 * 	both methods (useful for benchmarking).
 	 */
 	void BuildIntersections(SearchMethod search_type = BRUTE);
-
-
 
 	/*
 	 * 		Calculate the volume over all the processors

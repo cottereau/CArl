@@ -44,6 +44,9 @@
 #include "libmesh/mesh_tetgen_interface.h"
 #include "libmesh/cell_tet4.h"
 #include "libmesh/cell_hex8.h"
+#include "libmesh/metis_partitioner.h"
+#include "libmesh/error_vector.h"
+#include "libmesh/parallel_algebra.h"
 
 #include <petscmat.h>
 #include <petscvec.h>
