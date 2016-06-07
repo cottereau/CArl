@@ -266,8 +266,7 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 
 	std::ofstream joined_tables_file(m_table_output);
 	joined_tables_file 	<< m_nb_of_intersections << " "
-						<< m_Stitched_mesh.n_elem() << " "
-						<< m_Stitched_mesh.n_nodes() << std::endl;
+						<< m_Stitched_mesh.n_elem() << std::endl;
 	for(unsigned int iii = 0; iii < m_nb_of_intersections; ++iii)
 	{
 		joined_tables_file 	<< iii << " "
@@ -276,7 +275,7 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 							<< m_intersection_nb_of_elements[iii] << " ";
 		for(unsigned jjj = 0; jjj < m_intersection_nb_of_elements[iii]; ++jjj)
 		{
-			joined_tables_file 	<< intersection_elem_idx << " ";
+			joined_tables_file 	<< intersection_elem_idx + 1 << " ";
 			++intersection_elem_idx;
 		}
 		joined_tables_file 	<< std::endl;

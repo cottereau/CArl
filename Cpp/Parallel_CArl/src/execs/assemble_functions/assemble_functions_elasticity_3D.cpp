@@ -1159,7 +1159,6 @@ void set_physical_properties(libMesh::EquationSystems& es, std::string& physical
 		{
 			physical_param_system.solution->set(dof_index, inputMu[currentSubdomain]);
 		}
-
 	}
 
 	physical_param_system.solution->close();

@@ -144,27 +144,17 @@ void Mesh_restriction::export_restriction_mesh(const std::string & filename_base
 		std::string filename_mesh = filename_base + ".msh";
 		m_Mesh_patch.write(filename_mesh);
 
-		std::string filename_elements = filename_base + "_elements__global_to_restrict.dat";
-		std::string filename_nodes = filename_base + "_nodes__global_to_restrict.dat";
+		std::string filename_elements = filename_base + "_restrict.dat";
 
 		std::ofstream elems_out(filename_elements);
-		std::ofstream nodes_out(filename_nodes);
 
 		elems_out << m_elem_map_Output_Global.size() << std::endl;
 		for(unsigned int iii = 0; iii < m_elem_map_Output_Global.size(); ++iii)
 		{
-			elems_out << m_elem_map_Output_Global[iii] << " " << iii << std::endl;
+			elems_out << iii + 1 << " " << m_elem_map_Output_Global[iii] + 1 << std::endl;
 		}
 
 		elems_out.close();
-
-		nodes_out << m_node_map_Output_Global.size() << std::endl;
-		for(unsigned int iii = 0; iii < m_node_map_Output_Global.size(); ++iii)
-		{
-			nodes_out << m_node_map_Output_Global[iii] << " " << iii << std::endl;
-		}
-
-		nodes_out.close();
 	}
 }
 

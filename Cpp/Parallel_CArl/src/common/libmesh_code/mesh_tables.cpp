@@ -1072,22 +1072,22 @@ void carl::set_intersection_tables(
 		equivalence_table_A_to_R_A,equivalence_table_B_to_R_B,
 		full_intersection_restricted_pairs_map);
 
-	// DEBUG Print all this into a file
-	{
-		std::string debug_inter_table = "debug_restriction_libmesh_" +
-				std::to_string(rank) + ".dat";
-		std::ofstream debug_inter_file(debug_inter_table);
-
-		std::unordered_map<int,std::pair<int,int> >::iterator mapIt = full_intersection_restricted_pairs_map.begin();
-		std::unordered_map<int,std::pair<int,int> >::iterator end_mapIt = full_intersection_restricted_pairs_map.end();
-
-		for( ; mapIt != end_mapIt; ++mapIt)
-		{
-			debug_inter_file << mapIt->first << " " << mapIt->second.first << " " << mapIt->second.second << std::endl;
-		}
-
-		debug_inter_file.close();
-	}
+//	// DEBUG Print all this into a file
+//	{
+//		std::string debug_inter_table = "debug_restriction_libmesh_" +
+//				std::to_string(rank) + ".dat";
+//		std::ofstream debug_inter_file(debug_inter_table);
+//
+//		std::unordered_map<int,std::pair<int,int> >::iterator mapIt = full_intersection_restricted_pairs_map.begin();
+//		std::unordered_map<int,std::pair<int,int> >::iterator end_mapIt = full_intersection_restricted_pairs_map.end();
+//
+//		for( ; mapIt != end_mapIt; ++mapIt)
+//		{
+//			debug_inter_file << mapIt->first << " " << mapIt->second.first << " " << mapIt->second.second << std::endl;
+//		}
+//
+//		debug_inter_file.close();
+//	}
 
 	// Build in each processor its own intersection table
 	libMesh::MeshBase::const_element_iterator       elemIt  = mesh_intersection.active_local_elements_begin();
@@ -1107,20 +1107,20 @@ void carl::set_intersection_tables(
 		local_intersection_meshI_to_inter_map[idxI_table] = interID;
 	}
 
-	// DEBUG Print all this into a file
-	{
-		std::string debug_inter_table = "debug_local_inter_libmesh_" +
-				std::to_string(rank) + ".dat";
-		std::ofstream debug_inter_file(debug_inter_table);
-
-		std::unordered_map<int,int>::iterator mapIt = local_intersection_meshI_to_inter_map.begin();
-		std::unordered_map<int,int>::iterator end_mapIt = local_intersection_meshI_to_inter_map.end();
-
-		for( ; mapIt != end_mapIt; ++mapIt)
-		{
-			debug_inter_file << mapIt->first << " " << mapIt->second << std::endl;
-		}
-
-		debug_inter_file.close();
-	}
+//	// DEBUG Print all this into a file
+//	{
+//		std::string debug_inter_table = "debug_local_inter_libmesh_" +
+//				std::to_string(rank) + ".dat";
+//		std::ofstream debug_inter_file(debug_inter_table);
+//
+//		std::unordered_map<int,int>::iterator mapIt = local_intersection_meshI_to_inter_map.begin();
+//		std::unordered_map<int,int>::iterator end_mapIt = local_intersection_meshI_to_inter_map.end();
+//
+//		for( ; mapIt != end_mapIt; ++mapIt)
+//		{
+//			debug_inter_file << mapIt->first << " " << mapIt->second << std::endl;
+//		}
+//
+//		debug_inter_file.close();
+//	}
 };

@@ -1,4 +1,4 @@
-#include "main.h"
+#include "carl_libmesh_bricks.h"
 
 /*
  * 		Sketch of the second version of the program ----------------------------
@@ -318,7 +318,7 @@ int main(int argc, char** argv) {
 
 	// - Displacement conditions -----------------------------------------------
 	boundary_displacement x_max_BIG(1.0,0,0);
-	boundary_displacement x_min_BIG(-0.25,0,0);
+	boundary_displacement x_min_BIG(-1.0,0,0);
 	boundary_id_cube boundary_ids;
 
 	// - Set up inputs
@@ -592,7 +592,7 @@ int main(int argc, char** argv) {
 										= add_elasticity(equation_systems_BIG);
 
 	// [MACRO] Defining the boundaries with Dirichlet conditions
-	set_displaced_border_translation(elasticity_system_BIG, x_max_BIG,boundary_ids.MAX_X);
+	//set_displaced_border_translation(elasticity_system_BIG, x_min_BIG,boundary_ids.MIN_X);
 	set_clamped_border(elasticity_system_BIG, boundary_ids.MIN_X);
 
 	// [MACRO] Build stress system
@@ -613,6 +613,10 @@ int main(int argc, char** argv) {
 	// [MICRO] Set up the physical properties
 	libMesh::LinearImplicitSystem& elasticity_system_micro
 										= add_elasticity(equation_systems_micro);
+
+	// [MICRO] Defining the boundaries with Dirichlet conditions
+	set_displaced_border_translation(elasticity_system_micro, x_max_BIG,boundary_ids.MAX_X);
+
 
 	// [MICRO] Build stress system
 	libMesh::ExplicitSystem& stress_system_micro
@@ -679,10 +683,13 @@ int main(int argc, char** argv) {
 	double BIG_Mu = 0;
 
 	double coupling_const = -1;
-	set_physical_properties(equation_systems_micro,input_params.physical_params_file,BIG_E,BIG_Mu);
-
+	std::ifstream phys_params_file(input_params.physical_params_file);
+	carl::jump_lines(phys_params_file);
+	phys_params_file >> BIG_E >> BIG_Mu;
+	phys_params_file.close();
 
 	set_constant_physical_properties(equation_systems_BIG,BIG_E,BIG_Mu);
+	set_constant_physical_properties(equation_systems_micro,BIG_E,BIG_Mu);
 	perf_log.pop("Physical properties","System initialization:");
 
 	// - Set the coupling matrix -----------------------------------------------

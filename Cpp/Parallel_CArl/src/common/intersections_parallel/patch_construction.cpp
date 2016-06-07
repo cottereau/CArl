@@ -478,7 +478,7 @@ void Patch_construction::export_patch_mesh(std::string & filename_base)
 	elems_out << m_elem_map_Output_Global.size() << std::endl;
 	for(unsigned int iii = 0; iii < m_elem_map_Output_Global.size(); ++iii)
 	{
-		elems_out << m_elem_map_Output_Global[iii] << " " << iii << std::endl;
+		elems_out << m_elem_map_Output_Global[iii] + 1 << " " << iii + 1 << std::endl;
 	}
 
 	elems_out.close();
@@ -486,7 +486,7 @@ void Patch_construction::export_patch_mesh(std::string & filename_base)
 	nodes_out << m_node_map_Output_Global.size() << std::endl;
 	for(unsigned int iii = 0; iii < m_node_map_Output_Global.size(); ++iii)
 	{
-		nodes_out << m_node_map_Output_Global[iii] << " " << iii << std::endl;
+		nodes_out << m_node_map_Output_Global[iii] + 1 << " " << iii + 1 << std::endl;
 	}
 
 	nodes_out.close();
