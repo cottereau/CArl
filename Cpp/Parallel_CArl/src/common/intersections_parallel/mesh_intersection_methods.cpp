@@ -266,7 +266,8 @@ void Mesh_Intersection::export_intersection_data(const std::string & filename_ba
 	std::string table_file_out = filename_base + "_inter_table_Full.dat";
 
 	// Print the mesh
-	m_libMesh_Mesh.write(mesh_file_out);
+	libMesh::NameBasedIO output_mesh(m_libMesh_Mesh);
+	output_mesh.write(mesh_file_out);
 
 	// Print the intersection table
 	std::ofstream table_out(table_file_out);

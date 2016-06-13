@@ -55,7 +55,8 @@ void Stitch_Intersection_Meshes::set_base_filenames(const std::string & filename
 		m_table_filenames[iii] = filename_base + "_r_" + std::to_string(iii) + "_n_" + std::to_string(m_nb_files) + "_inter_table_Full.dat";
 	}
 
-	m_mesh_output = m_base_output + ".msh";
+	// m_mesh_output = m_base_output + ".msh";
+	m_mesh_output = m_base_output + ".e";
 	m_table_output= m_base_output + "_inter_table_Full.dat";
 
 	m_bFilenamesSet = true;
@@ -318,7 +319,10 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 				<< " (" << 100.*collisions/m_discrete_vertices.size() << "%)" << std::endl << std::endl;
 
 	m_Stitched_mesh.prepare_for_use();
-	m_Stitched_mesh.write(m_mesh_output);
+
+	// Print mesh
+	libMesh::NameBasedIO output_mesh(m_Stitched_mesh);
+	output_mesh.write(m_mesh_output);
 
 	// -> Fourth, re-build the intersection tables
 	unsigned int intersection_elem_idx = 0;

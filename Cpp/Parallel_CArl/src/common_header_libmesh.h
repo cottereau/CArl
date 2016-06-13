@@ -48,6 +48,7 @@
 #include "libmesh/error_vector.h"
 #include "libmesh/parallel_algebra.h"
 #include "libmesh/statistics.h"
+#include "libmesh/namebased_io.h"
 
 #include <petscmat.h>
 #include <petscvec.h>

@@ -142,7 +142,11 @@ void Mesh_restriction::export_restriction_mesh(const std::string & filename_base
 	if(m_rank == 0)
 	{
 		std::string filename_mesh = filename_base + ".msh";
-		m_Mesh_patch.write(filename_mesh);
+
+		// Print mesh
+		libMesh::GmshIO output_mesh(m_Mesh_patch);
+		output_mesh.binary() = true;
+		output_mesh.write(filename_mesh);
 
 		std::string filename_elements = filename_base + "_restrict.dat";
 

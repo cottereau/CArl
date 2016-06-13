@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
 
 	if(rank == 0)
 	{
-		join_meshes.set_base_filenames(input_params.output_base,".msh",nodes);
+		join_meshes.set_base_filenames(input_params.output_base,".e",nodes);
 		join_meshes.stitch_meshes();
 	}
 	perf_log.pop("Stitch intersection meshes");

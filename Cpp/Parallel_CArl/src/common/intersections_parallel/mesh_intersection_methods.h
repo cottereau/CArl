@@ -208,7 +208,7 @@ public:
 	/*
 	 *		Export both the intersection mesh its data structures
 	 */
-	void export_intersection_data(const std::string & filename_base, const std::string & mesh_format = std::string(".msh"));
+	void export_intersection_data(const std::string & filename_base, const std::string & mesh_format = std::string(".e"));
 
 	/*
 	 * 		Prepare the mesh for use
