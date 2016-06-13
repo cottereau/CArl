@@ -42,6 +42,27 @@ struct IntersectionData
 	int BMeshIdx;
 	int IntersectionID;
 };
+
+// Point hash function
+struct PointHash_3D {
+	std::size_t operator()(const std::vector<long>& k) const
+	{
+		long prime0 = 73856093;
+		long prime1 = 19349669;
+		long prime2 = 83492791;
+		long primeN = 2038074743;
+
+		return ( ( k[0] * prime0 ) ^ ( k[1] * prime1 ) ^ ( k[2] * prime2 ) ) % primeN;
+	}
+};
+ 
+struct PointHash_3D_Equal {
+	bool operator()(const std::vector<long>& lhs, const std::vector<long>& rhs) const
+	{
+		return lhs[0] == rhs[0] && lhs[1] == rhs[1] && lhs[2] == rhs[2];
+	}
+};
+
 }
 
 #endif /* COMMON_COMMON_FUNCTIONS_H_ */

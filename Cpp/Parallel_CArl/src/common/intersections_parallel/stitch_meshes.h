@@ -52,15 +52,21 @@ protected:
 	// Precision
 	double		m_eps;
 
+	// Minimum volume
+	double		m_vol_tol;
+
 	// Number of integers over each dimension of the grid
 	std::vector<long > m_GridN;
+	std::vector<long > m_dummy_discrete_point;
 
 	// Min and max points of the grid
 	libMesh::Point m_Grid_MinPoint;
 	libMesh::Point m_Grid_MaxPoint;
 
 	// Map between the indexes and the grid positions
-	std::unordered_map<long, unsigned int>	m_Grid_to_mesh_vertex_idx;
+	// std::unordered_map<long, unsigned int>	m_Grid_to_mesh_vertex_idx;
+	std::unordered_map<std::vector<long>, unsigned int, PointHash_3D, PointHash_3D_Equal >
+		m_discrete_vertices;
 
 	// Minimal of integers over each dimension of the grid
 	long m_GridN_min;
@@ -92,7 +98,7 @@ protected:
 public:
 
 	// Constructors
-	Stitch_Intersection_Meshes(	libMesh::Mesh& output_mesh, const std::string output_filename = "test_stitched", bool debugOutput = false) :
+	Stitch_Intersection_Meshes(	libMesh::Mesh& output_mesh, const std::string output_filename = "test_stitched",  long grid_n_min = static_cast<long>(1E9), bool debugOutput = true) :
 		m_world_comm { output_mesh.comm() },
 		m_nodes { m_world_comm.size() },
 		m_rank { m_world_comm.rank() },
@@ -100,10 +106,12 @@ public:
 		m_nb_files { 0 },
 		m_base_output { output_filename },
 		m_eps { -1 },
+		m_vol_tol { -1 },
 		m_GridN { std::vector<long> (3,-1) },
+		m_dummy_discrete_point { std::vector<long> (3,-1) },
 		m_Grid_MinPoint { libMesh::Point(0,0,0) },
 		m_Grid_MaxPoint { libMesh::Point(1,1,1) },
-		m_GridN_min { static_cast<long>(1E6)},
+		m_GridN_min { grid_n_min },
 		m_nb_of_intersections { 0 },
 		m_nb_of_elements { 0 },
 		m_nb_of_nodes { 0 },
@@ -137,7 +145,7 @@ public:
 	 * 	an input the original meshes, either by copying the data from an
 	 * 	Mesh_Intersection object.
 	 */
-	void set_grid_constraints(const libMesh::Mesh & mesh_A, const libMesh::Mesh & mesh_B);
+	void set_grid_constraints(const libMesh::Mesh & mesh_A, const libMesh::Mesh & mesh_B, double vol_tol = -1);
 	void set_grid_constraints(Mesh_Intersection & mesh_inter_obj);
 
 	/*
@@ -148,7 +156,8 @@ public:
 	/*
 	 * 		Convert a point to an grid index
 	 */
-	long convert_to_grid(const libMesh::Point iPoint);
+//	long convert_to_grid(const libMesh::Point iPoint);
+	void convert_to_discrete(const libMesh::Point& iPoint, std::vector<long>& oPoint);
 };
 }
 

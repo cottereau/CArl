@@ -47,6 +47,7 @@
 #include "libmesh/metis_partitioner.h"
 #include "libmesh/error_vector.h"
 #include "libmesh/parallel_algebra.h"
+#include "libmesh/statistics.h"
 
 #include <petscmat.h>
 #include <petscvec.h>

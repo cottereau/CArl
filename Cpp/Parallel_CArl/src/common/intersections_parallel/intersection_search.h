@@ -38,7 +38,6 @@ enum SearchMethod
 
 class	Intersection_Search
 {
-
 protected:
 
 	// Meshes

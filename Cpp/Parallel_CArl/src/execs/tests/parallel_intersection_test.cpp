@@ -132,6 +132,7 @@ int main(int argc, char *argv[])
 	// Preallocate the data
 	perf_log.push("Prepare intersection load");
 	search_coupling_intersections.PreparePreallocationAndLoad(input_params.search_type);
+	search_coupling_intersections.PreallocateAndPartitionCoupling();
 	perf_log.push("Prepare intersection load");
 
 	std::cout << " -> Nb. coupling elements (intersection partition) : " << test_mesh_C.n_partitions() << " ( ";
@@ -150,7 +151,7 @@ int main(int argc, char *argv[])
 	// Stitch the meshes!
 	perf_log.push("Stitch intersection meshes");
 	libMesh::Mesh test_mesh_full_I(LocalComm,3);
-	carl::Stitch_Intersection_Meshes	join_meshes(test_mesh_full_I,input_params.output_base + "_stitched",true);
+	carl::Stitch_Intersection_Meshes	join_meshes(test_mesh_full_I,input_params.output_base + "_stitched");
 	join_meshes.set_grid_constraints(test_mesh_A,test_mesh_B);
 
 	if(rank == 0)

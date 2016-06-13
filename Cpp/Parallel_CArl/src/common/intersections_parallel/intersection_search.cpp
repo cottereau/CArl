@@ -603,7 +603,6 @@ namespace carl
 	void Intersection_Search::PreparePreallocationAndLoad(SearchMethod search_type)
 	{
 		m_bSaveInterData = false;
-		m_bIntersectionsBuilt = false;
 		switch (search_type)
 		{
 			case BRUTE :	PrepareIntersections_Brute();
@@ -616,7 +615,6 @@ namespace carl
 							PrepareIntersections_Front();
 							break;
 		}
-		m_bIntersectionsBuilt = true;
 
 		m_comm.sum(m_Nb_Of_Intersections_Elem_C);
 
@@ -627,6 +625,24 @@ namespace carl
 	{
 		if(m_bPreparedPreallocation)
 		{
+//			if(m_bPrintDebug)
+			{
+				// Print some statistics
+				libMesh::StatisticsVector<int> dummy_before_statistics(m_nodes,0);
+				libMesh::Mesh::const_element_iterator it_dummy = m_Mesh_Coupling.elements_begin();
+				libMesh::Mesh::const_element_iterator it_dummy_end = m_Mesh_Coupling.elements_end();
+				for( ; it_dummy != it_dummy_end; ++it_dummy)
+				{
+					const libMesh::Elem * dummy_elem = * it_dummy;
+					dummy_before_statistics[dummy_elem->processor_id()] += m_Nb_Of_Intersections_Elem_C[dummy_elem->id()];
+				}
+
+				std::cout << "    DEBUG: partition weight statistics" << std::endl;
+				std::cout << " -> BEFORE Mean      : " << dummy_before_statistics.mean() << std::endl;
+				std::cout << " ->        Median    : " << dummy_before_statistics.median() << std::endl;
+				std::cout << " ->        Std. dev. : " << dummy_before_statistics.stddev() << std::endl << std::endl;
+			}
+
 			// Redo the partitioning
 			m_coupling_weights.resize(m_Nb_Of_Intersections_Elem_C.size());
 
@@ -638,7 +654,7 @@ namespace carl
 			dummy_partitioner->attach_weights(&m_coupling_weights);
 			m_Mesh_Coupling.partition(m_nodes);
 
-			// Allocate the intersection maps
+			// Allocate the intersection maps ...
 			unsigned int dummy_nb_of_inters = 0;
 			libMesh::Mesh::const_element_iterator it_local = m_Mesh_Coupling.local_elements_begin();
 			libMesh::Mesh::const_element_iterator it_local_end = m_Mesh_Coupling.local_elements_end();
@@ -648,7 +664,28 @@ namespace carl
 				dummy_nb_of_inters += m_coupling_weights[dummy_elem->id()];
 			}
 			m_Intersection_Pairs_multimap.reserve(2*dummy_nb_of_inters);
+
+			// ... and the intersection grid
+			m_Mesh_Intersection.preallocate_grid(192*dummy_nb_of_inters);
+
 			m_bDidPreallocation = true;
+
+//			if(m_bPrintDebug)
+			{
+				// Print some statistics
+				libMesh::StatisticsVector<int> dummy_after_statistics(m_nodes,0);
+				libMesh::Mesh::const_element_iterator it_dummy = m_Mesh_Coupling.elements_begin();
+				libMesh::Mesh::const_element_iterator it_dummy_end = m_Mesh_Coupling.elements_end();
+				for( ; it_dummy != it_dummy_end; ++it_dummy)
+				{
+					const libMesh::Elem * dummy_elem = * it_dummy;
+					dummy_after_statistics[dummy_elem->processor_id()] += m_Nb_Of_Intersections_Elem_C[dummy_elem->id()];
+				}
+
+				std::cout << " -> AFTER  Mean      : " << dummy_after_statistics.mean() << std::endl;
+				std::cout << " ->        Median    : " << dummy_after_statistics.median() << std::endl;
+				std::cout << " ->        Std. dev. : " << dummy_after_statistics.stddev() << std::endl  << std::endl;
+			}
 		}
 	}
 

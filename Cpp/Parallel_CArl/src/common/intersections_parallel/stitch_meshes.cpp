@@ -63,11 +63,12 @@ void Stitch_Intersection_Meshes::set_base_filenames(const std::string & filename
 
 void Stitch_Intersection_Meshes::preallocate_grid(int map_preallocation)
 {
-	m_Grid_to_mesh_vertex_idx.reserve(map_preallocation);
+	m_discrete_vertices.reserve(map_preallocation);
+//	m_Grid_to_mesh_vertex_idx.reserve(map_preallocation);
 	m_bGridPreallocated = true;
 }
 
-void Stitch_Intersection_Meshes::set_grid_constraints(const libMesh::Mesh & mesh_A, const libMesh::Mesh & mesh_B)
+void Stitch_Intersection_Meshes::set_grid_constraints(const libMesh::Mesh & mesh_A, const libMesh::Mesh & mesh_B, double vol_tol )
 {
 	libMesh::MeshTools::BoundingBox bbox_A = libMesh::MeshTools::bounding_box(mesh_A);
 	libMesh::MeshTools::BoundingBox bbox_B = libMesh::MeshTools::bounding_box(mesh_B);
@@ -97,13 +98,41 @@ void Stitch_Intersection_Meshes::set_grid_constraints(const libMesh::Mesh & mesh
 		m_GridN[iii] = (m_Grid_MaxPoint(iii) - m_Grid_MinPoint(iii)) / m_eps + 1;
 	}
 
+	if( vol_tol < 0 )
+	{
+		// Grossily estimate the volume of A's and B's elements using the bbox
+		double grid_volume 	  =		(m_Grid_MaxPoint(0) - m_Grid_MinPoint(0)) *
+									(m_Grid_MaxPoint(1) - m_Grid_MinPoint(1)) *
+									(m_Grid_MaxPoint(2) - m_Grid_MinPoint(2));
+
+
+		double fraction_vol_A = 	(bbox_A.max()(0) - bbox_A.min()(0)) *
+									(bbox_A.max()(1) - bbox_A.min()(1)) *
+									(bbox_A.max()(2) - bbox_A.min()(2)) /
+									grid_volume;
+
+		double fraction_vol_B = 	(bbox_B.max()(0) - bbox_B.min()(0)) *
+									(bbox_B.max()(1) - bbox_B.min()(1)) *
+									(bbox_B.max()(2) - bbox_B.min()(2)) /
+									grid_volume;
+
+		unsigned int est_elem =   std::max(fraction_vol_A * mesh_A.n_elem(),fraction_vol_B * mesh_B.n_elem());
+
+		m_vol_tol = 1E-6 * grid_volume / est_elem;
+	}
+	else
+	{
+		m_vol_tol = vol_tol;
+	}
+
 	// Mark grid as ready to use
 	m_bGridDefined = true;
 
-	if(m_bPrintDebug)
+//	if(m_bPrintDebug)
 	{
 		std::cout << "    DEBUG: discrete grid" << std::endl;
 		std::cout << " -> eps             : " << m_eps << std::endl;
+		std::cout << " -> volume          : " << m_vol_tol << std::endl;
 		std::cout << " -> Grid dimensions : " << m_GridN[0] << " " << m_GridN[1] << " " << m_GridN[2] << " " << std::endl  << std::endl;
 	}
 }
@@ -114,16 +143,18 @@ void Stitch_Intersection_Meshes::set_grid_constraints(Mesh_Intersection & mesh_i
 	m_Grid_MinPoint = mesh_inter_obj.min_point();
 	m_Grid_MaxPoint = mesh_inter_obj.max_point();
 	m_eps = mesh_inter_obj.eps();
+	m_vol_tol = mesh_inter_obj.min_vol();
 	m_GridN = mesh_inter_obj.grid_sizes();
 	m_GridN_min = mesh_inter_obj.grid_min_size();
 
 	// Mark grid as ready to use
 	m_bGridDefined = true;
 
-	if(m_bPrintDebug)
+//	if(m_bPrintDebug)
 	{
 		std::cout << "    DEBUG: discrete grid" << std::endl;
 		std::cout << " -> eps             : " << m_eps << std::endl;
+		std::cout << " -> volume          : " << m_vol_tol << std::endl;
 		std::cout << " -> Grid dimensions : " << m_GridN[0] << " " << m_GridN[1] << " " << m_GridN[2] << " " << std::endl  << std::endl;
 	}
 }
@@ -159,7 +190,7 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 	}
 
 	// -> Preallocate the data structures
-	preallocate_grid(2*m_maximum_nb_of_nodes);
+	preallocate_grid(100*m_maximum_nb_of_nodes);
 
 	m_Stitched_mesh.reserve_elem(m_nb_of_elements);
 	m_Stitched_mesh.reserve_nodes(m_maximum_nb_of_nodes);
@@ -221,6 +252,7 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 
 		// -> Insert nodes
 		libMesh::SerialMesh::element_iterator it_mesh = temp_mesh.elements_begin();
+
 		for( ; it_mesh != temp_mesh.elements_end(); ++it_mesh)
 		{
 			copy_elem = * it_mesh;
@@ -233,18 +265,31 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 			// -> First, add the nodes
 			for(unsigned int jjj = 0; jjj < 4; ++jjj)
 			{
-				grid_value = convert_to_grid(copy_elem->point(jjj));
-				if(m_Grid_to_mesh_vertex_idx.find(grid_value)==m_Grid_to_mesh_vertex_idx.end())
+				convert_to_discrete(copy_elem->point(jjj),m_dummy_discrete_point);
+				if(m_discrete_vertices.find(m_dummy_discrete_point) == m_discrete_vertices.end())
 				{
 					// New vertex! Add it to the mesh
-					m_Grid_to_mesh_vertex_idx[grid_value] = full_mesh_nb_nodes;
+					m_discrete_vertices[m_dummy_discrete_point] = full_mesh_nb_nodes;
 					mesh_node = m_Stitched_mesh.add_point(copy_elem->point(jjj),full_mesh_nb_nodes,0);
 					++full_mesh_nb_nodes;
 				}
 				else
 				{
-					mesh_node = m_Stitched_mesh.node_ptr(m_Grid_to_mesh_vertex_idx[grid_value]);
+					mesh_node = m_Stitched_mesh.node_ptr(m_discrete_vertices[m_dummy_discrete_point]);
 				}
+
+//				grid_value = convert_to_grid(copy_elem->point(jjj));
+//				if(m_Grid_to_mesh_vertex_idx.find(grid_value)==m_Grid_to_mesh_vertex_idx.end())
+//				{
+//					// New vertex! Add it to the mesh
+//					m_Grid_to_mesh_vertex_idx[grid_value] = full_mesh_nb_nodes;
+//					mesh_node = m_Stitched_mesh.add_point(copy_elem->point(jjj),full_mesh_nb_nodes,0);
+//					++full_mesh_nb_nodes;
+//				}
+//				else
+//				{
+//					mesh_node = m_Stitched_mesh.node_ptr(m_Grid_to_mesh_vertex_idx[grid_value]);
+//				}
 
 				// Associate vertex to the new element
 				mesh_elem->set_node(jjj) = mesh_node;
@@ -257,6 +302,20 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 			++full_mesh_nb_elems;
 		}
 	}
+
+	// Print information about the number of collisions
+	size_t collisions = 0;
+	for (size_t bucket = 0; bucket != m_discrete_vertices.bucket_count(); ++bucket)
+	{
+	    if (m_discrete_vertices.bucket_size(bucket) > 1)
+	    {
+	        collisions += m_discrete_vertices.bucket_size(bucket) - 1;
+	    }
+	}
+
+	std::cout 	<< "    DEBUG: discrete grid hash collisions" << std::endl;
+	std::cout 	<< " -> Nb. of collisions / size : " << collisions << " / " << m_discrete_vertices.size()
+				<< " (" << 100.*collisions/m_discrete_vertices.size() << "%)" << std::endl << std::endl;
 
 	m_Stitched_mesh.prepare_for_use();
 	m_Stitched_mesh.write(m_mesh_output);
@@ -287,16 +346,38 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 		std::cout << "    DEBUG: stitched mesh" << std::endl;
 		std::cout << " -> Volume : " << dummy_volume << std::endl  << std::endl;
 	}
+
+	int wrong_volume = 0;
+	libMesh::SerialMesh::element_iterator elem_begin = m_Stitched_mesh.local_elements_begin();
+	libMesh::SerialMesh::element_iterator elem_end = m_Stitched_mesh.local_elements_end();
+
+	for( ; elem_begin != elem_end; ++elem_begin)
+	{
+		libMesh::Elem * dummy_elem = * elem_begin;
+		if(std::abs(dummy_elem->volume()) < m_vol_tol)
+		{
+			++wrong_volume;
+		}
+	}
+
+	std::cout << " -> bad volumes : " << wrong_volume << " ( " <<  m_vol_tol << " ) " << std::endl;
 };
 
-long Stitch_Intersection_Meshes::convert_to_grid(const libMesh::Point iPoint)
-{
-	long dummy =  lround( (iPoint(0) -  m_Grid_MinPoint(0) )/m_eps) * m_GridN[1]*m_GridN[2]
-				+ lround( (iPoint(1) -  m_Grid_MinPoint(1) )/m_eps) * m_GridN[1]
-				+ lround( (iPoint(2) -  m_Grid_MinPoint(2) )/m_eps);
-	homemade_assert_msg(dummy > -1, "Negative grid index!\n");
+//long Stitch_Intersection_Meshes::convert_to_grid(const libMesh::Point iPoint)
+//{
+//	long dummy =  lround( (iPoint(0) -  m_Grid_MinPoint(0) )/m_eps) * m_GridN[1]*m_GridN[2]
+//				+ lround( (iPoint(1) -  m_Grid_MinPoint(1) )/m_eps) * m_GridN[1]
+//				+ lround( (iPoint(2) -  m_Grid_MinPoint(2) )/m_eps);
+//	homemade_assert_msg(dummy > -1, "Negative grid index!\n");
+//
+//	return dummy;
+//}
 
-	return dummy;
+void Stitch_Intersection_Meshes::convert_to_discrete(const libMesh::Point& iPoint, std::vector<long>& oPoint)
+{
+	oPoint[0] = lround( (iPoint(0) -  m_Grid_MinPoint(0) )/m_eps);
+	oPoint[1] = lround( (iPoint(1) -  m_Grid_MinPoint(1) )/m_eps);
+	oPoint[2] = lround( (iPoint(2) -  m_Grid_MinPoint(2) )/m_eps);
 }
 }
 

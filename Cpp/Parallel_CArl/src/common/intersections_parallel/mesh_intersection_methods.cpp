@@ -3,33 +3,33 @@
 namespace carl
 {
 
-void Mesh_Intersection::update_intersection_vertices(	const std::set<libMesh::Point> & input_points)
-{
-	long dummy_long_int;
-	m_nb_of_points = 0;
+// void Mesh_Intersection::update_intersection_vertices(	const std::set<libMesh::Point> & input_points)
+// {
+// 	long dummy_long_int;
+// 	m_nb_of_points = 0;
 
-	for(	std::set<libMesh::Point>::const_iterator it_points = input_points.begin();
-			it_points != input_points.end();
-			++it_points)
-	{
-		dummy_long_int = convert_to_grid(*it_points);
-		if(m_Grid_to_mesh_vertex_idx.find(dummy_long_int)==m_Grid_to_mesh_vertex_idx.end())
-		{
-			// New vertex! Add it to the mesh
-			m_Grid_to_mesh_vertex_idx[dummy_long_int] = m_nb_of_vertices;
-			m_intersection_point_indexes[m_nb_of_points] = m_nb_of_vertices;
-			m_libMesh_Mesh.add_point(*it_points,m_nb_of_vertices);
-			++m_nb_of_vertices;
-			++m_nb_of_points;
-		}
-		else
-		{
-			// Recover the index corresponding to the point
-			m_intersection_point_indexes[m_nb_of_points] = m_Grid_to_mesh_vertex_idx[dummy_long_int];
-			++m_nb_of_points;
-		}
-	}
-}
+// 	for(	std::set<libMesh::Point>::const_iterator it_points = input_points.begin();
+// 			it_points != input_points.end();
+// 			++it_points)
+// 	{
+// 		dummy_long_int = convert_to_grid(*it_points);
+// 		if(m_Grid_to_mesh_vertex_idx.find(dummy_long_int)==m_Grid_to_mesh_vertex_idx.end())
+// 		{
+// 			// New vertex! Add it to the mesh
+// 			m_Grid_to_mesh_vertex_idx[dummy_long_int] = m_nb_of_vertices;
+// 			m_intersection_point_indexes[m_nb_of_points] = m_nb_of_vertices;
+// 			m_libMesh_Mesh.add_point(*it_points,m_nb_of_vertices);
+// 			++m_nb_of_vertices;
+// 			++m_nb_of_points;
+// 		}
+// 		else
+// 		{
+// 			// Recover the index corresponding to the point
+// 			m_intersection_point_indexes[m_nb_of_points] = m_Grid_to_mesh_vertex_idx[dummy_long_int];
+// 			++m_nb_of_points;
+// 		}
+// 	}
+// }
 
 void Mesh_Intersection::triangulate_intersection(const std::set<libMesh::Point> & input_points)
 {
@@ -62,23 +62,28 @@ void Mesh_Intersection::update_intersection_mesh()
 			// -> First, add the nodes
 			for(unsigned int iii = 0; iii < 4; ++iii)
 			{
-				dummy_long_int = convert_to_grid(poly_elem->point(iii));
-				if(m_Grid_to_mesh_vertex_idx.find(dummy_long_int)==m_Grid_to_mesh_vertex_idx.end())
+				convert_to_discrete(poly_elem->point(iii),m_dummy_discrete_point);
+//				dummy_long_int = convert_to_grid(poly_elem->point(iii));
+
+				if(m_discrete_vertices.find(m_dummy_discrete_point) == m_discrete_vertices.end())
+//				if(m_Grid_to_mesh_vertex_idx.find(dummy_long_int)==m_Grid_to_mesh_vertex_idx.end())
 				{
 					// New vertex! Add it to the mesh
-					m_Grid_to_mesh_vertex_idx[dummy_long_int] = m_nb_of_vertices;
+
+					m_discrete_vertices[m_dummy_discrete_point] = m_nb_of_vertices;
+//					m_Grid_to_mesh_vertex_idx[dummy_long_int] = m_nb_of_vertices;
 					m_libMesh_Mesh.add_point(poly_elem->point(iii),m_nb_of_vertices);
 					mesh_elem->set_node(iii) = m_libMesh_Mesh.node_ptr(m_nb_of_vertices);
 					++m_nb_of_vertices;
 				}
 
 				// Associate vertex to the new element
-				mesh_elem->set_node(iii) = m_libMesh_Mesh.node_ptr(m_Grid_to_mesh_vertex_idx[dummy_long_int]);
+				mesh_elem->set_node(iii) = m_libMesh_Mesh.node_ptr(m_discrete_vertices[m_dummy_discrete_point]);
 			}
 			// Increase the number of elements
 			++m_nb_of_elements;
 		}
-	}	
+	}
 }
 
 void Mesh_Intersection::update_intersection_pairs(unsigned int elem_idx_A, unsigned int elem_idx_B, unsigned int inter_id)
@@ -111,6 +116,11 @@ double Mesh_Intersection::eps()
 	return m_eps;
 }
 
+double Mesh_Intersection::min_vol()
+{
+	return m_vol_tol;
+}
+
 std::vector<long> & Mesh_Intersection::grid_sizes()
 {
 	return m_GridN;
@@ -124,7 +134,8 @@ long Mesh_Intersection::grid_min_size()
 void Mesh_Intersection::initialize()
 {
 	m_libMesh_Mesh.clear();
-	m_Grid_to_mesh_vertex_idx.clear();
+//	m_Grid_to_mesh_vertex_idx.clear();
+	m_discrete_vertices.clear();
 	m_bMeshFinalized = false;
 	m_intersection_pairs.clear();
 	m_intersection_couplings.clear();
@@ -137,10 +148,11 @@ void Mesh_Intersection::initialize()
 
 void Mesh_Intersection::preallocate_grid( int map_preallocation )
 {
-	m_Grid_to_mesh_vertex_idx.reserve(map_preallocation);
+//	m_Grid_to_mesh_vertex_idx.reserve(map_preallocation);
+	m_discrete_vertices.reserve(map_preallocation);
 }
 
-void Mesh_Intersection::set_grid_constraints(const libMesh::Mesh & mesh_A, const libMesh::Mesh & mesh_B)
+void Mesh_Intersection::set_grid_constraints(const libMesh::Mesh & mesh_A, const libMesh::Mesh & mesh_B, double vol_tol)
 {
 	libMesh::MeshTools::BoundingBox bbox_A = libMesh::MeshTools::bounding_box(mesh_A);
 	libMesh::MeshTools::BoundingBox bbox_B = libMesh::MeshTools::bounding_box(mesh_B);
@@ -165,14 +177,39 @@ void Mesh_Intersection::set_grid_constraints(const libMesh::Mesh & mesh_A, const
 		m_Grid_MaxPoint(iii) += 2*m_eps;
 	}
 
-	m_vol_tol = std::pow(m_eps,2);
+	if( vol_tol < 0 )
+	{
+		// Grossily estimate the volume of A's and B's elements using the bbox
+		double grid_volume 	  =		(m_Grid_MaxPoint(0) - m_Grid_MinPoint(0)) *
+									(m_Grid_MaxPoint(1) - m_Grid_MinPoint(1)) *
+									(m_Grid_MaxPoint(2) - m_Grid_MinPoint(2));
+
+
+		double fraction_vol_A = 	(bbox_A.max()(0) - bbox_A.min()(0)) *
+									(bbox_A.max()(1) - bbox_A.min()(1)) *
+									(bbox_A.max()(2) - bbox_A.min()(2)) /
+									grid_volume;
+
+		double fraction_vol_B = 	(bbox_B.max()(0) - bbox_B.min()(0)) *
+									(bbox_B.max()(1) - bbox_B.min()(1)) *
+									(bbox_B.max()(2) - bbox_B.min()(2)) /
+									grid_volume;
+
+		unsigned int est_elem =   std::max(fraction_vol_A * mesh_A.n_elem(),fraction_vol_B * mesh_B.n_elem());
+
+		m_vol_tol = 1E-6 * grid_volume / est_elem;
+	}
+	else
+	{
+		m_vol_tol = vol_tol;
+	}
 
 	for(unsigned int iii = 0; iii < 3; ++iii)
 	{
 		m_GridN[iii] = (m_Grid_MaxPoint(iii) - m_Grid_MinPoint(iii)) / m_eps + 1;
 	}
 
-	if(m_bPrintDebug)
+//	if(m_bPrintDebug)
 	{
 		std::cout << "    DEBUG: discrete grid" << std::endl;
 		std::cout << " -> eps             : " << m_eps << std::endl;
@@ -254,6 +291,23 @@ void Mesh_Intersection::export_intersection_data(const std::string & filename_ba
 
 void Mesh_Intersection::prepare_for_use()
 {
+//	if(m_bPrintDebug)
+//	{
+		// Print information about the number of collisions
+		size_t collisions = 0;
+		for (size_t bucket = 0; bucket != m_discrete_vertices.bucket_count(); ++bucket)
+		{
+		    if (m_discrete_vertices.bucket_size(bucket) > 1)
+		    {
+		        collisions += m_discrete_vertices.bucket_size(bucket) - 1;
+		    }
+		}
+
+		std::cout 	<< "    DEBUG: discrete grid hash collisions" << std::endl;
+		std::cout 	<< " -> Nb. of collisions / size : " << collisions << " / " << m_discrete_vertices.size()
+					<< " (" << 100.*collisions/m_discrete_vertices.size() << "%)" << std::endl << std::endl;
+//	}
+
 	m_libMesh_Mesh.prepare_for_use();
 	m_bMeshFinalized = true;
 }
@@ -292,13 +346,20 @@ double Mesh_Intersection::get_intersection_volume(std::set<libMesh::Point> & inp
 	return volume;
 }
 
-long Mesh_Intersection::convert_to_grid(const libMesh::Point iPoint)
+void Mesh_Intersection::convert_to_discrete(const libMesh::Point& iPoint, std::vector<long>& oPoint)
 {
-	long dummy =  lround( (iPoint(0) -  m_Grid_MinPoint(0) )/m_eps) * m_GridN[1]*m_GridN[2]
-				+ lround( (iPoint(1) -  m_Grid_MinPoint(1) )/m_eps) * m_GridN[1]
-				+ lround( (iPoint(2) -  m_Grid_MinPoint(2) )/m_eps);
-	homemade_assert_msg(dummy > -1, "Negative grid index!\n");
-
-	return dummy;
+	oPoint[0] = lround( (iPoint(0) -  m_Grid_MinPoint(0) )/m_eps);
+	oPoint[1] = lround( (iPoint(1) -  m_Grid_MinPoint(1) )/m_eps);
+	oPoint[2] = lround( (iPoint(2) -  m_Grid_MinPoint(2) )/m_eps);
 }
+
+//long Mesh_Intersection::convert_to_grid(const libMesh::Point iPoint)
+//{
+//	long dummy =  lround( (iPoint(0) -  m_Grid_MinPoint(0) )/m_eps) * m_GridN[1]*m_GridN[2]
+//				+ lround( (iPoint(1) -  m_Grid_MinPoint(1) )/m_eps) * m_GridN[1]
+//				+ lround( (iPoint(2) -  m_Grid_MinPoint(2) )/m_eps);
+//	homemade_assert_msg(dummy > -1, "Negative grid index!\n");
+//
+//	return dummy;
+//}
 }

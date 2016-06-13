@@ -72,13 +72,16 @@ protected:
 
 	// Number of integers over each dimension of the grid
 	std::vector<long > m_GridN;
+	std::vector<long > m_dummy_discrete_point;
 
 	// Min and max points of the grid
 	libMesh::Point m_Grid_MinPoint;
 	libMesh::Point m_Grid_MaxPoint;
 
 	// Map between the indexes and the grid positions
-	std::unordered_map<long, unsigned int>	m_Grid_to_mesh_vertex_idx;
+//	std::unordered_map<long, unsigned int>	m_Grid_to_mesh_vertex_idx;
+	std::unordered_map<std::vector<long>, unsigned int, PointHash_3D, PointHash_3D_Equal >
+		m_discrete_vertices;
 
 	// Minimal of integers over each dimension of the grid
 	long m_GridN_min;
@@ -103,7 +106,7 @@ protected:
 	/*
 	 * 		Add new points to the intersection data structures
 	 */
-	void update_intersection_vertices(	const std::set<libMesh::Point> & input_points);
+	// void update_intersection_vertices(	const std::set<libMesh::Point> & input_points);
 
 	/*
 	 * 		Triangulate an intersection defined by a set of libMesh::Points
@@ -130,7 +133,7 @@ public:
 	// Constructors
 	Mesh_Intersection(	libMesh::SerialMesh & mesh, const libMesh::Mesh & mesh_A,
 						const libMesh::Mesh & mesh_B,
-						int map_preallocation = 1E6, bool debugOutput = false) :
+						int map_preallocation = 1E6, long grid_n_min = static_cast<long>(1E9), bool debugOutput = false) :
 		m_comm { mesh.comm() },
 		m_nodes { m_comm.size() },
 		m_rank { m_comm.rank() },
@@ -143,16 +146,18 @@ public:
 		m_nb_of_intersections { 0 },
 		m_eps { -1 },
 		m_GridN { std::vector<long >(3,-1) },
+		m_dummy_discrete_point { std::vector<long >(3,-1) },
 		m_Grid_MinPoint { libMesh::Point(0,0,0) },
 		m_Grid_MaxPoint { libMesh::Point(1,1,1) },
-		m_GridN_min { static_cast<long>(1E6)},
+		m_GridN_min { grid_n_min },
 		m_nb_of_elements { 0 },
 		m_nb_of_vertices { 0 },
 		m_nb_of_points { 0 },
 		m_bMeshFinalized { false },
 		m_bPrintDebug { debugOutput }
 	{
-		m_Grid_to_mesh_vertex_idx.reserve(map_preallocation);
+//		m_Grid_to_mesh_vertex_idx.reserve(map_preallocation);
+		m_discrete_vertices.reserve(map_preallocation);
 		m_intersection_point_indexes.resize(24);
 
 		set_grid_constraints(mesh_A,mesh_B);
@@ -172,6 +177,7 @@ public:
 	libMesh::Point & min_point();
 	libMesh::Point & max_point();
 	double eps();
+	double min_vol();
 	std::vector<long> & grid_sizes();
 	long grid_min_size();
 
@@ -189,7 +195,7 @@ public:
 	/*
 	 * 		Set the boundaries of the discrete points grid
 	 */
-	void set_grid_constraints(const libMesh::Mesh & mesh_A, const libMesh::Mesh & mesh_B);
+	void set_grid_constraints(const libMesh::Mesh & mesh_A, const libMesh::Mesh & mesh_B, double vol_tol = -1);
 
 	/*
 	 *		Increase the intersection mesh and update its data structures
@@ -222,7 +228,8 @@ public:
 	/*
 	 * 		Convert a point to an grid index
 	 */
-	long convert_to_grid(const libMesh::Point iPoint);
+	void convert_to_discrete(const libMesh::Point& iPoint, std::vector<long>& oPoint);
+//	long convert_to_grid(const libMesh::Point iPoint);
 };
 }
 
