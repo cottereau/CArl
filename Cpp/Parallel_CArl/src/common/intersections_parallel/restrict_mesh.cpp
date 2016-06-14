@@ -155,7 +155,7 @@ void Mesh_restriction::export_restriction_mesh(const std::string & filename_base
 		elems_out << m_elem_map_Output_Global.size() << std::endl;
 		for(unsigned int iii = 0; iii < m_elem_map_Output_Global.size(); ++iii)
 		{
-			elems_out << iii + 1 << " " << m_elem_map_Output_Global[iii] + 1 << std::endl;
+			elems_out << iii << " " << m_elem_map_Output_Global[iii] << std::endl;
 		}
 
 		elems_out.close();

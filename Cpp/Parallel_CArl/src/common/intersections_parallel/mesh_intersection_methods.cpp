@@ -278,12 +278,12 @@ void Mesh_Intersection::export_intersection_data(const std::string & filename_ba
 	{
 		nb_of_inter_elements = m_intersection_element_range[iii].second
 							 - m_intersection_element_range[iii].first;
-		table_out << iii << " " << m_intersection_pairs[iii].first + 1<< " "
-				                << m_intersection_pairs[iii].second + 1<< " "
+		table_out << iii << " " << m_intersection_pairs[iii].first << " "
+				                << m_intersection_pairs[iii].second << " "
 								<< nb_of_inter_elements;
 		for(unsigned int jjj = 0; jjj < nb_of_inter_elements; ++jjj)
 		{
-			table_out << " " << m_intersection_element_range[iii].first + jjj + 1;
+			table_out << " " << m_intersection_element_range[iii].first + jjj;
 		}
 		table_out << std::endl;
 	}

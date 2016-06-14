@@ -50,374 +50,380 @@ void carl::set_weight_function_domain_idx(	std::string &filename,
 	dataF.close();
 }
 
-void carl::create_mesh_map(
-		const std::string &filename,
-		std::unordered_map<int,int> &node_map,
-		std::unordered_map<int,int> &element_map)
-{
-	/*
-	 *  libmesh : nodes and elements start at 0, and are continuous
-	 *  GMSH    : nodes and elements can be discontinuous, libmesh builds a map
-	 *  Abaqus  : not sure, but seems similar to GMSH. libmesh builds a map, but
-	 *            differently from the method used for GMSH
-	 */
-
-	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
-	//{
-		build_mesh_map_Gmsh(filename,node_map,element_map);
-	//}
-	//else
-	//{
-	//	libmesh_error_msg("Error: unknown filetype");
-	//}
-}
-
-void carl::create_mesh_map(
-		const std::string &filename,
-		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
-		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &element_libmesh_to_gmsh_map
-		)
-{
-	/*
-	 *  libmesh : nodes and elements start at 0, and are continuous
-	 *  GMSH    : nodes and elements can be discontinuous, libmesh builds a map
-	 *  Abaqus  : not sure, but seems similar to GMSH. libmesh builds a map, but
-	 *            differently from the method used for GMSH
-	 */
-
-	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
-	//{
-		build_mesh_map_Gmsh(filename,node_gmsh_to_libmesh_map,node_libmesh_to_gmsh_map,
-				element_gmsh_to_libmesh_map,element_libmesh_to_gmsh_map);
-	//}
-	//else
-	//{
-	//	libmesh_error_msg("Error: unknown filetype");
-	//}
-};
-
-void carl::create_mesh_map(
-		const std::string &filename,
-		std::unordered_map<int,int> &node_map,
-		std::unordered_map<int,int> &element_map,
-		const libMesh::Parallel::Communicator& MeshComm)
-{
-	/*
-	 *  libmesh : nodes and elements start at 0, and are continuous
-	 *  GMSH    : nodes and elements can be discontinuous, libmesh builds a map
-	 *  Abaqus  : not sure, but seems similar to GMSH. libmesh builds a map, but
-	 *            differently from the method used for GMSH
-	 */
-
-	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
-	//{
-		int rank = MeshComm.rank();
-
-		if(rank == 0)
-		{
-			build_mesh_map_Gmsh(filename,node_map,element_map);
-		}
-		carl::broadcast_index_unordered_map(node_map,MeshComm);
-		carl::broadcast_index_unordered_map(element_map,MeshComm);
-	//}
-	//else
-	//{
-	//	libmesh_error_msg("Error: unknown filetype");
-	//}
-}
-
-void carl::create_mesh_map(
-		const std::string &filename,
-		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
-		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &element_libmesh_to_gmsh_map,
-		const libMesh::Parallel::Communicator& MeshComm
-		)
-{
-	/*
-	 *  libmesh : nodes and elements start at 0, and are continuous
-	 *  GMSH    : nodes and elements can be discontinuous, libmesh builds a map
-	 *  Abaqus  : not sure, but seems similar to GMSH. libmesh builds a map, but
-	 *            differently from the method used for GMSH
-	 */
-
-	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
-	//{
-		int rank = MeshComm.rank();
-
-		if(rank == 0)
-		{
-			build_mesh_map_Gmsh(filename,node_gmsh_to_libmesh_map,element_gmsh_to_libmesh_map);
-		}
-		MeshComm.barrier();
-		carl::broadcast_index_unordered_map(node_gmsh_to_libmesh_map,MeshComm);
-		carl::broadcast_index_unordered_map(element_gmsh_to_libmesh_map,MeshComm);
-
-		carl::invert_index_unordered_map(node_gmsh_to_libmesh_map,node_libmesh_to_gmsh_map);
-		carl::invert_index_unordered_map(element_gmsh_to_libmesh_map,element_libmesh_to_gmsh_map);
+//void carl::create_mesh_map(
+//		const std::string &filename,
+//		std::unordered_map<int,int> &node_map,
+//		std::unordered_map<int,int> &element_map)
+//{
+//	/*
+//	 *  libmesh : nodes and elements start at 0, and are continuous
+//	 *  GMSH    : nodes and elements can be discontinuous, libmesh builds a map
+//	 *  Abaqus  : not sure, but seems similar to GMSH. libmesh builds a map, but
+//	 *            differently from the method used for GMSH
+//	 */
 //
-//		// DEBUG Small bcast info test
-//		MeshComm.barrier();
-//		std::cout << " -> " << rank << " "
-//							<< node_gmsh_to_libmesh_map.size() << " / "
-//							<< node_libmesh_to_gmsh_map.size() << " --- "
-//							<< element_gmsh_to_libmesh_map.size() << " / "
-//							<< element_libmesh_to_gmsh_map.size() <<  std::endl;
+//	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
+//	//{
+//		build_mesh_map_Gmsh(filename,node_map,element_map);
+//	//}
+//	//else
+//	//{
+//	//	libmesh_error_msg("Error: unknown filetype");
+//	//}
+//}
 //
-//		MeshComm.barrier();
+//void carl::create_mesh_map(
+//		const std::string &filename,
+//		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
+//		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &element_libmesh_to_gmsh_map
+//		)
+//{
+//	/*
+//	 *  libmesh : nodes and elements start at 0, and are continuous
+//	 *  GMSH    : nodes and elements can be discontinuous, libmesh builds a map
+//	 *  Abaqus  : not sure, but seems similar to GMSH. libmesh builds a map, but
+//	 *            differently from the method used for GMSH
+//	 */
+//
+//	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
+//	//{
+//		build_mesh_map_Gmsh(filename,node_gmsh_to_libmesh_map,node_libmesh_to_gmsh_map,
+//				element_gmsh_to_libmesh_map,element_libmesh_to_gmsh_map);
+//	//}
+//	//else
+//	//{
+//	//	libmesh_error_msg("Error: unknown filetype");
+//	//}
+//};
+//
+//void carl::create_mesh_map(
+//		const std::string &filename,
+//		std::unordered_map<int,int> &node_map,
+//		std::unordered_map<int,int> &element_map,
+//		const libMesh::Parallel::Communicator& MeshComm)
+//{
+//	/*
+//	 *  libmesh : nodes and elements start at 0, and are continuous
+//	 *  Abaqus  : not sure, but seems similar to GMSH. libmesh builds a map, but
+//	 *            differently from the method used for GMSH
+//	 */
+//
+//	int rank = MeshComm.rank();
+//
+//	if(rank == 0)
+//	{
+//		if( filename.rfind(".msh") < filename.size() )
+//		{
+//			// Gmsh file : nodes and elements can be discontinuous, libmesh
+//			//             builds a map, we must do the same
+//			build_mesh_map_Gmsh(filename,node_map,element_map);
+//		}
+//		else if( filename.rfind(".e") < filename.size() )
+//		{
+//			// Covers both ".e" and ".exd" formats
+//			// Exodus_II file :
+//		}
+//		else
+//		{
+//			homemade_error_msg("Error: unknown filetype");
+//		}
+//	}
+//
+//	carl::broadcast_index_unordered_map(node_map,MeshComm);
+//	carl::broadcast_index_unordered_map(element_map,MeshComm);
+//}
+//
+//void carl::create_mesh_map(
+//		const std::string &filename,
+//		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
+//		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &element_libmesh_to_gmsh_map,
+//		const libMesh::Parallel::Communicator& MeshComm
+//		)
+//{
+//	/*
+//	 *  libmesh : nodes and elements start at 0, and are continuous
+//	 *  GMSH    : nodes and elements can be discontinuous, libmesh builds a map
+//	 *  Abaqus  : not sure, but seems similar to GMSH. libmesh builds a map, but
+//	 *            differently from the method used for GMSH
+//	 */
+//
+//	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
+//	//{
+//		int rank = MeshComm.rank();
+//
 //		if(rank == 0)
 //		{
-//			std::cout << std::endl;
+//			build_mesh_map_Gmsh(filename,node_gmsh_to_libmesh_map,element_gmsh_to_libmesh_map);
 //		}
-//
 //		MeshComm.barrier();
-//		std::cout << " -> " << rank << " "
-//							<< "7" << " "
-//							<< element_gmsh_to_libmesh_map[7] << " "
-//							<< element_libmesh_to_gmsh_map[element_gmsh_to_libmesh_map[7]]
-//							<< std::endl;
+//		carl::broadcast_index_unordered_map(node_gmsh_to_libmesh_map,MeshComm);
+//		carl::broadcast_index_unordered_map(element_gmsh_to_libmesh_map,MeshComm);
 //
-//		MeshComm.barrier();
-//		if(rank == 0)
+//		carl::invert_index_unordered_map(node_gmsh_to_libmesh_map,node_libmesh_to_gmsh_map);
+//		carl::invert_index_unordered_map(element_gmsh_to_libmesh_map,element_libmesh_to_gmsh_map);
+////
+////		// DEBUG Small bcast info test
+////		MeshComm.barrier();
+////		std::cout << " -> " << rank << " "
+////							<< node_gmsh_to_libmesh_map.size() << " / "
+////							<< node_libmesh_to_gmsh_map.size() << " --- "
+////							<< element_gmsh_to_libmesh_map.size() << " / "
+////							<< element_libmesh_to_gmsh_map.size() <<  std::endl;
+////
+////		MeshComm.barrier();
+////		if(rank == 0)
+////		{
+////			std::cout << std::endl;
+////		}
+////
+////		MeshComm.barrier();
+////		std::cout << " -> " << rank << " "
+////							<< "7" << " "
+////							<< element_gmsh_to_libmesh_map[7] << " "
+////							<< element_libmesh_to_gmsh_map[element_gmsh_to_libmesh_map[7]]
+////							<< std::endl;
+////
+////		MeshComm.barrier();
+////		if(rank == 0)
+////		{
+////			std::cout << std::endl;
+////		}
+////		MeshComm.barrier();
+//	//}
+//	//else
+//	//{
+//	//	libmesh_error_msg("Error: unknown filetype");
+//	//}
+//};
+//
+//void carl::build_mesh_map_Gmsh(const std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map)
+//{
+//	//if(!(boost::filesystem::path(filename).extension().string().compare(".msh")==0))
+//	//{
+//	//	libmesh_error_msg("Error: expected Gmsh filetype");
+//	//}
+//
+//	// Open file
+//	std::ifstream dataF(filename);
+//	if(!dataF.good())
+//	{
+//		libmesh_error_msg("Error: bad filestream");
+//	}
+//
+//	// Buffer string
+//	std::string bufferLine;
+//	std::stringstream	dataBuffer;
+//
+//	int nbOfNodes = -1;
+//	int nbOfElements = -1;
+//
+//	int gmshNodeIndex = -1;
+//	int gmshElemIndex = -1;
+//
+//	bool hasNodes = false;
+//	bool hasElements = false;
+//
+//	// Read info until the file ends
+//	while(std::getline(dataF,bufferLine))
+//	{
+//		/*
+//		 * 		As of the current Gmsh version (2.11, filetype v. 2.2), each
+//		 * 	file has only one $Nodes and one $Elements sections
+//		 */
+//		if(bufferLine.compare("$Nodes")==0)
 //		{
-//			std::cout << std::endl;
+//			// Read node indexes
+//			hasNodes = true;
+//			dataF >> nbOfNodes;
+//
+//			node_map.reserve(nbOfNodes);
+//
+//			// Line structure
+//			// [index] [X] [Y] [Z]
+//			std::getline(dataF,bufferLine);
+//			for(unsigned int iii = 0; iii < nbOfNodes; ++iii)
+//			{
+//				std::getline(dataF,bufferLine);
+//				dataBuffer.str("");
+//				dataBuffer.clear();
+//				dataBuffer << bufferLine;
+//
+//				dataBuffer >> gmshNodeIndex;
+//
+//				// Add point to map
+//				node_map[gmshNodeIndex] = iii;
+//			}
 //		}
-//		MeshComm.barrier();
-	//}
-	//else
-	//{
-	//	libmesh_error_msg("Error: unknown filetype");
-	//}
-};
+//
+//		if(bufferLine.compare("$Elements")==0)
+//		{
+//			// Read element indexes
+//			hasElements = true;
+//			dataF >> nbOfElements;
+//
+//			element_map.reserve(nbOfElements);
+//
+//			// Line structure
+//			// [index] [X] [Y] [Z]
+//			std::getline(dataF,bufferLine);
+//			for(unsigned int iii = 0; iii < nbOfElements; ++iii)
+//			{
+//				std::getline(dataF,bufferLine);
+//				dataBuffer.str("");
+//				dataBuffer.clear();
+//				dataBuffer << bufferLine;
+//
+//				dataBuffer 	>> gmshElemIndex;
+//
+//				element_map[gmshElemIndex] = iii;
+//			}
+//		}
+//
+//		if(hasNodes && hasElements)
+//		{
+//			break;
+//		}
+//	}
+//}
+//
+//void carl::build_mesh_map_Gmsh(const std::string &filename,
+//		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
+//		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &element_libmesh_to_gmsh_map)
+//{
+//	//if(!(boost::filesystem::path(filename).extension().string().compare(".msh")==0))
+//	//{
+//	//	libmesh_error_msg("Error: expected Gmsh filetype");
+//	//}
+//
+//	// Open file
+//	std::ifstream dataF(filename);
+//	if(!dataF.good())
+//	{
+//		libmesh_error_msg("Error: bad filestream");
+//	}
+//
+//	// Buffer string
+//	std::string bufferLine;
+//	std::stringstream	dataBuffer;
+//
+//	int nbOfNodes = -1;
+//	int nbOfElements = -1;
+//
+//	int gmshNodeIndex = -1;
+//	int gmshElemIndex = -1;
+//
+//	bool hasNodes = false;
+//	bool hasElements = false;
+//
+//	// Read info until the file ends
+//	while(std::getline(dataF,bufferLine))
+//	{
+//		/*
+//		 * 		As of the current Gmsh version (2.11, filetype v. 2.2), each
+//		 * 	file has only one $Nodes and one $Elements sections
+//		 */
+//		if(bufferLine.compare("$Nodes")==0)
+//		{
+//			// Read node indexes
+//			hasNodes = true;
+//			dataF >> nbOfNodes;
+//
+//			node_gmsh_to_libmesh_map.reserve(nbOfNodes);
+//			node_libmesh_to_gmsh_map.reserve(nbOfNodes);
+//
+//			// Line structure
+//			// [index] [X] [Y] [Z]
+//			std::getline(dataF,bufferLine);
+//			for(unsigned int iii = 0; iii < nbOfNodes; ++iii)
+//			{
+//				std::getline(dataF,bufferLine);
+//				dataBuffer.str("");
+//				dataBuffer.clear();
+//				dataBuffer << bufferLine;
+//
+//				dataBuffer >> gmshNodeIndex;
+//
+//				// Add point to map
+//				node_gmsh_to_libmesh_map[gmshNodeIndex] = iii;
+//				node_libmesh_to_gmsh_map[iii] = gmshNodeIndex;
+//			}
+//		}
+//
+//		if(bufferLine.compare("$Elements")==0)
+//		{
+//			// Read element indexes
+//			hasElements = true;
+//			dataF >> nbOfElements;
+//
+//			element_gmsh_to_libmesh_map.reserve(nbOfElements);
+//			element_libmesh_to_gmsh_map.reserve(nbOfElements);
+//
+//			// Line structure
+//			// [index] [X] [Y] [Z]
+//			std::getline(dataF,bufferLine);
+//			for(unsigned int iii = 0; iii < nbOfElements; ++iii)
+//			{
+//				std::getline(dataF,bufferLine);
+//				dataBuffer.str("");
+//				dataBuffer.clear();
+//				dataBuffer << bufferLine;
+//
+//				dataBuffer 	>> gmshElemIndex;
+//
+//				element_gmsh_to_libmesh_map[gmshElemIndex] = iii;
+//				element_libmesh_to_gmsh_map[iii] = gmshElemIndex;
+//			}
+//		}
+//
+//		if(hasNodes && hasElements)
+//		{
+//			break;
+//		}
+//	}
+//}
 
-void carl::build_mesh_map_Gmsh(const std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map)
-{
-	//if(!(boost::filesystem::path(filename).extension().string().compare(".msh")==0))
-	//{
-	//	libmesh_error_msg("Error: expected Gmsh filetype");
-	//}
-
-	// Open file
-	std::ifstream dataF(filename);
-	if(!dataF.good())
-	{
-		libmesh_error_msg("Error: bad filestream");
-	}
-
-	// Buffer string
-	std::string bufferLine;
-	std::stringstream	dataBuffer;
-
-	int nbOfNodes = -1;
-	int nbOfElements = -1;
-
-	int gmshNodeIndex = -1;
-	int gmshElemIndex = -1;
-
-	bool hasNodes = false;
-	bool hasElements = false;
-
-	// Read info until the file ends
-	while(std::getline(dataF,bufferLine))
-	{
-		/*
-		 * 		As of the current Gmsh version (2.11, filetype v. 2.2), each
-		 * 	file has only one $Nodes and one $Elements sections
-		 */
-		if(bufferLine.compare("$Nodes")==0)
-		{
-			// Read node indexes
-			hasNodes = true;
-			dataF >> nbOfNodes;
-
-			node_map.reserve(nbOfNodes);
-
-			// Line structure
-			// [index] [X] [Y] [Z]
-			std::getline(dataF,bufferLine);
-			for(unsigned int iii = 0; iii < nbOfNodes; ++iii)
-			{
-				std::getline(dataF,bufferLine);
-				dataBuffer.str("");
-				dataBuffer.clear();
-				dataBuffer << bufferLine;
-
-				dataBuffer >> gmshNodeIndex;
-
-				// Add point to map
-				node_map[gmshNodeIndex] = iii;
-			}
-		}
-
-		if(bufferLine.compare("$Elements")==0)
-		{
-			// Read element indexes
-			hasElements = true;
-			dataF >> nbOfElements;
-
-			element_map.reserve(nbOfElements);
-
-			// Line structure
-			// [index] [X] [Y] [Z]
-			std::getline(dataF,bufferLine);
-			for(unsigned int iii = 0; iii < nbOfElements; ++iii)
-			{
-				std::getline(dataF,bufferLine);
-				dataBuffer.str("");
-				dataBuffer.clear();
-				dataBuffer << bufferLine;
-
-				dataBuffer 	>> gmshElemIndex;
-
-				element_map[gmshElemIndex] = iii;
-			}
-		}
-
-		if(hasNodes && hasElements)
-		{
-			break;
-		}
-	}
-}
-
-void carl::build_mesh_map_Gmsh(const std::string &filename,
-		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
-		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &element_libmesh_to_gmsh_map)
-{
-	//if(!(boost::filesystem::path(filename).extension().string().compare(".msh")==0))
-	//{
-	//	libmesh_error_msg("Error: expected Gmsh filetype");
-	//}
-
-	// Open file
-	std::ifstream dataF(filename);
-	if(!dataF.good())
-	{
-		libmesh_error_msg("Error: bad filestream");
-	}
-
-	// Buffer string
-	std::string bufferLine;
-	std::stringstream	dataBuffer;
-
-	int nbOfNodes = -1;
-	int nbOfElements = -1;
-
-	int gmshNodeIndex = -1;
-	int gmshElemIndex = -1;
-
-	bool hasNodes = false;
-	bool hasElements = false;
-
-	// Read info until the file ends
-	while(std::getline(dataF,bufferLine))
-	{
-		/*
-		 * 		As of the current Gmsh version (2.11, filetype v. 2.2), each
-		 * 	file has only one $Nodes and one $Elements sections
-		 */
-		if(bufferLine.compare("$Nodes")==0)
-		{
-			// Read node indexes
-			hasNodes = true;
-			dataF >> nbOfNodes;
-
-			node_gmsh_to_libmesh_map.reserve(nbOfNodes);
-			node_libmesh_to_gmsh_map.reserve(nbOfNodes);
-
-			// Line structure
-			// [index] [X] [Y] [Z]
-			std::getline(dataF,bufferLine);
-			for(unsigned int iii = 0; iii < nbOfNodes; ++iii)
-			{
-				std::getline(dataF,bufferLine);
-				dataBuffer.str("");
-				dataBuffer.clear();
-				dataBuffer << bufferLine;
-
-				dataBuffer >> gmshNodeIndex;
-
-				// Add point to map
-				node_gmsh_to_libmesh_map[gmshNodeIndex] = iii;
-				node_libmesh_to_gmsh_map[iii] = gmshNodeIndex;
-			}
-		}
-
-		if(bufferLine.compare("$Elements")==0)
-		{
-			// Read element indexes
-			hasElements = true;
-			dataF >> nbOfElements;
-
-			element_gmsh_to_libmesh_map.reserve(nbOfElements);
-			element_libmesh_to_gmsh_map.reserve(nbOfElements);
-
-			// Line structure
-			// [index] [X] [Y] [Z]
-			std::getline(dataF,bufferLine);
-			for(unsigned int iii = 0; iii < nbOfElements; ++iii)
-			{
-				std::getline(dataF,bufferLine);
-				dataBuffer.str("");
-				dataBuffer.clear();
-				dataBuffer << bufferLine;
-
-				dataBuffer 	>> gmshElemIndex;
-
-				element_gmsh_to_libmesh_map[gmshElemIndex] = iii;
-				element_libmesh_to_gmsh_map[iii] = gmshElemIndex;
-			}
-		}
-
-		if(hasNodes && hasElements)
-		{
-			break;
-		}
-	}
-}
-
-void carl::set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file,
-					std::unordered_map<int,int>& mesh_NodeMap, std::unordered_map<int,int>& mesh_ElemMap)
-{
-	libMesh::GmshIO meshBuffer(mesh);
-	meshBuffer.read(mesh_file);
-	mesh.prepare_for_use();
-	create_mesh_map(mesh_file,mesh_NodeMap,mesh_ElemMap);
-};
-
-template<typename libMeshMesh>
-void carl::set_mesh_Gmsh(	libMeshMesh& mesh, const std::string& mesh_file)
-{
-	libMesh::GmshIO meshBuffer(mesh);
-	meshBuffer.read(mesh_file);
-	mesh.prepare_for_use();
-};
-
-template void carl::set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file);
-template void carl::set_mesh_Gmsh(	libMesh::ParallelMesh& mesh, const std::string& mesh_file);
-template void carl::set_mesh_Gmsh(	libMesh::SerialMesh& mesh, const std::string& mesh_file);
-
-
-void carl::set_mesh_Gmsh(
-		libMesh::Mesh& mesh,
-		const std::string& mesh_file,
-		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
-		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &element_libmesh_to_gmsh_map
-		)
-{
-	libMesh::GmshIO meshBuffer(mesh);
-	meshBuffer.read(mesh_file);
-	mesh.prepare_for_use();
-	create_mesh_map(mesh_file,node_gmsh_to_libmesh_map,node_libmesh_to_gmsh_map,
-			element_gmsh_to_libmesh_map,element_libmesh_to_gmsh_map);
-};
+//void carl::set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file,
+//					std::unordered_map<int,int>& mesh_NodeMap, std::unordered_map<int,int>& mesh_ElemMap)
+//{
+//	libMesh::GmshIO meshBuffer(mesh);
+//	meshBuffer.read(mesh_file);
+//	mesh.prepare_for_use();
+//	create_mesh_map(mesh_file,mesh_NodeMap,mesh_ElemMap);
+//};
+//
+//template<typename libMeshMesh>
+//void carl::set_mesh_Gmsh(	libMeshMesh& mesh, const std::string& mesh_file)
+//{
+//	libMesh::GmshIO meshBuffer(mesh);
+//	meshBuffer.read(mesh_file);
+//	mesh.prepare_for_use();
+//};
+//
+//template void carl::set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file);
+//template void carl::set_mesh_Gmsh(	libMesh::ParallelMesh& mesh, const std::string& mesh_file);
+//template void carl::set_mesh_Gmsh(	libMesh::SerialMesh& mesh, const std::string& mesh_file);
+//
+//void carl::set_mesh_Gmsh(
+//		libMesh::Mesh& mesh,
+//		const std::string& mesh_file,
+//		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
+//		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &element_libmesh_to_gmsh_map
+//		)
+//{
+//	libMesh::GmshIO meshBuffer(mesh);
+//	meshBuffer.read(mesh_file);
+//	mesh.prepare_for_use();
+//	create_mesh_map(mesh_file,node_gmsh_to_libmesh_map,node_libmesh_to_gmsh_map,
+//			element_gmsh_to_libmesh_map,element_libmesh_to_gmsh_map);
+//};
 
 // SERIAL intersection tables generation
 void carl::generate_intersection_tables_partial(	std::string& intersection_table_restrict_B_Filename,
@@ -723,12 +729,6 @@ void carl::set_equivalence_tables(
 		const std::string& equivalence_table_A_Filename,
 		const std::string& equivalence_table_B_Filename,
 
-		const std::unordered_map<int,int>& mesh_A_ElemMap,
-		const std::unordered_map<int,int>& mesh_RA_ElemMap,
-
-		const std::unordered_map<int,int>& mesh_B_ElemMap,
-		const std::unordered_map<int,int>& mesh_RB_ElemMap,
-
 		std::unordered_map<int,int>& equivalence_table_A_to_R_A,
 		std::unordered_map<int,int>& equivalence_table_B_to_R_B,
 		std::unordered_map<int,int>& equivalence_table_R_A_to_A,
@@ -760,8 +760,8 @@ void carl::set_equivalence_tables(
 			equivalence_A_file	>> temp_RX
 								>> temp_X;
 
-			dummy_equivalence_table_A[2*iii] = mesh_RA_ElemMap.at(temp_RX);
-			dummy_equivalence_table_A[2*iii + 1] = mesh_A_ElemMap.at(temp_X);
+			dummy_equivalence_table_A[2*iii] = temp_RX;
+			dummy_equivalence_table_A[2*iii + 1] = temp_X;
 		}
 		equivalence_A_file.close();
 
@@ -775,8 +775,8 @@ void carl::set_equivalence_tables(
 			equivalence_B_file	>> temp_RX
 								>> temp_X;
 
-			dummy_equivalence_table_B[2*iii] = mesh_RB_ElemMap.at(temp_RX);
-			dummy_equivalence_table_B[2*iii + 1] = mesh_B_ElemMap.at(temp_X);
+			dummy_equivalence_table_B[2*iii] = temp_RX;
+			dummy_equivalence_table_B[2*iii + 1] = temp_X;
 		}
 		equivalence_B_file.close();
 	}
@@ -897,10 +897,6 @@ void carl::set_full_intersection_tables(
 		const libMesh::Parallel::Communicator& WorldComm,
 		const std::string& intersection_full_table_Filename,
 
-		const std::unordered_map<int,int>& mesh_A_ElemMap,
-		const std::unordered_map<int,int>& mesh_B_ElemMap,
-		const std::unordered_map<int,int>& mesh_I_ElemMap,
-
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_pairs_map,
 		std::unordered_map<int,int>& full_intersection_meshI_to_inter_map)
 {
@@ -947,15 +943,15 @@ void carl::set_full_intersection_tables(
 									>> temp_nbOfInter;
 
 			dummy_intersections_IDs[iii]			  = temp_interID;
-			dummy_intersection_pairs_table[2*iii]     = mesh_A_ElemMap.at(temp_idxA);
-			dummy_intersection_pairs_table[2*iii + 1] = mesh_B_ElemMap.at(temp_idxB);
+			dummy_intersection_pairs_table[2*iii]     = temp_idxA;
+			dummy_intersection_pairs_table[2*iii + 1] = temp_idxB;
 			dummy_intersections_sizes_table[iii]      = temp_nbOfInter;
 
 			// ... and all of I's elements
 			for(int jjj = 0; jjj < temp_nbOfInter; ++jjj)
 			{
 				intersection_full_file >> temp_idxI;
-				dummy_all_intersections_table[interIdx] = mesh_I_ElemMap.at(temp_idxI);
+				dummy_all_intersections_table[interIdx] = temp_idxI;
 
 				++interIdx;
 			}
@@ -1047,10 +1043,6 @@ void carl::set_intersection_tables(
 		const std::unordered_map<int,int>& equivalence_table_A_to_R_A,
 		const std::unordered_map<int,int>& equivalence_table_B_to_R_B,
 
-		const std::unordered_map<int,int>& mesh_A_ElemMap,
-		const std::unordered_map<int,int>& mesh_B_ElemMap,
-		const std::unordered_map<int,int>& mesh_I_ElemMap,
-
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_pairs_map,
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_restricted_pairs_map,
 		std::unordered_map<int,int>& local_intersection_meshI_to_inter_map
@@ -1062,9 +1054,7 @@ void carl::set_intersection_tables(
 	//  TODO : 	change this step after parallelizing and integrating the
 	//			intersection algorithm
 	std::unordered_map<int,int> full_intersection_meshI_to_inter_map;
-
 	set_full_intersection_tables(WorldComm,intersection_full_table_Filename,
-			mesh_A_ElemMap, mesh_B_ElemMap, mesh_I_ElemMap,
 			full_intersection_pairs_map,full_intersection_meshI_to_inter_map);
 
 	// Set up the restricted intersection pairs table

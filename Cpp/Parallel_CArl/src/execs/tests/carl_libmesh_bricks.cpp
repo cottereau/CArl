@@ -352,40 +352,30 @@ int main(int argc, char** argv) {
 	// - Read the meshes -------------------------------------------------------
 
 	// - Parallelized meshes: A, B, intersection, mediator and weight
-	//   Elem / node maps : key = external index, value = libMesh's index
 
 	perf_log.push("Meshes - Parallel","Read files:");
 	libMesh::Mesh mesh_BIG(WorldComm, dim);
-	std::unordered_map<int,int> mesh_BIG_NodeMap;
-	std::unordered_map<int,int> mesh_BIG_ElemMap;
-	carl::set_mesh_Gmsh(mesh_BIG,input_params.mesh_BIG_file);
-	carl::create_mesh_map(input_params.mesh_BIG_file,
-			mesh_BIG_NodeMap,mesh_BIG_ElemMap,WorldComm);
+	mesh_BIG.read(input_params.mesh_BIG_file);
+	mesh_BIG.prepare_for_use();
 
 	libMesh::Mesh mesh_micro(WorldComm, dim);
-	std::unordered_map<int,int> mesh_micro_NodeMap;
-	std::unordered_map<int,int> mesh_micro_ElemMap;
-	carl::set_mesh_Gmsh(mesh_micro,input_params.mesh_micro_file);
-	carl::create_mesh_map(input_params.mesh_micro_file,
-			mesh_micro_NodeMap,mesh_micro_ElemMap,WorldComm);
+	mesh_micro.read(input_params.mesh_micro_file);
+	mesh_micro.prepare_for_use();
 
 	libMesh::Mesh mesh_inter(WorldComm, dim);
 	mesh_inter.allow_renumbering(false);
-	std::unordered_map<int,int> mesh_inter_NodeMap;
-	std::unordered_map<int,int> mesh_inter_ElemMap;
-	carl::set_mesh_Gmsh(mesh_inter,input_params.mesh_inter_file);
-	carl::create_mesh_map(input_params.mesh_inter_file,
-			mesh_inter_NodeMap,mesh_inter_ElemMap,WorldComm);
+	mesh_inter.read(input_params.mesh_inter_file);
+	mesh_inter.prepare_for_use();
 
 	libMesh::Mesh mesh_mediator(WorldComm, dim);
-	std::unordered_map<int,int> mesh_mediator_NodeMap;
-	std::unordered_map<int,int> mesh_mediator_ElemMap;
-	carl::set_mesh_Gmsh(mesh_mediator,input_params.mesh_mediator_file);
-	carl::create_mesh_map(input_params.mesh_mediator_file,
-			mesh_mediator_NodeMap,mesh_mediator_ElemMap,WorldComm);
+	mesh_mediator.allow_renumbering(false);
+	mesh_mediator.read(input_params.mesh_mediator_file);
+	mesh_mediator.prepare_for_use();
 
 	libMesh::Mesh mesh_weight(WorldComm, dim);
-	carl::set_mesh_Gmsh(mesh_weight,input_params.mesh_weight_file);
+	mesh_weight.allow_renumbering(false);
+	mesh_weight.read(input_params.mesh_weight_file);
+	mesh_weight.prepare_for_use();
 
 //	// DEBUG - Test: print info per proc
 //	{
@@ -422,19 +412,13 @@ int main(int argc, char** argv) {
 	perf_log.push("Meshes - Serial","Read files:");
 	libMesh::SerialMesh mesh_R_BIG(WorldComm, dim);
 	mesh_R_BIG.allow_renumbering(false);
-	std::unordered_map<int,int> mesh_R_BIG_NodeMap;
-	std::unordered_map<int,int> mesh_R_BIG_ElemMap;
-	carl::set_mesh_Gmsh(mesh_R_BIG,input_params.mesh_restrict_BIG_file);
-	carl::create_mesh_map(input_params.mesh_restrict_BIG_file,
-			mesh_R_BIG_NodeMap,mesh_R_BIG_ElemMap,WorldComm);
+	mesh_R_BIG.read(input_params.mesh_restrict_BIG_file);
+	mesh_R_BIG.prepare_for_use();
 
 	libMesh::SerialMesh mesh_R_micro(WorldComm, dim);
 	mesh_R_micro.allow_renumbering(false);
-	std::unordered_map<int,int> mesh_R_micro_NodeMap;
-	std::unordered_map<int,int> mesh_R_micro_ElemMap;
-	carl::set_mesh_Gmsh(mesh_R_micro,input_params.mesh_restrict_micro_file);
-	carl::create_mesh_map(input_params.mesh_restrict_micro_file,
-			mesh_R_micro_NodeMap,mesh_R_micro_ElemMap,WorldComm);
+	mesh_R_micro.read(input_params.mesh_restrict_micro_file);
+	mesh_R_micro.prepare_for_use();
 
 //	// DEBUG - Test: print info per proc
 //	{
@@ -500,12 +484,6 @@ int main(int argc, char** argv) {
 			input_params.equivalence_table_restrict_BIG_file,
 			input_params.equivalence_table_restrict_micro_file,
 
-			mesh_BIG_ElemMap,
-			mesh_R_BIG_ElemMap,
-
-			mesh_micro_ElemMap,
-			mesh_R_micro_ElemMap,
-
 			equivalence_table_BIG_to_R_BIG,
 			equivalence_table_micro_to_R_micro,
 			equivalence_table_R_BIG_to_BIG,
@@ -523,10 +501,6 @@ int main(int argc, char** argv) {
 				equivalence_table_BIG_to_R_BIG,
 				equivalence_table_micro_to_R_micro,
 
-				mesh_BIG_ElemMap,
-				mesh_micro_ElemMap,
-				mesh_inter_ElemMap,
-
 				full_intersection_pairs_map,
 				full_intersection_restricted_pairs_map,
 				local_intersection_meshI_to_inter_map);
@@ -542,10 +516,6 @@ int main(int argc, char** argv) {
 
 				equivalence_table_micro_to_R_micro,
 				equivalence_table_BIG_to_R_BIG,
-
-				mesh_micro_ElemMap,
-				mesh_BIG_ElemMap,
-				mesh_inter_ElemMap,
 
 				full_intersection_pairs_map,
 				full_intersection_restricted_pairs_map,
@@ -567,7 +537,6 @@ int main(int argc, char** argv) {
 											domain_Idx_micro, domain_Idx_coupling
 											);
 	perf_log.pop("Weight function domain","Read files:");
-
 
 	// - Generate the equation systems -----------------------------------------
 	perf_log.push("Initialization","System initialization:");
@@ -706,6 +675,8 @@ int main(int argc, char** argv) {
 			local_intersection_meshI_to_inter_map);
 	perf_log.pop("Set coupling matrices");
 
+
+
 	std::cout << std::endl;
 	std::cout << "| ---> Constants " << std::endl;
 	std::cout << "| Macro :" << std::endl;
@@ -749,7 +720,7 @@ int main(int argc, char** argv) {
 	// Export solution
 #ifdef LIBMESH_HAVE_EXODUS_API
 	perf_log.push("Save output","Output:");
-	libMesh::ExodusII_IO exo_io_micro(mesh_micro, /*single_precision=*/true);
+	libMesh::ExodusII_IO exo_io_micro(mesh_micro);
 
 	std::set<std::string> system_names_micro;
 	system_names_micro.insert("Elasticity");
@@ -757,7 +728,7 @@ int main(int argc, char** argv) {
 
 	exo_io_micro.write_element_data(equation_systems_micro);
 
-	libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
+	libMesh::ExodusII_IO exo_io_BIG(mesh_BIG);
 
 	std::set<std::string> system_names_BIG;
 	system_names_BIG.insert("Elasticity");

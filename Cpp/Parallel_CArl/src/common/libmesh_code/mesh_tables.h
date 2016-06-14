@@ -26,70 +26,70 @@ void set_weight_function_domain_idx(	std::string &filename,
 										std::vector<int>& domain_Idx_coupling
 										);
 
-void set_mesh_Gmsh(
-		libMesh::Mesh& mesh,
-		const std::string& mesh_file,
-		std::unordered_map<int,int>& mesh_NodeMap,
-		std::unordered_map<int,int>& mesh_ElemMap
-		);
+//void set_mesh_Gmsh(
+//		libMesh::Mesh& mesh,
+//		const std::string& mesh_file,
+//		std::unordered_map<int,int>& mesh_NodeMap,
+//		std::unordered_map<int,int>& mesh_ElemMap
+//		);
+//
+//void set_mesh_Gmsh(
+//		libMesh::Mesh& mesh,
+//		const std::string& mesh_file,
+//		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
+//		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &element_libmesh_to_gmsh_map
+//		);
+//template<typename libMeshMesh>
+//void set_mesh_Gmsh(
+//		libMeshMesh& mesh,
+//		const std::string& mesh_file
+//		);
 
-void set_mesh_Gmsh(
-		libMesh::Mesh& mesh,
-		const std::string& mesh_file,
-		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
-		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &element_libmesh_to_gmsh_map
-		);
-template<typename libMeshMesh>
-void set_mesh_Gmsh(
-		libMeshMesh& mesh,
-		const std::string& mesh_file
-		);
-
-void create_mesh_map(
-		const std::string &filename,
-		std::unordered_map<int,int> &node_map,
-		std::unordered_map<int,int> &element_map
-		);
-
-void create_mesh_map(
-		const std::string &filename,
-		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
-		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &element_libmesh_to_gmsh_map
-		);
-
-void create_mesh_map(
-		const std::string &filename,
-		std::unordered_map<int,int> &node_map,
-		std::unordered_map<int,int> &element_map,
-		const libMesh::Parallel::Communicator& WorldComm
-		);
-
-void create_mesh_map(
-		const std::string &filename,
-		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
-		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &element_libmesh_to_gmsh_map,
-		const libMesh::Parallel::Communicator& WorldComm
-		);
-
-void build_mesh_map_Gmsh(
-		const std::string &filename,
-		std::unordered_map<int,int> &node_map,
-		std::unordered_map<int,int> &element_map
-		);
-
-void build_mesh_map_Gmsh(
-		const std::string &filename,
-		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
-		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
-		std::unordered_map<int,int> &element_libmesh_to_gmsh_map
-		);
+//void create_mesh_map(
+//		const std::string &filename,
+//		std::unordered_map<int,int> &node_map,
+//		std::unordered_map<int,int> &element_map
+//		);
+//
+//void create_mesh_map(
+//		const std::string &filename,
+//		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
+//		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &element_libmesh_to_gmsh_map
+//		);
+//
+//void create_mesh_map(
+//		const std::string &filename,
+//		std::unordered_map<int,int> &node_map,
+//		std::unordered_map<int,int> &element_map,
+//		const libMesh::Parallel::Communicator& WorldComm
+//		);
+//
+//void create_mesh_map(
+//		const std::string &filename,
+//		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
+//		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &element_libmesh_to_gmsh_map,
+//		const libMesh::Parallel::Communicator& WorldComm
+//		);
+//
+//void build_mesh_map_Gmsh(
+//		const std::string &filename,
+//		std::unordered_map<int,int> &node_map,
+//		std::unordered_map<int,int> &element_map
+//		);
+//
+//void build_mesh_map_Gmsh(
+//		const std::string &filename,
+//		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
+//		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
+//		std::unordered_map<int,int> &element_libmesh_to_gmsh_map
+//		);
 ;
 void build_intersection_and_restriction_tables(
 		const libMesh::Parallel::Communicator& WorldComm,
@@ -129,12 +129,6 @@ void set_equivalence_tables(
 		const std::string& equivalence_table_A_Filename,
 		const std::string& equivalence_table_B_Filename,
 
-		const std::unordered_map<int,int>& mesh_A_ElemMap,
-		const std::unordered_map<int,int>& mesh_RA_ElemMap,
-
-		const std::unordered_map<int,int>& mesh_B_ElemMap,
-		const std::unordered_map<int,int>& mesh_RB_ElemMap,
-
 		std::unordered_map<int,int>& equivalence_table_A_to_R_A,
 		std::unordered_map<int,int>& equivalence_table_B_to_R_B,
 		std::unordered_map<int,int>& equivalence_table_R_A_to_A,
@@ -150,10 +144,6 @@ void set_full_intersection_tables(
 		const libMesh::Parallel::Communicator& WorldComm,
 		const std::string& intersection_full_table_Filename,
 
-		const std::unordered_map<int,int>& mesh_A_ElemMap,
-		const std::unordered_map<int,int>& mesh_B_ElemMap,
-		const std::unordered_map<int,int>& mesh_I_ElemMap,
-
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_pairs_map,
 		std::unordered_map<int,int>& full_intersection_meshI_to_inter_map);
 
@@ -166,10 +156,6 @@ void set_intersection_tables(
 
 		const std::unordered_map<int,int>& equivalence_table_A_to_R_A,
 		const std::unordered_map<int,int>& equivalence_table_B_to_R_B,
-
-		const std::unordered_map<int,int>& mesh_A_ElemMap,
-		const std::unordered_map<int,int>& mesh_B_ElemMap,
-		const std::unordered_map<int,int>& mesh_I_ElemMap,
 
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_pairs_map,
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_restricted_pairs_map,

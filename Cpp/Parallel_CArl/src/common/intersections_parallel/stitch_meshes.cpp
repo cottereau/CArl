@@ -338,7 +338,7 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 							<< m_intersection_nb_of_elements[iii] << " ";
 		for(unsigned jjj = 0; jjj < m_intersection_nb_of_elements[iii]; ++jjj)
 		{
-			joined_tables_file 	<< intersection_elem_idx + 1 << " ";
+			joined_tables_file 	<< intersection_elem_idx << " ";
 			++intersection_elem_idx;
 		}
 		joined_tables_file 	<< std::endl;
