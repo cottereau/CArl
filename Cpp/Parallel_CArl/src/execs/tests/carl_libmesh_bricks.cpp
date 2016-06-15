@@ -356,25 +356,30 @@ int main(int argc, char** argv) {
 	perf_log.push("Meshes - Parallel","Read files:");
 	libMesh::Mesh mesh_BIG(WorldComm, dim);
 	mesh_BIG.read(input_params.mesh_BIG_file);
+	std::cout << " big : " << mesh_BIG.n_partitions() << std::endl;
 	mesh_BIG.prepare_for_use();
 
 	libMesh::Mesh mesh_micro(WorldComm, dim);
 	mesh_micro.read(input_params.mesh_micro_file);
+	std::cout << " micro : " << mesh_micro.n_partitions() << std::endl;
 	mesh_micro.prepare_for_use();
 
 	libMesh::Mesh mesh_inter(WorldComm, dim);
 	mesh_inter.allow_renumbering(false);
 	mesh_inter.read(input_params.mesh_inter_file);
+	std::cout << " inter : " << mesh_inter.n_partitions() << std::endl;
 	mesh_inter.prepare_for_use();
 
 	libMesh::Mesh mesh_mediator(WorldComm, dim);
 	mesh_mediator.allow_renumbering(false);
 	mesh_mediator.read(input_params.mesh_mediator_file);
+	std::cout << " mediator : " << mesh_mediator.n_partitions() << std::endl;
 	mesh_mediator.prepare_for_use();
 
 	libMesh::Mesh mesh_weight(WorldComm, dim);
 	mesh_weight.allow_renumbering(false);
 	mesh_weight.read(input_params.mesh_weight_file);
+	std::cout << " weight : " << mesh_weight.n_partitions() << std::endl;
 	mesh_weight.prepare_for_use();
 
 //	// DEBUG - Test: print info per proc
@@ -413,11 +418,13 @@ int main(int argc, char** argv) {
 	libMesh::SerialMesh mesh_R_BIG(WorldComm, dim);
 	mesh_R_BIG.allow_renumbering(false);
 	mesh_R_BIG.read(input_params.mesh_restrict_BIG_file);
+	std::cout << " R_big : " << mesh_R_BIG.n_partitions() << std::endl;
 	mesh_R_BIG.prepare_for_use();
 
 	libMesh::SerialMesh mesh_R_micro(WorldComm, dim);
 	mesh_R_micro.allow_renumbering(false);
 	mesh_R_micro.read(input_params.mesh_restrict_micro_file);
+	std::cout << " R_micro : " << mesh_R_micro.n_partitions() << std::endl;
 	mesh_R_micro.prepare_for_use();
 
 //	// DEBUG - Test: print info per proc

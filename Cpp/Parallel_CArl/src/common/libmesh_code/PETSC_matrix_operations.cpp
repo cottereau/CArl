@@ -163,7 +163,19 @@ void carl::print_matrix_matlab(libMesh::PetscMatrix<libMesh::Number>& CouplingTe
 
 void carl::print_matrix_dim(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix)
 {
-	std::cout << "| M_i,j : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl  << std::endl;
+	std::cout << "| M_i,j  : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl;
+	MatInfo temp_info;
+	MatGetInfo(CouplingTestMatrix.mat(),MAT_LOCAL,&temp_info);
+	std::cout << "| LOCAL  : memory = " << temp_info.memory << std::endl;
+	std::cout << "|         non-zeros used = " << (100.*temp_info.nz_used)/temp_info.nz_allocated << " % " << std::endl;
+
+	MatGetInfo(CouplingTestMatrix.mat(),MAT_GLOBAL_SUM,&temp_info);
+	std::cout << "| GLOBAL : memory = " << temp_info.memory << std::endl;
+	std::cout << "|          non-zeros used = " << (100.*temp_info.nz_used)/temp_info.nz_allocated << " % " << std::endl;
+
+	MatGetInfo(CouplingTestMatrix.mat(),MAT_GLOBAL_MAX,&temp_info);
+	std::cout << "| MAX    : memory = " << temp_info.memory << std::endl;
+	std::cout << "|          non-zeros used = " << (100.*temp_info.nz_used)/temp_info.nz_allocated << " % " << std::endl << std::endl;
 }
 
 void carl::solve_linear_PETSC(	libMesh::PetscMatrix<libMesh::Number>& A,

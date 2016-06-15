@@ -142,7 +142,7 @@ void carl::PETSC_LATIN_solver::solve()
 	libMesh::PerfLog perf_log("Solve",MASTER_bPerfLog_LATIN_solver_solve);
 
 	std::cout << "| LATIN solver: " << std::endl;
-	std::cout << "|     Initialization ..."; std::cout.flush();
+	std::cout << "|     Initialization ..." << std::endl; std::cout.flush();
 
 	// -> Test if the parameters are set up
 	libmesh_assert_msg( m_bParamsSetUp , "   solve : LATIN parameters not set up!");
@@ -256,8 +256,8 @@ void carl::PETSC_LATIN_solver::solve()
 
 	while (iter_eps > m_LATIN_conv_eps && iter_nb < m_LATIN_conv_max_n)
 	{
-		clear_line();
-		std::cout << "|     Iter no. " << iter_nb; std::cout.flush();
+//		clear_line();
+		std::cout << "|     Iter no. " << iter_nb << " " << iter_eps << std::endl; std::cout.flush();
 		// -> Coupled step
 		perf_log.push("Coupled iterations");
 
@@ -363,7 +363,7 @@ void carl::PETSC_LATIN_solver::solve()
 	}
 
 	m_LATIN_conv_n = iter_nb;
-	clear_line();
+//	clear_line();
 	std::cout << "|     nb. of iterations : " << iter_nb;
 	if(iter_nb == m_LATIN_conv_max_n)
 	{
