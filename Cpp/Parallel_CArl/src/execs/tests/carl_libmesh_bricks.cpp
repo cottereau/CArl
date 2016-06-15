@@ -215,9 +215,7 @@ void get_input_params(GetPot& field_parser,
 
 	// Set coupling parameters
 	bool bUseSameSearchCoeff = false;
-
-	input_params.mean_distance = 0.2;
-
+	
 	input_params.k_dA = 2.5;
 	input_params.k_dB = 2.5;
 	input_params.k_cA = 2.5;
