@@ -163,11 +163,11 @@ int main(int argc, char *argv[])
 
 	// Restrict the meshes!
 	perf_log.push("Restrict meshes");
-	carl::Mesh_restriction restrict_A(test_mesh_A,LocalComm,true);
+	carl::Mesh_restriction restrict_A(test_mesh_A,LocalComm);
 	restrict_A.BuildRestriction(test_mesh_C);
 	restrict_A.export_restriction_mesh(input_params.output_base + "_A_restriction");
 
-	carl::Mesh_restriction restrict_B(test_mesh_B,LocalComm,true);
+	carl::Mesh_restriction restrict_B(test_mesh_B,LocalComm);
 	restrict_B.BuildRestriction(test_mesh_C);
 	restrict_B.export_restriction_mesh(input_params.output_base + "_B_restriction");
 	perf_log.pop("Restrict meshes");

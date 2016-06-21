@@ -129,7 +129,7 @@ void Stitch_Intersection_Meshes::set_grid_constraints(const libMesh::Mesh & mesh
 	// Mark grid as ready to use
 	m_bGridDefined = true;
 
-//	if(m_bPrintDebug)
+	if(m_bPrintDebug)
 	{
 		std::cout << "    DEBUG: discrete grid" << std::endl;
 		std::cout << " -> eps             : " << m_eps << std::endl;
@@ -151,7 +151,7 @@ void Stitch_Intersection_Meshes::set_grid_constraints(Mesh_Intersection & mesh_i
 	// Mark grid as ready to use
 	m_bGridDefined = true;
 
-//	if(m_bPrintDebug)
+	if(m_bPrintDebug)
 	{
 		std::cout << "    DEBUG: discrete grid" << std::endl;
 		std::cout << " -> eps             : " << m_eps << std::endl;
@@ -305,19 +305,21 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 	}
 
 	// Print information about the number of collisions
-	size_t collisions = 0;
-	for (size_t bucket = 0; bucket != m_discrete_vertices.bucket_count(); ++bucket)
+	if(m_bPrintDebug)
 	{
-	    if (m_discrete_vertices.bucket_size(bucket) > 1)
-	    {
-	        collisions += m_discrete_vertices.bucket_size(bucket) - 1;
-	    }
+		size_t collisions = 0;
+		for (size_t bucket = 0; bucket != m_discrete_vertices.bucket_count(); ++bucket)
+		{
+			if (m_discrete_vertices.bucket_size(bucket) > 1)
+			{
+				collisions += m_discrete_vertices.bucket_size(bucket) - 1;
+			}
+		}
+
+		std::cout 	<< "    DEBUG: discrete grid hash collisions" << std::endl;
+		std::cout 	<< " -> Nb. of collisions / size : " << collisions << " / " << m_discrete_vertices.size()
+					<< " (" << 100.*collisions/m_discrete_vertices.size() << "%)" << std::endl << std::endl;
 	}
-
-	std::cout 	<< "    DEBUG: discrete grid hash collisions" << std::endl;
-	std::cout 	<< " -> Nb. of collisions / size : " << collisions << " / " << m_discrete_vertices.size()
-				<< " (" << 100.*collisions/m_discrete_vertices.size() << "%)" << std::endl << std::endl;
-
 	m_Stitched_mesh.prepare_for_use();
 
 	// Print mesh

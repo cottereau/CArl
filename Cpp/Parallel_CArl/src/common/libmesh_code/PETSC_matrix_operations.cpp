@@ -98,7 +98,12 @@ void carl::lump_matrix_and_invert(		libMesh::PetscMatrix<libMesh::Number>& matri
 
 	matrixInput.vector_mult(vecOutput,UnityVec);
 
+	// std::cout 	<< " l1 : m_in " << matrixInput.l1_norm() << " | " 
+	// 			<< " m_in_lump " << vecOutput.l1_norm() << " | ";
 	vecOutput.reciprocal();
+
+	// std::cout 	<< " m_inverse_lump " << vecOutput.l1_norm() << std::endl << std::endl;
+
 }
 
 

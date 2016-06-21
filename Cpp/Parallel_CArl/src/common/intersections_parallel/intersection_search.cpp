@@ -482,6 +482,38 @@ namespace carl
 		m_Mesh_Intersection.prepare_for_use();
 		m_perf_log.pop("Prepare mesh","Brute force");
 
+		std::vector<double> timing_find_intersections(m_nodes,0);
+		std::vector<double> timing_build_intersections(m_nodes,0);
+
+		libMesh::PerfData performance_data = m_perf_log.get_perf_data("Find intersections","Brute force");
+		timing_find_intersections[m_rank] = performance_data.tot_time_incl_sub;
+		performance_data = m_perf_log.get_perf_data("Build intersections","Brute force");
+		timing_build_intersections[m_rank] = performance_data.tot_time_incl_sub;
+
+		m_comm.sum(timing_find_intersections);
+		m_comm.sum(timing_build_intersections);
+
+		if(m_rank == 0)
+		{
+			libMesh::StatisticsVector<double> statistics_find(m_nodes,0);
+			libMesh::StatisticsVector<double> statistics_build(m_nodes,0);
+			for(unsigned int iii = 0; iii < m_nodes; ++iii)
+			{
+				statistics_find[iii] = timing_find_intersections[iii];
+				statistics_build[iii] = timing_build_intersections[iii];
+			}
+
+			std::cout << "--- FIND timing ------------------------------------ Brute force -" << std::endl << std::endl;
+			std::cout << " -> Mean      : " << statistics_find.mean() << std::endl;
+			std::cout << " -> Median    : " << statistics_find.median() << std::endl;
+			std::cout << " -> Std. dev. : " << statistics_find.stddev() << std::endl << std::endl;
+			std::cout << "--- BUILD timing ----------------------------------- Brute force -" << std::endl << std::endl;
+			std::cout << " -> Mean      : " << statistics_build.mean() << std::endl;
+			std::cout << " -> Median    : " << statistics_build.median() << std::endl;
+			std::cout << " -> Std. dev. : " << statistics_build.stddev() << std::endl << std::endl;
+			std::cout << "---------------------------------------------------- Brute force -" << std::endl << std::endl;
+		}
+
 		if(m_bPrintDebug)
 		{
 			m_perf_log.push("Calculate volume","Brute force");
@@ -559,6 +591,38 @@ namespace carl
 		m_Mesh_Intersection.prepare_for_use();
 		m_perf_log.pop("Prepare mesh","Advancing front");
 
+		std::vector<double> timing_find_intersections(m_nodes,0);
+		std::vector<double> timing_build_intersections(m_nodes,0);
+
+		libMesh::PerfData performance_data = m_perf_log.get_perf_data("Find intersections","Advancing front");
+		timing_find_intersections[m_rank] = performance_data.tot_time_incl_sub;
+		performance_data = m_perf_log.get_perf_data("Build intersections","Advancing front");
+		timing_build_intersections[m_rank] = performance_data.tot_time_incl_sub;
+
+		m_comm.sum(timing_find_intersections);
+		m_comm.sum(timing_build_intersections);
+
+		if(m_rank == 0)
+		{
+			libMesh::StatisticsVector<double> statistics_find(m_nodes,0);
+			libMesh::StatisticsVector<double> statistics_build(m_nodes,0);
+			for(unsigned int iii = 0; iii < m_nodes; ++iii)
+			{
+				statistics_find[iii] = timing_find_intersections[iii];
+				statistics_build[iii] = timing_build_intersections[iii];
+			}
+
+			std::cout << "--- FIND timing -------------------------------- Advancing front -" << std::endl << std::endl;
+			std::cout << " -> Mean      : " << statistics_find.mean() << std::endl;
+			std::cout << " -> Median    : " << statistics_find.median() << std::endl;
+			std::cout << " -> Std. dev. : " << statistics_find.stddev() << std::endl << std::endl;
+			std::cout << "--- BUILD timing ------------------------------- Advancing front -" << std::endl << std::endl;
+			std::cout << " -> Mean      : " << statistics_build.mean() << std::endl;
+			std::cout << " -> Median    : " << statistics_build.median() << std::endl;
+			std::cout << " -> Std. dev. : " << statistics_build.stddev() << std::endl << std::endl;
+			std::cout << "------------------------------------------------ Advancing front -" << std::endl << std::endl;
+		}
+
 		if(m_bPrintDebug)
 		{
 			m_perf_log.push("Calculate volume","Advancing front");
@@ -625,7 +689,7 @@ namespace carl
 	{
 		if(m_bPreparedPreallocation)
 		{
-//			if(m_bPrintDebug)
+			if(m_bPrintDebug)
 			{
 				// Print some statistics
 				libMesh::StatisticsVector<int> dummy_before_statistics(m_nodes,0);
@@ -670,7 +734,7 @@ namespace carl
 
 			m_bDidPreallocation = true;
 
-//			if(m_bPrintDebug)
+			if(m_bPrintDebug)
 			{
 				// Print some statistics
 				libMesh::StatisticsVector<int> dummy_after_statistics(m_nodes,0);
@@ -705,6 +769,7 @@ namespace carl
 
 		m_bSaveInterData = true;
 		m_bIntersectionsBuilt = false;
+
 		switch (search_type)
 		{
 			case BRUTE :	BuildIntersections_Brute();

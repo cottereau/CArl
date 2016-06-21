@@ -209,7 +209,7 @@ void Mesh_Intersection::set_grid_constraints(const libMesh::Mesh & mesh_A, const
 		m_GridN[iii] = (m_Grid_MaxPoint(iii) - m_Grid_MinPoint(iii)) / m_eps + 1;
 	}
 
-//	if(m_bPrintDebug)
+	if(m_bPrintDebug)
 	{
 		std::cout << "    DEBUG: discrete grid" << std::endl;
 		std::cout << " -> eps             : " << m_eps << std::endl;
@@ -292,8 +292,8 @@ void Mesh_Intersection::export_intersection_data(const std::string & filename_ba
 
 void Mesh_Intersection::prepare_for_use()
 {
-//	if(m_bPrintDebug)
-//	{
+	if(m_bPrintDebug)
+	{
 		// Print information about the number of collisions
 		size_t collisions = 0;
 		for (size_t bucket = 0; bucket != m_discrete_vertices.bucket_count(); ++bucket)
@@ -307,7 +307,7 @@ void Mesh_Intersection::prepare_for_use()
 		std::cout 	<< "    DEBUG: discrete grid hash collisions" << std::endl;
 		std::cout 	<< " -> Nb. of collisions / size : " << collisions << " / " << m_discrete_vertices.size()
 					<< " (" << 100.*collisions/m_discrete_vertices.size() << "%)" << std::endl << std::endl;
-//	}
+	}
 
 	m_libMesh_Mesh.prepare_for_use();
 	m_bMeshFinalized = true;

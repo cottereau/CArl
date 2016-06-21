@@ -114,6 +114,20 @@ void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Numbe
 	std::cout << "| H_B " << std::endl;
 	print_matrix_dim(*m_H_B);
 
+	// std::cout 	<< " L1 : HA " << m_H_A->l1_norm() << " | " 
+	// 			<< " HB " << m_H_B->l1_norm() << " | "
+	// 			<< " CR " << m_C_RR->l1_norm() << " | " 
+	// 			<< " invCR " << m_invC_RR_vec->l1_norm() << " | " 
+	// 			<< " PA " << m_P_A->l1_norm() << " | " 
+	// 			<< " PB " << m_P_B->l1_norm() << std::endl << std::endl;
+
+	// std::cout 	<< " linfty : HA " << m_H_A->linfty_norm() << " | " 
+	// 			<< " HB " << m_H_B->linfty_norm() << " | "
+	// 			<< " CR " << m_C_RR->linfty_norm() << " | " 
+	// 			<< " invCR " << m_invC_RR_vec->linfty_norm() << " | " 
+	// 			<< " PA " << m_P_A->linfty_norm() << " | " 
+	// 			<< " PB " << m_P_B->linfty_norm() << std::endl << std::endl;
+
 	m_bMatricesSetUp = true;
 };
 
