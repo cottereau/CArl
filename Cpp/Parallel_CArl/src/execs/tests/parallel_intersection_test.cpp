@@ -13,6 +13,12 @@ struct parallel_intersection_test_params {
 	std::string output_base;
 
 	carl::SearchMethod search_type;
+
+	bool bSkipIntersectionConstruction;
+	bool bSkipIntersectionPartitioning;
+	bool bSkipRestriction;
+
+	bool bExportScalingData;
 };
 
 void get_input_params(GetPot& field_parser,
@@ -72,6 +78,38 @@ void get_input_params(GetPot& field_parser,
 	{
 		input_params.search_type = carl::BRUTE;
 	}
+
+	if(field_parser.search(1,"SkipIntersectionConstruction")) {
+		input_params.bSkipIntersectionConstruction = true;
+	}
+	else
+	{
+		input_params.bSkipIntersectionConstruction = false;
+	}
+
+	if(field_parser.search(1,"SkipIntersectionPartitioning")) {
+		input_params.bSkipIntersectionPartitioning = true;
+	}
+	else
+	{
+		input_params.bSkipIntersectionPartitioning = false;
+	}
+
+	if(field_parser.search(1,"SkipRestriction")) {
+		input_params.bSkipRestriction = true;
+	}
+	else
+	{
+		input_params.bSkipRestriction = false;
+	}
+
+	if(field_parser.search(1,"ExportScalingData")) {
+		input_params.bExportScalingData = true;
+	}
+	else
+	{
+		input_params.bExportScalingData = false;
+	}
 }
 ;
 
@@ -117,17 +155,34 @@ int main(int argc, char *argv[])
 	test_mesh_C.prepare_for_use();
 	test_mesh_C.partition(nodes);
 
-	std::cout << " -> Nb. coupling elements (simple partition) : " << test_mesh_C.n_partitions() << " ( ";
+	// Set up the search
+	perf_log.push("Set up");
+	carl::Intersection_Search search_coupling_intersections(test_mesh_A,test_mesh_B,test_mesh_C,test_mesh_I,input_params.output_base);
+	perf_log.pop("Set up");
+
+	if(input_params.bSkipIntersectionConstruction)
+	{
+		search_coupling_intersections.SkipIntersectionConstruction(true);
+		std::cout << "    ---> Skipping the intersection construction!" << std::endl << std::endl;
+	}
+
+	if(input_params.bSkipIntersectionPartitioning)
+	{
+		search_coupling_intersections.SkipIntersectionPartitioning(true);
+		std::cout << "    ---> Skipping the intersection partitioning!" << std::endl << std::endl;
+	}
+
+	if(input_params.bExportScalingData)
+	{
+		search_coupling_intersections.SetScalingFiles(input_params.output_base);
+	}
+
+	std::cout << " -> Nb. coupling elements (intersection partition) : " << test_mesh_C.n_partitions() << " ( ";
 	for(unsigned int iii = 0; iii < nodes; ++iii)
 	{
 			std::cout << test_mesh_C.n_elem_on_proc(iii) << " ";
 	}
 	std::cout << ")" << std::endl << std::endl;
-
-	// Set up the search
-	perf_log.push("Set up");
-	carl::Intersection_Search search_coupling_intersections(test_mesh_A,test_mesh_B,test_mesh_C,test_mesh_I,input_params.output_base);
-	perf_log.pop("Set up");
 
 	// Preallocate the data
 	perf_log.push("Prepare intersection load");
@@ -145,33 +200,41 @@ int main(int argc, char *argv[])
 	// Search!
 	perf_log.push("Search intersection");
 	search_coupling_intersections.BuildIntersections(input_params.search_type);
-	search_coupling_intersections.CalculateGlobalVolume();
+	if(!input_params.bSkipIntersectionConstruction)
+	{
+		search_coupling_intersections.CalculateGlobalVolume();
+	}
 	perf_log.pop("Search intersection");
 
 	// Stitch the meshes!
-	perf_log.push("Stitch intersection meshes");
-	libMesh::Mesh test_mesh_full_I(LocalComm,3);
-	carl::Stitch_Intersection_Meshes	join_meshes(test_mesh_full_I,input_params.output_base + "_stitched");
-	join_meshes.set_grid_constraints(test_mesh_A,test_mesh_B);
-
-	if(rank == 0)
+	if(!input_params.bSkipIntersectionConstruction)
 	{
-		join_meshes.set_base_filenames(input_params.output_base,".e",nodes);
-		join_meshes.stitch_meshes();
+		perf_log.push("Stitch intersection meshes");
+		libMesh::Mesh test_mesh_full_I(LocalComm,3);
+		carl::Stitch_Intersection_Meshes	join_meshes(test_mesh_full_I,input_params.output_base + "_stitched");
+		join_meshes.set_grid_constraints(test_mesh_A,test_mesh_B);
+
+		if(rank == 0)
+		{
+			join_meshes.set_base_filenames(input_params.output_base,".e",nodes);
+			join_meshes.stitch_meshes();
+		}
+		perf_log.pop("Stitch intersection meshes");
 	}
-	perf_log.pop("Stitch intersection meshes");
 
 	// Restrict the meshes!
-	perf_log.push("Restrict meshes");
-	carl::Mesh_restriction restrict_A(test_mesh_A,LocalComm);
-	restrict_A.BuildRestriction(test_mesh_C);
-	restrict_A.export_restriction_mesh(input_params.output_base + "_A_restriction");
+	if(!input_params.bSkipRestriction)
+	{
+		perf_log.push("Restrict meshes");
+		carl::Mesh_restriction restrict_A(test_mesh_A,LocalComm);
+		restrict_A.BuildRestriction(test_mesh_C);
+		restrict_A.export_restriction_mesh(input_params.output_base + "_A_restriction");
 
-	carl::Mesh_restriction restrict_B(test_mesh_B,LocalComm);
-	restrict_B.BuildRestriction(test_mesh_C);
-	restrict_B.export_restriction_mesh(input_params.output_base + "_B_restriction");
-	perf_log.pop("Restrict meshes");
-
+		carl::Mesh_restriction restrict_B(test_mesh_B,LocalComm);
+		restrict_B.BuildRestriction(test_mesh_C);
+		restrict_B.export_restriction_mesh(input_params.output_base + "_B_restriction");
+		perf_log.pop("Restrict meshes");
+	}
 
 	return 0;
 }

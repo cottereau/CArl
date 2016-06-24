@@ -473,48 +473,75 @@ namespace carl
 			m_perf_log.push("Find intersections","Brute force");
 			FindPatchIntersections_Brute(Query_elem);
 			m_perf_log.pop("Find intersections","Brute force");
-			m_perf_log.push("Build intersections","Brute force");
-			UpdateCouplingIntersection(Query_elem);
-			m_perf_log.pop("Build intersections","Brute force");
+			if(!m_bSkipIntersectionConstruction)
+			{
+				m_perf_log.push("Build intersections","Brute force");
+				UpdateCouplingIntersection(Query_elem);
+				m_perf_log.pop("Build intersections","Brute force");
+			}
 		};
 
-		m_perf_log.push("Prepare mesh","Brute force");
-		m_Mesh_Intersection.prepare_for_use();
-		m_perf_log.pop("Prepare mesh","Brute force");
-
-		std::vector<double> timing_find_intersections(m_nodes,0);
-		std::vector<double> timing_build_intersections(m_nodes,0);
-
-		libMesh::PerfData performance_data = m_perf_log.get_perf_data("Find intersections","Brute force");
-		timing_find_intersections[m_rank] = performance_data.tot_time_incl_sub;
-		performance_data = m_perf_log.get_perf_data("Build intersections","Brute force");
-		timing_build_intersections[m_rank] = performance_data.tot_time_incl_sub;
-
-		m_comm.sum(timing_find_intersections);
-		m_comm.sum(timing_build_intersections);
-
-		if(m_rank == 0)
+		if(!m_bSkipIntersectionConstruction)
 		{
-			libMesh::StatisticsVector<double> statistics_find(m_nodes,0);
-			libMesh::StatisticsVector<double> statistics_build(m_nodes,0);
-			for(unsigned int iii = 0; iii < m_nodes; ++iii)
-			{
-				statistics_find[iii] = timing_find_intersections[iii];
-				statistics_build[iii] = timing_build_intersections[iii];
-			}
-
-			std::cout << "--- FIND timing ------------------------------------ Brute force -" << std::endl << std::endl;
-			std::cout << " -> Mean      : " << statistics_find.mean() << std::endl;
-			std::cout << " -> Median    : " << statistics_find.median() << std::endl;
-			std::cout << " -> Std. dev. : " << statistics_find.stddev() << std::endl << std::endl;
-			std::cout << "--- BUILD timing ----------------------------------- Brute force -" << std::endl << std::endl;
-			std::cout << " -> Mean      : " << statistics_build.mean() << std::endl;
-			std::cout << " -> Median    : " << statistics_build.median() << std::endl;
-			std::cout << " -> Std. dev. : " << statistics_build.stddev() << std::endl << std::endl;
-			std::cout << "---------------------------------------------------- Brute force -" << std::endl << std::endl;
+			m_perf_log.push("Prepare mesh","Brute force");
+			m_Mesh_Intersection.prepare_for_use();
+			m_perf_log.pop("Prepare mesh","Brute force");
 		}
 
-		if(m_bPrintDebug)
+		if(m_bPrintTimingData)
+		{
+			std::vector<double> timing_find_intersections(m_nodes,0);
+			std::vector<double> timing_build_intersections(m_nodes,0);
+
+			libMesh::PerfData performance_data = m_perf_log.get_perf_data("Find intersections","Brute force");
+			timing_find_intersections[m_rank] = performance_data.tot_time_incl_sub;
+			performance_data = m_perf_log.get_perf_data("Build intersections","Brute force");
+			timing_build_intersections[m_rank] = performance_data.tot_time_incl_sub;
+
+			m_comm.sum(timing_find_intersections);
+			m_comm.sum(timing_build_intersections);
+
+			if(m_rank == 0)
+			{
+				std::string output_search_filename = m_timing_data_file_base + "_search_brute.dat";
+				std::ofstream output_search(output_search_filename,std::ofstream::app);
+				std::string output_intersection_filename = m_timing_data_file_base + "_build_brute.dat";
+				std::ofstream output_build;
+				if(!m_bSkipIntersectionConstruction)
+				{
+					output_build.open(output_intersection_filename,std::ofstream::app);
+				}
+
+				libMesh::StatisticsVector<double> statistics_find(m_nodes,0);
+				libMesh::StatisticsVector<double> statistics_build(m_nodes,0);
+				for(unsigned int iii = 0; iii < m_nodes; ++iii)
+				{
+					statistics_find[iii] = timing_find_intersections[iii];
+					statistics_build[iii] = timing_build_intersections[iii];
+				}
+
+				output_search 	<< statistics_find.minimum() << " "
+								<< statistics_find.maximum() << " "
+								<< statistics_find.mean() << " "
+								<< statistics_find.median() << " "
+								<< statistics_find.stddev() << std::endl;
+
+				output_search.close();
+
+				if(!m_bSkipIntersectionConstruction)
+				{
+					output_build 	<< statistics_build.minimum() << " "
+									<< statistics_build.maximum() << " "
+									<< statistics_build.mean() << " "
+									<< statistics_build.median() << " "
+									<< statistics_build.stddev() << std::endl;
+
+					output_build.close();
+				}
+			}
+		}
+
+		if(m_bPrintDebug && !m_bSkipIntersectionConstruction)
 		{
 			m_perf_log.push("Calculate volume","Brute force");
 			double total_volume = m_Mesh_Intersection.get_total_volume();
@@ -582,48 +609,75 @@ namespace carl
 			m_perf_log.push("Find intersections","Advancing front");
 			FindPatchIntersections_Front(Query_elem);
 			m_perf_log.pop("Find intersections","Advancing front");
-			m_perf_log.push("Build intersections","Advancing front");
-			UpdateCouplingIntersection(Query_elem);
-			m_perf_log.pop("Build intersections","Advancing front");
+			if(!m_bSkipIntersectionConstruction)
+			{
+				m_perf_log.push("Build intersections","Advancing front");
+				UpdateCouplingIntersection(Query_elem);
+				m_perf_log.pop("Build intersections","Advancing front");
+			}
 		};
 
-		m_perf_log.push("Prepare mesh","Advancing front");
-		m_Mesh_Intersection.prepare_for_use();
-		m_perf_log.pop("Prepare mesh","Advancing front");
-
-		std::vector<double> timing_find_intersections(m_nodes,0);
-		std::vector<double> timing_build_intersections(m_nodes,0);
-
-		libMesh::PerfData performance_data = m_perf_log.get_perf_data("Find intersections","Advancing front");
-		timing_find_intersections[m_rank] = performance_data.tot_time_incl_sub;
-		performance_data = m_perf_log.get_perf_data("Build intersections","Advancing front");
-		timing_build_intersections[m_rank] = performance_data.tot_time_incl_sub;
-
-		m_comm.sum(timing_find_intersections);
-		m_comm.sum(timing_build_intersections);
-
-		if(m_rank == 0)
+		if(!m_bSkipIntersectionConstruction)
 		{
-			libMesh::StatisticsVector<double> statistics_find(m_nodes,0);
-			libMesh::StatisticsVector<double> statistics_build(m_nodes,0);
-			for(unsigned int iii = 0; iii < m_nodes; ++iii)
-			{
-				statistics_find[iii] = timing_find_intersections[iii];
-				statistics_build[iii] = timing_build_intersections[iii];
-			}
-
-			std::cout << "--- FIND timing -------------------------------- Advancing front -" << std::endl << std::endl;
-			std::cout << " -> Mean      : " << statistics_find.mean() << std::endl;
-			std::cout << " -> Median    : " << statistics_find.median() << std::endl;
-			std::cout << " -> Std. dev. : " << statistics_find.stddev() << std::endl << std::endl;
-			std::cout << "--- BUILD timing ------------------------------- Advancing front -" << std::endl << std::endl;
-			std::cout << " -> Mean      : " << statistics_build.mean() << std::endl;
-			std::cout << " -> Median    : " << statistics_build.median() << std::endl;
-			std::cout << " -> Std. dev. : " << statistics_build.stddev() << std::endl << std::endl;
-			std::cout << "------------------------------------------------ Advancing front -" << std::endl << std::endl;
+			m_perf_log.push("Prepare mesh","Advancing front");
+			m_Mesh_Intersection.prepare_for_use();
+			m_perf_log.pop("Prepare mesh","Advancing front");
 		}
 
-		if(m_bPrintDebug)
+		if(m_bPrintTimingData)
+		{
+			std::vector<double> timing_find_intersections(m_nodes,0);
+			std::vector<double> timing_build_intersections(m_nodes,0);
+
+			libMesh::PerfData performance_data = m_perf_log.get_perf_data("Find intersections","Advancing front");
+			timing_find_intersections[m_rank] = performance_data.tot_time_incl_sub;
+			performance_data = m_perf_log.get_perf_data("Build intersections","Advancing front");
+			timing_build_intersections[m_rank] = performance_data.tot_time_incl_sub;
+
+			m_comm.sum(timing_find_intersections);
+			m_comm.sum(timing_build_intersections);
+
+			if(m_rank == 0)
+			{
+				std::string output_search_filename = m_timing_data_file_base + "_search_advancing.dat";
+				std::ofstream output_search(output_search_filename,std::ofstream::app);
+				std::string output_intersection_filename = m_timing_data_file_base + "_build_advancing.dat";
+				std::ofstream output_build;
+				if(!m_bSkipIntersectionConstruction)
+				{
+					output_build.open(output_intersection_filename,std::ofstream::app);
+				}
+
+				libMesh::StatisticsVector<double> statistics_find(m_nodes,0);
+				libMesh::StatisticsVector<double> statistics_build(m_nodes,0);
+				for(unsigned int iii = 0; iii < m_nodes; ++iii)
+				{
+					statistics_find[iii] = timing_find_intersections[iii];
+					statistics_build[iii] = timing_build_intersections[iii];
+				}
+
+				output_search 	<< statistics_find.minimum() << " "
+								<< statistics_find.maximum() << " "
+								<< statistics_find.mean() << " "
+								<< statistics_find.median() << " "
+								<< statistics_find.stddev() << std::endl;
+
+				output_search.close();
+
+				if(!m_bSkipIntersectionConstruction)
+				{
+					output_build 	<< statistics_build.minimum() << " "
+									<< statistics_build.maximum() << " "
+									<< statistics_build.mean() << " "
+									<< statistics_build.median() << " "
+									<< statistics_build.stddev() << std::endl;
+
+					output_build.close();
+				}
+			}
+		}
+
+		if(m_bPrintDebug && !m_bSkipIntersectionConstruction)
 		{
 			m_perf_log.push("Calculate volume","Advancing front");
 			double total_volume = m_Mesh_Intersection.get_total_volume();
@@ -689,24 +743,6 @@ namespace carl
 	{
 		if(m_bPreparedPreallocation)
 		{
-			if(m_bPrintDebug)
-			{
-				// Print some statistics
-				libMesh::StatisticsVector<int> dummy_before_statistics(m_nodes,0);
-				libMesh::Mesh::const_element_iterator it_dummy = m_Mesh_Coupling.elements_begin();
-				libMesh::Mesh::const_element_iterator it_dummy_end = m_Mesh_Coupling.elements_end();
-				for( ; it_dummy != it_dummy_end; ++it_dummy)
-				{
-					const libMesh::Elem * dummy_elem = * it_dummy;
-					dummy_before_statistics[dummy_elem->processor_id()] += m_Nb_Of_Intersections_Elem_C[dummy_elem->id()];
-				}
-
-				std::cout << "    DEBUG: partition weight statistics" << std::endl;
-				std::cout << " -> BEFORE Mean      : " << dummy_before_statistics.mean() << std::endl;
-				std::cout << " ->        Median    : " << dummy_before_statistics.median() << std::endl;
-				std::cout << " ->        Std. dev. : " << dummy_before_statistics.stddev() << std::endl << std::endl;
-			}
-
 			// Redo the partitioning
 			m_coupling_weights.resize(m_Nb_Of_Intersections_Elem_C.size());
 
@@ -714,41 +750,62 @@ namespace carl
 			{
 				m_coupling_weights[iii] = m_Nb_Of_Intersections_Elem_C[iii];
 			}
-			libMesh::Partitioner * dummy_partitioner = m_Mesh_Coupling.partitioner().get();
-			dummy_partitioner->attach_weights(&m_coupling_weights);
-			m_Mesh_Coupling.partition(m_nodes);
+
+			if(!m_bSkipIntersectionPartitioning)
+			{
+				libMesh::Partitioner * dummy_partitioner = m_Mesh_Coupling.partitioner().get();
+				dummy_partitioner->attach_weights(&m_coupling_weights);
+				m_Mesh_Coupling.partition(m_nodes);
+			}
 
 			// Allocate the intersection maps ...
+			std::vector<unsigned int> nb_of_inters_per_rank(m_nodes,0);
 			unsigned int dummy_nb_of_inters = 0;
 			libMesh::Mesh::const_element_iterator it_local = m_Mesh_Coupling.local_elements_begin();
 			libMesh::Mesh::const_element_iterator it_local_end = m_Mesh_Coupling.local_elements_end();
 			for( ; it_local != it_local_end; ++ it_local)
 			{
 				const libMesh::Elem * dummy_elem = * it_local;
-				dummy_nb_of_inters += m_coupling_weights[dummy_elem->id()];
+				nb_of_inters_per_rank[m_rank] += m_coupling_weights[dummy_elem->id()];
 			}
+			m_comm.sum(nb_of_inters_per_rank);
 			m_Intersection_Pairs_multimap.reserve(2*dummy_nb_of_inters);
 
 			// ... and the intersection grid
 			m_Mesh_Intersection.preallocate_grid(192*dummy_nb_of_inters);
-
 			m_bDidPreallocation = true;
 
-			if(m_bPrintDebug)
+			if(m_bPrintIntersectionsPerPartData)
 			{
-				// Print some statistics
-				libMesh::StatisticsVector<int> dummy_after_statistics(m_nodes,0);
-				libMesh::Mesh::const_element_iterator it_dummy = m_Mesh_Coupling.elements_begin();
-				libMesh::Mesh::const_element_iterator it_dummy_end = m_Mesh_Coupling.elements_end();
-				for( ; it_dummy != it_dummy_end; ++it_dummy)
+				if(m_rank == 0)
 				{
-					const libMesh::Elem * dummy_elem = * it_dummy;
-					dummy_after_statistics[dummy_elem->processor_id()] += m_Nb_Of_Intersections_Elem_C[dummy_elem->id()];
+					std::string intersection_statistics_filename;
+					if(!m_bSkipIntersectionPartitioning)
+					{
+						intersection_statistics_filename = m_timing_data_file_base + "_inters_per_partition__new_partitioning.dat";
+					}
+					else
+					{
+						intersection_statistics_filename = m_timing_data_file_base + "_inters_per_partition__original.dat";
+					}
+
+					libMesh::StatisticsVector<int> intersection_statistics(m_nodes,0);
+					for(unsigned int iii = 0; iii < m_nodes; ++iii)
+					{
+						intersection_statistics[iii] = nb_of_inters_per_rank[iii];
+					}
+
+					std::ofstream inter_statistics_output(intersection_statistics_filename,std::ofstream::app);
+
+					inter_statistics_output 	<< intersection_statistics.minimum() << " "
+									<< intersection_statistics.maximum() << " "
+									<< intersection_statistics.mean() << " "
+									<< intersection_statistics.median() << " "
+									<< intersection_statistics.stddev() << std::endl;
+
+					inter_statistics_output.close();
 				}
 
-				std::cout << " -> AFTER  Mean      : " << dummy_after_statistics.mean() << std::endl;
-				std::cout << " ->        Median    : " << dummy_after_statistics.median() << std::endl;
-				std::cout << " ->        Std. dev. : " << dummy_after_statistics.stddev() << std::endl  << std::endl;
 			}
 		}
 	}
@@ -783,9 +840,11 @@ namespace carl
 							break;
 		}
 
-		m_Mesh_Intersection.export_intersection_data(m_Output_filename_base);
-
-		m_bIntersectionsBuilt = true;
+		if(!m_bSkipIntersectionConstruction)
+		{
+			m_Mesh_Intersection.export_intersection_data(m_Output_filename_base);
+			m_bIntersectionsBuilt = true;
+		}
 	}
 
 	/*
@@ -943,6 +1002,13 @@ namespace carl
 			std::cout << " -> Positives / tests             : " << nbOfPositiveTests << " / " << nbOfTests
 					  << " (" << 100.*nbOfPositiveTests/nbOfTests << "%)" << std::endl  << std::endl;
 		}
+	}
+
+	void Intersection_Search::SetScalingFiles(const std::string& timing_data_file_base)
+	{
+		m_bPrintTimingData = true;
+		m_bPrintIntersectionsPerPartData = true;
+		m_timing_data_file_base = timing_data_file_base;
 	}
 }
 

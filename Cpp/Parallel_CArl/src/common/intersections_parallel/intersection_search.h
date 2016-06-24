@@ -88,6 +88,10 @@ protected:
 	// Volume cutoff for the intersections
 	double m_Min_Inter_Volume;
 
+	// Boolean indicating if intersections must be built or not
+	bool m_bSkipIntersectionConstruction;
+	bool m_bSkipIntersectionPartitioning;
+
 	// Output
 	std::string m_Output_filename_base;
 
@@ -95,6 +99,9 @@ protected:
 	bool MASTER_bPerfLog_intersection_search;
 	libMesh::PerfLog m_perf_log;
 	bool m_bPrintDebug;
+	bool m_bPrintTimingData;
+	bool m_bPrintIntersectionsPerPartData;
+	std::string m_timing_data_file_base;
 
 	// PROTECTED methods
 	/*
@@ -188,10 +195,14 @@ public:
 		m_bDidPreallocation { false },
 		m_bIntersectionsBuilt { false },
 		m_Min_Inter_Volume { Min_Inter_Volume },
+		m_bSkipIntersectionConstruction { false },
+		m_bSkipIntersectionPartitioning { false },
 		m_Output_filename_base { output_base + "_r_" + std::to_string(m_rank) + "_n_" + std::to_string(m_nodes)},
 		MASTER_bPerfLog_intersection_search {bDoPerf_log},
 		m_perf_log { libMesh::PerfLog("Intersection search", MASTER_bPerfLog_intersection_search) },
-		m_bPrintDebug { bDebugOutput }
+		m_bPrintDebug { bDebugOutput },
+		m_bPrintTimingData { false },
+		m_bPrintIntersectionsPerPartData { false }
 	{
 		// Reserve space for the intersection multimap
 		m_Nb_Of_Intersections_Elem_C.resize(mesh_Coupling.n_elem(),0);
@@ -219,6 +230,24 @@ public:
 	 * 	both methods (useful for benchmarking).
 	 */
 	void BuildIntersections(SearchMethod search_type = BRUTE);
+
+	/*
+	 * 		Set up timing output file.
+	 */
+	void SetScalingFiles(const std::string& timing_data_file_base);
+
+	/*
+	 * 		Skip intersection construction (or not)
+	 */
+	void SkipIntersectionConstruction(bool bSkipIntersectionConstruction)
+	{
+		m_bSkipIntersectionConstruction = bSkipIntersectionConstruction;
+	}
+
+	void SkipIntersectionPartitioning(bool bSkipIntersectionPartitioning)
+	{
+		m_bSkipIntersectionPartitioning = bSkipIntersectionPartitioning;
+	}
 
 	/*
 	 * 		Calculate the volume over all the processors
