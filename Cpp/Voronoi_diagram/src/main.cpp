@@ -123,6 +123,9 @@ void ExportVoronoiToGmsh(voro::container &con, double weight, std::string &baseF
 	           << "// Volume          : " << con.sum_cell_volumes()
 	           << std::endl << std::endl;
 
+	gmshOutput << "// Weights" << std::endl;
+    gmshOutput << "w1 = " << weight << ";" << std::endl << std::endl;
+
 	// Vertices !
 	std::vector<double> cell_vertices;
 	int cell_nb_of_vertices = 0;
@@ -151,8 +154,7 @@ void ExportVoronoiToGmsh(voro::container &con, double weight, std::string &baseF
 			gmshOutput 	<< "Point(" << vertex_global_index << ") = {"
 						<< cell_vertices[3*iii] << ", "
 						<< cell_vertices[3*iii+1] << ", "
-						<< cell_vertices[3*iii+2] << ", "
-						<< weight << "};" << std::endl;
+						<< cell_vertices[3*iii+2] << ", w1};" << std::endl;
 			++vertex_global_index;
 		}
 

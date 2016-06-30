@@ -517,15 +517,15 @@ bool Intersection_Tools::libMesh_exact_intersection_inside_coupling(const libMes
 		m_perf_log.pop("Nef polyhedron intersection","Exact intersection construction inside coupling");
 
 		m_perf_log.push("Point set output","Exact intersection construction inside coupling");
+
 		if(		!m_nef_I.is_empty() &&
 				 m_nef_I.number_of_volumes() > 1 &&
 				 m_nef_I.number_of_vertices() > 3 &&
 				 m_nef_I.number_of_facets() > 1)
 		{
-			// Intersection exists! Create output, if the volume is big enough
-			bElemIntersect = true;
-
+			// Intersection exists! Extract points!
 			points_out.clear();
+			bElemIntersect = true;
 
 			for(Nef_Polyhedron::Vertex_const_iterator it_vertex = m_nef_I.vertices_begin();
 					it_vertex != m_nef_I.vertices_end();
@@ -534,11 +534,21 @@ bool Intersection_Tools::libMesh_exact_intersection_inside_coupling(const libMes
 				dummy_CGAL_point = ConvertExactToInexact(it_vertex->point());
 				points_out.insert(libMesh::Point(dummy_CGAL_point.x(),dummy_CGAL_point.y(),dummy_CGAL_point.z()));
 			}
+
+			// Sometimes, CGAL will generate a very small volume, which follow
+			// the "if" conditions above, but results in a point or facet when
+			// converted to inexact values. The checks below test for it.
+			if(points_out.size() < 4)
+			{
+				// Invalid intersection!
+				bElemIntersect = false;
+			}
 		}
 		else
 		{
 			bElemIntersect = false;
 		}
+
 		m_perf_log.pop("Point set output","Exact intersection construction inside coupling");
 	}
 

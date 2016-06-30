@@ -286,7 +286,7 @@ namespace carl
 
 		// Find the first pair, (guide, probed)
 		std::pair<unsigned int,unsigned int> First_intersection;
-		FindFirstPair(Patch_guide,Patch_probed,First_intersection);
+		BruteForce_FindFirstPair(Patch_guide,Patch_probed,First_intersection);
 
 		// Index and iterators guide neighbor elements to be tested
 		unsigned int guide_neighbor_index = 0;
@@ -983,7 +983,7 @@ namespace carl
 				bDoIntersect = m_Intersection_test.libMesh_exact_intersection_inside_coupling(elem_A,elem_B,points_out,bCreateNewNefForA,true,false);
 				m_perf_log.pop("Build intersection polyhedron","Build intersections");
 				++nbOfTests;
-
+				
 				if(bDoIntersect)
 				{
 					// ... and, if they do, update the intersection mesh!
