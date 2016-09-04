@@ -859,13 +859,13 @@ void carl::set_equivalence_tables(
 }
 
 void carl::set_restricted_intersection_pairs_table(
-		const std::unordered_map<int,std::pair<int,int> >&  full_intersection_pairs_map,
+		const std::unordered_map<int,std::pair<int,int> >&  intersection_pairs_map,
 		const std::unordered_map<int,int>& equivalence_table_A_to_R_A,
 		const std::unordered_map<int,int>& equivalence_table_B_to_R_B,
-		std::unordered_map<int,std::pair<int,int> >& full_intersection_restricted_pairs_map)
+		std::unordered_map<int,std::pair<int,int> >& intersection_restricted_pairs_map)
 {
 	// "Resize" the final output
-	full_intersection_restricted_pairs_map.reserve(equivalence_table_A_to_R_A.size());
+	intersection_restricted_pairs_map.reserve(equivalence_table_A_to_R_A.size());
 
 	int interID = -1;
 	int idxA = -1;
@@ -875,9 +875,9 @@ void carl::set_restricted_intersection_pairs_table(
 	int idxRB = -1;
 
 	std::unordered_map<int,std::pair<int,int> >::const_iterator mapIt =
-			full_intersection_pairs_map.begin();
+			intersection_pairs_map.begin();
 	std::unordered_map<int,std::pair<int,int> >::const_iterator end_mapIt =
-			full_intersection_pairs_map.end();
+			intersection_pairs_map.end();
 
 	for( ; mapIt != end_mapIt; ++mapIt)
 	{
@@ -888,7 +888,7 @@ void carl::set_restricted_intersection_pairs_table(
 		idxRA	= equivalence_table_A_to_R_A.at(idxA);
 		idxRB	= equivalence_table_B_to_R_B.at(idxB);
 
-		full_intersection_restricted_pairs_map[interID] =
+		intersection_restricted_pairs_map[interID] =
 				std::pair<int,int>(idxRA,idxRB);
 	}
 }
@@ -1033,6 +1033,57 @@ void carl::set_full_intersection_tables(
 //	WorldComm.barrier();
 };
 
+void carl::read_local_intersection_tables(
+		const libMesh::Parallel::Communicator& WorldComm,
+		const std::string& intersection_local_table_Filename,
+
+		std::unordered_map<int,std::pair<int,int> >& local_intersection_pairs_map,
+		std::unordered_map<int,int>& local_intersection_meshI_to_inter_map)
+{
+	int rank = WorldComm.rank();
+
+	int nbOfIntersections = -1;
+	int nbOfInterElems = -1;
+
+	// Declare a few auxiliary variables
+	int temp_interID = -1;
+	int temp_idxA = -1;
+	int temp_idxB = -1;
+	int temp_idxI = -1;
+	int temp_nbOfInter = -1;
+	int temp_dummy = -1;
+
+	int interIdx = 0;
+
+	// Do the file reading
+	std::ifstream intersection_full_file(intersection_local_table_Filename);
+
+	intersection_full_file >> nbOfIntersections >> nbOfInterElems >> temp_dummy;
+
+	for(int iii = 0; iii < nbOfIntersections; ++iii)
+	{
+		// For each line, read ...
+
+		// ... the inter ID, A and B's elements, and the number of I's elements ...
+		intersection_full_file 	>> temp_interID
+								>> temp_idxA >> temp_idxB
+								>> temp_nbOfInter;
+
+		local_intersection_pairs_map[temp_interID] = std::pair<int,int>(temp_idxA,temp_idxB);
+
+		// ... and all of I's elements
+		for(int jjj = 0; jjj < temp_nbOfInter; ++jjj)
+		{
+			intersection_full_file >> temp_idxI;
+			local_intersection_meshI_to_inter_map[temp_idxI] = temp_interID;
+			++interIdx;
+		}
+	}
+	intersection_full_file.close();
+
+	WorldComm.barrier();
+};
+
 void carl::set_intersection_tables(
 		const libMesh::Parallel::Communicator& WorldComm,
 		const libMesh::Mesh& mesh_intersection,
@@ -1061,6 +1112,88 @@ void carl::set_intersection_tables(
 	set_restricted_intersection_pairs_table(full_intersection_pairs_map,
 		equivalence_table_A_to_R_A,equivalence_table_B_to_R_B,
 		full_intersection_restricted_pairs_map);
+
+//	// DEBUG Print all this into a file
+//	{
+//		std::string debug_inter_table = "debug_restriction_libmesh_" +
+//				std::to_string(rank) + ".dat";
+//		std::ofstream debug_inter_file(debug_inter_table);
+//
+//		std::unordered_map<int,std::pair<int,int> >::iterator mapIt = full_intersection_restricted_pairs_map.begin();
+//		std::unordered_map<int,std::pair<int,int> >::iterator end_mapIt = full_intersection_restricted_pairs_map.end();
+//
+//		for( ; mapIt != end_mapIt; ++mapIt)
+//		{
+//			debug_inter_file << mapIt->first << " " << mapIt->second.first << " " << mapIt->second.second << std::endl;
+//		}
+//
+//		debug_inter_file.close();
+//	}
+
+	// Build in each processor its own intersection table
+	libMesh::MeshBase::const_element_iterator       elemIt  = mesh_intersection.active_local_elements_begin();
+	const libMesh::MeshBase::const_element_iterator end_elemIt = mesh_intersection.active_local_elements_end();
+	int local_nbOfInters = mesh_intersection.n_active_local_elem();
+	local_intersection_meshI_to_inter_map.reserve(local_nbOfInters);
+
+	// Some dummy indexes used
+	int idxI_table = -1;
+	int interID = -1;
+
+	for( ; elemIt != end_elemIt; ++ elemIt)
+	{
+		const libMesh::Elem* elem = *elemIt;
+		idxI_table 	= elem->id();
+		interID 	= full_intersection_meshI_to_inter_map[idxI_table];
+		local_intersection_meshI_to_inter_map[idxI_table] = interID;
+	}
+
+//	// DEBUG Print all this into a file
+//	{
+//		std::string debug_inter_table = "debug_local_inter_libmesh_" +
+//				std::to_string(rank) + ".dat";
+//		std::ofstream debug_inter_file(debug_inter_table);
+//
+//		std::unordered_map<int,int>::iterator mapIt = local_intersection_meshI_to_inter_map.begin();
+//		std::unordered_map<int,int>::iterator end_mapIt = local_intersection_meshI_to_inter_map.end();
+//
+//		for( ; mapIt != end_mapIt; ++mapIt)
+//		{
+//			debug_inter_file << mapIt->first << " " << mapIt->second << std::endl;
+//		}
+//
+//		debug_inter_file.close();
+//	}
+};
+
+void carl::set_local_intersection_tables(
+		const libMesh::Parallel::Communicator& WorldComm,
+		const libMesh::Mesh& mesh_intersection,
+		const std::string& intersection_local_table_Filename,
+		const std::string& equivalence_table_A_Filename,
+		const std::string& equivalence_table_B_Filename,
+
+		const std::unordered_map<int,int>& equivalence_table_A_to_R_A,
+		const std::unordered_map<int,int>& equivalence_table_B_to_R_B,
+
+		std::unordered_map<int,std::pair<int,int> >& local_intersection_pairs_map,
+		std::unordered_map<int,std::pair<int,int> >& local_intersection_restricted_pairs_map,
+		std::unordered_map<int,int>& local_intersection_meshI_to_inter_map
+		)
+{
+	int rank = WorldComm.rank();
+
+	// 	Start by reading and broadcasting the global intersection table
+	//  TODO : 	change this step after parallelizing and integrating the
+	//			intersection algorithm
+	std::unordered_map<int,int> full_intersection_meshI_to_inter_map;
+	read_local_intersection_tables(WorldComm,intersection_local_table_Filename,
+			local_intersection_pairs_map,full_intersection_meshI_to_inter_map);
+
+	// Set up the restricted intersection pairs table
+	set_restricted_intersection_pairs_table(local_intersection_pairs_map,
+		equivalence_table_A_to_R_A,equivalence_table_B_to_R_B,
+		local_intersection_restricted_pairs_map);
 
 //	// DEBUG Print all this into a file
 //	{

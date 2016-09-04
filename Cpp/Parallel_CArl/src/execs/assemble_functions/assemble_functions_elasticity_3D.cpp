@@ -108,6 +108,7 @@ libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_s
 	// Physical constants are set as constant, monomial
 	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
 	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("Index", libMesh::CONSTANT, libMesh::MONOMIAL);
 
 	libMesh::LinearImplicitSystem& elasticity_system =
 			input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
@@ -131,6 +132,7 @@ libMesh::LinearImplicitSystem& add_elasticity_with_assemble(	libMesh::EquationSy
 	// Physical constants are set as constant, monomial
 	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
 	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("Index", libMesh::CONSTANT, libMesh::MONOMIAL);
 
 	libMesh::LinearImplicitSystem& elasticity_system =
 			input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");

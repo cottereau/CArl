@@ -205,8 +205,8 @@ void carl::coupled_system::get_lambdas(	const unsigned int 							dim,
 					std::vector<std::vector<libMesh::Real> >& 	lambda_weights)
 {
 	// Test if we are using the correct type!
-	homemade_assert_msg(base_elem->type() == libMesh::TET4 || base_elem->type() == libMesh::TET10,
-			" Only implemented for TET4 or TET10 elements!");
+	homemade_assert_msg(base_elem->type() == libMesh::TET4 || base_elem->type() == libMesh::HEX8,
+			" Only implemented for TET4 or HEX8 elements!");
 
 	homemade_assert_msg(dim == 3,
 			" Only implemented for 3D!");
@@ -379,6 +379,112 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 	m_LATIN_solver.set_relaxation(relax);
 };
 
+void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const std::string type_name,
+												void fptr_BIG(		libMesh::EquationSystems& es,
+																	const std::string& name, weight_parameter_function& weight_mask),
+												void fptr_micro(	libMesh::EquationSystems& es,
+																	const std::string& name, weight_parameter_function& weight_mask, anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
+												anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj,
+												double k_dA, double k_dB, double k_cA, double k_cB,
+												double eps, int convIter, double relax)
+{
+	// Get the systems
+	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
+	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
+
+	libMesh::ImplicitSystem& Sys_BIG =   libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_BIG.get_system(type_name));
+	libMesh::ImplicitSystem& Sys_micro = libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_micro.get_system(type_name));
+
+	// Get the weight functions
+	weight_parameter_function& alpha_mask = * m_alpha_masks[micro_name];
+
+	// Assemble the systems
+	fptr_BIG(EqSystems_BIG,type_name,alpha_mask);
+	Sys_BIG.matrix->close();
+	Sys_BIG.rhs->close();
+	m_bHasAssembled_BIG = true;
+
+	fptr_micro(EqSystems_micro,type_name,alpha_mask,anisotropy_obj);
+	Sys_micro.matrix->close();
+	Sys_micro.rhs->close();
+	m_bHasAssembled_micro[micro_name] = true;
+
+	// Get the matrices
+	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_BIG.matrix);
+	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_micro.matrix);
+
+	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
+
+	// Get the vectors
+	libMesh::PetscVector<libMesh::Number>& F_A = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_BIG.rhs);
+	libMesh::PetscVector<libMesh::Number>& F_B = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_micro.rhs);
+
+	// Set the solver parameters
+	m_LATIN_solver.set_params(k_dA,k_dB,k_cA,k_cB);
+
+	// Set the solver matrices
+	m_LATIN_solver.set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
+
+	// Set the solver matrices
+	m_LATIN_solver.set_forces(F_A,F_B);
+
+	// Set LATIN parameters (convergence, relaxation ... )
+	m_LATIN_solver.set_convergence_limits(eps,convIter);
+	m_LATIN_solver.set_relaxation(relax);
+};
+
+void carl::coupled_system::set_LATIN_nonlinear_solver(const std::string micro_name, const std::string type_name_BIG,
+		 	 	 	 	 	 	 	 	 	 	 const std::string type_name_micro,
+												void fptr_BIG(		libMesh::EquationSystems& es,
+																	const std::string& name, weight_parameter_function& weight_mask),
+												libMesh::EquationSystems& eq_sys_nonlinear,
+												double k_dA, double k_dB, double k_cA, double k_cB,
+												double eps, int convIter, double relax)
+{
+	// Get the systems
+	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
+	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
+
+	libMesh::ImplicitSystem& Sys_BIG =   libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_BIG.get_system(type_name_BIG));
+	libMesh::NonlinearImplicitSystem& Sys_micro = libMesh::cast_ref<libMesh::NonlinearImplicitSystem&>(EqSystems_micro.get_system(type_name_micro));
+
+	// Get the weight functions
+	weight_parameter_function& alpha_mask = * m_alpha_masks[micro_name];
+
+	// Assemble the systems
+	fptr_BIG(EqSystems_BIG,type_name_BIG,alpha_mask);
+	Sys_BIG.matrix->close();
+	Sys_BIG.rhs->close();
+	m_bHasAssembled_BIG = true;
+
+	// Since the micro system is non-linear, the assemble steps must be done during the solves
+
+	// Get the matrices
+	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_BIG.matrix);
+
+	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
+
+	// Get the vectors
+	libMesh::PetscVector<libMesh::Number>& F_A = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_BIG.rhs);
+
+	// Set the solver parameters
+	m_LATIN_solver.set_params(k_dA,k_dB,k_cA,k_cB);
+
+	// Set the solver matrices
+	m_LATIN_solver.set_matrices_nonlinear(M_A,C_RA,C_RB,C_RR);
+
+	// Set the solver matrices
+	m_LATIN_solver.set_forces_nonlinear(F_A);
+
+	// Set LATIN parameters (convergence, relaxation ... )
+	m_LATIN_solver.set_convergence_limits(eps,convIter);
+	m_LATIN_solver.set_relaxation(relax);
+};
+
 void carl::coupled_system::solve_LATIN(const std::string micro_name, const std::string type_name, const std::string conv_name)
 {
 	// Solve!
@@ -396,6 +502,36 @@ void carl::coupled_system::solve_LATIN(const std::string micro_name, const std::
 
 	libMesh::System& Sys_BIG =   libMesh::cast_ref<libMesh::System&>(EqSystems_BIG.get_system(type_name));
 	libMesh::System& Sys_micro = libMesh::cast_ref<libMesh::System&>(EqSystems_micro.get_system(type_name));
+
+	// Set the solutions!
+	*(Sys_BIG.solution) = sol_BIG;
+	Sys_BIG.solution->close();
+	Sys_BIG.update();
+	*(Sys_micro.solution) = sol_micro;
+	Sys_micro.solution->close();
+	Sys_micro.update();
+
+	print_LATIN_convergence(conv_name);
+}
+
+void carl::coupled_system::solve_LATIN_nonlinear(const std::string micro_name, const std::string type_name_micro, const std::string type_name_BIG, const std::string conv_name)
+{
+	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
+	libMesh::NonlinearImplicitSystem& Sys_micro = libMesh::cast_ref<libMesh::NonlinearImplicitSystem&>(EqSystems_micro.get_system(type_name_micro));
+
+	// Solve!
+	m_LATIN_solver.solve_nonlinear(EqSystems_micro,type_name_micro);
+
+	// Get the solutions
+	libMesh::NumericVector<libMesh::Number>& sol_BIG =
+			libMesh::cast_ref<libMesh::NumericVector<libMesh::Number>& >(m_LATIN_solver.get_solution_BIG());
+	libMesh::NumericVector<libMesh::Number>& sol_micro =
+			libMesh::cast_ref<libMesh::NumericVector<libMesh::Number>& >(m_LATIN_solver.get_solution_micro());
+
+	// Get the systems
+	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
+
+	libMesh::System& Sys_BIG =   libMesh::cast_ref<libMesh::System&>(EqSystems_BIG.get_system(type_name_BIG));
 
 	// Set the solutions!
 	*(Sys_BIG.solution) = sol_BIG;

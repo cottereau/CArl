@@ -23,7 +23,7 @@
 #include <chrono>
 #include <ctime>
 #include <unordered_map>
-#include <math.h>
+#include <cmath>
 
 #include <boost/random/uniform_real_distribution.hpp>
 #include <boost/random/uniform_01.hpp>
@@ -1371,39 +1371,48 @@ int main(int argc, char *argv[])
 		min_distance = 0.5*weight;
 	}
 
-	// Set up the number of blocks that the container is divided into
-	int part_per_block = 8;
-
-	double blocks_density = (double) particles / part_per_block;
-	double blocks_linear_density = pow(blocks_density,1/3.);
-	int nx = 2*blocks_linear_density;
-	int ny = 2*blocks_linear_density;
-	int nz = 2*blocks_linear_density;
+	bool bSkipMesh = false;
+	if ( cmd_line.search(1, "-skipmesh") )
+	{
+		bSkipMesh = true;
+	}
 
 	// Random variables
 	boost::random::lagged_fibonacci607 m_rng;
 	boost::random::uniform_01<> rnd;
 
-	// Create a container with the geometry given above, and make it
-	// non-periodic in each of the three coordinates. Allocate space for
-	// eight particles within each computational block
-	voro::container con(x_min,x_max,y_min,y_max,z_min,z_max,nx,ny,nz,
-			xIsPeriodic,yIsPeriodic,zIsPeriodic,part_per_block);
+	if(!bSkipMesh)
+	{
+		// Set up the number of blocks that the container is divided into
+		int part_per_block = 8;
 
-	double x,y,z;
+		double blocks_density = (double) particles / part_per_block;
+		double blocks_linear_density = pow(blocks_density,1/3.);
+		int nx = 2*blocks_linear_density;
+		int ny = 2*blocks_linear_density;
+		int nz = 2*blocks_linear_density;
 
-	// Randomly add particles into the container
-	for(int iii=0; iii<particles; iii++) {
-		x=x_min+rnd(m_rng)*(x_max-x_min);
-		y=y_min+rnd(m_rng)*(y_max-y_min);
-		z=z_min+rnd(m_rng)*(z_max-z_min);
-		con.put(iii,x,y,z);
+		// Create a container with the geometry given above, and make it
+		// non-periodic in each of the three coordinates. Allocate space for
+		// eight particles within each computational block
+		voro::container con(x_min,x_max,y_min,y_max,z_min,z_max,nx,ny,nz,
+				xIsPeriodic,yIsPeriodic,zIsPeriodic,part_per_block);
+
+		double x,y,z;
+
+		// Randomly add particles into the container
+		for(int iii=0; iii<particles; iii++) {
+			x=x_min+rnd(m_rng)*(x_max-x_min);
+			y=y_min+rnd(m_rng)*(y_max-y_min);
+			z=z_min+rnd(m_rng)*(z_max-z_min);
+			con.put(iii,x,y,z);
+		}
+
+		// Export it to Gmsh format
+		NewExportVoronoiToGmsh(con,weight,output_geo_filename);
 	}
 
-	// Export it to Gmsh format
-	NewExportVoronoiToGmsh(con,weight,output_geo_filename);
-
-	// And build physical parameters
+	// Build heterogeneous physical parameters
 	double youngMean = 200;
 	double muMean = 80;
 
@@ -1424,4 +1433,31 @@ int main(int argc, char *argv[])
 		physOutput << youngValue << " " << muValue << " " << iii + 1 << std::endl;
 	}
 	physOutput.close();
+
+	// Build an anisotropy file too
+	std::string  outAnglesParameters = output_geo_filename + "_angles.dat";
+	std::ofstream anglesOutput(outAnglesParameters, std::ofstream::trunc);
+
+	double c11 = 198;
+	double c12 = 125;
+	double c44 = 122;
+	anglesOutput 	<< particles << " "
+					<< c11 << " "
+					<< c12 << " "
+					<< c44 << " "
+					<< youngMean << " "
+					<< muMean << std::endl;
+
+	double angle_x = 0;
+	double angle_y = 0;
+	double angle_z = 0;
+
+	for(int iii=0; iii<particles; iii++)
+	{
+		angle_x = 2*rnd(m_rng)*M_PI;
+		angle_y = 2*rnd(m_rng)*M_PI;
+		angle_z = 2*rnd(m_rng)*M_PI;
+		anglesOutput << angle_x << " " << angle_y << " " << angle_z << " " << iii + 1 << std::endl;
+	}
+	anglesOutput.close();
 }

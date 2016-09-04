@@ -50,6 +50,32 @@
 #include "libmesh/statistics.h"
 #include "libmesh/namebased_io.h"
 #include "libmesh/petsc_preconditioner.h"
+#include "libmesh/fem_system.h"
+
+#include "libmesh/boundary_info.h"
+#include "libmesh/diff_solver.h"
+#include "libmesh/dof_map.h"
+#include "libmesh/equation_systems.h"
+#include "libmesh/fe_base.h"
+#include "libmesh/fem_context.h"
+#include "libmesh/getpot.h"
+#include "libmesh/mesh.h"
+#include "libmesh/newton_solver.h"
+#include "libmesh/numeric_vector.h"
+#include "libmesh/quadrature.h"
+#include "libmesh/sparse_matrix.h"
+#include "libmesh/steady_solver.h"
+#include "libmesh/transient_system.h"
+
+#include "libmesh/dense_vector.h"
+#include "libmesh/dense_matrix.h"
+#include "libmesh/vector_value.h"
+#include "libmesh/tensor_value.h"
+#include "libmesh/getpot.h"
+
+#include "libmesh/nonlinear_solver.h"
+#include "libmesh/petsc_nonlinear_solver.h"
+#include "libmesh/nonlinear_implicit_system.h"
 
 #include <petscmat.h>
 #include <petscvec.h>

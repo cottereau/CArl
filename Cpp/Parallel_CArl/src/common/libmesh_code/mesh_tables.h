@@ -161,7 +161,31 @@ void set_intersection_tables(
 		std::unordered_map<int,std::pair<int,int> >& full_intersection_restricted_pairs_map,
 		std::unordered_map<int,int>& local_intersection_meshI_to_inter_map
 		);
+
+void read_local_intersection_tables(
+		const libMesh::Parallel::Communicator& WorldComm,
+		const std::string& intersection_local_table_Filename,
+
+		std::unordered_map<int,std::pair<int,int> >& local_intersection_pairs_map,
+		std::unordered_map<int,int>& local_intersection_meshI_to_inter_map);
+
+void set_local_intersection_tables(
+		const libMesh::Parallel::Communicator& WorldComm,
+		const libMesh::Mesh& mesh_intersection,
+		const std::string& intersection_local_table_Filename,
+		const std::string& equivalence_table_A_Filename,
+		const std::string& equivalence_table_B_Filename,
+
+		const std::unordered_map<int,int>& equivalence_table_A_to_R_A,
+		const std::unordered_map<int,int>& equivalence_table_B_to_R_B,
+
+		std::unordered_map<int,std::pair<int,int> >& local_intersection_pairs_map,
+		std::unordered_map<int,std::pair<int,int> >& local_intersection_restricted_pairs_map,
+		std::unordered_map<int,int>& local_intersection_meshI_to_inter_map
+		);
 };
+
+
 
 
 

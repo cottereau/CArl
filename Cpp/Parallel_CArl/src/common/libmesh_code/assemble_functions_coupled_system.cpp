@@ -374,7 +374,7 @@ void carl::coupled_system::assemble_coupling_elasticity_3D(
 			*m_inter_EquationSystemMap[inter_name];
 
 	// First, test if all the systems have an elasticity model and variable set
-	homemade_assert_msg(micro_eq_system.has_system("Elasticity"),
+	homemade_assert_msg(micro_eq_system.has_system("Elasticity") || micro_eq_system.has_system("NonlinearElasticity"),
 			" Micro equation systems missing \"Elasticity\" system!");
 	homemade_assert_msg(BIG_eq_system.has_system("Elasticity"),
 			" Macro equation systems missing \"Elasticity\" system!");
@@ -733,7 +733,8 @@ void carl::coupled_system::assemble_coupling_elasticity_3D_parallel(
 										full_intersection_restricted_pairs_map,
 		const std::unordered_map<int,int>&
 										local_intersection_meshI_to_inter_map,
-
+		const std::string BIG_type,
+		const std::string micro_type,
 		bool bSameElemsType)
 {
 	// TODO : make it possible to invert the algorithm's systems!
@@ -753,10 +754,10 @@ void carl::coupled_system::assemble_coupling_elasticity_3D_parallel(
 			*m_R_micro_EquationSystemMap[micro_name];
 
 	// First, test if all the systems have an elasticity model and variable set
-	homemade_assert_msg(micro_eq_system.has_system("Elasticity"),
-			" Micro equation systems missing \"Elasticity\" system!");
-	homemade_assert_msg(BIG_eq_system.has_system("Elasticity"),
-			" Macro equation systems missing \"Elasticity\" system!");
+	homemade_assert_msg(micro_eq_system.has_system(micro_type),
+			" Micro equation systems is missing a system type!");
+	homemade_assert_msg(BIG_eq_system.has_system(BIG_type),
+			" Macro equation systems is missing a system type!");
 	homemade_assert_msg(R_micro_eq_system.has_system("Elasticity"),
 			" Restricted micro equation systems missing \"Elasticity\" system!");
 	homemade_assert_msg(R_BIG_eq_system.has_system("Elasticity"),
@@ -767,14 +768,14 @@ void carl::coupled_system::assemble_coupling_elasticity_3D_parallel(
 			" Mediatored equation systems missing \"Elasticity\" system!");
 
 	// Systems and vars
-	libMesh::LinearImplicitSystem& volume_mediator_system =
-			mediator_eq_system.get_system<libMesh::LinearImplicitSystem>("Elasticity");
+	libMesh::ImplicitSystem& volume_mediator_system =
+			libMesh::cast_ref<libMesh::ImplicitSystem&>(mediator_eq_system.get_system("Elasticity"));
 
-	libMesh::LinearImplicitSystem& volume_BIG_system =
-			BIG_eq_system.get_system<libMesh::LinearImplicitSystem>("Elasticity");
+	libMesh::ImplicitSystem& volume_BIG_system =
+			libMesh::cast_ref<libMesh::ImplicitSystem&>(BIG_eq_system.get_system<libMesh::LinearImplicitSystem>(BIG_type));
 
-	libMesh::LinearImplicitSystem& volume_micro_system =
-			micro_eq_system.get_system<libMesh::LinearImplicitSystem>("Elasticity");
+	libMesh::ImplicitSystem& volume_micro_system =
+			libMesh::cast_ref<libMesh::ImplicitSystem&>(micro_eq_system.get_system<libMesh::LinearImplicitSystem>(micro_type));
 
 	libMesh::LinearImplicitSystem& volume_inter_system =
 			inter_eq_system.get_system<libMesh::LinearImplicitSystem>("Elasticity");
@@ -1100,6 +1101,9 @@ void carl::coupled_system::assemble_coupling_elasticity_3D_parallel(
 		couplingMatrix_mediator_mediator.add_matrix(Me_mediator_mediator.Me,
 				mediator_addresses.dof_indices, mediator_addresses.dof_indices);
 	}
+
+	const libMesh::Parallel::Communicator& WorldComm = couplingMatrix_mediator_micro.comm();
+	WorldComm.barrier();
 
 	couplingMatrix_mediator_micro.close();
 	couplingMatrix_mediator_BIG.close();

@@ -12,6 +12,8 @@
 #include "common_header_libmesh.h"
 #include "common_functions.h"
 
+#include "assemble_functions_nonlinear_elasticity_3D.h"
+
 #include "PETSC_matrix_operations.h"
 
 const bool MASTER_bPerfLog_LATIN_solver_matrix_assemble = true;
@@ -46,13 +48,16 @@ protected:
 	Mat m_PETSC_P_A;
 	Mat m_PETSC_P_B;
 
+	libMesh::PetscMatrix<libMesh::Number> * m_Extra_M_B;
+	Mat m_PETSC_Extra_M_B;
+
 	// Forces
 	libMesh::PetscVector<libMesh::Number> * m_F_A;
 	libMesh::PetscVector<libMesh::Number> * m_F_B;
 
 	// Solution
-	libMesh::PetscVector<libMesh::Number> * m_sol_A;
-	libMesh::PetscVector<libMesh::Number> * m_sol_B;
+	libMesh::NumericVector<libMesh::Number> * m_sol_A;
+	libMesh::NumericVector<libMesh::Number> * m_sol_B;
 
 	// Constants
 	double m_k_dA;
@@ -81,6 +86,7 @@ protected:
 	bool m_bParamsSetUp;
 	bool m_bCheckDimensions;
 	bool m_bDeallocateMatrices;
+	bool m_bDeallocateNonlinear;
 	bool m_bSolved;
 
 	// System_names
@@ -135,6 +141,7 @@ public:
 							m_bParamsSetUp { false },
 							m_bCheckDimensions { false },
 							m_bDeallocateMatrices { false },
+							m_bDeallocateNonlinear { false },
 							m_bSolved {false},
 
 							m_ksp_name_A { "macro_sys" },
@@ -233,6 +240,11 @@ public:
 			m_sol_B = NULL;
 			m_invC_RR_vec = NULL;
 		}
+		if(m_bDeallocateNonlinear)
+		{
+			delete m_Extra_M_B;
+			m_Extra_M_B = NULL;
+		}
 	};
 
 	// Methods
@@ -254,8 +266,19 @@ public:
 							double product_prealloc_H_A = 1500,
 							double product_prealloc_H_B = 1500);
 
+	void set_matrices_nonlinear(	libMesh::PetscMatrix<libMesh::Number>& M_A,
+							libMesh::PetscMatrix<libMesh::Number>& C_RA,
+							libMesh::PetscMatrix<libMesh::Number>& C_RB,
+							libMesh::PetscMatrix<libMesh::Number>& C_RR,
+							double product_prealloc_P_A = 1,
+							double product_prealloc_P_B = 1,
+							double product_prealloc_H_A = 1500,
+							double product_prealloc_H_B = 1500);
+
 	void set_forces(	libMesh::PetscVector<libMesh::Number>& F_A,
 						libMesh::PetscVector<libMesh::Number>& F_B);
+
+	void set_forces_nonlinear(	libMesh::PetscVector<libMesh::Number>& F_A);
 
 	void set_convergence_limits(double eps, int convIter);
 
@@ -263,11 +286,13 @@ public:
 
 	void solve();
 
+	void solve_nonlinear(libMesh::EquationSystems& EqSys_micro, const std::string type_name_micro);
+
 	void check_dimensions();
 
-	libMesh::PetscVector<libMesh::Number>& get_solution_BIG();
+	libMesh::NumericVector<libMesh::Number>& get_solution_BIG();
 
-	libMesh::PetscVector<libMesh::Number>& get_solution_micro();
+	libMesh::NumericVector<libMesh::Number>& get_solution_micro();
 
 	void print_convergence(std::ostream& convergenceOut);
 

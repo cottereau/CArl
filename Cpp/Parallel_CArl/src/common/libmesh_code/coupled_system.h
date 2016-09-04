@@ -16,6 +16,7 @@
 #include "LATIN_solver.h"
 #include "PETSC_matrix_operations.h"
 #include "weight_parameter_function.h"
+#include "anisotropic_elasticity_cubic_sym.h"
 
 const bool MASTER_bPerfLog_assemble_coupling = false;
 const bool MASTER_debug_coupling_assemble = false;
@@ -32,7 +33,7 @@ private:
 public:
 
 	// Constructor
-	libMesh_fe_addresses_3(libMesh::LinearImplicitSystem& input_system,
+	libMesh_fe_addresses_3(libMesh::System& input_system,
 			const std::string u_var_name = "u", const std::string v_var_name =
 					"v", const std::string w_var_name = "w") :
 			eq_system { input_system },
@@ -529,7 +530,8 @@ public:
 											full_intersection_restricted_pairs_map,
 			const std::unordered_map<int,int>&
 											local_intersection_meshI_to_inter_map,
-
+			const std::string BIG_type = "Elasticity",
+			const std::string micro_type = "Elasticity",
 			bool bSameElemsType = true);
 
 	void set_LATIN_solver(const std::string micro_name,
@@ -547,10 +549,30 @@ public:
 			double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,
 			double eps = 1E-2, int convIter = 10000, double relax = 0.8);
 
+	void set_LATIN_solver(const std::string micro_name, const std::string type_name,
+													void fptr_BIG(		libMesh::EquationSystems& es,
+																		const std::string& name, weight_parameter_function& weight_mask),
+													void fptr_micro(	libMesh::EquationSystems& es,
+																		const std::string& name, weight_parameter_function& weight_mask, anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
+													anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj,
+													double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,
+													double eps = 1E-2, int convIter = 10000, double relax = 0.8);
+
+	void set_LATIN_nonlinear_solver(const std::string micro_name,
+			const std::string type_name_BIG,
+			const std::string type_name_micro,
+			void fptr_BIG(libMesh::EquationSystems& es, const std::string& name,
+					weight_parameter_function& alpha_mask),
+			libMesh::EquationSystems& eq_sys_nonlinear, double k_dA = 2.5,
+			double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,
+			double eps = 1E-2, int convIter = 10000, double relax = 0.8);
+
 	void print_LATIN_convergence(const std::string& filename);
 
 	void solve_LATIN(const std::string micro_name, const std::string type_name,
 			const std::string conv_name);
+
+	void solve_LATIN_nonlinear(const std::string micro_name, const std::string type_name_micro, const std::string type_name_BIG, const std::string conv_name);
 
 	libMesh::PetscMatrix<libMesh::Number>& get_micro_coupling_matrix(
 			const std::string& name);

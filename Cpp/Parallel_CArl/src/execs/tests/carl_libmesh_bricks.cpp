@@ -340,44 +340,34 @@ int main(int argc, char** argv) {
 
 	// Set up the communicator and the rank variables
 	libMesh::Parallel::Communicator& WorldComm = init.comm();
-//	libMesh::Parallel::Communicator LocalComm;
+	libMesh::Parallel::Communicator LocalComm;
 
 	int rank = WorldComm.rank();
 	int nodes = WorldComm.size();
 
-//	WorldComm.split(rank,rank,LocalComm);
+	WorldComm.split(rank,rank,LocalComm);
 
 	// - Read the meshes -------------------------------------------------------
 
-	// - Parallelized meshes: A, B, intersection, mediator and weight
+	// - Parallelized meshes: A, B, mediator and weight
 
 	perf_log.push("Meshes - Parallel","Read files:");
 	libMesh::Mesh mesh_BIG(WorldComm, dim);
 	mesh_BIG.read(input_params.mesh_BIG_file);
-	std::cout << " big : " << mesh_BIG.n_partitions() << std::endl;
 	mesh_BIG.prepare_for_use();
 
 	libMesh::Mesh mesh_micro(WorldComm, dim);
 	mesh_micro.read(input_params.mesh_micro_file);
-	std::cout << " micro : " << mesh_micro.n_partitions() << std::endl;
 	mesh_micro.prepare_for_use();
-
-	libMesh::Mesh mesh_inter(WorldComm, dim);
-	mesh_inter.allow_renumbering(false);
-	mesh_inter.read(input_params.mesh_inter_file);
-	std::cout << " inter : " << mesh_inter.n_partitions() << std::endl;
-	mesh_inter.prepare_for_use();
 
 	libMesh::Mesh mesh_mediator(WorldComm, dim);
 	mesh_mediator.allow_renumbering(false);
 	mesh_mediator.read(input_params.mesh_mediator_file);
-	std::cout << " mediator : " << mesh_mediator.n_partitions() << std::endl;
 	mesh_mediator.prepare_for_use();
 
 	libMesh::Mesh mesh_weight(WorldComm, dim);
 	mesh_weight.allow_renumbering(false);
 	mesh_weight.read(input_params.mesh_weight_file);
-	std::cout << " weight : " << mesh_weight.n_partitions() << std::endl;
 	mesh_weight.prepare_for_use();
 
 //	// DEBUG - Test: print info per proc
@@ -404,7 +394,7 @@ int main(int argc, char** argv) {
 
 	perf_log.pop("Meshes - Parallel","Read files:");
 
-	// - Local meshes: restrict A and restrict B
+	// - Semi-local meshes: restrict A and restrict B
 
 	// -> libMesh's default mesh IS the SerialMesh, which creates a copy of
 	//    itself on each processor, but partitions the iterators over each
@@ -416,13 +406,11 @@ int main(int argc, char** argv) {
 	libMesh::SerialMesh mesh_R_BIG(WorldComm, dim);
 	mesh_R_BIG.allow_renumbering(false);
 	mesh_R_BIG.read(input_params.mesh_restrict_BIG_file);
-	std::cout << " R_big : " << mesh_R_BIG.n_partitions() << std::endl;
 	mesh_R_BIG.prepare_for_use();
 
 	libMesh::SerialMesh mesh_R_micro(WorldComm, dim);
 	mesh_R_micro.allow_renumbering(false);
 	mesh_R_micro.read(input_params.mesh_restrict_micro_file);
-	std::cout << " R_micro : " << mesh_R_micro.n_partitions() << std::endl;
 	mesh_R_micro.prepare_for_use();
 
 //	// DEBUG - Test: print info per proc
@@ -456,6 +444,17 @@ int main(int argc, char** argv) {
 //		}
 //		mesh_data.close();
 //	}
+
+	// - Local mesh: intersection mesh
+	libMesh::Mesh mesh_inter(LocalComm, dim);
+	mesh_inter.allow_renumbering(false);
+	std::string local_inter_mesh_filename = input_params.mesh_inter_file + "_r_"
+										+ std::to_string(rank) + "_n_" + std::to_string(nodes) + ".e";
+	std::string local_inter_table_filename = input_params.intersection_table_full + "_r_"
+										+ std::to_string(rank) + "_n_" + std::to_string(nodes) + "_inter_table_Full.dat";
+	mesh_inter.read(local_inter_mesh_filename);
+	mesh_inter.prepare_for_use();
+
 	perf_log.pop("Meshes - Serial","Read files:");
 
 	/*
@@ -496,10 +495,24 @@ int main(int argc, char** argv) {
 
 	if(input_params.b_UseMesh_BIG_AsMediator)
 	{
-		carl::set_intersection_tables(
+//		carl::set_intersection_tables(
+//				WorldComm,
+//				mesh_inter,
+//				input_params.intersection_table_full,
+//				input_params.equivalence_table_restrict_BIG_file,
+//				input_params.equivalence_table_restrict_micro_file,
+//
+//				equivalence_table_BIG_to_R_BIG,
+//				equivalence_table_micro_to_R_micro,
+//
+//				full_intersection_pairs_map,
+//				full_intersection_restricted_pairs_map,
+//				local_intersection_meshI_to_inter_map);
+
+		carl::set_local_intersection_tables(
 				WorldComm,
 				mesh_inter,
-				input_params.intersection_table_full,
+				local_inter_table_filename,
 				input_params.equivalence_table_restrict_BIG_file,
 				input_params.equivalence_table_restrict_micro_file,
 
@@ -512,10 +525,24 @@ int main(int argc, char** argv) {
 	}
 	else if(input_params.b_UseMesh_micro_AsMediator)
 	{
-		carl::set_intersection_tables(
+//		carl::set_intersection_tables(
+//				WorldComm,
+//				mesh_inter,
+//				input_params.intersection_table_full,
+//				input_params.equivalence_table_restrict_micro_file,
+//				input_params.equivalence_table_restrict_BIG_file,
+//
+//				equivalence_table_micro_to_R_micro,
+//				equivalence_table_BIG_to_R_BIG,
+//
+//				full_intersection_pairs_map,
+//				full_intersection_restricted_pairs_map,
+//				local_intersection_meshI_to_inter_map);
+
+		carl::set_local_intersection_tables(
 				WorldComm,
 				mesh_inter,
-				input_params.intersection_table_full,
+				local_inter_table_filename,
 				input_params.equivalence_table_restrict_micro_file,
 				input_params.equivalence_table_restrict_BIG_file,
 
@@ -541,14 +568,19 @@ int main(int argc, char** argv) {
 											domain_Idx_BIG, nb_of_domain_Idx,
 											domain_Idx_micro, domain_Idx_coupling
 											);
+
+	WorldComm.barrier();
+
 	perf_log.pop("Weight function domain","Read files:");
 
 	// - Generate the equation systems -----------------------------------------
 	perf_log.push("Initialization","System initialization:");
 	carl::coupled_system CoupledTest(WorldComm);
 
+	const std::string inter_system_name = "InterSys_" + std::to_string(rank);
+
 	libMesh::EquationSystems& equation_systems_inter =
-					CoupledTest.add_inter_EquationSystem("InterSys", mesh_inter);
+					CoupledTest.add_inter_EquationSystem(inter_system_name, mesh_inter);
 
 	// Add the weight function mesh
 	CoupledTest.add_alpha_mask("MicroSys",mesh_weight);
@@ -597,6 +629,7 @@ int main(int argc, char** argv) {
 										= add_stress(equation_systems_micro);
 
 	equation_systems_micro.init();
+
 	perf_log.pop("Micro system","System initialization:");
 
 	// - Build the RESTRICTED BIG system ---------------------------------------
@@ -625,6 +658,7 @@ int main(int argc, char** argv) {
 										= add_elasticity(equation_systems_R_micro);
 
 	equation_systems_R_micro.init();
+
 	perf_log.pop("RESTRICTED micro system","System initialization:");
 
 	// - Build the mediator system ---------------------------------------------
@@ -639,6 +673,8 @@ int main(int argc, char** argv) {
 
 	equation_systems_mediator.init();
 
+	WorldComm.barrier();
+
 	perf_log.pop("Mediator system","System initialization:");
 
 	// - Build the dummy inter system ------------------------------------------
@@ -649,6 +685,8 @@ int main(int argc, char** argv) {
 										= add_elasticity(equation_systems_inter);
 
 	equation_systems_inter.init();
+
+	WorldComm.barrier();
 
 	perf_log.pop("Intersection system","System initialization:");
 
@@ -671,13 +709,18 @@ int main(int argc, char** argv) {
 	coupling_const = eval_lambda_1(BIG_E,BIG_Mu);
 	CoupledTest.set_coupling_parameters("MicroSys",coupling_const,input_params.mean_distance);
 
+	WorldComm.barrier();
+
 	CoupledTest.use_H1_coupling("MicroSys");
 	CoupledTest.assemble_coupling_elasticity_3D_parallel("BigSys","MicroSys",
-			"InterSys","MediatorSys",
+			inter_system_name,"MediatorSys",
 			mesh_R_BIG, mesh_R_micro,
 			full_intersection_pairs_map,
 			full_intersection_restricted_pairs_map,
 			local_intersection_meshI_to_inter_map);
+
+	WorldComm.barrier();
+
 	perf_log.pop("Set coupling matrices");
 
 
@@ -707,11 +750,14 @@ int main(int argc, char** argv) {
 									input_params.LATIN_eps, input_params.LATIN_conv_max, input_params.LATIN_relax);
 	perf_log.pop("Set up","LATIN Solver:");
 
+	WorldComm.barrier();
 
 	// Solve !
 	perf_log.push("Solve","LATIN Solver:");
 	CoupledTest.solve_LATIN("MicroSys","Elasticity",input_params.LATIN_convergence_output);
 	perf_log.pop("Solve","LATIN Solver:");
+
+	WorldComm.barrier();
 
 	// Calculate stress
 	perf_log.push("Compute stress - micro","Output:");
