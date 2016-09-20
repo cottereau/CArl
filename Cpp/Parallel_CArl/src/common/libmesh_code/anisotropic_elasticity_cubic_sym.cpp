@@ -27,7 +27,7 @@ void carl::anisotropic_elasticity_tensor_cubic_sym::set_parameters(libMesh::Equa
 	{
 		std::ifstream physicalParamsIFS(physicalParamsFile);
 		physicalParamsIFS >> m_nb_grains >> m_c11 >> m_c12 >> m_c44 >> m_meanE >> m_meanMu;
-		std::cout << m_nb_grains << m_c11 << m_c12 << m_c44 <<  m_meanE << m_meanMu << std::endl;
+//		std::cout << m_nb_grains << m_c11 << m_c12 << m_c44 <<  m_meanE << m_meanMu << std::endl;
 		m_angles_x.resize(m_nb_grains);
 		m_angles_y.resize(m_nb_grains);
 		m_angles_z.resize(m_nb_grains);

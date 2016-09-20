@@ -183,7 +183,6 @@ void assemble_elasticity_anisotropic_with_weight(	libMesh::EquationSystems& es,
 			alpha_micro = weight_mask.get_alpha_micro(qp_points[qp]);
 
 			// Internal tension
-			std::cout << localIdx << std::endl;
 			Update_SubK(Kuu, qp, 0, 0, dphi, n_components, n_u_dofs, JxW, anisotropy_obj_input, localIdx, alpha_micro);
 			Update_SubK(Kuv, qp, 0, 1, dphi, n_components, n_u_dofs, JxW, anisotropy_obj_input, localIdx, alpha_micro);
 			Update_SubK(Kuw, qp, 0, 2, dphi, n_components, n_u_dofs, JxW, anisotropy_obj_input, localIdx, alpha_micro);

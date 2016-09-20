@@ -735,13 +735,6 @@ int main(int argc, char** argv) {
 			local_intersection_meshI_to_inter_map,
 			inter_mediator_BIG,
 			inter_mediator_micro);
-	CoupledTest.assemble_coupling_elasticity_3D_parallel("BigSys","MicroSys",
-			"InterSys","MediatorSys",
-			mesh_R_BIG, mesh_R_micro,
-			local_intersection_pairs_map,
-			local_intersection_restricted_pairs_map,
-			local_intersection_meshI_to_inter_map);
-	perf_log.pop("Set coupling matrices");
 
 	std::cout << std::endl;
 	std::cout << "| ---> Constants " << std::endl;
