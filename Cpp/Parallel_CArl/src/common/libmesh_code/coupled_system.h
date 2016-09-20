@@ -12,6 +12,7 @@
 #include "common_header_libmesh.h"
 #include "common_functions.h"
 
+#include "mpi_carl_tools.h"
 #include "weak_formulations.h"
 #include "LATIN_solver.h"
 #include "PETSC_matrix_operations.h"
@@ -497,6 +498,13 @@ public:
 
 	void clear();
 
+	void prepare_coupling_preallocation(
+			libMesh::PetscMatrix<libMesh::Number>& coupling_matrix,
+			libMesh_fe_addresses_3& row_addresses,
+			libMesh_fe_addresses_3& col_addresses,
+			const std::unordered_multimap<int,int>&  inter_table
+			);
+
 	void assemble_coupling_matrices(const std::string BIG_name,
 			const std::string micro_name, const std::string inter_name,
 			const std::string mediator_name,
@@ -530,6 +538,27 @@ public:
 											full_intersection_restricted_pairs_map,
 			const std::unordered_map<int,int>&
 											local_intersection_meshI_to_inter_map,
+			const std::string BIG_type = "Elasticity",
+			const std::string micro_type = "Elasticity",
+			bool bSameElemsType = true);
+
+	void assemble_coupling_elasticity_3D_parallel(
+			const std::string BIG_name,
+			const std::string micro_name,
+			const std::string inter_name,
+			const std::string mediator_name,
+
+			const libMesh::MeshBase& mesh_R_BIG,
+			const libMesh::MeshBase& mesh_R_micro,
+
+			const std::unordered_map<int,std::pair<int,int> >&
+											full_intersection_pairs_map,
+			const std::unordered_map<int,std::pair<int,int> >&
+											full_intersection_restricted_pairs_map,
+			const std::unordered_map<int,int>&
+											local_intersection_meshI_to_inter_map,
+			const std::unordered_multimap<int,int>& inter_table_mediator_BIG,
+			const std::unordered_multimap<int,int>& inter_table_mediator_micro,
 			const std::string BIG_type = "Elasticity",
 			const std::string micro_type = "Elasticity",
 			bool bSameElemsType = true);

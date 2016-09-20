@@ -1,4 +1,6 @@
 #include "main.h"
+#include <chrono>
+#include <thread>
 
 /*
  * 		Sketch of the second version of the program ----------------------------
@@ -454,6 +456,8 @@ int main(int argc, char** argv) {
 										+ std::to_string(rank) + "_n_" + std::to_string(nodes) + ".e";
 	std::string local_inter_table_filename = input_params.intersection_table_full + "_r_"
 										+ std::to_string(rank) + "_n_" + std::to_string(nodes) + "_inter_table_Full.dat";
+	std::string global_inter_table_filename = input_params.intersection_table_full + "_stitched_inter_table_Full.dat";
+
 	mesh_inter.read(local_inter_mesh_filename);
 	mesh_inter.prepare_for_use();
 
@@ -475,8 +479,8 @@ int main(int argc, char** argv) {
 	 */
 
 	perf_log.push("Equivalence / intersection tables","Read files:");
-	std::unordered_map<int,std::pair<int,int> > full_intersection_pairs_map;
-	std::unordered_map<int,std::pair<int,int> > full_intersection_restricted_pairs_map;
+	std::unordered_map<int,std::pair<int,int> > local_intersection_pairs_map;
+	std::unordered_map<int,std::pair<int,int> > local_intersection_restricted_pairs_map;
 	std::unordered_map<int,int> local_intersection_meshI_to_inter_map;
 
 	std::unordered_map<int,int> equivalence_table_BIG_to_R_BIG;
@@ -507,8 +511,8 @@ int main(int argc, char** argv) {
 				equivalence_table_BIG_to_R_BIG,
 				equivalence_table_micro_to_R_micro,
 
-				full_intersection_pairs_map,
-				full_intersection_restricted_pairs_map,
+				local_intersection_pairs_map,
+				local_intersection_restricted_pairs_map,
 				local_intersection_meshI_to_inter_map);
 	}
 	else if(input_params.b_UseMesh_micro_AsMediator)
@@ -523,10 +527,21 @@ int main(int argc, char** argv) {
 				equivalence_table_micro_to_R_micro,
 				equivalence_table_BIG_to_R_BIG,
 
-				full_intersection_pairs_map,
-				full_intersection_restricted_pairs_map,
+				local_intersection_pairs_map,
+				local_intersection_restricted_pairs_map,
 				local_intersection_meshI_to_inter_map);
 	}
+
+	std::unordered_multimap<int,int> inter_mediator_BIG;
+	std::unordered_multimap<int,int> inter_mediator_micro;
+
+	carl::set_global_mediator_system_intersection_lists(
+			WorldComm,
+			global_inter_table_filename,
+			equivalence_table_BIG_to_R_BIG,
+			equivalence_table_R_BIG_to_BIG,
+			inter_mediator_BIG,
+			inter_mediator_micro);
 
 	perf_log.pop("Equivalence / intersection tables","Read files:");
 
@@ -677,9 +692,11 @@ int main(int argc, char** argv) {
 	CoupledTest.assemble_coupling_elasticity_3D_parallel("BigSys","MicroSys",
 			"InterSys","MediatorSys",
 			mesh_R_BIG, mesh_R_micro,
-			full_intersection_pairs_map,
-			full_intersection_restricted_pairs_map,
-			local_intersection_meshI_to_inter_map);
+			local_intersection_pairs_map,
+			local_intersection_restricted_pairs_map,
+			local_intersection_meshI_to_inter_map,
+			inter_mediator_BIG,
+			inter_mediator_micro);
 	perf_log.pop("Set coupling matrices");
 
 	std::cout << std::endl;
@@ -747,5 +764,7 @@ int main(int argc, char** argv) {
 	std::ofstream perf_log_file("meshes/parallel_test/output/perf_log_" + std::to_string(rank)  + ".txt");
 	perf_log_file << perf_log.get_log();
 	perf_log_file.close();
+
+	std::this_thread::sleep_for(std::chrono::seconds(10));
 	return 0;
 }
