@@ -54,9 +54,6 @@ void carl::anisotropic_elasticity_tensor_cubic_sym::set_parameters(libMesh::Equa
 		SysComm.broadcast(m_meanE);
 		SysComm.broadcast(m_meanMu);
 
-		meanE = m_meanE;
-		meanMu = m_meanMu;
-
 		if(rank != 0)
 		{
 			m_angles_x.resize(m_nb_grains);
@@ -69,14 +66,17 @@ void carl::anisotropic_elasticity_tensor_cubic_sym::set_parameters(libMesh::Equa
 		SysComm.broadcast(m_angles_y);
 		SysComm.broadcast(m_angles_z);
 		SysComm.broadcast(temp_idx);
-
-		for(int iii = 0; iii < m_nb_grains; ++iii)
-		{
-			m_domain_to_vec_map[temp_idx[iii]] = iii;
-		}
-
-		m_Rotation_matrices.resize(m_nb_grains,libMesh::DenseMatrix<libMesh::Real>(3,3));
 	}
+
+	meanE = m_meanE;
+	meanMu = m_meanMu;
+
+	for(int iii = 0; iii < m_nb_grains; ++iii)
+	{
+		m_domain_to_vec_map[temp_idx[iii]] = iii;
+	}
+
+	m_Rotation_matrices.resize(m_nb_grains,libMesh::DenseMatrix<libMesh::Real>(3,3));
 
 	// Mesh pointer
 	const libMesh::MeshBase& mesh = es.get_mesh();
@@ -85,20 +85,25 @@ void carl::anisotropic_elasticity_tensor_cubic_sym::set_parameters(libMesh::Equa
 	libMesh::ExplicitSystem& physical_param_system = es.get_system<libMesh::ExplicitSystem>("PhysicalConstants");
 	const libMesh::DofMap& physical_dof_map = physical_param_system.get_dof_map();
 
-	unsigned int physical_consts[1];
+	unsigned int physical_consts[7];
 	physical_consts[0] = physical_param_system.variable_number ("Index");
+	physical_consts[1] = physical_param_system.variable_number ("Angle_x");
+	physical_consts[2] = physical_param_system.variable_number ("Angle_y");
+	physical_consts[3] = physical_param_system.variable_number ("Angle_z");
+	physical_consts[4] = physical_param_system.variable_number ("color_r");
+	physical_consts[5] = physical_param_system.variable_number ("color_g");
+	physical_consts[6] = physical_param_system.variable_number ("color_b");
+
+	// Calculate the rotation matrices
+	this->generate_rotation_matrices();
 
 	std::vector<libMesh::dof_id_type> physical_dof_indices_var;
 	libMesh::MeshBase::const_element_iterator       el     = mesh.active_local_elements_begin();
 	const libMesh::MeshBase::const_element_iterator end_el = mesh.active_local_elements_end();
 
-	int currentSubdomain = -1;
-
 	for ( ; el != end_el; ++el)
 	{
 		const libMesh::Elem* elem = *el;
-
-		currentSubdomain = elem->subdomain_id()-1;
 
 		// Grain index
 		physical_dof_map.dof_indices(elem, physical_dof_indices_var, physical_consts[0]);
@@ -113,9 +118,6 @@ void carl::anisotropic_elasticity_tensor_cubic_sym::set_parameters(libMesh::Equa
 
 	physical_param_system.solution->close();
 	physical_param_system.update();
-
-	// Calculate the rotation matrices
-	this->generate_rotation_matrices();
 }
 
 void  carl::anisotropic_elasticity_tensor_cubic_sym::generate_rotation_matrices()

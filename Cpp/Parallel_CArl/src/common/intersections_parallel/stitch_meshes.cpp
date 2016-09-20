@@ -229,12 +229,9 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 	// -> Third, stitch the meshes
 	libMesh::SerialMesh temp_mesh(m_world_comm,3);
 	temp_mesh.allow_renumbering(false);
-	long grid_value = 0;
 
 	unsigned int full_mesh_nb_elems = 0;
 	unsigned int full_mesh_nb_nodes = 0;
-	unsigned int partial_mesh_nb_elems = 0;
-	unsigned int partial_mesh_nb_nodes = 0;
 
 	libMesh::Elem * copy_elem = NULL;
 	libMesh::Elem * mesh_elem = NULL;
@@ -247,9 +244,6 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 	{
 		// -> Open mesh file
 		temp_mesh.read(m_mesh_filenames[iii]);
-
-		partial_mesh_nb_elems = temp_mesh.n_elem();
-		partial_mesh_nb_nodes = temp_mesh.n_nodes();
 
 		// -> Insert nodes
 		libMesh::SerialMesh::element_iterator it_mesh = temp_mesh.elements_begin();
@@ -278,19 +272,6 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 				{
 					mesh_node = m_Stitched_mesh.node_ptr(m_discrete_vertices[m_dummy_discrete_point]);
 				}
-
-//				grid_value = convert_to_grid(copy_elem->point(jjj));
-//				if(m_Grid_to_mesh_vertex_idx.find(grid_value)==m_Grid_to_mesh_vertex_idx.end())
-//				{
-//					// New vertex! Add it to the mesh
-//					m_Grid_to_mesh_vertex_idx[grid_value] = full_mesh_nb_nodes;
-//					mesh_node = m_Stitched_mesh.add_point(copy_elem->point(jjj),full_mesh_nb_nodes,0);
-//					++full_mesh_nb_nodes;
-//				}
-//				else
-//				{
-//					mesh_node = m_Stitched_mesh.node_ptr(m_Grid_to_mesh_vertex_idx[grid_value]);
-//				}
 
 				// Associate vertex to the new element
 				mesh_elem->set_node(jjj) = mesh_node;

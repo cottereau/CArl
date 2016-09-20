@@ -239,9 +239,9 @@ void carl::coupled_system::get_lambdas(	const unsigned int 							dim,
 	// Calculate the lambdas
 	// -> lines : DoF from base
 	// -> cols  : DoF from inter
-	for(int iii = 0; iii < lambda_base_size; ++iii)
+	for(unsigned int iii = 0; iii < lambda_base_size; ++iii)
 	{
-		for(int jjj = 0; jjj < lambda_inter_size; ++jjj)
+		for(unsigned int jjj = 0; jjj < lambda_inter_size; ++jjj)
 		{
 			lambda_weights[iii][jjj] =
 					libMesh::FE<3,libMesh::LAGRANGE>::shape(
@@ -448,7 +448,7 @@ void carl::coupled_system::set_LATIN_nonlinear_solver(const std::string micro_na
 	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
 
 	libMesh::ImplicitSystem& Sys_BIG =   libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_BIG.get_system(type_name_BIG));
-	libMesh::NonlinearImplicitSystem& Sys_micro = libMesh::cast_ref<libMesh::NonlinearImplicitSystem&>(EqSystems_micro.get_system(type_name_micro));
+//	libMesh::NonlinearImplicitSystem& Sys_micro = libMesh::cast_ref<libMesh::NonlinearImplicitSystem&>(EqSystems_micro.get_system(type_name_micro));
 
 	// Get the weight functions
 	weight_parameter_function& alpha_mask = * m_alpha_masks[micro_name];

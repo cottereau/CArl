@@ -90,7 +90,7 @@ void set_weight_function_domain_idx(	std::string &filename,
 //		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
 //		std::unordered_map<int,int> &element_libmesh_to_gmsh_map
 //		);
-;
+
 void build_intersection_and_restriction_tables(
 		const libMesh::Parallel::Communicator& WorldComm,
 		const std::string& intersection_full_table_Filename,
@@ -183,6 +183,15 @@ void set_local_intersection_tables(
 		std::unordered_map<int,std::pair<int,int> >& local_intersection_restricted_pairs_map,
 		std::unordered_map<int,int>& local_intersection_meshI_to_inter_map
 		);
+
+void set_global_mediator_system_intersection_lists(
+		const libMesh::Parallel::Communicator& WorldComm,
+		const std::string& intersection_global_table_Filename,
+		const std::unordered_map<int,int>& equivalence_table_system_to_mediator,
+		const std::unordered_map<int,int>& equivalence_table_mediator_to_system,
+
+		std::unordered_multimap<int,int>& inter_mediator_A,
+		std::unordered_multimap<int,int>& inter_mediator_B);
 };
 
 

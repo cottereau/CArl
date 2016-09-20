@@ -50,381 +50,6 @@ void carl::set_weight_function_domain_idx(	std::string &filename,
 	dataF.close();
 }
 
-//void carl::create_mesh_map(
-//		const std::string &filename,
-//		std::unordered_map<int,int> &node_map,
-//		std::unordered_map<int,int> &element_map)
-//{
-//	/*
-//	 *  libmesh : nodes and elements start at 0, and are continuous
-//	 *  GMSH    : nodes and elements can be discontinuous, libmesh builds a map
-//	 *  Abaqus  : not sure, but seems similar to GMSH. libmesh builds a map, but
-//	 *            differently from the method used for GMSH
-//	 */
-//
-//	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
-//	//{
-//		build_mesh_map_Gmsh(filename,node_map,element_map);
-//	//}
-//	//else
-//	//{
-//	//	libmesh_error_msg("Error: unknown filetype");
-//	//}
-//}
-//
-//void carl::create_mesh_map(
-//		const std::string &filename,
-//		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
-//		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
-//		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
-//		std::unordered_map<int,int> &element_libmesh_to_gmsh_map
-//		)
-//{
-//	/*
-//	 *  libmesh : nodes and elements start at 0, and are continuous
-//	 *  GMSH    : nodes and elements can be discontinuous, libmesh builds a map
-//	 *  Abaqus  : not sure, but seems similar to GMSH. libmesh builds a map, but
-//	 *            differently from the method used for GMSH
-//	 */
-//
-//	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
-//	//{
-//		build_mesh_map_Gmsh(filename,node_gmsh_to_libmesh_map,node_libmesh_to_gmsh_map,
-//				element_gmsh_to_libmesh_map,element_libmesh_to_gmsh_map);
-//	//}
-//	//else
-//	//{
-//	//	libmesh_error_msg("Error: unknown filetype");
-//	//}
-//};
-//
-//void carl::create_mesh_map(
-//		const std::string &filename,
-//		std::unordered_map<int,int> &node_map,
-//		std::unordered_map<int,int> &element_map,
-//		const libMesh::Parallel::Communicator& MeshComm)
-//{
-//	/*
-//	 *  libmesh : nodes and elements start at 0, and are continuous
-//	 *  Abaqus  : not sure, but seems similar to GMSH. libmesh builds a map, but
-//	 *            differently from the method used for GMSH
-//	 */
-//
-//	int rank = MeshComm.rank();
-//
-//	if(rank == 0)
-//	{
-//		if( filename.rfind(".msh") < filename.size() )
-//		{
-//			// Gmsh file : nodes and elements can be discontinuous, libmesh
-//			//             builds a map, we must do the same
-//			build_mesh_map_Gmsh(filename,node_map,element_map);
-//		}
-//		else if( filename.rfind(".e") < filename.size() )
-//		{
-//			// Covers both ".e" and ".exd" formats
-//			// Exodus_II file :
-//		}
-//		else
-//		{
-//			homemade_error_msg("Error: unknown filetype");
-//		}
-//	}
-//
-//	carl::broadcast_index_unordered_map(node_map,MeshComm);
-//	carl::broadcast_index_unordered_map(element_map,MeshComm);
-//}
-//
-//void carl::create_mesh_map(
-//		const std::string &filename,
-//		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
-//		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
-//		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
-//		std::unordered_map<int,int> &element_libmesh_to_gmsh_map,
-//		const libMesh::Parallel::Communicator& MeshComm
-//		)
-//{
-//	/*
-//	 *  libmesh : nodes and elements start at 0, and are continuous
-//	 *  GMSH    : nodes and elements can be discontinuous, libmesh builds a map
-//	 *  Abaqus  : not sure, but seems similar to GMSH. libmesh builds a map, but
-//	 *            differently from the method used for GMSH
-//	 */
-//
-//	//if(boost::filesystem::path(filename).extension().string().compare(".msh")==0)
-//	//{
-//		int rank = MeshComm.rank();
-//
-//		if(rank == 0)
-//		{
-//			build_mesh_map_Gmsh(filename,node_gmsh_to_libmesh_map,element_gmsh_to_libmesh_map);
-//		}
-//		MeshComm.barrier();
-//		carl::broadcast_index_unordered_map(node_gmsh_to_libmesh_map,MeshComm);
-//		carl::broadcast_index_unordered_map(element_gmsh_to_libmesh_map,MeshComm);
-//
-//		carl::invert_index_unordered_map(node_gmsh_to_libmesh_map,node_libmesh_to_gmsh_map);
-//		carl::invert_index_unordered_map(element_gmsh_to_libmesh_map,element_libmesh_to_gmsh_map);
-////
-////		// DEBUG Small bcast info test
-////		MeshComm.barrier();
-////		std::cout << " -> " << rank << " "
-////							<< node_gmsh_to_libmesh_map.size() << " / "
-////							<< node_libmesh_to_gmsh_map.size() << " --- "
-////							<< element_gmsh_to_libmesh_map.size() << " / "
-////							<< element_libmesh_to_gmsh_map.size() <<  std::endl;
-////
-////		MeshComm.barrier();
-////		if(rank == 0)
-////		{
-////			std::cout << std::endl;
-////		}
-////
-////		MeshComm.barrier();
-////		std::cout << " -> " << rank << " "
-////							<< "7" << " "
-////							<< element_gmsh_to_libmesh_map[7] << " "
-////							<< element_libmesh_to_gmsh_map[element_gmsh_to_libmesh_map[7]]
-////							<< std::endl;
-////
-////		MeshComm.barrier();
-////		if(rank == 0)
-////		{
-////			std::cout << std::endl;
-////		}
-////		MeshComm.barrier();
-//	//}
-//	//else
-//	//{
-//	//	libmesh_error_msg("Error: unknown filetype");
-//	//}
-//};
-//
-//void carl::build_mesh_map_Gmsh(const std::string &filename, std::unordered_map<int,int> &node_map, std::unordered_map<int,int> &element_map)
-//{
-//	//if(!(boost::filesystem::path(filename).extension().string().compare(".msh")==0))
-//	//{
-//	//	libmesh_error_msg("Error: expected Gmsh filetype");
-//	//}
-//
-//	// Open file
-//	std::ifstream dataF(filename);
-//	if(!dataF.good())
-//	{
-//		libmesh_error_msg("Error: bad filestream");
-//	}
-//
-//	// Buffer string
-//	std::string bufferLine;
-//	std::stringstream	dataBuffer;
-//
-//	int nbOfNodes = -1;
-//	int nbOfElements = -1;
-//
-//	int gmshNodeIndex = -1;
-//	int gmshElemIndex = -1;
-//
-//	bool hasNodes = false;
-//	bool hasElements = false;
-//
-//	// Read info until the file ends
-//	while(std::getline(dataF,bufferLine))
-//	{
-//		/*
-//		 * 		As of the current Gmsh version (2.11, filetype v. 2.2), each
-//		 * 	file has only one $Nodes and one $Elements sections
-//		 */
-//		if(bufferLine.compare("$Nodes")==0)
-//		{
-//			// Read node indexes
-//			hasNodes = true;
-//			dataF >> nbOfNodes;
-//
-//			node_map.reserve(nbOfNodes);
-//
-//			// Line structure
-//			// [index] [X] [Y] [Z]
-//			std::getline(dataF,bufferLine);
-//			for(unsigned int iii = 0; iii < nbOfNodes; ++iii)
-//			{
-//				std::getline(dataF,bufferLine);
-//				dataBuffer.str("");
-//				dataBuffer.clear();
-//				dataBuffer << bufferLine;
-//
-//				dataBuffer >> gmshNodeIndex;
-//
-//				// Add point to map
-//				node_map[gmshNodeIndex] = iii;
-//			}
-//		}
-//
-//		if(bufferLine.compare("$Elements")==0)
-//		{
-//			// Read element indexes
-//			hasElements = true;
-//			dataF >> nbOfElements;
-//
-//			element_map.reserve(nbOfElements);
-//
-//			// Line structure
-//			// [index] [X] [Y] [Z]
-//			std::getline(dataF,bufferLine);
-//			for(unsigned int iii = 0; iii < nbOfElements; ++iii)
-//			{
-//				std::getline(dataF,bufferLine);
-//				dataBuffer.str("");
-//				dataBuffer.clear();
-//				dataBuffer << bufferLine;
-//
-//				dataBuffer 	>> gmshElemIndex;
-//
-//				element_map[gmshElemIndex] = iii;
-//			}
-//		}
-//
-//		if(hasNodes && hasElements)
-//		{
-//			break;
-//		}
-//	}
-//}
-//
-//void carl::build_mesh_map_Gmsh(const std::string &filename,
-//		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
-//		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
-//		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
-//		std::unordered_map<int,int> &element_libmesh_to_gmsh_map)
-//{
-//	//if(!(boost::filesystem::path(filename).extension().string().compare(".msh")==0))
-//	//{
-//	//	libmesh_error_msg("Error: expected Gmsh filetype");
-//	//}
-//
-//	// Open file
-//	std::ifstream dataF(filename);
-//	if(!dataF.good())
-//	{
-//		libmesh_error_msg("Error: bad filestream");
-//	}
-//
-//	// Buffer string
-//	std::string bufferLine;
-//	std::stringstream	dataBuffer;
-//
-//	int nbOfNodes = -1;
-//	int nbOfElements = -1;
-//
-//	int gmshNodeIndex = -1;
-//	int gmshElemIndex = -1;
-//
-//	bool hasNodes = false;
-//	bool hasElements = false;
-//
-//	// Read info until the file ends
-//	while(std::getline(dataF,bufferLine))
-//	{
-//		/*
-//		 * 		As of the current Gmsh version (2.11, filetype v. 2.2), each
-//		 * 	file has only one $Nodes and one $Elements sections
-//		 */
-//		if(bufferLine.compare("$Nodes")==0)
-//		{
-//			// Read node indexes
-//			hasNodes = true;
-//			dataF >> nbOfNodes;
-//
-//			node_gmsh_to_libmesh_map.reserve(nbOfNodes);
-//			node_libmesh_to_gmsh_map.reserve(nbOfNodes);
-//
-//			// Line structure
-//			// [index] [X] [Y] [Z]
-//			std::getline(dataF,bufferLine);
-//			for(unsigned int iii = 0; iii < nbOfNodes; ++iii)
-//			{
-//				std::getline(dataF,bufferLine);
-//				dataBuffer.str("");
-//				dataBuffer.clear();
-//				dataBuffer << bufferLine;
-//
-//				dataBuffer >> gmshNodeIndex;
-//
-//				// Add point to map
-//				node_gmsh_to_libmesh_map[gmshNodeIndex] = iii;
-//				node_libmesh_to_gmsh_map[iii] = gmshNodeIndex;
-//			}
-//		}
-//
-//		if(bufferLine.compare("$Elements")==0)
-//		{
-//			// Read element indexes
-//			hasElements = true;
-//			dataF >> nbOfElements;
-//
-//			element_gmsh_to_libmesh_map.reserve(nbOfElements);
-//			element_libmesh_to_gmsh_map.reserve(nbOfElements);
-//
-//			// Line structure
-//			// [index] [X] [Y] [Z]
-//			std::getline(dataF,bufferLine);
-//			for(unsigned int iii = 0; iii < nbOfElements; ++iii)
-//			{
-//				std::getline(dataF,bufferLine);
-//				dataBuffer.str("");
-//				dataBuffer.clear();
-//				dataBuffer << bufferLine;
-//
-//				dataBuffer 	>> gmshElemIndex;
-//
-//				element_gmsh_to_libmesh_map[gmshElemIndex] = iii;
-//				element_libmesh_to_gmsh_map[iii] = gmshElemIndex;
-//			}
-//		}
-//
-//		if(hasNodes && hasElements)
-//		{
-//			break;
-//		}
-//	}
-//}
-
-//void carl::set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file,
-//					std::unordered_map<int,int>& mesh_NodeMap, std::unordered_map<int,int>& mesh_ElemMap)
-//{
-//	libMesh::GmshIO meshBuffer(mesh);
-//	meshBuffer.read(mesh_file);
-//	mesh.prepare_for_use();
-//	create_mesh_map(mesh_file,mesh_NodeMap,mesh_ElemMap);
-//};
-//
-//template<typename libMeshMesh>
-//void carl::set_mesh_Gmsh(	libMeshMesh& mesh, const std::string& mesh_file)
-//{
-//	libMesh::GmshIO meshBuffer(mesh);
-//	meshBuffer.read(mesh_file);
-//	mesh.prepare_for_use();
-//};
-//
-//template void carl::set_mesh_Gmsh(	libMesh::Mesh& mesh, const std::string& mesh_file);
-//template void carl::set_mesh_Gmsh(	libMesh::ParallelMesh& mesh, const std::string& mesh_file);
-//template void carl::set_mesh_Gmsh(	libMesh::SerialMesh& mesh, const std::string& mesh_file);
-//
-//void carl::set_mesh_Gmsh(
-//		libMesh::Mesh& mesh,
-//		const std::string& mesh_file,
-//		std::unordered_map<int,int> &node_gmsh_to_libmesh_map,
-//		std::unordered_map<int,int> &node_libmesh_to_gmsh_map,
-//		std::unordered_map<int,int> &element_gmsh_to_libmesh_map,
-//		std::unordered_map<int,int> &element_libmesh_to_gmsh_map
-//		)
-//{
-//	libMesh::GmshIO meshBuffer(mesh);
-//	meshBuffer.read(mesh_file);
-//	mesh.prepare_for_use();
-//	create_mesh_map(mesh_file,node_gmsh_to_libmesh_map,node_libmesh_to_gmsh_map,
-//			element_gmsh_to_libmesh_map,element_libmesh_to_gmsh_map);
-//};
-
 // SERIAL intersection tables generation
 void carl::generate_intersection_tables_partial(	std::string& intersection_table_restrict_B_Filename,
 											std::string& intersection_table_I_Filename,
@@ -676,52 +301,6 @@ void carl::build_intersection_and_restriction_tables(
 		equivalence_table_B_to_R_B[dummy_equivalence_table_B[2*iii + 1]] =
 				dummy_equivalence_table_B[2*iii];
 	}
-
-//	// DEBUG Small bcast info test
-//	std::cout << " -> " << rank << " "
-//						<< intersection_full_table.size() << " / "
-//						<< nbOfInterElems << " --- "
-//						<< dummy_equivalence_table_A.size()/2 << " / "
-//						<< nbOfRestricted_A_Elems << " --- "
-//						<< dummy_equivalence_table_B.size()/2 << " / "
-//						<< nbOfRestricted_B_Elems << std::endl;
-//
-//	WorldComm.barrier();
-//	if(rank == 0)
-//	{
-//		std::cout << std::endl;
-//	}
-//	WorldComm.barrier();
-//	std::cout << " -> " << rank << " "
-//						<< intersection_full_table[4].InterMeshIdx << " "
-//						<< intersection_full_table[4].AMeshIdx << " "
-//						<< intersection_full_table[4].BMeshIdx << " "
-//						<< intersection_full_table[4].IntersectionID << " "
-//						<< std::endl;
-//
-//	WorldComm.barrier();
-//	if(rank == 0)
-//	{
-//		std::cout << std::endl;
-//	}
-//	WorldComm.barrier();
-//	std::cout << " -> " << rank << " "
-//						<< "4" << " "
-//						<< equivalence_table_A_to_R_A[4] << " "
-//						<< equivalence_table_R_A_to_A[equivalence_table_A_to_R_A[4]]
-//						<< std::endl;
-//
-//	WorldComm.barrier();
-//	if(rank == 0)
-//	{
-//		std::cout << std::endl;
-//	}
-//	WorldComm.barrier();
-//	std::cout << " -> " << rank << " "
-//						<< "4" << " "
-//						<< equivalence_table_B_to_R_B[4] << " "
-//						<< equivalence_table_R_B_to_B[equivalence_table_B_to_R_B[4]]
-//						<< std::endl;
 };
 
 void carl::set_equivalence_tables(
@@ -818,44 +397,6 @@ void carl::set_equivalence_tables(
 		equivalence_table_B_to_R_B[dummy_equivalence_table_B[2*iii + 1]] =
 				dummy_equivalence_table_B[2*iii];
 	}
-
-//	// DEBUG Small bcast info test
-//	std::cout << " -> " << rank << " "
-//						<< dummy_equivalence_table_A.size()/2 << " / "
-//						<< nbOfRestricted_A_Elems << " --- "
-//						<< dummy_equivalence_table_B.size()/2 << " / "
-//						<< nbOfRestricted_B_Elems << std::endl;
-//
-//	WorldComm.barrier();
-//	if(rank == 0)
-//	{
-//		std::cout << std::endl;
-//	}
-//
-//	WorldComm.barrier();
-//	std::cout << " -> " << rank << " "
-//						<< "7" << " "
-//						<< equivalence_table_R_A_to_A[7] << " "
-//						<< equivalence_table_A_to_R_A[equivalence_table_R_A_to_A[7]]
-//						<< std::endl;
-//
-//	WorldComm.barrier();
-//	if(rank == 0)
-//	{
-//		std::cout << std::endl;
-//	}
-//	WorldComm.barrier();
-//	std::cout << " -> " << rank << " "
-//						<< "4" << " "
-//						<< equivalence_table_R_B_to_B[4] << " "
-//						<< equivalence_table_B_to_R_B[equivalence_table_R_B_to_B[4]]
-//						<< std::endl;
-//	WorldComm.barrier();
-//	if(rank == 0)
-//	{
-//		std::cout << std::endl;
-//	}
-//	WorldComm.barrier();
 }
 
 void carl::set_restricted_intersection_pairs_table(
@@ -1000,37 +541,6 @@ void carl::set_full_intersection_tables(
 			++interIdx;
 		}
 	}
-
-//	// DEBUG Small bcast info test
-//	PetscSynchronizedPrintf(PETSC_COMM_WORLD," -> %d %d / %d\n",rank,full_intersection_meshI_to_inter_map.size(),nbOfInterElems);
-//	PetscSynchronizedFlush(PETSC_COMM_WORLD,PETSC_STDOUT);
-//	WorldComm.barrier();
-//	if(rank == 0)
-//	{
-//		std::cout << std::endl;
-//	}
-//	WorldComm.barrier();
-//
-//	PetscSynchronizedPrintf(PETSC_COMM_WORLD," -> %d %d / %d\n",rank,full_intersection_pairs_map.size(),nbOfIntersections);
-//	PetscSynchronizedFlush(PETSC_COMM_WORLD,PETSC_STDOUT);
-//	WorldComm.barrier();
-//	if(rank == 0)
-//	{
-//		std::cout << std::endl;
-//	}
-//	WorldComm.barrier();
-//
-//	PetscSynchronizedPrintf(PETSC_COMM_WORLD," -> %d %d %d %d \n",
-//			rank,full_intersection_meshI_to_inter_map[7],
-//			full_intersection_pairs_map[full_intersection_meshI_to_inter_map[7]].first,
-//			full_intersection_pairs_map[full_intersection_meshI_to_inter_map[7]].second);
-//	PetscSynchronizedFlush(PETSC_COMM_WORLD,PETSC_STDOUT);
-//	WorldComm.barrier();
-//	if(rank == 0)
-//	{
-//		std::cout << std::endl;
-//	}
-//	WorldComm.barrier();
 };
 
 void carl::read_local_intersection_tables(
@@ -1040,8 +550,6 @@ void carl::read_local_intersection_tables(
 		std::unordered_map<int,std::pair<int,int> >& local_intersection_pairs_map,
 		std::unordered_map<int,int>& local_intersection_meshI_to_inter_map)
 {
-	int rank = WorldComm.rank();
-
 	int nbOfIntersections = -1;
 	int nbOfInterElems = -1;
 
@@ -1099,11 +607,7 @@ void carl::set_intersection_tables(
 		std::unordered_map<int,int>& local_intersection_meshI_to_inter_map
 		)
 {
-	int rank = WorldComm.rank();
-
 	// 	Start by reading and broadcasting the global intersection table
-	//  TODO : 	change this step after parallelizing and integrating the
-	//			intersection algorithm
 	std::unordered_map<int,int> full_intersection_meshI_to_inter_map;
 	set_full_intersection_tables(WorldComm,intersection_full_table_Filename,
 			full_intersection_pairs_map,full_intersection_meshI_to_inter_map);
@@ -1112,23 +616,6 @@ void carl::set_intersection_tables(
 	set_restricted_intersection_pairs_table(full_intersection_pairs_map,
 		equivalence_table_A_to_R_A,equivalence_table_B_to_R_B,
 		full_intersection_restricted_pairs_map);
-
-//	// DEBUG Print all this into a file
-//	{
-//		std::string debug_inter_table = "debug_restriction_libmesh_" +
-//				std::to_string(rank) + ".dat";
-//		std::ofstream debug_inter_file(debug_inter_table);
-//
-//		std::unordered_map<int,std::pair<int,int> >::iterator mapIt = full_intersection_restricted_pairs_map.begin();
-//		std::unordered_map<int,std::pair<int,int> >::iterator end_mapIt = full_intersection_restricted_pairs_map.end();
-//
-//		for( ; mapIt != end_mapIt; ++mapIt)
-//		{
-//			debug_inter_file << mapIt->first << " " << mapIt->second.first << " " << mapIt->second.second << std::endl;
-//		}
-//
-//		debug_inter_file.close();
-//	}
 
 	// Build in each processor its own intersection table
 	libMesh::MeshBase::const_element_iterator       elemIt  = mesh_intersection.active_local_elements_begin();
@@ -1147,23 +634,6 @@ void carl::set_intersection_tables(
 		interID 	= full_intersection_meshI_to_inter_map[idxI_table];
 		local_intersection_meshI_to_inter_map[idxI_table] = interID;
 	}
-
-//	// DEBUG Print all this into a file
-//	{
-//		std::string debug_inter_table = "debug_local_inter_libmesh_" +
-//				std::to_string(rank) + ".dat";
-//		std::ofstream debug_inter_file(debug_inter_table);
-//
-//		std::unordered_map<int,int>::iterator mapIt = local_intersection_meshI_to_inter_map.begin();
-//		std::unordered_map<int,int>::iterator end_mapIt = local_intersection_meshI_to_inter_map.end();
-//
-//		for( ; mapIt != end_mapIt; ++mapIt)
-//		{
-//			debug_inter_file << mapIt->first << " " << mapIt->second << std::endl;
-//		}
-//
-//		debug_inter_file.close();
-//	}
 };
 
 void carl::set_local_intersection_tables(
@@ -1181,11 +651,7 @@ void carl::set_local_intersection_tables(
 		std::unordered_map<int,int>& local_intersection_meshI_to_inter_map
 		)
 {
-	int rank = WorldComm.rank();
-
 	// 	Start by reading and broadcasting the global intersection table
-	//  TODO : 	change this step after parallelizing and integrating the
-	//			intersection algorithm
 	std::unordered_map<int,int> full_intersection_meshI_to_inter_map;
 	read_local_intersection_tables(WorldComm,intersection_local_table_Filename,
 			local_intersection_pairs_map,full_intersection_meshI_to_inter_map);
@@ -1194,23 +660,6 @@ void carl::set_local_intersection_tables(
 	set_restricted_intersection_pairs_table(local_intersection_pairs_map,
 		equivalence_table_A_to_R_A,equivalence_table_B_to_R_B,
 		local_intersection_restricted_pairs_map);
-
-//	// DEBUG Print all this into a file
-//	{
-//		std::string debug_inter_table = "debug_restriction_libmesh_" +
-//				std::to_string(rank) + ".dat";
-//		std::ofstream debug_inter_file(debug_inter_table);
-//
-//		std::unordered_map<int,std::pair<int,int> >::iterator mapIt = full_intersection_restricted_pairs_map.begin();
-//		std::unordered_map<int,std::pair<int,int> >::iterator end_mapIt = full_intersection_restricted_pairs_map.end();
-//
-//		for( ; mapIt != end_mapIt; ++mapIt)
-//		{
-//			debug_inter_file << mapIt->first << " " << mapIt->second.first << " " << mapIt->second.second << std::endl;
-//		}
-//
-//		debug_inter_file.close();
-//	}
 
 	// Build in each processor its own intersection table
 	libMesh::MeshBase::const_element_iterator       elemIt  = mesh_intersection.active_local_elements_begin();
@@ -1229,21 +678,74 @@ void carl::set_local_intersection_tables(
 		interID 	= full_intersection_meshI_to_inter_map[idxI_table];
 		local_intersection_meshI_to_inter_map[idxI_table] = interID;
 	}
+};
 
-//	// DEBUG Print all this into a file
-//	{
-//		std::string debug_inter_table = "debug_local_inter_libmesh_" +
-//				std::to_string(rank) + ".dat";
-//		std::ofstream debug_inter_file(debug_inter_table);
-//
-//		std::unordered_map<int,int>::iterator mapIt = local_intersection_meshI_to_inter_map.begin();
-//		std::unordered_map<int,int>::iterator end_mapIt = local_intersection_meshI_to_inter_map.end();
-//
-//		for( ; mapIt != end_mapIt; ++mapIt)
-//		{
-//			debug_inter_file << mapIt->first << " " << mapIt->second << std::endl;
-//		}
-//
-//		debug_inter_file.close();
-//	}
+void carl::set_global_mediator_system_intersection_lists(
+		const libMesh::Parallel::Communicator& WorldComm,
+		const std::string& intersection_global_table_Filename,
+		const std::unordered_map<int,int>& equivalence_table_system_to_mediator,
+		const std::unordered_map<int,int>& equivalence_table_mediator_to_system,
+
+		std::unordered_multimap<int,int>& inter_mediator_A,
+		std::unordered_multimap<int,int>& inter_mediator_B)
+{
+	// First, do the reading work on proc. 0
+	int rank = WorldComm.rank();
+	int nodes = WorldComm.size();
+
+	int 				temp_interID;
+	std::vector<int>	temp_idxA;
+	std::vector<int>	temp_idxB;
+
+	int nbOfIntersections = -1;
+	int nbOfInterElems = -1;
+
+	std::string dummy_data;
+
+	if(rank == 0)
+	{
+		std::ifstream intersection_full_file(intersection_global_table_Filename);
+		intersection_full_file >> nbOfIntersections >> nbOfInterElems;
+
+		temp_idxA.resize(nbOfIntersections);
+		temp_idxB.resize(nbOfIntersections);
+
+		for(int iii = 0; iii < nbOfIntersections; ++iii)
+		{
+			intersection_full_file 	>> temp_interID
+									>> temp_idxA[iii] >> temp_idxB[iii];
+			intersection_full_file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		}
+		intersection_full_file.close();
+	}
+
+	if(nodes > 1)
+	{
+		WorldComm.broadcast(nbOfIntersections);
+
+		if(rank != 0)
+		{
+			temp_idxA.resize(nbOfIntersections);
+			temp_idxB.resize(nbOfIntersections);
+		}
+		WorldComm.broadcast(temp_idxA);
+		WorldComm.broadcast(temp_idxB);
+	}
+
+	inter_mediator_A.reserve(nbOfIntersections);
+	inter_mediator_B.reserve(nbOfIntersections);
+
+	int mediator_idx;
+	for(int iii = 0; iii < nbOfIntersections; ++iii)
+	{
+		mediator_idx = equivalence_table_system_to_mediator.at(temp_idxA[iii]);
+		inter_mediator_B.emplace(std::make_pair(mediator_idx, temp_idxB[iii]));
+	}
+
+	int system_idx;
+	for(unsigned int iii = 0; iii < equivalence_table_system_to_mediator.size(); ++iii)
+	{
+		system_idx = equivalence_table_mediator_to_system.at(iii);
+		inter_mediator_A.emplace(std::make_pair(iii, system_idx));
+	}
 };

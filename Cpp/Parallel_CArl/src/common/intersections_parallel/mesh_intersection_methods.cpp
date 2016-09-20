@@ -3,34 +3,6 @@
 namespace carl
 {
 
-// void Mesh_Intersection::update_intersection_vertices(	const std::set<libMesh::Point> & input_points)
-// {
-// 	long dummy_long_int;
-// 	m_nb_of_points = 0;
-
-// 	for(	std::set<libMesh::Point>::const_iterator it_points = input_points.begin();
-// 			it_points != input_points.end();
-// 			++it_points)
-// 	{
-// 		dummy_long_int = convert_to_grid(*it_points);
-// 		if(m_Grid_to_mesh_vertex_idx.find(dummy_long_int)==m_Grid_to_mesh_vertex_idx.end())
-// 		{
-// 			// New vertex! Add it to the mesh
-// 			m_Grid_to_mesh_vertex_idx[dummy_long_int] = m_nb_of_vertices;
-// 			m_intersection_point_indexes[m_nb_of_points] = m_nb_of_vertices;
-// 			m_libMesh_Mesh.add_point(*it_points,m_nb_of_vertices);
-// 			++m_nb_of_vertices;
-// 			++m_nb_of_points;
-// 		}
-// 		else
-// 		{
-// 			// Recover the index corresponding to the point
-// 			m_intersection_point_indexes[m_nb_of_points] = m_Grid_to_mesh_vertex_idx[dummy_long_int];
-// 			++m_nb_of_points;
-// 		}
-// 	}
-// }
-
 void Mesh_Intersection::triangulate_intersection(const std::set<libMesh::Point> & input_points)
 {
 	m_libMesh_PolyhedronMesh.clear();
@@ -48,7 +20,7 @@ void Mesh_Intersection::update_intersection_mesh()
 {
 	// Test which elements must be added, and insert their vertices
 	libMesh::SerialMesh::element_iterator   it_poly_mesh = m_libMesh_PolyhedronMesh.elements_begin();
-	long dummy_long_int = 0;
+
 	for(	; it_poly_mesh != m_libMesh_PolyhedronMesh.elements_end();
 			++it_poly_mesh)
 	{
@@ -63,15 +35,12 @@ void Mesh_Intersection::update_intersection_mesh()
 			for(unsigned int iii = 0; iii < 4; ++iii)
 			{
 				convert_to_discrete(poly_elem->point(iii),m_dummy_discrete_point);
-//				dummy_long_int = convert_to_grid(poly_elem->point(iii));
 
 				if(m_discrete_vertices.find(m_dummy_discrete_point) == m_discrete_vertices.end())
-//				if(m_Grid_to_mesh_vertex_idx.find(dummy_long_int)==m_Grid_to_mesh_vertex_idx.end())
 				{
 					// New vertex! Add it to the mesh
 
 					m_discrete_vertices[m_dummy_discrete_point] = m_nb_of_vertices;
-//					m_Grid_to_mesh_vertex_idx[dummy_long_int] = m_nb_of_vertices;
 					m_libMesh_Mesh.add_point(poly_elem->point(iii),m_nb_of_vertices);
 					mesh_elem->set_node(iii) = m_libMesh_Mesh.node_ptr(m_nb_of_vertices);
 					++m_nb_of_vertices;

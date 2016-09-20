@@ -835,7 +835,7 @@ void Triangular_Mesh_3::RestrictMesh(Nef_Polyhedron& nefRestriction, Triangular_
 
 	tableFile << RestrictedToFullCellMap.size() << std::endl;
 
-	for(int iii = 0; iii < RestrictedToFullCellMap.size(); ++iii)
+	for(unsigned int iii = 0; iii < RestrictedToFullCellMap.size(); ++iii)
 	{
 		tableFile << iii + 1 << " " << RestrictedToFullCellMap[iii] + 1 << std::endl;
 	}
@@ -859,11 +859,6 @@ void Triangular_Mesh_3::ImportGmsh(std::string &ifName)
 	// Initialize the mesh
 	Initialize();
 
-	// Set up safety booleans
-	bool hasHeader = false;
-	bool hasNodes = false;
-	bool hasElements = false;
-
 	// Variables needed by gmsh
 	unsigned int		gmshNumberOfNodes = 0;
 	unsigned int 		gmshNumberOfElements = 0;
@@ -877,7 +872,7 @@ void Triangular_Mesh_3::ImportGmsh(std::string &ifName)
 
 	int					bufferElementIndex = 1;
 	int					bufferElementType = 1;
-	int					bufferElementTagNumber = 1;
+	unsigned int		bufferElementTagNumber = 1;
 	std::vector<int>	bufferElementTags(5);
 	std::vector<int>	bufferElementNodes(4);
 
@@ -894,16 +889,9 @@ void Triangular_Mesh_3::ImportGmsh(std::string &ifName)
 	// Read info until the file ends
 	while(std::getline(dataF,bufferLine))
 	{
-		if(bufferLine.compare("$MeshFormat")==0)
-		{
-			// Read mesh format!
-			hasHeader = true;
-		}
-
 		if(bufferLine.compare("$Nodes")==0)
 		{
 			// Read nodes!
-			hasNodes = true;
 			dataF >> gmshNumberOfNodes;
 
 			// Reserve space for the nodes
@@ -930,7 +918,6 @@ void Triangular_Mesh_3::ImportGmsh(std::string &ifName)
 		if(bufferLine.compare("$Elements")==0)
 		{
 			// Read the elements!
-			hasElements = true;
 			dataF >> gmshNumberOfElements;
 
 			// Element structures (* = to be ignored):
@@ -1029,10 +1016,6 @@ void Triangular_Mesh_3::ImportMedit(std::string &ifName)
 	// Initialize the mesh
 	Initialize();
 
-	// Set up safety booleans
-	bool hasNodes = false;
-	bool hasElements = false;
-
 	// Variables needed by medit
 	unsigned int		meditNumberOfNodes = 0;
 	unsigned int 		meditNumberOfElements = 0;
@@ -1071,7 +1054,6 @@ void Triangular_Mesh_3::ImportMedit(std::string &ifName)
 			assert(meditDimension==3);
 
 			// Read nodes!
-			hasNodes = true;
 			dataF >> meditNumberOfNodes;
 
 			// Reserve space for the nodes
@@ -1099,7 +1081,6 @@ void Triangular_Mesh_3::ImportMedit(std::string &ifName)
 		if(bufferLine.find("Tetrahedra")!=std::string::npos)
 		{
 			// Read the triangles!
-			hasElements = true;
 			dataF >> meditNumberOfElements;
 
 			// Element structures (* = to be ignored):

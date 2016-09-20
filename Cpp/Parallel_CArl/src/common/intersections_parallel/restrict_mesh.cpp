@@ -37,8 +37,6 @@ void Mesh_restriction::BuildRestriction(const libMesh::SerialMesh 	& Coupling_me
 		m_Patch_Node_indexes.clear();
 		m_Patch_Elem_Neighbours.clear();
 
-		libMesh::Elem * 	First_Restriction_elems = NULL;
-		libMesh::Elem * 	elem_candidate = NULL;
 		std::set<unsigned int>::iterator it_set_start;
 
 		libMesh::Mesh::const_element_iterator it_coupling = Coupling_mesh.elements_begin();

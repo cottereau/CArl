@@ -109,6 +109,12 @@ libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_s
 	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
 	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
 	physical_variables.add_variable("Index", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("Angle_x", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("Angle_y", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("Angle_z", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("color_r", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("color_g", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("color_b", libMesh::CONSTANT, libMesh::MONOMIAL);
 
 	libMesh::LinearImplicitSystem& elasticity_system =
 			input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
@@ -229,7 +235,7 @@ void assemble_elasticity(libMesh::EquationSystems& es,
 	const std::vector<libMesh::Real>& JxW = fe->get_JxW();
 
 	// Shape functions
-	const std::vector<std::vector<libMesh::Real> >& phi = fe->get_phi();
+//	const std::vector<std::vector<libMesh::Real> >& phi = fe->get_phi();
 
 	// Shape functions derivatives
 	const std::vector<std::vector<libMesh::RealGradient> >& dphi = fe->get_dphi();
@@ -397,7 +403,7 @@ void assemble_elasticity_heterogeneous(libMesh::EquationSystems& es,
 	const std::vector<libMesh::Real>& JxW = fe->get_JxW();
 
 	// Shape functions
-	const std::vector<std::vector<libMesh::Real> >& phi = fe->get_phi();
+//	const std::vector<std::vector<libMesh::Real> >& phi = fe->get_phi();
 
 	// Shape functions derivatives
 	const std::vector<std::vector<libMesh::RealGradient> >& dphi = fe->get_dphi();
@@ -582,7 +588,7 @@ void assemble_elasticity_with_weight(	libMesh::EquationSystems& es,
 	const std::vector<libMesh::Real>& JxW = fe->get_JxW();
 
 	// Shape functions
-	const std::vector<std::vector<libMesh::Real> >& phi = fe->get_phi();
+//	const std::vector<std::vector<libMesh::Real> >& phi = fe->get_phi();
 
 	// Shape functions derivatives
 	const std::vector<std::vector<libMesh::RealGradient> >& dphi = fe->get_dphi();
@@ -759,7 +765,7 @@ void assemble_elasticity_heterogeneous_with_weight(	libMesh::EquationSystems& es
 	const std::vector<libMesh::Real>& JxW = fe->get_JxW();
 
 	// Shape functions
-	const std::vector<std::vector<libMesh::Real> >& phi = fe->get_phi();
+//	const std::vector<std::vector<libMesh::Real> >& phi = fe->get_phi();
 
 	// Shape functions derivatives
 	const std::vector<std::vector<libMesh::RealGradient> >& dphi = fe->get_dphi();

@@ -85,7 +85,7 @@ void assemble_elasticity_anisotropic_with_weight(	libMesh::EquationSystems& es,
 	const std::vector<libMesh::Real>& JxW = fe->get_JxW();
 
 	// Shape functions
-	const std::vector<std::vector<libMesh::Real> >& phi = fe->get_phi();
+//	const std::vector<std::vector<libMesh::Real> >& phi = fe->get_phi();
 
 	// Shape functions derivatives
 	const std::vector<std::vector<libMesh::RealGradient> >& dphi = fe->get_dphi();

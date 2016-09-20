@@ -38,7 +38,7 @@ void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Numbe
 	libMesh::PerfLog perf_log("Matrix setup",MASTER_bPerfLog_LATIN_solver_matrix_assemble);
 
 	// -> Will need k_d/cI
-	libmesh_assert_msg( m_bParamsSetUp , "LATIN parameters not set up!");
+	homemade_assert_msg( m_bParamsSetUp , "LATIN parameters not set up!");
 
 	m_M_A = &M_A;
 	m_M_B = &M_B;
@@ -145,7 +145,7 @@ void carl::PETSC_LATIN_solver::set_matrices_nonlinear(	libMesh::PetscMatrix<libM
 	libMesh::PerfLog perf_log("Matrix setup",MASTER_bPerfLog_LATIN_solver_matrix_assemble);
 
 	// -> Will need k_d/cI
-	libmesh_assert_msg( m_bParamsSetUp , "LATIN parameters not set up!");
+	homemade_assert_msg( m_bParamsSetUp , "LATIN parameters not set up!");
 
 	m_M_A = &M_A;
 
@@ -275,9 +275,9 @@ void carl::PETSC_LATIN_solver::solve()
 	std::cout << "|     Initialization ..." << std::endl; std::cout.flush();
 
 	// -> Test if the parameters are set up
-	libmesh_assert_msg( m_bParamsSetUp , "   solve : LATIN parameters not set up!");
-	libmesh_assert_msg( m_bMatricesSetUp , "   solve : Matrices not set up!");
-	libmesh_assert_msg( m_bForcesSetUp , "   solve : Forces not set up!");
+	homemade_assert_msg( m_bParamsSetUp , "   solve : LATIN parameters not set up!");
+	homemade_assert_msg( m_bMatricesSetUp , "   solve : Matrices not set up!");
+	homemade_assert_msg( m_bForcesSetUp , "   solve : Forces not set up!");
 
 	// -> Matrix dimensions
 
@@ -371,10 +371,12 @@ void carl::PETSC_LATIN_solver::solve()
 	// -> Initialize the vectors
 	// u_0,I = H_I^-1 * F_I (KSP SOLVER!)
 
-	perf_log.push("KSP solver","Initialization");
+	perf_log.push("KSP solver - A","Initialization");
 	KSP_Solver_H_A.solve ( *m_H_A, *m_sol_A, *m_F_A, m_KSP_A_eps, m_KSP_A_iter_max);
+	perf_log.pop("KSP solver - A","Initialization");
+	perf_log.push("KSP solver - B","Initialization");
 	KSP_Solver_H_B.solve ( *m_H_B, *m_sol_B, *m_F_B, m_KSP_B_eps, m_KSP_B_iter_max);
-	perf_log.pop("KSP solver","Initialization");
+	perf_log.pop("KSP solver - B","Initialization");
 
 	// w_0,I = P_I * u_0,I
 	m_P_A->vector_mult(w_A,*m_sol_A);
@@ -384,7 +386,6 @@ void carl::PETSC_LATIN_solver::solve()
 	phi_dA.add(-m_k_dA,w_A);
 	phi_dB.add(-m_k_dB,w_B);
 
-	std::cout << m_LATIN_conv_eps << " " << m_LATIN_conv_max_n << std::endl;
 	while (iter_eps > m_LATIN_conv_eps && iter_nb < m_LATIN_conv_max_n)
 	{
 //		clear_line();
@@ -439,11 +440,13 @@ void carl::PETSC_LATIN_solver::solve()
 		f_eff_B.add(*m_F_B);
 		perf_log.pop("Effective force","Decoupled - iterations");
 
-		perf_log.push("KSP solver","Decoupled - iterations");
 		// u_i,I = H_I^-1 * f_eff_i,I (KSP SOLVER!)
+		perf_log.push("KSP solver - A","Decoupled - iterations");
 		KSP_Solver_H_A.solve ( *m_H_A, u_A, f_eff_A, m_KSP_A_eps, m_KSP_A_iter_max);
+		perf_log.pop("KSP solver - A","Decoupled - iterations");
+		perf_log.push("KSP solver - B","Decoupled - iterations");
 		KSP_Solver_H_B.solve ( *m_H_B, u_B, f_eff_B, m_KSP_B_eps, m_KSP_B_iter_max);
-		perf_log.pop("KSP solver","Decoupled - iterations");
+		perf_log.pop("KSP solver - A","Decoupled - iterations");
 
 		// w_i,I = P_I * u_i,I
 		perf_log.push("Projection","Decoupled - iterations");
@@ -483,8 +486,6 @@ void carl::PETSC_LATIN_solver::solve()
 		norm_diff = phi_diff_A.l2_norm() + phi_diff_B.l2_norm();
 		norm_sum = phi_sum_A.l2_norm() + phi_sum_B.l2_norm();
 
-		std::cout << norm_sum << std::endl; std::cout.flush();
-
 		if(norm_sum < 1E-18)
 		{
 			break;
@@ -517,9 +518,9 @@ void carl::PETSC_LATIN_solver::solve_nonlinear(libMesh::EquationSystems& EqSys_m
 	std::cout << "|     Initialization ..." << std::endl; std::cout.flush();
 
 	// -> Test if the parameters are set up
-	libmesh_assert_msg( m_bParamsSetUp , "   solve : LATIN parameters not set up!");
-	libmesh_assert_msg( m_bMatricesSetUp , "   solve : Matrices not set up!");
-	libmesh_assert_msg( m_bForcesSetUp , "   solve : Forces not set up!");
+	homemade_assert_msg( m_bParamsSetUp , "   solve : LATIN parameters not set up!");
+	homemade_assert_msg( m_bMatricesSetUp , "   solve : Matrices not set up!");
+	homemade_assert_msg( m_bForcesSetUp , "   solve : Forces not set up!");
 
 	// -> Matrix dimensions
 
@@ -851,7 +852,6 @@ void carl::PETSC_LATIN_solver::solve_nonlinear(libMesh::EquationSystems& EqSys_m
 
 }
 
-
 void carl::PETSC_LATIN_solver::check_dimensions()
 {
 	int H_A_mmm, H_A_nnn, H_A_local_mmm, H_A_local_nnn,
@@ -889,43 +889,43 @@ void carl::PETSC_LATIN_solver::check_dimensions()
 	F_B_size = m_F_B->size(); F_B_local_size = m_F_B->local_size();
 
 	// Test if the matrices are squared
-	libmesh_assert_msg( H_A_mmm == H_A_nnn , "   check_dimensions : H_A.m() != H_A.n() !");
-	libmesh_assert_msg( H_B_mmm == H_B_nnn , "   check_dimensions : H_B.m() != H_B.n() !");
+	homemade_assert_msg( H_A_mmm == H_A_nnn , "   check_dimensions : H_A.m() != H_A.n() !");
+	homemade_assert_msg( H_B_mmm == H_B_nnn , "   check_dimensions : H_B.m() != H_B.n() !");
 
 	// Test the projections
-	libmesh_assert_msg( H_A_nnn == P_A_nnn , "   check_dimensions : H_A.n() != P_A.n() !");
-	libmesh_assert_msg( H_B_nnn == P_B_nnn , "   check_dimensions : H_B.n() != P_B.n() !");
-	libmesh_assert_msg( P_A_mmm == P_B_mmm , "   check_dimensions : P_A.m() != P_B.m() !");
+	homemade_assert_msg( H_A_nnn == P_A_nnn , "   check_dimensions : H_A.n() != P_A.n() !");
+	homemade_assert_msg( H_B_nnn == P_B_nnn , "   check_dimensions : H_B.n() != P_B.n() !");
+	homemade_assert_msg( P_A_mmm == P_B_mmm , "   check_dimensions : P_A.m() != P_B.m() !");
 
 	// Test the couplings
-	libmesh_assert_msg( H_A_nnn == C_A_nnn , "   check_dimensions : H_A.n() != C_A.n() !");
-	libmesh_assert_msg( H_B_nnn == C_B_nnn , "   check_dimensions : H_B.n() != C_B.n() !");
-	libmesh_assert_msg( C_A_mmm == C_B_mmm , "   check_dimensions : C_A.m() != C_B.m() !");
+	homemade_assert_msg( H_A_nnn == C_A_nnn , "   check_dimensions : H_A.n() != C_A.n() !");
+	homemade_assert_msg( H_B_nnn == C_B_nnn , "   check_dimensions : H_B.n() != C_B.n() !");
+	homemade_assert_msg( C_A_mmm == C_B_mmm , "   check_dimensions : C_A.m() != C_B.m() !");
 
 	// Test the forces
-	libmesh_assert_msg( H_A_nnn == F_A_size , "   check_dimensions : H_A.n() != F_A.size() !");
-	libmesh_assert_msg( H_B_nnn == F_B_size , "   check_dimensions : H_B.n() != F_B.size() !");
+	homemade_assert_msg( H_A_nnn == F_A_size , "   check_dimensions : H_A.n() != F_A.size() !");
+	homemade_assert_msg( H_B_nnn == F_B_size , "   check_dimensions : H_B.n() != F_B.size() !");
 
 
 	// -> Now local !
 
 	// Test if the matrices are squared
-	libmesh_assert_msg( H_A_local_mmm == H_A_local_nnn , "   check_dimensions : H_A.m() != H_A.n() (local) !");
-	libmesh_assert_msg( H_B_local_mmm == H_B_local_nnn , "   check_dimensions : H_B.m() != H_B.n() (local) !");
+	homemade_assert_msg( H_A_local_mmm == H_A_local_nnn , "   check_dimensions : H_A.m() != H_A.n() (local) !");
+	homemade_assert_msg( H_B_local_mmm == H_B_local_nnn , "   check_dimensions : H_B.m() != H_B.n() (local) !");
 
 	// Test the projections
-	libmesh_assert_msg( H_A_local_nnn == P_A_local_nnn , "   check_dimensions : H_A.n() != P_A.n() (local) !");
-	libmesh_assert_msg( H_B_local_nnn == P_B_local_nnn , "   check_dimensions : H_B.n() != P_B.n() (local) !");
-	libmesh_assert_msg( P_A_local_mmm == P_B_local_mmm , "   check_dimensions : P_A.m() != P_B.m() (local) !");
+	homemade_assert_msg( H_A_local_nnn == P_A_local_nnn , "   check_dimensions : H_A.n() != P_A.n() (local) !");
+	homemade_assert_msg( H_B_local_nnn == P_B_local_nnn , "   check_dimensions : H_B.n() != P_B.n() (local) !");
+	homemade_assert_msg( P_A_local_mmm == P_B_local_mmm , "   check_dimensions : P_A.m() != P_B.m() (local) !");
 
 	// Test the couplings
-	libmesh_assert_msg( H_A_local_nnn == C_A_local_nnn , "   check_dimensions : H_A.n() != C_A.n() (local) !");
-	libmesh_assert_msg( H_B_local_nnn == C_B_local_nnn , "   check_dimensions : H_B.n() != C_B.n() (local) !");
-	libmesh_assert_msg( C_A_local_mmm == C_B_local_mmm , "   check_dimensions : C_A.m() != C_B.m() (local) !");
+	homemade_assert_msg( H_A_local_nnn == C_A_local_nnn , "   check_dimensions : H_A.n() != C_A.n() (local) !");
+	homemade_assert_msg( H_B_local_nnn == C_B_local_nnn , "   check_dimensions : H_B.n() != C_B.n() (local) !");
+	homemade_assert_msg( C_A_local_mmm == C_B_local_mmm , "   check_dimensions : C_A.m() != C_B.m() (local) !");
 
 	// Test the forces
-	libmesh_assert_msg( H_A_local_nnn == F_A_local_size , "   check_dimensions : H_A.n() != F_A.size() (local) !");
-	libmesh_assert_msg( H_B_local_nnn == F_B_local_size , "   check_dimensions : H_B.n() != F_B.size() (local) !");
+	homemade_assert_msg( H_A_local_nnn == F_A_local_size , "   check_dimensions : H_A.n() != F_A.size() (local) !");
+	homemade_assert_msg( H_B_local_nnn == F_B_local_size , "   check_dimensions : H_B.n() != F_B.size() (local) !");
 
 	m_bCheckDimensions = true;
 }

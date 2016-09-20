@@ -425,7 +425,6 @@ void Patch_construction::build_patch_mesh()
 	it_set_end = m_Patch_Elem_indexes.end();
 	libMesh::Elem * originalElem = NULL;
 	libMesh::Elem * dummyElem = NULL;
-	libMesh::ElemType originalType;
 	counter = 0;
 
 	unsigned int originalNode = 0;
@@ -433,7 +432,6 @@ void Patch_construction::build_patch_mesh()
 	for( ; it_set != it_set_end ; ++it_set)
 	{
 		originalElem = m_Mesh.elem(*it_set);
-		originalType = originalElem->type();
 
 		if(originalElem->type() == libMesh::TET4)
 		{

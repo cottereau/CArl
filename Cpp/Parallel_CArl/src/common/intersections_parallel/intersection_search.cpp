@@ -74,14 +74,11 @@ namespace carl
 
 		m_perf_log.pop("Preamble","Brute force algorithm");
 
-		bool bCreateNewNefForA = true;
-
 		for(	it_patch_A =  Patch_Set_A.begin();
 				it_patch_A != Patch_Set_A.end();
 				++it_patch_A)
 		{
 			const libMesh::Elem * elem_A = m_Mesh_A.elem(*it_patch_A);
-			bCreateNewNefForA = true;
 
 			for(	it_patch_B =  Patch_Set_B.begin();
 					it_patch_B != Patch_Set_B.end();
@@ -96,8 +93,6 @@ namespace carl
 
 				if(bDoIntersect)
 				{
-					bCreateNewNefForA = false;
-
 					if(m_bSaveInterData)
 					{
 						m_Intersection_Pairs_multimap.insert(std::pair<unsigned int, unsigned int>(*it_patch_A,*it_patch_B));
@@ -316,8 +311,6 @@ namespace carl
 		int nbOfTests = 0;
 		int nbOfPositiveTests = 0;
 
-		bool bCreateNewNefForGuide = true;
-
 		bool bCreateNewNefForGuideNeigh = true;
 
 		m_perf_log.pop("Preamble","Advancing front algorithm");
@@ -344,8 +337,6 @@ namespace carl
 			// Pop out the first element from the probed intersection queue, and
 			// insert it inside the test queue
 			Patch_probed->FrontSearch_prepare_for_probed_test();
-
-			bCreateNewNefForGuide = true;
 
 			m_perf_log.pop("Set up new guide element","Advancing front algorithm");
 

@@ -31,7 +31,7 @@ template<typename T>
 void jump_lines(T& filestream, unsigned int numberOfLines = 1)
 {
 	std::string dummy;
-	for(int iii = 0; iii < numberOfLines; ++iii)
+	for(unsigned int iii = 0; iii < numberOfLines; ++iii)
 		std::getline(filestream,dummy);
 };
 
