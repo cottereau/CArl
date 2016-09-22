@@ -77,6 +77,11 @@ void carl::anisotropic_elasticity_tensor_cubic_sym::set_parameters(libMesh::Equa
 	}
 
 	m_Rotation_matrices.resize(m_nb_grains,libMesh::DenseMatrix<libMesh::Real>(3,3));
+	m_Elasticity_tensors.resize(m_nb_grains);
+	for(int iii = 0; iii < m_nb_grains; ++iii)
+	{
+		m_Elasticity_tensors[iii].set_dimension(3);
+	}
 
 	// Mesh pointer
 	const libMesh::MeshBase& mesh = es.get_mesh();
@@ -96,6 +101,9 @@ void carl::anisotropic_elasticity_tensor_cubic_sym::set_parameters(libMesh::Equa
 
 	// Calculate the rotation matrices
 	this->generate_rotation_matrices();
+
+	// And generate the elasticity tensors
+	this->generate_elasticity_tensors();
 
 	std::vector<libMesh::dof_id_type> physical_dof_indices_var;
 	libMesh::MeshBase::const_element_iterator       el     = mesh.active_local_elements_begin();
@@ -135,26 +143,86 @@ void  carl::anisotropic_elasticity_tensor_cubic_sym::generate_rotation_matrices(
 		s_theta = sin(theta); 	c_theta = cos(theta);
 		s_psi 	= sin(psi); 	c_psi 	= cos(psi);
 
-		m_Rotation_matrices[iii](0,0) =
-				c_theta * c_psi;
-		m_Rotation_matrices[iii](0,1) =
-				- c_phi * s_psi - s_phi * s_theta * c_psi;
-		m_Rotation_matrices[iii](0,2) =
-				s_phi * s_psi 	- c_phi * s_theta * c_psi;
+		m_Rotation_matrices[iii](0,0) =           c_theta;
+		m_Rotation_matrices[iii](0,1) =         - s_theta * c_psi;
+		m_Rotation_matrices[iii](0,2) =           s_theta * s_psi;
 
-		m_Rotation_matrices[iii](1,0) =
-				c_theta * s_psi;
-		m_Rotation_matrices[iii](1,1) =
-				c_phi * c_psi 	- s_phi * s_theta * s_psi;
-		m_Rotation_matrices[iii](1,2) =
-				- s_phi * c_psi - c_phi * s_theta * s_psi;
+		m_Rotation_matrices[iii](1,0) =   c_phi * s_theta;
+		m_Rotation_matrices[iii](1,1) =   c_phi * c_theta * c_psi
+				                        - s_phi           * s_psi;
+		m_Rotation_matrices[iii](1,2) = - s_phi           * c_psi
+				                        - c_phi * c_theta * s_psi;
 
-		m_Rotation_matrices[iii](2,0) =
-				- s_theta;
-		m_Rotation_matrices[iii](2,1) =
-				s_phi * c_theta;
-		m_Rotation_matrices[iii](2,2) =
-				c_phi * c_theta;
+		m_Rotation_matrices[iii](2,0) =   s_phi * s_theta;
+		m_Rotation_matrices[iii](2,1) =   c_phi           * s_psi
+				                        + s_phi * c_theta * c_psi;
+		m_Rotation_matrices[iii](2,2) =   c_phi           * c_psi
+				                        - s_phi * c_theta * s_psi;
+	}
+}
+
+void  carl::anisotropic_elasticity_tensor_cubic_sym::generate_elasticity_tensors()
+{
+	for(int nnn = 0; nnn < m_nb_grains; ++nnn)
+	{
+		libMesh::DenseMatrix<libMesh::Real>& R = m_Rotation_matrices[nnn];
+		Order4Tensor& C = 						 m_Elasticity_tensors[nnn];
+
+		// LOOOOOOPS!
+		/*
+		 * 		Things would be simpler with a order 4 tensor class and proper
+		 * 	contraction operations, but for now libMesh only has a order 2
+		 * 	tensor class (the order N one is a dummy class).
+		 */
+		std::cout << nnn << " (before) : " << std::endl;
+		for(unsigned int iii = 0; iii < 3; ++iii) {
+		for(unsigned int jjj = 0; jjj < 3; ++jjj) {
+		for(unsigned int kkk = 0; kkk < 3; ++kkk) {
+		for(unsigned int lll = 0; lll < 3; ++lll)
+		{
+			std::cout << C(iii,jjj,kkk,lll) << " ";
+		}
+		std::cout << std::endl;
+		}
+		std::cout << std::endl;
+		}
+		std::cout << std::endl;
+		}
+		std::cout << std::endl;
+
+
+
+		for(unsigned int iii = 0; iii < 3; ++iii)
+		for(unsigned int jjj = 0; jjj < 3; ++jjj)
+		for(unsigned int kkk = 0; kkk < 3; ++kkk)
+		for(unsigned int lll = 0; lll < 3; ++lll)
+		{
+			// Contraction indexes
+			for(unsigned int ppp = 0; ppp < 3; ++ppp)
+			for(unsigned int qqq = 0; qqq < 3; ++qqq)
+			for(unsigned int rrr = 0; rrr < 3; ++rrr)
+			for(unsigned int sss = 0; sss < 3; ++sss)
+			{
+				 C(iii,jjj,kkk,lll)+= R(iii,ppp) * R(jjj,qqq) * R(kkk,rrr) * R(lll,sss) *
+						this->eval_internal_elasticity_tensor(ppp,qqq,rrr,sss);
+			}
+		}
+
+		std::cout << nnn << " : " << std::endl;
+		for(unsigned int iii = 0; iii < 3; ++iii) {
+		for(unsigned int jjj = 0; jjj < 3; ++jjj) {
+		for(unsigned int kkk = 0; kkk < 3; ++kkk) {
+		for(unsigned int lll = 0; lll < 3; ++lll)
+		{
+			std::cout << C(iii,jjj,kkk,lll) << " ";
+		}
+		std::cout << std::endl;
+		}
+		std::cout << std::endl;
+		}
+		std::cout << std::endl;
+		}
+		std::cout << std::endl;
 	}
 }
 
@@ -188,31 +256,39 @@ libMesh::DenseMatrix<libMesh::Real>&  carl::anisotropic_elasticity_tensor_cubic_
 	return m_Rotation_matrices[m_domain_to_vec_map[idx_grain]];
 }
 
+carl::Order4Tensor&  carl::anisotropic_elasticity_tensor_cubic_sym::get_elasticity(int idx_grain)
+{
+	return m_Elasticity_tensors[m_domain_to_vec_map[idx_grain]];
+}
+
 libMesh::Real  carl::anisotropic_elasticity_tensor_cubic_sym::eval_elasticity_tensor(unsigned int i,
 						  unsigned int j,
 						  unsigned int k,
 						  unsigned int l,
 						  int idx_grain)
 {
-	double output = 0;
-	libMesh::DenseMatrix<libMesh::Real>& R = get_rotation(idx_grain);
+	Order4Tensor& C = get_elasticity(idx_grain);
 
-	for(unsigned int ppp = 0; ppp < 3; ++ppp)
-	{
-		for(unsigned int qqq = 0; qqq < 3; ++qqq)
-		{
-			for(unsigned int rrr = 0; rrr < 3; ++rrr)
-			{
-				for(unsigned int sss = 0; sss < 3; ++sss)
-				{
-					output += R(i,ppp) * R(j,qqq) * R(k,rrr) * R(l,sss) *
-							this->eval_internal_elasticity_tensor(ppp,qqq,rrr,sss);
-				}
-			}
-		}
-	}
+//	double output = 0;
+//	libMesh::DenseMatrix<libMesh::Real>& R = get_rotation(idx_grain);
+//
+//	for(unsigned int ppp = 0; ppp < 3; ++ppp)
+//	{
+//		for(unsigned int qqq = 0; qqq < 3; ++qqq)
+//		{
+//			for(unsigned int rrr = 0; rrr < 3; ++rrr)
+//			{
+//				for(unsigned int sss = 0; sss < 3; ++sss)
+//				{
+//					output += R(i,ppp) * R(j,qqq) * R(k,rrr) * R(l,sss) *
+//							this->eval_internal_elasticity_tensor(ppp,qqq,rrr,sss);
+//				}
+//			}
+//		}
+//	}
+//	return output;
 
-	return output;
+	return C(i,j,k,l);
 }
 
 

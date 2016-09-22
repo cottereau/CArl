@@ -35,6 +35,8 @@ void jump_lines(T& filestream, unsigned int numberOfLines = 1)
 		std::getline(filestream,dummy);
 };
 
+int voigt_index_converter(int aaa, int bbb);
+
 struct IntersectionData
 {
 	int InterMeshIdx;

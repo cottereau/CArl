@@ -26,3 +26,36 @@ void clear_line()
 {
 	std::cout << '\r' << "                                                                               " << "\r";
 };
+
+int carl::voigt_index_converter(int aaa, int bbb)
+{
+	if(aaa == bbb)
+	{
+		// 00 -> 0, 11 -> 1, 22 -> 2
+		return aaa;
+	}
+	else
+	{
+		// 12, 21 -> 3
+		// 02, 20 -> 4
+		// 01, 10 -> 5
+		int sum = aaa + bbb;
+
+		if(sum == 3)
+		{
+			return 3;
+		}
+		else if(sum == 2)
+		{
+			return 4;
+		}
+		else if(sum == 1)
+		{
+			return 5;
+		}
+	}
+
+	std::cerr << "Bad indexes! " << aaa << " " << bbb << std::endl;
+	homemade_error_msg(" You shouldn't be here! (voigt_index_converter)");
+	return -1;
+};
