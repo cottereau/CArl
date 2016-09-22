@@ -679,45 +679,45 @@ int main(int argc, char** argv) {
 	set_constant_physical_properties(equation_systems_BIG,BIG_E,BIG_Mu);
 
 //	std::cout   << anisotropy_data.m_c11 << " " << anisotropy_data.m_c12 << " " << anisotropy_data.m_c44 << std::endl;
-	std::cout 	<< anisotropy_data.eval_internal_elasticity_tensor(0,0,0,0) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(0,0,1,1) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(0,0,2,2) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(0,0,1,2) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(0,0,0,1) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(0,0,0,2) << std::endl;
-	std::cout 	<< "    "
-				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,1,1) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,2,2) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,1,2) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,0,1) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,0,2) << std::endl;
-	std::cout 	<< "        "
-				<< anisotropy_data.eval_internal_elasticity_tensor(2,2,2,2) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(2,2,1,2) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(2,2,0,1) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(2,2,0,2) << std::endl;
-	std::cout 	<< "            "
-				<< anisotropy_data.eval_internal_elasticity_tensor(1,2,1,2) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(1,2,0,1) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(1,2,0,2) << std::endl;
-	std::cout 	<< "                "
-				<< anisotropy_data.eval_internal_elasticity_tensor(0,1,0,1) << " "
-				<< anisotropy_data.eval_internal_elasticity_tensor(0,1,0,2) << std::endl;
-	std::cout 	<< "                    "
-				<< anisotropy_data.eval_internal_elasticity_tensor(0,2,0,2) << std::endl << std::endl;
+//	std::cout 	<< anisotropy_data.eval_internal_elasticity_tensor(0,0,0,0) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,0,1,1) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,0,2,2) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,0,1,2) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,0,0,1) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,0,0,2) << std::endl;
+//	std::cout 	<< "    "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,1,1) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,2,2) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,1,2) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,0,1) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,0,2) << std::endl;
+//	std::cout 	<< "        "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(2,2,2,2) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(2,2,1,2) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(2,2,0,1) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(2,2,0,2) << std::endl;
+//	std::cout 	<< "            "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(1,2,1,2) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(1,2,0,1) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(1,2,0,2) << std::endl;
+//	std::cout 	<< "                "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,1,0,1) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,1,0,2) << std::endl;
+//	std::cout 	<< "                    "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,2,0,2) << std::endl << std::endl;
 
-	for(int iii = 1; iii < 6; ++iii)
-	{
-		std::cout 	<< anisotropy_data.get_rotation(iii)(0,0) << " "
-					<< anisotropy_data.get_rotation(iii)(0,1) << " "
-					<< anisotropy_data.get_rotation(iii)(0,2) << std::endl;
-		std::cout 	<< anisotropy_data.get_rotation(iii)(1,0) << " "
-					<< anisotropy_data.get_rotation(iii)(1,1) << " "
-					<< anisotropy_data.get_rotation(iii)(1,2) << std::endl;
-		std::cout 	<< anisotropy_data.get_rotation(iii)(2,0) << " "
-					<< anisotropy_data.get_rotation(iii)(2,1) << " "
-					<< anisotropy_data.get_rotation(iii)(2,2) << std::endl << std::endl;
-	}
+//	for(int iii = 1; iii < 6; ++iii)
+//	{
+//		std::cout 	<< anisotropy_data.get_rotation(iii)(0,0) << " "
+//					<< anisotropy_data.get_rotation(iii)(0,1) << " "
+//					<< anisotropy_data.get_rotation(iii)(0,2) << std::endl;
+//		std::cout 	<< anisotropy_data.get_rotation(iii)(1,0) << " "
+//					<< anisotropy_data.get_rotation(iii)(1,1) << " "
+//					<< anisotropy_data.get_rotation(iii)(1,2) << std::endl;
+//		std::cout 	<< anisotropy_data.get_rotation(iii)(2,0) << " "
+//					<< anisotropy_data.get_rotation(iii)(2,1) << " "
+//					<< anisotropy_data.get_rotation(iii)(2,2) << std::endl << std::endl;
+//	}
 
 	perf_log.pop("Physical properties","System initialization:");
 
