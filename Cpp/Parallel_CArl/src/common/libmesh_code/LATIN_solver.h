@@ -56,8 +56,8 @@ protected:
 	libMesh::PetscVector<libMesh::Number> * m_F_B;
 
 	// Solution
-	libMesh::NumericVector<libMesh::Number> * m_sol_A;
-	libMesh::NumericVector<libMesh::Number> * m_sol_B;
+	libMesh::PetscVector<libMesh::Number> * m_sol_A;
+	libMesh::PetscVector<libMesh::Number> * m_sol_B;
 
 	// Constants
 	double m_k_dA;
@@ -89,9 +89,23 @@ protected:
 	bool m_bDeallocateNonlinear;
 	bool m_bSolved;
 
+	// Restart parameters
+	bool m_bUseRestart;
+	bool m_bPrintRestart;
+
+	std::string m_conv_filename;
+	std::string m_phi_A_filename;
+	std::string m_phi_B_filename;
+	std::string m_sol_A_filename;
+	std::string m_sol_B_filename;
+
 	// System_names
 	std::string m_ksp_name_A;
 	std::string m_ksp_name_B;
+
+	std::vector<std::string>   ksp_solver_table;
+
+
 
 private:
 	PETSC_LATIN_solver();
@@ -143,16 +157,20 @@ public:
 							m_bDeallocateMatrices { false },
 							m_bDeallocateNonlinear { false },
 							m_bSolved {false},
+							m_bUseRestart {false},
 
 							m_ksp_name_A { "macro_sys" },
 							m_ksp_name_B { "micro_sys" }
 	{
 		m_LATIN_Index.resize(m_LATIN_conv_max_n);
 
-                m_invC_RR_vec = new libMesh::PetscVector<libMesh::Number>(comm);
+		m_invC_RR_vec = new libMesh::PetscVector<libMesh::Number>(comm);
 
-                m_sol_A = new libMesh::PetscVector<libMesh::Number>(comm);
-                m_sol_B = new libMesh::PetscVector<libMesh::Number>(comm);
+		m_sol_A = new libMesh::PetscVector<libMesh::Number>(comm);
+		m_sol_B = new libMesh::PetscVector<libMesh::Number>(comm);
+		ksp_solver_table = {"CG","CGN","CGS","CR","QMR","TCQMR","TFQMR",
+				   "BICG","BICGSTAB","MINRES","GMRES","LSQR","JACOBI","SOR_FORWARD",
+				   "SOR_BACKWARD","SSOR","RICHARDSON","CHEBYSHEV","SPARSELU","INVALID_SOLVER"};
 	};
 
 	PETSC_LATIN_solver(double i_k_dA, double i_k_dB, double i_k_cA, double i_k_cB, const libMesh::Parallel::Communicator& comm )  :
@@ -204,16 +222,21 @@ public:
 			m_bCheckDimensions { false },
 			m_bDeallocateMatrices { false },
 			m_bSolved {false},
+			m_bUseRestart {false},
 
 			m_ksp_name_A { "macro_sys_" },
 			m_ksp_name_B { "micro_sys_" }
 	{
 		m_LATIN_Index.resize(m_LATIN_conv_max_n);
 
-                m_invC_RR_vec = new libMesh::PetscVector<libMesh::Number>(comm);
+		m_invC_RR_vec = new libMesh::PetscVector<libMesh::Number>(comm);
 
 		m_sol_A = new libMesh::PetscVector<libMesh::Number>(comm);
 		m_sol_B = new libMesh::PetscVector<libMesh::Number>(comm);
+
+		ksp_solver_table = {"CG","CGN","CGS","CR","QMR","TCQMR","TFQMR",
+				   "BICG","BICGSTAB","MINRES","GMRES","LSQR","JACOBI","SOR_FORWARD",
+				   "SOR_BACKWARD","SSOR","RICHARDSON","CHEBYSHEV","SPARSELU","INVALID_SOLVER"};
 	};
 
 	// Destructor
@@ -255,6 +278,10 @@ public:
 	void set_params(double i_k_dA, double i_k_dB, double i_k_cA, double i_k_cB);
 
 	void set_sys_names(const std::string& name_A, const std::string& name_B);
+
+	void set_restart( 	bool bUseRestart,
+						bool bPrintRestart,
+						const std::string& restart_base_filename);
 
 	void set_matrices(	libMesh::PetscMatrix<libMesh::Number>& M_A,
 							libMesh::PetscMatrix<libMesh::Number>& M_B,

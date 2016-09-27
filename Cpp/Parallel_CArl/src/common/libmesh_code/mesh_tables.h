@@ -192,6 +192,13 @@ void set_global_mediator_system_intersection_lists(
 
 		std::unordered_multimap<int,int>& inter_mediator_A,
 		std::unordered_multimap<int,int>& inter_mediator_B);
+
+void repartition_system_meshes(
+		const libMesh::Parallel::Communicator& WorldComm,
+		libMesh::Mesh& mesh_input,
+		libMesh::Mesh& mesh_intersect,
+		std::unordered_map<int,std::pair<int,int> >& local_intersection_pairs_map,
+		bool bUseSecond = true);
 };
 
 

@@ -56,6 +56,9 @@ struct carl_coupling_generation_input_params {
 	bool b_UseMesh_BIG_AsMediator;
 	bool b_UseMesh_micro_AsMediator;
 	bool b_UseMesh_extra_AsMediator;
+	bool b_Repartition_micro;
+	bool LATIN_b_UseRestartFiles;
+	bool LATIN_b_PrintRestartFiles;
 
 	double mean_distance;
 
@@ -69,6 +72,7 @@ struct carl_coupling_generation_input_params {
 	double LATIN_relax;
 
 	std::string LATIN_convergence_output;
+	std::string LATIN_restart_file_base;
 
 	std::string output_file_BIG;
 	std::string output_file_micro;
@@ -158,6 +162,7 @@ void get_input_params(GetPot& field_parser,
 	input_params.b_UseMesh_BIG_AsMediator = false;
 	input_params.b_UseMesh_micro_AsMediator = false;
 	input_params.b_UseMesh_extra_AsMediator = false;
+	input_params.b_Repartition_micro = false;
 	if (field_parser.search(1,"Use_A_AsMediator"))
 	{
 		input_params.b_UseMesh_BIG_AsMediator = true;
@@ -175,6 +180,10 @@ void get_input_params(GetPot& field_parser,
 			+ input_params.b_UseMesh_extra_AsMediator > 1)
 	{
 		homemade_error_msg("Choose only one mesh as mediator!");
+	}
+	if (field_parser.search(1,"Repartition_Micro"))
+	{
+		input_params.b_Repartition_micro = true;
 	}
 
 	if(input_params.b_UseMesh_BIG_AsMediator)
@@ -269,11 +278,14 @@ void get_input_params(GetPot& field_parser,
 	}
 
 	// Set LATIN parameters
+	input_params.LATIN_b_UseRestartFiles = false;
+	input_params.LATIN_b_PrintRestartFiles = false;
 	input_params.LATIN_eps = 1E-2;
 	input_params.LATIN_conv_max = 10000;
 	input_params.LATIN_relax = 0.8;
 
 	input_params.LATIN_convergence_output = "LATIN_convergence.dat";
+	input_params.LATIN_restart_file_base = "LATIN_restart";
 
 	if( field_parser.search(2, "--LATINeps","LATINEps") )
 	{
@@ -295,6 +307,20 @@ void get_input_params(GetPot& field_parser,
 		input_params.LATIN_convergence_output = field_parser.next(input_params.LATIN_convergence_output);
 	}
 
+	if( field_parser.search(1,"Use_restart_data") )
+	{
+		input_params.LATIN_b_UseRestartFiles = true;
+	}
+	if( field_parser.search(1,"Save_restart_data") )
+	{
+		input_params.LATIN_b_PrintRestartFiles = true;
+	}
+
+	if( field_parser.search(1,"LATINRestartDataFiles") )
+	{
+		input_params.LATIN_restart_file_base = field_parser.next(input_params.LATIN_restart_file_base);
+	}
+
 	// Set output files
 	input_params.output_file_BIG = "meshes/3D/output/carl_multi_crystal_test_micro.exo";
 	input_params.output_file_micro = "meshes/3D/output/carl_multi_crystal_test_macro.exo";
@@ -306,7 +332,6 @@ void get_input_params(GetPot& field_parser,
 	{
 		input_params.output_file_micro = field_parser.next(input_params.output_file_micro);
 	}
-
 }
 ;
 
@@ -535,6 +560,9 @@ int main(int argc, char** argv) {
 	std::unordered_multimap<int,int> inter_mediator_BIG;
 	std::unordered_multimap<int,int> inter_mediator_micro;
 
+	if(input_params.b_Repartition_micro)
+		carl::repartition_system_meshes(WorldComm,mesh_micro,mesh_BIG,local_intersection_pairs_map);
+
 	carl::set_global_mediator_system_intersection_lists(
 			WorldComm,
 			global_inter_table_filename,
@@ -561,7 +589,6 @@ int main(int argc, char** argv) {
 	WorldComm.barrier();
 
 	perf_log.pop("Weight function domain","Read files:");
-
 
 	// - Generate the equation systems -----------------------------------------
 	perf_log.push("Initialization","System initialization:");
@@ -710,13 +737,17 @@ int main(int argc, char** argv) {
 	std::cout << "|    k_cA, k_cB   : " << input_params.k_cA << " " << input_params.k_cB << std::endl;
 	std::cout << "|    kappa        : " << coupling_const << std::endl;
 	std::cout << "|    e            : " << input_params.mean_distance << std::endl;
-
-//	CoupledTest.print_matrix_micro_info("MicroSys");
-//	CoupledTest.print_matrix_BIG_info("MicroSys");
-//	CoupledTest.print_matrix_mediator_info("MicroSys");
+	std::cout << "|    restart file : " << input_params.LATIN_restart_file_base << "*" << std::endl;
 
 	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
 	perf_log.push("Set up","LATIN Solver:");
+	if(input_params.LATIN_b_PrintRestartFiles || input_params.LATIN_b_UseRestartFiles)
+	{
+		CoupledTest.set_LATIN_restart(	input_params.LATIN_b_UseRestartFiles,
+				input_params.LATIN_b_PrintRestartFiles,
+				input_params.LATIN_restart_file_base);
+	}
+
 	CoupledTest.set_LATIN_solver(	"MicroSys","Elasticity",
 									assemble_elasticity_with_weight,
 									assemble_elasticity_heterogeneous_with_weight,

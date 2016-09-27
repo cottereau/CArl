@@ -55,6 +55,9 @@ struct carl_coupling_generation_input_params {
 	bool b_UseMesh_micro_AsMediator;
 	bool b_UseMesh_extra_AsMediator;
 
+	bool LATIN_b_UseRestartFiles;
+	bool LATIN_b_PrintRestartFiles;
+
 	double mean_distance;
 
 	double k_dA;
@@ -67,6 +70,7 @@ struct carl_coupling_generation_input_params {
 	double LATIN_relax;
 
 	std::string LATIN_convergence_output;
+	std::string LATIN_restart_file_base;
 
 	std::string output_file_BIG;
 	std::string output_file_micro;
@@ -272,6 +276,7 @@ void get_input_params(GetPot& field_parser,
 	input_params.LATIN_relax = 0.8;
 
 	input_params.LATIN_convergence_output = "LATIN_convergence.dat";
+	input_params.LATIN_restart_file_base = "LATIN_restart";
 
 	if( field_parser.search(2, "--LATINeps","LATINEps") )
 	{
@@ -291,6 +296,20 @@ void get_input_params(GetPot& field_parser,
 	if( field_parser.search(2, "--LATINconvOutput","LATINConvergneceOutput") )
 	{
 		input_params.LATIN_convergence_output = field_parser.next(input_params.LATIN_convergence_output);
+	}
+
+	if( field_parser.search(1,"Use_restart_data") )
+	{
+		input_params.LATIN_b_UseRestartFiles = true;
+	}
+	if( field_parser.search(1,"Save_restart_data") )
+	{
+		input_params.LATIN_b_PrintRestartFiles = true;
+	}
+
+	if( field_parser.search(1,"LATINRestartDataFiles") )
+	{
+		input_params.LATIN_restart_file_base = field_parser.next(input_params.LATIN_restart_file_base);
 	}
 
 	// Set output files
@@ -747,13 +766,17 @@ int main(int argc, char** argv) {
 	std::cout << "|    k_cA, k_cB   : " << input_params.k_cA << " " << input_params.k_cB << std::endl;
 	std::cout << "|    kappa        : " << coupling_const << std::endl;
 	std::cout << "|    e            : " << input_params.mean_distance << std::endl;
-
-//	CoupledTest.print_matrix_micro_info("MicroSys");
-//	CoupledTest.print_matrix_BIG_info("MicroSys");
-//	CoupledTest.print_matrix_mediator_info("MicroSys");
+	std::cout << "|    restart file : " << input_params.LATIN_restart_file_base << "*" << std::endl;
 
 	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
 	perf_log.push("Set up","LATIN Solver:");
+	if(input_params.LATIN_b_PrintRestartFiles || input_params.LATIN_b_UseRestartFiles)
+	{
+		CoupledTest.set_LATIN_restart(	input_params.LATIN_b_UseRestartFiles,
+				input_params.LATIN_b_PrintRestartFiles,
+				input_params.LATIN_restart_file_base);
+	}
+
 	CoupledTest.set_LATIN_solver(	"MicroSys","Elasticity",
 									assemble_elasticity_with_weight,
 									assemble_elasticity_anisotropic_with_weight,

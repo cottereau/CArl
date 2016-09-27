@@ -166,11 +166,14 @@ void carl::print_matrix_dim(libMesh::PetscMatrix<libMesh::Number>& CouplingTestM
 	MatInfo temp_info;
 	MatGetInfo(CouplingTestMatrix.mat(),MAT_LOCAL,&temp_info);
 	std::cout << "| LOCAL  : memory = " << temp_info.memory << std::endl;
-	std::cout << "|         non-zeros used = " << (100.*temp_info.nz_used)/temp_info.nz_allocated << " % " << std::endl;
+	std::cout << "|          non-zeros used = " << (100.*temp_info.nz_used)/temp_info.nz_allocated << " % " << std::endl;
 
 	MatGetInfo(CouplingTestMatrix.mat(),MAT_GLOBAL_SUM,&temp_info);
 	std::cout << "| GLOBAL : memory = " << temp_info.memory << std::endl;
 	std::cout << "|          non-zeros used = " << (100.*temp_info.nz_used)/temp_info.nz_allocated << " % " << std::endl;
+	std::cout << "|          total nb. of non-zeros used = " << temp_info.nz_used << std::endl;
+	std::cout << "|          total nb. of non-zeros allocated = " << temp_info.nz_allocated << std::endl;
+	std::cout << "|          sparsity = " << (100.*temp_info.nz_used)/(CouplingTestMatrix.m() * CouplingTestMatrix.n()) << " % " << std::endl;
 
 	MatGetInfo(CouplingTestMatrix.mat(),MAT_GLOBAL_MAX,&temp_info);
 	std::cout << "| MAX    : memory = " << temp_info.memory << std::endl;
@@ -225,6 +228,28 @@ void carl::check_coupling_matrix(	libMesh::PetscMatrix<libMesh::Number>& Couplin
 	std::cout << "|    Sum( M_i,j )   = " << accumulator << std::endl;
 	std::cout << "|    n * C * Volume = " << n_var*CouplingScale*vol << std::endl;
 	std::cout << "| >  Difference     = " << difference << std::endl << std::endl;
+}
 
+void carl::write_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
+		const std::string& filename)
+{
+	const libMesh::Parallel::Communicator& WorldComm = input_vec.comm();
 
+	PetscViewer    viewer;
+	PetscViewerBinaryOpen(WorldComm.get(),filename.c_str(),FILE_MODE_WRITE,&viewer);
+	VecView(input_vec.vec(),viewer);
+
+	PetscViewerDestroy(&viewer);
+}
+
+void carl::read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
+		const std::string& filename)
+{
+	const libMesh::Parallel::Communicator& WorldComm = input_vec.comm();
+
+	PetscViewer    viewer;
+	PetscViewerBinaryOpen(WorldComm.get(),filename.c_str(),FILE_MODE_READ,&viewer);
+	VecLoad(input_vec.vec(),viewer);
+
+	PetscViewerDestroy(&viewer);
 }

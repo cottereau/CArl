@@ -749,3 +749,74 @@ void carl::set_global_mediator_system_intersection_lists(
 		inter_mediator_A.emplace(std::make_pair(iii, system_idx));
 	}
 };
+
+void carl::repartition_system_meshes(
+		const libMesh::Parallel::Communicator& WorldComm,
+		libMesh::Mesh& mesh_input,
+		libMesh::Mesh& mesh_intersect,
+		std::unordered_map<int,std::pair<int,int> >& local_intersection_pairs_map,
+		bool bUseSecond)
+{
+	std::vector<double> mesh_input_weights;
+	mesh_input_weights.resize(mesh_input.n_elem(),0);
+
+	// Nb. of intersections associated to each elem of mesh_intersect
+	std::vector<int>	inter_per_elem(mesh_intersect.n_elem());
+
+	std::unordered_map<int,std::pair<int,int> >::const_iterator inter_pairsIt =
+			local_intersection_pairs_map.begin();
+	const std::unordered_map<int,std::pair<int,int> >::const_iterator end_inter_pairsIt =
+			local_intersection_pairs_map.end();
+	for( ; inter_pairsIt != end_inter_pairsIt; ++inter_pairsIt)
+	{
+		const std::pair<int,int>& dummy_pair = inter_pairsIt->second;
+
+		if(bUseSecond)
+		{
+			++inter_per_elem[dummy_pair.first];
+		}
+		else
+		{
+			++inter_per_elem[dummy_pair.second];
+		}
+	}
+
+	inter_pairsIt = local_intersection_pairs_map.begin();
+	for( ; inter_pairsIt != end_inter_pairsIt; ++inter_pairsIt)
+	{
+		const std::pair<int,int>& dummy_pair = inter_pairsIt->second;
+
+		if(bUseSecond)
+		{
+			mesh_input_weights[dummy_pair.second] += inter_per_elem[dummy_pair.first];
+		}
+		else
+		{
+			mesh_input_weights[dummy_pair.first] += inter_per_elem[dummy_pair.second];
+		}
+	}
+
+	WorldComm.sum(mesh_input_weights);
+
+	// Basic partitioning
+	libMesh::MeshBase::const_element_iterator			mesh_inputIt =
+			mesh_input.elements_begin();
+	const libMesh::MeshBase::const_element_iterator		end_mesh_inputIt =
+			mesh_input.elements_end();
+	for( ; mesh_inputIt != end_mesh_inputIt; ++mesh_inputIt )
+	{
+		const libMesh::Elem* elem_input = *mesh_inputIt;
+		int idxinput = elem_input->id();
+
+		mesh_input_weights[idxinput] += elem_input->n_nodes();
+	}
+
+	libMesh::ErrorVector dummy_input_error(mesh_input.n_elem());
+	for(unsigned int iii = 0; iii < mesh_input.n_elem(); ++iii)
+		dummy_input_error[iii] = mesh_input_weights[iii];
+
+	libMesh::Partitioner * dummy_partitioner_input = mesh_input.partitioner().get();
+	dummy_partitioner_input->attach_weights(&dummy_input_error);
+	mesh_input.partition();
+};
+

@@ -12,6 +12,8 @@
 #include "common_header_libmesh.h"
 #include "common_functions.h"
 
+#include <petscviewerhdf5.h>
+
 namespace carl
 {
 
@@ -43,6 +45,11 @@ void check_coupling_matrix( libMesh::PetscMatrix<libMesh::Number>& CouplingTestM
 		const std::string matrixtype,
 		int n_var = 3);
 
+void write_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
+										const std::string& filename);
+
+void read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
+										const std::string& filename);
 
 }
 

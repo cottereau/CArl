@@ -276,6 +276,13 @@ void carl::coupled_system::print_matrix_micro_info(const std::string& name)
 	print_matrix(CouplingTestMatrix);
 }
 
+void carl::coupled_system::set_LATIN_restart( bool bUseRestart,
+												bool bPrintRestart,
+												const std::string restart_base_filename)
+{
+	m_LATIN_solver.set_restart(bUseRestart,bPrintRestart,restart_base_filename);
+};
+
 void carl::coupled_system::set_LATIN_solver(const std::string micro_name,
 		const std::string type_name, double k_dA, double k_dB, double k_cA, double k_cB,
 		double eps, int convIter, double relax)

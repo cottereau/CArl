@@ -25,6 +25,22 @@ void carl::PETSC_LATIN_solver::set_sys_names(const std::string& name_A, const st
 	m_ksp_name_B = name_B + "_";
 };
 
+void carl::PETSC_LATIN_solver::set_restart( 	bool bUseRestart,
+												bool bPrintRestart,
+												const std::string& restart_base_filename)
+{
+	m_bUseRestart = bUseRestart;
+	m_bPrintRestart = bPrintRestart;
+	if(m_bUseRestart || m_bPrintRestart)
+	{
+		m_conv_filename 	= restart_base_filename + "_conv.dat";
+		m_phi_A_filename 	= restart_base_filename + "_phi_A.dat";
+		m_phi_B_filename 	= restart_base_filename + "_phi_B.dat";
+		m_sol_A_filename 	= restart_base_filename + "_sol_A.dat";
+		m_sol_B_filename 	= restart_base_filename + "_sol_B.dat";
+	}
+}
+
 void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Number>& M_A,
 					libMesh::PetscMatrix<libMesh::Number>& M_B,
 					libMesh::PetscMatrix<libMesh::Number>& C_RA,
@@ -107,6 +123,12 @@ void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Numbe
 	m_H_A = new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_H_A, *m_comm);
 	m_H_B = new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_H_B, *m_comm);
 	perf_log.pop("Build","H_I");
+
+	std::cout << "| K_A " << std::endl;
+	print_matrix_dim(*m_M_A);
+
+	std::cout << "| K_B " << std::endl;
+	print_matrix_dim(*m_M_B);
 
 	std::cout << "| H_A " << std::endl;
 	print_matrix_dim(*m_H_A);
@@ -271,8 +293,11 @@ void carl::PETSC_LATIN_solver::solve()
 {
 	libMesh::PerfLog perf_log("Solve",MASTER_bPerfLog_LATIN_solver_solve);
 
+	int rank = m_comm->rank();
+
 	std::cout << "| LATIN solver: " << std::endl;
 	std::cout << "|     Initialization ..." << std::endl; std::cout.flush();
+	std::cout << "|        eps = " << m_LATIN_conv_eps << ", max. iter. = " << m_LATIN_conv_max_n << std::endl;
 
 	// -> Test if the parameters are set up
 	homemade_assert_msg( m_bParamsSetUp , "   solve : LATIN parameters not set up!");
@@ -305,12 +330,28 @@ void carl::PETSC_LATIN_solver::solve()
 	double iter_eps = 1 + m_LATIN_conv_eps;
 	int    iter_nb = 0;
 
+	if(m_bUseRestart)
+	{
+		if(rank == 0)
+		{
+			std::ifstream param_data(m_conv_filename);
+			param_data >> iter_nb >> iter_eps;
+			param_data.close();
+		}
+
+		m_comm->broadcast(iter_nb);
+		m_comm->broadcast(iter_eps);
+	}
+
 	double norm_diff = 0;
 	double norm_sum = 0;
 
 	perf_log.push("Vector declarations","Initialization");
 	m_sol_A->init(dim_A,dim_A_local);
 	m_sol_B->init(dim_B,dim_B_local);
+
+	PetscObjectSetName((PetscObject)m_sol_A->vec(),"sol_A");
+	PetscObjectSetName((PetscObject)m_sol_B->vec(),"sol_B");
 
 	// Temporary solutions
 	libMesh::PetscVector<libMesh::Number> w_A(*m_comm, dim_R, dim_R_local);
@@ -345,6 +386,9 @@ void carl::PETSC_LATIN_solver::solve()
 	phi_dA.zero();
 	phi_dB.zero();
 
+	PetscObjectSetName((PetscObject)phi_dA.vec(),"phi_dA");
+	PetscObjectSetName((PetscObject)phi_dB.vec(),"phi_dB");
+
 	libMesh::PetscVector<libMesh::Number> phi_diff_A(*m_comm, dim_R, dim_R_local);
 	libMesh::PetscVector<libMesh::Number> phi_diff_B(*m_comm, dim_R, dim_R_local);
 	phi_diff_A.zero();
@@ -366,29 +410,48 @@ void carl::PETSC_LATIN_solver::solve()
 
 	KSP_Solver_H_A.init(m_H_A, m_ksp_name_A.c_str());
 	KSP_Solver_H_B.init(m_H_B, m_ksp_name_B.c_str());
+
+	std::cout 	<< "|        Solver types : " <<  ksp_solver_table[KSP_Solver_H_A.solver_type()] << " "
+				<< ksp_solver_table[KSP_Solver_H_B.solver_type()] << std::endl;
+	std::cout   << "|" << std::endl;
 	perf_log.pop("KSP solvers setup","Initialization");
 
 	// -> Initialize the vectors
 	// u_0,I = H_I^-1 * F_I (KSP SOLVER!)
-
-	perf_log.push("KSP solver - A","Initialization");
-	KSP_Solver_H_A.solve ( *m_H_A, *m_sol_A, *m_F_A, m_KSP_A_eps, m_KSP_A_iter_max);
-	perf_log.pop("KSP solver - A","Initialization");
-	perf_log.push("KSP solver - B","Initialization");
-	KSP_Solver_H_B.solve ( *m_H_B, *m_sol_B, *m_F_B, m_KSP_B_eps, m_KSP_B_iter_max);
-	perf_log.pop("KSP solver - B","Initialization");
+	if(!m_bUseRestart)
+	{
+		perf_log.push("KSP solver - A","Initialization");
+		KSP_Solver_H_A.solve ( *m_H_A, *m_sol_A, *m_F_A, m_KSP_A_eps, m_KSP_A_iter_max);
+		perf_log.pop("KSP solver - A","Initialization");
+		perf_log.push("KSP solver - B","Initialization");
+		KSP_Solver_H_B.solve ( *m_H_B, *m_sol_B, *m_F_B, m_KSP_B_eps, m_KSP_B_iter_max);
+		perf_log.pop("KSP solver - B","Initialization");
+	}
+	else
+	{
+		read_PETSC_vector(*m_sol_A,m_sol_A_filename);
+		read_PETSC_vector(*m_sol_B,m_sol_B_filename);
+	}
 
 	// w_0,I = P_I * u_0,I
 	m_P_A->vector_mult(w_A,*m_sol_A);
 	m_P_B->vector_mult(w_B,*m_sol_B);
 
 	// phi_d0,I = - k_dI * w_0,I
-	phi_dA.add(-m_k_dA,w_A);
-	phi_dB.add(-m_k_dB,w_B);
+	if(!m_bUseRestart)
+	{
+		phi_dA.add(-m_k_dA,w_A);
+		phi_dB.add(-m_k_dB,w_B);
+	}
+	else
+	{
+		read_PETSC_vector(phi_dA  ,m_phi_A_filename);
+		read_PETSC_vector(phi_dB  ,m_phi_B_filename);
+	}
 
+	libMesh::PerfData timing_data;
 	while (iter_eps > m_LATIN_conv_eps && iter_nb < m_LATIN_conv_max_n)
 	{
-//		clear_line();
 		std::cout << "|     Iter no. " << iter_nb << " " << iter_eps << std::endl; std::cout.flush();
 		// -> Coupled step
 		perf_log.push("Coupled iterations");
@@ -444,9 +507,13 @@ void carl::PETSC_LATIN_solver::solve()
 		perf_log.push("KSP solver - A","Decoupled - iterations");
 		KSP_Solver_H_A.solve ( *m_H_A, u_A, f_eff_A, m_KSP_A_eps, m_KSP_A_iter_max);
 		perf_log.pop("KSP solver - A","Decoupled - iterations");
+		timing_data = perf_log.get_perf_data("KSP solver - A","Decoupled - iterations");
+		std::cout << "|        Solver A time : " << timing_data.tot_time/(iter_nb + 1) << std::endl;
 		perf_log.push("KSP solver - B","Decoupled - iterations");
 		KSP_Solver_H_B.solve ( *m_H_B, u_B, f_eff_B, m_KSP_B_eps, m_KSP_B_iter_max);
-		perf_log.pop("KSP solver - A","Decoupled - iterations");
+		perf_log.pop("KSP solver - B","Decoupled - iterations");
+		timing_data = perf_log.get_perf_data("KSP solver - B","Decoupled - iterations");
+		std::cout << "|        Solver B time : " << timing_data.tot_time/(iter_nb + 1) << std::endl;
 
 		// w_i,I = P_I * u_i,I
 		perf_log.push("Projection","Decoupled - iterations");
@@ -494,10 +561,26 @@ void carl::PETSC_LATIN_solver::solve()
 		iter_eps = 2*norm_diff / norm_sum;
 		m_LATIN_Index[iter_nb] = iter_eps;
 		++iter_nb;
-	}
 
+		if(m_bPrintRestart)
+		{
+			std::cout << "|        Writing to files " << m_phi_A_filename << ", etc ..." << std::endl;
+			write_PETSC_vector(phi_dA  ,m_phi_A_filename);
+			write_PETSC_vector(phi_dB  ,m_phi_B_filename);
+			write_PETSC_vector(*m_sol_A,m_sol_A_filename);
+			write_PETSC_vector(*m_sol_B,m_sol_B_filename);
+
+			if(rank == 0)
+			{
+				std::ofstream param_data(m_conv_filename);
+				param_data << iter_nb << " " << iter_eps << std::endl;
+				param_data.close();
+			}
+		}
+		std::cout << "|" << std::endl;
+	}
 	m_LATIN_conv_n = iter_nb;
-//	clear_line();
+
 	std::cout << "|     nb. of iterations : " << iter_nb;
 	if(iter_nb == m_LATIN_conv_max_n)
 	{
@@ -680,7 +763,7 @@ void carl::PETSC_LATIN_solver::solve_nonlinear(libMesh::EquationSystems& EqSys_m
 	      << std::endl << std::endl;
 	}
 
-	m_sol_B = Sys_micro.solution.get();
+	m_sol_B = libMesh::cast_ptr<libMesh::PetscVector<libMesh::Number> *>(Sys_micro.solution.get());
 
 	// w_0,I = P_I * u_0,I
 	m_P_A->vector_mult(w_A,*m_sol_A);
