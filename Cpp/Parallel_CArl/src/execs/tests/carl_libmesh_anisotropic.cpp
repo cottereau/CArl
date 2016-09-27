@@ -271,6 +271,8 @@ void get_input_params(GetPot& field_parser,
 	}
 
 	// Set LATIN parameters
+	input_params.LATIN_b_UseRestartFiles = false;
+	input_params.LATIN_b_PrintRestartFiles = false;
 	input_params.LATIN_eps = 1E-2;
 	input_params.LATIN_conv_max = 10000;
 	input_params.LATIN_relax = 0.8;
