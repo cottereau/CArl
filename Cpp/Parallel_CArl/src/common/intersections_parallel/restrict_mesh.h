@@ -8,10 +8,8 @@
 #ifndef COMMON_INTERSECTIONS_PARALLEL_RESTRICT_MESH_H_
 #define COMMON_INTERSECTIONS_PARALLEL_RESTRICT_MESH_H_
 
-#include "common_header.h"
-#include "common_header_libmesh.h"
+#include "carl_headers.h"
 #include "mesh_tables.h"
-#include "CGAL_typedefs.h"
 
 #include "intersection_tools.h"
 #include "patch_construction.h"

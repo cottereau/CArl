@@ -8,8 +8,7 @@
 #ifndef COMMON_MESH_RESTRICTION_MESH_RESTRICTION_3D_H_
 #define COMMON_MESH_RESTRICTION_MESH_RESTRICTION_3D_H_
 
-#include "CGAL_typedefs.h"
-#include "common_header.h"
+#include "carl_headers.h"
 #include "triangular_mesh_3.h"
 #include "intersection_functions_3.h"
 

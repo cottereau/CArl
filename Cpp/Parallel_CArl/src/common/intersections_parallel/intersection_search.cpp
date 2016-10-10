@@ -185,7 +185,6 @@ namespace carl
 		{
 			// Couldn't find the first intersection using a point search ...
 			// Will have to do the things the hard way ...
-			std::cout << " -> Fast first pair search failed, using full scan method" << std::endl;
 			BruteForce_FindFirstPair(Patch_guide,Patch_probed,First_intersection);
 		}
 	};
@@ -461,6 +460,7 @@ namespace carl
 			{
 				real_volume += Query_elem->volume();
 			}
+
 			m_perf_log.push("Find intersections","Brute force");
 			FindPatchIntersections_Brute(Query_elem);
 			m_perf_log.pop("Find intersections","Brute force");

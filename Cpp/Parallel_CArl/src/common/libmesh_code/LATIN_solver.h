@@ -8,9 +8,7 @@
 #ifndef COMMON_LIBMESH_CODE_LATIN_SOLVER_H_
 #define COMMON_LIBMESH_CODE_LATIN_SOLVER_H_
 
-#include "common_header.h"
-#include "common_header_libmesh.h"
-#include "common_functions.h"
+#include "carl_headers.h"
 
 #include "assemble_functions_nonlinear_elasticity_3D.h"
 
@@ -86,6 +84,8 @@ protected:
 	bool m_bParamsSetUp;
 	bool m_bCheckDimensions;
 	bool m_bDeallocateMatrices;
+	bool m_bDeallocateModifiedMatrices;
+	bool m_bDeallocateLumpingVector;
 	bool m_bDeallocateNonlinear;
 	bool m_bSolved;
 
@@ -104,8 +104,7 @@ protected:
 	std::string m_ksp_name_B;
 
 	std::vector<std::string>   ksp_solver_table;
-
-
+	carl::CoupledSolverType m_solver_type;
 
 private:
 	PETSC_LATIN_solver();
@@ -113,13 +112,14 @@ private:
 public:
 
 	// Constructors
-	PETSC_LATIN_solver(const libMesh::Parallel::Communicator& comm) :
+	PETSC_LATIN_solver(	const libMesh::Parallel::Communicator& comm,
+						carl::CoupledSolverType solver_type = carl::LATIN_MODIFIED_STIFFNESS) :
 							m_comm { &comm },
 
 							m_C_RA { NULL },
 							m_C_RB { NULL },
 							m_C_RR { NULL },
-						//	m_invC_RR_vec { libMesh::PetscVector<libMesh::Number>(comm) },
+
 							m_invC_RR_vec { NULL },
 							m_M_A { NULL },
 							m_M_B { NULL },
@@ -132,9 +132,6 @@ public:
 
 							m_F_A { NULL },
 							m_F_B { NULL },
-
-							// m_sol_A { libMesh::PetscVector<libMesh::Number>(comm) },
-							// m_sol_B { libMesh::PetscVector<libMesh::Number>(comm) },
 
 							m_sol_A { NULL },
 							m_sol_B { NULL },
@@ -155,16 +152,19 @@ public:
 							m_bParamsSetUp { false },
 							m_bCheckDimensions { false },
 							m_bDeallocateMatrices { false },
+							m_bDeallocateModifiedMatrices { false },
+							m_bDeallocateLumpingVector { false },
 							m_bDeallocateNonlinear { false },
+
 							m_bSolved {false},
 							m_bUseRestart {false},
+							m_bPrintRestart {false},
 
 							m_ksp_name_A { "macro_sys" },
-							m_ksp_name_B { "micro_sys" }
+							m_ksp_name_B { "micro_sys" },
+							m_solver_type { solver_type }
 	{
 		m_LATIN_Index.resize(m_LATIN_conv_max_n);
-
-		m_invC_RR_vec = new libMesh::PetscVector<libMesh::Number>(comm);
 
 		m_sol_A = new libMesh::PetscVector<libMesh::Number>(comm);
 		m_sol_B = new libMesh::PetscVector<libMesh::Number>(comm);
@@ -173,15 +173,17 @@ public:
 				   "SOR_BACKWARD","SSOR","RICHARDSON","CHEBYSHEV","SPARSELU","INVALID_SOLVER"};
 	};
 
-	PETSC_LATIN_solver(double i_k_dA, double i_k_dB, double i_k_cA, double i_k_cB, const libMesh::Parallel::Communicator& comm )  :
+	PETSC_LATIN_solver(	double i_k_dA, double i_k_dB, double i_k_cA, double i_k_cB,
+						const libMesh::Parallel::Communicator& comm,
+						carl::CoupledSolverType solver_type = carl::LATIN_MODIFIED_STIFFNESS)  :
 			m_comm { &comm },
 
 			m_C_RA { NULL },
 			m_C_RB { NULL },
 			m_C_RR { NULL },
-//			m_invC_RR_vec { libMesh::PetscVector<libMesh::Number>(comm) },
 
 			m_invC_RR_vec { NULL },
+
 			m_M_A { NULL },
 			m_M_B { NULL },
 
@@ -193,9 +195,6 @@ public:
 
 			m_F_A { NULL },
 			m_F_B { NULL },
-
-//			m_sol_A { libMesh::PetscVector<libMesh::Number>(comm) },
-//			m_sol_B { libMesh::PetscVector<libMesh::Number>(comm) },
 
 			m_sol_A { NULL },
 			m_sol_B { NULL },
@@ -221,15 +220,18 @@ public:
 			m_bParamsSetUp { true },
 			m_bCheckDimensions { false },
 			m_bDeallocateMatrices { false },
+			m_bDeallocateModifiedMatrices { false },
+			m_bDeallocateLumpingVector { false },
+
 			m_bSolved {false},
 			m_bUseRestart {false},
+			m_bPrintRestart {false},
 
 			m_ksp_name_A { "macro_sys_" },
-			m_ksp_name_B { "micro_sys_" }
+			m_ksp_name_B { "micro_sys_" },
+			m_solver_type { solver_type }
 	{
 		m_LATIN_Index.resize(m_LATIN_conv_max_n);
-
-		m_invC_RR_vec = new libMesh::PetscVector<libMesh::Number>(comm);
 
 		m_sol_A = new libMesh::PetscVector<libMesh::Number>(comm);
 		m_sol_B = new libMesh::PetscVector<libMesh::Number>(comm);
@@ -250,17 +252,24 @@ public:
 			delete m_P_B;
 			m_P_B = NULL;
 
+			delete m_sol_A;
+			delete m_sol_B;
+
+			m_sol_A = NULL;
+			m_sol_B = NULL;
+
+		}
+		if(m_bDeallocateModifiedMatrices)
+		{
 			delete m_H_A;
 			m_H_A = NULL;
 
 			delete m_H_B;
 			m_H_B = NULL;
-
-			delete m_sol_A;
-			delete m_sol_B;
+		}
+		if(m_bDeallocateLumpingVector)
+		{
 			delete m_invC_RR_vec;
-			m_sol_A = NULL;
-			m_sol_B = NULL;
 			m_invC_RR_vec = NULL;
 		}
 		if(m_bDeallocateNonlinear)
@@ -312,6 +321,10 @@ public:
 	void set_relaxation(double relax);
 
 	void solve();
+
+	void solve_modified_stiffness();
+
+	void solve_original_stiffness();
 
 	void solve_nonlinear(libMesh::EquationSystems& EqSys_micro, const std::string type_name_micro);
 

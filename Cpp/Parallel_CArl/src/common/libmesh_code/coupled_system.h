@@ -8,9 +8,7 @@
 #ifndef ASSEMBLE_INTERSECTION_3D_H_
 #define ASSEMBLE_INTERSECTION_3D_H_
 
-#include "common_header.h"
-#include "common_header_libmesh.h"
-#include "common_functions.h"
+#include "carl_headers.h"
 
 #include "mpi_carl_tools.h"
 #include "weak_formulations.h"
@@ -285,6 +283,7 @@ protected:
 	typedef std::map<std::string, weight_parameter_function*>::iterator alpha_mask_iterator;
 
 	// -> LATIN solver
+	carl::CoupledSolverType m_solver_type;
 	PETSC_LATIN_solver m_LATIN_solver;
 
 private:
@@ -294,10 +293,11 @@ public:
 	// Members
 
 	// Constructors
-	coupled_system(const libMesh::Parallel::Communicator& comm) :
+	coupled_system(const libMesh::Parallel::Communicator& comm, carl::CoupledSolverType solver_type = carl::LATIN_MODIFIED_STIFFNESS) :
 			m_bHasAssembled_BIG { false },
 			m_bHasDefinedMeshRestrictions { false },
-			m_LATIN_solver { PETSC_LATIN_solver(comm) }
+			m_solver_type { solver_type },
+			m_LATIN_solver { PETSC_LATIN_solver(comm,m_solver_type) }
 	{
 	}
 	;

@@ -8,8 +8,7 @@
 #ifndef ELASTICITY_3D_ASSEMBLE_FUNCTIONS_ELASTICITY_3D_H_
 #define ELASTICITY_3D_ASSEMBLE_FUNCTIONS_ELASTICITY_3D_H_
 
-#include "common_header_libmesh.h"
-#include "common_functions.h"
+#include "carl_headers.h"
 
 #include "weight_parameter_function.h"
 

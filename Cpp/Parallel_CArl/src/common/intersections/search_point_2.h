@@ -11,8 +11,7 @@
 #ifndef INTERSECTIONS_SEARCH_POINT_2_H_
 #define INTERSECTIONS_SEARCH_POINT_2_H_
 
-#include "common_header.h"
-#include "CGAL_typedefs.h"
+#include "carl_headers.h"
 #include "triangular_mesh_2.h"
 
 /*

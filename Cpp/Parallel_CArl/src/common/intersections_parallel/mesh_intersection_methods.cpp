@@ -11,9 +11,20 @@ void Mesh_Intersection::triangulate_intersection(const std::set<libMesh::Point> 
 			it_set != input_points.end();
 			++it_set)
 	{
+		libMesh::Point dummy = *it_set;
 		m_libMesh_PolyhedronMesh.add_point(*it_set);
 	}
-	m_TetGenInterface.triangulate_pointset();
+
+//	std::cout << "    " << m_libMesh_PolyhedronMesh.n_nodes() << " nodes:" << std::endl;
+//	for(unsigned int iii = 0; iii < m_libMesh_PolyhedronMesh.n_nodes(); ++iii)
+//	{
+//		m_libMesh_PolyhedronMesh.node(iii).print();
+//		std::cout << std::endl;
+//	}
+	libMesh::TetGenMeshInterface 			temp_tetgen_interface(m_libMesh_PolyhedronMesh);
+//	std::cout << "    Associated interface with the mesh" << std::endl;
+	temp_tetgen_interface.triangulate_pointset();
+//	std::cout << "    Finished triangulation" << std::endl;
 }
 
 void Mesh_Intersection::update_intersection_mesh()
@@ -196,7 +207,11 @@ void Mesh_Intersection::increase_intersection_mesh(	const std::set<libMesh::Poin
 	unsigned int intersection_range_start = m_nb_of_elements;
 
 	//	First, triangulate the point set!
+//	std::cout 	<< " Triangulating A " << elem_idx_A
+//				<< ", B " << elem_idx_B
+//				<< ", C " << elem_idx_C << std::endl;
 	triangulate_intersection(input_points);
+//	std::cout 	<< " Finished!" << std::endl;
 
 	//	Second, add the points to the grid-to-mesh map and update the intersection mesh,
 	// taking into account if the associated elements are big enough.

@@ -8,8 +8,7 @@
 #ifndef COMMON_LIBMESH_CODE_ANISOTROPIC_ELASTICITY_CUBIC_SYM_H_
 #define COMMON_LIBMESH_CODE_ANISOTROPIC_ELASTICITY_CUBIC_SYM_H_
 
-#include "common_header_libmesh.h"
-#include "common_functions.h"
+#include "carl_headers.h"
 
 #include "weight_parameter_function.h"
 

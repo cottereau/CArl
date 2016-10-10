@@ -1,12 +1,13 @@
 /*
- * main.h
+ * carl_solver_test.h
  *
- *  Created on: Feb 18, 2016
+ *  Created on: Sep 28, 2016
  *      Author: Thiago Milanetto Schlittler
  */
 
-#ifndef EXECS_CARL_PARALLEL_COUPLING_MAIN_H_
-#define EXECS_CARL_PARALLEL_COUPLING_MAIN_H_
+#ifndef EXECS_TESTS_CARL_SOLVER_TEST_H_
+#define EXECS_TESTS_CARL_SOLVER_TEST_H_
+
 
 #include "carl_headers.h"
 
@@ -17,4 +18,4 @@
 
 //#include "CGAL_typedefs.h"
 
-#endif /* EXECS_CARL_PARALLEL_COUPLING_MAIN_H_ */
+#endif /* EXECS_TESTS_CARL_SOLVER_TEST_H_ */

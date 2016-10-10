@@ -12,9 +12,7 @@
 #ifndef COMMON_LIBMESH_CODE_WEAK_FORMULATIONS_H_
 #define COMMON_LIBMESH_CODE_WEAK_FORMULATIONS_H_
 
-#include "common_header.h"
-#include "common_functions.h"
-#include "common_header_libmesh.h"
+#include "carl_headers.h"
 
 // --- Matrices
 void Mass(	libMesh::DenseMatrix<libMesh::Number>& Mass,

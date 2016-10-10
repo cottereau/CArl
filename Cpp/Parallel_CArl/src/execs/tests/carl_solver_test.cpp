@@ -1,4 +1,5 @@
-#include "main.h"
+#include "carl_solver_test.h"
+
 #include <chrono>
 #include <thread>
 
@@ -57,6 +58,7 @@ struct carl_coupling_generation_input_params {
 	bool b_UseMesh_micro_AsMediator;
 	bool b_UseMesh_extra_AsMediator;
 	bool b_Repartition_micro;
+	bool b_Print_Output;
 	bool LATIN_b_UseRestartFiles;
 	bool LATIN_b_PrintRestartFiles;
 
@@ -77,8 +79,7 @@ struct carl_coupling_generation_input_params {
 	std::string output_file_BIG;
 	std::string output_file_micro;
 
-	std::string solver_type_string;
-	carl::CoupledSolverType solver_type;
+	std::string base_output;
 };
 
 void get_input_params(GetPot& field_parser,
@@ -281,14 +282,9 @@ void get_input_params(GetPot& field_parser,
 	}
 
 	// Set LATIN parameters
-	input_params.LATIN_b_UseRestartFiles = false;
-	input_params.LATIN_b_PrintRestartFiles = false;
 	input_params.LATIN_eps = 1E-2;
 	input_params.LATIN_conv_max = 10000;
 	input_params.LATIN_relax = 0.8;
-
-	input_params.LATIN_convergence_output = "LATIN_convergence.dat";
-	input_params.LATIN_restart_file_base = "LATIN_restart";
 
 	if( field_parser.search(2, "--LATINeps","LATINEps") )
 	{
@@ -310,6 +306,52 @@ void get_input_params(GetPot& field_parser,
 		input_params.LATIN_convergence_output = field_parser.next(input_params.LATIN_convergence_output);
 	}
 
+
+
+	// Set output files
+	input_params.b_Print_Output = true;
+	if ( field_parser.search(1, "SkipOutput") )
+	{
+		input_params.b_Print_Output = false;
+	}
+
+	if ( field_parser.search(1, "OutputBase") )
+	{
+		input_params.base_output = field_parser.next(input_params.base_output);
+	}
+
+	if(input_params.b_Print_Output)
+	{
+		input_params.output_file_BIG = "meshes/3D/output/carl_multi_crystal_test_micro.exo";
+		input_params.output_file_micro = "meshes/3D/output/carl_multi_crystal_test_macro.exo";
+
+		if ( field_parser.search(3, "-o","--output", "OutputBase") )
+		{
+			input_params.output_file_BIG = input_params.base_output + "_system_A.e";
+			input_params.output_file_micro = input_params.base_output + "_system_B.e";
+		}
+		else
+		{
+			if ( field_parser.search(3, "-oA","--outputA", "OutputEXOFileA") )
+			{
+				input_params.output_file_BIG = field_parser.next(input_params.output_file_BIG);
+			}
+			if ( field_parser.search(3, "-oB","--outputB", "OutputEXOFileB") )
+			{
+				input_params.output_file_micro = field_parser.next(input_params.output_file_micro);
+			}
+		}
+	}
+
+	// Set restart
+	input_params.LATIN_b_UseRestartFiles = false;
+	input_params.LATIN_b_PrintRestartFiles = false;
+
+	input_params.LATIN_convergence_output = input_params.base_output + "_convergence.dat";
+	input_params.LATIN_restart_file_base = input_params.base_output + "_restart";
+
+	std::cout << input_params.LATIN_restart_file_base << std::endl;
+	std::cout << input_params.base_output << std::endl;
 	if( field_parser.search(1,"Use_restart_data") )
 	{
 		input_params.LATIN_b_UseRestartFiles = true;
@@ -322,28 +364,6 @@ void get_input_params(GetPot& field_parser,
 	if( field_parser.search(1,"LATINRestartDataFiles") )
 	{
 		input_params.LATIN_restart_file_base = field_parser.next(input_params.LATIN_restart_file_base);
-	}
-
-	// Set output files
-	input_params.output_file_BIG = "meshes/3D/output/carl_multi_crystal_test_micro.exo";
-	input_params.output_file_micro = "meshes/3D/output/carl_multi_crystal_test_macro.exo";
-	if ( field_parser.search(3, "-oA","--outputA", "OutputEXOFileA") )
-	{
-		input_params.output_file_BIG = field_parser.next(input_params.output_file_BIG);
-	}
-	if ( field_parser.search(3, "-oB","--outputB", "OutputEXOFileB") )
-	{
-		input_params.output_file_micro = field_parser.next(input_params.output_file_micro);
-	}
-
-	input_params.solver_type = carl::LATIN_MODIFIED_STIFFNESS;
-	if ( field_parser.search(1, "SolverType") )
-	{
-		input_params.solver_type_string = field_parser.next(input_params.solver_type_string);
-		if(input_params.solver_type_string == "LATIN_Modified")
-			input_params.solver_type = carl::LATIN_MODIFIED_STIFFNESS;
-		if(input_params.solver_type_string == "LATIN_Original_Stiffness")
-			input_params.solver_type = carl::LATIN_ORIGINAL_STIFFNESS;
 	}
 }
 ;
@@ -366,6 +386,14 @@ int main(int argc, char** argv) {
 	GetPot field_parser;
 	std::string input_filename;
 
+	carl_coupling_generation_input_params input_params;
+
+	input_params.base_output = "./";
+	if ( command_line.search(2, "-o","--output") )
+	{
+		input_params.base_output = command_line.next(input_params.base_output);
+	}
+
 	if (command_line.search(1, "--inputfile")) {
 		input_filename = command_line.next(input_filename);
 		field_parser.parse_input_file(input_filename, "#", "\n", " \t\n");
@@ -373,7 +401,6 @@ int main(int argc, char** argv) {
 		field_parser = command_line;
 	}
 
-	carl_coupling_generation_input_params input_params;
 	get_input_params(field_parser, input_params);
 
 	const unsigned int dim = 3;
@@ -605,7 +632,7 @@ int main(int argc, char** argv) {
 
 	// - Generate the equation systems -----------------------------------------
 	perf_log.push("Initialization","System initialization:");
-	carl::coupled_system CoupledTest(WorldComm,input_params.solver_type);
+	carl::coupled_system CoupledTest(WorldComm);
 
 	libMesh::EquationSystems& equation_systems_inter =
 					CoupledTest.add_inter_EquationSystem("InterSys", mesh_inter);
@@ -750,16 +777,17 @@ int main(int argc, char** argv) {
 	std::cout << "|    k_cA, k_cB   : " << input_params.k_cA << " " << input_params.k_cB << std::endl;
 	std::cout << "|    kappa        : " << coupling_const << std::endl;
 	std::cout << "|    e            : " << input_params.mean_distance << std::endl;
-	std::cout << "|    restart file : " << input_params.LATIN_restart_file_base << "*" << std::endl;
 
-	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
+	std::cout << std::endl << "| --> Testing the solver " << std::endl;
 	perf_log.push("Set up","LATIN Solver:");
 	if(input_params.LATIN_b_PrintRestartFiles || input_params.LATIN_b_UseRestartFiles)
 	{
+		std::cout << "|    restart file : " << input_params.LATIN_restart_file_base << "*" << std::endl;
 		CoupledTest.set_LATIN_restart(	input_params.LATIN_b_UseRestartFiles,
 				input_params.LATIN_b_PrintRestartFiles,
 				input_params.LATIN_restart_file_base);
 	}
+	std::cout << std::endl;
 
 	CoupledTest.set_LATIN_solver(	"MicroSys","Elasticity",
 									assemble_elasticity_with_weight,
@@ -774,41 +802,43 @@ int main(int argc, char** argv) {
 	CoupledTest.solve_LATIN("MicroSys","Elasticity",input_params.LATIN_convergence_output);
 	perf_log.pop("Solve","LATIN Solver:");
 
-	// Calculate stress
-	perf_log.push("Compute stress - micro","Output:");
-	compute_stresses(equation_systems_micro);
-	perf_log.pop("Compute stress - micro","Output:");
+	if(input_params.b_Print_Output)
+	{
+		// Calculate stress
+		perf_log.push("Compute stress - micro","Output:");
+		compute_stresses(equation_systems_micro);
+		perf_log.pop("Compute stress - micro","Output:");
 
-	perf_log.push("Compute stress - macro","Output:");
-	compute_stresses(equation_systems_BIG);
-	perf_log.pop("Compute stress - macro","Output:");
-
-	// Export solution
-#ifdef LIBMESH_HAVE_EXODUS_API
-	perf_log.push("Save output","Output:");
-	libMesh::ExodusII_IO exo_io_micro(mesh_micro, /*single_precision=*/true);
-
-	std::set<std::string> system_names_micro;
-	system_names_micro.insert("Elasticity");
-	exo_io_micro.write_equation_systems(input_params.output_file_micro,equation_systems_micro,&system_names_micro);
-
-	exo_io_micro.write_element_data(equation_systems_micro);
-
-	libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
-
-	std::set<std::string> system_names_BIG;
-	system_names_BIG.insert("Elasticity");
-	exo_io_BIG.write_equation_systems(input_params.output_file_BIG,equation_systems_BIG,&system_names_BIG);
-
-	exo_io_BIG.write_element_data(equation_systems_BIG);
-	perf_log.pop("Save output","Output:");
-#endif
+		perf_log.push("Compute stress - macro","Output:");
+		compute_stresses(equation_systems_BIG);
+		perf_log.pop("Compute stress - macro","Output:");
 
 
-	std::ofstream perf_log_file("meshes/parallel_test/output/perf_log_" + std::to_string(rank)  + ".txt");
+		// Export solution
+	#ifdef LIBMESH_HAVE_EXODUS_API
+		perf_log.push("Save output","Output:");
+		libMesh::ExodusII_IO exo_io_micro(mesh_micro, /*single_precision=*/true);
+
+		std::set<std::string> system_names_micro;
+		system_names_micro.insert("Elasticity");
+		exo_io_micro.write_equation_systems(input_params.output_file_micro,equation_systems_micro,&system_names_micro);
+
+		exo_io_micro.write_element_data(equation_systems_micro);
+
+		libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
+
+		std::set<std::string> system_names_BIG;
+		system_names_BIG.insert("Elasticity");
+		exo_io_BIG.write_equation_systems(input_params.output_file_BIG,equation_systems_BIG,&system_names_BIG);
+
+		exo_io_BIG.write_element_data(equation_systems_BIG);
+		perf_log.pop("Save output","Output:");
+	#endif
+	}
+
+	std::ofstream perf_log_file(input_params.base_output + "_perf_log_" + std::to_string(rank)  + ".txt");
 	perf_log_file << perf_log.get_log();
 	perf_log_file.close();
 
-	std::this_thread::sleep_for(std::chrono::seconds(10));
 	return 0;
 }

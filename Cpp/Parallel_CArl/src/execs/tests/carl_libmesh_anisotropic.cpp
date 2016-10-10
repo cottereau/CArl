@@ -74,6 +74,9 @@ struct carl_coupling_generation_input_params {
 
 	std::string output_file_BIG;
 	std::string output_file_micro;
+
+	std::string solver_type_string;
+	carl::CoupledSolverType solver_type;
 };
 
 void get_input_params(GetPot& field_parser,
@@ -326,6 +329,15 @@ void get_input_params(GetPot& field_parser,
 		input_params.output_file_micro = field_parser.next(input_params.output_file_micro);
 	}
 
+	input_params.solver_type = carl::LATIN_MODIFIED_STIFFNESS;
+	if ( field_parser.search(1, "SolverType") )
+	{
+		input_params.solver_type_string = field_parser.next(input_params.solver_type_string);
+		if(input_params.solver_type_string == "LATIN_Modified")
+			input_params.solver_type = carl::LATIN_MODIFIED_STIFFNESS;
+		if(input_params.solver_type_string == "LATIN_Original_Stiffness")
+			input_params.solver_type = carl::LATIN_ORIGINAL_STIFFNESS;
+	}
 }
 ;
 
@@ -584,7 +596,7 @@ int main(int argc, char** argv) {
 
 	// - Generate the equation systems -----------------------------------------
 	perf_log.push("Initialization","System initialization:");
-	carl::coupled_system CoupledTest(WorldComm);
+	carl::coupled_system CoupledTest(WorldComm,input_params.solver_type);
 
 	libMesh::EquationSystems& equation_systems_inter =
 					CoupledTest.add_inter_EquationSystem("InterSys", mesh_inter);

@@ -8,6 +8,8 @@
 #ifndef COMMON_LIBMESH_CODE_WEIGHT_PARAMETER_FUNCTION_H_
 #define COMMON_LIBMESH_CODE_WEIGHT_PARAMETER_FUNCTION_H_
 
+#include "carl_headers.h"
+
 namespace carl
 {
 

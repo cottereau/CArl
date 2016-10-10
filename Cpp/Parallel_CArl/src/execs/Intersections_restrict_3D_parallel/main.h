@@ -8,11 +8,9 @@
 #ifndef INTERSECTIONS_RESTRICTION_3D_MAIN_H_
 #define INTERSECTIONS_RESTRICTION_3D_MAIN_H_
 
-#include "common_header.h"
-#include "common_header_libmesh.h"
-#include "mesh_tables.h"
+#include "carl_headers.h"
 
-#include "CGAL_typedefs.h"
+#include "mesh_tables.h"
 
 #include "triangular_mesh_3.h"
 #include "intersection_functions_3.h"

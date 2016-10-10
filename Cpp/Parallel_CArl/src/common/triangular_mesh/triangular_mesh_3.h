@@ -8,8 +8,7 @@
 #ifndef TRIANGULAR_MESH_3_H_
 #define TRIANGULAR_MESH_3_H_
 
-#include "common_header.h"
-#include "CGAL_typedefs.h"
+#include "carl_headers.h"
 
 class	Triangular_Mesh_3
 {

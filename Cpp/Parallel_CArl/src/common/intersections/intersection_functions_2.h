@@ -8,8 +8,7 @@
 #ifndef INTERSECTION_FUNCTIONS_2_H_
 #define INTERSECTION_FUNCTIONS_2_H_
 
-#include "common_header.h"
-#include "CGAL_typedefs.h"
+#include "carl_headers.h"
 #include "triangular_mesh_2.h"
 #include "triangular_mesh_intersection_2.h"
 

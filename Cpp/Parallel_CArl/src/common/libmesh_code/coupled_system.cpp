@@ -284,7 +284,8 @@ void carl::coupled_system::set_LATIN_restart( bool bUseRestart,
 };
 
 void carl::coupled_system::set_LATIN_solver(const std::string micro_name,
-		const std::string type_name, double k_dA, double k_dB, double k_cA, double k_cB,
+		const std::string type_name,
+		double k_dA, double k_dB, double k_cA, double k_cB,
 		double eps, int convIter, double relax)
 {
 	// Get the systems

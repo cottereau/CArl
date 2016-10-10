@@ -8,11 +8,8 @@
 #ifndef COMMON_INTERSECTIONS_PARALLEL_INTERSECTION_MESH_LIBMESH_H_
 #define COMMON_INTERSECTIONS_PARALLEL_INTERSECTION_MESH_LIBMESH_H_
 
-#include "common_header.h"
-#include "common_header_libmesh.h"
+#include "carl_headers.h"
 #include "mesh_tables.h"
-
-#include "CGAL_typedefs.h"
 
 #include "algorithm"
 
@@ -46,7 +43,7 @@ protected:
 	libMesh::SerialMesh&				   	m_libMesh_Mesh;
 
 	// Mesh guarding the tetrahedrization of the intersection polyhedron
-	libMesh::SerialMesh					   	m_libMesh_PolyhedronMesh;
+	libMesh::Mesh					   	    m_libMesh_PolyhedronMesh;
 
 	// TetGen interface
 	libMesh::TetGenMeshInterface 			m_TetGenInterface;
@@ -141,7 +138,7 @@ public:
 		m_global_nodes { m_global_comm.size() },
 		m_global_rank { m_global_comm.rank() },
 		m_libMesh_Mesh { mesh },
-		m_libMesh_PolyhedronMesh { libMesh::SerialMesh(m_comm) },
+		m_libMesh_PolyhedronMesh { libMesh::Mesh(m_comm) },
 		m_TetGenInterface { libMesh::TetGenMeshInterface(m_libMesh_PolyhedronMesh) },
 		m_nb_of_intersections { 0 },
 		m_eps { -1 },

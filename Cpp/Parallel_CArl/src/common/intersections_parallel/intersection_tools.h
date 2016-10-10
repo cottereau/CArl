@@ -8,11 +8,8 @@
 #ifndef COMMON_INTERSECTIONS_PARALLEL_INTERSECTION_TOOLS_H_
 #define COMMON_INTERSECTIONS_PARALLEL_INTERSECTION_TOOLS_H_
 
-#include "common_header.h"
-#include "common_header_libmesh.h"
+#include "carl_headers.h"
 #include "mesh_tables.h"
-
-#include "CGAL_typedefs.h"
 
 namespace carl
 {
@@ -110,7 +107,7 @@ protected:
 public:
 
 	// Constructors
-	Intersection_Tools(const libMesh::Elem * elem_C, double Min_Inter_Volume = 1E-15, bool bDoPerf_log = false) :
+	Intersection_Tools(const libMesh::Elem * elem_C, double Min_Inter_Volume = 1E-21, bool bDoPerf_log = false) :
 		m_Min_Inter_Volume { Min_Inter_Volume },
 		MASTER_bPerfLog_intersection_tools {bDoPerf_log},
 		m_perf_log { libMesh::PerfLog("Intersection tools", MASTER_bPerfLog_intersection_tools) }
@@ -129,7 +126,7 @@ public:
 		m_elem_C_triangles = NULL;
 	};
 
-	Intersection_Tools(double Min_Inter_Volume = 1E-15, bool bDoPerf_log = false) :
+	Intersection_Tools(double Min_Inter_Volume = 1E-21, bool bDoPerf_log = false) :
 		m_Min_Inter_Volume { Min_Inter_Volume },
 		MASTER_bPerfLog_intersection_tools {bDoPerf_log},
 		m_perf_log { libMesh::PerfLog("Intersection tools", MASTER_bPerfLog_intersection_tools) }

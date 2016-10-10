@@ -13,8 +13,7 @@
 #ifndef INTERSECTIONS_TRIANGULAR_MESH_INTERSECTION_2_H_
 #define INTERSECTIONS_TRIANGULAR_MESH_INTERSECTION_2_H_
 
-#include "common_header.h"
-#include "CGAL_typedefs.h"
+#include "carl_headers.h"
 #include "triangular_mesh_2.h"
 
 // Local typedefs
