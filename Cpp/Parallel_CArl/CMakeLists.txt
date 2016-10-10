@@ -91,7 +91,7 @@ set ( EXEC_DIRS ${CARL_LIBMESH_PARALLEL_EXEC_DIR} ${DEVEL_BACKYARD_EXEC_DIR} ${T
 include_directories( ${LIB_DIRS} ${EXEC_DIR} )
 
 # set source sets
-file ( GLOB COMMON_SOURCES                "${SOURCE_DIR}/common*.h"           "${SOURCE_DIR}/common*.cpp")
+file ( GLOB COMMON_SOURCES                "${COMMON_SRC_DIR}/common*.h"           "${COMMON_SRC_DIR}/common*.cpp")
 file ( GLOB MESH_3D_SOURCES               "${MESH_DIR}/*3.h"                  "${MESH_DIR}/*3.cpp" "${RESTRICTION_3D_EXEC_DIR}/*3.h")
 # file ( GLOB INTERSECTION_SOURCES          "${INTERSECTION_DIR}/*3.h"          "${INTERSECTION_DIR}/*3.cpp")
 file ( GLOB INTERSECTION_PARALLEL_SOURCES "${INTERSECTION_PARALLEL_DIR}/*.h" "${INTERSECTION_PARALLEL_DIR}/*.cpp")
@@ -106,7 +106,7 @@ file ( GLOB TEST_EXECS ${TEST_CASES_EXEC_DIR}/*.cpp )
 
 # Creating entries for target: intersections_2D
 # ############################
-add_library( COMMON_OBJS OBJECT                         ${COMMON_SOURCES})
+add_library( COMMON_OBJS OBJECT                         "${SOURCE_DIR}/carl_headers.h" "${COMMON_SRC_DIR}/CGAL_typedefs.h" ${COMMON_SOURCES})
 add_library( MESH_3D_OBJS OBJECT                        ${MESH_3D_SOURCES})
 # add_library( INTERSECTION_OBJS OBJECT                   ${INTERSECTION_SOURCES})
 add_library( INTERSECTION_PARALLEL_OBJS OBJECT          ${INTERSECTION_PARALLEL_SOURCES})
