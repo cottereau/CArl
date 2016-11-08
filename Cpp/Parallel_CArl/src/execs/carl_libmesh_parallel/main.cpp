@@ -756,7 +756,7 @@ int main(int argc, char** argv) {
 	perf_log.push("Set up","LATIN Solver:");
 	if(input_params.LATIN_b_PrintRestartFiles || input_params.LATIN_b_UseRestartFiles)
 	{
-		CoupledTest.set_LATIN_restart(	input_params.LATIN_b_UseRestartFiles,
+		CoupledTest.set_restart(	input_params.LATIN_b_UseRestartFiles,
 				input_params.LATIN_b_PrintRestartFiles,
 				input_params.LATIN_restart_file_base);
 	}

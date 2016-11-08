@@ -21,25 +21,33 @@ void carl::PETSC_LATIN_solver::set_params(double i_k_dA, double i_k_dB, double i
 	m_bParamsSetUp = true;
 };
 
-void carl::PETSC_LATIN_solver::set_sys_names(const std::string& name_A, const std::string& name_B)
+void carl::PETSC_LATIN_solver::set_info(	bool bSavePartitionInfo,
+											const std::string& info_base_filename)
 {
-	m_ksp_name_A = name_A + "_";
-	m_ksp_name_B = name_B + "_";
-};
+	// Call the coupled_solver function
+	coupled_solver::set_info(bSavePartitionInfo,info_base_filename);
+
+	if(m_bSavePartitionInfo)
+	{
+		m_info_matrix_H_A_filename 	= info_base_filename + "_matrix_H_A.dat";
+		m_info_matrix_H_B_filename  = info_base_filename + "_matrix_H_B.dat";
+		m_matrix_H_A_filename 	= info_base_filename + "_matrix_H_A.m";
+		m_matrix_H_B_filename  = info_base_filename + "_matrix_H_B.m";
+	}
+}
 
 void carl::PETSC_LATIN_solver::set_restart( 	bool bUseRestart,
 												bool bPrintRestart,
 												const std::string& restart_base_filename)
 {
-	m_bUseRestart = bUseRestart;
-	m_bPrintRestart = bPrintRestart;
+	// Call the coupled_solver function
+	coupled_solver::set_restart(bUseRestart,bPrintRestart,restart_base_filename);
+
 	if(m_bUseRestart || m_bPrintRestart)
 	{
 		m_conv_filename 	= restart_base_filename + "_conv.dat";
 		m_phi_A_filename 	= restart_base_filename + "_phi_A.dat";
 		m_phi_B_filename 	= restart_base_filename + "_phi_B.dat";
-		m_sol_A_filename 	= restart_base_filename + "_sol_A.dat";
-		m_sol_B_filename 	= restart_base_filename + "_sol_B.dat";
 	}
 }
 
@@ -55,6 +63,8 @@ void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Numbe
 {
 	libMesh::PerfLog perf_log("Matrix setup",MASTER_bPerfLog_LATIN_solver_matrix_assemble);
 
+	coupled_solver::set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
+
 	switch(m_solver_type)
 	{
 		case carl::LATIN_MODIFIED_STIFFNESS :
@@ -68,17 +78,12 @@ void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Numbe
 	// -> Will need k_d/cI
 	homemade_assert_msg( m_bParamsSetUp , "LATIN parameters not set up!");
 
-	m_C_RA = &C_RA;
-	m_C_RB = &C_RB;
-	m_C_RR = &C_RR;
-
 	// -> Invert the C_RR matrix
 	if(m_bUseLumping)
 	{
 		perf_log.push("Lumping");
-		m_bDeallocateLumpingVector = true;
-		m_invC_RR_vec = new libMesh::PetscVector<libMesh::Number>(* m_comm);
-		lump_matrix_and_invert(* m_C_RR,* m_invC_RR_vec);
+		m_invC_RR_vec = std::unique_ptr<libMesh::PetscVector<libMesh::Number> >(new libMesh::PetscVector<libMesh::Number>(* m_comm));
+		lump_matrix_and_invert(* m_C_RR,* m_invC_RR_vec.get());
 		perf_log.pop("Lumping");
 	}
 	else
@@ -86,15 +91,6 @@ void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Numbe
 		// TODO : implement inverse matrix
 		libmesh_error_msg("   set_matrices : Exact inverse matrix not implemented yet!!!");
 	}
-
-	/*
-	 * 	Since the definition of the PETSc matrix of a libMesh::PetscMatrix
-	 *	object is done at the declaration, we must use a dynamically
-	 *	allocated libMesh::PetscMatrix, and remember to de-allocate it
-	 *	during the destruction.
-	 */
-
-	m_bDeallocateMatrices = true;
 
 	// -> Calculate P_I = invC_RR * C_I
 	perf_log.push("P_I");
@@ -104,20 +100,18 @@ void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Numbe
 	MatDiagonalScale(m_PETSC_P_A,m_invC_RR_vec->vec(),PETSC_NULL);
 	MatDiagonalScale(m_PETSC_P_B,m_invC_RR_vec->vec(),PETSC_NULL);
 
-	m_P_A = new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_P_A, *m_comm);
-	m_P_B = new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_P_B, *m_comm);
+	m_P_A = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_P_A, *m_comm));
+	m_P_B = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_P_B, *m_comm));
 	perf_log.pop("P_I");
 
 	std::cout << "| P_A " << std::endl;
-	print_matrix_dim(*m_P_A);
+	print_matrix_dim(*m_P_A.get());
 
 	std::cout << "| P_B " << std::endl;
-	print_matrix_dim(*m_P_B);
+	print_matrix_dim(*m_P_B.get());
 
 	if(m_solver_type == carl::LATIN_MODIFIED_STIFFNESS)
 	{
-		m_bDeallocateModifiedMatrices = true;
-
 		// C_I^t * P_I
 		perf_log.push("Product","H_I");
 		MatTransposeMatMult(m_C_RA->mat(), m_PETSC_P_A, MAT_INITIAL_MATRIX, product_prealloc_H_A, &m_PETSC_H_A);
@@ -126,8 +120,6 @@ void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Numbe
 
 		// k_dI * ( C_I^t * P_I ) + M_I
 		perf_log.push("Sum","H_I");
-		m_M_A = &M_A;
-		m_M_B = &M_B;
 
 		MatAYPX(m_PETSC_H_A, m_k_dA, m_M_A->mat(), DIFFERENT_NONZERO_PATTERN);
 		MatAYPX(m_PETSC_H_B, m_k_dB, m_M_B->mat(), DIFFERENT_NONZERO_PATTERN);
@@ -135,63 +127,69 @@ void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Numbe
 
 		// -> Calculate H_I = k_dI * C_I^t * P_I + M_I
 		perf_log.push("Build","H_I");
-		m_H_A = new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_H_A, *m_comm);
-		m_H_B = new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_H_B, *m_comm);
+		m_H_A = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_H_A, *m_comm));
+		m_H_B = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_H_B, *m_comm));
 		perf_log.pop("Build","H_I");
 
-		std::cout << "| K_A " << std::endl;
-		print_matrix_dim(*m_M_A);
-
-		std::cout << "| K_B " << std::endl;
-		print_matrix_dim(*m_M_B);
-
 		std::cout << "| H_A " << std::endl;
-		print_matrix_dim(*m_H_A);
+		print_matrix_dim(*m_H_A.get());
 
 		std::cout << "| H_B " << std::endl;
-		print_matrix_dim(*m_H_B);
+		print_matrix_dim(*m_H_B.get());
 
-		 std::cout 	<< " L1 : MA " << m_M_A->l1_norm() << " | "
-				   	<< " HA " << m_H_A->l1_norm() << " | "
-		 			<< " HB " << m_H_B->l1_norm() << " | "
-		 			<< " CR " << m_C_RR->l1_norm() << " | "
-		 			<< " invCR " << m_invC_RR_vec->l1_norm() << " | "
-		 			<< " PA " << m_P_A->l1_norm() << " | "
-		 			<< " PB " << m_P_B->l1_norm() << std::endl << std::endl;
+		if(m_bSavePartitionInfo)
+		{
+			std::ofstream dummy_stream;
+			dummy_stream.open(m_info_matrix_M_A_filename);
+			print_matrix_info(*m_M_A,dummy_stream);
+			dummy_stream.close();
 
-		 std::cout 	<< " linfty : MA " << m_M_A->linfty_norm() << " | "
-				 	<< " HA " << m_H_A->linfty_norm() << " | "
-		 			<< " HB " << m_H_B->linfty_norm() << " | "
-		 			<< " CR " << m_C_RR->linfty_norm() << " | "
-		 			<< " invCR " << m_invC_RR_vec->linfty_norm() << " | "
-		 			<< " PA " << m_P_A->linfty_norm() << " | "
-		 			<< " PB " << m_P_B->linfty_norm() << std::endl << std::endl;
+			dummy_stream.open(m_info_matrix_M_B_filename);
+			print_matrix_info(*m_M_B,dummy_stream);
+			dummy_stream.close();
+
+			dummy_stream.open(m_info_matrix_H_A_filename);
+			print_matrix_info(*m_H_A.get(),dummy_stream);
+			dummy_stream.close();
+
+			dummy_stream.open(m_info_matrix_H_B_filename);
+			print_matrix_info(*m_H_B.get(),dummy_stream);
+			dummy_stream.close();
+
+			m_M_A->print_matlab(m_matrix_M_A_filename);
+			m_H_A->print_matlab(m_matrix_H_A_filename);
+			m_C_RA->print_matlab(m_matrix_C_A_filename);
+			m_M_B->print_matlab(m_matrix_M_B_filename);
+			m_H_B->print_matlab(m_matrix_H_B_filename);
+			m_C_RB->print_matlab(m_matrix_C_B_filename);
+		}
+
+		std::cout 	<< " L1 : MA " << m_M_A->l1_norm() << " | "
+				<< " HA " << m_H_A->l1_norm() << " | "
+				<< " HB " << m_H_B->l1_norm() << " | "
+				<< " CR " << m_C_RR->l1_norm() << " | "
+				<< " invCR " << m_invC_RR_vec->l1_norm() << " | "
+				<< " PA " << m_P_A->l1_norm() << " | "
+				<< " PB " << m_P_B->l1_norm() << std::endl << std::endl;
 	}
 	else if(m_solver_type == carl::LATIN_ORIGINAL_STIFFNESS)
 	{
 		// -> H_I = M_I
-		m_H_A = &M_A;
-		m_H_B = &M_B;
+		m_H_A = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(&M_A);
+		m_H_B = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(&M_B);
 
 		std::cout << "| H_A = K_A" << std::endl;
-		print_matrix_dim(*m_H_A);
+		print_matrix_dim(*m_H_A.get());
 
 		std::cout << "| H_B = K_B " << std::endl;
-		print_matrix_dim(*m_H_B);
+		print_matrix_dim(*m_H_B.get());
 
-		 std::cout 	<< " HA " << m_H_A->l1_norm() << " | "
-		 			<< " HB " << m_H_B->l1_norm() << " | "
-		 			<< " CR " << m_C_RR->l1_norm() << " | "
-		 			<< " invCR " << m_invC_RR_vec->l1_norm() << " | "
-		 			<< " PA " << m_P_A->l1_norm() << " | "
-		 			<< " PB " << m_P_B->l1_norm() << std::endl << std::endl;
-
-		 std::cout 	<< " HA " << m_H_A->linfty_norm() << " | "
-		 			<< " HB " << m_H_B->linfty_norm() << " | "
-		 			<< " CR " << m_C_RR->linfty_norm() << " | "
-		 			<< " invCR " << m_invC_RR_vec->linfty_norm() << " | "
-		 			<< " PA " << m_P_A->linfty_norm() << " | "
-		 			<< " PB " << m_P_B->linfty_norm() << std::endl << std::endl;
+		std::cout 	<< " HA " << m_H_A->l1_norm() << " | "
+				<< " HB " << m_H_B->l1_norm() << " | "
+				<< " CR " << m_C_RR->l1_norm() << " | "
+				<< " invCR " << m_invC_RR_vec->l1_norm() << " | "
+				<< " PA " << m_P_A->l1_norm() << " | "
+				<< " PB " << m_P_B->l1_norm() << std::endl << std::endl;
 	}
 	else
 	{
@@ -225,7 +223,7 @@ void carl::PETSC_LATIN_solver::set_matrices_nonlinear(	libMesh::PetscMatrix<libM
 	if(m_bUseLumping)
 	{
 		perf_log.push("Lumping");
-		lump_matrix_and_invert(* m_C_RR,* m_invC_RR_vec);
+		lump_matrix_and_invert(* m_C_RR,* m_invC_RR_vec.get());
 		perf_log.pop("Lumping");
 	}
 	else
@@ -234,15 +232,6 @@ void carl::PETSC_LATIN_solver::set_matrices_nonlinear(	libMesh::PetscMatrix<libM
 		libmesh_error_msg("   set_matrices : Exact inverse matrix not implemented yet!!!");
 	}
 
-	/*
-	 * 	Since the definition of the PETSc matrix of a libMesh::PetscMatrix
-	 *	object is done at the declaration, we must use a dynamically
-	 *	allocated libMesh::PetscMatrix, and remember to de-allocate it
-	 *	during the destruction.
-	 */
-
-	m_bDeallocateMatrices = true;
-
 	// -> Calculate P_I = invC_RR * C_I
 	perf_log.push("P_I");
 	MatConvert(m_C_RA->mat(),MATSAME,MAT_INITIAL_MATRIX,&m_PETSC_P_A);
@@ -250,18 +239,16 @@ void carl::PETSC_LATIN_solver::set_matrices_nonlinear(	libMesh::PetscMatrix<libM
 
 	MatDiagonalScale(m_PETSC_P_A,m_invC_RR_vec->vec(),PETSC_NULL);
 	MatDiagonalScale(m_PETSC_P_B,m_invC_RR_vec->vec(),PETSC_NULL);
-//		MatMatMult(m_invC_RR.mat(), m_C_RA->mat(), MAT_INITIAL_MATRIX, product_prealloc_P_A, &m_PETSC_P_A);
-//		MatMatMult(m_invC_RR.mat(), m_C_RB->mat(), MAT_INITIAL_MATRIX, product_prealloc_P_B, &m_PETSC_P_B);
 
-	m_P_A = new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_P_A, *m_comm);
-	m_P_B = new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_P_B, *m_comm);
+	m_P_A = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_P_A, *m_comm));
+	m_P_B = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_P_B, *m_comm));
 	perf_log.pop("P_I");
 
 	std::cout << "| P_A " << std::endl;
-	print_matrix_dim(*m_P_A);
+	print_matrix_dim(*m_P_A.get());
 
 	std::cout << "| P_B " << std::endl;
-	print_matrix_dim(*m_P_B);
+	print_matrix_dim(*m_P_B.get());
 
 	// -> Calculate H_I = k_dI * C_I^t * P_I + M_I
 
@@ -279,15 +266,15 @@ void carl::PETSC_LATIN_solver::set_matrices_nonlinear(	libMesh::PetscMatrix<libM
 	perf_log.pop("Sum","H_I");
 
 	perf_log.push("Build","H_I");
-	m_H_A = new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_H_A, *m_comm);
-	m_Extra_M_B = new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_Extra_M_B, *m_comm);
+	m_H_A = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_H_A, *m_comm));
+	m_Extra_M_B = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(new libMesh::PetscMatrix<libMesh::Number>(m_PETSC_Extra_M_B, *m_comm));
 	perf_log.pop("Build","H_I");
 
 	std::cout << "| H_A " << std::endl;
-	print_matrix_dim(*m_H_A);
+	print_matrix_dim(*m_H_A.get());
 
 	std::cout << "| E_B " << std::endl;
-	print_matrix_dim(*m_Extra_M_B);
+	print_matrix_dim(*m_Extra_M_B.get());
 
 	 std::cout 	<< " L1 : MA " << m_M_A->l1_norm() << " | "
 			   	<< " HA " << m_H_A->l1_norm() << " | "
@@ -306,15 +293,6 @@ void carl::PETSC_LATIN_solver::set_matrices_nonlinear(	libMesh::PetscMatrix<libM
 	 			<< " PB " << m_P_B->linfty_norm() << std::endl << std::endl;
 
 	m_bMatricesSetUp = true;
-};
-
-void carl::PETSC_LATIN_solver::set_forces(	libMesh::PetscVector<libMesh::Number>& F_A,
-					libMesh::PetscVector<libMesh::Number>& F_B)
-{
-	m_F_A = &F_A;
-	m_F_B = &F_B;
-
-	m_bForcesSetUp = true;
 };
 
 void carl::PETSC_LATIN_solver::set_forces_nonlinear(	libMesh::PetscVector<libMesh::Number>& F_A)
@@ -342,7 +320,7 @@ void carl::PETSC_LATIN_solver::solve()
 	std::cout << "|        eps = " << m_LATIN_conv_eps << ", max. iter. = " << m_LATIN_conv_max_n << std::endl;
 
 	// -> Test if the parameters are set up
-	homemade_assert_msg( m_bParamsSetUp , "   solve : LATIN parameters not set up!");
+	homemade_assert_msg( m_bParamsSetUp , "   solve : parameters not set up!");
 	homemade_assert_msg( m_bMatricesSetUp , "   solve : Matrices not set up!");
 	homemade_assert_msg( m_bForcesSetUp , "   solve : Forces not set up!");
 
@@ -465,11 +443,11 @@ void carl::PETSC_LATIN_solver::solve_modified_stiffness()
 	perf_log.push("KSP solvers setup","Initialization");
 	libMesh::PetscLinearSolver<libMesh::Number> KSP_Solver_H_A(*m_comm);
 	libMesh::PetscLinearSolver<libMesh::Number> KSP_Solver_H_B(*m_comm);
-//	KSP_Solver_H_A.reuse_preconditioner(true);
-//	KSP_Solver_H_B.reuse_preconditioner(true);
+	KSP_Solver_H_A.reuse_preconditioner(true);
+	KSP_Solver_H_B.reuse_preconditioner(true);
 
-	KSP_Solver_H_A.init(m_H_A, m_ksp_name_A.c_str());
-	KSP_Solver_H_B.init(m_H_B, m_ksp_name_B.c_str());
+	KSP_Solver_H_A.init(m_H_A.get(), m_ksp_name_A.c_str());
+	KSP_Solver_H_B.init(m_H_B.get(), m_ksp_name_B.c_str());
 
 	std::cout << KSP_Solver_H_A.ksp()->max_it << std::endl;
 
@@ -489,21 +467,21 @@ void carl::PETSC_LATIN_solver::solve_modified_stiffness()
 	if(!m_bUseRestart)
 	{
 		perf_log.push("KSP solver - A","Initialization");
-		KSP_Solver_H_A.solve ( *m_H_A, *m_sol_A, *m_F_A, m_KSP_A_eps, m_KSP_A_iter_max);
+		KSP_Solver_H_A.solve ( *m_H_A.get(), *m_sol_A.get(), *m_F_A, m_KSP_A_eps, m_KSP_A_iter_max);
 		perf_log.pop("KSP solver - A","Initialization");
 		perf_log.push("KSP solver - B","Initialization");
-		KSP_Solver_H_B.solve ( *m_H_B, *m_sol_B, *m_F_B, m_KSP_B_eps, m_KSP_B_iter_max);
+		KSP_Solver_H_B.solve ( *m_H_B.get(), *m_sol_B.get(), *m_F_B, m_KSP_B_eps, m_KSP_B_iter_max);
 		perf_log.pop("KSP solver - B","Initialization");
 	}
 	else
 	{
-		read_PETSC_vector(*m_sol_A,m_sol_A_filename);
-		read_PETSC_vector(*m_sol_B,m_sol_B_filename);
+		read_PETSC_vector(*m_sol_A.get(),m_sol_A_filename);
+		read_PETSC_vector(*m_sol_B.get(),m_sol_B_filename);
 	}
 
 	// w_0,I = P_I * u_0,I
-	m_P_A->vector_mult(w_A,*m_sol_A);
-	m_P_B->vector_mult(w_B,*m_sol_B);
+	m_P_A->vector_mult(w_A,*m_sol_A.get());
+	m_P_B->vector_mult(w_B,*m_sol_B.get());
 
 	// phi_d0,I = - k_dI * w_0,I
 	if(!m_bUseRestart)
@@ -575,12 +553,12 @@ void carl::PETSC_LATIN_solver::solve_modified_stiffness()
 
 		// u_i,I = H_I^-1 * f_eff_i,I (KSP SOLVER!)
 		perf_log.push("KSP solver - A","Decoupled - iterations");
-		KSP_Solver_H_A.solve ( *m_H_A, u_A, f_eff_A, m_KSP_A_eps, m_KSP_A_iter_max);
+		KSP_Solver_H_A.solve ( *m_H_A.get(), u_A, f_eff_A, m_KSP_A_eps, m_KSP_A_iter_max);
 		perf_log.pop("KSP solver - A","Decoupled - iterations");
 		timing_data = perf_log.get_perf_data("KSP solver - A","Decoupled - iterations");
 		std::cout << "|        Solver A time : " << timing_data.tot_time/(iter_nb + 1) << std::endl;
 		perf_log.push("KSP solver - B","Decoupled - iterations");
-		KSP_Solver_H_B.solve ( *m_H_B, u_B, f_eff_B, m_KSP_B_eps, m_KSP_B_iter_max);
+		KSP_Solver_H_B.solve ( *m_H_B.get(), u_B, f_eff_B, m_KSP_B_eps, m_KSP_B_iter_max);
 		perf_log.pop("KSP solver - B","Decoupled - iterations");
 		timing_data = perf_log.get_perf_data("KSP solver - B","Decoupled - iterations");
 		std::cout << "|        Solver B time : " << timing_data.tot_time/(iter_nb + 1) << std::endl;
@@ -637,8 +615,8 @@ void carl::PETSC_LATIN_solver::solve_modified_stiffness()
 			std::cout << "|        Writing to files " << m_phi_A_filename << ", etc ..." << std::endl;
 			write_PETSC_vector(phi_dA  ,m_phi_A_filename);
 			write_PETSC_vector(phi_dB  ,m_phi_B_filename);
-			write_PETSC_vector(*m_sol_A,m_sol_A_filename);
-			write_PETSC_vector(*m_sol_B,m_sol_B_filename);
+			write_PETSC_vector(*m_sol_A.get(),m_sol_A_filename);
+			write_PETSC_vector(*m_sol_B.get(),m_sol_B_filename);
 
 			if(rank == 0)
 			{
@@ -786,8 +764,8 @@ void carl::PETSC_LATIN_solver::solve_original_stiffness()
 	KSP_Solver_H_A.reuse_preconditioner(true);
 	KSP_Solver_H_B.reuse_preconditioner(true);
 
-	KSP_Solver_H_A.init(m_H_A, m_ksp_name_A.c_str());
-	KSP_Solver_H_B.init(m_H_B, m_ksp_name_B.c_str());
+	KSP_Solver_H_A.init(m_H_A.get(), m_ksp_name_A.c_str());
+	KSP_Solver_H_B.init(m_H_B.get(), m_ksp_name_B.c_str());
 
 	KSPType solver_type_string_A;
 	KSPType solver_type_string_B;
@@ -804,21 +782,21 @@ void carl::PETSC_LATIN_solver::solve_original_stiffness()
 	if(!m_bUseRestart)
 	{
 		perf_log.push("KSP solver - A","Initialization");
-		KSP_Solver_H_A.solve ( *m_H_A, *m_sol_A, *m_F_A, m_KSP_A_eps, m_KSP_A_iter_max);
+		KSP_Solver_H_A.solve ( *m_H_A.get(), *m_sol_A.get(), *m_F_A, m_KSP_A_eps, m_KSP_A_iter_max);
 		perf_log.pop("KSP solver - A","Initialization");
 		perf_log.push("KSP solver - B","Initialization");
-		KSP_Solver_H_B.solve ( *m_H_B, *m_sol_B, *m_F_B, m_KSP_B_eps, m_KSP_B_iter_max);
+		KSP_Solver_H_B.solve ( *m_H_B.get(), *m_sol_B.get(), *m_F_B, m_KSP_B_eps, m_KSP_B_iter_max);
 		perf_log.pop("KSP solver - B","Initialization");
 	}
 	else
 	{
-		read_PETSC_vector(*m_sol_A,m_sol_A_filename);
-		read_PETSC_vector(*m_sol_B,m_sol_B_filename);
+		read_PETSC_vector(*m_sol_A.get(),m_sol_A_filename);
+		read_PETSC_vector(*m_sol_B.get(),m_sol_B_filename);
 	}
 
 	// w_0,dI = P_I * u_0,I
-	m_P_A->vector_mult(w_dA,*m_sol_A);
-	m_P_B->vector_mult(w_dB,*m_sol_B);
+	m_P_A->vector_mult(w_dA,*m_sol_A.get());
+	m_P_B->vector_mult(w_dB,*m_sol_B.get());
 
 	// phi_d0,I = - k_dI * w_0,dI
 	if(!m_bUseRestart)
@@ -960,8 +938,8 @@ void carl::PETSC_LATIN_solver::solve_original_stiffness()
 			std::cout << "|        Writing to files " << m_phi_A_filename << ", etc ..." << std::endl;
 			write_PETSC_vector(phi_dA  ,m_phi_A_filename);
 			write_PETSC_vector(phi_dB  ,m_phi_B_filename);
-			write_PETSC_vector(*m_sol_A,m_sol_A_filename);
-			write_PETSC_vector(*m_sol_B,m_sol_B_filename);
+			write_PETSC_vector(*m_sol_A.get(),m_sol_A_filename);
+			write_PETSC_vector(*m_sol_B.get(),m_sol_B_filename);
 
 			if(rank == 0)
 			{
@@ -998,10 +976,6 @@ void carl::PETSC_LATIN_solver::solve_nonlinear(libMesh::EquationSystems& EqSys_m
 	homemade_assert_msg( m_bForcesSetUp , "   solve : Forces not set up!");
 
 	// -> Matrix dimensions
-
-	// Check them beforehand
-//	this->check_dimensions();
-
 	unsigned int 	dim_A, dim_A_local,
 					dim_B, dim_B_local,
 					dim_R, dim_R_local;
@@ -1085,14 +1059,14 @@ void carl::PETSC_LATIN_solver::solve_nonlinear(libMesh::EquationSystems& EqSys_m
 	libMesh::PetscLinearSolver<libMesh::Number> KSP_Solver_H_A(*m_comm);
 	KSP_Solver_H_A.reuse_preconditioner(true);
 
-	KSP_Solver_H_A.init(m_H_A, m_ksp_name_A.c_str());
+	KSP_Solver_H_A.init(m_H_A.get(), m_ksp_name_A.c_str());
 	perf_log.pop("KSP solvers setup","Initialization");
 
 	// -> Initialize the vectors
 	// u_0,I = H_I^-1 * F_I (KSP SOLVER!)
 
 	perf_log.push("KSP solver","Initialization");
-	KSP_Solver_H_A.solve ( *m_H_A, *m_sol_A, *m_F_A, m_KSP_A_eps, m_KSP_A_iter_max);
+	KSP_Solver_H_A.solve ( *m_H_A.get(), *m_sol_A.get(), *m_F_A, m_KSP_A_eps, m_KSP_A_iter_max);
 	perf_log.pop("KSP solver","Initialization");
 
 	// Set up non-linear system
@@ -1120,7 +1094,7 @@ void carl::PETSC_LATIN_solver::solve_nonlinear(libMesh::EquationSystems& EqSys_m
 	// Associate the extra terms to the residual and jacobian assemble object
 	// J_extra = C_extra
 	// r_extra : depends on the previous solution
-	micro_assemble_obj->set_coupling_term_matrix(m_Extra_M_B);
+	micro_assemble_obj->set_coupling_term_matrix(m_Extra_M_B.get());
 	micro_assemble_obj->set_coupling_term_vector(&Extra_F_B);
 
 	libMesh::PetscNonlinearSolver<libMesh::Real> * dummySolver =
@@ -1155,11 +1129,11 @@ void carl::PETSC_LATIN_solver::solve_nonlinear(libMesh::EquationSystems& EqSys_m
 	      << std::endl << std::endl;
 	}
 
-	m_sol_B = libMesh::cast_ptr<libMesh::PetscVector<libMesh::Number> *>(Sys_micro.solution.get());
-
 	// w_0,I = P_I * u_0,I
-	m_P_A->vector_mult(w_A,*m_sol_A);
-	m_P_B->vector_mult(w_B,*m_sol_B);
+	libMesh::PetscVector<libMesh::Number> * dummy_vec_B = libMesh::cast_ptr<libMesh::PetscVector<libMesh::Number> * >(Sys_micro.solution.get());
+	VecCopy(dummy_vec_B->vec(),m_sol_B->vec());
+	m_P_A->vector_mult(w_A,*m_sol_A.get());
+	m_P_B->vector_mult(w_B,*m_sol_B.get());
 
 	// phi_d0,I = - k_dI * w_0,I
 	phi_dA.add(-m_k_dA,w_A);
@@ -1221,7 +1195,7 @@ void carl::PETSC_LATIN_solver::solve_nonlinear(libMesh::EquationSystems& EqSys_m
 
 		perf_log.push("KSP solver","Decoupled - iterations");
 		// u_i,I = H_I^-1 * f_eff_i,I (KSP SOLVER!)
-		KSP_Solver_H_A.solve ( *m_H_A, u_A, f_eff_A, m_KSP_A_eps, m_KSP_A_iter_max);
+		KSP_Solver_H_A.solve ( *m_H_A.get(), u_A, f_eff_A, m_KSP_A_eps, m_KSP_A_iter_max);
 		perf_log.pop("KSP solver","Decoupled - iterations");
 
 		// Non-linear solver
@@ -1326,96 +1300,6 @@ void carl::PETSC_LATIN_solver::solve_nonlinear(libMesh::EquationSystems& EqSys_m
 	m_bSolved = true;
 
 }
-
-void carl::PETSC_LATIN_solver::check_dimensions()
-{
-	int H_A_mmm, H_A_nnn, H_A_local_mmm, H_A_local_nnn,
-		H_B_mmm, H_B_nnn, H_B_local_mmm, H_B_local_nnn,
-
-		C_A_mmm, C_A_nnn, C_A_local_mmm, C_A_local_nnn,
-		C_B_mmm, C_B_nnn, C_B_local_mmm, C_B_local_nnn,
-
-		P_A_mmm, P_A_nnn, P_A_local_mmm, P_A_local_nnn,
-		P_B_mmm, P_B_nnn, P_B_local_mmm, P_B_local_nnn,
-
-		F_A_size, F_A_local_size,
-		F_B_size, F_B_local_size;
-
-
-	H_A_mmm = m_H_A->m(); H_A_nnn = m_H_A->n();
-	MatGetLocalSize(m_H_A->mat(),&H_A_local_mmm,&H_A_local_nnn);
-
-	H_B_mmm = m_H_B->m(); H_B_nnn = m_H_B->n();
-	MatGetLocalSize(m_H_B->mat(),&H_B_local_mmm,&H_B_local_nnn);
-
-	C_A_mmm = m_C_RA->m(); C_A_nnn = m_C_RA->n();
-	MatGetLocalSize(m_C_RA->mat(),&C_A_local_mmm,&C_A_local_nnn);
-
-	C_B_mmm = m_C_RB->m(); C_B_nnn = m_C_RB->n();
-	MatGetLocalSize(m_C_RB->mat(),&C_B_local_mmm,&C_B_local_nnn);
-
-	P_A_mmm = m_P_A->m(); P_A_nnn = m_P_A->n();
-	MatGetLocalSize(m_P_A->mat(),&P_A_local_mmm,&P_A_local_nnn);
-
-	P_B_mmm = m_P_B->m(); P_B_nnn = m_P_B->n();
-	MatGetLocalSize(m_P_B->mat(),&P_B_local_mmm,&P_B_local_nnn);
-
-	F_A_size = m_F_A->size(); F_A_local_size = m_F_A->local_size();
-	F_B_size = m_F_B->size(); F_B_local_size = m_F_B->local_size();
-
-	// Test if the matrices are squared
-	homemade_assert_msg( H_A_mmm == H_A_nnn , "   check_dimensions : H_A.m() != H_A.n() !");
-	homemade_assert_msg( H_B_mmm == H_B_nnn , "   check_dimensions : H_B.m() != H_B.n() !");
-
-	// Test the projections
-	homemade_assert_msg( H_A_nnn == P_A_nnn , "   check_dimensions : H_A.n() != P_A.n() !");
-	homemade_assert_msg( H_B_nnn == P_B_nnn , "   check_dimensions : H_B.n() != P_B.n() !");
-	homemade_assert_msg( P_A_mmm == P_B_mmm , "   check_dimensions : P_A.m() != P_B.m() !");
-
-	// Test the couplings
-	homemade_assert_msg( H_A_nnn == C_A_nnn , "   check_dimensions : H_A.n() != C_A.n() !");
-	homemade_assert_msg( H_B_nnn == C_B_nnn , "   check_dimensions : H_B.n() != C_B.n() !");
-	homemade_assert_msg( C_A_mmm == C_B_mmm , "   check_dimensions : C_A.m() != C_B.m() !");
-
-	// Test the forces
-	homemade_assert_msg( H_A_nnn == F_A_size , "   check_dimensions : H_A.n() != F_A.size() !");
-	homemade_assert_msg( H_B_nnn == F_B_size , "   check_dimensions : H_B.n() != F_B.size() !");
-
-
-	// -> Now local !
-
-	// Test if the matrices are squared
-	homemade_assert_msg( H_A_local_mmm == H_A_local_nnn , "   check_dimensions : H_A.m() != H_A.n() (local) !");
-	homemade_assert_msg( H_B_local_mmm == H_B_local_nnn , "   check_dimensions : H_B.m() != H_B.n() (local) !");
-
-	// Test the projections
-	homemade_assert_msg( H_A_local_nnn == P_A_local_nnn , "   check_dimensions : H_A.n() != P_A.n() (local) !");
-	homemade_assert_msg( H_B_local_nnn == P_B_local_nnn , "   check_dimensions : H_B.n() != P_B.n() (local) !");
-	homemade_assert_msg( P_A_local_mmm == P_B_local_mmm , "   check_dimensions : P_A.m() != P_B.m() (local) !");
-
-	// Test the couplings
-	homemade_assert_msg( H_A_local_nnn == C_A_local_nnn , "   check_dimensions : H_A.n() != C_A.n() (local) !");
-	homemade_assert_msg( H_B_local_nnn == C_B_local_nnn , "   check_dimensions : H_B.n() != C_B.n() (local) !");
-	homemade_assert_msg( C_A_local_mmm == C_B_local_mmm , "   check_dimensions : C_A.m() != C_B.m() (local) !");
-
-	// Test the forces
-	homemade_assert_msg( H_A_local_nnn == F_A_local_size , "   check_dimensions : H_A.n() != F_A.size() (local) !");
-	homemade_assert_msg( H_B_local_nnn == F_B_local_size , "   check_dimensions : H_B.n() != F_B.size() (local) !");
-
-	m_bCheckDimensions = true;
-}
-
-
-libMesh::NumericVector<libMesh::Number>& carl::PETSC_LATIN_solver::get_solution_micro()
-{
-	return *m_sol_B;
-}
-
-libMesh::NumericVector<libMesh::Number>& carl::PETSC_LATIN_solver::get_solution_BIG()
-{
-	return *m_sol_A;
-}
-
 
 void carl::PETSC_LATIN_solver::print_convergence(std::ostream& convergenceOut)
 {

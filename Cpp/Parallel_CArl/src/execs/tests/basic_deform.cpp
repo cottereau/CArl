@@ -179,8 +179,6 @@ int main(int argc, char** argv) {
 	perf_log.pop("Physical properties","System initialization:");
 
 	// - Set the coupling matrix -----------------------------------------------
-	perf_log.push("Set coupling matrices");
-
 	std::cout << std::endl;
 	std::cout << "| ---> Constants " << std::endl;
 	std::cout << "| Macro :" << std::endl;
@@ -189,7 +187,9 @@ int main(int argc, char** argv) {
 	std::cout << "|    lambda_1     : " << eval_lambda_1(BIG_E,BIG_Mu) << std::endl;
 
 	// Solve !
+	perf_log.push("Solve");
 	elasticity_system_BIG.solve();
+	perf_log.pop("Solve");
 
 	perf_log.push("Compute stress - macro","Output:");
 	compute_stresses(equation_systems_BIG);
@@ -208,8 +208,8 @@ int main(int argc, char** argv) {
 	perf_log.pop("Save output","Output:");
 #endif
 
-	std::ofstream perf_log_file("meshes/parallel_test/output/perf_log_" + std::to_string(rank)  + ".txt");
-	perf_log_file << perf_log.get_log();
-	perf_log_file.close();
+//	std::ofstream perf_log_file("meshes/parallel_test/output/perf_log_" + std::to_string(rank)  + ".txt");
+//	perf_log_file << perf_log.get_log();
+//	perf_log_file.close();
 	return 0;
 }

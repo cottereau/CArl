@@ -180,6 +180,74 @@ void carl::print_matrix_dim(libMesh::PetscMatrix<libMesh::Number>& CouplingTestM
 	std::cout << "|          non-zeros used = " << (100.*temp_info.nz_used)/temp_info.nz_allocated << " % " << std::endl << std::endl;
 }
 
+void carl::print_matrix_info(libMesh::PetscMatrix<libMesh::Number>& InputMatrix, std::ostream & os)
+{
+	const libMesh::Parallel::Communicator& WorldComm = InputMatrix.comm();
+
+	unsigned int rank = WorldComm.rank();
+	unsigned int nodes = WorldComm.size();
+
+	MatInfo local_info;
+	MatInfo global_info;
+	MatGetInfo(InputMatrix.mat(),MAT_LOCAL,&local_info);
+	MatGetInfo(InputMatrix.mat(),MAT_LOCAL,&global_info);
+
+	// Set up local variables
+	int l_nz_used = local_info.nz_used;
+	int l_nz_allocated = local_info.nz_allocated;
+	int l_memory = local_info.memory;
+
+	int l_n = -1;
+	int l_m = -1;
+
+	double accumulator_n = 0;
+	double accumulator_m = 0;
+
+	MatGetLocalSize(InputMatrix.mat(),&l_n,&l_m);
+
+	std::vector<int>	full_nz_used;
+	std::vector<int>	full_nz_allocated;
+	std::vector<int>	full_memory;
+
+	std::vector<int>	full_n;
+	std::vector<int>	full_m;
+
+	if(rank == 0)
+	{
+		full_nz_used.resize(nodes,0);
+		full_nz_allocated.resize(nodes,0);
+		full_memory.resize(nodes,0);
+		full_n.resize(nodes,0);
+		full_m.resize(nodes,0);
+	}
+
+	WorldComm.gather(0,l_nz_used,full_nz_used);
+	WorldComm.gather(0,l_nz_allocated,full_nz_allocated);
+	WorldComm.gather(0,l_memory,full_memory);
+	WorldComm.gather(0,l_n,full_n);
+	WorldComm.gather(0,l_m,full_m);
+
+	if(rank == 0)
+	{
+		os << "# rank \t local_n \t local_m \t start_n \t start_m \t nz_alloc \t nz_used \t memory  " << std::endl;
+		for(unsigned int iii = 0; iii < nodes; ++iii)
+		{
+			os 	<< iii << " \t "
+				<< full_n[iii] << " \t "
+				<< full_m[iii] << " \t "
+				<< accumulator_n << " \t "
+				<< accumulator_m << " \t "
+				<< full_nz_allocated[iii] << " \t "
+				<< full_nz_used[iii] << " \t "
+				<< full_memory[iii] << std::endl;
+			accumulator_n += full_n[iii];
+			accumulator_m += full_m[iii];
+		}
+	}
+
+	WorldComm.barrier();
+}
+
 void carl::solve_linear_PETSC(	libMesh::PetscMatrix<libMesh::Number>& A,
 								libMesh::PetscVector<libMesh::Number>& b,
 								libMesh::PetscVector<libMesh::Number>& x,

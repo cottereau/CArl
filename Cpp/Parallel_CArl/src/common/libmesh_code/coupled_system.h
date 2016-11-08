@@ -12,6 +12,7 @@
 
 #include "mpi_carl_tools.h"
 #include "weak_formulations.h"
+#include "coupled_solver.h"
 #include "LATIN_solver.h"
 #include "PETSC_matrix_operations.h"
 #include "weight_parameter_function.h"
@@ -284,7 +285,7 @@ protected:
 
 	// -> LATIN solver
 	carl::CoupledSolverType m_solver_type;
-	PETSC_LATIN_solver m_LATIN_solver;
+	std::shared_ptr<coupled_solver> m_coupled_solver;
 
 private:
 	coupled_system();
@@ -296,9 +297,19 @@ public:
 	coupled_system(const libMesh::Parallel::Communicator& comm, carl::CoupledSolverType solver_type = carl::LATIN_MODIFIED_STIFFNESS) :
 			m_bHasAssembled_BIG { false },
 			m_bHasDefinedMeshRestrictions { false },
-			m_solver_type { solver_type },
-			m_LATIN_solver { PETSC_LATIN_solver(comm,m_solver_type) }
+			m_solver_type { solver_type }
+
 	{
+		switch (m_solver_type)
+		{
+			case carl::LATIN_MODIFIED_STIFFNESS:
+			case carl::LATIN_ORIGINAL_STIFFNESS:
+				m_coupled_solver =
+						std::shared_ptr<coupled_solver>(new PETSC_LATIN_solver(comm,solver_type));
+				break;
+			case carl::CG:
+				break;
+		}
 	}
 	;
 
@@ -563,9 +574,10 @@ public:
 			const std::string micro_type = "Elasticity",
 			bool bSameElemsType = true);
 
-	void set_LATIN_restart( bool bUseRestart,
+	void set_restart( bool bUseRestart,
 							bool bPrintRestart,
-							const std::string restart_base_filename = "restart_");
+							const std::string restart_base_filename = "restart_",
+							bool bPrintMatrix = false);
 
 	void set_LATIN_solver(	const std::string micro_name,const std::string type_name,
 							double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,

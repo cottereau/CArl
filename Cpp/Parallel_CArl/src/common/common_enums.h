@@ -12,8 +12,9 @@ namespace carl
 {
 // Coupled system solver type
 enum CoupledSolverType {
-	LATIN_MODIFIED_STIFFNESS = 0, // Use LATIN's modified stiffness
-	LATIN_ORIGINAL_STIFFNESS = 1 // Keep the stiffness unchanged
+	LATIN_MODIFIED_STIFFNESS = 0, // Original LATIN solver
+	LATIN_ORIGINAL_STIFFNESS = 1, // Original LATIN solver, with unmodified K's
+	CG    = 2  // Conjugate gradient solver
 };
 }
 

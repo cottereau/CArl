@@ -783,7 +783,7 @@ int main(int argc, char** argv) {
 	if(input_params.LATIN_b_PrintRestartFiles || input_params.LATIN_b_UseRestartFiles)
 	{
 		std::cout << "|    restart file : " << input_params.LATIN_restart_file_base << "*" << std::endl;
-		CoupledTest.set_LATIN_restart(	input_params.LATIN_b_UseRestartFiles,
+		CoupledTest.set_restart(	input_params.LATIN_b_UseRestartFiles,
 				input_params.LATIN_b_PrintRestartFiles,
 				input_params.LATIN_restart_file_base);
 	}
