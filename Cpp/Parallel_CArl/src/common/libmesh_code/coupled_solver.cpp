@@ -90,9 +90,6 @@ void carl::coupled_solver::check_dimensions()
 		C_A_mmm, C_A_nnn, C_A_local_mmm, C_A_local_nnn,
 		C_B_mmm, C_B_nnn, C_B_local_mmm, C_B_local_nnn,
 
-//		P_A_mmm, P_A_nnn, P_A_local_mmm, P_A_local_nnn,
-//		P_B_mmm, P_B_nnn, P_B_local_mmm, P_B_local_nnn,
-
 		F_A_size, F_A_local_size,
 		F_B_size, F_B_local_size;
 

@@ -101,7 +101,6 @@ void carl::lump_matrix_and_invert(		libMesh::PetscMatrix<libMesh::Number>& matri
 	vecOutput.reciprocal();
 }
 
-
 void carl::print_matrix(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix)
 {
 	libMesh::Real accumulator = 0;
