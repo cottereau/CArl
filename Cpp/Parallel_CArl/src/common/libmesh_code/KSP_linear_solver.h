@@ -9,10 +9,9 @@
 #define COMMON_LIBMESH_CODE_KSP_LINEAR_SOLVER_H_
 
 #include "carl_headers.h"
+#include "generic_solver_interface.h"
 
 #include "PETSC_matrix_operations.h"
-
-#include "generic_solver_interface.h"
 
 namespace carl
 {
@@ -28,13 +27,11 @@ protected:
 
 	libMesh::PetscMatrix<libMesh::Number> * m_Matrix;
 
-
 public:
 
 	// Constructor
 	KSP_linear_solver(	const libMesh::Parallel::Communicator& comm) :
-		m_comm { &comm },
-
+		generic_solver_interface(comm),
 		m_KSP_eps { 1E-8 },
 		m_KSP_iter_max { 10000 },
 

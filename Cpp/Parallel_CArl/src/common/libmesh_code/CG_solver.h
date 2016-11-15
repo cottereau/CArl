@@ -10,6 +10,7 @@
 
 #include "carl_headers.h"
 #include "coupled_solver.h"
+#include "KSP_linear_solver.h"
 #include "assemble_functions_nonlinear_elasticity_3D.h"
 
 #include "PETSC_matrix_operations.h"
@@ -88,11 +89,13 @@ public:
 							libMesh::PetscMatrix<libMesh::Number>& C_RR);
 
 	// Methods
-	void set_convergence_limits(double eps_abs, double eps_rel, int convIter, double div_tol);
+	void set_convergence_limits(double eps_abs, double eps_rel, int convIter = 1E4, double div_tol = 1E4);
 
 	void use_preconditioner(bool flag = true);
 
-	void build_preconditioner();
+	void build_preconditioner()
+	{
+	};
 
 	void print_convergence(std::ostream& convergenceOut);
 };

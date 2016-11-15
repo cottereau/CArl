@@ -5,6 +5,6 @@
  *      Author: Thiago Milanetto Schlittler
  */
 
-
+#include "generic_solver_interface.h"
 
 

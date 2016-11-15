@@ -292,45 +292,131 @@ void carl::coupled_system::set_restart(		bool bUseRestart,
 			cast_LATIN_solver->set_restart(bUseRestart,bPrintRestart,restart_base_filename);
 			cast_LATIN_solver->set_info(bPrintMatrix,restart_base_filename);
 		}
+		break;
 	case CG:
+		{
+			std::shared_ptr<PETSC_CG_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_solver>(m_coupled_solver);
+
+			cast_CG_solver->set_restart(bUseRestart,bPrintRestart,restart_base_filename);
+			cast_CG_solver->set_info(bPrintMatrix,restart_base_filename);
+		}
 		break;
 	}
 };
+
+void carl::coupled_system::set_macro_system(
+		const std::string micro_name,
+		const std::string type_name,
+		void fptr_assemble(		libMesh::EquationSystems& es,
+								const std::string& name, weight_parameter_function& weight_mask))
+{
+	// Get the system
+	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
+	libMesh::ImplicitSystem& Sys_BIG =   libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_BIG.get_system(type_name));
+
+	// Assemble the systems
+	if(fptr_assemble)
+	{
+		// Get the weight functions
+		weight_parameter_function& alpha_mask = * m_alpha_masks[micro_name];
+
+		// Assemble
+		fptr_assemble(EqSystems_BIG,type_name,alpha_mask);
+	}
+	else
+	{
+		Sys_BIG.assemble();
+	}
+
+	// Close matrix and vector
+	Sys_BIG.matrix->close();
+	Sys_BIG.rhs->close();
+	m_bHasAssembled_BIG = true;
+}
+
+void carl::coupled_system::set_micro_system(
+		const std::string micro_name,
+		const std::string type_name,
+		void fptr_assemble(		libMesh::EquationSystems& es,
+										const std::string& name, weight_parameter_function& weight_mask))
+{
+	// Get the system
+	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
+	libMesh::ImplicitSystem& Sys_micro = libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_micro.get_system(type_name));
+
+	// Assemble the systems
+	if(fptr_assemble)
+	{
+		// Get the weight functions
+		weight_parameter_function& alpha_mask = * m_alpha_masks[micro_name];
+
+		// Assemble
+		fptr_assemble(EqSystems_micro,type_name,alpha_mask);
+	}
+	else
+	{
+		Sys_micro.assemble();
+	}
+
+	// Close matrix and vector
+	Sys_micro.matrix->close();
+	Sys_micro.rhs->close();
+	m_bHasAssembled_micro[micro_name] = true;
+}
+
+void carl::coupled_system::set_micro_system(
+		const std::string micro_name,
+		const std::string type_name,
+		void fptr_assemble(		libMesh::EquationSystems& es,
+								const std::string& name, weight_parameter_function& weight_mask,
+								anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
+								anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj)
+{
+	// Get the system
+	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
+	libMesh::ImplicitSystem& Sys_micro = libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_micro.get_system(type_name));
+
+	// Assemble the systems
+	if(fptr_assemble)
+	{
+		// Get the weight functions
+		weight_parameter_function& alpha_mask = * m_alpha_masks[micro_name];
+
+		// Assemble
+		fptr_assemble(EqSystems_micro,type_name,alpha_mask,anisotropy_obj);
+	}
+	else
+	{
+		Sys_micro.assemble();
+	}
+
+	// Close matrix and vector
+	Sys_micro.matrix->close();
+	Sys_micro.rhs->close();
+	m_bHasAssembled_micro[micro_name] = true;
+}
 
 void carl::coupled_system::set_LATIN_solver(const std::string micro_name,
 		const std::string type_name,
 		double k_dA, double k_dB, double k_cA, double k_cB,
 		double eps, int convIter, double relax)
 {
-	// Get the systems
-	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
-	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
-
-	libMesh::ImplicitSystem& Sys_BIG =   libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_BIG.get_system(type_name));
-	libMesh::ImplicitSystem& Sys_micro = libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_micro.get_system(type_name));
-
-	// Assemble the systems
-	Sys_BIG.assemble();
-	Sys_BIG.matrix->close();
-	Sys_BIG.rhs->close();
-	m_bHasAssembled_BIG = true;
-
-	Sys_micro.assemble();
-	Sys_micro.matrix->close();
-	Sys_micro.rhs->close();
-	m_bHasAssembled_micro[micro_name] = true;
-
-	// Get the matrices
-	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_BIG.matrix);
-	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_micro.matrix);
+	this->set_macro_system(micro_name,type_name);
+	this->set_micro_system(micro_name,type_name);
 
 	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
 	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
 	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
 
-	// Get the vectors
-	libMesh::PetscVector<libMesh::Number>& F_A = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_BIG.rhs);
-	libMesh::PetscVector<libMesh::Number>& F_B = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_micro.rhs);
+	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_A =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).rhs);
+
+	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
 
 	// Set the solver parameters
 	switch(m_solver_type)
@@ -366,38 +452,23 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 												double k_dA, double k_dB, double k_cA, double k_cB,
 												double eps, int convIter, double relax)
 {
-	// Get the systems
-	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
-	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
-
-	libMesh::ImplicitSystem& Sys_BIG =   libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_BIG.get_system(type_name));
-	libMesh::ImplicitSystem& Sys_micro = libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_micro.get_system(type_name));
-
-	// Get the weight functions
-	weight_parameter_function& alpha_mask = * m_alpha_masks[micro_name];
-
-	// Assemble the systems
-	fptr_BIG(EqSystems_BIG,type_name,alpha_mask);
-	Sys_BIG.matrix->close();
-	Sys_BIG.rhs->close();
-	m_bHasAssembled_BIG = true;
-
-	fptr_micro(EqSystems_micro,type_name,alpha_mask);
-	Sys_micro.matrix->close();
-	Sys_micro.rhs->close();
-	m_bHasAssembled_micro[micro_name] = true;
+	this->set_macro_system(micro_name,type_name,fptr_BIG);
+	this->set_micro_system(micro_name,type_name,fptr_micro);
 
 	// Get the matrices
-	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_BIG.matrix);
-	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_micro.matrix);
-
 	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
 	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
 	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
 
-	// Get the vectors
-	libMesh::PetscVector<libMesh::Number>& F_A = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_BIG.rhs);
-	libMesh::PetscVector<libMesh::Number>& F_B = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_micro.rhs);
+	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_A =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).rhs);
+
+	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
 
 	switch(m_solver_type)
 	{
@@ -423,8 +494,6 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 	case CG:
 		break;
 	}
-
-
 };
 
 void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const std::string type_name,
@@ -436,38 +505,23 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 												double k_dA, double k_dB, double k_cA, double k_cB,
 												double eps, int convIter, double relax)
 {
-	// Get the systems
-	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
-	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
-
-	libMesh::ImplicitSystem& Sys_BIG =   libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_BIG.get_system(type_name));
-	libMesh::ImplicitSystem& Sys_micro = libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_micro.get_system(type_name));
-
-	// Get the weight functions
-	weight_parameter_function& alpha_mask = * m_alpha_masks[micro_name];
-
-	// Assemble the systems
-	fptr_BIG(EqSystems_BIG,type_name,alpha_mask);
-	Sys_BIG.matrix->close();
-	Sys_BIG.rhs->close();
-	m_bHasAssembled_BIG = true;
-
-	fptr_micro(EqSystems_micro,type_name,alpha_mask,anisotropy_obj);
-	Sys_micro.matrix->close();
-	Sys_micro.rhs->close();
-	m_bHasAssembled_micro[micro_name] = true;
+	this->set_macro_system(micro_name,type_name,fptr_BIG);
+	this->set_micro_system(micro_name,type_name,fptr_micro,anisotropy_obj);
 
 	// Get the matrices
-	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_BIG.matrix);
-	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_micro.matrix);
-
 	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
 	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
 	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
 
-	// Get the vectors
-	libMesh::PetscVector<libMesh::Number>& F_A = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_BIG.rhs);
-	libMesh::PetscVector<libMesh::Number>& F_B = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_micro.rhs);
+	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_A =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).rhs);
+
+	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
 
 	switch(m_solver_type)
 	{
@@ -491,6 +545,147 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 			break;
 		}
 	case CG:
+		break;
+	}
+};
+
+void carl::coupled_system::set_CG_solver(const std::string micro_name,
+		const std::string type_name,
+		double eps_abs, double eps_rel, int convIter, double div_tol)
+{
+	this->set_macro_system(micro_name,type_name);
+	this->set_micro_system(micro_name,type_name);
+
+	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
+
+	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_A =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).rhs);
+
+	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
+
+	// Set the solver parameters
+	switch(m_solver_type)
+	{
+	case CG:
+		{
+			std::shared_ptr<PETSC_CG_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_solver>(m_coupled_solver);
+
+			// Set the solver matrices
+			cast_CG_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
+
+			// Set the solver matrices
+			cast_CG_solver->set_forces(F_A,F_B);
+
+			// Set CG parameters (convergence )
+			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol);
+			break;
+		}
+	case LATIN_MODIFIED_STIFFNESS:
+	case LATIN_ORIGINAL_STIFFNESS:
+		break;
+	}
+};
+
+void carl::coupled_system::set_CG_solver(const std::string micro_name, const std::string type_name,
+												void fptr_BIG(		libMesh::EquationSystems& es,
+																	const std::string& name, weight_parameter_function& weight_mask),
+												void fptr_micro(	libMesh::EquationSystems& es,
+																	const std::string& name, weight_parameter_function& weight_mask),
+												double eps_abs, double eps_rel, int convIter, double div_tol)
+{
+	this->set_macro_system(micro_name,type_name,fptr_BIG);
+	this->set_micro_system(micro_name,type_name,fptr_micro);
+
+	// Get the matrices
+	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
+
+	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_A =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).rhs);
+
+	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
+
+	// Set the solver parameters
+	switch(m_solver_type)
+	{
+	case CG:
+		{
+			std::shared_ptr<PETSC_CG_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_solver>(m_coupled_solver);
+
+			// Set the solver matrices
+			cast_CG_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
+
+			// Set the solver matrices
+			cast_CG_solver->set_forces(F_A,F_B);
+
+			// Set CG parameters (convergence )
+			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol);
+			break;
+		}
+	case LATIN_MODIFIED_STIFFNESS:
+	case LATIN_ORIGINAL_STIFFNESS:
+		break;
+	}
+};
+
+void carl::coupled_system::set_CG_solver(const std::string micro_name, const std::string type_name,
+												void fptr_BIG(		libMesh::EquationSystems& es,
+																	const std::string& name, weight_parameter_function& weight_mask),
+												void fptr_micro(	libMesh::EquationSystems& es,
+																	const std::string& name, weight_parameter_function& weight_mask, anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
+												anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj,
+												double eps_abs, double eps_rel, int convIter, double div_tol)
+{
+	this->set_macro_system(micro_name,type_name,fptr_BIG);
+	this->set_micro_system(micro_name,type_name,fptr_micro,anisotropy_obj);
+
+	// Get the matrices
+	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
+
+	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_A =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).rhs);
+
+	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
+
+	// Set the solver parameters
+	switch(m_solver_type)
+	{
+	case CG:
+		{
+			std::shared_ptr<PETSC_CG_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_solver>(m_coupled_solver);
+
+			// Set the solver matrices
+			cast_CG_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
+
+			// Set the solver matrices
+			cast_CG_solver->set_forces(F_A,F_B);
+
+			// Set CG parameters (convergence )
+			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol);
+			break;
+		}
+	case LATIN_MODIFIED_STIFFNESS:
+	case LATIN_ORIGINAL_STIFFNESS:
 		break;
 	}
 };
@@ -503,33 +698,23 @@ void carl::coupled_system::set_LATIN_nonlinear_solver(const std::string micro_na
 												double k_dA, double k_dB, double k_cA, double k_cB,
 												double eps, int convIter, double relax)
 {
+	this->set_macro_system(micro_name,type_name_BIG,fptr_BIG);
+
 	// Get the systems
-	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
 	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
-
-	libMesh::ImplicitSystem& Sys_BIG =   libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_BIG.get_system(type_name_BIG));
-//	libMesh::NonlinearImplicitSystem& Sys_micro = libMesh::cast_ref<libMesh::NonlinearImplicitSystem&>(EqSystems_micro.get_system(type_name_micro));
-
-	// Get the weight functions
-	weight_parameter_function& alpha_mask = * m_alpha_masks[micro_name];
-
-	// Assemble the systems
-	fptr_BIG(EqSystems_BIG,type_name_BIG,alpha_mask);
-	Sys_BIG.matrix->close();
-	Sys_BIG.rhs->close();
-	m_bHasAssembled_BIG = true;
 
 	// Since the micro system is non-linear, the assemble steps must be done during the solves
 
 	// Get the matrices
-	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(* Sys_BIG.matrix);
-
 	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
 	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
 	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
 
-	// Get the vectors
-	libMesh::PetscVector<libMesh::Number>& F_A = libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(* Sys_BIG.rhs);
+	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name_BIG)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_A =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name_BIG)).rhs);
+
 
 	switch(m_solver_type)
 	{
@@ -555,11 +740,9 @@ void carl::coupled_system::set_LATIN_nonlinear_solver(const std::string micro_na
 	case CG:
 		break;
 	}
-
-
 };
 
-void carl::coupled_system::solve_LATIN(const std::string micro_name, const std::string type_name, const std::string conv_name)
+void carl::coupled_system::solve(const std::string micro_name, const std::string type_name, const std::string conv_name)
 {
 	// Solve!
 	m_coupled_solver->solve();
@@ -585,7 +768,7 @@ void carl::coupled_system::solve_LATIN(const std::string micro_name, const std::
 	Sys_micro.solution->close();
 	Sys_micro.update();
 
-	print_LATIN_convergence(conv_name);
+	print_convergence(conv_name);
 }
 
 void carl::coupled_system::solve_LATIN_nonlinear(const std::string micro_name, const std::string type_name_micro, const std::string type_name_BIG, const std::string conv_name)
@@ -628,7 +811,7 @@ void carl::coupled_system::solve_LATIN_nonlinear(const std::string micro_name, c
 	Sys_micro.solution->close();
 	Sys_micro.update();
 
-	print_LATIN_convergence(conv_name);
+	print_convergence(conv_name);
 }
 
 void carl::coupled_system::print_matrix_BIG_info(const std::string& name)
@@ -661,7 +844,7 @@ void carl::coupled_system::print_matrix_mediator_info(const std::string& name)
 	print_matrix(CouplingTestMatrix);
 }
 
-void carl::coupled_system::print_LATIN_convergence(const std::string& filename)
+void carl::coupled_system::print_convergence(const std::string& filename)
 {
 	std::ofstream convergenceOut(filename);
 
@@ -676,7 +859,12 @@ void carl::coupled_system::print_LATIN_convergence(const std::string& filename)
 			break;
 		}
 	case CG:
-		break;
+		{
+			std::shared_ptr<PETSC_CG_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_solver>(m_coupled_solver);
+
+			cast_CG_solver->print_convergence(convergenceOut);
+			break;
+		}
 	}
 
 	convergenceOut.close();

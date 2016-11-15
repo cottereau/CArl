@@ -32,9 +32,9 @@ public:
 
 	};
 
-	virtual void solve(libMesh::PetscVector<libMesh::Number>& sol, libMesh::PetscVector<libMesh::Number>& rhs);
+	virtual void solve(libMesh::PetscVector<libMesh::Number>& sol, libMesh::PetscVector<libMesh::Number>& rhs) = 0;
 
-	virtual void print_type();
+	virtual void print_type() = 0;
 };
 
 }

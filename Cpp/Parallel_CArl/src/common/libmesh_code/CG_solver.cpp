@@ -67,8 +67,8 @@ void carl::PETSC_CG_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Number>&
 
 		m_PC = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(new libMesh::PetscMatrix<libMesh::Number>(*m_comm));
 		m_PC->init(M,N,local_M,local_M,1,0);
-		MatShift(m_PC->mat(),1.0);
 		m_PC->close();
+		MatShift(m_PC->mat(),1.0);
 	}
 
 	m_bMatricesSetUp = true;
@@ -122,6 +122,8 @@ void carl::PETSC_CG_solver::solve()
 	dim_R_local = silly_local;
 
 	// -> Declarations - convergence parameters
+	perf_log.push("Vector declarations","Initialization");
+
 	double coupled_residual_norm = 0;
 	int    iter_nb = 0;
 
@@ -199,6 +201,7 @@ void carl::PETSC_CG_solver::solve()
 	double rho_i = 0;
 	double rho_i_old = 0;
 	double rho_0 = 0;
+	double dummy_aux = 0;
 
 	perf_log.pop("Vector declarations","Initialization");
 
@@ -236,9 +239,11 @@ void carl::PETSC_CG_solver::solve()
 		// r_0 = C_A * u_0,A + C_B * u_0,B
 		m_C_RA->vector_mult(r_i_old,u0_A);
 		m_C_RB->vector_mult_add(r_i_old,u0_B);
+		std::cout << r_i_old.l2_norm() << std::endl;
 
 		// z_0 = [ M^-1 ] * r_0 = PC * r_0
 		m_PC->vector_mult(z_i,r_i_old);
+		std::cout << m_PC->linfty_norm() << " " << m_PC->l1_norm() << std::endl;
 
 		// p_0 = z_0
 		p_i_old = z_i;
@@ -282,15 +287,19 @@ void carl::PETSC_CG_solver::solve()
 
 		// -> Generate new correction
 		// w_i,I = M_I^-1 * C_I^T* p_i
-		perf_log.push("KSP solver - A","Coupled CG iterations");
 		MatMultTranspose(m_C_RA->mat(),p_i_old.vec(),rhs_A.vec());
+		perf_log.push("KSP solver - A","Coupled CG iterations");
 		KSP_Solver_M_A.solve(w_A,rhs_A);
 		perf_log.pop("KSP solver - A","Coupled CG iterations");
+		timing_data = perf_log.get_perf_data("KSP solver - A","Coupled CG iterations");
+		std::cout << "|        Solver A time : " << timing_data.tot_time/(iter_nb + 1) << std::endl;
 
-		perf_log.push("KSP solver - B","Coupled CG iterations");
 		MatMultTranspose(m_C_RB->mat(),p_i_old.vec(),rhs_B.vec());
+		perf_log.push("KSP solver - B","Coupled CG iterations");
 		KSP_Solver_M_B.solve(w_B,rhs_B);
 		perf_log.pop("KSP solver - B","Coupled CG iterations");
+		timing_data = perf_log.get_perf_data("KSP solver - B","Coupled CG iterations");
+		std::cout << "|        Solver B time : " << timing_data.tot_time/(iter_nb + 1) << std::endl;
 
 		perf_log.push("New correction","Coupled CG iterations");
 
@@ -299,9 +308,13 @@ void carl::PETSC_CG_solver::solve()
 		m_C_RB->vector_mult_add(q_i,w_B);
 
 		// alpha_i = rho_i / ( p_i * q_i )
-		alpha_i = rho_i_old / (p_i_old.dot(q_i));
+		dummy_aux = p_i_old.dot(q_i);
+		alpha_i = rho_i_old / dummy_aux;
+		std::cout << " alpha : " << alpha_i << std::endl;
+		std::cout << rho_i_old << " " <<  dummy_aux << std::endl;
 		lambda_vec = lambda_vec_old;
 		lambda_vec.add(alpha_i,p_i_old);
+		std::cout << lambda_vec.l2_norm() << std::endl;
 		perf_log.pop("New correction","Coupled CG iterations");
 
 		// -> Update auxiliary vectors
@@ -317,7 +330,11 @@ void carl::PETSC_CG_solver::solve()
 		rho_i = r_i.dot(z_i);
 
 		// beta_(i+1) = rho_(i+1) / rho_i
+		std::cout << rho_i << " " <<  rho_i_old << std::endl;
+		std::cout << r_i.l2_norm() << " " << z_i.l2_norm() << std::endl;
 		beta_ip = rho_i / rho_i_old;
+
+		std::cout << " beta : " << beta_ip << std::endl;
 
 		// p_(i+1) = z_(i+1) + beta_(i+1) * p_i
 		p_i = z_i;
@@ -326,6 +343,8 @@ void carl::PETSC_CG_solver::solve()
 
 		// -> Check the convergence
 		++iter_nb;
+
+		std::cout << "| rho : " << rho_i << " " << rho_0 << std::endl; std::cout.flush();
 
 		// Absolute convergence
 		if(rho_i < m_CG_conv_eps_abs)

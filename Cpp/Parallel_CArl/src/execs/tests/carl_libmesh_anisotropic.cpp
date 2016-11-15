@@ -342,6 +342,8 @@ void get_input_params(GetPot& field_parser,
 			input_params.solver_type = carl::LATIN_MODIFIED_STIFFNESS;
 		if(input_params.solver_type_string == "LATIN_Original_Stiffness")
 			input_params.solver_type = carl::LATIN_ORIGINAL_STIFFNESS;
+		if(input_params.solver_type_string == "CG")
+			input_params.solver_type = carl::CG;
 	}
 }
 ;
@@ -797,19 +799,37 @@ int main(int argc, char** argv) {
 				input_params.LATIN_b_PrintRestartFiles,
 				input_params.LATIN_restart_file_base);
 	}
+	std::cout << std::endl << "| --> Setting the solver " << std::endl << std::endl;
 
-	CoupledTest.set_LATIN_solver(	"MicroSys","Elasticity",
-									assemble_elasticity_with_weight,
-									assemble_elasticity_anisotropic_with_weight,
-									anisotropy_data,
-									input_params.k_dA, input_params.k_dB, input_params.k_cA, input_params.k_cB,
-									input_params.LATIN_eps, input_params.LATIN_conv_max, input_params.LATIN_relax);
+	switch(input_params.solver_type)
+	{
+		case carl::LATIN_MODIFIED_STIFFNESS:
+		case carl::LATIN_ORIGINAL_STIFFNESS:
+		{
+			CoupledTest.set_LATIN_solver(	"MicroSys","Elasticity",
+											assemble_elasticity_with_weight,
+											assemble_elasticity_anisotropic_with_weight,
+											anisotropy_data,
+											input_params.k_dA, input_params.k_dB, input_params.k_cA, input_params.k_cB,
+											input_params.LATIN_eps, input_params.LATIN_conv_max, input_params.LATIN_relax);
+			break;
+		}
+		case carl::CG:
+		{
+			CoupledTest.set_CG_solver(	"MicroSys","Elasticity",
+											assemble_elasticity_with_weight,
+											assemble_elasticity_anisotropic_with_weight,
+											anisotropy_data);
+			break;
+		}
+	}
+
 	perf_log.pop("Set up","LATIN Solver:");
 
 
 	// Solve !
 	perf_log.push("Solve","LATIN Solver:");
-	CoupledTest.solve_LATIN("MicroSys","Elasticity",input_params.LATIN_convergence_output);
+	CoupledTest.solve("MicroSys","Elasticity",input_params.LATIN_convergence_output);
 	perf_log.pop("Solve","LATIN Solver:");
 
 	// Calculate stress
