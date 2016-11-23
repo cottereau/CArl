@@ -16,6 +16,13 @@ enum CoupledSolverType {
 	LATIN_ORIGINAL_STIFFNESS = 1, // Original LATIN solver, with unmodified K's
 	CG    = 2  // Conjugate gradient solver
 };
+
+enum IntersectionMeshingMethod {
+	LIBMESH_TETGEN = 0, // libMesh Tetgen algorithm, problematic with
+						// Intel compilers
+	CGAL = 1 			// Intersection meshing algorithm using
+						// CGAL's Triangulation_3
+};
 }
 
 

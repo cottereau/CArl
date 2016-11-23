@@ -15,16 +15,52 @@ void Mesh_Intersection::triangulate_intersection(const std::set<libMesh::Point> 
 		m_libMesh_PolyhedronMesh.add_point(*it_set);
 	}
 
-//	std::cout << "    " << m_libMesh_PolyhedronMesh.n_nodes() << " nodes:" << std::endl;
-//	for(unsigned int iii = 0; iii < m_libMesh_PolyhedronMesh.n_nodes(); ++iii)
-//	{
-//		m_libMesh_PolyhedronMesh.node(iii).print();
-//		std::cout << std::endl;
-//	}
-	libMesh::TetGenMeshInterface 			temp_tetgen_interface(m_libMesh_PolyhedronMesh);
-//	std::cout << "    Associated interface with the mesh" << std::endl;
-	temp_tetgen_interface.triangulate_pointset();
-//	std::cout << "    Finished triangulation" << std::endl;
+	switch (m_MeshingMethod)
+	{
+	case IntersectionMeshingMethod::LIBMESH_TETGEN:
+	{
+		libMesh::TetGenMeshInterface 			temp_tetgen_interface(m_libMesh_PolyhedronMesh);
+		temp_tetgen_interface.triangulate_pointset();
+		break;
+	}
+	case IntersectionMeshingMethod::CGAL:
+	{
+		// Clear CGAL's mesh
+		m_CGAL_PolyhedronMesh.clear();
+
+		// This is a superfluous extra point conversion:
+		// (CGAL Exact -> CGAL Inexact -> LibMesh -> CGAL Inexact)
+		// But changing this would need a re-structuring of the code (TODO !)
+		Point_3 dummy_CGAL_point;
+		const libMesh::Point * dummy_libMesh_point;
+		for(int iii = 0; iii < input_points.size(); ++iii)
+		{
+			dummy_libMesh_point = &m_libMesh_PolyhedronMesh.point(iii);
+			dummy_CGAL_point = Point_3( (*dummy_libMesh_point)(0),(*dummy_libMesh_point)(1),(*dummy_libMesh_point)(2));
+
+			// Insert vertex and save the corresponding
+			Vertex_handle_3 dummy_vertex_handle = m_CGAL_PolyhedronMesh.insert(dummy_CGAL_point);
+			dummy_vertex_handle->info().ExtIndex = iii;
+		}
+
+		// At this point, CGAL generated the mesh, now we have to convert it to libMesh
+		unsigned int dummy_vertex_idx = 0;
+		for(	Finite_cells_iterator_3 cell_it = m_CGAL_PolyhedronMesh.finite_cells_begin();
+				cell_it != m_CGAL_PolyhedronMesh.finite_cells_end();
+				++cell_it)
+		{
+			libMesh::Elem * elem_pointer =  m_libMesh_PolyhedronMesh.add_elem(new libMesh::Tet4);
+			for(int iii = 0; iii < 4; ++iii)
+			{
+				dummy_vertex_idx = cell_it->vertex(iii)->info().ExtIndex;
+				elem_pointer->set_node(iii) = &(m_libMesh_PolyhedronMesh.node(dummy_vertex_idx));
+			}
+		}
+		m_libMesh_PolyhedronMesh.prepare_for_use();
+
+		break;
+	}
+	}
 }
 
 void Mesh_Intersection::update_intersection_mesh()

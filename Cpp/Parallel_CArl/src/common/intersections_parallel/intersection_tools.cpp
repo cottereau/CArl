@@ -463,6 +463,10 @@ bool Intersection_Tools::libMesh_exact_intersection_inside_coupling(const libMes
 
 	// Dummy CGAL point
 	Point_3		dummy_CGAL_point;
+	libMesh::Point dummy_libMesh_point;
+
+	std::vector<double> bbox_dims(6,0);
+	double inter_vol = 0;
 
 	if(bTestNeeded)
 	{
@@ -538,10 +542,52 @@ bool Intersection_Tools::libMesh_exact_intersection_inside_coupling(const libMes
 			// Sometimes, CGAL will generate a very small volume, which follow
 			// the "if" conditions above, but results in a point or facet when
 			// converted to inexact values. The checks below test for it.
-			if(points_out.size() < 4)
+			std::set<libMesh::Point>::const_iterator it_set = points_out.begin();
+			dummy_libMesh_point = *it_set;
+
+			bbox_dims[0] = dummy_libMesh_point(0);
+			bbox_dims[1] = dummy_libMesh_point(0);
+			bbox_dims[2] = dummy_libMesh_point(1);
+			bbox_dims[3] = dummy_libMesh_point(1);
+			bbox_dims[4] = dummy_libMesh_point(2);
+			bbox_dims[5] = dummy_libMesh_point(2);
+			++it_set;
+
+			for(; it_set != points_out.end(); ++it_set)
+			{
+				dummy_libMesh_point = *it_set;
+				if(bbox_dims[0] > dummy_libMesh_point(0)) // Min x
+					bbox_dims[0] = dummy_libMesh_point(0);
+				if(bbox_dims[1] < dummy_libMesh_point(0)) // Max x
+					bbox_dims[1] = dummy_libMesh_point(0);
+				if(bbox_dims[2] > dummy_libMesh_point(1)) // Min y
+					bbox_dims[2] = dummy_libMesh_point(1);
+				if(bbox_dims[3] < dummy_libMesh_point(1)) // Max y
+					bbox_dims[3] = dummy_libMesh_point(1);
+				if(bbox_dims[4] > dummy_libMesh_point(2)) // Min z
+					bbox_dims[4] = dummy_libMesh_point(2);
+				if(bbox_dims[5] < dummy_libMesh_point(2)) // Max z
+					bbox_dims[5] = dummy_libMesh_point(2);
+
+//				it_set->print();
+//				std::cout << std::endl;
+			}
+
+			inter_vol = std::abs((bbox_dims[1] - bbox_dims[0]) * (bbox_dims[3] - bbox_dims[2]) * (bbox_dims[5] - bbox_dims[4]));
+//			std::cout << " -> Volume = " << inter_vol << std::endl;
+			if(points_out.size() < 4 || inter_vol < m_Min_Inter_Volume )
 			{
 				// Invalid intersection!
 				bElemIntersect = false;
+
+				std::set<libMesh::Point>::const_iterator it_set = points_out.begin();
+//				std::cout << " -> Volume = " << inter_vol << std::endl;
+				for(; it_set != points_out.end(); ++it_set)
+				{
+//					it_set->print();
+//					std::cout << std::endl;
+				}
+
 			}
 		}
 		else

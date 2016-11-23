@@ -45,6 +45,9 @@ protected:
 	// Mesh guarding the tetrahedrization of the intersection polyhedron
 	libMesh::Mesh					   	    m_libMesh_PolyhedronMesh;
 
+	// Auxiliary CGAL mesh, used if Tetgen doesn't work
+	DT_3		 							m_CGAL_PolyhedronMesh;
+
 	// TetGen interface
 	libMesh::TetGenMeshInterface 			m_TetGenInterface;
 
@@ -76,7 +79,6 @@ protected:
 	libMesh::Point m_Grid_MaxPoint;
 
 	// Map between the indexes and the grid positions
-//	std::unordered_map<long, unsigned int>	m_Grid_to_mesh_vertex_idx;
 	std::unordered_map<std::vector<long>, unsigned int, PointHash_3D, PointHash_3D_Equal >
 		m_discrete_vertices;
 
@@ -95,6 +97,9 @@ protected:
 
 	// Perflog and debug variables
 	bool m_bPrintDebug;
+
+	// Choice of meshing algorithm
+	IntersectionMeshingMethod m_MeshingMethod;
 
 	// PROTECTED constructor
 	Mesh_Intersection();
@@ -129,7 +134,7 @@ public:
 
 	// Constructors
 	Mesh_Intersection(	libMesh::SerialMesh & mesh, const libMesh::Mesh & mesh_A,
-						const libMesh::Mesh & mesh_B,
+						const libMesh::Mesh & mesh_B, IntersectionMeshingMethod MeshingMethod = IntersectionMeshingMethod::CGAL,
 						int map_preallocation = 1E6, long grid_n_min = static_cast<long>(1E9), bool debugOutput = false) :
 		m_comm { mesh.comm() },
 		m_nodes { m_comm.size() },
@@ -151,9 +156,9 @@ public:
 		m_nb_of_vertices { 0 },
 		m_nb_of_points { 0 },
 		m_bMeshFinalized { false },
-		m_bPrintDebug { debugOutput }
+		m_bPrintDebug { debugOutput },
+		m_MeshingMethod { MeshingMethod }
 	{
-//		m_Grid_to_mesh_vertex_idx.reserve(map_preallocation);
 		m_discrete_vertices.reserve(map_preallocation);
 		m_intersection_point_indexes.resize(24);
 
@@ -167,6 +172,16 @@ public:
 		m_intersection_element_range.reserve(map_preallocation);
 
 		m_libMesh_Mesh.allow_renumbering(false);
+
+		switch(m_MeshingMethod)
+		{
+		case IntersectionMeshingMethod::LIBMESH_TETGEN :
+			std::cout << " -> Using TetGen to generate mesh" << std::endl;
+			break;
+		case IntersectionMeshingMethod::CGAL :
+			std::cout << " -> Using CGAL to generate mesh" << std::endl;
+			break;
+		}
 	};
 
 	// Getters

@@ -19,6 +19,8 @@ struct parallel_intersection_test_params {
 	bool bSkipRestriction;
 
 	bool bExportScalingData;
+
+	carl::IntersectionMeshingMethod inter_meshing_method;
 };
 
 void get_input_params(GetPot& field_parser,
@@ -110,6 +112,28 @@ void get_input_params(GetPot& field_parser,
 	{
 		input_params.bExportScalingData = false;
 	}
+
+	std::string meshing_method;
+	if (field_parser.search(2, "--meshingMethodType", "MeshingMethod")) {
+		meshing_method = field_parser.next(
+				search_type);
+		if(meshing_method == "CGAL")
+		{
+			input_params.inter_meshing_method = carl::IntersectionMeshingMethod::CGAL;
+		}
+		else if(meshing_method == "TETGEN" )
+		{
+			input_params.inter_meshing_method = carl::IntersectionMeshingMethod::LIBMESH_TETGEN;
+		}
+		else
+		{
+			input_params.inter_meshing_method = carl::IntersectionMeshingMethod::LIBMESH_TETGEN;
+		}
+	}
+	else
+	{
+		input_params.inter_meshing_method = carl::IntersectionMeshingMethod::LIBMESH_TETGEN;
+	}
 }
 ;
 
@@ -157,7 +181,7 @@ int main(int argc, char *argv[])
 
 	// Set up the search
 	perf_log.push("Set up");
-	carl::Intersection_Search search_coupling_intersections(test_mesh_A,test_mesh_B,test_mesh_C,test_mesh_I,input_params.output_base);
+	carl::Intersection_Search search_coupling_intersections(test_mesh_A,test_mesh_B,test_mesh_C,test_mesh_I,input_params.output_base,input_params.inter_meshing_method);
 	perf_log.pop("Set up");
 
 	if(input_params.bSkipIntersectionConstruction)

@@ -55,6 +55,9 @@ protected:
 	Patch_construction					   m_Patch_Constructor_A;
 	Patch_construction					   m_Patch_Constructor_B;
 
+	// Flag defining the intersection meshing algorithm
+	IntersectionMeshingMethod m_MeshingMethod;
+
 	// Object containing the intersection mesh
 	Mesh_Intersection					   m_Mesh_Intersection;
 
@@ -174,6 +177,7 @@ public:
 						libMesh::Mesh & mesh_Coupling,
 						libMesh::Mesh & mesh_I,
 						const std::string & output_base = std::string("test"),
+						IntersectionMeshingMethod MeshingMethod = IntersectionMeshingMethod::CGAL,
 						double Min_Inter_Volume = 1E-15,
 						bool  bDoPerf_log = true,
 						bool  bDebugOutput = false) :
@@ -186,7 +190,8 @@ public:
 		m_local_comm { mesh_I.comm() },
 		m_Patch_Constructor_A { Patch_construction(m_Mesh_A,m_local_comm)},
 		m_Patch_Constructor_B { Patch_construction(m_Mesh_B,m_local_comm)},
-		m_Mesh_Intersection { Mesh_Intersection(mesh_I,m_Mesh_A,m_Mesh_B)},
+		m_MeshingMethod { MeshingMethod },
+		m_Mesh_Intersection { Mesh_Intersection(mesh_I,m_Mesh_A,m_Mesh_B,m_MeshingMethod)},
 		m_bSaveInterData { true },
 		m_bPreparedPreallocation { false },
 		m_bDidPreallocation { false },
