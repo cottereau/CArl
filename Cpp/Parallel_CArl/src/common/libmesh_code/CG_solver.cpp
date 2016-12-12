@@ -39,6 +39,15 @@ void carl::PETSC_CG_solver::set_restart( 	bool bUseRestart,
 	}
 }
 
+//void carl::PETSC_CG_solver::set_coordinates(	libMesh::PetscVector<libMesh::Number>& coord_vect_A,
+//					libMesh::PetscVector<libMesh::Number>& coord_vect_B)
+//{
+//	m_coord_vect_A = &coord_vect_A;
+//	m_coord_vect_B = &coord_vect_B;
+//
+//	m_bCoordsSetup = true;
+//}
+
 void carl::PETSC_CG_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Number>& M_A,
 					libMesh::PetscMatrix<libMesh::Number>& M_B,
 					libMesh::PetscMatrix<libMesh::Number>& C_RA,
@@ -205,16 +214,40 @@ void carl::PETSC_CG_solver::solve()
 
 	perf_log.pop("Vector declarations","Initialization");
 
+	// Set up the null spaces
+
+
 	// Solvers
 	perf_log.push("KSP solvers setup","Initialization");
-	KSP_linear_solver KSP_Solver_M_A(*m_comm);
-	KSP_linear_solver KSP_Solver_M_B(*m_comm);
+//	KSP_linear_solver KSP_Solver_M_A(*m_comm);
+//	KSP_linear_solver KSP_Solver_M_B(*m_comm);
 
-	KSP_Solver_M_A.set_solver(*m_M_A, m_ksp_name_A.c_str());
-	KSP_Solver_M_B.set_solver(*m_M_B, m_ksp_name_B.c_str());
+//	KSP_Solver_M_A.set_solver(*m_M_A, m_ksp_name_A.c_str());
+//	KSP_Solver_M_B.set_solver(*m_M_B, m_ksp_name_B.c_str());
 
-	KSP_Solver_M_A.print_type();
-	KSP_Solver_M_B.print_type();
+//	KSP_Solver_M_A.print_type();
+//	KSP_Solver_M_B.print_type();
+
+	KSP PETSc_ksp_A, PETSc_ksp_B;
+//	MatNullSpace   M_A_nullsp, M_B_nullsp;
+
+	KSPCreate(PETSC_COMM_WORLD, &PETSc_ksp_A);
+	KSPCreate(PETSC_COMM_WORLD, &PETSc_ksp_B);
+	KSPSetOperators(PETSc_ksp_A,m_M_A->mat(),m_M_A->mat());
+	KSPSetOperators(PETSc_ksp_B,m_M_B->mat(),m_M_B->mat());
+
+//	MatNullSpaceCreateRigidBody(m_coord_vect_A->vec(),&M_A_nullsp);
+////	MatSetNearNullSpace(m_M_A->mat(), M_A_nullsp);
+//	MatSetNearNullSpace(m_M_A->mat(), M_A_nullsp);
+//
+//	MatNullSpaceCreateRigidBody(m_coord_vect_B->vec(),&M_B_nullsp);
+////	MatSetNearNullSpace(m_M_B->mat(), M_B_nullsp);
+//	MatSetNullSpace(m_M_B->mat(), M_B_nullsp);
+
+	KSPSetFromOptions(PETSc_ksp_A);
+	KSPSetFromOptions(PETSc_ksp_B);
+
+
 	perf_log.pop("KSP solvers setup","Initialization");
 
 	// -> Initialize the vectors
@@ -222,14 +255,25 @@ void carl::PETSC_CG_solver::solve()
 	{
 		// u_0,I = M_I^-1 * F_I (KSP SOLVER!)
 		perf_log.push("KSP solver - A","Initialization");
-		KSP_Solver_M_A.solve (u0_A, *m_F_A);
+//		KSP_Solver_M_A.solve (u0_A, *m_F_A);
+		KSPSolve(PETSc_ksp_A, m_F_A->vec(), u0_A.vec());
 		write_PETSC_vector(u0_A  ,m_u0_A_filename);
 		perf_log.pop("KSP solver - A","Initialization");
 
 		perf_log.push("KSP solver - B","Initialization");
-		KSP_Solver_M_B.solve (u0_B, *m_F_B);
+//		KSP_Solver_M_B.solve (u0_B, *m_F_B);
+		KSPSolve(PETSc_ksp_B, m_F_B->vec(), u0_B.vec());
 		write_PETSC_vector(u0_B  ,m_u0_B_filename);
 		perf_log.pop("KSP solver - B","Initialization");
+
+//		PetscViewer    viewer;
+//		PetscViewerASCIIOpen(PETSC_COMM_WORLD, "null_A.dat", &viewer);
+//		MatNullSpaceView(M_A_nullsp,viewer);
+//		PetscViewerDestroy(&viewer);
+
+//		PetscViewerASCIIOpen(PETSC_COMM_WORLD, "null_B.dat", &viewer);
+//		MatNullSpaceView(M_B_nullsp,viewer);
+//		PetscViewerDestroy(&viewer);
 
 		perf_log.push("CG vector setup","Initialization");
 
@@ -289,14 +333,16 @@ void carl::PETSC_CG_solver::solve()
 		// w_i,I = M_I^-1 * C_I^T* p_i
 		MatMultTranspose(m_C_RA->mat(),p_i_old.vec(),rhs_A.vec());
 		perf_log.push("KSP solver - A","Coupled CG iterations");
-		KSP_Solver_M_A.solve(w_A,rhs_A);
+//		KSP_Solver_M_A.solve(w_A,rhs_A);
+		KSPSolve(PETSc_ksp_A, rhs_A.vec(), w_A.vec());
 		perf_log.pop("KSP solver - A","Coupled CG iterations");
 		timing_data = perf_log.get_perf_data("KSP solver - A","Coupled CG iterations");
 		std::cout << "|        Solver A time : " << timing_data.tot_time/(iter_nb + 1) << std::endl;
 
 		MatMultTranspose(m_C_RB->mat(),p_i_old.vec(),rhs_B.vec());
 		perf_log.push("KSP solver - B","Coupled CG iterations");
-		KSP_Solver_M_B.solve(w_B,rhs_B);
+//		KSP_Solver_M_B.solve(w_B,rhs_B);
+		KSPSolve(PETSc_ksp_B, rhs_B.vec(), w_B.vec());
 		perf_log.pop("KSP solver - B","Coupled CG iterations");
 		timing_data = perf_log.get_perf_data("KSP solver - B","Coupled CG iterations");
 		std::cout << "|        Solver B time : " << timing_data.tot_time/(iter_nb + 1) << std::endl;
@@ -309,12 +355,14 @@ void carl::PETSC_CG_solver::solve()
 
 		// alpha_i = rho_i / ( p_i * q_i )
 		dummy_aux = p_i_old.dot(q_i);
+
 		alpha_i = rho_i_old / dummy_aux;
-		std::cout << " alpha : " << alpha_i << std::endl;
-		std::cout << rho_i_old << " " <<  dummy_aux << std::endl;
+
+		std::cout << "|        " << rho_i_old << " " <<  dummy_aux << " " << alpha_i << std::endl;
+
 		lambda_vec = lambda_vec_old;
 		lambda_vec.add(alpha_i,p_i_old);
-		std::cout << lambda_vec.l2_norm() << std::endl;
+
 		perf_log.pop("New correction","Coupled CG iterations");
 
 		// -> Update auxiliary vectors
@@ -334,7 +382,7 @@ void carl::PETSC_CG_solver::solve()
 		std::cout << r_i.l2_norm() << " " << z_i.l2_norm() << std::endl;
 		beta_ip = rho_i / rho_i_old;
 
-		std::cout << " beta : " << beta_ip << std::endl;
+		std::cout << "|        " << beta_ip << std::endl;
 
 		// p_(i+1) = z_(i+1) + beta_(i+1) * p_i
 		p_i = z_i;
@@ -343,8 +391,6 @@ void carl::PETSC_CG_solver::solve()
 
 		// -> Check the convergence
 		++iter_nb;
-
-		std::cout << "| rho : " << rho_i << " " << rho_0 << std::endl; std::cout.flush();
 
 		// Absolute convergence
 		if(rho_i < m_CG_conv_eps_abs)
@@ -412,17 +458,21 @@ void carl::PETSC_CG_solver::solve()
 	perf_log.push("KSP solver - A","Solution");
 
 	MatMultTranspose(m_C_RA->mat(),lambda_vec.vec(),rhs_A.vec());
-	KSP_Solver_M_A.solve(w_A,rhs_A);
+//	KSP_Solver_M_A.solve(w_A,rhs_A);
+	KSPSolve(PETSc_ksp_A, rhs_A.vec(), w_A.vec());
 	*m_sol_A.get() = u0_A;
 	m_sol_A->add(-1,w_A);
 	perf_log.pop("KSP solver - A","Solution");
 
 	perf_log.push("KSP solver - B","Solution");
 	MatMultTranspose(m_C_RB->mat(),lambda_vec.vec(),rhs_B.vec());
-	KSP_Solver_M_B.solve(w_B,rhs_B);
+	KSPSolve(PETSc_ksp_B, rhs_B.vec(), w_B.vec());
 	*m_sol_B.get() = u0_B;
-	m_sol_B->add(-1,w_B);
+	m_sol_B->add(1,w_B);
 	perf_log.pop("KSP solver - B","Solution");
+
+//	MatNullSpaceDestroy(&M_A_nullsp);
+//	MatNullSpaceDestroy(&M_B_nullsp);
 
 	m_bSolved = true;
 }

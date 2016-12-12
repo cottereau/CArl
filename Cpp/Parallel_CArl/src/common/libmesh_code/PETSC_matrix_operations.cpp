@@ -309,6 +309,18 @@ void carl::write_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 	PetscViewerDestroy(&viewer);
 }
 
+void carl::print_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
+		const std::string& filename)
+{
+	const libMesh::Parallel::Communicator& WorldComm = input_vec.comm();
+
+	PetscViewer    viewer;
+	PetscViewerASCIIOpen(WorldComm.get(),filename.c_str(),&viewer);
+	VecView(input_vec.vec(),viewer);
+
+	PetscViewerDestroy(&viewer);
+}
+
 void carl::read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 		const std::string& filename)
 {

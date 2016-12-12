@@ -268,6 +268,10 @@ protected:
 	std::map<std::string, libMesh::PetscMatrix<libMesh::Number>*> m_couplingMatrixMap_mediator_BIG;
 	std::map<std::string, libMesh::PetscMatrix<libMesh::Number>*> m_couplingMatrixMap_mediator_mediator;
 
+	// -> Coordinates vector map
+	std::pair<std::string, libMesh::PetscVector<libMesh::Number>* > m_coord_vect_BIG;
+	std::map<std::string, libMesh::PetscVector<libMesh::Number>* > m_coord_vect_microMap;
+
 	// -> Point locators needed for the alpha masks
 	std::map<std::string, weight_parameter_function*> m_alpha_masks;
 
@@ -276,6 +280,8 @@ protected:
 	std::map<std::string, bool> m_bUseH1Coupling;
 	bool m_bHasAssembled_BIG;
 	bool m_bHasDefinedMeshRestrictions;
+	bool m_bHasDefinedCoordVector_BIG;
+	bool m_bHasDefinedCoordVector_micro;
 
 	// -> Coupling constant maps
 	std::map<std::string, double> m_coupling_constantMap;
@@ -284,6 +290,7 @@ protected:
 	// -> Typedefs of the destructor iterators
 	typedef std::map<std::string, libMesh::EquationSystems*>::iterator EqSystem_iterator;
 	typedef std::map<std::string, libMesh::PetscMatrix<libMesh::Number>*>::iterator Matrix_iterator;
+	typedef std::map<std::string, libMesh::PetscVector<libMesh::Number>*>::iterator Vector_iterator;
 	typedef std::map<std::string, weight_parameter_function*>::iterator alpha_mask_iterator;
 
 	// -> LATIN solver
@@ -300,6 +307,8 @@ public:
 	coupled_system(const libMesh::Parallel::Communicator& comm, carl::CoupledSolverType solver_type = carl::LATIN_MODIFIED_STIFFNESS) :
 			m_bHasAssembled_BIG { false },
 			m_bHasDefinedMeshRestrictions { false },
+			m_bHasDefinedCoordVector_BIG { true },
+			m_bHasDefinedCoordVector_micro { true },
 			m_solver_type { solver_type }
 
 	{
@@ -334,7 +343,15 @@ public:
 		m_BIG_EquationSystem.first = name;
 		m_BIG_EquationSystem.second = EqSystemPtr;
 
+		libMesh::PetscVector<libMesh::Number>* coord_vector_Ptr =
+				new libMesh::PetscVector<libMesh::Number>(EqSystemPtr->comm());
+
+		m_coord_vect_BIG.first = name;
+		m_coord_vect_BIG.second = coord_vector_Ptr;
+
 		return *EqSystemPtr;
+
+		m_bHasDefinedCoordVector_BIG = true;
 	}
 
 	libMesh::EquationSystems& set_Restricted_BIG_EquationSystem(const std::string& name,
@@ -359,6 +376,7 @@ public:
 		libMesh::PetscMatrix<libMesh::Number>* Matrix_mediator_BIG_Ptr = NULL;
 		libMesh::PetscMatrix<libMesh::Number>* Matrix_mediator_mediator_Ptr =
 		NULL;
+		libMesh::PetscVector<libMesh::Number>* coord_vector_Ptr = NULL;
 
 		if (!m_micro_EquationSystemMap.count(name))
 		{
@@ -370,6 +388,7 @@ public:
 			Matrix_mediator_BIG_Ptr = new libMesh_MatrixType(microMesh.comm());
 			Matrix_mediator_mediator_Ptr = new libMesh_MatrixType(
 					microMesh.comm());
+			coord_vector_Ptr = new libMesh::PetscVector<libMesh::Number>(microMesh.comm());
 
 			m_micro_EquationSystemMap.insert(std::make_pair(name, EqSystemPtr));
 			m_couplingMatrixMap_mediator_micro.insert(
@@ -378,6 +397,9 @@ public:
 					std::make_pair(name, Matrix_mediator_BIG_Ptr));
 			m_couplingMatrixMap_mediator_mediator.insert(
 					std::make_pair(name, Matrix_mediator_mediator_Ptr));
+			m_coord_vect_microMap.insert(
+					std::make_pair(name, coord_vector_Ptr));
+
 			m_bHasAssembled_micro.insert(std::make_pair(name, false));
 			m_bUseH1Coupling.insert(std::make_pair(name, false));
 		}
@@ -388,6 +410,8 @@ public:
 					<< " already exists!" << std::endl;
 			EqSystemPtr = m_micro_EquationSystemMap[name];
 		}
+
+		m_bHasDefinedCoordVector_micro = true;
 
 		return *EqSystemPtr;
 	}
@@ -529,6 +553,14 @@ public:
 			std::unordered_multimap<int, int>& intersection_table_inter,
 			double coupling_const = 1., bool using_same_mesh_mediator_A = false,
 			bool bSameElemsType = true);
+
+	void set_rigid_body_mode(libMesh::ImplicitSystem&  input_system,
+			libMesh::PetscVector<libMesh::Number>* coord_vec
+			);
+
+	void set_rigid_body_modes_BIG(const std::string& sys_name);
+
+	void set_rigid_body_modes_micro(const std::string micro_name, const std::string& sys_name);
 
 	void assemble_coupling_elasticity_3D(const std::string BIG_name,
 			const std::string micro_name, const std::string inter_name,

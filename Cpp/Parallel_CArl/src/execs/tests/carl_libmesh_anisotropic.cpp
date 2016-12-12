@@ -829,6 +829,8 @@ int main(int argc, char** argv) {
 
 	// Solve !
 	perf_log.push("Solve","LATIN Solver:");
+//	CoupledTest.set_rigid_body_modes_BIG("Elasticity");
+	CoupledTest.set_rigid_body_modes_micro("MicroSys","Elasticity");
 	CoupledTest.solve("MicroSys","Elasticity",input_params.LATIN_convergence_output);
 	perf_log.pop("Solve","LATIN Solver:");
 

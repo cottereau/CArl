@@ -49,6 +49,9 @@ void write_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 void read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 										const std::string& filename);
 
+void print_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
+		const std::string& filename);
+
 }
 
 #endif /* COMMON_LIBMESH_CODE_PETSC_MATRIX_OPERATIONS_H_ */

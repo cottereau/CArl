@@ -43,6 +43,29 @@ void carl::coupled_system::clear()
 		}
 	}
 
+	if(m_bHasDefinedCoordVector_BIG)
+	{
+		libMesh::PetscVector<libMesh::Number> *VectBIG = m_coord_vect_BIG.second;
+		VectBIG->clear();
+		delete VectBIG;
+		VectBIG = NULL;
+		 m_coord_vect_BIG.second = NULL;
+	}
+
+	if(m_bHasDefinedCoordVector_micro)
+	{
+		while(!m_coord_vect_microMap.empty())
+		{
+			Vector_iterator toClean = m_coord_vect_microMap.begin();
+
+			libMesh::PetscVector<libMesh::Number> *Vect = toClean->second;
+			Vect->clear();
+			delete Vect;
+			Vect = NULL;
+
+			m_coord_vect_microMap.erase(toClean);
+		}
+	}
 	while(!m_inter_EquationSystemMap.empty())
 	{
 		EqSystem_iterator toClean = m_inter_EquationSystemMap.begin();
@@ -869,4 +892,82 @@ void carl::coupled_system::print_convergence(const std::string& filename)
 
 	convergenceOut.close();
 
+}
+
+void carl::coupled_system::set_rigid_body_mode(libMesh::ImplicitSystem&  input_system,
+												libMesh::PetscVector<libMesh::Number>* coord_vec
+												)
+{
+	// Set up some temporary variables to simplify code
+	libMesh::PetscMatrix<libMesh::Number> * mat_sys = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number>* >(input_system.matrix);
+	const libMesh::MeshBase& mesh_sys = input_system.get_mesh();
+	unsigned int sys_BIG_number = input_system.number();
+
+	// Set vector structure as *almost* the same of rigidity matrix
+	Vec PETSc_vec_sys;
+	PetscInt local_N;
+	MatGetLocalSize(mat_sys->mat(),NULL,&local_N);
+	VecCreate(mesh_sys.comm().get(),&PETSc_vec_sys);
+	VecSetSizes(PETSc_vec_sys,local_N,mat_sys->n());
+	VecSetBlockSize(PETSc_vec_sys,mesh_sys.mesh_dimension());
+	VecSetFromOptions(PETSc_vec_sys);
+
+	libMesh::PetscVector<libMesh::Number> vec_sys(PETSc_vec_sys,mesh_sys.comm());
+	m_coord_vect_BIG.second->init(vec_sys);
+
+	VecDestroy(&PETSc_vec_sys);
+
+	std::cout.flush();
+
+	auto node_it = mesh_sys.local_nodes_begin();
+	auto node_it_end = mesh_sys.local_nodes_end();
+
+	unsigned int dof_number_BIG = 0;
+
+	for( ; node_it != node_it_end; ++node_it)
+	{
+		const libMesh::Node* node_BIG = *node_it;
+
+		for(unsigned int var=0; var<node_BIG->n_dofs(sys_BIG_number); var++)
+		{
+			dof_number_BIG = node_BIG->dof_number(sys_BIG_number,var,0);
+			m_coord_vect_BIG.second->set(dof_number_BIG,node_BIG->operator ()(var));
+		}
+	}
+
+	MatNullSpace nullsp_sys;
+	MatNullSpaceCreateRigidBody(m_coord_vect_BIG.second->vec(),&nullsp_sys);
+
+
+	PetscViewer    viewer;
+	PetscViewerASCIIOpen(PETSC_COMM_WORLD, "null_A.dat", &viewer);
+	MatNullSpaceView(nullsp_sys,viewer);
+	PetscViewerDestroy(&viewer);
+	MatSetNullSpace(mat_sys->mat(),nullsp_sys);
+}
+
+void carl::coupled_system::set_rigid_body_modes_BIG(const std::string& sys_name)
+{
+
+	homemade_assert_msg(m_bHasAssembled_BIG,"Macro system not assembled yet!\n");
+
+	// Set up some temporary variables to simplify code
+	libMesh::EquationSystems& EqSystems_BIG = * m_BIG_EquationSystem.second;
+	libMesh::ImplicitSystem& Sys_BIG =
+			libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_BIG.get_system(sys_name));
+
+	set_rigid_body_mode(Sys_BIG,m_coord_vect_BIG.second);
+}
+
+void carl::coupled_system::set_rigid_body_modes_micro(const std::string micro_name, const std::string& sys_name)
+{
+
+	homemade_assert_msg(m_bHasAssembled_micro[micro_name],"Micro system not assembled yet!\n");
+
+	// Set up some temporary variables to simplify code
+	libMesh::EquationSystems& EqSystems_micro = * m_micro_EquationSystemMap[micro_name];
+	libMesh::ImplicitSystem& Sys_micro =
+			libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_micro.get_system(sys_name));
+
+	set_rigid_body_mode(Sys_micro,m_coord_vect_microMap[micro_name]);
 }

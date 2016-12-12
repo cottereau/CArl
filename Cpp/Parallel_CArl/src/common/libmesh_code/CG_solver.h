@@ -28,6 +28,10 @@ protected:
 	// Preallocator
 	std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> > m_PC;
 
+//	// Coordinates vectors
+//	libMesh::PetscVector<libMesh::Number> * m_coord_vect_A;
+//	libMesh::PetscVector<libMesh::Number> * m_coord_vect_B;
+
 	// Convergence parameters
 	double m_CG_conv_eps_abs;
 	double m_CG_conv_eps_rel;
@@ -40,6 +44,7 @@ protected:
 	// Flags
 	bool m_bUsePreconditioner;
 	bool m_bRecalculatePreconditioner;
+	bool m_bCoordsSetup;
 
 	// Partitioning debug parameters
 	std::string m_info_matrix_PC_filename;
@@ -62,11 +67,14 @@ public:
 	PETSC_CG_solver(	const libMesh::Parallel::Communicator& comm) :
 							coupled_solver (comm,carl::CG),
 
+//							m_coord_vect_A { NULL },
+//							m_coord_vect_B { NULL },
 							m_CG_conv_eps_abs { 1E-5 },
 							m_CG_conv_eps_rel { 1E-4 },
 							m_CG_conv_max_n { 10000 },
 							m_CG_div_tol { 1E4 },
-							m_bUsePreconditioner { false }
+							m_bUsePreconditioner { false },
+							m_bCoordsSetup { false }
 	{
 		m_CG_Index.resize(m_CG_conv_max_n);
 		m_bParamsSetUp = true;
@@ -98,6 +106,9 @@ public:
 	};
 
 	void print_convergence(std::ostream& convergenceOut);
+//
+//	void set_coordinates(	libMesh::PetscVector<libMesh::Number>& coord_vect_A,
+//						libMesh::PetscVector<libMesh::Number>& coord_vect_B);
 };
 
 }
