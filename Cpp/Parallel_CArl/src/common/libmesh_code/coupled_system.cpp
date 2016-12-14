@@ -546,6 +546,9 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
 			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
 
+	this->set_rigid_body_modes_BIG(type_name);
+	this->set_rigid_body_modes_micro(micro_name,type_name);
+
 	switch(m_solver_type)
 	{
 	case LATIN_MODIFIED_STIFFNESS:
@@ -558,6 +561,9 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 
 			// Set the solver matrices
 			cast_LATIN_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
+
+			// Build the null space projectors
+			cast_LATIN_solver->build_null_space_projection_matrices(M_B,C_RB);
 
 			// Set the solver matrices
 			cast_LATIN_solver->set_forces(F_A,F_B);
@@ -690,6 +696,9 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
 			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
 
+	this->set_rigid_body_modes_BIG(type_name);
+	this->set_rigid_body_modes_micro(micro_name,type_name);
+
 	// Set the solver parameters
 	switch(m_solver_type)
 	{
@@ -702,6 +711,8 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 
 			// Set the solver matrices
 			cast_CG_solver->set_forces(F_A,F_B);
+
+			std::cout << " hop " << std::endl;
 
 			// Set CG parameters (convergence )
 			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol);
@@ -895,13 +906,14 @@ void carl::coupled_system::print_convergence(const std::string& filename)
 }
 
 void carl::coupled_system::set_rigid_body_mode(libMesh::ImplicitSystem&  input_system,
-												libMesh::PetscVector<libMesh::Number>* coord_vec
+												libMesh::PetscVector<libMesh::Number>* coord_vec,
+												const std::string& sys_type
 												)
 {
 	// Set up some temporary variables to simplify code
 	libMesh::PetscMatrix<libMesh::Number> * mat_sys = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number>* >(input_system.matrix);
 	const libMesh::MeshBase& mesh_sys = input_system.get_mesh();
-	unsigned int sys_BIG_number = input_system.number();
+	unsigned int sys_sys_number = input_system.number();
 
 	// Set vector structure as *almost* the same of rigidity matrix
 	Vec PETSc_vec_sys;
@@ -928,22 +940,22 @@ void carl::coupled_system::set_rigid_body_mode(libMesh::ImplicitSystem&  input_s
 	{
 		const libMesh::Node* node_BIG = *node_it;
 
-		for(unsigned int var=0; var<node_BIG->n_dofs(sys_BIG_number); var++)
+		for(unsigned int var=0; var<node_BIG->n_dofs(sys_sys_number); var++)
 		{
-			dof_number_BIG = node_BIG->dof_number(sys_BIG_number,var,0);
+			dof_number_BIG = node_BIG->dof_number(sys_sys_number,var,0);
 			m_coord_vect_BIG.second->set(dof_number_BIG,node_BIG->operator ()(var));
 		}
 	}
 
 	MatNullSpace nullsp_sys;
 	MatNullSpaceCreateRigidBody(m_coord_vect_BIG.second->vec(),&nullsp_sys);
-
-
-	PetscViewer    viewer;
-	PetscViewerASCIIOpen(PETSC_COMM_WORLD, "null_A.dat", &viewer);
-	MatNullSpaceView(nullsp_sys,viewer);
-	PetscViewerDestroy(&viewer);
 	MatSetNullSpace(mat_sys->mat(),nullsp_sys);
+
+//	PetscViewer    viewer;
+//	std::string filename = "null_" + sys_type + ".dat";
+//	PetscViewerASCIIOpen(PETSC_COMM_WORLD, filename.c_str(), &viewer);
+//	MatNullSpaceView(nullsp_sys,viewer);
+//	PetscViewerDestroy(&viewer);
 }
 
 void carl::coupled_system::set_rigid_body_modes_BIG(const std::string& sys_name)
@@ -956,7 +968,7 @@ void carl::coupled_system::set_rigid_body_modes_BIG(const std::string& sys_name)
 	libMesh::ImplicitSystem& Sys_BIG =
 			libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_BIG.get_system(sys_name));
 
-	set_rigid_body_mode(Sys_BIG,m_coord_vect_BIG.second);
+	set_rigid_body_mode(Sys_BIG,m_coord_vect_BIG.second,m_BIG_EquationSystem.first);
 }
 
 void carl::coupled_system::set_rigid_body_modes_micro(const std::string micro_name, const std::string& sys_name)
@@ -969,5 +981,5 @@ void carl::coupled_system::set_rigid_body_modes_micro(const std::string micro_na
 	libMesh::ImplicitSystem& Sys_micro =
 			libMesh::cast_ref<libMesh::ImplicitSystem&>(EqSystems_micro.get_system(sys_name));
 
-	set_rigid_body_mode(Sys_micro,m_coord_vect_microMap[micro_name]);
+	set_rigid_body_mode(Sys_micro,m_coord_vect_microMap[micro_name],micro_name);
 }

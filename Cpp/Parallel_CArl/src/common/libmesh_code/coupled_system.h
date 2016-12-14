@@ -555,7 +555,8 @@ public:
 			bool bSameElemsType = true);
 
 	void set_rigid_body_mode(libMesh::ImplicitSystem&  input_system,
-			libMesh::PetscVector<libMesh::Number>* coord_vec
+			libMesh::PetscVector<libMesh::Number>* coord_vec,
+			const std::string& sys_type
 			);
 
 	void set_rigid_body_modes_BIG(const std::string& sys_name);
@@ -658,14 +659,14 @@ public:
 							double eps = 1E-2, int convIter = 10000, double relax = 0.8);
 
 	void set_CG_solver(	const std::string micro_name,const std::string type_name,
-							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 1E4, double div_tol = 1E4);
+							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 100, double div_tol = 1E4);
 
 	void set_CG_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es, const std::string& name,
 												weight_parameter_function& alpha_mask),
 							void fptr_micro(	libMesh::EquationSystems& es, const std::string& name,
 												weight_parameter_function& alpha_mask),
-							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 1E4, double div_tol = 1E4);
+							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 100, double div_tol = 1E4);
 
 	void set_CG_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es,
@@ -673,7 +674,7 @@ public:
 							void fptr_micro(	libMesh::EquationSystems& es,
 												const std::string& name, weight_parameter_function& weight_mask, anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
 							anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj,
-							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 1E4, double div_tol = 1E4);
+							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 100, double div_tol = 1E4);
 
 	void set_LATIN_nonlinear_solver(const std::string micro_name,
 			const std::string type_name_BIG,

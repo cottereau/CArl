@@ -140,3 +140,90 @@ void carl::coupled_solver::check_dimensions()
 
 	m_bCheckDimensions = true;
 };
+
+void carl::coupled_solver::build_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys)
+{
+	homemade_assert_msg(m_bMatricesSetUp,"Must have the matrices ready!");
+
+	// Get the rigid body modes vector and build the corresponding matrix
+	MatNullSpace nullsp_sys;
+
+	MatGetNullSpace(M_sys.mat(),&nullsp_sys);
+
+	if(nullsp_sys)
+	{
+		PetscBool 	null_has_cte;
+		PetscInt  	null_nb_vecs;
+		const Vec*	null_vecs;
+		PetscInt	C_sys_M, C_sys_N, C_sys_M_local, C_sys_N_local;
+		PetscInt	R_mat_M, R_mat_N, R_mat_M_local, R_mat_N_local;
+		Mat 		R_mat, R_T_mat, RI_mat, RI_T_mat;
+		Mat			RITRI_mat, inv_RITRI_mat;
+
+		// Get the input matrix's dimensions
+		MatGetLocalSize(C_sys.mat(),&C_sys_M_local,&C_sys_N_local);
+		MatGetSize(C_sys.mat(),&C_sys_M,&C_sys_N);
+
+		// -> Create the matrices!
+		// R_mat      : n_sys   x nb_vecs ( 3 for 2D, 6 for 3D )
+		MatNullSpaceGetVecs(nullsp_sys,&null_has_cte,&null_nb_vecs,&null_vecs);
+		create_PETSC_dense_matrix_from_vectors(null_vecs,null_nb_vecs,R_mat);
+		MatTranspose(R_mat,MAT_INITIAL_MATRIX,&R_T_mat);
+
+		MatGetLocalSize(R_mat,&R_mat_M_local,&R_mat_N_local);
+		MatGetSize(R_mat,&R_mat_M,&R_mat_N);
+
+		//             M       x N
+		// C_sys     : n_coupl x n_sys
+		// RI_mat    : n_coupl x nb_vecs ( 3 for 2D, 6 for 3D )
+		// RITRI_mat : nb_vecs x nb_vecs ( 3 for 2D, 6 for 3D )
+		MatCreateDense(PETSC_COMM_WORLD,C_sys_M_local,R_mat_N_local,C_sys_M,R_mat_N,NULL,&RI_mat);
+		MatCreateDense(PETSC_COMM_WORLD,R_mat_N_local,R_mat_N_local,R_mat_N,R_mat_N,NULL,&RITRI_mat);
+
+		// RI = C_sys * R_mat;
+		MatMatMult(C_sys.mat(),R_mat,MAT_REUSE_MATRIX,PETSC_DECIDE,&RI_mat);
+		MatTranspose(RI_mat,MAT_INITIAL_MATRIX,&RI_T_mat);
+
+		// Cannot use MatTransposeMatMult with dense matrices ...
+		MatMatMult(RI_T_mat,RI_mat,MAT_REUSE_MATRIX,PETSC_DECIDE,&RITRI_mat);
+
+		// Invert (fortunately, only a 6x6 matrix ...)
+		PETSC_invert_dense_matrix(RITRI_mat,inv_RITRI_mat);
+
+		// Calculate the projectors!
+
+		// PI_mat    : n_coupl x n_coupl
+		// F_mat     : n_coupl x n_sys		(same as C_sys)
+		MatCreateDense(PETSC_COMM_WORLD,C_sys_M_local,C_sys_M_local,C_sys_M,C_sys_M,NULL,&m_null_PI);
+		MatCreateDense(PETSC_COMM_WORLD,C_sys_M_local,C_sys_N_local,C_sys_M,C_sys_N,NULL,&m_null_F);
+
+		// PI_mat = Id - RI_mat * ( inv_RITRI_mat ) * RI_T_mat
+		// ... but MatMatMatMult is not supported for dense matrices ...
+
+		// aux_matrix = RI_mat * inv_RITRI_mat
+		// aux_matrix : n_coupl x nb_vecs (same as RI_mat)
+		Mat aux_matrix;
+		MatDuplicate(RI_mat,MAT_DO_NOT_COPY_VALUES,&aux_matrix);
+		MatMatMult(RI_mat,inv_RITRI_mat,MAT_REUSE_MATRIX,PETSC_DECIDE,&aux_matrix);
+
+		// PI_mat = Id - aux_matrix * RI_T_mat
+		MatMatMult(aux_matrix,RI_T_mat,MAT_REUSE_MATRIX,PETSC_DECIDE,&m_null_PI);
+		MatScale(m_null_PI,-1);
+		MatShift(m_null_PI,1);
+
+		// F_mat = aux_matrix * R_T_mat
+		MatMatMult(aux_matrix,R_T_mat,MAT_REUSE_MATRIX,PETSC_DECIDE,&m_null_F);
+
+		// Set up flag
+		m_bCreatedRigidBodyProjectors = true;
+
+		// Cleanup
+		MatDestroy(&aux_matrix);
+		MatDestroy(&R_mat);
+		MatDestroy(&RI_mat);
+		MatDestroy(&R_T_mat);
+		MatDestroy(&RI_T_mat);
+		MatDestroy(&RITRI_mat);
+	}
+
+};

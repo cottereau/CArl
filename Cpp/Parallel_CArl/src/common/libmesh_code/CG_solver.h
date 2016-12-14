@@ -71,8 +71,8 @@ public:
 //							m_coord_vect_B { NULL },
 							m_CG_conv_eps_abs { 1E-5 },
 							m_CG_conv_eps_rel { 1E-4 },
-							m_CG_conv_max_n { 10000 },
-							m_CG_div_tol { 1E4 },
+							m_CG_conv_max_n { 100 },
+							m_CG_div_tol { 10000 },
 							m_bUsePreconditioner { false },
 							m_bCoordsSetup { false }
 	{
@@ -106,9 +106,6 @@ public:
 	};
 
 	void print_convergence(std::ostream& convergenceOut);
-//
-//	void set_coordinates(	libMesh::PetscVector<libMesh::Number>& coord_vect_A,
-//						libMesh::PetscVector<libMesh::Number>& coord_vect_B);
 };
 
 }

@@ -34,6 +34,10 @@ protected:
 	libMesh::PetscVector<libMesh::Number> * m_F_A;
 	libMesh::PetscVector<libMesh::Number> * m_F_B;
 
+	// Null space projectors
+	Mat m_null_F;
+	Mat m_null_PI;
+
 	// Solution
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_sol_A;
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_sol_B;
@@ -50,6 +54,7 @@ protected:
 	bool m_bForcesSetUp;
 	bool m_bParamsSetUp;
 	bool m_bSolved;
+	bool m_bCreatedRigidBodyProjectors;
 
 	// Restart parameters
 	bool m_bUseRestart;
@@ -109,6 +114,7 @@ public:
 							m_bSavePartitionInfo { false },
 
 							m_bSolved {false},
+							m_bCreatedRigidBodyProjectors { false },
 							m_bUseRestart {false},
 							m_bPrintRestart {false},
 
@@ -123,6 +129,14 @@ public:
 				   "SOR_BACKWARD","SSOR","RICHARDSON","CHEBYSHEV","SPARSELU","INVALID_SOLVER"};
 	};
 
+	~coupled_solver()
+	{
+		if(m_bCreatedRigidBodyProjectors)
+		{
+			MatDestroy(&m_null_F);
+			MatDestroy(&m_null_PI);
+		}
+	}
 	// Methods
 	void set_sys_names(const std::string& name_A, const std::string& name_B);
 
@@ -148,10 +162,10 @@ public:
 
 	void check_dimensions();
 
+	void build_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys);
+
 	// Virtual methods
 	virtual void solve() = 0;
-
-
 };
 
 };

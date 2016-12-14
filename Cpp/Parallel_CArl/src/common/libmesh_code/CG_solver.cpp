@@ -57,6 +57,7 @@ void carl::PETSC_CG_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Number>&
 	libMesh::PerfLog perf_log("Matrix setup",MASTER_bPerfLog_CG_solver_matrix_assemble);
 
 	coupled_solver::set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
+
 	std::cout << "| -> Using CG " << std::endl;
 
 	// Calculate the preconditioner - if needed
@@ -229,20 +230,11 @@ void carl::PETSC_CG_solver::solve()
 //	KSP_Solver_M_B.print_type();
 
 	KSP PETSc_ksp_A, PETSc_ksp_B;
-//	MatNullSpace   M_A_nullsp, M_B_nullsp;
 
 	KSPCreate(PETSC_COMM_WORLD, &PETSc_ksp_A);
 	KSPCreate(PETSC_COMM_WORLD, &PETSc_ksp_B);
 	KSPSetOperators(PETSc_ksp_A,m_M_A->mat(),m_M_A->mat());
 	KSPSetOperators(PETSc_ksp_B,m_M_B->mat(),m_M_B->mat());
-
-//	MatNullSpaceCreateRigidBody(m_coord_vect_A->vec(),&M_A_nullsp);
-////	MatSetNearNullSpace(m_M_A->mat(), M_A_nullsp);
-//	MatSetNearNullSpace(m_M_A->mat(), M_A_nullsp);
-//
-//	MatNullSpaceCreateRigidBody(m_coord_vect_B->vec(),&M_B_nullsp);
-////	MatSetNearNullSpace(m_M_B->mat(), M_B_nullsp);
-//	MatSetNullSpace(m_M_B->mat(), M_B_nullsp);
 
 	KSPSetFromOptions(PETSc_ksp_A);
 	KSPSetFromOptions(PETSc_ksp_B);
@@ -265,15 +257,6 @@ void carl::PETSC_CG_solver::solve()
 		KSPSolve(PETSc_ksp_B, m_F_B->vec(), u0_B.vec());
 		write_PETSC_vector(u0_B  ,m_u0_B_filename);
 		perf_log.pop("KSP solver - B","Initialization");
-
-//		PetscViewer    viewer;
-//		PetscViewerASCIIOpen(PETSC_COMM_WORLD, "null_A.dat", &viewer);
-//		MatNullSpaceView(M_A_nullsp,viewer);
-//		PetscViewerDestroy(&viewer);
-
-//		PetscViewerASCIIOpen(PETSC_COMM_WORLD, "null_B.dat", &viewer);
-//		MatNullSpaceView(M_B_nullsp,viewer);
-//		PetscViewerDestroy(&viewer);
 
 		perf_log.push("CG vector setup","Initialization");
 
@@ -325,6 +308,8 @@ void carl::PETSC_CG_solver::solve()
 	bool bKeepRunning = true;
 	bool bConverged = false;
 
+	KSPConvergedReason conv_reason;
+
 	while (bKeepRunning)
 	{
 		std::cout << "|     Iter no. " << iter_nb << " " << std::endl; std::cout.flush();
@@ -337,7 +322,9 @@ void carl::PETSC_CG_solver::solve()
 		KSPSolve(PETSc_ksp_A, rhs_A.vec(), w_A.vec());
 		perf_log.pop("KSP solver - A","Coupled CG iterations");
 		timing_data = perf_log.get_perf_data("KSP solver - A","Coupled CG iterations");
+		KSPGetConvergedReason(PETSc_ksp_A,&conv_reason);
 		std::cout << "|        Solver A time : " << timing_data.tot_time/(iter_nb + 1) << std::endl;
+		std::cout << "|          Converged ? : " << conv_reason << std::endl;
 
 		MatMultTranspose(m_C_RB->mat(),p_i_old.vec(),rhs_B.vec());
 		perf_log.push("KSP solver - B","Coupled CG iterations");
@@ -345,7 +332,9 @@ void carl::PETSC_CG_solver::solve()
 		KSPSolve(PETSc_ksp_B, rhs_B.vec(), w_B.vec());
 		perf_log.pop("KSP solver - B","Coupled CG iterations");
 		timing_data = perf_log.get_perf_data("KSP solver - B","Coupled CG iterations");
+		KSPGetConvergedReason(PETSc_ksp_B,&conv_reason);
 		std::cout << "|        Solver B time : " << timing_data.tot_time/(iter_nb + 1) << std::endl;
+		std::cout << "|          Converged ? : " << conv_reason << std::endl;
 
 		perf_log.push("New correction","Coupled CG iterations");
 
