@@ -332,3 +332,70 @@ void carl::read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 
 	PetscViewerDestroy(&viewer);
 }
+
+void carl::create_PETSC_dense_matrix_from_vectors(const Vec *vecs_in, int nb_vecs, Mat& matrix_out)
+{
+	// Get the vectors' dimensions and create the matrix
+	PetscInt M_local, M;
+	VecGetLocalSize(vecs_in[0],&M_local);
+	VecGetSize(vecs_in[0],&M);
+
+	MatCreateDense(PETSC_COMM_WORLD,M_local,PETSC_DECIDE,M,nb_vecs,NULL,&matrix_out);
+
+	// Get the ownership ranges and the row indexes
+	PetscInt own_low, own_high;
+	VecGetOwnershipRange(vecs_in[0],&own_low,&own_high);
+
+	std::vector<PetscInt> row(M_local,0);
+
+	for(int iii = 0; iii < M_local; ++iii)
+	{
+		row[iii] = own_low + iii;
+	}
+
+	// Set the values
+	PetscScalar* data;
+	for(int iii = 0; iii < nb_vecs; ++iii)
+	{
+		VecGetArray(vecs_in[iii],&data);
+		MatSetValues(matrix_out,M_local,row.data(),1,&iii,data,INSERT_VALUES);
+		VecRestoreArray(vecs_in[iii],&data);
+	}
+
+	// Assembly
+	MatAssemblyBegin(matrix_out,MAT_FINAL_ASSEMBLY);
+	MatAssemblyEnd(matrix_out,MAT_FINAL_ASSEMBLY);
+}
+
+void carl::PETSC_invert_dense_matrix(Mat& matrix_in, Mat& matrix_out)
+{
+	// WARNING: this operation is extremely expensive for large systems !!!
+	//          Only use this for small matrices (example: the 6x6 or 3x3
+	//          or 3x3 matrices from the null space projectors,
+
+	Mat				Id_mat;
+	MatFactorInfo 	factor_info;
+	IS				rperm, cperm;
+
+	// Duplicate matrix data structures
+	MatDuplicate(matrix_in,MAT_DO_NOT_COPY_VALUES,&matrix_out);
+	MatDuplicate(matrix_in,MAT_DO_NOT_COPY_VALUES,&Id_mat);
+
+	// Create identity
+	MatZeroEntries(Id_mat);
+	MatShift(Id_mat,1);
+
+	// Factor input matrix
+	MatGetOrdering(matrix_in,MATORDERINGNATURAL,  &rperm,  &cperm);
+	MatFactorInfoInitialize(&factor_info);
+	MatLUFactor(matrix_in,rperm,cperm,&factor_info);
+
+	// Calculate inverse
+	MatMatSolve(matrix_in,Id_mat,matrix_out);
+
+	// Reset input's factoring
+	MatSetUnfactored(matrix_in);
+
+	// Cleanup
+	MatDestroy(&Id_mat);
+}

@@ -52,6 +52,11 @@ void read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 void print_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 		const std::string& filename);
 
+void create_PETSC_dense_matrix_from_vectors(const Vec *vecs_in, int nb_vecs, Mat& matrix_out);
+
+void PETSC_invert_dense_matrix(Mat& matrix_in, Mat& matrix_out);
 }
+
+
 
 #endif /* COMMON_LIBMESH_CODE_PETSC_MATRIX_OPERATIONS_H_ */
