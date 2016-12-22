@@ -5,8 +5,8 @@
  *      Author: Thiago Milanetto Schlittler
  */
 
-#ifndef COMMON_LIBMESH_CODE_LATIN_SOLVER_H_
-#define COMMON_LIBMESH_CODE_LATIN_SOLVER_H_
+#ifndef COMMON_LIBMESH_CODE_LATIN_COUPLED_SOLVER_H_
+#define COMMON_LIBMESH_CODE_LATIN_COUPLED_SOLVER_H_
 
 #include "carl_headers.h"
 #include "coupled_solver.h"
@@ -20,7 +20,7 @@ const bool MASTER_bPerfLog_LATIN_solver_solve = true;
 namespace carl
 {
 
-class PETSC_LATIN_solver : public coupled_solver
+class PETSC_LATIN_coupled_solver : public coupled_solver
 {
 protected:
 
@@ -69,12 +69,12 @@ protected:
 	std::string m_matrix_H_B_filename;
 
 private:
-	PETSC_LATIN_solver();
+	PETSC_LATIN_coupled_solver();
 
 public:
 
 	// Constructors
-	PETSC_LATIN_solver(	const libMesh::Parallel::Communicator& comm,
+	PETSC_LATIN_coupled_solver(	const libMesh::Parallel::Communicator& comm,
 						carl::CoupledSolverType solver_type = carl::LATIN_MODIFIED_STIFFNESS) :
 							coupled_solver (comm,solver_type),
 
@@ -88,7 +88,7 @@ public:
 		m_LATIN_Index.resize(m_LATIN_conv_max_n);
 	};
 
-	PETSC_LATIN_solver(	double i_k_dA, double i_k_dB, double i_k_cA, double i_k_cB,
+	PETSC_LATIN_coupled_solver(	double i_k_dA, double i_k_dB, double i_k_cA, double i_k_cB,
 						const libMesh::Parallel::Communicator& comm,
 						carl::CoupledSolverType solver_type = carl::LATIN_MODIFIED_STIFFNESS)  :
 							coupled_solver (comm,solver_type),
@@ -161,4 +161,4 @@ public:
 
 }
 
-#endif /* COMMON_LIBMESH_CODE_LATIN_SOLVER_H_ */
+#endif /* COMMON_LIBMESH_CODE_LATIN_COUPLED_SOLVER_H_ */

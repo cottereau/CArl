@@ -38,6 +38,11 @@ protected:
 	Mat m_null_F;
 	Mat m_null_PI;
 
+	Mat m_null_R;
+	Mat m_null_RT;
+
+	Mat 		RI_mat, RI_T_mat;
+
 	// Solution
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_sol_A;
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_sol_B;
@@ -135,6 +140,11 @@ public:
 		{
 			MatDestroy(&m_null_F);
 			MatDestroy(&m_null_PI);
+			MatDestroy(&m_null_R);
+			MatDestroy(&m_null_RT);
+
+			MatDestroy(&RI_mat);
+			MatDestroy(&RI_T_mat);
 		}
 	}
 	// Methods

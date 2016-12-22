@@ -12,6 +12,8 @@
 
 #include "mesh_tables.h"
 #include "coupled_system.h"
+#include "base_CG_solver.h"
+
 #include "assemble_functions_elasticity_3D.h"
 #include "PETSC_matrix_operations.h"
 

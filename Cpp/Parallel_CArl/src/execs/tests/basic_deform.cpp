@@ -168,14 +168,13 @@ int main(int argc, char** argv) {
 	double BIG_E = 0;
 	double BIG_Mu = 0;
 
-//	std::ifstream phys_params_file(input_params.physical_params_file);
-//	carl::jump_lines(phys_params_file);
-//	phys_params_file >> BIG_E >> BIG_Mu;
-//	phys_params_file.close();
-//
-//	set_constant_physical_properties(equation_systems_BIG,BIG_E,BIG_Mu);
+	std::ifstream phys_params_file(input_params.physical_params_file);
+	phys_params_file >> BIG_E >> BIG_Mu;
+	phys_params_file.close();
 
-	set_physical_properties(equation_systems_BIG,input_params.physical_params_file,BIG_E,BIG_Mu);
+	set_constant_physical_properties(equation_systems_BIG,BIG_E,BIG_Mu);
+
+//	set_physical_properties(equation_systems_BIG,input_params.physical_params_file,BIG_E,BIG_Mu);
 	perf_log.pop("Physical properties","System initialization:");
 
 	// - Set the coupling matrix -----------------------------------------------
@@ -188,7 +187,26 @@ int main(int argc, char** argv) {
 
 	// Solve !
 	perf_log.push("Solve");
-	elasticity_system_BIG.solve();
+//	elasticity_system_BIG.solve();
+	elasticity_system_BIG.assemble();
+	elasticity_system_BIG.matrix->close();
+	elasticity_system_BIG.rhs->close();
+
+	libMesh::PetscMatrix<libMesh::Number> * sys_matrix =
+			libMesh::libmesh_cast_ptr<libMesh::PetscMatrix<libMesh::Number> * >(elasticity_system_BIG.matrix);
+
+	libMesh::PetscVector<libMesh::Number> * sys_vec =
+			libMesh::libmesh_cast_ptr<libMesh::PetscVector<libMesh::Number> * >(elasticity_system_BIG.rhs);
+
+	carl::base_CG_solver CG_test(WorldComm);
+	CG_test.set_solver_matrix(*sys_matrix);
+	CG_test.set_system_rhs(*sys_vec);
+
+	CG_test.solve();
+
+	*(elasticity_system_BIG.solution) = CG_test.get_solution();
+	elasticity_system_BIG.solution->close();
+	elasticity_system_BIG.update();
 	perf_log.pop("Solve");
 
 	perf_log.push("Compute stress - macro","Output:");
@@ -207,6 +225,8 @@ int main(int argc, char** argv) {
 	exo_io_BIG.write_element_data(equation_systems_BIG);
 	perf_log.pop("Save output","Output:");
 #endif
+
+
 
 //	std::ofstream perf_log_file("meshes/parallel_test/output/perf_log_" + std::to_string(rank)  + ".txt");
 //	perf_log_file << perf_log.get_log();

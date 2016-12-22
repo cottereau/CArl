@@ -1,18 +1,18 @@
-#include "LATIN_solver.h"
 #include <petscksp.h>
 #include <petsc/private/kspimpl.h>
+#include "LATIN_coupled_solver.h"
 
-void carl::PETSC_LATIN_solver::use_exact_inverse()
+void carl::PETSC_LATIN_coupled_solver::use_exact_inverse()
 {
 	m_bUseLumping = false;
 };
 
-void carl::PETSC_LATIN_solver::use_lumped_inverse()
+void carl::PETSC_LATIN_coupled_solver::use_lumped_inverse()
 {
 	m_bUseLumping = true;
 };
 
-void carl::PETSC_LATIN_solver::set_params(double i_k_dA, double i_k_dB, double i_k_cA, double i_k_cB)
+void carl::PETSC_LATIN_coupled_solver::set_params(double i_k_dA, double i_k_dB, double i_k_cA, double i_k_cB)
 {
 	m_k_dA = i_k_dA;
 	m_k_dB = i_k_dB;
@@ -21,7 +21,7 @@ void carl::PETSC_LATIN_solver::set_params(double i_k_dA, double i_k_dB, double i
 	m_bParamsSetUp = true;
 };
 
-void carl::PETSC_LATIN_solver::set_info(	bool bSavePartitionInfo,
+void carl::PETSC_LATIN_coupled_solver::set_info(	bool bSavePartitionInfo,
 											const std::string& info_base_filename)
 {
 	// Call the coupled_solver function
@@ -36,7 +36,7 @@ void carl::PETSC_LATIN_solver::set_info(	bool bSavePartitionInfo,
 	}
 }
 
-void carl::PETSC_LATIN_solver::set_restart( 	bool bUseRestart,
+void carl::PETSC_LATIN_coupled_solver::set_restart( 	bool bUseRestart,
 												bool bPrintRestart,
 												const std::string& restart_base_filename)
 {
@@ -51,7 +51,7 @@ void carl::PETSC_LATIN_solver::set_restart( 	bool bUseRestart,
 	}
 }
 
-void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Number>& M_A,
+void carl::PETSC_LATIN_coupled_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Number>& M_A,
 					libMesh::PetscMatrix<libMesh::Number>& M_B,
 					libMesh::PetscMatrix<libMesh::Number>& C_RA,
 					libMesh::PetscMatrix<libMesh::Number>& C_RB,
@@ -199,7 +199,7 @@ void carl::PETSC_LATIN_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Numbe
 	m_bMatricesSetUp = true;
 };
 
-void carl::PETSC_LATIN_solver::set_matrices_nonlinear(	libMesh::PetscMatrix<libMesh::Number>& M_A,
+void carl::PETSC_LATIN_coupled_solver::set_matrices_nonlinear(	libMesh::PetscMatrix<libMesh::Number>& M_A,
 					libMesh::PetscMatrix<libMesh::Number>& C_RA,
 					libMesh::PetscMatrix<libMesh::Number>& C_RB,
 					libMesh::PetscMatrix<libMesh::Number>& C_RR,
@@ -295,25 +295,25 @@ void carl::PETSC_LATIN_solver::set_matrices_nonlinear(	libMesh::PetscMatrix<libM
 	m_bMatricesSetUp = true;
 };
 
-void carl::PETSC_LATIN_solver::set_forces_nonlinear(	libMesh::PetscVector<libMesh::Number>& F_A)
+void carl::PETSC_LATIN_coupled_solver::set_forces_nonlinear(	libMesh::PetscVector<libMesh::Number>& F_A)
 {
 	m_F_A = &F_A;
 
 	m_bForcesSetUp = true;
 };
 
-void carl::PETSC_LATIN_solver::set_convergence_limits(double eps, int convIter)
+void carl::PETSC_LATIN_coupled_solver::set_convergence_limits(double eps, int convIter)
 {
 	m_LATIN_conv_eps = eps;
 	m_LATIN_conv_max_n = convIter;
 };
 
-void carl::PETSC_LATIN_solver::set_relaxation(double relax)
+void carl::PETSC_LATIN_coupled_solver::set_relaxation(double relax)
 {
 	m_LATIN_relax = relax;
 }
 
-void carl::PETSC_LATIN_solver::solve()
+void carl::PETSC_LATIN_coupled_solver::solve()
 {
 	std::cout << "| LATIN solver: " << std::endl;
 	std::cout << "|     Initialization ..." << std::endl; std::cout.flush();
@@ -337,7 +337,7 @@ void carl::PETSC_LATIN_solver::solve()
 	}
 }
 
-void carl::PETSC_LATIN_solver::solve_modified_stiffness()
+void carl::PETSC_LATIN_coupled_solver::solve_modified_stiffness()
 {
 	libMesh::PerfLog perf_log("Solve",MASTER_bPerfLog_LATIN_solver_solve);
 
@@ -640,7 +640,7 @@ void carl::PETSC_LATIN_solver::solve_modified_stiffness()
 	m_bSolved = true;
 }
 
-void carl::PETSC_LATIN_solver::solve_original_stiffness()
+void carl::PETSC_LATIN_coupled_solver::solve_original_stiffness()
 {
 	libMesh::PerfLog perf_log("Solve",MASTER_bPerfLog_LATIN_solver_solve);
 
@@ -963,7 +963,7 @@ void carl::PETSC_LATIN_solver::solve_original_stiffness()
 	m_bSolved = true;
 }
 
-void carl::PETSC_LATIN_solver::solve_nonlinear(libMesh::EquationSystems& EqSys_micro, const std::string type_name_micro)
+void carl::PETSC_LATIN_coupled_solver::solve_nonlinear(libMesh::EquationSystems& EqSys_micro, const std::string type_name_micro)
 {
 	libMesh::PerfLog perf_log("Solve",MASTER_bPerfLog_LATIN_solver_solve);
 
@@ -1301,7 +1301,7 @@ void carl::PETSC_LATIN_solver::solve_nonlinear(libMesh::EquationSystems& EqSys_m
 
 }
 
-void carl::PETSC_LATIN_solver::print_convergence(std::ostream& convergenceOut)
+void carl::PETSC_LATIN_coupled_solver::print_convergence(std::ostream& convergenceOut)
 {
 	if(m_bSolved)
 	{

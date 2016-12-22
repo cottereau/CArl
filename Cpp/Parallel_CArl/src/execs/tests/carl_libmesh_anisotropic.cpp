@@ -273,7 +273,7 @@ void get_input_params(GetPot& field_parser,
 		}
 	}
 
-	if( field_parser.search(2, "--dist","LATINCouplingMeshScale") )
+	if( field_parser.search(2, "--dist","CouplingMeshScale") )
 	{
 		input_params.mean_distance = field_parser.next(input_params.mean_distance);
 	}
@@ -765,8 +765,8 @@ int main(int argc, char** argv) {
 
 	// - Set the coupling matrix -----------------------------------------------
 	perf_log.push("Set coupling matrices");
-	coupling_const = eval_lambda_1(BIG_E,BIG_Mu);
-	CoupledTest.set_coupling_parameters("MicroSys",coupling_const,input_params.mean_distance);
+	coupling_const = BIG_E;
+	CoupledTest.set_coupling_parameters("MicroSys",BIG_E,input_params.mean_distance);
 
 	CoupledTest.use_H1_coupling("MicroSys");
 	CoupledTest.assemble_coupling_elasticity_3D_parallel("BigSys","MicroSys",

@@ -310,7 +310,7 @@ void carl::coupled_system::set_restart(		bool bUseRestart,
 	case LATIN_MODIFIED_STIFFNESS:
 	case LATIN_ORIGINAL_STIFFNESS:
 		{
-			std::shared_ptr<PETSC_LATIN_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_solver>(m_coupled_solver);
+			std::shared_ptr<PETSC_LATIN_coupled_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_coupled_solver>(m_coupled_solver);
 
 			cast_LATIN_solver->set_restart(bUseRestart,bPrintRestart,restart_base_filename);
 			cast_LATIN_solver->set_info(bPrintMatrix,restart_base_filename);
@@ -318,7 +318,7 @@ void carl::coupled_system::set_restart(		bool bUseRestart,
 		break;
 	case CG:
 		{
-			std::shared_ptr<PETSC_CG_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_solver>(m_coupled_solver);
+			std::shared_ptr<PETSC_CG_coupled_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_coupled_solver>(m_coupled_solver);
 
 			cast_CG_solver->set_restart(bUseRestart,bPrintRestart,restart_base_filename);
 			cast_CG_solver->set_info(bPrintMatrix,restart_base_filename);
@@ -447,7 +447,7 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name,
 	case LATIN_MODIFIED_STIFFNESS:
 	case LATIN_ORIGINAL_STIFFNESS:
 		{
-			std::shared_ptr<PETSC_LATIN_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_solver>(m_coupled_solver);
+			std::shared_ptr<PETSC_LATIN_coupled_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_coupled_solver>(m_coupled_solver);
 
 			cast_LATIN_solver->set_params(k_dA,k_dB,k_cA,k_cB);
 
@@ -498,7 +498,7 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 	case LATIN_MODIFIED_STIFFNESS:
 	case LATIN_ORIGINAL_STIFFNESS:
 		{
-			std::shared_ptr<PETSC_LATIN_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_solver>(m_coupled_solver);
+			std::shared_ptr<PETSC_LATIN_coupled_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_coupled_solver>(m_coupled_solver);
 
 			// Set the solver parameters
 			cast_LATIN_solver->set_params(k_dA,k_dB,k_cA,k_cB);
@@ -554,7 +554,7 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 	case LATIN_MODIFIED_STIFFNESS:
 	case LATIN_ORIGINAL_STIFFNESS:
 		{
-			std::shared_ptr<PETSC_LATIN_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_solver>(m_coupled_solver);
+			std::shared_ptr<PETSC_LATIN_coupled_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_coupled_solver>(m_coupled_solver);
 
 			// Set the solver parameters
 			cast_LATIN_solver->set_params(k_dA,k_dB,k_cA,k_cB);
@@ -604,7 +604,10 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name,
 	{
 	case CG:
 		{
-			std::shared_ptr<PETSC_CG_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_solver>(m_coupled_solver);
+			std::shared_ptr<PETSC_CG_coupled_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_coupled_solver>(m_coupled_solver);
+
+			// Use preconditioner
+			cast_CG_solver->use_preconditioner(false);
 
 			// Set the solver matrices
 			cast_CG_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
@@ -652,7 +655,10 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 	{
 	case CG:
 		{
-			std::shared_ptr<PETSC_CG_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_solver>(m_coupled_solver);
+			std::shared_ptr<PETSC_CG_coupled_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_coupled_solver>(m_coupled_solver);
+
+			// Use preconditioner
+			cast_CG_solver->use_preconditioner(false);
 
 			// Set the solver matrices
 			cast_CG_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
@@ -704,15 +710,18 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 	{
 	case CG:
 		{
-			std::shared_ptr<PETSC_CG_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_solver>(m_coupled_solver);
+			std::shared_ptr<PETSC_CG_coupled_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_coupled_solver>(m_coupled_solver);
+
+			// Use preconditioner
+			cast_CG_solver->use_preconditioner(false);
 
 			// Set the solver matrices
 			cast_CG_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
 
+			cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
+
 			// Set the solver matrices
 			cast_CG_solver->set_forces(F_A,F_B);
-
-			std::cout << " hop " << std::endl;
 
 			// Set CG parameters (convergence )
 			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol);
@@ -755,7 +764,7 @@ void carl::coupled_system::set_LATIN_nonlinear_solver(const std::string micro_na
 	case LATIN_MODIFIED_STIFFNESS:
 	case LATIN_ORIGINAL_STIFFNESS:
 		{
-			std::shared_ptr<PETSC_LATIN_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_solver>(m_coupled_solver);
+			std::shared_ptr<PETSC_LATIN_coupled_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_coupled_solver>(m_coupled_solver);
 
 			// Set the solver parameters
 			cast_LATIN_solver->set_params(k_dA,k_dB,k_cA,k_cB);
@@ -816,7 +825,7 @@ void carl::coupled_system::solve_LATIN_nonlinear(const std::string micro_name, c
 	case LATIN_MODIFIED_STIFFNESS:
 	case LATIN_ORIGINAL_STIFFNESS:
 		{
-			std::shared_ptr<PETSC_LATIN_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_solver>(m_coupled_solver);
+			std::shared_ptr<PETSC_LATIN_coupled_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_coupled_solver>(m_coupled_solver);
 
 			cast_LATIN_solver->solve_nonlinear(EqSystems_micro,type_name_micro);
 			break;
@@ -887,14 +896,14 @@ void carl::coupled_system::print_convergence(const std::string& filename)
 	case LATIN_MODIFIED_STIFFNESS:
 	case LATIN_ORIGINAL_STIFFNESS:
 		{
-			std::shared_ptr<PETSC_LATIN_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_solver>(m_coupled_solver);
+			std::shared_ptr<PETSC_LATIN_coupled_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_coupled_solver>(m_coupled_solver);
 
 			cast_LATIN_solver->print_convergence(convergenceOut);
 			break;
 		}
 	case CG:
 		{
-			std::shared_ptr<PETSC_CG_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_solver>(m_coupled_solver);
+			std::shared_ptr<PETSC_CG_coupled_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_coupled_solver>(m_coupled_solver);
 
 			cast_CG_solver->print_convergence(convergenceOut);
 			break;

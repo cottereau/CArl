@@ -157,7 +157,6 @@ void carl::coupled_solver::build_null_space_projection_matrices(libMesh::PetscMa
 		const Vec*	null_vecs;
 		PetscInt	C_sys_M, C_sys_N, C_sys_M_local, C_sys_N_local;
 		PetscInt	R_mat_M, R_mat_N, R_mat_M_local, R_mat_N_local;
-		Mat 		R_mat, R_T_mat, RI_mat, RI_T_mat;
 		Mat			RITRI_mat, inv_RITRI_mat;
 
 		// Get the input matrix's dimensions
@@ -167,11 +166,11 @@ void carl::coupled_solver::build_null_space_projection_matrices(libMesh::PetscMa
 		// -> Create the matrices!
 		// R_mat      : n_sys   x nb_vecs ( 3 for 2D, 6 for 3D )
 		MatNullSpaceGetVecs(nullsp_sys,&null_has_cte,&null_nb_vecs,&null_vecs);
-		create_PETSC_dense_matrix_from_vectors(null_vecs,null_nb_vecs,R_mat);
-		MatTranspose(R_mat,MAT_INITIAL_MATRIX,&R_T_mat);
+		create_PETSC_dense_matrix_from_vectors(null_vecs,null_nb_vecs,m_null_R);
+		MatTranspose(m_null_R,MAT_INITIAL_MATRIX,&m_null_RT);
 
-		MatGetLocalSize(R_mat,&R_mat_M_local,&R_mat_N_local);
-		MatGetSize(R_mat,&R_mat_M,&R_mat_N);
+		MatGetLocalSize(m_null_R,&R_mat_M_local,&R_mat_N_local);
+		MatGetSize(m_null_R,&R_mat_M,&R_mat_N);
 
 		//             M       x N
 		// C_sys     : n_coupl x n_sys
@@ -181,7 +180,7 @@ void carl::coupled_solver::build_null_space_projection_matrices(libMesh::PetscMa
 		MatCreateDense(PETSC_COMM_WORLD,R_mat_N_local,R_mat_N_local,R_mat_N,R_mat_N,NULL,&RITRI_mat);
 
 		// RI = C_sys * R_mat;
-		MatMatMult(C_sys.mat(),R_mat,MAT_REUSE_MATRIX,PETSC_DECIDE,&RI_mat);
+		MatMatMult(C_sys.mat(),m_null_R,MAT_REUSE_MATRIX,PETSC_DECIDE,&RI_mat);
 		MatTranspose(RI_mat,MAT_INITIAL_MATRIX,&RI_T_mat);
 
 		// Cannot use MatTransposeMatMult with dense matrices ...
@@ -212,18 +211,15 @@ void carl::coupled_solver::build_null_space_projection_matrices(libMesh::PetscMa
 		MatShift(m_null_PI,1);
 
 		// F_mat = aux_matrix * R_T_mat
-		MatMatMult(aux_matrix,R_T_mat,MAT_REUSE_MATRIX,PETSC_DECIDE,&m_null_F);
+		MatMatMult(aux_matrix,m_null_RT,MAT_REUSE_MATRIX,PETSC_DECIDE,&m_null_F);
 
 		// Set up flag
 		m_bCreatedRigidBodyProjectors = true;
 
 		// Cleanup
 		MatDestroy(&aux_matrix);
-		MatDestroy(&R_mat);
-		MatDestroy(&RI_mat);
-		MatDestroy(&R_T_mat);
-		MatDestroy(&RI_T_mat);
+//		MatDestroy(&RI_mat);
+//		MatDestroy(&RI_T_mat);
 		MatDestroy(&RITRI_mat);
 	}
-
 };

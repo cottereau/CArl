@@ -22,6 +22,7 @@ protected:
 
 	// Communicator
 	const libMesh::Parallel::Communicator * m_comm;
+	generic_solver_interface();
 
 public:
 
@@ -32,7 +33,22 @@ public:
 
 	};
 
-	virtual void solve(libMesh::PetscVector<libMesh::Number>& sol, libMesh::PetscVector<libMesh::Number>& rhs) = 0;
+	// Get the system's dimensions
+	virtual void get_system_dimensions(unsigned int& M_out, unsigned int& M_local_out) = 0;
+
+	virtual void get_coupling_dimensions(unsigned int& M_out, unsigned int& N_out, unsigned int& M_local_out, unsigned int& N_local_out) = 0;
+
+	// Calculate v_out = [ C * ( M^-1 ) *C^t ] * v_in
+	virtual void apply_ZMiZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out) = 0;
+
+	// Calculate v_out = [ ( M^-1 ) *C^t ] * v_in
+	virtual void apply_MiZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out) = 0;
+
+	// Calculate v_out = ( M^-1 ) * v_in
+	virtual void solve(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out) = 0;
+
+	// Calculate v_out = ( M^-1 ) * rhs
+	virtual void solve(libMesh::PetscVector<libMesh::Number>& v_out) = 0;
 
 	virtual void print_type() = 0;
 };

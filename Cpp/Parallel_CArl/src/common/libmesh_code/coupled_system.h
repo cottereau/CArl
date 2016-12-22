@@ -14,12 +14,11 @@
 #include "weak_formulations.h"
 #include "coupled_solver.h"
 
-#include "LATIN_solver.h"
-#include "CG_solver.h"
-
 #include "PETSC_matrix_operations.h"
 #include "weight_parameter_function.h"
 #include "anisotropic_elasticity_cubic_sym.h"
+#include "CG_coupled_solver.h"
+#include "LATIN_coupled_solver.h"
 
 const bool MASTER_bPerfLog_assemble_coupling = false;
 const bool MASTER_debug_coupling_assemble = false;
@@ -317,11 +316,11 @@ public:
 			case carl::LATIN_MODIFIED_STIFFNESS:
 			case carl::LATIN_ORIGINAL_STIFFNESS:
 				m_coupled_solver =
-						std::shared_ptr<coupled_solver>(new PETSC_LATIN_solver(comm,solver_type));
+						std::shared_ptr<coupled_solver>(new PETSC_LATIN_coupled_solver(comm,solver_type));
 				break;
 			case carl::CG:
 				m_coupled_solver =
-						std::shared_ptr<coupled_solver>(new PETSC_CG_solver(comm));
+						std::shared_ptr<coupled_solver>(new PETSC_CG_coupled_solver(comm));
 				break;
 		}
 	}

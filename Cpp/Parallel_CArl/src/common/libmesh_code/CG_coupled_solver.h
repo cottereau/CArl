@@ -5,8 +5,8 @@
  *      Author: Thiago Milanetto Schlittler
  */
 
-#ifndef COMMON_LIBMESH_CODE_CG_SOLVER_H_
-#define COMMON_LIBMESH_CODE_CG_SOLVER_H_
+#ifndef COMMON_LIBMESH_CODE_CG_COUPLED_SOLVER_H_
+#define COMMON_LIBMESH_CODE_CG_COUPLED_SOLVER_H_
 
 #include "carl_headers.h"
 #include "coupled_solver.h"
@@ -21,12 +21,13 @@ const bool MASTER_bPerfLog_CG_solver_solve = true;
 namespace carl
 {
 
-class PETSC_CG_solver : public coupled_solver
+class PETSC_CG_coupled_solver : public coupled_solver
 {
 protected:
 
 	// Preallocator
 	std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> > m_PC;
+	Mat m_PC_PETSc;
 
 //	// Coordinates vectors
 //	libMesh::PetscVector<libMesh::Number> * m_coord_vect_A;
@@ -59,12 +60,12 @@ protected:
 	std::string m_rho_filename;
 
 private:
-	PETSC_CG_solver();
+	PETSC_CG_coupled_solver();
 
 public:
 
 	// Constructors
-	PETSC_CG_solver(	const libMesh::Parallel::Communicator& comm) :
+	PETSC_CG_coupled_solver(	const libMesh::Parallel::Communicator& comm) :
 							coupled_solver (comm,carl::CG),
 
 //							m_coord_vect_A { NULL },
@@ -80,6 +81,13 @@ public:
 		m_bParamsSetUp = true;
 	};
 
+	~PETSC_CG_coupled_solver()
+	{
+		if(m_bUsePreconditioner)
+		{
+			MatDestroy(&m_PC_PETSc);
+		}
+	}
 	// Methods - reimplemented from "coupled_solver.h"
 	void set_restart( 		bool bUseRestart,
 							bool bPrintRestart,
@@ -101,13 +109,11 @@ public:
 
 	void use_preconditioner(bool flag = true);
 
-	void build_preconditioner()
-	{
-	};
+	void build_preconditioner();
 
 	void print_convergence(std::ostream& convergenceOut);
 };
 
 }
 
-#endif /* COMMON_LIBMESH_CODE_CG_SOLVER_H_ */
+#endif /* COMMON_LIBMESH_CODE_CG_COUPLED_SOLVER_H_ */
