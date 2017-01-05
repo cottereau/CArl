@@ -19,6 +19,7 @@
 #include "anisotropic_elasticity_cubic_sym.h"
 #include "CG_coupled_solver.h"
 #include "LATIN_coupled_solver.h"
+#include "KSP_linear_solver.h"
 
 const bool MASTER_bPerfLog_assemble_coupling = false;
 const bool MASTER_debug_coupling_assemble = false;
@@ -292,9 +293,11 @@ protected:
 	typedef std::map<std::string, libMesh::PetscVector<libMesh::Number>*>::iterator Vector_iterator;
 	typedef std::map<std::string, weight_parameter_function*>::iterator alpha_mask_iterator;
 
-	// -> LATIN solver
+	// -> Solver pointers
 	carl::CoupledSolverType m_solver_type;
 	std::shared_ptr<coupled_solver> m_coupled_solver;
+	std::shared_ptr<generic_solver_interface> m_sys_A_solver;
+	std::shared_ptr<generic_solver_interface> m_sys_B_solver;
 
 private:
 	coupled_system();
@@ -323,6 +326,9 @@ public:
 						std::shared_ptr<coupled_solver>(new PETSC_CG_coupled_solver(comm));
 				break;
 		}
+
+		m_sys_A_solver = std::shared_ptr<generic_solver_interface>(new KSP_linear_solver(comm));
+		m_sys_B_solver = std::shared_ptr<generic_solver_interface>(new KSP_linear_solver(comm));
 	}
 	;
 
@@ -658,14 +664,14 @@ public:
 							double eps = 1E-2, int convIter = 10000, double relax = 0.8);
 
 	void set_CG_solver(	const std::string micro_name,const std::string type_name,
-							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 100, double div_tol = 1E4);
+							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 100, double div_tol = 1E5);
 
 	void set_CG_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es, const std::string& name,
 												weight_parameter_function& alpha_mask),
 							void fptr_micro(	libMesh::EquationSystems& es, const std::string& name,
 												weight_parameter_function& alpha_mask),
-							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 100, double div_tol = 1E4);
+							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 100, double div_tol = 1E5);
 
 	void set_CG_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es,
@@ -673,7 +679,7 @@ public:
 							void fptr_micro(	libMesh::EquationSystems& es,
 												const std::string& name, weight_parameter_function& weight_mask, anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
 							anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj,
-							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 100, double div_tol = 1E4);
+							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 100, double div_tol = 1E5);
 
 	void set_LATIN_nonlinear_solver(const std::string micro_name,
 			const std::string type_name_BIG,

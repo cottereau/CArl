@@ -53,6 +53,21 @@ void KSP_linear_solver::set_rhs(libMesh::PetscVector<libMesh::Number>& vector)
 	m_bRhsSet = true;
 };
 
+libMesh::PetscMatrix<libMesh::Number>& KSP_linear_solver::get_matrix()
+{
+	return *m_Matrix;
+}
+
+libMesh::PetscMatrix<libMesh::Number>& KSP_linear_solver::get_coupling_matrix()
+{
+	return *m_Coupling;
+}
+
+libMesh::PetscVector<libMesh::Number>& KSP_linear_solver::get_rhs()
+{
+	return *m_rhs;
+}
+
 KSPConvergedReason KSP_linear_solver::get_converged_reason()
 {
 	return m_conv_reason;
@@ -88,7 +103,7 @@ void KSP_linear_solver::apply_ZMiZt(libMesh::PetscVector<libMesh::Number>& v_in,
 	libMesh::PetscVector<libMesh::Number> * aux_vec_sol_ptr = m_aux_vec_2.get();
 
 	MatMultTranspose(m_Coupling->mat(),v_in.vec(),aux_vec_rhs_ptr->vec());
-	this->solve(*aux_vec_sol_ptr,*aux_vec_rhs_ptr);
+	this->solve(*aux_vec_rhs_ptr,*aux_vec_sol_ptr);
 	m_Coupling->vector_mult(v_out,*aux_vec_sol_ptr);
 }
 
@@ -100,7 +115,18 @@ void KSP_linear_solver::apply_MiZt(libMesh::PetscVector<libMesh::Number>& v_in, 
 	libMesh::PetscVector<libMesh::Number> * aux_vec_rhs_ptr = m_aux_vec_1.get();
 
 	MatMultTranspose(m_Coupling->mat(),v_in.vec(),aux_vec_rhs_ptr->vec());
-	this->solve(v_out,*aux_vec_rhs_ptr);
+	this->solve(*aux_vec_rhs_ptr,v_out);
+}
+
+void KSP_linear_solver::apply_ZMi(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
+{
+	homemade_assert_msg(m_bMatrixSet, "Solver matrix not set yet!\n");
+	homemade_assert_msg(m_bCouplingSet, "Coupling matrix not set yet!\n");
+
+	libMesh::PetscVector<libMesh::Number> * aux_vec_sol_ptr = m_aux_vec_1.get();
+
+	this->solve(v_in,*aux_vec_sol_ptr);
+	MatMult(m_Coupling->mat(),aux_vec_sol_ptr->vec(),v_out.vec());
 }
 
 // Implementations of virtual methods
@@ -128,6 +154,49 @@ void KSP_linear_solver::print_type()
 	std::cout   << "|" << std::endl;
 }
 
+void KSP_linear_solver::calculate_pseudo_inverse()
+{
+	Vec dummy_vec;
+	Mat matrix_out;
+
+	PetscInt M, N;
+
+	MatCreateVecs(m_Matrix->mat(),&dummy_vec,PETSC_NULL);
+	MatGetSize(m_Matrix->mat(),&M,&N);
+
+	Vec *dummy_Id;
+	Vec *dummy_sol;
+
+	VecDuplicateVecs(dummy_vec,N,&dummy_Id);
+	VecDuplicateVecs(dummy_vec,N,&dummy_sol);
+
+	for(int iii = 0; iii < N; ++iii)
+	{
+		VecSet(dummy_Id[iii],0);
+		VecSetValue(dummy_Id[iii],iii,1,INSERT_VALUES);
+		VecSet(dummy_sol[iii],0);
+
+		libMesh::PetscVector<libMesh::Number> dummy_Id_libmesh(dummy_Id[iii],*m_comm);
+		libMesh::PetscVector<libMesh::Number> dummy_sol_libmesh(dummy_sol[iii],*m_comm);
+
+		this->solve(dummy_Id_libmesh,dummy_sol_libmesh);
+	}
+
+	create_PETSC_dense_matrix_from_vectors(dummy_sol,N,matrix_out);
+
+	PetscViewer    viewer;
+	PetscViewerASCIIOpen(m_comm->get(),"pinvFB.m",&viewer);
+	PetscViewerPushFormat(viewer,PETSC_VIEWER_ASCII_MATLAB);
+
+	MatView(matrix_out,viewer);
+
+	PetscViewerDestroy(&viewer);
+
+	MatDestroy(&matrix_out);
+	VecDestroyVecs(N,&dummy_Id);
+	VecDestroyVecs(N,&dummy_sol);
+	VecDestroy(&dummy_vec);
+}
 }
 
 

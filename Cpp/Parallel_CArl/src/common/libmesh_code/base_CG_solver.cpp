@@ -19,9 +19,15 @@ void base_CG_solver::set_sol_vectors()
 
 	m_initial_sol = std::unique_ptr<libMesh::PetscVector<libMesh::Number> >(new libMesh::PetscVector<libMesh::Number>(*m_comm));
 	m_initial_sol->init(m_sys_N,m_sys_local_N);
+
 	m_initial_sol->zero();
 	m_initial_sol->close();
 };
+
+void base_CG_solver::set_initial_sol(libMesh::PetscVector<libMesh::Number>& init_sol_in)
+{
+	*m_initial_sol = init_sol_in;
+}
 
 void base_CG_solver::apply_M(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
@@ -44,13 +50,13 @@ void base_CG_solver::apply_LATIN_operator(libMesh::PetscVector<libMesh::Number>&
 
 void base_CG_solver::apply_CG_operator(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
-	homemade_error_msg("Not tested yet!\n");
+//	homemade_error_msg("Not tested yet!\n");
 
 	// CG operator: v_out = ( C1 * M1^-1 * C1^t + C2 * M2^-1 * C2^t ) * v_in
 
 	// temp_sol_I = ( CI * MI^-1 * CI^t ) * v_in
-	m_solver_A->apply_MiZt(v_in,*m_temp_sol_A);
-	m_solver_B->apply_MiZt(v_in,*m_temp_sol_B);
+	m_solver_A->apply_ZMiZt(v_in,*m_temp_sol_A);
+	m_solver_B->apply_ZMiZt(v_in,*m_temp_sol_B);
 
 	// v_out = temp_sol_A + temp_sol_B
 	v_out = *m_temp_sol_A;
@@ -94,9 +100,16 @@ void base_CG_solver::set_CG_precond()
 void base_CG_solver::use_preconditioner(bool bUsePreconditioner)
 {
 	// Preconditioner to be implemented later
-	homemade_error_msg("Preconditioners not implemented yet!\n");
+	homemade_assert_msg(!bUsePreconditioner,"Preconditioners not implemented yet!\n");
+
 	m_bUsePreconditioner = bUsePreconditioner;
 };
+
+void base_CG_solver::set_solver_CG_projector(Mat& proj_in)
+{
+	m_bUseNullSpaceProjector = true;
+	m_M_null_proj = &proj_in;
+}
 
 void base_CG_solver::set_solver_matrix(libMesh::PetscMatrix<libMesh::Number>& sys_mat_in)
 {
@@ -155,10 +168,11 @@ void base_CG_solver::set_solver_CG(generic_solver_interface& solver_in_A, generi
 	// Set the internal solvers
 	m_solver_A = &solver_in_A;
 	m_solver_B = &solver_in_B;
+
 	apply_system_matrix = &base_CG_solver::apply_CG_operator;
 
 	// Set the dimensions - equal to the coupling matrices' nb. of rows
-	m_solver_A->get_coupling_dimensions(m_coupling_M,m_coupling_N,m_coupling_local_N,m_coupling_local_N);
+	m_solver_A->get_coupling_dimensions(m_coupling_M,m_coupling_N,m_coupling_local_M,m_coupling_local_N);
 	m_sys_N = m_coupling_M;
 	m_sys_local_N = m_coupling_local_M;
 
@@ -224,11 +238,23 @@ void base_CG_solver::solve()
 
 	std::cout << "|     Finished setup " << std::endl;
 
+	m_rhs->print_matlab("F_sys.m");
+	m_M_PC->print_matlab("M_precond.m");
+
 	// Initialize the system
 	// r(0) = b - A * x(0)
 	m_r_prev = *m_rhs;
-	(this->*apply_system_matrix)(m_aux,m_x_prev);
+	(this->*apply_system_matrix)(m_x_prev,m_aux);
 	m_r_prev.add(-1,m_aux);
+	m_x_prev.print_matlab("x_0.m");
+	m_aux.print_matlab("aux_0.m");
+	m_r_prev.print_matlab("r_0.m");
+	m_temp_sol_A->print_matlab("ZMZ_A.m");
+	m_temp_sol_B->print_matlab("ZMZ_B.m");
+	m_solver_A->print_type();
+	m_solver_B->print_type();
+
+	m_solver_B->calculate_pseudo_inverse();
 
 	// z(0) = M_PC * r(0)
 	m_M_PC->vector_mult(m_z,m_r_prev);
@@ -242,13 +268,14 @@ void base_CG_solver::solve()
 	if(m_bUseNullSpaceProjector)
 	{
 		std::cout << "|     Using the projector ... " << std::endl;
-		m_M_null_proj->vector_mult(m_p_prev,m_z);
+		MatMult(*m_M_null_proj,m_z.vec(),m_p_prev.vec());
 	}
 	else
 	{
 		std::cout << "|     NOT using the projector ... " << std::endl;
 		m_p_prev = m_z;
 	}
+	m_p_prev.print_matlab("p_0.m");
 
 	std::cout << "|     Finished preamble: " << std::endl;
 
@@ -297,7 +324,7 @@ void base_CG_solver::solve()
 
 		if(m_bUseNullSpaceProjector)
 		{
-			m_M_null_proj->vector_mult(m_p,m_aux);
+			MatMult(*m_M_null_proj,m_aux.vec(),m_p.vec());
 		}
 		else
 		{
@@ -352,6 +379,7 @@ libMesh::PetscVector<libMesh::Number>& base_CG_solver::get_solution()
 
 bool base_CG_solver::test_convergence(unsigned int iter, double res_norm, double init_res_norm)
 {
+	std::cout << m_CG_conv_eps_abs << " " << m_CG_conv_eps_rel << " | " << m_CG_conv_max_n << " " <<  m_CG_div_tol << std::endl;
 	if(res_norm < m_CG_conv_eps_abs || 		         // Absolute convergence
 	   res_norm < m_CG_conv_eps_rel * init_res_norm) // Relative convergence
 	{

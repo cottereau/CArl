@@ -11,6 +11,8 @@
 #include "carl_headers.h"
 
 #include "PETSC_matrix_operations.h"
+#include "generic_solver_interface.h"
+#include "base_CG_solver.h"
 
 namespace carl
 {

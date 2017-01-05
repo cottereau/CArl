@@ -62,7 +62,7 @@ private:
 	double m_search_k;
 
 	// Null space projector
-	libMesh::PetscMatrix<libMesh::Number> * m_M_null_proj;
+	Mat * m_M_null_proj;
 
 	// Set solution vectors
 	void set_sol_vectors();
@@ -83,6 +83,11 @@ private:
 
 	void set_CG_precond();
 
+	// Convergence / divergence tests
+	bool test_convergence(unsigned int iter, double res_norm, double init_res_norm);
+
+	bool test_divergence(unsigned int iter, double res_norm, double init_res_norm);
+
 	// Flags
 	bool m_bSystemOperatorSet;
 	bool m_brhsSet;
@@ -93,7 +98,7 @@ private:
 public:
 	base_CG_solver(	const libMesh::Parallel::Communicator& comm ) :
 		m_comm { &comm },
-		m_CG_conv_eps_abs { 1E-5 },
+		m_CG_conv_eps_abs { 1E-8 },
 		m_CG_conv_eps_rel { 1E-20 },
 		m_CG_conv_max_n { 100 },
 		m_CG_div_tol { 10000 },
@@ -127,11 +132,27 @@ public:
 		}
 	};
 
+	// Set up parameters
+	void set_convergence_limits(	double conv_eps_abs_in = 1E-8,
+										double conv_eps_rel_in = 1E-20,
+										int conv_max_n_in = 100,
+										double div_tol_in = 10000)
+	{
+		m_CG_conv_eps_abs = conv_eps_abs_in;
+		m_CG_conv_eps_rel = conv_eps_rel_in;
+		m_CG_conv_max_n = conv_max_n_in;
+		m_CG_div_tol = div_tol_in;
+	}
+
 	// Set up flags
 	void use_preconditioner(bool bUsePreconditioner = true);
 
 	// Solver setup methods
+	void set_solver_CG_projector(Mat& proj_in);
+
 	void set_solver_matrix(libMesh::PetscMatrix<libMesh::Number>& sys_mat_in);
+
+	void set_initial_sol(libMesh::PetscVector<libMesh::Number>& init_sol_in);
 
 	void set_solver_LATIN(generic_solver_interface& solver_correction, libMesh::PetscVector<libMesh::Number>& sys_mat_in, double search_k_in);
 
@@ -143,11 +164,6 @@ public:
 	void solve();
 
 	libMesh::PetscVector<libMesh::Number>& get_solution();
-
-	// Convergence / divergence tests
-	bool test_convergence(unsigned int iter, double res_norm, double init_res_norm);
-
-	bool test_divergence(unsigned int iter, double res_norm, double init_res_norm);
 
 };
 

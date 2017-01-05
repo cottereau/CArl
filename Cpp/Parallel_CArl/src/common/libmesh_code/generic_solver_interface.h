@@ -33,6 +33,22 @@ public:
 
 	};
 
+	virtual KSPConvergedReason get_converged_reason() = 0;
+
+	virtual void set_solver(libMesh::PetscMatrix<libMesh::Number>& matrix, const std::string name = "") = 0;
+
+	virtual void set_matrix(libMesh::PetscMatrix<libMesh::Number>& matrix) = 0;
+
+	virtual void set_coupling_matrix(libMesh::PetscMatrix<libMesh::Number>& matrix) = 0;
+
+	virtual void set_rhs(libMesh::PetscVector<libMesh::Number>& vector) = 0;
+
+	virtual libMesh::PetscMatrix<libMesh::Number>& get_matrix() = 0;
+
+	virtual libMesh::PetscMatrix<libMesh::Number>& get_coupling_matrix() = 0;
+
+	virtual libMesh::PetscVector<libMesh::Number>& get_rhs() = 0;
+
 	// Get the system's dimensions
 	virtual void get_system_dimensions(unsigned int& M_out, unsigned int& M_local_out) = 0;
 
@@ -44,6 +60,9 @@ public:
 	// Calculate v_out = [ ( M^-1 ) *C^t ] * v_in
 	virtual void apply_MiZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out) = 0;
 
+	// Calculate v_out = [ C * ( M^-1 ) ] * v_in
+	void apply_ZMi(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+
 	// Calculate v_out = ( M^-1 ) * v_in
 	virtual void solve(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out) = 0;
 
@@ -51,6 +70,8 @@ public:
 	virtual void solve(libMesh::PetscVector<libMesh::Number>& v_out) = 0;
 
 	virtual void print_type() = 0;
+
+	virtual void calculate_pseudo_inverse() = 0;
 };
 
 }

@@ -12,6 +12,7 @@
 #include "coupled_solver.h"
 #include "KSP_linear_solver.h"
 #include "assemble_functions_nonlinear_elasticity_3D.h"
+#include "base_CG_solver.h"
 
 #include "PETSC_matrix_operations.h"
 
@@ -28,10 +29,6 @@ protected:
 	// Preallocator
 	std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> > m_PC;
 	Mat m_PC_PETSc;
-
-//	// Coordinates vectors
-//	libMesh::PetscVector<libMesh::Number> * m_coord_vect_A;
-//	libMesh::PetscVector<libMesh::Number> * m_coord_vect_B;
 
 	// Convergence parameters
 	double m_CG_conv_eps_abs;
@@ -50,6 +47,11 @@ protected:
 	// Partitioning debug parameters
 	std::string m_info_matrix_PC_filename;
 	std::string m_matrix_PC_filename;
+
+	// Set up the system solvers
+	generic_solver_interface * m_sys_A_solver;
+	generic_solver_interface * m_sys_B_solver;
+	base_CG_solver m_coupling_solver;
 
 	// Restart parameters
 	std::string m_u0_A_filename;
@@ -70,12 +72,15 @@ public:
 
 //							m_coord_vect_A { NULL },
 //							m_coord_vect_B { NULL },
-							m_CG_conv_eps_abs { 1E-5 },
-							m_CG_conv_eps_rel { 1E-4 },
+							m_CG_conv_eps_abs { 1E-8 },
+							m_CG_conv_eps_rel { 1E-20 },
 							m_CG_conv_max_n { 100 },
 							m_CG_div_tol { 10000 },
 							m_bUsePreconditioner { false },
-							m_bCoordsSetup { false }
+							m_bCoordsSetup { false },
+							m_sys_A_solver { NULL },
+							m_sys_B_solver { NULL },
+							m_coupling_solver(comm)
 	{
 		m_CG_Index.resize(m_CG_conv_max_n);
 		m_bParamsSetUp = true;
@@ -88,6 +93,10 @@ public:
 			MatDestroy(&m_PC_PETSc);
 		}
 	}
+
+	// Set the coupled system solver
+	void set_solvers(generic_solver_interface * solver_A, generic_solver_interface * solver_B);
+
 	// Methods - reimplemented from "coupled_solver.h"
 	void set_restart( 		bool bUseRestart,
 							bool bPrintRestart,
@@ -112,6 +121,8 @@ public:
 	void build_preconditioner();
 
 	void print_convergence(std::ostream& convergenceOut);
+
+	void set_null_space_projector();
 };
 
 }
