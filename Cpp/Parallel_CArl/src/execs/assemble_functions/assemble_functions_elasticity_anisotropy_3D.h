@@ -18,7 +18,7 @@
 void Update_SubK(	libMesh::DenseSubMatrix<libMesh::Number>& SubK,
 					unsigned int qp,
 					unsigned int C_i,
-					unsigned int C_j,
+					unsigned int C_k,
 					const std::vector<std::vector<libMesh::RealGradient> >& dphi,
 					const unsigned int n_components,
 					const unsigned int n_u_dofs,
@@ -31,6 +31,10 @@ void Update_SubK(	libMesh::DenseSubMatrix<libMesh::Number>& SubK,
 void assemble_elasticity_anisotropic_with_weight(	libMesh::EquationSystems& es,
 							const std::string& system_name,
 							carl::weight_parameter_function& weight_mask,
+							carl::anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input);
+
+void assemble_elasticity_anisotropic(	libMesh::EquationSystems& es,
+							const std::string& system_name,
 							carl::anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input);
 
 #endif /* EXECS_ASSEMBLE_FUNCTIONS_ASSEMBLE_FUNCTIONS_ELASTICITY_ANISOTROPY_3D_H_ */

@@ -441,6 +441,17 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name,
 	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
 			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
 
+	if(m_bUseNullSpace_BIG)
+	{
+		std::cout << "| -> Using null space for macro system!!!" << std::endl;
+		this->set_rigid_body_modes_BIG(type_name);
+	}
+	if(m_bUseNullSpace_micro[micro_name])
+	{
+		std::cout << "| -> Using null space for micro system " << micro_name << "!!!" << std::endl;
+		this->set_rigid_body_modes_micro(micro_name,type_name);
+	}
+
 	// Set the solver parameters
 	switch(m_solver_type)
 	{
@@ -492,6 +503,17 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).matrix);
 	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
 			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
+
+	if(m_bUseNullSpace_BIG)
+	{
+		std::cout << "| -> Using null space for macro system!!!" << std::endl;
+		this->set_rigid_body_modes_BIG(type_name);
+	}
+	if(m_bUseNullSpace_micro[micro_name])
+	{
+		std::cout << "| -> Using null space for micro system " << micro_name << "!!!" << std::endl;
+		this->set_rigid_body_modes_micro(micro_name,type_name);
+	}
 
 	switch(m_solver_type)
 	{
@@ -546,8 +568,16 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
 			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
 
-//	this->set_rigid_body_modes_BIG(type_name);
-	this->set_rigid_body_modes_micro(micro_name,type_name);
+	if(m_bUseNullSpace_BIG)
+	{
+		std::cout << "| -> Using null space for macro system!!!" << std::endl;
+		this->set_rigid_body_modes_BIG(type_name);
+	}
+	if(m_bUseNullSpace_micro[micro_name])
+	{
+		std::cout << "| -> Using null space for micro system " << micro_name << "!!!" << std::endl;
+		this->set_rigid_body_modes_micro(micro_name,type_name);
+	}
 
 	switch(m_solver_type)
 	{
@@ -600,8 +630,16 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name,
 	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
 			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
 
-//	this->set_rigid_body_modes_BIG(type_name);
-	this->set_rigid_body_modes_micro(micro_name,type_name);
+	if(m_bUseNullSpace_BIG)
+	{
+		std::cout << "| -> Using null space for macro system!!!" << std::endl;
+		this->set_rigid_body_modes_BIG(type_name);
+	}
+	if(m_bUseNullSpace_micro[micro_name])
+	{
+		std::cout << "| -> Using null space for micro system " << micro_name << "!!!" << std::endl;
+		this->set_rigid_body_modes_micro(micro_name,type_name);
+	}
 
 	// Set the solver parameters
 	switch(m_solver_type)
@@ -621,8 +659,11 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name,
 			// Set the solver matrices
 			cast_CG_solver->set_forces(F_A,F_B);
 
-			cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
-			cast_CG_solver->set_null_space_projector();
+			if(m_bUseNullSpace_micro[micro_name])
+			{
+				cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
+				cast_CG_solver->set_null_space_projector();
+			}
 
 			// Set CG parameters (convergence )
 			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol);
@@ -662,8 +703,16 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
 			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
 
-//	this->set_rigid_body_modes_BIG(type_name);
-	this->set_rigid_body_modes_micro(micro_name,type_name);
+	if(m_bUseNullSpace_BIG)
+	{
+		std::cout << "| -> Using null space for macro system!!!" << std::endl;
+		this->set_rigid_body_modes_BIG(type_name);
+	}
+	if(m_bUseNullSpace_micro[micro_name])
+	{
+		std::cout << "| -> Using null space for micro system " << micro_name << "!!!" << std::endl;
+		this->set_rigid_body_modes_micro(micro_name,type_name);
+	}
 
 	// Set the solver parameters
 	switch(m_solver_type)
@@ -683,8 +732,11 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 			// Set the solver matrices
 			cast_CG_solver->set_forces(F_A,F_B);
 
-			cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
-			cast_CG_solver->set_null_space_projector();
+			if(m_bUseNullSpace_micro[micro_name])
+			{
+				cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
+				cast_CG_solver->set_null_space_projector();
+			}
 
 			// Set CG parameters (convergence )
 			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol);
@@ -725,8 +777,16 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
 			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
 
-//	this->set_rigid_body_modes_BIG(type_name);
-	this->set_rigid_body_modes_micro(micro_name,type_name);
+	if(m_bUseNullSpace_BIG)
+	{
+		std::cout << "| -> Using null space for macro system!!!" << std::endl;
+		this->set_rigid_body_modes_BIG(type_name);
+	}
+	if(m_bUseNullSpace_micro[micro_name])
+	{
+		std::cout << "| -> Using null space for micro system " << micro_name << "!!!" << std::endl;
+		this->set_rigid_body_modes_micro(micro_name,type_name);
+	}
 
 	// Set the solver parameters
 	switch(m_solver_type)
@@ -746,8 +806,11 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 			// Set the solver matrices
 			cast_CG_solver->set_forces(F_A,F_B);
 
-			cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
-			cast_CG_solver->set_null_space_projector();
+			if(m_bUseNullSpace_micro[micro_name])
+			{
+				cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
+				cast_CG_solver->set_null_space_projector();
+			}
 
 			// Set CG parameters (convergence )
 			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol);

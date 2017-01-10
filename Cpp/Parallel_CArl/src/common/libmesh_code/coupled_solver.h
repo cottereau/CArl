@@ -108,10 +108,10 @@ public:
 							m_F_A { NULL },
 							m_F_B { NULL },
 
-							m_KSP_A_eps { 1E-8 },
+							m_KSP_A_eps { 1E-5 },
 							m_KSP_A_iter_max { 10000 },
 
-							m_KSP_B_eps { 1E-8 },
+							m_KSP_B_eps { 1E-5 },
 							m_KSP_B_iter_max { 10000 },
 
 							m_bMatricesSetUp { false },

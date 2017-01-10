@@ -148,6 +148,9 @@ void assemble_elasticity_heterogeneous(libMesh::EquationSystems& es,
 void assemble_elasticity_with_weight(libMesh::EquationSystems& es,
 					   const std::string& system_name, carl::weight_parameter_function& weight_mask);
 
+void assemble_elasticity_with_weight_micro(libMesh::EquationSystems& es,
+					   const std::string& system_name, carl::weight_parameter_function& weight_mask);
+
 void assemble_elasticity_heterogeneous_with_weight(libMesh::EquationSystems& es,
 					   const std::string& system_name, carl::weight_parameter_function& weight_mask);
 

@@ -613,6 +613,12 @@ int main(int argc, char** argv) {
 	// Add the weight function mesh
 	CoupledTest.add_alpha_mask("MicroSys",mesh_weight);
 	CoupledTest.set_alpha_mask_parameters("MicroSys",domain_Idx_BIG,domain_Idx_micro[0],domain_Idx_coupling[0]);
+
+//	CoupledTest.add_alpha_mask("BigSys",mesh_weight);
+//
+//	CoupledTest.set_alpha_mask_parameters("MicroSys", 0.99, 0   , 0.5, domain_Idx_micro[0],domain_Idx_BIG,domain_Idx_coupling[0]);
+//	CoupledTest.set_alpha_mask_parameters("BigSys", 1   , 0.01, 0.5, domain_Idx_BIG,domain_Idx_micro[0],domain_Idx_coupling[0]);
+
 	perf_log.pop("Initialization","System initialization:");
 
 	// - Build the BIG system --------------------------------------------------
@@ -717,6 +723,14 @@ int main(int argc, char** argv) {
 	double BIG_Mu = 0;
 
 	double coupling_const = -1;
+
+//	std::ifstream phys_params_file(input_params.physical_params_file);
+//	phys_params_file >> BIG_E >> BIG_Mu;
+//	phys_params_file.close();
+//
+//	set_constant_physical_properties(equation_systems_BIG,BIG_E,BIG_Mu);
+//	set_constant_physical_properties(equation_systems_micro,BIG_E,BIG_Mu);
+
 	carl::anisotropic_elasticity_tensor_cubic_sym anisotropy_data(equation_systems_micro,input_params.physical_params_file,BIG_E,BIG_Mu);
 	set_constant_physical_properties(equation_systems_BIG,BIG_E,BIG_Mu);
 
@@ -727,27 +741,84 @@ int main(int argc, char** argv) {
 //				<< anisotropy_data.eval_internal_elasticity_tensor(0,0,1,2) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(0,0,0,1) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(0,0,0,2) << std::endl;
-//	std::cout 	<< "    "
+//
+//	std::cout 	<< anisotropy_data.eval_internal_elasticity_tensor(1,1,0,0) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,1,1) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,2,2) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,1,2) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,0,1) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(1,1,0,2) << std::endl;
-//	std::cout 	<< "        "
+//
+//	std::cout 	<< anisotropy_data.eval_internal_elasticity_tensor(2,2,0,0) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(2,2,1,1) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(2,2,2,2) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(2,2,1,2) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(2,2,0,1) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(2,2,0,2) << std::endl;
-//	std::cout 	<< "            "
+//
+//	std::cout 	<< anisotropy_data.eval_internal_elasticity_tensor(1,2,0,0) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(1,2,1,1) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(1,2,2,2) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(1,2,1,2) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(1,2,0,1) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(1,2,0,2) << std::endl;
-//	std::cout 	<< "                "
+//
+//	std::cout 	<< anisotropy_data.eval_internal_elasticity_tensor(0,1,0,0) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,1,1,1) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,1,2,2) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,1,1,2) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(0,1,0,1) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(0,1,0,2) << std::endl;
-//	std::cout 	<< "                    "
+//
+//	std::cout 	<< anisotropy_data.eval_internal_elasticity_tensor(0,2,0,0) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,2,1,1) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,2,2,2) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,2,1,2) << " "
+//				<< anisotropy_data.eval_internal_elasticity_tensor(0,2,0,1) << " "
 //				<< anisotropy_data.eval_internal_elasticity_tensor(0,2,0,2) << std::endl << std::endl;
-
+//
+//	std::cout 	<< eval_elasticity_tensor(0,0,0,0,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,0,1,1,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,0,2,2,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,0,1,2,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,0,0,1,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,0,0,2,BIG_E,BIG_Mu) << std::endl;
+//
+//	std::cout 	<< eval_elasticity_tensor(1,1,0,0,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(1,1,1,1,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(1,1,2,2,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(1,1,1,2,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(1,1,0,1,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(1,1,0,2,BIG_E,BIG_Mu) << std::endl;
+//
+//	std::cout 	<< eval_elasticity_tensor(2,2,0,0,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(2,2,1,1,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(2,2,2,2,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(2,2,1,2,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(2,2,0,1,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(2,2,0,2,BIG_E,BIG_Mu) << std::endl;
+//
+//	std::cout 	<< eval_elasticity_tensor(1,2,0,0,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(1,2,1,1,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(1,2,2,2,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(1,2,1,2,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(1,2,0,1,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(1,2,0,2,BIG_E,BIG_Mu) << std::endl;
+//
+//	std::cout 	<< eval_elasticity_tensor(0,1,0,0,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,1,1,1,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,1,2,2,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,1,1,2,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,1,0,1,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,1,0,2,BIG_E,BIG_Mu) << std::endl;
+//
+//	std::cout 	<< eval_elasticity_tensor(0,2,0,0,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,2,1,1,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,2,2,2,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,2,1,2,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,2,0,1,BIG_E,BIG_Mu) << " "
+//				<< eval_elasticity_tensor(0,2,0,2,BIG_E,BIG_Mu) << std::endl << std::endl;
+//
 //	for(int iii = 1; iii < 6; ++iii)
 //	{
 //		std::cout 	<< anisotropy_data.get_rotation(iii)(0,0) << " "
@@ -766,7 +837,7 @@ int main(int argc, char** argv) {
 	// - Set the coupling matrix -----------------------------------------------
 	perf_log.push("Set coupling matrices");
 	coupling_const = BIG_E;
-	CoupledTest.set_coupling_parameters("MicroSys",BIG_E,input_params.mean_distance);
+	CoupledTest.set_coupling_parameters("MicroSys",coupling_const,input_params.mean_distance);
 
 	CoupledTest.use_H1_coupling("MicroSys");
 	CoupledTest.assemble_coupling_elasticity_3D_parallel("BigSys","MicroSys",
@@ -812,14 +883,23 @@ int main(int argc, char** argv) {
 											anisotropy_data,
 											input_params.k_dA, input_params.k_dB, input_params.k_cA, input_params.k_cB,
 											input_params.LATIN_eps, input_params.LATIN_conv_max, input_params.LATIN_relax);
+//			CoupledTest.set_LATIN_solver(	"MicroSys","Elasticity",
+//											assemble_elasticity_with_weight,
+//											assemble_elasticity_with_weight,
+//											input_params.k_dA, input_params.k_dB, input_params.k_cA, input_params.k_cB,
+//											input_params.LATIN_eps, input_params.LATIN_conv_max, input_params.LATIN_relax);
 			break;
 		}
 		case carl::CG:
 		{
+			CoupledTest.use_null_space_micro("MicroSys",true);
 			CoupledTest.set_CG_solver(	"MicroSys","Elasticity",
 											assemble_elasticity_with_weight,
 											assemble_elasticity_anisotropic_with_weight,
 											anisotropy_data);
+//			CoupledTest.set_CG_solver(	"MicroSys","Elasticity",
+//											assemble_elasticity_with_weight,
+//											assemble_elasticity_with_weight);
 			break;
 		}
 	}
@@ -865,5 +945,42 @@ int main(int argc, char** argv) {
 	std::ofstream perf_log_file("perf_log_" + std::to_string(rank)  + ".txt");
 	perf_log_file << perf_log.get_log();
 	perf_log_file.close();
+
+//	libMesh::EquationSystems equation_systems_micro_BIS(mesh_micro);
+//
+//	// [MICRO BIS] Set up the physical properties
+//	libMesh::LinearImplicitSystem& elasticity_system_micro_BIS
+//										= add_elasticity(equation_systems_micro_BIS);
+//
+//	equation_systems_micro_BIS.init();
+//
+//	carl::anisotropic_elasticity_tensor_cubic_sym anisotropy_data_BIS(equation_systems_micro_BIS,input_params.physical_params_file,BIG_E,BIG_Mu);
+//	assemble_elasticity_anisotropic(equation_systems_micro_BIS,"Elasticity",anisotropy_data_BIS);
+//
+//
+//
+//	// Close matrix and vector
+//	elasticity_system_micro_BIS.matrix->close();
+//	elasticity_system_micro_BIS.rhs->close();
+//
+//	elasticity_system_micro_BIS.matrix->print_matlab("M_B_aniso_isotropic_no_weights.m");
+//
+//	libMesh::EquationSystems equation_systems_micro_TER(mesh_micro);
+//
+//	// [MICRO BIS] Set up the physical properties
+//	libMesh::LinearImplicitSystem& elasticity_system_micro_TER
+//										= add_elasticity(equation_systems_micro_TER);
+//
+//	equation_systems_micro_TER.init();
+//
+//	set_constant_physical_properties(equation_systems_micro_TER,BIG_E,BIG_Mu);
+//	assemble_elasticity(equation_systems_micro_TER,"Elasticity");
+//
+//	// Close matrix and vector
+//	elasticity_system_micro_TER.matrix->close();
+//	elasticity_system_micro_TER.rhs->close();
+//
+//	elasticity_system_micro_TER.matrix->print_matlab("M_B_isotropic_no_weights.m");
+
 	return 0;
 }

@@ -72,9 +72,9 @@ public:
 
 //							m_coord_vect_A { NULL },
 //							m_coord_vect_B { NULL },
-							m_CG_conv_eps_abs { 1E-8 },
+							m_CG_conv_eps_abs { 1E-5 },
 							m_CG_conv_eps_rel { 1E-20 },
-							m_CG_conv_max_n { 100 },
+							m_CG_conv_max_n { 1000 },
 							m_CG_div_tol { 10000 },
 							m_bUsePreconditioner { false },
 							m_bCoordsSetup { false },

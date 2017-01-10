@@ -71,7 +71,7 @@ public:
 
 	virtual void print_type() = 0;
 
-	virtual void calculate_pseudo_inverse() = 0;
+	virtual void calculate_pseudo_inverse(const std::string& filename) = 0;
 };
 
 }

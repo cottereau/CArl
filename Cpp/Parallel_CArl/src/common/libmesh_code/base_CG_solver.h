@@ -98,9 +98,9 @@ private:
 public:
 	base_CG_solver(	const libMesh::Parallel::Communicator& comm ) :
 		m_comm { &comm },
-		m_CG_conv_eps_abs { 1E-8 },
+		m_CG_conv_eps_abs { 1E-5 },
 		m_CG_conv_eps_rel { 1E-20 },
-		m_CG_conv_max_n { 100 },
+		m_CG_conv_max_n { 1000 },
 		m_CG_div_tol { 10000 },
 		m_rhs { NULL },
 		m_M_PC { NULL },
@@ -133,9 +133,9 @@ public:
 	};
 
 	// Set up parameters
-	void set_convergence_limits(	double conv_eps_abs_in = 1E-8,
+	void set_convergence_limits(	double conv_eps_abs_in = 1E-5,
 										double conv_eps_rel_in = 1E-20,
-										int conv_max_n_in = 100,
+										int conv_max_n_in = 1000,
 										double div_tol_in = 10000)
 	{
 		m_CG_conv_eps_abs = conv_eps_abs_in;

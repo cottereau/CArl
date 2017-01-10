@@ -42,7 +42,7 @@ public:
 	// Constructor
 	KSP_linear_solver(	const libMesh::Parallel::Communicator& comm) :
 		generic_solver_interface(comm),
-		m_KSP_eps { 1E-8 },
+		m_KSP_eps { 1E-5 },
 		m_KSP_iter_max { 10000 },
 
 		m_Matrix { NULL },
@@ -104,7 +104,7 @@ public:
 
 	void print_type();
 
-	void calculate_pseudo_inverse();
+	void calculate_pseudo_inverse(const std::string& filename);
 
 
 };

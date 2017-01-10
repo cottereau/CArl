@@ -232,6 +232,7 @@ libMesh::Real  carl::anisotropic_elasticity_tensor_cubic_sym::eval_internal_elas
 		  unsigned int l)
 {
 	double output = 0;
+
 	if(i == j && k == l)
 	{
 		if(i == k && j == l)
@@ -243,7 +244,7 @@ libMesh::Real  carl::anisotropic_elasticity_tensor_cubic_sym::eval_internal_elas
 			output = m_c12;
 		}
 	}
-	else if(i == k && j == l)
+	else if( (i == k && j == l) || (i == l && j == k) )
 	{
 		output = m_c44;
 	}

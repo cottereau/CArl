@@ -227,17 +227,17 @@ void carl::PETSC_CG_coupled_solver::solve()
 	m_sys_B_solver->solve (*m_F_B,vec_u0_B);
 	perf_log.pop("KSP solver - B","Initialization");
 
-	m_M_A->print_matlab("M_A.m");
-	m_C_RA->print_matlab("C_A.m");
+//	m_M_A->print_matlab("M_A.m");
+//	m_C_RA->print_matlab("C_A.m");
+//
+//	m_M_B->print_matlab("M_B.m");
+//	m_C_RB->print_matlab("C_B.m");
+//
+//	m_F_A->print_matlab("F_A.m");
+//	m_F_B->print_matlab("F_B.m");
 
-	m_M_B->print_matlab("M_B.m");
-	m_C_RB->print_matlab("C_B.m");
-
-	m_F_A->print_matlab("F_A.m");
-	m_F_B->print_matlab("F_B.m");
-
-	vec_u0_A.print_matlab("sol_A0.m");
-	vec_u0_B.print_matlab("sol_B0.m");
+//	vec_u0_A.print_matlab("sol_A0.m");
+//	vec_u0_B.print_matlab("sol_B0.m");
 
 	m_C_RA->vector_mult(vec_coupled_rhs,vec_u0_A);
 	m_C_RB->vector_mult(vec_coupled_rhs_aux,vec_u0_B);
@@ -251,16 +251,19 @@ void carl::PETSC_CG_coupled_solver::solve()
 	if(!m_bUseRestart)
 	{
 		perf_log.push("CG vector setup","Initialization");
-		write_PETSC_vector(vec_u0_B  ,m_u0_B_filename);
-		write_PETSC_vector(vec_u0_A  ,m_u0_A_filename);
+		if(m_bPrintRestart)
+		{
+			write_PETSC_vector(vec_u0_B  ,m_u0_B_filename);
+			write_PETSC_vector(vec_u0_A  ,m_u0_A_filename);
+		}
 
 		// lambda_0 = F_null * F_B
-		MatMult(m_null_F,m_F_B->vec(),vec_lambda_zero.vec());
-
-		libMesh::PetscMatrix<libMesh::Number> dummy_Mat(m_null_F,*m_comm);
-		dummy_Mat.print_matlab("F_null_proj.m");
-		libMesh::PetscMatrix<libMesh::Number> dummy_Mat_bis(m_null_R,*m_comm);
-		dummy_Mat_bis.print_matlab("R_null.m");
+//		MatMult(m_null_F,m_F_B->vec(),vec_lambda_zero.vec());
+//
+//		libMesh::PetscMatrix<libMesh::Number> dummy_Mat(m_null_F,*m_comm);
+//		dummy_Mat.print_matlab("F_null_proj.m");
+//		libMesh::PetscMatrix<libMesh::Number> dummy_Mat_bis(m_null_R,*m_comm);
+//		dummy_Mat_bis.print_matlab("R_null.m");
 
 		perf_log.pop("CG vector setup","Initialization");
 	}
@@ -278,7 +281,7 @@ void carl::PETSC_CG_coupled_solver::solve()
 
 
 	// Set initial solution
-	m_coupling_solver.set_initial_sol(vec_lambda_zero);
+//	m_coupling_solver.set_initial_sol(vec_lambda_zero);
 
 	std::cout << "Vectors setup: end" << std::endl;
 	// Solve the coupled system
@@ -287,17 +290,18 @@ void carl::PETSC_CG_coupled_solver::solve()
 	vec_lambda = m_coupling_solver.get_solution();
 
 	// Create corrected solution
-	// U_I = U_0,I - A_I^-1 * C_I * lambda
+	// U_1 = U_0,1 - A_1^-1 * C_1 * lambda
 	perf_log.push("KSP solver - A","Solution");
 	m_sys_A_solver->apply_MiZt(vec_lambda,vec_aux_A);
 	*m_sol_A.get() = vec_u0_A;
 	m_sol_A->add(-1,vec_aux_A);
 	perf_log.pop("KSP solver - A","Solution");
 
+	// U_2 = U_0,2 - A_2^-1 * C_2 * lambda
 	perf_log.push("KSP solver - B","Solution");
 	m_sys_B_solver->apply_MiZt(vec_lambda,vec_aux_B);
 	*m_sol_B.get() = vec_u0_B;
-	m_sol_B->add(-1,vec_aux_B);
+	m_sol_B->add(vec_aux_B);
 	perf_log.pop("KSP solver - B","Solution");
 
 	m_bSolved = true;
@@ -318,5 +322,5 @@ void carl::PETSC_CG_coupled_solver::set_null_space_projector()
 {
 	m_coupling_solver.set_solver_CG_projector(m_null_PI);
 	libMesh::PetscMatrix<libMesh::Number> dummy_mat(m_null_PI,*m_comm);
-	dummy_mat.print_matlab("M_null_proj_matrix.m");
+//	dummy_mat.print_matlab("M_null_proj_matrix.m");
 }

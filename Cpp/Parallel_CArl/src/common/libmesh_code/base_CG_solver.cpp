@@ -238,23 +238,24 @@ void base_CG_solver::solve()
 
 	std::cout << "|     Finished setup " << std::endl;
 
-	m_rhs->print_matlab("F_sys.m");
-	m_M_PC->print_matlab("M_precond.m");
+//	m_rhs->print_matlab("F_sys.m");
+//	m_M_PC->print_matlab("M_precond.m");
 
 	// Initialize the system
 	// r(0) = b - A * x(0)
 	m_r_prev = *m_rhs;
 	(this->*apply_system_matrix)(m_x_prev,m_aux);
 	m_r_prev.add(-1,m_aux);
-	m_x_prev.print_matlab("x_0.m");
-	m_aux.print_matlab("aux_0.m");
-	m_r_prev.print_matlab("r_0.m");
-	m_temp_sol_A->print_matlab("ZMZ_A.m");
-	m_temp_sol_B->print_matlab("ZMZ_B.m");
+//	m_x_prev.print_matlab("x_0.m");
+//	m_aux.print_matlab("aux_0.m");
+//	m_r_prev.print_matlab("r_0.m");
+//	m_temp_sol_A->print_matlab("ZMZ_A.m");
+//	m_temp_sol_B->print_matlab("ZMZ_B.m");
 	m_solver_A->print_type();
 	m_solver_B->print_type();
 
-	m_solver_B->calculate_pseudo_inverse();
+	// m_solver_B->calculate_pseudo_inverse("pinv_M_B.m");
+	// m_solver_A->calculate_pseudo_inverse("pinv_M_A.m");
 
 	// z(0) = M_PC * r(0)
 	m_M_PC->vector_mult(m_z,m_r_prev);
@@ -265,6 +266,7 @@ void base_CG_solver::solve()
 
 	// p(0) = M_proj * z(0)?
 	// p(0) = z(0) ?
+	// SHORTCIRCUITED THE PROJECTOR!
 	if(m_bUseNullSpaceProjector)
 	{
 		std::cout << "|     Using the projector ... " << std::endl;
@@ -275,7 +277,7 @@ void base_CG_solver::solve()
 		std::cout << "|     NOT using the projector ... " << std::endl;
 		m_p_prev = m_z;
 	}
-	m_p_prev.print_matlab("p_0.m");
+//	m_p_prev.print_matlab("p_0.m");
 
 	std::cout << "|     Finished preamble: " << std::endl;
 
@@ -288,6 +290,14 @@ void base_CG_solver::solve()
 	std::cout << "|" << std::endl;
 	std::cout << "|        rho(0)        :" << m_rho_prev << std::endl;
 	std::cout << "|" << std::endl;
+
+	std::ofstream beta_out_file("beta.dat",std::ios::trunc);
+	std::ofstream rho_out_file("rho.dat",std::ios::trunc);
+
+	rho_out_file << "# iteration \t rho " << std::endl;
+	rho_out_file << kkk << "\t\t" <<  m_rho_prev << std::endl;
+
+	beta_out_file << "# iteration \t beta " << std::endl;
 
 	while(bKeepIterating)
 	{
@@ -317,11 +327,15 @@ void base_CG_solver::solve()
 		// beta(k + 1) = rho(k + 1) / rho(k)
 		m_beta = m_rho / m_rho_prev;
 
+		rho_out_file << kkk << "\t\t" <<  m_rho << std::endl;
+		beta_out_file << kkk << "\t\t" <<  m_beta << std::endl;
+
 		// p(k + 1) = M_proj * ( z(k + 1) + beta(k + 1) * p(k) ) ?
 		// p(k + 1) = z(k + 1) + beta(k + 1) * p(k) ?
 		m_aux = m_z;
 		m_aux.add(m_beta,m_p_prev);
 
+		// SHORTCIRCUITED THE PROJECTOR!
 		if(m_bUseNullSpaceProjector)
 		{
 			MatMult(*m_M_null_proj,m_aux.vec(),m_p.vec());
@@ -331,13 +345,15 @@ void base_CG_solver::solve()
 			m_p = m_aux;
 		}
 
-		std::cout << "|" << std::endl;
-		std::cout << "|     Iteration no. " << kkk << std::endl;
-		std::cout << "|        rho(k)        :" << m_rho_prev << std::endl;
-		std::cout << "|        alpha(k)      :" << m_alpha_prev << std::endl;
-		std::cout << "|        rho(k + 1)    :" << m_rho << std::endl;
-		std::cout << "|        beta(k + 1)   :" << m_beta << std::endl;
-		std::cout << "|" << std::endl;
+//		std::cout << "|" << std::endl;
+//		std::cout << "|     Iteration no. " << kkk << std::endl;
+//		std::cout << "|        rho(k)        :" << m_rho_prev << std::endl;
+//		std::cout << "|        alpha(k)      :" << m_alpha_prev << std::endl;
+//		std::cout << "|        rho(k + 1)    :" << m_rho << std::endl;
+//		std::cout << "|        beta(k + 1)   :" << m_beta << std::endl;
+//		std::cout << "|" << std::endl;
+
+
 
 		// Advance iteration
 		++kkk;
@@ -359,16 +375,18 @@ void base_CG_solver::solve()
 		}
 	}
 
+	rho_out_file.close();
+	beta_out_file.close();
 	*m_sol = m_x;
 
 	// Set solution!
 	if(bConverged)
 	{
-		std::cout << "| Converged after " << kkk << " iterations, residual = " << m_rho << std::endl;
+		std::cout << "| Converged after " << kkk << " iterations" << std::endl;
 	}
 	if(bDiverged)
 	{
-		std::cout << "| DIVERGED after " << kkk << " iterations, residual = " << m_rho << std::endl;
+		std::cout << "| DIVERGED after " << kkk << " iterations" << std::endl;
 	}
 };
 
@@ -379,10 +397,14 @@ libMesh::PetscVector<libMesh::Number>& base_CG_solver::get_solution()
 
 bool base_CG_solver::test_convergence(unsigned int iter, double res_norm, double init_res_norm)
 {
-	std::cout << m_CG_conv_eps_abs << " " << m_CG_conv_eps_rel << " | " << m_CG_conv_max_n << " " <<  m_CG_div_tol << std::endl;
-	if(res_norm < m_CG_conv_eps_abs || 		         // Absolute convergence
-	   res_norm < m_CG_conv_eps_rel * init_res_norm) // Relative convergence
+	if(res_norm < m_CG_conv_eps_abs) // Absolute convergence
 	{
+		std::cout << "| Absolute convergence : " << res_norm  << " < " << m_CG_conv_eps_abs << std::endl;
+		return true;
+	}
+	if(res_norm < m_CG_conv_eps_rel * init_res_norm) // Relative convergence
+	{
+		std::cout << "| Relative convergence : " << res_norm  << " < " << m_CG_conv_eps_rel << "*" << init_res_norm << std::endl;
 		return true;
 	}
 
@@ -391,9 +413,14 @@ bool base_CG_solver::test_convergence(unsigned int iter, double res_norm, double
 
 bool base_CG_solver::test_divergence(unsigned int iter, double res_norm, double init_res_norm)
 {
-	if(iter > m_CG_conv_max_n || 					 // Iteration divergence
-	   res_norm > m_CG_div_tol * init_res_norm)      // Residual divergence
+	if(iter > m_CG_conv_max_n) // Iteration divergence
 	{
+		std::cout << "| Iteration divergence : " << iter  << " > " << m_CG_conv_max_n << std::endl;
+		return true;
+	}
+	if(res_norm > m_CG_div_tol * init_res_norm)      // Residual divergence
+	{
+		std::cout << "| Residual divergence : " << res_norm  << " > " << m_CG_div_tol << "*" << init_res_norm << std::endl;
 		return true;
 	}
 

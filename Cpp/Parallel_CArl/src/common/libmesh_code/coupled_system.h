@@ -278,7 +278,9 @@ protected:
 	// -> Bools for assembly of the systems
 	std::map<std::string, bool> m_bHasAssembled_micro;
 	std::map<std::string, bool> m_bUseH1Coupling;
+	std::map<std::string, bool> m_bUseNullSpace_micro;
 	bool m_bHasAssembled_BIG;
+	bool m_bUseNullSpace_BIG;
 	bool m_bHasDefinedMeshRestrictions;
 	bool m_bHasDefinedCoordVector_BIG;
 	bool m_bHasDefinedCoordVector_micro;
@@ -308,6 +310,7 @@ public:
 	// Constructors
 	coupled_system(const libMesh::Parallel::Communicator& comm, carl::CoupledSolverType solver_type = carl::LATIN_MODIFIED_STIFFNESS) :
 			m_bHasAssembled_BIG { false },
+			m_bUseNullSpace_BIG { false },
 			m_bHasDefinedMeshRestrictions { false },
 			m_bHasDefinedCoordVector_BIG { true },
 			m_bHasDefinedCoordVector_micro { true },
@@ -407,6 +410,7 @@ public:
 
 			m_bHasAssembled_micro.insert(std::make_pair(name, false));
 			m_bUseH1Coupling.insert(std::make_pair(name, false));
+			m_bUseNullSpace_micro.insert(std::make_pair(name, false));
 		}
 		else
 		{
@@ -541,6 +545,16 @@ public:
 		m_coupling_lengthMap[name] = coupling_length;
 	}
 
+	void use_null_space_BIG(bool bInput = true)
+	{
+		m_bUseNullSpace_BIG = bInput;
+	}
+
+	void use_null_space_micro(const std::string& name, bool bInput = true)
+	{
+		m_bUseNullSpace_micro[name] = bInput;
+	}
+
 	void clear();
 
 	void prepare_coupling_preallocation(
@@ -644,7 +658,7 @@ public:
 
 	void set_LATIN_solver(	const std::string micro_name,const std::string type_name,
 							double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,
-							double eps = 1E-2, int convIter = 10000, double relax = 0.8);
+							double eps = 1E-2, int convIter = 100000, double relax = 0.8);
 
 	void set_LATIN_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es, const std::string& name,
@@ -652,7 +666,7 @@ public:
 							void fptr_micro(	libMesh::EquationSystems& es, const std::string& name,
 												weight_parameter_function& alpha_mask),
 							double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,
-							double eps = 1E-2, int convIter = 10000, double relax = 0.8);
+							double eps = 1E-2, int convIter = 100000, double relax = 0.8);
 
 	void set_LATIN_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es,
@@ -661,17 +675,17 @@ public:
 												const std::string& name, weight_parameter_function& weight_mask, anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
 							anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj,
 							double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,
-							double eps = 1E-2, int convIter = 10000, double relax = 0.8);
+							double eps = 1E-2, int convIter = 100000, double relax = 0.8);
 
 	void set_CG_solver(	const std::string micro_name,const std::string type_name,
-							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 100, double div_tol = 1E5);
+							double eps_abs = 1E-50, double eps_rel = 1E-5, int convIter = 1000, double div_tol = 1E5);
 
 	void set_CG_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es, const std::string& name,
 												weight_parameter_function& alpha_mask),
 							void fptr_micro(	libMesh::EquationSystems& es, const std::string& name,
 												weight_parameter_function& alpha_mask),
-							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 100, double div_tol = 1E5);
+							double eps_abs = 1E-50, double eps_rel = 1E-5, int convIter = 1000, double div_tol = 1E5);
 
 	void set_CG_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es,
@@ -679,7 +693,7 @@ public:
 							void fptr_micro(	libMesh::EquationSystems& es,
 												const std::string& name, weight_parameter_function& weight_mask, anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
 							anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj,
-							double eps_abs = 1E-50, double eps_rel = 1E-8, int convIter = 100, double div_tol = 1E5);
+							double eps_abs = 1E-50, double eps_rel = 1E-5, int convIter = 1000, double div_tol = 1E5);
 
 	void set_LATIN_nonlinear_solver(const std::string micro_name,
 			const std::string type_name_BIG,
@@ -688,7 +702,7 @@ public:
 					weight_parameter_function& alpha_mask),
 			libMesh::EquationSystems& eq_sys_nonlinear, double k_dA = 2.5,
 			double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,
-			double eps = 1E-2, int convIter = 10000, double relax = 0.8);
+			double eps = 1E-2, int convIter = 100000, double relax = 0.8);
 
 	void print_convergence(const std::string& filename);
 

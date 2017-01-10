@@ -102,8 +102,13 @@ void KSP_linear_solver::apply_ZMiZt(libMesh::PetscVector<libMesh::Number>& v_in,
 	libMesh::PetscVector<libMesh::Number> * aux_vec_rhs_ptr = m_aux_vec_1.get();
 	libMesh::PetscVector<libMesh::Number> * aux_vec_sol_ptr = m_aux_vec_2.get();
 
+	// MatMultTranspose(Mat mat,Vec x,Vec y) : y = A^t * x
 	MatMultTranspose(m_Coupling->mat(),v_in.vec(),aux_vec_rhs_ptr->vec());
+
+	// solve(v_in,v_out)
 	this->solve(*aux_vec_rhs_ptr,*aux_vec_sol_ptr);
+
+	// vector_mult(dest,arg)
 	m_Coupling->vector_mult(v_out,*aux_vec_sol_ptr);
 }
 
@@ -154,7 +159,7 @@ void KSP_linear_solver::print_type()
 	std::cout   << "|" << std::endl;
 }
 
-void KSP_linear_solver::calculate_pseudo_inverse()
+void KSP_linear_solver::calculate_pseudo_inverse(const std::string& filename)
 {
 	Vec dummy_vec;
 	Mat matrix_out;
@@ -185,7 +190,7 @@ void KSP_linear_solver::calculate_pseudo_inverse()
 	create_PETSC_dense_matrix_from_vectors(dummy_sol,N,matrix_out);
 
 	PetscViewer    viewer;
-	PetscViewerASCIIOpen(m_comm->get(),"pinvFB.m",&viewer);
+	PetscViewerASCIIOpen(m_comm->get(),filename.c_str(),&viewer);
 	PetscViewerPushFormat(viewer,PETSC_VIEWER_ASCII_MATLAB);
 
 	MatView(matrix_out,viewer);

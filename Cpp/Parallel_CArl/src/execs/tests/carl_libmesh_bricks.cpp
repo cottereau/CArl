@@ -54,7 +54,7 @@ struct carl_coupling_generation_input_params {
 	bool b_UseMesh_BIG_AsMediator;
 	bool b_UseMesh_micro_AsMediator;
 	bool b_UseMesh_extra_AsMediator;
-
+	bool b_Repartition_micro;
 	bool LATIN_b_UseRestartFiles;
 	bool LATIN_b_PrintRestartFiles;
 
@@ -163,6 +163,7 @@ void get_input_params(GetPot& field_parser,
 	input_params.b_UseMesh_BIG_AsMediator = false;
 	input_params.b_UseMesh_micro_AsMediator = false;
 	input_params.b_UseMesh_extra_AsMediator = false;
+	input_params.b_Repartition_micro = true;
 	if (field_parser.search(1,"Use_A_AsMediator"))
 	{
 		input_params.b_UseMesh_BIG_AsMediator = true;
@@ -180,6 +181,10 @@ void get_input_params(GetPot& field_parser,
 			+ input_params.b_UseMesh_extra_AsMediator > 1)
 	{
 		homemade_error_msg("Choose only one mesh as mediator!");
+	}
+	if (field_parser.search(1,"Do_notRepartition_Micro"))
+	{
+		input_params.b_Repartition_micro = false;
 	}
 
 	if(input_params.b_UseMesh_BIG_AsMediator)
@@ -268,7 +273,7 @@ void get_input_params(GetPot& field_parser,
 		}
 	}
 
-	if( field_parser.search(2, "--dist","LATINCouplingMeshScale") )
+	if( field_parser.search(2, "--dist","CouplingMeshScale") )
 	{
 		input_params.mean_distance = field_parser.next(input_params.mean_distance);
 	}
@@ -337,6 +342,8 @@ void get_input_params(GetPot& field_parser,
 			input_params.solver_type = carl::LATIN_MODIFIED_STIFFNESS;
 		if(input_params.solver_type_string == "LATIN_Original_Stiffness")
 			input_params.solver_type = carl::LATIN_ORIGINAL_STIFFNESS;
+		if(input_params.solver_type_string == "CG")
+			input_params.solver_type = carl::CG;
 	}
 }
 ;
@@ -429,7 +436,7 @@ int main(int argc, char** argv) {
 
 	perf_log.pop("Meshes - Parallel","Read files:");
 
-	// - Semi-local meshes: restrict A and restrict B
+	// - Local meshes: restrict A and restrict B
 
 	// -> libMesh's default mesh IS the SerialMesh, which creates a copy of
 	//    itself on each processor, but partitions the iterators over each
@@ -487,10 +494,10 @@ int main(int argc, char** argv) {
 										+ std::to_string(rank) + "_n_" + std::to_string(nodes) + ".e";
 	std::string local_inter_table_filename = input_params.intersection_table_full + "_r_"
 										+ std::to_string(rank) + "_n_" + std::to_string(nodes) + "_inter_table_Full.dat";
+	std::string global_inter_table_filename = input_params.intersection_table_full + "_stitched_inter_table_Full.dat";
+
 	mesh_inter.read(local_inter_mesh_filename);
 	mesh_inter.prepare_for_use();
-
-	std::string global_inter_table_filename = input_params.intersection_table_full + "_stitched_inter_table_Full.dat";
 
 	perf_log.pop("Meshes - Serial","Read files:");
 
@@ -565,6 +572,9 @@ int main(int argc, char** argv) {
 
 	std::unordered_multimap<int,int> inter_mediator_BIG;
 	std::unordered_multimap<int,int> inter_mediator_micro;
+
+	if(input_params.b_Repartition_micro)
+		carl::repartition_system_meshes(WorldComm,mesh_micro,mesh_BIG,local_intersection_pairs_map);
 
 	carl::set_global_mediator_system_intersection_lists(
 			WorldComm,
@@ -723,7 +733,7 @@ int main(int argc, char** argv) {
 
 	// - Set the coupling matrix -----------------------------------------------
 	perf_log.push("Set coupling matrices");
-	coupling_const = eval_lambda_1(BIG_E,BIG_Mu);
+	coupling_const = BIG_E;
 	CoupledTest.set_coupling_parameters("MicroSys",coupling_const,input_params.mean_distance);
 
 	CoupledTest.use_H1_coupling("MicroSys");
@@ -757,12 +767,29 @@ int main(int argc, char** argv) {
 				input_params.LATIN_b_PrintRestartFiles,
 				input_params.LATIN_restart_file_base);
 	}
+	std::cout << std::endl << "| --> Setting the solver " << std::endl << std::endl;
 
-	CoupledTest.set_LATIN_solver(	"MicroSys","Elasticity",
+	switch(input_params.solver_type)
+	{
+		case carl::LATIN_MODIFIED_STIFFNESS:
+		case carl::LATIN_ORIGINAL_STIFFNESS:
+		{
+			CoupledTest.set_LATIN_solver(	"MicroSys","Elasticity",
 									assemble_elasticity_with_weight,
-									assemble_elasticity_heterogeneous_with_weight,
+									assemble_elasticity_with_weight_micro,
 									input_params.k_dA, input_params.k_dB, input_params.k_cA, input_params.k_cB,
 									input_params.LATIN_eps, input_params.LATIN_conv_max, input_params.LATIN_relax);
+			break;
+		}
+		case carl::CG:
+		{
+			CoupledTest.set_CG_solver(	"MicroSys","Elasticity",
+											assemble_elasticity_with_weight,
+											assemble_elasticity_with_weight_micro);
+			break;
+		}
+	}
+
 	perf_log.pop("Set up","LATIN Solver:");
 
 
