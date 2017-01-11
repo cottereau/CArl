@@ -180,6 +180,7 @@ void carl::PETSC_CG_coupled_solver::solve()
 	libMesh::PetscVector<libMesh::Number> vec_aux_A(*m_comm,dim_A,dim_A_local);
 	libMesh::PetscVector<libMesh::Number> vec_aux_B(*m_comm,dim_B,dim_B_local);
 
+
 	// Set initial values
 	m_sol_A->zero();
 	m_sol_B->zero();
@@ -204,10 +205,13 @@ void carl::PETSC_CG_coupled_solver::solve()
 	// Coupling space vectors
 	libMesh::PetscVector<libMesh::Number> vec_lambda(*m_comm, dim_R, dim_R_local);
 	libMesh::PetscVector<libMesh::Number> vec_lambda_zero(*m_comm, dim_R, dim_R_local);
+	libMesh::PetscVector<libMesh::Number> vec_aux_lambda(*m_comm,dim_R, dim_R_local);
 
 	// Coupled system rhs
 	libMesh::PetscVector<libMesh::Number> vec_coupled_rhs(*m_comm, dim_R, dim_R_local);
 	libMesh::PetscVector<libMesh::Number> vec_coupled_rhs_aux(*m_comm, dim_R, dim_R_local);
+
+
 
 
 	// Set initial values
@@ -215,6 +219,7 @@ void carl::PETSC_CG_coupled_solver::solve()
 	vec_lambda_zero.zero();
 	vec_coupled_rhs.zero();
 	vec_coupled_rhs_aux.zero();
+	vec_aux_lambda.zero();
 
 	// Calculate the coupled rhs
 
@@ -257,13 +262,16 @@ void carl::PETSC_CG_coupled_solver::solve()
 			write_PETSC_vector(vec_u0_A  ,m_u0_A_filename);
 		}
 
-		// lambda_0 = F_null * F_B
-//		MatMult(m_null_F,m_F_B->vec(),vec_lambda_zero.vec());
-//
-//		libMesh::PetscMatrix<libMesh::Number> dummy_Mat(m_null_F,*m_comm);
-//		dummy_Mat.print_matlab("F_null_proj.m");
-//		libMesh::PetscMatrix<libMesh::Number> dummy_Mat_bis(m_null_R,*m_comm);
-//		dummy_Mat_bis.print_matlab("R_null.m");
+		if(m_bUseNullSpaceB)
+		{
+			// lambda_0 = F_null * F_B
+			MatMult(m_null_F,m_F_B->vec(),vec_lambda_zero.vec());
+			//
+			//		libMesh::PetscMatrix<libMesh::Number> dummy_Mat(m_null_F,*m_comm);
+			//		dummy_Mat.print_matlab("F_null_proj.m");
+			//		libMesh::PetscMatrix<libMesh::Number> dummy_Mat_bis(m_null_R,*m_comm);
+			//		dummy_Mat_bis.print_matlab("R_null.m");
+		}
 
 		perf_log.pop("CG vector setup","Initialization");
 	}
@@ -281,7 +289,7 @@ void carl::PETSC_CG_coupled_solver::solve()
 
 
 	// Set initial solution
-//	m_coupling_solver.set_initial_sol(vec_lambda_zero);
+	m_coupling_solver.set_initial_sol(vec_lambda_zero);
 
 	std::cout << "Vectors setup: end" << std::endl;
 	// Solve the coupled system
@@ -302,6 +310,15 @@ void carl::PETSC_CG_coupled_solver::solve()
 	m_sys_B_solver->apply_MiZt(vec_lambda,vec_aux_B);
 	*m_sol_B.get() = vec_u0_B;
 	m_sol_B->add(vec_aux_B);
+
+	if(m_bUseNullSpaceB)
+	{
+		// Must add correction
+		// U_2_corr = U_2 + null_space_corr * coupling_residual
+		m_coupling_solver.get_residual_vector(vec_aux_lambda);
+		this->add_nullspace_correction(vec_aux_lambda,*m_sol_B);
+	}
+
 	perf_log.pop("KSP solver - B","Solution");
 
 	m_bSolved = true;

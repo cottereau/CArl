@@ -201,6 +201,195 @@ void base_CG_solver::set_system_rhs(libMesh::PetscVector<libMesh::Number>& rhs_i
 	m_rhs = &rhs_in;
 	m_brhsSet = true;
 };
+//
+//void base_CG_solver::solve()
+//{
+//	homemade_assert_msg(m_bSystemOperatorSet,"System operator must be set before solving!\n");
+//	homemade_assert_msg(m_brhsSet,"Right-hand side must be set before solving!\n");
+//
+//	// Create the iteration vectors
+//	libMesh::PetscVector<libMesh::Number> m_p(*m_comm), m_p_prev(*m_comm);
+//	libMesh::PetscVector<libMesh::Number> m_q_prev(*m_comm);
+//	libMesh::PetscVector<libMesh::Number> m_r(*m_comm), m_r_prev(*m_comm);
+//	libMesh::PetscVector<libMesh::Number> m_z(*m_comm);
+//	libMesh::PetscVector<libMesh::Number> m_x(*m_comm), m_x_prev(*m_comm);
+//
+//	libMesh::PetscVector<libMesh::Number> m_aux(*m_comm);
+//
+//	m_p.init(m_sys_N,m_sys_local_N);
+//	m_p.zero();
+//	m_p.close();
+//
+//	m_p_prev.init(m_p); m_p_prev.close();
+//	m_q_prev.init(m_p); m_q_prev.close();
+//	m_r.init(m_p);      m_r.close();
+//	m_r_prev.init(m_p); m_r_prev.close();
+//	m_z.init(m_p);      m_z.close();
+//	m_x.init(m_p);      m_x.close();
+//	m_x_prev.init(m_p); m_x_prev.close();
+//	m_aux.init(m_p);    m_aux.close();
+//	m_x_prev = *m_initial_sol;
+//
+//	// Set the iteration search parameters
+//	double m_rho = 0, m_beta = 0;
+//	double m_rho_prev = 0, m_alpha_prev = 0;
+//	double m_rho_zero = 0;
+//	double aux_double = 0;
+//
+//	std::cout << "|     Finished setup " << std::endl;
+//
+////	m_rhs->print_matlab("F_sys.m");
+////	m_M_PC->print_matlab("M_precond.m");
+//
+//	// Initialize the system
+//	// r(0) = b - A * x(0)
+//	m_r_prev = *m_rhs;
+//	(this->*apply_system_matrix)(m_x_prev,m_aux);
+//	m_r_prev.add(-1,m_aux);
+////	m_x_prev.print_matlab("x_0.m");
+////	m_aux.print_matlab("aux_0.m");
+////	m_r_prev.print_matlab("r_0.m");
+////	m_temp_sol_A->print_matlab("ZMZ_A.m");
+////	m_temp_sol_B->print_matlab("ZMZ_B.m");
+//	m_solver_A->print_type();
+//	m_solver_B->print_type();
+//
+//	// m_solver_B->calculate_pseudo_inverse("pinv_M_B.m");
+//	// m_solver_A->calculate_pseudo_inverse("pinv_M_A.m");
+//
+//	// z(0) = M_proj * M_PC * r(0) ?
+//	// z(0) = M_PC * r(0) ?
+//	m_M_PC->vector_mult(m_z,m_r_prev);
+//
+//	// rho(0) = r(0) . z(0)
+//	m_rho_prev = m_r_prev.dot(m_z);
+//	m_rho_zero = m_rho_prev;
+//
+//	// p(0) = M_proj * z(0)?
+//	// p(0) = z(0) ?
+//	// SHORTCIRCUITED THE PROJECTOR!
+//	if(m_bUseNullSpaceProjector)
+//	{
+//		std::cout << "|     Using the projector ... " << std::endl;
+//		MatMult(*m_M_null_proj,m_z.vec(),m_p_prev.vec());
+//	}
+//	else
+//	{
+//		std::cout << "|     NOT using the projector ... " << std::endl;
+//		m_p_prev = m_z;
+//	}
+////	m_p_prev.print_matlab("p_0.m");
+//
+//	std::cout << "|     Finished preamble: " << std::endl;
+//
+//	// Iteration parameters
+//	unsigned int kkk = 0;
+//	bool bKeepIterating = true;
+//	bool bConverged = false;
+//	bool bDiverged = false;
+//
+//	std::cout << "|" << std::endl;
+//	std::cout << "|        rho(0)        :" << m_rho_prev << std::endl;
+//	std::cout << "|" << std::endl;
+//
+//	std::ofstream beta_out_file("beta.dat",std::ios::trunc);
+//	std::ofstream rho_out_file("rho.dat",std::ios::trunc);
+//
+//	rho_out_file << "# iteration \t rho " << std::endl;
+//	rho_out_file << kkk << "\t\t" <<  m_rho_prev << std::endl;
+//
+//	beta_out_file << "# iteration \t beta " << std::endl;
+//
+//	while(bKeepIterating)
+//	{
+//		// q(k) = A * p(k)
+//		(this->*apply_system_matrix)(m_p_prev,m_q_prev);
+//
+//		// aux_double = p(k) . q(k) = p(k) * A * p(k)
+//		aux_double = m_p_prev.dot(m_q_prev);
+//
+//		// alpha(k) = r(k) . z(k) / ( p(k) * A * p(k) )
+//		//          = rho(k)      / aux_double
+//		m_alpha_prev = m_rho_prev / aux_double;
+//
+//		// x(k + 1) = x(k) + alpha(k) * p(k)
+//		m_x = m_x_prev; m_x.add(m_alpha_prev,m_p_prev);
+//
+//		// r(k + 1) = r(k) - alpha(k) * A * p(k)
+//		//          = r(k) - alpha(k) * q(k)
+//		m_r = m_r_prev; m_r.add(-m_alpha_prev,m_q_prev);
+//
+//		// z(k + 1) = M_PC * r(k + 1)
+//		m_M_PC->vector_mult(m_z,m_r);
+//
+//		// rho(k + 1) = r(k + 1) . z(k + 1)
+//		m_rho = m_r.dot(m_z);
+//
+//		// beta(k + 1) = rho(k + 1) / rho(k)
+//		m_beta = m_rho / m_rho_prev;
+//
+//		rho_out_file << kkk << "\t\t" <<  m_rho << std::endl;
+//		beta_out_file << kkk << "\t\t" <<  m_beta << std::endl;
+//
+//		// p(k + 1) = M_proj * ( z(k + 1) + beta(k + 1) * p(k) ) ?
+//		// p(k + 1) = z(k + 1) + beta(k + 1) * p(k) ?
+//		m_aux = m_z;
+//		m_aux.add(m_beta,m_p_prev);
+//
+//		// SHORTCIRCUITED THE PROJECTOR!
+//		if(m_bUseNullSpaceProjector)
+//		{
+//			MatMult(*m_M_null_proj,m_aux.vec(),m_p.vec());
+//		}
+//		else
+//		{
+//			m_p = m_aux;
+//		}
+//
+////		std::cout << "|" << std::endl;
+////		std::cout << "|     Iteration no. " << kkk << std::endl;
+////		std::cout << "|        rho(k)        :" << m_rho_prev << std::endl;
+////		std::cout << "|        alpha(k)      :" << m_alpha_prev << std::endl;
+////		std::cout << "|        rho(k + 1)    :" << m_rho << std::endl;
+////		std::cout << "|        beta(k + 1)   :" << m_beta << std::endl;
+////		std::cout << "|" << std::endl;
+//
+//
+//
+//		// Advance iteration
+//		++kkk;
+//
+//		// Check convergence
+//		bConverged = test_convergence(kkk,m_rho,m_rho_zero);
+//		bDiverged = test_divergence(kkk,m_rho,m_rho_zero);
+//
+//		if(bConverged || bDiverged)
+//		{
+//			bKeepIterating = false;
+//		}
+//		else
+//		{
+//			m_p_prev = m_p;
+//			m_rho_prev = m_rho;
+//			m_x_prev = m_x;
+//			m_r_prev = m_r;
+//		}
+//	}
+//
+//	rho_out_file.close();
+//	beta_out_file.close();
+//	*m_sol = m_x;
+//
+//	// Set solution!
+//	if(bConverged)
+//	{
+//		std::cout << "| Converged after " << kkk << " iterations" << std::endl;
+//	}
+//	if(bDiverged)
+//	{
+//		std::cout << "| DIVERGED after " << kkk << " iterations" << std::endl;
+//	}
+//};
 
 void base_CG_solver::solve()
 {
@@ -257,27 +446,26 @@ void base_CG_solver::solve()
 	// m_solver_B->calculate_pseudo_inverse("pinv_M_B.m");
 	// m_solver_A->calculate_pseudo_inverse("pinv_M_A.m");
 
-	// z(0) = M_PC * r(0)
-	m_M_PC->vector_mult(m_z,m_r_prev);
+	// z(0) = M_proj * M_PC * r(0) ?
+	// z(0) = M_PC * r(0) ?
+	m_M_PC->vector_mult(m_aux,m_r_prev);
+	if(m_bUseNullSpaceProjector)
+	{
+		std::cout << "|     Using the projector ... " << std::endl;
+		MatMult(*m_M_null_proj,m_aux.vec(),m_z.vec());
+	}
+	else
+	{
+		std::cout << "|     NOT using the projector ... " << std::endl;
+		m_z = m_aux;
+	}
 
 	// rho(0) = r(0) . z(0)
 	m_rho_prev = m_r_prev.dot(m_z);
 	m_rho_zero = m_rho_prev;
 
-	// p(0) = M_proj * z(0)?
-	// p(0) = z(0) ?
-	// SHORTCIRCUITED THE PROJECTOR!
-	if(m_bUseNullSpaceProjector)
-	{
-		std::cout << "|     Using the projector ... " << std::endl;
-		MatMult(*m_M_null_proj,m_z.vec(),m_p_prev.vec());
-	}
-	else
-	{
-		std::cout << "|     NOT using the projector ... " << std::endl;
-		m_p_prev = m_z;
-	}
-//	m_p_prev.print_matlab("p_0.m");
+	// p(0) = z(0)
+	m_p_prev = m_z;
 
 	std::cout << "|     Finished preamble: " << std::endl;
 
@@ -318,8 +506,17 @@ void base_CG_solver::solve()
 		//          = r(k) - alpha(k) * q(k)
 		m_r = m_r_prev; m_r.add(-m_alpha_prev,m_q_prev);
 
-		// z(k + 1) = M_PC * r(k + 1)
-		m_M_PC->vector_mult(m_z,m_r);
+		// z(k + 1) = M_proj * M_PC * r(k + 1) ?
+		// z(k + 1) = M_PC * r(k + 1) ?
+		m_M_PC->vector_mult(m_aux,m_r);
+		if(m_bUseNullSpaceProjector)
+		{
+			MatMult(*m_M_null_proj,m_aux.vec(),m_z.vec());
+		}
+		else
+		{
+			m_z = m_aux;
+		}
 
 		// rho(k + 1) = r(k + 1) . z(k + 1)
 		m_rho = m_r.dot(m_z);
@@ -332,18 +529,8 @@ void base_CG_solver::solve()
 
 		// p(k + 1) = M_proj * ( z(k + 1) + beta(k + 1) * p(k) ) ?
 		// p(k + 1) = z(k + 1) + beta(k + 1) * p(k) ?
-		m_aux = m_z;
-		m_aux.add(m_beta,m_p_prev);
-
-		// SHORTCIRCUITED THE PROJECTOR!
-		if(m_bUseNullSpaceProjector)
-		{
-			MatMult(*m_M_null_proj,m_aux.vec(),m_p.vec());
-		}
-		else
-		{
-			m_p = m_aux;
-		}
+		m_p = m_z;
+		m_p.add(m_beta,m_p_prev);
 
 //		std::cout << "|" << std::endl;
 //		std::cout << "|     Iteration no. " << kkk << std::endl;
@@ -352,8 +539,6 @@ void base_CG_solver::solve()
 //		std::cout << "|        rho(k + 1)    :" << m_rho << std::endl;
 //		std::cout << "|        beta(k + 1)   :" << m_beta << std::endl;
 //		std::cout << "|" << std::endl;
-
-
 
 		// Advance iteration
 		++kkk;
@@ -393,6 +578,12 @@ void base_CG_solver::solve()
 libMesh::PetscVector<libMesh::Number>& base_CG_solver::get_solution()
 {
 	return *m_sol;
+};
+
+void base_CG_solver::get_residual_vector(libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	vec_out = *m_rhs;
+	vec_out.add(-1,*m_sol);
 };
 
 bool base_CG_solver::test_convergence(unsigned int iter, double res_norm, double init_res_norm)

@@ -67,13 +67,6 @@ private:
 	// Set solution vectors
 	void set_sol_vectors();
 
-	// Internal system operator functions
-	void apply_M(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
-
-	void apply_LATIN_operator(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
-
-	void apply_CG_operator(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
-
 	// Preconditioners
 	void build_identity_precond();
 
@@ -147,6 +140,13 @@ public:
 	// Set up flags
 	void use_preconditioner(bool bUsePreconditioner = true);
 
+	// Internal system operator functions
+	void apply_M(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+
+	void apply_LATIN_operator(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+
+	void apply_CG_operator(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+
 	// Solver setup methods
 	void set_solver_CG_projector(Mat& proj_in);
 
@@ -164,6 +164,8 @@ public:
 	void solve();
 
 	libMesh::PetscVector<libMesh::Number>& get_solution();
+
+	void get_residual_vector(libMesh::PetscVector<libMesh::Number>& vec_out);
 
 };
 

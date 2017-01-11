@@ -43,6 +43,8 @@ protected:
 	Mat m_null_R;
 	Mat m_null_RT;
 
+	Mat m_null_sol_correction;
+
 	Mat 		RI_mat, RI_T_mat;
 
 	// Solution
@@ -62,6 +64,8 @@ protected:
 	bool m_bParamsSetUp;
 	bool m_bSolved;
 	bool m_bCreatedRigidBodyProjectors;
+
+	bool m_bUseNullSpaceB;
 
 	// Restart parameters
 	bool m_bUseRestart;
@@ -122,6 +126,7 @@ public:
 
 							m_bSolved {false},
 							m_bCreatedRigidBodyProjectors { false },
+							m_bUseNullSpaceB {false},
 							m_bUseRestart {false},
 							m_bPrintRestart {false},
 
@@ -144,6 +149,7 @@ public:
 			MatDestroy(&m_null_PI);
 			MatDestroy(&m_null_R);
 			MatDestroy(&m_null_RT);
+			MatDestroy(&m_null_sol_correction);
 
 			MatDestroy(&RI_mat);
 			MatDestroy(&RI_T_mat);
@@ -175,6 +181,8 @@ public:
 	void check_dimensions();
 
 	void build_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys);
+
+	void add_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
 
 	// Virtual methods
 	virtual void solve() = 0;

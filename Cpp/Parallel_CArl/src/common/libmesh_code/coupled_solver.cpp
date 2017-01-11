@@ -193,8 +193,10 @@ void carl::coupled_solver::build_null_space_projection_matrices(libMesh::PetscMa
 
 		// PI_mat    : n_coupl x n_coupl
 		// F_mat     : n_coupl x n_sys		(same as C_sys)
+		// sol_correction : n_sys * n_coupl
 		MatCreateDense(PETSC_COMM_WORLD,C_sys_M_local,C_sys_M_local,C_sys_M,C_sys_M,NULL,&m_null_PI);
 		MatCreateDense(PETSC_COMM_WORLD,C_sys_M_local,C_sys_N_local,C_sys_M,C_sys_N,NULL,&m_null_F);
+		MatCreateDense(PETSC_COMM_WORLD,C_sys_N_local,C_sys_M_local,C_sys_N,C_sys_M,NULL,&m_null_sol_correction);
 
 		// PI_mat = Id - RI_mat * ( inv_RITRI_mat ) * RI_T_mat
 		// ... but MatMatMatMult is not supported for dense matrices ...
@@ -213,13 +215,31 @@ void carl::coupled_solver::build_null_space_projection_matrices(libMesh::PetscMa
 		// F_mat = aux_matrix * R_T_mat
 		MatMatMult(aux_matrix,m_null_RT,MAT_REUSE_MATRIX,PETSC_DECIDE,&m_null_F);
 
+		// sol_correction = R_mat * inv_RITRI_mat * RI_T_mat
+		// sol_correction : n_sys * n_coupl
+
+		// aux_matrix_bis = inv_RITRI_mat * RI_T_mat
+		// aux_matrix_bis : nb_vecs * n_sys
+		Mat aux_matrix_bis;
+		MatCreateDense(PETSC_COMM_WORLD,R_mat_N_local,C_sys_M_local,R_mat_N,C_sys_M,NULL,&aux_matrix_bis);
+		MatMatMult(inv_RITRI_mat,RI_T_mat,MAT_REUSE_MATRIX,PETSC_DECIDE,&aux_matrix_bis);
+
+		// sol_correction = R_mat * aux_matrix_bis
+		MatMatMult(m_null_R,aux_matrix_bis,MAT_REUSE_MATRIX,PETSC_DECIDE,&m_null_sol_correction);
+
 		// Set up flag
 		m_bCreatedRigidBodyProjectors = true;
+		m_bUseNullSpaceB = true;
 
 		// Cleanup
 		MatDestroy(&aux_matrix);
-//		MatDestroy(&RI_mat);
-//		MatDestroy(&RI_T_mat);
+		MatDestroy(&aux_matrix_bis);
 		MatDestroy(&RITRI_mat);
 	}
 };
+
+void carl::coupled_solver::add_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	MatMultAdd(m_null_sol_correction,vec_in.vec(),vec_out.vec(),vec_out.vec());
+}
+
