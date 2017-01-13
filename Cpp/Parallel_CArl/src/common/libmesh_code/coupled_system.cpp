@@ -651,7 +651,7 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name,
 			std::shared_ptr<generic_solver_interface> cast_sys_B_solver = std::dynamic_pointer_cast<KSP_linear_solver>(m_sys_B_solver);
 
 			// Use preconditioner
-			cast_CG_solver->use_preconditioner(false);
+			cast_CG_solver->set_preconditioner_type(BaseCGPrecondType::NO_PRECONDITIONER);
 
 			// Set the solver matrices
 			cast_CG_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
@@ -724,7 +724,7 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 			std::shared_ptr<generic_solver_interface> cast_sys_B_solver = std::dynamic_pointer_cast<KSP_linear_solver>(m_sys_B_solver);
 
 			// Use preconditioner
-			cast_CG_solver->use_preconditioner(false);
+			cast_CG_solver->set_preconditioner_type(BaseCGPrecondType::NO_PRECONDITIONER);
 
 			// Set the solver matrices
 			cast_CG_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
@@ -798,7 +798,8 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 			std::shared_ptr<generic_solver_interface> cast_sys_B_solver = std::dynamic_pointer_cast<KSP_linear_solver>(m_sys_B_solver);
 
 			// Use preconditioner
-			cast_CG_solver->use_preconditioner(false);
+			cast_CG_solver->set_preconditioner_type(BaseCGPrecondType::NO_PRECONDITIONER);
+
 
 			// Set the solver matrices
 			cast_CG_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);

@@ -41,7 +41,7 @@ void base_CG_solver::apply_LATIN_operator(libMesh::PetscVector<libMesh::Number>&
 	// LATIN operator: v_out = ( M + k * ( C^t * C_R^-1 * C ) )* v_in
 
 	// v_out = k * ( C^t * C_R^-1 * C ) * v_in
-	m_solver_A->apply_ZMiZt(v_in,v_out);
+	m_solver_A->apply_ZMinvZt(v_in,v_out);
 	v_out.scale(m_search_k);
 
 	// v_out += M * v_in
@@ -50,59 +50,64 @@ void base_CG_solver::apply_LATIN_operator(libMesh::PetscVector<libMesh::Number>&
 
 void base_CG_solver::apply_CG_operator(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
-//	homemade_error_msg("Not tested yet!\n");
-
 	// CG operator: v_out = ( C1 * M1^-1 * C1^t + C2 * M2^-1 * C2^t ) * v_in
 
 	// temp_sol_I = ( CI * MI^-1 * CI^t ) * v_in
-	m_solver_A->apply_ZMiZt(v_in,*m_temp_sol_A);
-	m_solver_B->apply_ZMiZt(v_in,*m_temp_sol_B);
+	m_solver_A->apply_ZMinvZt(v_in,*m_temp_sol_A);
+	m_solver_B->apply_ZMinvZt(v_in,*m_temp_sol_B);
 
 	// v_out = temp_sol_A + temp_sol_B
 	v_out = *m_temp_sol_A;
 	v_out += *m_temp_sol_B;
 };
 
-void base_CG_solver::build_identity_precond()
+void base_CG_solver::apply_precond_matrix(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
-	m_M_PC = new libMesh::PetscMatrix<libMesh::Number>(*m_comm);
-	m_M_PC->init(m_sys_N,m_sys_N,m_sys_local_N,m_sys_local_N);
-	m_M_PC->zero();
-	m_M_PC->close();
-	MatShift(m_M_PC->mat(),1);
-
-	m_bBuiltExplicitPreconditioner  = true;
+	m_M_PC->vector_mult(v_out,v_in);
 };
 
-void base_CG_solver::set_matrix_precond()
+void base_CG_solver::apply_coupled_sys_precon(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
-	homemade_error_msg("Not implemented yet!\n");
+	// temp_sol_I = ( CI * MI * CI^t ) * v_in
+	m_solver_A->apply_ZMZt(v_in,*m_temp_sol_A);
+	m_solver_B->apply_ZMZt(v_in,*m_temp_sol_B);
 
-	// We can use PETSc's preconditioners here
+	// v_out = temp_sol_A + temp_sol_B
+	v_out = *m_temp_sol_A;
+	v_out += *m_temp_sol_B;
 };
 
-void base_CG_solver::set_LATIN_precond()
+void base_CG_solver::apply_inverse_coupling_precond(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
-	homemade_error_msg("Not implemented yet!\n");
-
-	// Maybe using simply "m_sys_mat"'s preconditioner is enough?
+	m_coupling_precond_solver->solve(*m_M_PC,v_out,v_in,1e-5,1000);
 };
 
-void base_CG_solver::set_CG_precond()
+void base_CG_solver::set_precond_matrix(libMesh::PetscMatrix<libMesh::Number>& m_in)
 {
-	homemade_error_msg("Not implemented yet!\n");
-
-	// Nadia's article speaks about using the inverse of the coupling
-	// operator K_C as the preconditioner, but it only defines K_1 and K_2.
-	// Is it the C_R matrix we've used for the LATIN method?
+	m_M_PC = &m_in;
 };
 
-void base_CG_solver::use_preconditioner(bool bUsePreconditioner)
+void base_CG_solver::set_inverse_precond(libMesh::PetscMatrix<libMesh::Number>& m_in)
 {
-	// Preconditioner to be implemented later
-	homemade_assert_msg(!bUsePreconditioner,"Preconditioners not implemented yet!\n");
+	m_M_PC = &m_in;
+	m_coupling_precond_solver = std::unique_ptr<libMesh::PetscLinearSolver<libMesh::Number> >
+	(new libMesh::PetscLinearSolver<libMesh::Number>(*m_comm));
+	m_coupling_precond_solver->reuse_preconditioner(true);
+	m_coupling_precond_solver->init(&m_in,"coupling_sys");
+};
 
-	m_bUsePreconditioner = bUsePreconditioner;
+void base_CG_solver::set_preconditioner_type(BaseCGPrecondType type_input)
+{
+	if(type_input == BaseCGPrecondType::NO_PRECONDITIONER)
+	{
+		m_bUsePreconditioner = false;
+	}
+	else
+	{
+		m_bUsePreconditioner = true;
+	}
+
+	m_precond_type = type_input;
 };
 
 void base_CG_solver::set_solver_CG_projector(Mat& proj_in)
@@ -126,9 +131,35 @@ void base_CG_solver::set_solver_matrix(libMesh::PetscMatrix<libMesh::Number>& sy
 
 	this->set_sol_vectors();
 
-	// Preconditioner to be implemented later
+	if(m_bUsePreconditioner)
 	{
-		this->build_identity_precond();
+		switch(m_precond_type)
+		{
+		case BaseCGPrecondType::SYSTEM_MATRIX:
+		{
+			this->set_precond_matrix(*m_sys_mat);
+			apply_preconditioner = &base_CG_solver::apply_precond_matrix;
+			m_bPreconditionerSet = true;
+			break;
+		}
+		case BaseCGPrecondType::CUSTOM_MATRIX:
+		{
+			apply_preconditioner = &base_CG_solver::apply_precond_matrix;
+			m_bPreconditionerSet = true;
+			break;
+		}
+		case BaseCGPrecondType::COUPLING_OPERATOR:
+		case BaseCGPrecondType::COUPLED_SYSTEM_OPERATOR:
+		{
+			homemade_error_msg("Invalid preconditioner type for direct CG solver!\n");
+			break;
+		}
+		case BaseCGPrecondType::NO_PRECONDITIONER:
+		{
+			homemade_error_msg("You shouldn't be here!\n");
+			break;
+		}
+		}
 	}
 
 	m_bSystemOperatorSet = true;
@@ -156,9 +187,7 @@ void base_CG_solver::set_solver_LATIN(generic_solver_interface& solver_correctio
 	this->set_sol_vectors();
 
 	// Still have to think about a good preconditioner for the LATIN case
-	{
-		this->build_identity_precond();
-	}
+	m_bUsePreconditioner = false;
 
 	m_bSystemOperatorSet = true;
 };
@@ -189,8 +218,39 @@ void base_CG_solver::set_solver_CG(generic_solver_interface& solver_in_A, generi
 	this->set_sol_vectors();
 
 	// Preconditioner to be implemented later
+	if(m_bUsePreconditioner)
 	{
-		this->build_identity_precond();
+		switch(m_precond_type)
+		{
+		case BaseCGPrecondType::COUPLING_OPERATOR:
+		{
+			apply_preconditioner = &base_CG_solver::apply_inverse_coupling_precond;
+			m_bPreconditionerSet = true;
+			break;
+		}
+		case BaseCGPrecondType::CUSTOM_MATRIX:
+		{
+			apply_preconditioner = &base_CG_solver::apply_precond_matrix;
+			m_bPreconditionerSet = true;
+			break;
+		}
+		case BaseCGPrecondType::COUPLED_SYSTEM_OPERATOR:
+		{
+			apply_preconditioner = &base_CG_solver::apply_coupled_sys_precon;
+			m_bPreconditionerSet = true;
+			break;
+		}
+		case BaseCGPrecondType::SYSTEM_MATRIX:
+		{
+			homemade_error_msg("Invalid preconditioner type for coupled CG solver!\n");
+			break;
+		}
+		case BaseCGPrecondType::NO_PRECONDITIONER:
+		{
+			homemade_error_msg("You shouldn't be here!\n");
+			break;
+		}
+		}
 	}
 
 	m_bSystemOperatorSet = true;
@@ -201,200 +261,15 @@ void base_CG_solver::set_system_rhs(libMesh::PetscVector<libMesh::Number>& rhs_i
 	m_rhs = &rhs_in;
 	m_brhsSet = true;
 };
-//
-//void base_CG_solver::solve()
-//{
-//	homemade_assert_msg(m_bSystemOperatorSet,"System operator must be set before solving!\n");
-//	homemade_assert_msg(m_brhsSet,"Right-hand side must be set before solving!\n");
-//
-//	// Create the iteration vectors
-//	libMesh::PetscVector<libMesh::Number> m_p(*m_comm), m_p_prev(*m_comm);
-//	libMesh::PetscVector<libMesh::Number> m_q_prev(*m_comm);
-//	libMesh::PetscVector<libMesh::Number> m_r(*m_comm), m_r_prev(*m_comm);
-//	libMesh::PetscVector<libMesh::Number> m_z(*m_comm);
-//	libMesh::PetscVector<libMesh::Number> m_x(*m_comm), m_x_prev(*m_comm);
-//
-//	libMesh::PetscVector<libMesh::Number> m_aux(*m_comm);
-//
-//	m_p.init(m_sys_N,m_sys_local_N);
-//	m_p.zero();
-//	m_p.close();
-//
-//	m_p_prev.init(m_p); m_p_prev.close();
-//	m_q_prev.init(m_p); m_q_prev.close();
-//	m_r.init(m_p);      m_r.close();
-//	m_r_prev.init(m_p); m_r_prev.close();
-//	m_z.init(m_p);      m_z.close();
-//	m_x.init(m_p);      m_x.close();
-//	m_x_prev.init(m_p); m_x_prev.close();
-//	m_aux.init(m_p);    m_aux.close();
-//	m_x_prev = *m_initial_sol;
-//
-//	// Set the iteration search parameters
-//	double m_rho = 0, m_beta = 0;
-//	double m_rho_prev = 0, m_alpha_prev = 0;
-//	double m_rho_zero = 0;
-//	double aux_double = 0;
-//
-//	std::cout << "|     Finished setup " << std::endl;
-//
-////	m_rhs->print_matlab("F_sys.m");
-////	m_M_PC->print_matlab("M_precond.m");
-//
-//	// Initialize the system
-//	// r(0) = b - A * x(0)
-//	m_r_prev = *m_rhs;
-//	(this->*apply_system_matrix)(m_x_prev,m_aux);
-//	m_r_prev.add(-1,m_aux);
-////	m_x_prev.print_matlab("x_0.m");
-////	m_aux.print_matlab("aux_0.m");
-////	m_r_prev.print_matlab("r_0.m");
-////	m_temp_sol_A->print_matlab("ZMZ_A.m");
-////	m_temp_sol_B->print_matlab("ZMZ_B.m");
-//	m_solver_A->print_type();
-//	m_solver_B->print_type();
-//
-//	// m_solver_B->calculate_pseudo_inverse("pinv_M_B.m");
-//	// m_solver_A->calculate_pseudo_inverse("pinv_M_A.m");
-//
-//	// z(0) = M_proj * M_PC * r(0) ?
-//	// z(0) = M_PC * r(0) ?
-//	m_M_PC->vector_mult(m_z,m_r_prev);
-//
-//	// rho(0) = r(0) . z(0)
-//	m_rho_prev = m_r_prev.dot(m_z);
-//	m_rho_zero = m_rho_prev;
-//
-//	// p(0) = M_proj * z(0)?
-//	// p(0) = z(0) ?
-//	// SHORTCIRCUITED THE PROJECTOR!
-//	if(m_bUseNullSpaceProjector)
-//	{
-//		std::cout << "|     Using the projector ... " << std::endl;
-//		MatMult(*m_M_null_proj,m_z.vec(),m_p_prev.vec());
-//	}
-//	else
-//	{
-//		std::cout << "|     NOT using the projector ... " << std::endl;
-//		m_p_prev = m_z;
-//	}
-////	m_p_prev.print_matlab("p_0.m");
-//
-//	std::cout << "|     Finished preamble: " << std::endl;
-//
-//	// Iteration parameters
-//	unsigned int kkk = 0;
-//	bool bKeepIterating = true;
-//	bool bConverged = false;
-//	bool bDiverged = false;
-//
-//	std::cout << "|" << std::endl;
-//	std::cout << "|        rho(0)        :" << m_rho_prev << std::endl;
-//	std::cout << "|" << std::endl;
-//
-//	std::ofstream beta_out_file("beta.dat",std::ios::trunc);
-//	std::ofstream rho_out_file("rho.dat",std::ios::trunc);
-//
-//	rho_out_file << "# iteration \t rho " << std::endl;
-//	rho_out_file << kkk << "\t\t" <<  m_rho_prev << std::endl;
-//
-//	beta_out_file << "# iteration \t beta " << std::endl;
-//
-//	while(bKeepIterating)
-//	{
-//		// q(k) = A * p(k)
-//		(this->*apply_system_matrix)(m_p_prev,m_q_prev);
-//
-//		// aux_double = p(k) . q(k) = p(k) * A * p(k)
-//		aux_double = m_p_prev.dot(m_q_prev);
-//
-//		// alpha(k) = r(k) . z(k) / ( p(k) * A * p(k) )
-//		//          = rho(k)      / aux_double
-//		m_alpha_prev = m_rho_prev / aux_double;
-//
-//		// x(k + 1) = x(k) + alpha(k) * p(k)
-//		m_x = m_x_prev; m_x.add(m_alpha_prev,m_p_prev);
-//
-//		// r(k + 1) = r(k) - alpha(k) * A * p(k)
-//		//          = r(k) - alpha(k) * q(k)
-//		m_r = m_r_prev; m_r.add(-m_alpha_prev,m_q_prev);
-//
-//		// z(k + 1) = M_PC * r(k + 1)
-//		m_M_PC->vector_mult(m_z,m_r);
-//
-//		// rho(k + 1) = r(k + 1) . z(k + 1)
-//		m_rho = m_r.dot(m_z);
-//
-//		// beta(k + 1) = rho(k + 1) / rho(k)
-//		m_beta = m_rho / m_rho_prev;
-//
-//		rho_out_file << kkk << "\t\t" <<  m_rho << std::endl;
-//		beta_out_file << kkk << "\t\t" <<  m_beta << std::endl;
-//
-//		// p(k + 1) = M_proj * ( z(k + 1) + beta(k + 1) * p(k) ) ?
-//		// p(k + 1) = z(k + 1) + beta(k + 1) * p(k) ?
-//		m_aux = m_z;
-//		m_aux.add(m_beta,m_p_prev);
-//
-//		// SHORTCIRCUITED THE PROJECTOR!
-//		if(m_bUseNullSpaceProjector)
-//		{
-//			MatMult(*m_M_null_proj,m_aux.vec(),m_p.vec());
-//		}
-//		else
-//		{
-//			m_p = m_aux;
-//		}
-//
-////		std::cout << "|" << std::endl;
-////		std::cout << "|     Iteration no. " << kkk << std::endl;
-////		std::cout << "|        rho(k)        :" << m_rho_prev << std::endl;
-////		std::cout << "|        alpha(k)      :" << m_alpha_prev << std::endl;
-////		std::cout << "|        rho(k + 1)    :" << m_rho << std::endl;
-////		std::cout << "|        beta(k + 1)   :" << m_beta << std::endl;
-////		std::cout << "|" << std::endl;
-//
-//
-//
-//		// Advance iteration
-//		++kkk;
-//
-//		// Check convergence
-//		bConverged = test_convergence(kkk,m_rho,m_rho_zero);
-//		bDiverged = test_divergence(kkk,m_rho,m_rho_zero);
-//
-//		if(bConverged || bDiverged)
-//		{
-//			bKeepIterating = false;
-//		}
-//		else
-//		{
-//			m_p_prev = m_p;
-//			m_rho_prev = m_rho;
-//			m_x_prev = m_x;
-//			m_r_prev = m_r;
-//		}
-//	}
-//
-//	rho_out_file.close();
-//	beta_out_file.close();
-//	*m_sol = m_x;
-//
-//	// Set solution!
-//	if(bConverged)
-//	{
-//		std::cout << "| Converged after " << kkk << " iterations" << std::endl;
-//	}
-//	if(bDiverged)
-//	{
-//		std::cout << "| DIVERGED after " << kkk << " iterations" << std::endl;
-//	}
-//};
 
 void base_CG_solver::solve()
 {
 	homemade_assert_msg(m_bSystemOperatorSet,"System operator must be set before solving!\n");
 	homemade_assert_msg(m_brhsSet,"Right-hand side must be set before solving!\n");
+	if(m_bUsePreconditioner)
+	{
+		homemade_assert_msg(m_bPreconditionerSet,"Preconditioner not set yet!\n");
+	}
 
 	// Create the iteration vectors
 	libMesh::PetscVector<libMesh::Number> m_p(*m_comm), m_p_prev(*m_comm);
@@ -446,9 +321,19 @@ void base_CG_solver::solve()
 	// m_solver_B->calculate_pseudo_inverse("pinv_M_B.m");
 	// m_solver_A->calculate_pseudo_inverse("pinv_M_A.m");
 
-	// z(0) = M_proj * M_PC * r(0) ?
-	// z(0) = M_PC * r(0) ?
-	m_M_PC->vector_mult(m_aux,m_r_prev);
+	// aux(0) = M_PC * r(0) ?
+	// aux(0) = r(0) ?
+	if(m_bUsePreconditioner)
+	{
+		(this->*apply_preconditioner)(m_r_prev,m_aux);
+	}
+	else
+	{
+		m_aux = m_r_prev;
+	}
+
+	// z(0) = M_proj * aux(0) ?
+	// z(0) = axu(0) ?
 	if(m_bUseNullSpaceProjector)
 	{
 		std::cout << "|     Using the projector ... " << std::endl;
@@ -506,9 +391,19 @@ void base_CG_solver::solve()
 		//          = r(k) - alpha(k) * q(k)
 		m_r = m_r_prev; m_r.add(-m_alpha_prev,m_q_prev);
 
-		// z(k + 1) = M_proj * M_PC * r(k + 1) ?
-		// z(k + 1) = M_PC * r(k + 1) ?
-		m_M_PC->vector_mult(m_aux,m_r);
+		// aux(k + 1) = M_PC * r(k + 1) ?
+		// aux(k + 1) = r(k + 1) ?
+		if(m_bUsePreconditioner)
+		{
+			(this->*apply_preconditioner)(m_r,m_aux);
+		}
+		else
+		{
+			m_aux = m_r;
+		}
+
+		// z(k + 1) = M_proj * aux(k + 1) ?
+		// z(k + 1) = aux(k + 1) ?
 		if(m_bUseNullSpaceProjector)
 		{
 			MatMult(*m_M_null_proj,m_aux.vec(),m_z.vec());
@@ -588,14 +483,14 @@ void base_CG_solver::get_residual_vector(libMesh::PetscVector<libMesh::Number>& 
 
 bool base_CG_solver::test_convergence(unsigned int iter, double res_norm, double init_res_norm)
 {
-	if(res_norm < m_CG_conv_eps_abs) // Absolute convergence
+	if(std::abs(res_norm) < m_CG_conv_eps_abs) // Absolute convergence
 	{
-		std::cout << "| Absolute convergence : " << res_norm  << " < " << m_CG_conv_eps_abs << std::endl;
+		std::cout << "| Absolute convergence : | " << res_norm  << " | < " << m_CG_conv_eps_abs << std::endl;
 		return true;
 	}
-	if(res_norm < m_CG_conv_eps_rel * init_res_norm) // Relative convergence
+	if(std::abs(res_norm) < m_CG_conv_eps_rel * init_res_norm) // Relative convergence
 	{
-		std::cout << "| Relative convergence : " << res_norm  << " < " << m_CG_conv_eps_rel << "*" << init_res_norm << std::endl;
+		std::cout << "| Relative convergence : | " << res_norm  << " | < " << m_CG_conv_eps_rel << "*" << init_res_norm << std::endl;
 		return true;
 	}
 
@@ -609,9 +504,9 @@ bool base_CG_solver::test_divergence(unsigned int iter, double res_norm, double 
 		std::cout << "| Iteration divergence : " << iter  << " > " << m_CG_conv_max_n << std::endl;
 		return true;
 	}
-	if(res_norm > m_CG_div_tol * init_res_norm)      // Residual divergence
+	if(std::abs(res_norm) > m_CG_div_tol * init_res_norm)      // Residual divergence
 	{
-		std::cout << "| Residual divergence : " << res_norm  << " > " << m_CG_div_tol << "*" << init_res_norm << std::endl;
+		std::cout << "| Residual divergence : | " << res_norm  << " | > " << m_CG_div_tol << "*" << init_res_norm << std::endl;
 		return true;
 	}
 

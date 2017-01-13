@@ -2,9 +2,9 @@
 #include <petsc/private/kspimpl.h>
 #include "CG_coupled_solver.h"
 
-void carl::PETSC_CG_coupled_solver::use_preconditioner(bool flag)
+void carl::PETSC_CG_coupled_solver::set_preconditioner_type(BaseCGPrecondType type_input)
 {
-	m_bUsePreconditioner = flag;
+	m_precond_type = type_input;
 };
 
 void carl::PETSC_CG_coupled_solver::set_info(	bool bSavePartitionInfo,
@@ -35,11 +35,17 @@ void carl::PETSC_CG_coupled_solver::set_solvers(generic_solver_interface * solve
 	m_sys_B_solver->set_solver(*m_M_B,m_ksp_name_B.c_str());
 	m_sys_B_solver->set_coupling_matrix(*m_C_RB);
 
+	m_coupling_solver.set_preconditioner_type(m_precond_type);
+
+	// Set up the preconditioner - if needed
+	if(m_precond_type == BaseCGPrecondType::COUPLING_OPERATOR)
+	{
+		m_coupling_solver.set_inverse_precond(*m_C_RR);
+	}
+
 	// Set up the coupled equation solver
 	m_coupling_solver.set_solver_CG(*m_sys_A_solver,*m_sys_B_solver);
-	// TODO: uncomment this line after the preconditioners have been implemented
-//	m_coupling_solver.use_preconditioner(m_bUsePreconditioner);
-	m_coupling_solver.use_preconditioner(false);
+
 	m_coupling_solver.set_convergence_limits(m_CG_conv_eps_abs,m_CG_conv_eps_rel,m_CG_conv_max_n,m_CG_div_tol);
 };
 
@@ -62,18 +68,6 @@ void carl::PETSC_CG_coupled_solver::set_restart( 	bool bUseRestart,
 	}
 }
 
-void  carl::PETSC_CG_coupled_solver::build_preconditioner()
-{
-	Mat dummy_mat;
-	MatRARt(m_M_A->mat(),m_C_RA->mat(),MAT_INITIAL_MATRIX,1,&dummy_mat);
-	MatRARt(m_M_B->mat(),m_C_RB->mat(),MAT_INITIAL_MATRIX,1,&m_PC_PETSc);
-
-	MatAXPY(m_PC_PETSc,1,dummy_mat,DIFFERENT_NONZERO_PATTERN);
-	m_PC = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(new libMesh::PetscMatrix<libMesh::Number>(m_PC_PETSc,*m_comm));
-
-	MatDestroy(&dummy_mat);
-};
-
 void carl::PETSC_CG_coupled_solver::set_matrices(	libMesh::PetscMatrix<libMesh::Number>& M_A,
 					libMesh::PetscMatrix<libMesh::Number>& M_B,
 					libMesh::PetscMatrix<libMesh::Number>& C_RA,
@@ -88,26 +82,26 @@ void carl::PETSC_CG_coupled_solver::set_matrices(	libMesh::PetscMatrix<libMesh::
 
 	std::cout << "| -> Using CG " << std::endl;
 
-	// Calculate the preconditioner - if needed
-	if(m_bUsePreconditioner)
-	{
-		this->build_preconditioner();
-	}
-	else
-	{
-		// Use the identity matrix
-		int M = C_RR.m();
-		int N = C_RR.n();
-
-		PetscInt local_M, local_N;
-
-		MatGetLocalSize(C_RR.mat(),&local_M,&local_N);
-
-		m_PC = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(new libMesh::PetscMatrix<libMesh::Number>(*m_comm));
-		m_PC->init(M,N,local_M,local_M,1,0);
-		m_PC->close();
-		MatShift(m_PC->mat(),1.0);
-	}
+//	// Calculate the preconditioner - if needed
+//	if(m_bUsePreconditioner)
+//	{
+//		this->build_preconditioner();
+//	}
+//	else
+//	{
+//		// Use the identity matrix
+//		int M = C_RR.m();
+//		int N = C_RR.n();
+//
+//		PetscInt local_M, local_N;
+//
+//		MatGetLocalSize(C_RR.mat(),&local_M,&local_N);
+//
+//		m_PC = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(new libMesh::PetscMatrix<libMesh::Number>(*m_comm));
+//		m_PC->init(M,N,local_M,local_M,1,0);
+//		m_PC->close();
+//		MatShift(m_PC->mat(),1.0);
+//	}
 };
 
 void carl::PETSC_CG_coupled_solver::set_convergence_limits(double eps_abs, double eps_rel, int convIter, double div_tol)
@@ -300,14 +294,14 @@ void carl::PETSC_CG_coupled_solver::solve()
 	// Create corrected solution
 	// U_1 = U_0,1 - A_1^-1 * C_1 * lambda
 	perf_log.push("KSP solver - A","Solution");
-	m_sys_A_solver->apply_MiZt(vec_lambda,vec_aux_A);
+	m_sys_A_solver->apply_MinvZt(vec_lambda,vec_aux_A);
 	*m_sol_A.get() = vec_u0_A;
 	m_sol_A->add(-1,vec_aux_A);
 	perf_log.pop("KSP solver - A","Solution");
 
 	// U_2 = U_0,2 - A_2^-1 * C_2 * lambda
 	perf_log.push("KSP solver - B","Solution");
-	m_sys_B_solver->apply_MiZt(vec_lambda,vec_aux_B);
+	m_sys_B_solver->apply_MinvZt(vec_lambda,vec_aux_B);
 	*m_sol_B.get() = vec_u0_B;
 	m_sol_B->add(vec_aux_B);
 
@@ -340,4 +334,9 @@ void carl::PETSC_CG_coupled_solver::set_null_space_projector()
 	m_coupling_solver.set_solver_CG_projector(m_null_PI);
 	libMesh::PetscMatrix<libMesh::Number> dummy_mat(m_null_PI,*m_comm);
 //	dummy_mat.print_matlab("M_null_proj_matrix.m");
+}
+
+void carl::PETSC_CG_coupled_solver::set_preconditioner_matrix(libMesh::PetscMatrix<libMesh::Number>& M_precond)
+{
+	m_coupling_solver.set_precond_matrix(M_precond);
 }

@@ -87,14 +87,17 @@ public:
 
 	void get_coupling_dimensions(unsigned int& M_out, unsigned int& N_out, unsigned int& M_local_out, unsigned int& N_local_out);
 
+	// Calculate v_out = [ C * M * C^t ] * v_in
+	void apply_ZMZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+
 	// Calculate v_out = [ C * ( M^-1 ) *C^t ] * v_in
-	void apply_ZMiZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+	void apply_ZMinvZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
 
 	// Calculate v_out = [ ( M^-1 ) *C^t ] * v_in
-	void apply_MiZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+	void apply_MinvZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
 
 	// Calculate v_out = [ C * ( M^-1 ) ] * v_in
-	void apply_ZMi(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+	void apply_ZMinv(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
 
 	// Calculate v_out = ( M^-1 ) * v_in
 	void solve(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);

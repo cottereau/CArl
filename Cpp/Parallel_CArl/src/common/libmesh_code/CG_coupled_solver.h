@@ -28,7 +28,6 @@ protected:
 
 	// Preallocator
 	std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> > m_PC;
-	Mat m_PC_PETSc;
 
 	// Convergence parameters
 	double m_CG_conv_eps_abs;
@@ -40,9 +39,8 @@ protected:
 	int    m_CG_conv_n;
 
 	// Flags
-	bool m_bUsePreconditioner;
-	bool m_bRecalculatePreconditioner;
 	bool m_bCoordsSetup;
+	BaseCGPrecondType m_precond_type;
 
 	// Partitioning debug parameters
 	std::string m_info_matrix_PC_filename;
@@ -76,8 +74,8 @@ public:
 							m_CG_conv_eps_rel { 1E-20 },
 							m_CG_conv_max_n { 1000 },
 							m_CG_div_tol { 10000 },
-							m_bUsePreconditioner { false },
 							m_bCoordsSetup { false },
+							m_precond_type { BaseCGPrecondType::NO_PRECONDITIONER },
 							m_sys_A_solver { NULL },
 							m_sys_B_solver { NULL },
 							m_coupling_solver(comm)
@@ -85,14 +83,6 @@ public:
 		m_CG_Index.resize(m_CG_conv_max_n);
 		m_bParamsSetUp = true;
 	};
-
-	~PETSC_CG_coupled_solver()
-	{
-		if(m_bUsePreconditioner)
-		{
-			MatDestroy(&m_PC_PETSc);
-		}
-	}
 
 	// Set the coupled system solver
 	void set_solvers(generic_solver_interface * solver_A, generic_solver_interface * solver_B);
@@ -116,13 +106,15 @@ public:
 	// Methods
 	void set_convergence_limits(double eps_abs, double eps_rel, int convIter = 1E4, double div_tol = 1E4);
 
-	void use_preconditioner(bool flag = true);
+	void set_preconditioner_type(BaseCGPrecondType type_input = BaseCGPrecondType::NO_PRECONDITIONER );
 
 	void build_preconditioner();
 
 	void print_convergence(std::ostream& convergenceOut);
 
 	void set_null_space_projector();
+
+	void set_preconditioner_matrix(libMesh::PetscMatrix<libMesh::Number>& M_precond);
 };
 
 }

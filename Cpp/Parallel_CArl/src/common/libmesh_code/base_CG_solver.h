@@ -22,6 +22,7 @@ private:
 
 	// Typedef for the system operator function pointer
 	typedef void (base_CG_solver::*sys_fptr)(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+	typedef void (base_CG_solver::*precond_fptr)(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
 
 	// libMesh communicator
 	const libMesh::Parallel::Communicator * m_comm;
@@ -40,6 +41,7 @@ private:
 
 	// Function pointers
 	sys_fptr apply_system_matrix;
+	precond_fptr apply_preconditioner;
 
 	// System and coupling sizes
 	unsigned int m_sys_N;
@@ -50,6 +52,9 @@ private:
 
 	unsigned int m_coupling_N;
 	unsigned int m_coupling_local_N;
+
+	// Preconditioner unique pointer
+	std::unique_ptr<libMesh::PetscLinearSolver<libMesh::Number> > m_coupling_precond_solver;
 
 	// Internal matrix and solver pointers and co.
 	libMesh::PetscMatrix<libMesh::Number> * m_sys_mat;
@@ -67,26 +72,35 @@ private:
 	// Set solution vectors
 	void set_sol_vectors();
 
-	// Preconditioners
-	void build_identity_precond();
-
-	void set_matrix_precond();
-
-	void set_LATIN_precond();
-
-	void set_CG_precond();
-
 	// Convergence / divergence tests
 	bool test_convergence(unsigned int iter, double res_norm, double init_res_norm);
 
 	bool test_divergence(unsigned int iter, double res_norm, double init_res_norm);
+
+	// Internal system operator functions
+	void apply_M(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+
+	void apply_LATIN_operator(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+
+	void apply_CG_operator(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+
+	// Internal
+	void apply_precond_matrix(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+
+	void apply_coupled_sys_precon(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+
+	void apply_inverse_coupling_precond(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
 
 	// Flags
 	bool m_bSystemOperatorSet;
 	bool m_brhsSet;
 	bool m_bUsePreconditioner;
 	bool m_bBuiltExplicitPreconditioner;
+	bool m_bPreconditionerSet;
 	bool m_bUseNullSpaceProjector;
+
+	// Preconditioner flag
+	BaseCGPrecondType m_precond_type;
 
 public:
 	base_CG_solver(	const libMesh::Parallel::Communicator& comm ) :
@@ -98,6 +112,7 @@ public:
 		m_rhs { NULL },
 		m_M_PC { NULL },
 		apply_system_matrix { NULL },
+		apply_preconditioner { NULL },
 		m_sys_N { 0 },
 		m_sys_local_N { 0 },
 		m_coupling_M { 0 },
@@ -113,7 +128,9 @@ public:
 		m_brhsSet { false },
 		m_bUsePreconditioner { false },
 		m_bBuiltExplicitPreconditioner { false },
-		m_bUseNullSpaceProjector { false }
+		m_bPreconditionerSet { false },
+		m_bUseNullSpaceProjector { false },
+		m_precond_type { BaseCGPrecondType::NO_PRECONDITIONER }
 	{
 	};
 
@@ -137,15 +154,12 @@ public:
 		m_CG_div_tol = div_tol_in;
 	}
 
-	// Set up flags
-	void use_preconditioner(bool bUsePreconditioner = true);
+	// Preconditioners
+	void set_precond_matrix(libMesh::PetscMatrix<libMesh::Number>& m_in);
 
-	// Internal system operator functions
-	void apply_M(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+	void set_inverse_precond(libMesh::PetscMatrix<libMesh::Number>& m_in);
 
-	void apply_LATIN_operator(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
-
-	void apply_CG_operator(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+	void set_preconditioner_type(BaseCGPrecondType type_input = BaseCGPrecondType::NO_PRECONDITIONER);
 
 	// Solver setup methods
 	void set_solver_CG_projector(Mat& proj_in);

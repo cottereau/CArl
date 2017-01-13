@@ -17,6 +17,13 @@ enum CoupledSolverType {
 	CG    = 2  // Conjugate gradient solver
 };
 
+enum BaseCGPrecondType {
+	NO_PRECONDITIONER = 0, // Identity matrix
+	CUSTOM_MATRIX = 1, // User-defined matrix
+	SYSTEM_MATRIX = 2, // System matrix
+	COUPLING_OPERATOR = 3, // C_RR
+	COUPLED_SYSTEM_OPERATOR = 4 // sum ( C_RI * M_I *C_RI^T )
+};
 enum IntersectionMeshingMethod {
 	LIBMESH_TETGEN = 0, // libMesh Tetgen algorithm, problematic with
 						// Intel compilers

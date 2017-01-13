@@ -94,7 +94,23 @@ void KSP_linear_solver::get_coupling_dimensions(unsigned int& M_out, unsigned in
 	N_local_out = silly_local_N;
 }
 
-void KSP_linear_solver::apply_ZMiZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
+void KSP_linear_solver::apply_ZMZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
+{
+	homemade_assert_msg(m_bMatrixSet, "Solver matrix not set yet!\n");
+	homemade_assert_msg(m_bCouplingSet, "Coupling matrix not set yet!\n");
+
+	libMesh::PetscVector<libMesh::Number> * aux_vec_rhs_ptr = m_aux_vec_1.get();
+	libMesh::PetscVector<libMesh::Number> * aux_vec_sol_ptr = m_aux_vec_2.get();
+
+	// MatMultTranspose(Mat mat,Vec x,Vec y) : y = A^t * x
+	MatMultTranspose(m_Coupling->mat(),v_in.vec(),aux_vec_rhs_ptr->vec());
+	m_Matrix->vector_mult(*aux_vec_sol_ptr,*aux_vec_rhs_ptr);
+
+	// vector_mult(dest,arg)
+	m_Coupling->vector_mult(v_out,*aux_vec_sol_ptr);
+}
+
+void KSP_linear_solver::apply_ZMinvZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
 	homemade_assert_msg(m_bMatrixSet, "Solver matrix not set yet!\n");
 	homemade_assert_msg(m_bCouplingSet, "Coupling matrix not set yet!\n");
@@ -112,7 +128,7 @@ void KSP_linear_solver::apply_ZMiZt(libMesh::PetscVector<libMesh::Number>& v_in,
 	m_Coupling->vector_mult(v_out,*aux_vec_sol_ptr);
 }
 
-void KSP_linear_solver::apply_MiZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
+void KSP_linear_solver::apply_MinvZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
 	homemade_assert_msg(m_bMatrixSet, "Solver matrix not set yet!\n");
 	homemade_assert_msg(m_bCouplingSet, "Coupling matrix not set yet!\n");
@@ -123,7 +139,7 @@ void KSP_linear_solver::apply_MiZt(libMesh::PetscVector<libMesh::Number>& v_in, 
 	this->solve(*aux_vec_rhs_ptr,v_out);
 }
 
-void KSP_linear_solver::apply_ZMi(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
+void KSP_linear_solver::apply_ZMinv(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
 	homemade_assert_msg(m_bMatrixSet, "Solver matrix not set yet!\n");
 	homemade_assert_msg(m_bCouplingSet, "Coupling matrix not set yet!\n");
