@@ -69,38 +69,56 @@ set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LIBMESH_INCLUDE} ${LIBM
 set ( SOURCE_DIR src )
 
 set ( EXEC_SRC_DIR ${SOURCE_DIR}/execs )
-# set ( INTERSECTION_RESTRICT_3D_EXEC_DIR ${EXEC_SRC_DIR}/intersections_restrict_3D_parallel )
 set ( CARL_LIBMESH_PARALLEL_EXEC_DIR    ${EXEC_SRC_DIR}/carl_libmesh_parallel )
 set ( DEVEL_BACKYARD_EXEC_DIR           ${EXEC_SRC_DIR}/devel_backyard )
 set ( TEST_CASES_EXEC_DIR               ${EXEC_SRC_DIR}/tests )
+set ( ASSEMBLE_FUNCTIONS_DIR            ${EXEC_SRC_DIR}/assemble_functions )
 
 set ( COMMON_SRC_DIR             ${SOURCE_DIR}/common )
+
 set ( MESH_DIR                   ${COMMON_SRC_DIR}/triangular_mesh )
-# set ( INTERSECTION_DIR           ${COMMON_SRC_DIR}/intersections )
 set ( INTERSECTION_PARALLEL_DIR  ${COMMON_SRC_DIR}/intersections_parallel )
 set ( LIBMESH_CODE_DIR           ${COMMON_SRC_DIR}/libmesh_code )
 
-set ( ASSEMBLE_FUNCTIONS_DIR   ${EXEC_SRC_DIR}/assemble_functions )
+set ( LM_BASE_CG_SOLVER_DIR     ${LIBMESH_CODE_DIR}/base_CG_solver )
+set ( LM_COUPLED_SOLVER_DIR     ${LIBMESH_CODE_DIR}/coupled_solver )
+set ( LM_COUPLED_SYSTEM_DIR     ${LIBMESH_CODE_DIR}/coupled_system )
+set ( LM_PETSC_MATRIX_OPS_DIR   ${LIBMESH_CODE_DIR}/PETSC_matrix_operations )
+set ( LM_SYSTEM_SOLVER_DIR      ${LIBMESH_CODE_DIR}/system_solver )
+set ( LM_MISC_DIR               ${LIBMESH_CODE_DIR}/misc )
 
 # include for local directory
-# set ( LIB_DIRS ${SOURCE_DIR} ${MESH_DIR} ${INTERSECTION_DIR} ${LIBMESH_CODE_DIR} ${ASSEMBLE_FUNCTIONS_DIR} ${INTERSECTION_DIR} ${INTERSECTION_PARALLEL_DIR})
-set ( LIB_DIRS ${SOURCE_DIR} ${MESH_DIR} ${INTERSECTION_DIR} ${LIBMESH_CODE_DIR} ${ASSEMBLE_FUNCTIONS_DIR} ${INTERSECTION_PARALLEL_DIR})
-# set ( EXEC_DIRS ${INTERSECTION_RESTRICT_3D_EXEC_DIR} ${CARL_LIBMESH_PARALLEL_EXEC_DIR} ${DEVEL_BACKYARD_EXEC_DIR})
+set ( LIBMESH_LIB_DIRS ${LM_BASE_CG_SOLVER_DIR} ${LM_COUPLED_SOLVER_DIR} ${LM_COUPLED_SYSTEM_DIR} ${LM_PETSC_MATRIX_OPS_DIR} ${LM_SYSTEM_SOLVER_DIR} ${LM_MISC_DIR})
+set ( LIB_DIRS ${SOURCE_DIR} ${MESH_DIR} ${INTERSECTION_DIR} ${ASSEMBLE_FUNCTIONS_DIR} ${INTERSECTION_PARALLEL_DIR})
 set ( EXEC_DIRS ${CARL_LIBMESH_PARALLEL_EXEC_DIR} ${DEVEL_BACKYARD_EXEC_DIR} ${TEST_CASES_EXEC_DIR})
 
-include_directories( ${LIB_DIRS} ${EXEC_DIR} )
+include_directories( ${LIBMESH_LIB_DIRS} ${LIB_DIRS} ${EXEC_DIR} )
 
 # set source sets
-file ( GLOB COMMON_SOURCES                "${COMMON_SRC_DIR}/common*.h"           "${COMMON_SRC_DIR}/common*.cpp")
-file ( GLOB MESH_3D_SOURCES               "${MESH_DIR}/*3.h"                  "${MESH_DIR}/*3.cpp" "${RESTRICTION_3D_EXEC_DIR}/*3.h")
-# file ( GLOB INTERSECTION_SOURCES          "${INTERSECTION_DIR}/*3.h"          "${INTERSECTION_DIR}/*3.cpp")
-file ( GLOB INTERSECTION_PARALLEL_SOURCES "${INTERSECTION_PARALLEL_DIR}/*.h" "${INTERSECTION_PARALLEL_DIR}/*.cpp")
-file ( GLOB LIBMESH_CODE_SOURCES "${LIBMESH_CODE_DIR}/*.h" "${LIBMESH_CODE_DIR}/*.cpp" )
-file ( GLOB ASSEMBLE_FUNCTIONS_SOURCES "${ASSEMBLE_FUNCTIONS_DIR}/*.h" "${ASSEMBLE_FUNCTIONS_DIR}/*.cpp" )
+file ( GLOB COMMON_SOURCES                "${COMMON_SRC_DIR}/common*.h"           
+                                          "${COMMON_SRC_DIR}/common*.cpp")
+file ( GLOB MESH_3D_SOURCES               "${MESH_DIR}/*3.h"                  
+                                          "${MESH_DIR}/*3.cpp"
+                                          "${RESTRICTION_3D_EXEC_DIR}/*3.h")
+file ( GLOB INTERSECTION_PARALLEL_SOURCES "${INTERSECTION_PARALLEL_DIR}/*.h"
+                                          "${INTERSECTION_PARALLEL_DIR}/*.cpp")
+file ( GLOB ASSEMBLE_FUNCTIONS_SOURCES    "${ASSEMBLE_FUNCTIONS_DIR}/*.h"
+                                          "${ASSEMBLE_FUNCTIONS_DIR}/*.cpp" )
 
-message (STATUS "${LIBMESH_CODE_SOURCES}")
+file ( GLOB LM_BASE_CG_SOLVER_SOURCES     "${LM_BASE_CG_SOLVER_DIR}/*.h"
+                                          "${LM_BASE_CG_SOLVER_DIR}/*.cpp" )
+file ( GLOB LM_COUPLED_SOLVER_SOURCES     "${LM_COUPLED_SOLVER_DIR}/*.h"
+                                          "${LM_COUPLED_SOLVER_DIR}/*.cpp" )
+file ( GLOB LM_COUPLED_SYSTEM_SOURCES     "${LM_COUPLED_SYSTEM_DIR}/*.h"
+                                          "${LM_COUPLED_SYSTEM_DIR}/*.cpp" )
+file ( GLOB LM_PETSC_MATRIX_OPS_SOURCES   "${LM_PETSC_MATRIX_OPS_DIR}/*.h"
+                                          "${LM_PETSC_MATRIX_OPS_DIR}/*.cpp" )
+file ( GLOB LM_SYSTEM_SOLVER_SOURCES      "${LM_SYSTEM_SOLVER_DIR}/*.h"
+                                          "${LM_SYSTEM_SOLVER_DIR}/*.cpp" )
+file ( GLOB LM_MISC_SOURCES               "${LM_MISC_DIR}/*.h"
+                                          "${LM_MISC_DIR}/*.cpp" )
+
 # set execs sources
-# set ( INTERSECTION_RESTRICT_3D_EXEC_SOURCES    ${INTERSECTION_RESTRICT_3D_EXEC_DIR}/main.cpp)
 set ( CARL_LIBMESH_PARALLEL_EXEC_SOURCES       ${CARL_LIBMESH_PARALLEL_EXEC_DIR}/main.cpp )
 set ( DEVEL_BACKYARD_EXEC_SOURCES              ${DEVEL_BACKYARD_EXEC_DIR}/main.cpp )
 file ( GLOB TEST_EXECS ${TEST_CASES_EXEC_DIR}/*.cpp )
@@ -109,18 +127,12 @@ file ( GLOB TEST_EXECS ${TEST_CASES_EXEC_DIR}/*.cpp )
 # ############################
 add_library( COMMON_OBJS OBJECT                         "${SOURCE_DIR}/carl_headers.h" "${COMMON_SRC_DIR}/CGAL_typedefs.h" ${COMMON_SOURCES})
 add_library( MESH_3D_OBJS OBJECT                        ${MESH_3D_SOURCES})
-# add_library( INTERSECTION_OBJS OBJECT                   ${INTERSECTION_SOURCES})
 add_library( INTERSECTION_PARALLEL_OBJS OBJECT          ${INTERSECTION_PARALLEL_SOURCES})
-add_library( LIBMESH_CODE_OBJS OBJECT                   ${LIBMESH_CODE_SOURCES})
+add_library( LIBMESH_CODE_OBJS OBJECT                   ${LM_BASE_CG_SOLVER_SOURCES} ${LM_COUPLED_SOLVER_SOURCES} ${LM_COUPLED_SYSTEM_SOURCES} ${LM_PETSC_MATRIX_OPS_SOURCES} ${LM_SYSTEM_SOLVER_SOURCES} ${LM_MISC_SOURCES})
 add_library( ASSEMBLE_FUNCTIONS_OBJS OBJECT             ${ASSEMBLE_FUNCTIONS_SOURCES})
-
-# add_executable( intersections_restrict_3D_parallel ${INTERSECTION_RESTRICT_3D_EXEC_SOURCES} 
-#                                                    $<TARGET_OBJECTS:MESH_3D_OBJS> 
-#                                                    $<TARGET_OBJECTS:COMMON_OBJS>)
 
 add_executable( carl_libmesh_parallel     ${CARL_LIBMESH_PARALLEL_EXEC_SOURCES} 
                                                   $<TARGET_OBJECTS:MESH_3D_OBJS> 
-#                                                   $<TARGET_OBJECTS:INTERSECTION_OBJS> 
                                                   $<TARGET_OBJECTS:LIBMESH_CODE_OBJS> 
                                                   $<TARGET_OBJECTS:COMMON_OBJS>
                                                   $<TARGET_OBJECTS:ASSEMBLE_FUNCTIONS_OBJS>)
@@ -131,10 +143,6 @@ add_executable( test_devel_parallel     ${DEVEL_BACKYARD_EXEC_SOURCES}
                                                   $<TARGET_OBJECTS:LIBMESH_CODE_OBJS> 
                                                   $<TARGET_OBJECTS:COMMON_OBJS>
                                                   $<TARGET_OBJECTS:ASSEMBLE_FUNCTIONS_OBJS>)
-
-
-#set ( LIB_DIR /opt/local/lib)
-#set ( BOOST_LIBRARIES ${LIB_DIR}/libboost_filesystem-mt.dylib) 
 
 # Set up the test files                                           
 foreach( test_source_file ${TEST_EXECS} )
@@ -155,6 +163,5 @@ add_to_cached_list( CGAL_EXECUTABLE_TARGETS carl_libmesh_parallel )
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS test_libmesh_parallel )
 
 # Link the executable to CGAL and third-party libraries
-# target_link_libraries(intersections_restrict_3D_parallel ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 target_link_libraries(carl_libmesh_parallel ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 target_link_libraries(test_devel_parallel  ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )

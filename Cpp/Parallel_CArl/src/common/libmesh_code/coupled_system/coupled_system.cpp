@@ -592,9 +592,6 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 			// Set the solver matrices
 			cast_LATIN_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
 
-			// Build the null space projectors
-			cast_LATIN_solver->build_null_space_projection_matrices(M_B,C_RB);
-
 			// Set the solver matrices
 			cast_LATIN_solver->set_forces(F_A,F_B);
 
@@ -662,7 +659,7 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name,
 			if(m_bUseNullSpace_micro[micro_name])
 			{
 				cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
-				cast_CG_solver->set_null_space_projector();
+//				cast_CG_solver->set_null_space_projector();
 			}
 
 			// Set CG parameters (convergence )
@@ -735,7 +732,7 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 			if(m_bUseNullSpace_micro[micro_name])
 			{
 				cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
-				cast_CG_solver->set_null_space_projector();
+//				cast_CG_solver->set_null_space_projector();
 			}
 
 			// Set CG parameters (convergence )
@@ -810,7 +807,7 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 			if(m_bUseNullSpace_micro[micro_name])
 			{
 				cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
-				cast_CG_solver->set_null_space_projector();
+//				cast_CG_solver->set_null_space_projector();
 			}
 
 			// Set CG parameters (convergence )

@@ -110,10 +110,129 @@ void base_CG_solver::set_preconditioner_type(BaseCGPrecondType type_input)
 	m_precond_type = type_input;
 };
 
-void base_CG_solver::set_solver_CG_projector(Mat& proj_in)
+void base_CG_solver::build_solver_CG_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys)
 {
+	// Get the rigid body modes vector and build the corresponding matrix
+	MatNullSpace nullsp_sys;
 	m_bUseNullSpaceProjector = true;
-	m_M_null_proj = &proj_in;
+
+	MatGetNullSpace(M_sys.mat(),&nullsp_sys);
+
+	if(nullsp_sys)
+	{
+		PetscBool 	null_has_cte;
+		PetscInt  	null_nb_vecs;
+		const Vec*	null_vecs;
+		PetscInt	C_sys_M, C_sys_N, C_sys_M_local, C_sys_N_local;
+		PetscInt	R_mat_M, R_mat_N, R_mat_M_local, R_mat_N_local;
+		Mat			RITRI_mat, inv_RITRI_mat;
+
+		// Get the input matrix's dimensions
+		MatGetLocalSize(C_sys.mat(),&C_sys_M_local,&C_sys_N_local);
+		MatGetSize(C_sys.mat(),&C_sys_M,&C_sys_N);
+
+		// -> Create the matrices!
+		// R_mat      : n_sys   x nb_vecs ( 3 for 2D, 6 for 3D )
+		MatNullSpaceGetVecs(nullsp_sys,&null_has_cte,&null_nb_vecs,&null_vecs);
+		create_PETSC_dense_matrix_from_vectors(null_vecs,null_nb_vecs,m_null_R);
+		MatTranspose(m_null_R,MAT_INITIAL_MATRIX,&m_null_RT);
+
+		MatGetLocalSize(m_null_R,&R_mat_M_local,&R_mat_N_local);
+		MatGetSize(m_null_R,&R_mat_M,&R_mat_N);
+
+		//             M       x N
+		// C_sys     : n_coupl x n_sys
+		// RI_mat    : n_coupl x nb_vecs ( 3 for 2D, 6 for 3D )
+		// RITRI_mat : nb_vecs x nb_vecs ( 3 for 2D, 6 for 3D )
+		MatCreateDense(PETSC_COMM_WORLD,C_sys_M_local,R_mat_N_local,C_sys_M,R_mat_N,NULL,&RI_mat);
+		MatCreateDense(PETSC_COMM_WORLD,R_mat_N_local,R_mat_N_local,R_mat_N,R_mat_N,NULL,&RITRI_mat);
+
+		// RI = C_sys * R_mat;
+		MatMatMult(C_sys.mat(),m_null_R,MAT_REUSE_MATRIX,PETSC_DECIDE,&RI_mat);
+		MatTranspose(RI_mat,MAT_INITIAL_MATRIX,&RI_T_mat);
+
+		// Cannot use MatTransposeMatMult with dense matrices ...
+		MatMatMult(RI_T_mat,RI_mat,MAT_REUSE_MATRIX,PETSC_DECIDE,&RITRI_mat);
+
+		// Invert (fortunately, only a 6x6 matrix ...)
+		PETSC_invert_dense_matrix(RITRI_mat,inv_RITRI_mat);
+
+		// Calculate the projectors!
+
+		// PI_mat    : n_coupl x n_coupl
+		// F_mat     : n_coupl x n_sys		(same as C_sys)
+		// sol_correction : n_sys * n_coupl
+		MatCreateDense(PETSC_COMM_WORLD,C_sys_M_local,C_sys_M_local,C_sys_M,C_sys_M,NULL,&m_null_PI);
+		MatCreateDense(PETSC_COMM_WORLD,C_sys_M_local,C_sys_N_local,C_sys_M,C_sys_N,NULL,&m_null_F);
+		MatCreateDense(PETSC_COMM_WORLD,C_sys_N_local,C_sys_M_local,C_sys_N,C_sys_M,NULL,&m_null_sol_correction);
+
+		// PI_mat = Id - RI_mat * ( inv_RITRI_mat ) * RI_T_mat
+		// ... but MatMatMatMult is not supported for dense matrices ...
+
+		// aux_matrix = RI_mat * inv_RITRI_mat
+		// aux_matrix : n_coupl x nb_vecs (same as RI_mat)
+		Mat aux_matrix;
+		MatDuplicate(RI_mat,MAT_DO_NOT_COPY_VALUES,&aux_matrix);
+		MatMatMult(RI_mat,inv_RITRI_mat,MAT_REUSE_MATRIX,PETSC_DECIDE,&aux_matrix);
+
+		// PI_mat = Id - aux_matrix * RI_T_mat
+		MatMatMult(aux_matrix,RI_T_mat,MAT_REUSE_MATRIX,PETSC_DECIDE,&m_null_PI);
+		MatScale(m_null_PI,-1);
+		MatShift(m_null_PI,1);
+
+		// F_mat = aux_matrix * R_T_mat
+		MatMatMult(aux_matrix,m_null_RT,MAT_REUSE_MATRIX,PETSC_DECIDE,&m_null_F);
+
+		// sol_correction = R_mat * inv_RITRI_mat * RI_T_mat
+		// sol_correction : n_sys * n_coupl
+
+		// aux_matrix_bis = inv_RITRI_mat * RI_T_mat
+		// aux_matrix_bis : nb_vecs * n_sys
+		Mat aux_matrix_bis;
+		MatCreateDense(PETSC_COMM_WORLD,R_mat_N_local,C_sys_M_local,R_mat_N,C_sys_M,NULL,&aux_matrix_bis);
+		MatMatMult(inv_RITRI_mat,RI_T_mat,MAT_REUSE_MATRIX,PETSC_DECIDE,&aux_matrix_bis);
+
+		// sol_correction = R_mat * aux_matrix_bis
+		MatMatMult(m_null_R,aux_matrix_bis,MAT_REUSE_MATRIX,PETSC_DECIDE,&m_null_sol_correction);
+
+		// Set up flag
+		m_bCreatedRigidBodyProjectors = true;
+
+		// Cleanup
+		MatDestroy(&aux_matrix);
+		MatDestroy(&aux_matrix_bis);
+		MatDestroy(&RITRI_mat);
+	}
+};
+
+void base_CG_solver::add_CG_built_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	MatMultAdd(m_null_sol_correction,vec_in.vec(),vec_out.vec(),vec_out.vec());
+}
+
+void base_CG_solver::apply_CG_built_nullspace_residual_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	MatMult(m_null_PI,vec_in.vec(),vec_out.vec());
+};
+
+void base_CG_solver::apply_CG_built_nullspace_force_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	MatMult(m_null_F,vec_in.vec(),vec_out.vec());
+};
+
+void base_CG_solver::add_CG_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	(this->*correct_solution)(vec_in,vec_out);
+}
+
+void base_CG_solver::apply_CG_nullspace_residual_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	(this->*apply_residual_projection)(vec_in,vec_out);
+}
+
+void base_CG_solver::apply_CG_nullspace_force_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	(this->*apply_force_projection)(vec_in,vec_out);
 }
 
 void base_CG_solver::set_solver_matrix(libMesh::PetscMatrix<libMesh::Number>& sys_mat_in)
@@ -337,7 +456,7 @@ void base_CG_solver::solve()
 	if(m_bUseNullSpaceProjector)
 	{
 		std::cout << "|     Using the projector ... " << std::endl;
-		MatMult(*m_M_null_proj,m_aux.vec(),m_z.vec());
+		(this->*apply_residual_projection)(m_aux,m_z);
 	}
 	else
 	{
@@ -406,7 +525,8 @@ void base_CG_solver::solve()
 		// z(k + 1) = aux(k + 1) ?
 		if(m_bUseNullSpaceProjector)
 		{
-			MatMult(*m_M_null_proj,m_aux.vec(),m_z.vec());
+//			MatMult(*m_M_null_proj,m_aux.vec(),m_z.vec());
+			(this->*apply_residual_projection)(m_aux,m_z);
 		}
 		else
 		{

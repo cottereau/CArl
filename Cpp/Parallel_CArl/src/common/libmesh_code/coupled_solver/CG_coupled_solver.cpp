@@ -205,9 +205,6 @@ void carl::PETSC_CG_coupled_solver::solve()
 	libMesh::PetscVector<libMesh::Number> vec_coupled_rhs(*m_comm, dim_R, dim_R_local);
 	libMesh::PetscVector<libMesh::Number> vec_coupled_rhs_aux(*m_comm, dim_R, dim_R_local);
 
-
-
-
 	// Set initial values
 	vec_lambda.zero();
 	vec_lambda_zero.zero();
@@ -259,7 +256,8 @@ void carl::PETSC_CG_coupled_solver::solve()
 		if(m_bUseNullSpaceB)
 		{
 			// lambda_0 = F_null * F_B
-			MatMult(m_null_F,m_F_B->vec(),vec_lambda_zero.vec());
+			m_coupling_solver.apply_CG_nullspace_force_projection(*m_F_B,vec_lambda_zero);
+//			MatMult(m_null_F,m_F_B->vec(),vec_lambda_zero.vec());
 			//
 			//		libMesh::PetscMatrix<libMesh::Number> dummy_Mat(m_null_F,*m_comm);
 			//		dummy_Mat.print_matlab("F_null_proj.m");
@@ -329,14 +327,28 @@ void carl::PETSC_CG_coupled_solver::print_convergence(std::ostream& convergenceO
 	}
 }
 
-void carl::PETSC_CG_coupled_solver::set_null_space_projector()
-{
-	m_coupling_solver.set_solver_CG_projector(m_null_PI);
-	libMesh::PetscMatrix<libMesh::Number> dummy_mat(m_null_PI,*m_comm);
-//	dummy_mat.print_matlab("M_null_proj_matrix.m");
-}
+//void carl::PETSC_CG_coupled_solver::set_null_space_projector()
+//{
+//	m_coupling_solver.set_solver_CG_projector(m_null_PI);
+//}
 
 void carl::PETSC_CG_coupled_solver::set_preconditioner_matrix(libMesh::PetscMatrix<libMesh::Number>& M_precond)
 {
 	m_coupling_solver.set_precond_matrix(M_precond);
+}
+
+void carl::PETSC_CG_coupled_solver::build_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys,
+		libMesh::PetscMatrix<libMesh::Number>& C_sys)
+{
+	homemade_assert_msg(m_bMatricesSetUp,"Must have the matrices ready!");
+
+	m_coupling_solver.build_solver_CG_null_space_projection_matrices(M_sys,C_sys);
+
+	m_bCreatedRigidBodyProjectors = true;
+	m_bUseNullSpaceB = true;
+};
+
+void carl::PETSC_CG_coupled_solver::add_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	m_coupling_solver.add_CG_nullspace_correction(vec_in,vec_out);
 }

@@ -23,6 +23,9 @@ private:
 	// Typedef for the system operator function pointer
 	typedef void (base_CG_solver::*sys_fptr)(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
 	typedef void (base_CG_solver::*precond_fptr)(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+	typedef void (base_CG_solver::*proj_residual_fptr)(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+	typedef void (base_CG_solver::*proj_force_fptr)(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+	typedef void (base_CG_solver::*corr_sol_fptr)(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
 
 	// libMesh communicator
 	const libMesh::Parallel::Communicator * m_comm;
@@ -42,6 +45,9 @@ private:
 	// Function pointers
 	sys_fptr apply_system_matrix;
 	precond_fptr apply_preconditioner;
+	proj_force_fptr apply_force_projection;
+	proj_residual_fptr apply_residual_projection;
+	corr_sol_fptr correct_solution;
 
 	// System and coupling sizes
 	unsigned int m_sys_N;
@@ -66,8 +72,16 @@ private:
 
 	double m_search_k;
 
-	// Null space projector
-	Mat * m_M_null_proj;
+	// Null space projectors
+	Mat m_null_F;
+	Mat m_null_PI;
+
+	Mat m_null_R;
+	Mat m_null_RT;
+
+	Mat m_null_sol_correction;
+
+	Mat RI_mat, RI_T_mat;
 
 	// Set solution vectors
 	void set_sol_vectors();
@@ -91,13 +105,25 @@ private:
 
 	void apply_inverse_coupling_precond(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
 
+	// Nullspace methods
+
+	// -> Brute force
+	void add_CG_built_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
+
+	void apply_CG_built_nullspace_residual_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
+
+	void apply_CG_built_nullspace_force_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
+
 	// Flags
 	bool m_bSystemOperatorSet;
 	bool m_brhsSet;
+
 	bool m_bUsePreconditioner;
 	bool m_bBuiltExplicitPreconditioner;
 	bool m_bPreconditionerSet;
+
 	bool m_bUseNullSpaceProjector;
+	bool m_bCreatedRigidBodyProjectors;
 
 	// Preconditioner flag
 	BaseCGPrecondType m_precond_type;
@@ -123,15 +149,18 @@ public:
 		m_solver_A { NULL },
 		m_solver_B { NULL },
 		m_search_k { 0 },
-		m_M_null_proj { NULL },
 		m_bSystemOperatorSet { false },
 		m_brhsSet { false },
 		m_bUsePreconditioner { false },
 		m_bBuiltExplicitPreconditioner { false },
 		m_bPreconditionerSet { false },
 		m_bUseNullSpaceProjector { false },
+		m_bCreatedRigidBodyProjectors { false },
 		m_precond_type { BaseCGPrecondType::NO_PRECONDITIONER }
 	{
+		apply_force_projection = &base_CG_solver::apply_CG_built_nullspace_force_projection;
+		apply_residual_projection = &base_CG_solver::apply_CG_built_nullspace_residual_projection;
+		correct_solution = &base_CG_solver::add_CG_built_nullspace_correction;
 	};
 
 	~base_CG_solver()
@@ -139,6 +168,17 @@ public:
 		if(m_bBuiltExplicitPreconditioner)
 		{
 			delete m_M_PC;
+		}
+		if(m_bCreatedRigidBodyProjectors)
+		{
+			MatDestroy(&m_null_F);
+			MatDestroy(&m_null_PI);
+			MatDestroy(&m_null_R);
+			MatDestroy(&m_null_RT);
+			MatDestroy(&m_null_sol_correction);
+
+			MatDestroy(&RI_mat);
+			MatDestroy(&RI_T_mat);
 		}
 	};
 
@@ -161,9 +201,16 @@ public:
 
 	void set_preconditioner_type(BaseCGPrecondType type_input = BaseCGPrecondType::NO_PRECONDITIONER);
 
-	// Solver setup methods
-	void set_solver_CG_projector(Mat& proj_in);
+	// Nullspace methods
+	void build_solver_CG_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys);
 
+	void add_CG_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
+
+	void apply_CG_nullspace_residual_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
+
+	void apply_CG_nullspace_force_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
+
+	// Solver setup methods
 	void set_solver_matrix(libMesh::PetscMatrix<libMesh::Number>& sys_mat_in);
 
 	void set_initial_sol(libMesh::PetscVector<libMesh::Number>& init_sol_in);

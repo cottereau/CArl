@@ -111,10 +111,15 @@ public:
 	void build_preconditioner();
 
 	void print_convergence(std::ostream& convergenceOut);
-
-	void set_null_space_projector();
+//
+//	void set_null_space_projector();
 
 	void set_preconditioner_matrix(libMesh::PetscMatrix<libMesh::Number>& M_precond);
+
+	void build_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys);
+
+	void add_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
+
 };
 
 }

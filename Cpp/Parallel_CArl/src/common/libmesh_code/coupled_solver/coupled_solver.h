@@ -37,15 +37,15 @@ protected:
 	libMesh::PetscVector<libMesh::Number> * m_F_B;
 
 	// Null space projectors
-	Mat m_null_F;
-	Mat m_null_PI;
-
-	Mat m_null_R;
-	Mat m_null_RT;
-
-	Mat m_null_sol_correction;
-
-	Mat 		RI_mat, RI_T_mat;
+//	Mat m_null_F;
+//	Mat m_null_PI;
+//
+//	Mat m_null_R;
+//	Mat m_null_RT;
+//
+//	Mat m_null_sol_correction;
+//
+//	Mat 		RI_mat, RI_T_mat;
 
 	// Solution
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_sol_A;
@@ -141,20 +141,20 @@ public:
 				   "SOR_BACKWARD","SSOR","RICHARDSON","CHEBYSHEV","SPARSELU","INVALID_SOLVER"};
 	};
 
-	~coupled_solver()
-	{
-		if(m_bCreatedRigidBodyProjectors)
-		{
-			MatDestroy(&m_null_F);
-			MatDestroy(&m_null_PI);
-			MatDestroy(&m_null_R);
-			MatDestroy(&m_null_RT);
-			MatDestroy(&m_null_sol_correction);
-
-			MatDestroy(&RI_mat);
-			MatDestroy(&RI_T_mat);
-		}
-	}
+//	~coupled_solver()
+//	{
+//		if(m_bCreatedRigidBodyProjectors)
+//		{
+//			MatDestroy(&m_null_F);
+//			MatDestroy(&m_null_PI);
+//			MatDestroy(&m_null_R);
+//			MatDestroy(&m_null_RT);
+//			MatDestroy(&m_null_sol_correction);
+//
+//			MatDestroy(&RI_mat);
+//			MatDestroy(&RI_T_mat);
+//		}
+//	}
 	// Methods
 	void set_sys_names(const std::string& name_A, const std::string& name_B);
 
@@ -179,10 +179,6 @@ public:
 						const std::string& info_base_filename);
 
 	void check_dimensions();
-
-	void build_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys);
-
-	void add_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
 
 	// Virtual methods
 	virtual void solve() = 0;
