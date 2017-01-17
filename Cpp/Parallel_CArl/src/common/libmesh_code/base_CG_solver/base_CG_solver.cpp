@@ -113,7 +113,6 @@ void base_CG_solver::set_preconditioner_type(BaseCGPrecondType type_input)
 void base_CG_solver::build_CG_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys)
 {
 	// Get the rigid body modes vector and build the corresponding matrix
-	MatNullSpace nullsp_sys;
 	m_bUseNullSpaceProjector = true;
 
 	MatGetNullSpace(M_sys.mat(),&nullsp_sys);
@@ -220,7 +219,7 @@ void base_CG_solver::apply_CG_built_nullspace_force_projection(libMesh::PetscVec
 
 void base_CG_solver::add_CG_runtime_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
 {
-	// vec_out = R * (inv_RITRI_mat) * RC^t * vec_in
+	// vec_out = vec_out + R * (inv_RITRI_mat) * RC^t * vec_in
 
 	// aux_vec_input = RC^t * vec_in
 	// -> All the communications are done here!
@@ -235,8 +234,6 @@ void base_CG_solver::add_CG_runtime_nullspace_correction(libMesh::PetscVector<li
 
 	// vec_out = sum ( aux_null_vec_output[i] * vec_R[i])
 	// -> This should have no communications at all!
-	vec_out.zero();
-
 	PetscScalar *dummy_array_output;
 	VecGetArray(aux_null_vec_output,&dummy_array_output);
 	// Cannot use VecMAXPY because "null_vecs" is a constant pointer ...
@@ -305,7 +302,6 @@ void base_CG_solver::apply_CG_runtime_nullspace_force_projection(libMesh::PetscV
 void base_CG_solver::build_CG_runtime_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys)
 {
 	// Get the rigid body modes vector and build the corresponding matrix
-	MatNullSpace nullsp_sys;
 	m_bUseNullSpaceProjector = true;
 
 	MatGetNullSpace(M_sys.mat(),&nullsp_sys);
@@ -607,24 +603,14 @@ void base_CG_solver::solve()
 
 	std::cout << "|     Finished setup " << std::endl;
 
-//	m_rhs->print_matlab("F_sys.m");
-//	m_M_PC->print_matlab("M_precond.m");
-
 	// Initialize the system
 	// r(0) = b - A * x(0)
 	m_r_prev = *m_rhs;
 	(this->*apply_system_matrix)(m_x_prev,m_aux);
 	m_r_prev.add(-1,m_aux);
-//	m_x_prev.print_matlab("x_0.m");
-//	m_aux.print_matlab("aux_0.m");
-//	m_r_prev.print_matlab("r_0.m");
-//	m_temp_sol_A->print_matlab("ZMZ_A.m");
-//	m_temp_sol_B->print_matlab("ZMZ_B.m");
+
 	m_solver_A->print_type();
 	m_solver_B->print_type();
-
-	// m_solver_B->calculate_pseudo_inverse("pinv_M_B.m");
-	// m_solver_A->calculate_pseudo_inverse("pinv_M_A.m");
 
 	// aux(0) = M_PC * r(0) ?
 	// aux(0) = r(0) ?
@@ -669,13 +655,7 @@ void base_CG_solver::solve()
 	std::cout << "|        rho(0)        :" << m_rho_prev << std::endl;
 	std::cout << "|" << std::endl;
 
-	std::ofstream beta_out_file("beta.dat",std::ios::trunc);
-	std::ofstream rho_out_file("rho.dat",std::ios::trunc);
-
-	rho_out_file << "# iteration \t rho " << std::endl;
-	rho_out_file << kkk << "\t\t" <<  m_rho_prev << std::endl;
-
-	beta_out_file << "# iteration \t beta " << std::endl;
+	m_CG_Index[0] = m_rho_prev;
 
 	while(bKeepIterating)
 	{
@@ -711,7 +691,6 @@ void base_CG_solver::solve()
 		// z(k + 1) = aux(k + 1) ?
 		if(m_bUseNullSpaceProjector)
 		{
-//			MatMult(*m_M_null_proj,m_aux.vec(),m_z.vec());
 			(this->*apply_residual_projection)(m_aux,m_z);
 		}
 		else
@@ -725,21 +704,12 @@ void base_CG_solver::solve()
 		// beta(k + 1) = rho(k + 1) / rho(k)
 		m_beta = m_rho / m_rho_prev;
 
-		rho_out_file << kkk << "\t\t" <<  m_rho << std::endl;
-		beta_out_file << kkk << "\t\t" <<  m_beta << std::endl;
+		m_CG_Index[kkk] = m_rho;
 
 		// p(k + 1) = M_proj * ( z(k + 1) + beta(k + 1) * p(k) ) ?
 		// p(k + 1) = z(k + 1) + beta(k + 1) * p(k) ?
 		m_p = m_z;
 		m_p.add(m_beta,m_p_prev);
-
-//		std::cout << "|" << std::endl;
-//		std::cout << "|     Iteration no. " << kkk << std::endl;
-//		std::cout << "|        rho(k)        :" << m_rho_prev << std::endl;
-//		std::cout << "|        alpha(k)      :" << m_alpha_prev << std::endl;
-//		std::cout << "|        rho(k + 1)    :" << m_rho << std::endl;
-//		std::cout << "|        beta(k + 1)   :" << m_beta << std::endl;
-//		std::cout << "|" << std::endl;
 
 		// Advance iteration
 		++kkk;
@@ -761,8 +731,8 @@ void base_CG_solver::solve()
 		}
 	}
 
-	rho_out_file.close();
-	beta_out_file.close();
+	m_CG_conv_n = kkk;
+
 	*m_sol = m_x;
 
 	// Set solution!
@@ -819,4 +789,9 @@ bool base_CG_solver::test_divergence(unsigned int iter, double res_norm, double 
 	return false;
 };
 
+void base_CG_solver::get_convergence_data(std::vector<double>& CG_Index_output, int& CG_conv_n_output)
+{
+	CG_Index_output = m_CG_Index;
+	CG_conv_n_output = m_CG_conv_n;
+}
 } /* namespace CArl */

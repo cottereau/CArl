@@ -69,8 +69,8 @@ struct carl_coupling_generation_input_params {
 	int LATIN_conv_max;
 	double LATIN_relax;
 
-	std::string LATIN_convergence_output;
-	std::string LATIN_restart_file_base;
+	std::string coupled_convergence_output;
+	std::string coupled_restart_file_base;
 
 	std::string output_file_BIG;
 	std::string output_file_micro;
@@ -285,8 +285,8 @@ void get_input_params(GetPot& field_parser,
 	input_params.LATIN_conv_max = 10000;
 	input_params.LATIN_relax = 0.8;
 
-	input_params.LATIN_convergence_output = "LATIN_convergence.dat";
-	input_params.LATIN_restart_file_base = "LATIN_restart";
+	input_params.coupled_convergence_output = "coupled_convergence.dat";
+	input_params.coupled_restart_file_base = "coupled_restart";
 
 	if( field_parser.search(2, "--LATINeps","LATINEps") )
 	{
@@ -305,7 +305,7 @@ void get_input_params(GetPot& field_parser,
 
 	if( field_parser.search(2, "--LATINconvOutput","LATINConvergneceOutput") )
 	{
-		input_params.LATIN_convergence_output = field_parser.next(input_params.LATIN_convergence_output);
+		input_params.coupled_convergence_output = field_parser.next(input_params.coupled_convergence_output);
 	}
 
 	if( field_parser.search(1,"Use_restart_data") )
@@ -317,9 +317,9 @@ void get_input_params(GetPot& field_parser,
 		input_params.LATIN_b_PrintRestartFiles = true;
 	}
 
-	if( field_parser.search(1,"LATINRestartDataFiles") )
+	if( field_parser.search(1,"CoupledRestartDataFiles") )
 	{
-		input_params.LATIN_restart_file_base = field_parser.next(input_params.LATIN_restart_file_base);
+		input_params.coupled_restart_file_base = field_parser.next(input_params.coupled_restart_file_base);
 	}
 
 	// Set output files
@@ -614,11 +614,6 @@ int main(int argc, char** argv) {
 	CoupledTest.add_alpha_mask("MicroSys",mesh_weight);
 	CoupledTest.set_alpha_mask_parameters("MicroSys",domain_Idx_BIG,domain_Idx_micro[0],domain_Idx_coupling[0]);
 
-//	CoupledTest.add_alpha_mask("BigSys",mesh_weight);
-//
-//	CoupledTest.set_alpha_mask_parameters("MicroSys", 0.99, 0   , 0.5, domain_Idx_micro[0],domain_Idx_BIG,domain_Idx_coupling[0]);
-//	CoupledTest.set_alpha_mask_parameters("BigSys", 1   , 0.01, 0.5, domain_Idx_BIG,domain_Idx_micro[0],domain_Idx_coupling[0]);
-
 	perf_log.pop("Initialization","System initialization:");
 
 	// - Build the BIG system --------------------------------------------------
@@ -750,20 +745,34 @@ int main(int argc, char** argv) {
 	std::cout << "|    E            : " << BIG_E << std::endl;
 	std::cout << "|    Mu (lamba_2) : " << BIG_Mu << std::endl;
 	std::cout << "|    lambda_1     : " << eval_lambda_1(BIG_E,BIG_Mu) << std::endl;
-	std::cout << "| LATIN :" << std::endl;
-	std::cout << "|    k_dA, k_dB   : " << input_params.k_dA << " " << input_params.k_dB << std::endl;
-	std::cout << "|    k_cA, k_cB   : " << input_params.k_cA << " " << input_params.k_cB << std::endl;
+	std::cout << "| Coupling :" << std::endl;
 	std::cout << "|    kappa        : " << coupling_const << std::endl;
 	std::cout << "|    e            : " << input_params.mean_distance << std::endl;
-	std::cout << "|    restart file : " << input_params.LATIN_restart_file_base << "*" << std::endl;
+
+	switch(input_params.solver_type)
+	{
+		case carl::LATIN_MODIFIED_STIFFNESS:
+		case carl::LATIN_ORIGINAL_STIFFNESS:
+		{
+			std::cout << "| LATIN :" << std::endl;
+			std::cout << "|    k_dA, k_dB   : " << input_params.k_dA << " " << input_params.k_dB << std::endl;
+			std::cout << "|    k_cA, k_cB   : " << input_params.k_cA << " " << input_params.k_cB << std::endl;
+			break;
+		}
+		case carl::CG:
+		{
+			break;
+		}
+	}
+	std::cout << "| restart file    : " << input_params.coupled_restart_file_base << "*" << std::endl;
 
 	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
-	perf_log.push("Set up","LATIN Solver:");
+	perf_log.push("Set up","Coupled Solver:");
 	if(input_params.LATIN_b_PrintRestartFiles || input_params.LATIN_b_UseRestartFiles)
 	{
 		CoupledTest.set_restart(	input_params.LATIN_b_UseRestartFiles,
 				input_params.LATIN_b_PrintRestartFiles,
-				input_params.LATIN_restart_file_base);
+				input_params.coupled_restart_file_base);
 	}
 	std::cout << std::endl << "| --> Setting the solver " << std::endl << std::endl;
 
@@ -778,11 +787,6 @@ int main(int argc, char** argv) {
 											anisotropy_data,
 											input_params.k_dA, input_params.k_dB, input_params.k_cA, input_params.k_cB,
 											input_params.LATIN_eps, input_params.LATIN_conv_max, input_params.LATIN_relax);
-//			CoupledTest.set_LATIN_solver(	"MicroSys","Elasticity",
-//											assemble_elasticity_with_weight,
-//											assemble_elasticity_with_weight,
-//											input_params.k_dA, input_params.k_dB, input_params.k_cA, input_params.k_cB,
-//											input_params.LATIN_eps, input_params.LATIN_conv_max, input_params.LATIN_relax);
 			break;
 		}
 		case carl::CG:
@@ -792,20 +796,17 @@ int main(int argc, char** argv) {
 											assemble_elasticity_with_weight,
 											assemble_elasticity_anisotropic_with_weight,
 											anisotropy_data);
-//			CoupledTest.set_CG_solver(	"MicroSys","Elasticity",
-//											assemble_elasticity_with_weight,
-//											assemble_elasticity_with_weight);
 			break;
 		}
 	}
 
-	perf_log.pop("Set up","LATIN Solver:");
+	perf_log.pop("Set up","Coupled Solver:");
 
 
 	// Solve !
-	perf_log.push("Solve","LATIN Solver:");
-	CoupledTest.solve("MicroSys","Elasticity",input_params.LATIN_convergence_output);
-	perf_log.pop("Solve","LATIN Solver:");
+	perf_log.push("Solve","Coupled Solver:");
+	CoupledTest.solve("MicroSys","Elasticity",input_params.coupled_convergence_output);
+	perf_log.pop("Solve","Coupled Solver:");
 
 	// Calculate stress
 	perf_log.push("Compute stress - micro","Output:");
@@ -836,46 +837,6 @@ int main(int argc, char** argv) {
 	exo_io_BIG.write_element_data(equation_systems_BIG);
 	perf_log.pop("Save output","Output:");
 #endif
-
-	std::ofstream perf_log_file("perf_log_" + std::to_string(rank)  + ".txt");
-	perf_log_file << perf_log.get_log();
-	perf_log_file.close();
-
-//	libMesh::EquationSystems equation_systems_micro_BIS(mesh_micro);
-//
-//	// [MICRO BIS] Set up the physical properties
-//	libMesh::LinearImplicitSystem& elasticity_system_micro_BIS
-//										= add_elasticity(equation_systems_micro_BIS);
-//
-//	equation_systems_micro_BIS.init();
-//
-//	carl::anisotropic_elasticity_tensor_cubic_sym anisotropy_data_BIS(equation_systems_micro_BIS,input_params.physical_params_file,BIG_E,BIG_Mu);
-//	assemble_elasticity_anisotropic(equation_systems_micro_BIS,"Elasticity",anisotropy_data_BIS);
-//
-//
-//
-//	// Close matrix and vector
-//	elasticity_system_micro_BIS.matrix->close();
-//	elasticity_system_micro_BIS.rhs->close();
-//
-//	elasticity_system_micro_BIS.matrix->print_matlab("M_B_aniso_isotropic_no_weights.m");
-//
-//	libMesh::EquationSystems equation_systems_micro_TER(mesh_micro);
-//
-//	// [MICRO BIS] Set up the physical properties
-//	libMesh::LinearImplicitSystem& elasticity_system_micro_TER
-//										= add_elasticity(equation_systems_micro_TER);
-//
-//	equation_systems_micro_TER.init();
-//
-//	set_constant_physical_properties(equation_systems_micro_TER,BIG_E,BIG_Mu);
-//	assemble_elasticity(equation_systems_micro_TER,"Elasticity");
-//
-//	// Close matrix and vector
-//	elasticity_system_micro_TER.matrix->close();
-//	elasticity_system_micro_TER.rhs->close();
-//
-//	elasticity_system_micro_TER.matrix->print_matlab("M_B_isotropic_no_weights.m");
 
 	return 0;
 }

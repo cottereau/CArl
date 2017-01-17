@@ -37,6 +37,9 @@ private:
 	int    m_CG_conv_max_n;
 	double m_CG_div_tol;
 
+	std::vector<double> m_CG_Index;
+	int    m_CG_conv_n;
+
 	// System
 	libMesh::PetscVector<libMesh::Number> * m_rhs;
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_sol;
@@ -73,6 +76,8 @@ private:
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_temp_sol_B;
 
 	double m_search_k;
+
+	MatNullSpace nullsp_sys;
 
 	// Null space projectors - built
 	Mat m_null_F;
@@ -162,6 +167,7 @@ public:
 		m_CG_conv_eps_rel { 1E-20 },
 		m_CG_conv_max_n { 1000 },
 		m_CG_div_tol { 10000 },
+		m_CG_conv_n { -1 },
 		m_rhs { NULL },
 		m_M_PC { NULL },
 		apply_system_matrix { NULL },
@@ -233,6 +239,8 @@ public:
 		m_CG_conv_eps_rel = conv_eps_rel_in;
 		m_CG_conv_max_n = conv_max_n_in;
 		m_CG_div_tol = div_tol_in;
+
+		m_CG_Index.resize(m_CG_conv_max_n);
 	}
 
 	// Preconditioners
@@ -268,6 +276,8 @@ public:
 	libMesh::PetscVector<libMesh::Number>& get_solution();
 
 	void get_residual_vector(libMesh::PetscVector<libMesh::Number>& vec_out);
+
+	void get_convergence_data(std::vector<double>& CG_Index_output, int& CG_conv_n_output);
 
 };
 

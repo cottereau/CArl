@@ -68,8 +68,6 @@ public:
 	PETSC_CG_coupled_solver(	const libMesh::Parallel::Communicator& comm) :
 							coupled_solver (comm,carl::CG),
 
-//							m_coord_vect_A { NULL },
-//							m_coord_vect_B { NULL },
 							m_CG_conv_eps_abs { 1E-5 },
 							m_CG_conv_eps_rel { 1E-20 },
 							m_CG_conv_max_n { 1000 },
@@ -111,8 +109,6 @@ public:
 	void build_preconditioner();
 
 	void print_convergence(std::ostream& convergenceOut);
-//
-//	void set_null_space_projector();
 
 	void set_preconditioner_matrix(libMesh::PetscMatrix<libMesh::Number>& M_precond);
 

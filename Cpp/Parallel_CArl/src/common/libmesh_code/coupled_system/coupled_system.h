@@ -253,6 +253,9 @@ class coupled_system
 protected:
 	// Members
 
+	// Communicator
+	const libMesh::Parallel::Communicator * m_comm;
+
 	// -> Equation system maps
 	std::pair<std::string, libMesh::EquationSystems*> m_BIG_EquationSystem;
 	std::pair<std::string, libMesh::EquationSystems*> m_R_BIG_EquationSystem;
@@ -309,6 +312,7 @@ public:
 
 	// Constructors
 	coupled_system(const libMesh::Parallel::Communicator& comm, carl::CoupledSolverType solver_type = carl::LATIN_MODIFIED_STIFFNESS) :
+			m_comm { &comm },
 			m_bHasAssembled_BIG { false },
 			m_bUseNullSpace_BIG { false },
 			m_bHasDefinedMeshRestrictions { false },

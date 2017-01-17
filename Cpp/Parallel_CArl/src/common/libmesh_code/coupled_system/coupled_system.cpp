@@ -659,7 +659,6 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name,
 			if(m_bUseNullSpace_micro[micro_name])
 			{
 				cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
-//				cast_CG_solver->set_null_space_projector();
 			}
 
 			// Set CG parameters (convergence )
@@ -732,7 +731,6 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 			if(m_bUseNullSpace_micro[micro_name])
 			{
 				cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
-//				cast_CG_solver->set_null_space_projector();
 			}
 
 			// Set CG parameters (convergence )
@@ -807,7 +805,6 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 			if(m_bUseNullSpace_micro[micro_name])
 			{
 				cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
-//				cast_CG_solver->set_null_space_projector();
 			}
 
 			// Set CG parameters (convergence )
@@ -901,7 +898,7 @@ void carl::coupled_system::solve(const std::string micro_name, const std::string
 	Sys_micro.solution->close();
 	Sys_micro.update();
 
-	print_convergence(conv_name);
+	this->print_convergence(conv_name);
 }
 
 void carl::coupled_system::solve_LATIN_nonlinear(const std::string micro_name, const std::string type_name_micro, const std::string type_name_BIG, const std::string conv_name)
@@ -944,7 +941,8 @@ void carl::coupled_system::solve_LATIN_nonlinear(const std::string micro_name, c
 	Sys_micro.solution->close();
 	Sys_micro.update();
 
-	print_convergence(conv_name);
+	this->print_convergence(conv_name);
+
 }
 
 void carl::coupled_system::print_matrix_BIG_info(const std::string& name)
@@ -979,29 +977,31 @@ void carl::coupled_system::print_matrix_mediator_info(const std::string& name)
 
 void carl::coupled_system::print_convergence(const std::string& filename)
 {
-	std::ofstream convergenceOut(filename);
-
-	switch(m_solver_type)
+	if(m_comm->rank() == 0)
 	{
-	case LATIN_MODIFIED_STIFFNESS:
-	case LATIN_ORIGINAL_STIFFNESS:
-		{
-			std::shared_ptr<PETSC_LATIN_coupled_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_coupled_solver>(m_coupled_solver);
+		std::ofstream convergenceOut(filename);
 
-			cast_LATIN_solver->print_convergence(convergenceOut);
-			break;
-		}
-	case CG:
+		switch(m_solver_type)
 		{
-			std::shared_ptr<PETSC_CG_coupled_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_coupled_solver>(m_coupled_solver);
+		case LATIN_MODIFIED_STIFFNESS:
+		case LATIN_ORIGINAL_STIFFNESS:
+			{
+				std::shared_ptr<PETSC_LATIN_coupled_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_coupled_solver>(m_coupled_solver);
 
-			cast_CG_solver->print_convergence(convergenceOut);
-			break;
+				cast_LATIN_solver->print_convergence(convergenceOut);
+				break;
+			}
+		case CG:
+			{
+				std::shared_ptr<PETSC_CG_coupled_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_coupled_solver>(m_coupled_solver);
+
+				cast_CG_solver->print_convergence(convergenceOut);
+				break;
+			}
 		}
+
+		convergenceOut.close();
 	}
-
-	convergenceOut.close();
-
 }
 
 void carl::coupled_system::set_rigid_body_mode(libMesh::ImplicitSystem&  input_system,
@@ -1049,12 +1049,7 @@ void carl::coupled_system::set_rigid_body_mode(libMesh::ImplicitSystem&  input_s
 	MatNullSpace nullsp_sys;
 	MatNullSpaceCreateRigidBody(m_coord_vect_BIG.second->vec(),&nullsp_sys);
 	MatSetNullSpace(mat_sys->mat(),nullsp_sys);
-
-//	PetscViewer    viewer;
-//	std::string filename = "null_" + sys_type + ".dat";
-//	PetscViewerASCIIOpen(PETSC_COMM_WORLD, filename.c_str(), &viewer);
-//	MatNullSpaceView(nullsp_sys,viewer);
-//	PetscViewerDestroy(&viewer);
+	MatNullSpaceDestroy(&nullsp_sys);
 }
 
 void carl::coupled_system::set_rigid_body_modes_BIG(const std::string& sys_name)

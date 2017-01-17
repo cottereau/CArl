@@ -81,27 +81,6 @@ void carl::PETSC_CG_coupled_solver::set_matrices(	libMesh::PetscMatrix<libMesh::
 	m_bMatricesSetUp = true;
 
 	std::cout << "| -> Using CG " << std::endl;
-
-//	// Calculate the preconditioner - if needed
-//	if(m_bUsePreconditioner)
-//	{
-//		this->build_preconditioner();
-//	}
-//	else
-//	{
-//		// Use the identity matrix
-//		int M = C_RR.m();
-//		int N = C_RR.n();
-//
-//		PetscInt local_M, local_N;
-//
-//		MatGetLocalSize(C_RR.mat(),&local_M,&local_N);
-//
-//		m_PC = std::unique_ptr<libMesh::PetscMatrix<libMesh::Number> >(new libMesh::PetscMatrix<libMesh::Number>(*m_comm));
-//		m_PC->init(M,N,local_M,local_M,1,0);
-//		m_PC->close();
-//		MatShift(m_PC->mat(),1.0);
-//	}
 };
 
 void carl::PETSC_CG_coupled_solver::set_convergence_limits(double eps_abs, double eps_rel, int convIter, double div_tol)
@@ -223,18 +202,6 @@ void carl::PETSC_CG_coupled_solver::solve()
 	m_sys_B_solver->solve (*m_F_B,vec_u0_B);
 	perf_log.pop("KSP solver - B","Initialization");
 
-//	m_M_A->print_matlab("M_A.m");
-//	m_C_RA->print_matlab("C_A.m");
-//
-//	m_M_B->print_matlab("M_B.m");
-//	m_C_RB->print_matlab("C_B.m");
-//
-//	m_F_A->print_matlab("F_A.m");
-//	m_F_B->print_matlab("F_B.m");
-
-//	vec_u0_A.print_matlab("sol_A0.m");
-//	vec_u0_B.print_matlab("sol_B0.m");
-
 	m_C_RA->vector_mult(vec_coupled_rhs,vec_u0_A);
 	m_C_RB->vector_mult(vec_coupled_rhs_aux,vec_u0_B);
 	vec_coupled_rhs.add(-1,vec_coupled_rhs_aux);
@@ -257,12 +224,6 @@ void carl::PETSC_CG_coupled_solver::solve()
 		{
 			// lambda_0 = F_null * F_B
 			m_coupling_solver.apply_CG_nullspace_force_projection(*m_F_B,vec_lambda_zero);
-//			MatMult(m_null_F,m_F_B->vec(),vec_lambda_zero.vec());
-			//
-			//		libMesh::PetscMatrix<libMesh::Number> dummy_Mat(m_null_F,*m_comm);
-			//		dummy_Mat.print_matlab("F_null_proj.m");
-			//		libMesh::PetscMatrix<libMesh::Number> dummy_Mat_bis(m_null_R,*m_comm);
-			//		dummy_Mat_bis.print_matlab("R_null.m");
 		}
 
 		perf_log.pop("CG vector setup","Initialization");
@@ -320,17 +281,17 @@ void carl::PETSC_CG_coupled_solver::print_convergence(std::ostream& convergenceO
 {
 	if(m_bSolved)
 	{
-		for(int iii = 0; iii < m_CG_conv_n; ++iii)
+		if(m_comm->rank() == 0)
 		{
-			convergenceOut << iii << " " << m_CG_Index[iii] << std::endl;
+			m_coupling_solver.get_convergence_data(m_CG_Index,m_CG_conv_n);
+
+			for(int iii = 0; iii < m_CG_conv_n; ++iii)
+			{
+				convergenceOut << iii << " " << m_CG_Index[iii] << std::endl;
+			}
 		}
 	}
 }
-
-//void carl::PETSC_CG_coupled_solver::set_null_space_projector()
-//{
-//	m_coupling_solver.set_solver_CG_projector(m_null_PI);
-//}
 
 void carl::PETSC_CG_coupled_solver::set_preconditioner_matrix(libMesh::PetscMatrix<libMesh::Number>& M_precond)
 {
