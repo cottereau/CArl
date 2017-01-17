@@ -342,7 +342,7 @@ void carl::PETSC_CG_coupled_solver::build_null_space_projection_matrices(libMesh
 {
 	homemade_assert_msg(m_bMatricesSetUp,"Must have the matrices ready!");
 
-	m_coupling_solver.build_solver_CG_null_space_projection_matrices(M_sys,C_sys);
+	m_coupling_solver.set_CG_null_space_projection_matrices(M_sys,C_sys);
 
 	m_bCreatedRigidBodyProjectors = true;
 	m_bUseNullSpaceB = true;

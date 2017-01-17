@@ -110,7 +110,7 @@ void base_CG_solver::set_preconditioner_type(BaseCGPrecondType type_input)
 	m_precond_type = type_input;
 };
 
-void base_CG_solver::build_solver_CG_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys)
+void base_CG_solver::build_CG_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys)
 {
 	// Get the rigid body modes vector and build the corresponding matrix
 	MatNullSpace nullsp_sys;
@@ -125,7 +125,6 @@ void base_CG_solver::build_solver_CG_null_space_projection_matrices(libMesh::Pet
 		const Vec*	null_vecs;
 		PetscInt	C_sys_M, C_sys_N, C_sys_M_local, C_sys_N_local;
 		PetscInt	R_mat_M, R_mat_N, R_mat_M_local, R_mat_N_local;
-		Mat			RITRI_mat, inv_RITRI_mat;
 
 		// Get the input matrix's dimensions
 		MatGetLocalSize(C_sys.mat(),&C_sys_M_local,&C_sys_N_local);
@@ -196,12 +195,11 @@ void base_CG_solver::build_solver_CG_null_space_projection_matrices(libMesh::Pet
 		MatMatMult(m_null_R,aux_matrix_bis,MAT_REUSE_MATRIX,PETSC_DECIDE,&m_null_sol_correction);
 
 		// Set up flag
-		m_bCreatedRigidBodyProjectors = true;
+		m_bCreatedRigidBodyProjectors_built = true;
 
 		// Cleanup
 		MatDestroy(&aux_matrix);
 		MatDestroy(&aux_matrix_bis);
-		MatDestroy(&RITRI_mat);
 	}
 };
 
@@ -219,6 +217,194 @@ void base_CG_solver::apply_CG_built_nullspace_force_projection(libMesh::PetscVec
 {
 	MatMult(m_null_F,vec_in.vec(),vec_out.vec());
 };
+
+void base_CG_solver::add_CG_runtime_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	// vec_out = R * (inv_RITRI_mat) * RC^t * vec_in
+
+	// aux_vec_input = RC^t * vec_in
+	// -> All the communications are done here!
+	PetscScalar *dummy_array_input;
+	VecGetArray(aux_null_vec_input,&dummy_array_input);
+	VecMDot(vec_in.vec(),null_nb_vecs,null_coupled_vecs,dummy_array_input);
+	VecRestoreArray(aux_null_vec_input,&dummy_array_input);
+
+	// aux_vec_output = inv_RITRI_mat * aux_vec_input
+	// -> Completely local operation!
+	MatMult(inv_RITRI_mat,aux_null_vec_input,aux_null_vec_output);
+
+	// vec_out = sum ( aux_null_vec_output[i] * vec_R[i])
+	// -> This should have no communications at all!
+	vec_out.zero();
+
+	PetscScalar *dummy_array_output;
+	VecGetArray(aux_null_vec_output,&dummy_array_output);
+	// Cannot use VecMAXPY because "null_vecs" is a constant pointer ...
+	for(int iii = 0; iii < null_nb_vecs; ++iii)
+	{
+		VecAXPY(vec_out.vec(),dummy_array_output[iii],null_vecs[iii]);
+	}
+	VecRestoreArray(aux_null_vec_output,&dummy_array_output);
+}
+
+void base_CG_solver::apply_CG_runtime_nullspace_residual_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	// vec_out = [ I - RC * (inv_RITRI_mat) * RC^t ] * vec_in
+
+	// aux_vec_input = RC^t * vec_in
+	// -> All the communications are done here!
+	PetscScalar *dummy_array_input;
+	VecGetArray(aux_null_vec_input,&dummy_array_input);
+	VecMDot(vec_in.vec(),null_nb_vecs,null_coupled_vecs,dummy_array_input);
+	VecRestoreArray(aux_null_vec_input,&dummy_array_input);
+
+	// aux_vec_output = - inv_RITRI_mat * aux_vec_input
+	// -> Completely local operation!
+	MatMult(inv_RITRI_mat,aux_null_vec_input,aux_null_vec_output);
+	VecScale(aux_null_vec_output,-1);	// -> MINUS APPLIED HERE!!!
+
+	// vec_out = vec_in + sum ( aux_null_vec_output[i] * vec_RC[i])
+	// -> This should have no communications at all!
+	vec_out = vec_in;
+
+	PetscScalar *dummy_array_output;
+	VecGetArray(aux_null_vec_output,&dummy_array_output);
+	VecMAXPY(vec_out.vec(),null_nb_vecs,dummy_array_output,null_coupled_vecs);
+	VecRestoreArray(aux_null_vec_output,&dummy_array_output);
+}
+
+void base_CG_solver::apply_CG_runtime_nullspace_force_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	// vec_out = RC * (inv_RITRI_mat) * R^t* vec_in
+
+	// aux_vec_input = R^t * vec_in
+	// -> All the communications are done here!
+	// Cannot use VecMDot because "null_vecs" is a constant pointer ...
+	PetscScalar *dummy_array_input;
+	VecGetArray(aux_null_vec_input,&dummy_array_input);
+	for(int iii = 0; iii < null_nb_vecs; ++iii)
+	{
+		VecDot(vec_in.vec(),null_vecs[iii],&dummy_array_input[iii]);
+	}
+	VecRestoreArray(aux_null_vec_input,&dummy_array_input);
+
+	// aux_vec_output = inv_RITRI_mat * aux_vec_input
+	// -> Completely local operation!
+	MatMult(inv_RITRI_mat,aux_null_vec_input,aux_null_vec_output);
+
+	// vec_out = sum ( aux_null_vec_output[i] * vec_RC[i])
+	// -> This should have no communications at all!
+	vec_out.zero();
+
+	PetscScalar *dummy_array_output;
+	VecGetArray(aux_null_vec_output,&dummy_array_output);
+	VecMAXPY(vec_out.vec(),null_nb_vecs,dummy_array_output,null_coupled_vecs);
+	VecRestoreArray(aux_null_vec_output,&dummy_array_output);
+}
+
+void base_CG_solver::build_CG_runtime_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys)
+{
+	// Get the rigid body modes vector and build the corresponding matrix
+	MatNullSpace nullsp_sys;
+	m_bUseNullSpaceProjector = true;
+
+	MatGetNullSpace(M_sys.mat(),&nullsp_sys);
+
+	if(nullsp_sys)
+	{
+		// Set initial variables
+
+		// Projectors that we will need:
+		/*
+		 * 	* residual projector:
+		 *
+		 * 		PI = I - C * R * ( R^t * C^t * C * R )^-1 * R^t * C^t
+		 * 		   = I - C * R * (RITRI_mat)^-1 * R^t * C^t
+		 * 		   = I - C * R * (inv_RITRI_mat) * R^t * C^t
+		 * 		   = I - RC    * (inv_RITRI_mat) * RC^T
+		 *
+		 *  * force projector
+		 *
+		 *  	F  =     RC    * (inv_RITRI_mat) * R^t
+		 *
+		 *  * solution correction
+		 *
+		 *      corr =       R * (inv_RITRI_mat) * RC^t
+		 *
+		 */
+
+		// Get matrix pointers
+		m_M_sys = &M_sys;
+		m_C_sys = &C_sys;
+
+		// Get the matrix dimensions
+		//                     M       x N
+		// C_sys             : n_coupl x n_sys
+		// null_vecs         : n_sys   x nb_vecs	( R )
+		// null_coupled_vecs : n_coupl x nb_vecs	( RC )
+
+		PetscInt	C_sys_M, C_sys_N, C_sys_M_local, C_sys_N_local;
+
+		// Get the input matrix's dimensions
+		MatGetLocalSize(C_sys.mat(),&C_sys_M_local,&C_sys_N_local);
+		MatGetSize(C_sys.mat(),&C_sys_M,&C_sys_N);
+
+		// Get the nullspace vectors
+		PetscBool 	null_has_cte;
+
+		MatNullSpaceGetVecs(nullsp_sys,&null_has_cte,&null_nb_vecs,&null_vecs);
+
+		// Apply the coupling operator
+		Vec dummy_vec;
+		VecCreate(PETSC_COMM_WORLD,&dummy_vec);
+		VecSetSizes(dummy_vec,C_sys_M_local,C_sys_M);
+		VecSetFromOptions(dummy_vec);
+
+		VecDuplicateVecs(dummy_vec,null_nb_vecs,&null_coupled_vecs);
+
+		VecDestroy(&dummy_vec);
+
+		for(PetscInt iii = 0; iii < null_nb_vecs; ++iii)
+		{
+			MatMult(m_C_sys->mat(),null_vecs[iii],null_coupled_vecs[iii]);
+		}
+
+		// Build the LOCAL dense matrix
+		std::vector<PetscScalar> dummy_vec_val(null_nb_vecs,0);
+		std::vector<PetscInt>    dummy_vec_row(null_nb_vecs,0);
+
+		for(PetscInt iii = 0; iii < null_nb_vecs; ++iii)
+		{
+			dummy_vec_row[iii] = iii;
+		}
+
+		MatCreateSeqDense(PETSC_COMM_SELF,null_nb_vecs,null_nb_vecs,NULL,&RITRI_mat);
+
+		for(PetscInt iii = 0; iii < null_nb_vecs; ++iii)
+		{
+			VecMDot(null_coupled_vecs[iii],null_nb_vecs,null_coupled_vecs,dummy_vec_val.data());
+			MatSetValues(RITRI_mat,null_nb_vecs,dummy_vec_row.data(),1,&iii,dummy_vec_val.data(),INSERT_VALUES);
+		}
+		MatAssemblyBegin(RITRI_mat,MAT_FINAL_ASSEMBLY);
+		MatAssemblyEnd(RITRI_mat,MAT_FINAL_ASSEMBLY);
+
+		PETSC_invert_dense_matrix(RITRI_mat,inv_RITRI_mat);
+
+		VecCreateSeq(PETSC_COMM_SELF,null_nb_vecs,&aux_null_vec_input);
+		VecCreateSeq(PETSC_COMM_SELF,null_nb_vecs,&aux_null_vec_output);
+
+		VecZeroEntries(aux_null_vec_input);
+		VecZeroEntries(aux_null_vec_output);
+
+		// Set up flag
+		m_bCreatedRigidBodyProjectors_runtime = true;
+	}
+};
+
+void base_CG_solver::set_CG_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys)
+{
+	(this->*set_nullspace_matrices)(M_sys,C_sys);
+}
 
 void base_CG_solver::add_CG_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
 {
