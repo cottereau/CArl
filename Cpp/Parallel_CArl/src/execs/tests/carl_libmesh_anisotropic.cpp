@@ -77,6 +77,8 @@ struct carl_coupling_generation_input_params {
 
 	std::string solver_type_string;
 	carl::CoupledSolverType solver_type;
+	std::string CG_precond_type_string;
+	carl::BaseCGPrecondType CG_precond_type;
 };
 
 void get_input_params(GetPot& field_parser,
@@ -334,17 +336,33 @@ void get_input_params(GetPot& field_parser,
 		input_params.output_file_micro = field_parser.next(input_params.output_file_micro);
 	}
 
-	input_params.solver_type = carl::LATIN_MODIFIED_STIFFNESS;
+	input_params.solver_type = carl::CoupledSolverType::LATIN_MODIFIED_STIFFNESS;
+	input_params.CG_precond_type = carl::BaseCGPrecondType::NO_PRECONDITIONER;
 	if ( field_parser.search(1, "SolverType") )
 	{
 		input_params.solver_type_string = field_parser.next(input_params.solver_type_string);
 		if(input_params.solver_type_string == "LATIN_Modified")
-			input_params.solver_type = carl::LATIN_MODIFIED_STIFFNESS;
+			input_params.solver_type = carl::CoupledSolverType::LATIN_MODIFIED_STIFFNESS;
 		if(input_params.solver_type_string == "LATIN_Original_Stiffness")
-			input_params.solver_type = carl::LATIN_ORIGINAL_STIFFNESS;
+			input_params.solver_type = carl::CoupledSolverType::LATIN_ORIGINAL_STIFFNESS;
 		if(input_params.solver_type_string == "CG")
-			input_params.solver_type = carl::CG;
+		{
+			input_params.solver_type = carl::CoupledSolverType::CG;
+			if ( field_parser.search(1, "CGPreconditionerType") )
+			{
+				input_params.CG_precond_type_string = field_parser.next(input_params.CG_precond_type_string);
+				if(input_params.CG_precond_type_string == "NONE")
+					input_params.CG_precond_type = carl::BaseCGPrecondType::NO_PRECONDITIONER;
+				if(input_params.CG_precond_type_string == "Coupling_operator")
+					input_params.CG_precond_type = carl::BaseCGPrecondType::COUPLING_OPERATOR;
+				if(input_params.CG_precond_type_string == "Coupled_system_operator")
+					input_params.CG_precond_type = carl::BaseCGPrecondType::COUPLED_SYSTEM_OPERATOR;
+
+			}
+		}
 	}
+
+
 }
 ;
 
@@ -792,6 +810,7 @@ int main(int argc, char** argv) {
 		case carl::CG:
 		{
 			CoupledTest.use_null_space_micro("MicroSys",true);
+			CoupledTest.set_cg_preconditioner_type(input_params.CG_precond_type);
 			CoupledTest.set_CG_solver(	"MicroSys","Elasticity",
 											assemble_elasticity_with_weight,
 											assemble_elasticity_anisotropic_with_weight,

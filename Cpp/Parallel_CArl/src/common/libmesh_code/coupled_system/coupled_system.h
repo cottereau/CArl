@@ -304,6 +304,9 @@ protected:
 	std::shared_ptr<generic_solver_interface> m_sys_A_solver;
 	std::shared_ptr<generic_solver_interface> m_sys_B_solver;
 
+	// -> Preconditioner type
+	BaseCGPrecondType m_CG_precond_type;
+
 private:
 	coupled_system();
 
@@ -318,7 +321,8 @@ public:
 			m_bHasDefinedMeshRestrictions { false },
 			m_bHasDefinedCoordVector_BIG { true },
 			m_bHasDefinedCoordVector_micro { true },
-			m_solver_type { solver_type }
+			m_solver_type { solver_type },
+			m_CG_precond_type {BaseCGPrecondType::NO_PRECONDITIONER }
 
 	{
 		switch (m_solver_type)
@@ -770,6 +774,11 @@ public:
 	void use_L2_coupling(std::string name)
 	{
 		m_bUseH1Coupling[name] = false;
+	}
+
+	void set_cg_preconditioner_type(BaseCGPrecondType CG_precond_type_input)
+	{
+		m_CG_precond_type = CG_precond_type_input;
 	}
 };
 
