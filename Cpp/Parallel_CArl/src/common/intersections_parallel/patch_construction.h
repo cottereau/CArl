@@ -39,8 +39,8 @@ protected:
 	const libMesh::Parallel::Communicator&  m_local_comm;
 
 	// Meshes and point locators
-	libMesh::SerialMesh&						   	m_Mesh;
-	libMesh::SerialMesh								m_Mesh_patch;
+	libMesh::ReplicatedMesh&						   	m_Mesh;
+	libMesh::ReplicatedMesh								m_Mesh_patch;
 	std::unique_ptr<libMesh::PointLocatorBase>      m_Patch_Point_Locator;
 
 	// Object used to do the intersection tests
@@ -87,7 +87,7 @@ public:
 		m_rank { m_comm.rank() },
 		m_local_comm {  local_comm },
 		m_Mesh { mesh },
-		m_Mesh_patch { libMesh::SerialMesh(m_local_comm) },
+		m_Mesh_patch { libMesh::ReplicatedMesh(m_local_comm) },
 
 		m_bPrintDebug { debugOutput }
 	{
@@ -105,8 +105,8 @@ public:
 	};
 
 	// Getters
-	libMesh::SerialMesh & mesh();
-	libMesh::SerialMesh & patch_mesh();
+	libMesh::ReplicatedMesh & mesh();
+	libMesh::ReplicatedMesh & patch_mesh();
 	std::unordered_set<unsigned int> & elem_indexes();
 	std::unordered_set<unsigned int> & node_indexes();
 	unsigned int size();

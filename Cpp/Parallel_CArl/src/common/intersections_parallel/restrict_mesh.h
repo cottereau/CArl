@@ -36,11 +36,13 @@ public:
 
 	};
 
-	void BuildRestriction(const libMesh::SerialMesh 	& Coupling_mesh);
+	void BuildRestriction(const libMesh::ReplicatedMesh 	& Coupling_mesh);
 
-	libMesh::SerialMesh & restricted_mesh();
+	libMesh::ReplicatedMesh & restricted_mesh();
 
 	void export_restriction_mesh(const std::string & filename_base);
+
+	void BuildRestrictionFromSet(const std::unordered_set<unsigned int> * restricted_mesh_set);
 };
 }
 

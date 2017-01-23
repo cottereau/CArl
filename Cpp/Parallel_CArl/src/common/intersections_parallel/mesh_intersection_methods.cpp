@@ -66,7 +66,7 @@ void Mesh_Intersection::triangulate_intersection(const std::set<libMesh::Point> 
 void Mesh_Intersection::update_intersection_mesh()
 {
 	// Test which elements must be added, and insert their vertices
-	libMesh::SerialMesh::element_iterator   it_poly_mesh = m_libMesh_PolyhedronMesh.elements_begin();
+	libMesh::ReplicatedMesh::element_iterator   it_poly_mesh = m_libMesh_PolyhedronMesh.elements_begin();
 
 	for(	; it_poly_mesh != m_libMesh_PolyhedronMesh.elements_end();
 			++it_poly_mesh)
@@ -112,7 +112,7 @@ void Mesh_Intersection::update_intersection_element_range(unsigned int range_sta
 	m_intersection_element_range[inter_id] = std::make_pair(range_start, range_end);
 }
 
-const libMesh::SerialMesh & Mesh_Intersection::mesh()
+const libMesh::ReplicatedMesh & Mesh_Intersection::mesh()
 {
 	return m_libMesh_Mesh;
 }
@@ -339,7 +339,7 @@ double Mesh_Intersection::get_total_volume()
 
 	homemade_assert_msg(m_bMeshFinalized,"Intersection mesh was not prepared for use!\n");
 
-	for(libMesh::SerialMesh::element_iterator it_elem = m_libMesh_Mesh.elements_begin();
+	for(libMesh::ReplicatedMesh::element_iterator it_elem = m_libMesh_Mesh.elements_begin();
 			it_elem != m_libMesh_Mesh.elements_end();
 			++it_elem)
 	{
@@ -356,7 +356,7 @@ double Mesh_Intersection::get_intersection_volume(std::set<libMesh::Point> & inp
 
 	triangulate_intersection(input_points);
 
-	for(libMesh::SerialMesh::element_iterator it_elem = m_libMesh_PolyhedronMesh.elements_begin();
+	for(libMesh::ReplicatedMesh::element_iterator it_elem = m_libMesh_PolyhedronMesh.elements_begin();
 			it_elem != m_libMesh_PolyhedronMesh.elements_end();
 			++it_elem)
 	{

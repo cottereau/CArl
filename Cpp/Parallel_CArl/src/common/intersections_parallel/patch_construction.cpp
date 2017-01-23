@@ -10,12 +10,12 @@
 namespace carl
 {
 // Getters
-libMesh::SerialMesh & Patch_construction::mesh()
+libMesh::ReplicatedMesh & Patch_construction::mesh()
 {
 	return m_Mesh;
 }
 
-libMesh::SerialMesh & Patch_construction::patch_mesh()
+libMesh::ReplicatedMesh & Patch_construction::patch_mesh()
 {
 	return m_Mesh_patch;
 }

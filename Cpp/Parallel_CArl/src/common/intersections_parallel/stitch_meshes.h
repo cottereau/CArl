@@ -23,7 +23,7 @@ protected:
 	const unsigned int 						m_rank;
 
 	// Address of the intersection mesh
-	libMesh::SerialMesh&				   	m_Stitched_mesh;
+	libMesh::ReplicatedMesh&				   	m_Stitched_mesh;
 
 	// Vectors containing the input files
 	std::vector<std::string>				m_mesh_filenames;
@@ -37,6 +37,11 @@ protected:
 
 	// Vector containing all the intersection pairs ...
 	std::vector<std::pair<unsigned int, unsigned int> > m_intersection_pairs;
+
+	// Unordered sets containing the elements from each mesh involved
+	// in the intersection
+	std::unordered_set<unsigned int> m_restriction_set_first;
+	std::unordered_set<unsigned int> m_restriction_set_second;
 
 	// ... and the number of elements inside each intersection
 	std::vector<unsigned int> m_intersection_nb_of_elements;
@@ -71,6 +76,8 @@ protected:
 	unsigned int m_nb_of_elements;
 	unsigned int m_nb_of_nodes;
 	unsigned int m_maximum_nb_of_nodes;
+	unsigned int m_maximum_nb_of_elements_first;
+	unsigned int m_maximum_nb_of_elements_second;
 
 	// Boolean set when the filename base is also set
 	bool m_bFilenamesSet;
@@ -111,6 +118,8 @@ public:
 		m_nb_of_elements { 0 },
 		m_nb_of_nodes { 0 },
 		m_maximum_nb_of_nodes { 0 },
+		m_maximum_nb_of_elements_first { 0 },
+		m_maximum_nb_of_elements_second { 0 },
 		m_bFilenamesSet { false },
 		m_bGridDefined { false },
 		m_bGridPreallocated { false },
@@ -121,7 +130,7 @@ public:
 	};
 
 	// Getters
-	const libMesh::SerialMesh & mesh();
+	const libMesh::ReplicatedMesh & mesh();
 
 	// PUBLIC methods
 	/*
@@ -151,8 +160,13 @@ public:
 	/*
 	 * 		Convert a point to an grid index
 	 */
-//	long convert_to_grid(const libMesh::Point iPoint);
 	void convert_to_discrete(const libMesh::Point& iPoint, std::vector<long>& oPoint);
+
+	/*
+	 * 		Get the intersecting element sets
+	 */
+	const std::unordered_set<unsigned int>* get_restricted_set_pointer_first();
+	const std::unordered_set<unsigned int>* get_restricted_set_pointer_second();
 };
 }
 

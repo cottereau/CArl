@@ -172,11 +172,18 @@ int main(int argc, char *argv[])
 	// And set the (single processor) output mesh
 	libMesh::Mesh test_mesh_I(LocalComm);
 
+//	test_mesh_A.allow_renumbering(false);
+//	test_mesh_B.allow_renumbering(false);
+//	test_mesh_C.allow_renumbering(false);
+
 	test_mesh_A.read(input_params.mesh_A);
 	test_mesh_B.read(input_params.mesh_B);
 	test_mesh_C.read(input_params.mesh_C);
 
+	test_mesh_A.prepare_for_use();
+	test_mesh_B.prepare_for_use();
 	test_mesh_C.prepare_for_use();
+
 	test_mesh_C.partition(nodes);
 
 	// Set up the search
@@ -244,20 +251,23 @@ int main(int argc, char *argv[])
 			join_meshes.stitch_meshes();
 		}
 		perf_log.pop("Stitch intersection meshes");
-	}
 
-	// Restrict the meshes!
-	if(!input_params.bSkipRestriction)
-	{
-		perf_log.push("Restrict meshes");
-		carl::Mesh_restriction restrict_A(test_mesh_A,LocalComm);
-		restrict_A.BuildRestriction(test_mesh_C);
-		restrict_A.export_restriction_mesh(input_params.output_base + "_A_restriction");
+		// Restrict the meshes!
+		if(!input_params.bSkipRestriction)
+		{
+			const std::unordered_set<unsigned int> * restrict_set_A_ptr = join_meshes.get_restricted_set_pointer_first();
+			const std::unordered_set<unsigned int> * restrict_set_B_ptr = join_meshes.get_restricted_set_pointer_second();
 
-		carl::Mesh_restriction restrict_B(test_mesh_B,LocalComm);
-		restrict_B.BuildRestriction(test_mesh_C);
-		restrict_B.export_restriction_mesh(input_params.output_base + "_B_restriction");
-		perf_log.pop("Restrict meshes");
+			perf_log.push("Restrict meshes");
+			carl::Mesh_restriction restrict_A(test_mesh_A,LocalComm);
+			restrict_A.BuildRestrictionFromSet(restrict_set_A_ptr);
+			restrict_A.export_restriction_mesh(input_params.output_base + "_A_restriction");
+
+			carl::Mesh_restriction restrict_B(test_mesh_B,LocalComm);
+			restrict_B.BuildRestrictionFromSet(restrict_set_B_ptr);
+			restrict_B.export_restriction_mesh(input_params.output_base + "_B_restriction");
+			perf_log.pop("Restrict meshes");
+		}
 	}
 
 	return 0;

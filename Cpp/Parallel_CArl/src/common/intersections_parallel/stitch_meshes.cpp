@@ -9,7 +9,7 @@
 
 namespace carl
 {
-const libMesh::SerialMesh & Stitch_Intersection_Meshes::mesh()
+const libMesh::ReplicatedMesh & Stitch_Intersection_Meshes::mesh()
 {
 	return m_Stitched_mesh;
 }
@@ -173,21 +173,31 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 	m_nb_of_intersections = 0;
 	m_nb_of_elements = 0;
 	m_maximum_nb_of_nodes = 0;
+	m_maximum_nb_of_elements_first = 0;
+	m_maximum_nb_of_elements_second = 0;
 
 	unsigned int temp_nb_of_intersections = 0;
 	unsigned int temp_nb_of_elements = 0;
 	unsigned int temp_nb_of_nodes = 0;
+	unsigned int temp_nb_of_elements_first = 0;
+	unsigned int temp_nb_of_elements_second = 0;
+
 	for(unsigned int iii = 0; iii < m_nb_files; ++iii)
 	{
 		table_file.open(m_table_filenames[iii]);
 		table_file >> temp_nb_of_intersections;
 		table_file >> temp_nb_of_elements;
 		table_file >> temp_nb_of_nodes;
+		table_file >> temp_nb_of_elements_first;
+		table_file >> temp_nb_of_elements_second;
+
 		table_file.close();
 
 		m_nb_of_intersections += temp_nb_of_intersections;
 		m_nb_of_elements += temp_nb_of_elements;
 		m_maximum_nb_of_nodes += temp_nb_of_nodes;
+		m_maximum_nb_of_elements_first += temp_nb_of_elements_first;
+		m_maximum_nb_of_elements_second += temp_nb_of_elements_second;
 	}
 
 	// -> Preallocate the data structures
@@ -198,6 +208,8 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 
 	m_intersection_pairs.resize(m_nb_of_intersections);
 	m_intersection_nb_of_elements.resize(m_nb_of_intersections);
+	m_restriction_set_first.reserve(m_nb_of_intersections);
+	m_restriction_set_second.reserve(m_nb_of_intersections);
 
 	// -> Second, read the data that will be used to reconstruct the
 	//    intersection tables in the end: intersection pairs, and number of
@@ -218,6 +230,10 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 						>> m_intersection_pairs[intersection_idx].second;
 			table_file 	>> m_intersection_nb_of_elements[intersection_idx];
 			carl::jump_lines(table_file);
+
+			// Prepare data for the restriction mesh
+			m_restriction_set_first.insert(m_intersection_pairs[intersection_idx].first);
+			m_restriction_set_second.insert(m_intersection_pairs[intersection_idx].second);
 			++intersection_idx;
 		}
 
@@ -227,7 +243,7 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 	homemade_assert_msg(m_bGridPreallocated,"Grid not preallocated!\n");
 
 	// -> Third, stitch the meshes
-	libMesh::SerialMesh temp_mesh(m_world_comm,3);
+	libMesh::ReplicatedMesh temp_mesh(m_world_comm,3);
 	temp_mesh.allow_renumbering(false);
 
 	unsigned int full_mesh_nb_elems = 0;
@@ -246,7 +262,7 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 		temp_mesh.read(m_mesh_filenames[iii]);
 
 		// -> Insert nodes
-		libMesh::SerialMesh::element_iterator it_mesh = temp_mesh.elements_begin();
+		libMesh::ReplicatedMesh::element_iterator it_mesh = temp_mesh.elements_begin();
 
 		for( ; it_mesh != temp_mesh.elements_end(); ++it_mesh)
 		{
@@ -335,8 +351,8 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 	}
 
 	int wrong_volume = 0;
-	libMesh::SerialMesh::element_iterator elem_begin = m_Stitched_mesh.local_elements_begin();
-	libMesh::SerialMesh::element_iterator elem_end = m_Stitched_mesh.local_elements_end();
+	libMesh::ReplicatedMesh::element_iterator elem_begin = m_Stitched_mesh.local_elements_begin();
+	libMesh::ReplicatedMesh::element_iterator elem_end = m_Stitched_mesh.local_elements_end();
 
 	for( ; elem_begin != elem_end; ++elem_begin)
 	{
@@ -350,22 +366,25 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 	std::cout << " -> bad volumes : " << wrong_volume << " ( " <<  m_vol_tol << " ) " << std::endl;
 };
 
-//long Stitch_Intersection_Meshes::convert_to_grid(const libMesh::Point iPoint)
-//{
-//	long dummy =  lround( (iPoint(0) -  m_Grid_MinPoint(0) )/m_eps) * m_GridN[1]*m_GridN[2]
-//				+ lround( (iPoint(1) -  m_Grid_MinPoint(1) )/m_eps) * m_GridN[1]
-//				+ lround( (iPoint(2) -  m_Grid_MinPoint(2) )/m_eps);
-//	homemade_assert_msg(dummy > -1, "Negative grid index!\n");
-//
-//	return dummy;
-//}
-
 void Stitch_Intersection_Meshes::convert_to_discrete(const libMesh::Point& iPoint, std::vector<long>& oPoint)
 {
 	oPoint[0] = lround( (iPoint(0) -  m_Grid_MinPoint(0) )/m_eps);
 	oPoint[1] = lround( (iPoint(1) -  m_Grid_MinPoint(1) )/m_eps);
 	oPoint[2] = lround( (iPoint(2) -  m_Grid_MinPoint(2) )/m_eps);
 }
+
+const std::unordered_set<unsigned int>* Stitch_Intersection_Meshes::get_restricted_set_pointer_first()
+{
+	return &m_restriction_set_first;
+};
+
+const std::unordered_set<unsigned int>* Stitch_Intersection_Meshes::get_restricted_set_pointer_second()
+{
+	return &m_restriction_set_second;
+};
+
 }
+
+
 
 

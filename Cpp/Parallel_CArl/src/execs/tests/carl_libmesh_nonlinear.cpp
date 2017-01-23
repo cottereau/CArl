@@ -445,12 +445,12 @@ int main(int argc, char** argv) {
 	//    than SerialMesh for less than a few thousand processors.
 
 	perf_log.push("Meshes - Serial","Read files:");
-	libMesh::SerialMesh mesh_R_BIG(WorldComm, dim);
+	libMesh::ReplicatedMesh mesh_R_BIG(WorldComm, dim);
 	mesh_R_BIG.allow_renumbering(false);
 	mesh_R_BIG.read(input_params.mesh_restrict_BIG_file);
 	mesh_R_BIG.prepare_for_use();
 
-	libMesh::SerialMesh mesh_R_micro(WorldComm, dim);
+	libMesh::ReplicatedMesh mesh_R_micro(WorldComm, dim);
 	mesh_R_micro.allow_renumbering(false);
 	mesh_R_micro.read(input_params.mesh_restrict_micro_file);
 	mesh_R_micro.prepare_for_use();

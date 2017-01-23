@@ -40,7 +40,7 @@ protected:
 	const unsigned int 						m_global_rank;
 
 	// Address of the intersection mesh
-	libMesh::SerialMesh&				   	m_libMesh_Mesh;
+	libMesh::ReplicatedMesh&				   	m_libMesh_Mesh;
 
 	// Mesh guarding the tetrahedrization of the intersection polyhedron
 	libMesh::Mesh					   	    m_libMesh_PolyhedronMesh;
@@ -133,7 +133,7 @@ protected:
 public:
 
 	// Constructors
-	Mesh_Intersection(	libMesh::SerialMesh & mesh, const libMesh::Mesh & mesh_A,
+	Mesh_Intersection(	libMesh::ReplicatedMesh & mesh, const libMesh::Mesh & mesh_A,
 						const libMesh::Mesh & mesh_B, IntersectionMeshingMethod MeshingMethod = IntersectionMeshingMethod::CGAL,
 						int map_preallocation = 1E6, long grid_n_min = static_cast<long>(1E9), bool debugOutput = false) :
 		m_comm { mesh.comm() },
@@ -185,7 +185,7 @@ public:
 	};
 
 	// Getters
-	const libMesh::SerialMesh & mesh();
+	const libMesh::ReplicatedMesh & mesh();
 	libMesh::Point & min_point();
 	libMesh::Point & max_point();
 	double eps();

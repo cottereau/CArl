@@ -9,7 +9,31 @@
 namespace carl
 {
 
-void Mesh_restriction::BuildRestriction(const libMesh::SerialMesh 	& Coupling_mesh)
+void Mesh_restriction::BuildRestrictionFromSet(const std::unordered_set<unsigned int> * restricted_mesh_set)
+{
+	// Intersection and distribution work done already by the stitch algorithm.
+
+	// Only do the work over a single processor, to avoid communications.
+	if(m_rank == 0)
+	{
+		m_Patch_Elem_indexes.clear();
+		m_Patch_Node_indexes.clear();
+		m_Patch_Elem_Neighbours.clear();
+
+		std::unordered_set<unsigned int >::iterator elem_idx_it = restricted_mesh_set->begin();
+		std::unordered_set<unsigned int >::iterator elem_idx_it_end = restricted_mesh_set->end();
+
+		for( ; elem_idx_it != elem_idx_it_end; ++ elem_idx_it)
+		{
+			const libMesh::Elem * elem_to_add = m_Mesh.elem(*elem_idx_it);
+			insert_patch_element(elem_to_add);
+		}
+
+		build_patch_mesh();
+	}
+}
+
+void Mesh_restriction::BuildRestriction(const libMesh::ReplicatedMesh 	& Coupling_mesh)
 {
 	bool bDoIntersect = false;
 
@@ -160,7 +184,7 @@ void Mesh_restriction::export_restriction_mesh(const std::string & filename_base
 	}
 }
 
-libMesh::SerialMesh &  Mesh_restriction::restricted_mesh()
+libMesh::ReplicatedMesh &  Mesh_restriction::restricted_mesh()
 {
 	return m_Mesh_patch;
 }

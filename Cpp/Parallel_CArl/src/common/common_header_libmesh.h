@@ -13,7 +13,7 @@
 #include "libmesh/mesh.h"
 #include "libmesh/mesh_generation.h"
 #include "libmesh/parallel_mesh.h"
-#include "libmesh/serial_mesh.h"
+#include "libmesh/replicated_mesh.h"
 #include "libmesh/exodusII_io.h"
 #include "libmesh/gnuplot_io.h"
 #include "libmesh/gmsh_io.h"

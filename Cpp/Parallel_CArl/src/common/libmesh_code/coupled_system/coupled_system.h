@@ -69,6 +69,7 @@ public:
 	libMesh::FEType fe_type;
 	libMesh::UniquePtr<libMesh::FEBase> fe_unique_ptr;
 	libMesh::QGauss qrule;
+	const libMesh::Elem* elem;
 
 	// Members set with the set_dofs method
 	std::vector<libMesh::dof_id_type> dof_indices;
@@ -83,11 +84,12 @@ public:
 
 	void set_DoFs(int idx = 0)
 	{
-		const libMesh::Elem* elem = mesh.elem(idx);
-		dof_map.dof_indices(elem, dof_indices);
-		dof_map.dof_indices(elem, dof_indices_u, u_var);
-		dof_map.dof_indices(elem, dof_indices_v, v_var);
-		dof_map.dof_indices(elem, dof_indices_w, w_var);
+		const libMesh::Elem* elem_dummy = mesh.elem(idx);
+		elem = mesh.elem(idx);
+		dof_map.dof_indices(elem_dummy, dof_indices);
+		dof_map.dof_indices(elem_dummy, dof_indices_u, u_var);
+		dof_map.dof_indices(elem_dummy, dof_indices_v, v_var);
+		dof_map.dof_indices(elem_dummy, dof_indices_w, w_var);
 		n_dofs = dof_indices.size();
 		n_dofs_u = dof_indices_u.size();
 		n_dofs_v = dof_indices_v.size();
@@ -635,6 +637,46 @@ public:
 											local_intersection_meshI_to_inter_map,
 			const std::unordered_multimap<int,int>& inter_table_mediator_BIG,
 			const std::unordered_multimap<int,int>& inter_table_mediator_micro,
+			const std::string BIG_type = "Elasticity",
+			const std::string micro_type = "Elasticity",
+			bool bSameElemsType = true);
+
+	void check_coupling_construction_3D_parallel(
+			const std::string BIG_name,
+			const std::string micro_name,
+			const std::string inter_name,
+			const std::string mediator_name,
+
+			const libMesh::MeshBase& mesh_R_BIG,
+			const libMesh::MeshBase& mesh_R_micro,
+
+			const std::unordered_map<int,std::pair<int,int> >&
+											full_intersection_pairs_map,
+			const std::unordered_map<int,std::pair<int,int> >&
+											full_intersection_restricted_pairs_map,
+			const std::unordered_map<int,int>&
+											local_intersection_meshI_to_inter_map,
+			const std::unordered_multimap<int,int>& inter_table_mediator_BIG,
+			const std::unordered_multimap<int,int>& inter_table_mediator_micro,
+			const std::string BIG_type = "Elasticity",
+			const std::string micro_type = "Elasticity",
+			bool bSameElemsType = true);
+
+	void check_coupling_construction_3D_parallel(
+			const std::string BIG_name,
+			const std::string micro_name,
+			const std::string inter_name,
+			const std::string mediator_name,
+
+			const libMesh::MeshBase& mesh_R_BIG,
+			const libMesh::MeshBase& mesh_R_micro,
+
+			const std::unordered_map<int,std::pair<int,int> >&
+											full_intersection_pairs_map,
+			const std::unordered_map<int,std::pair<int,int> >&
+											full_intersection_restricted_pairs_map,
+			const std::unordered_map<int,int>&
+											local_intersection_meshI_to_inter_map,
 			const std::string BIG_type = "Elasticity",
 			const std::string micro_type = "Elasticity",
 			bool bSameElemsType = true);
