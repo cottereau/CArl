@@ -67,6 +67,10 @@ private:
 	// Preconditioner unique pointer
 	std::unique_ptr<libMesh::PetscLinearSolver<libMesh::Number> > m_coupling_precond_solver;
 
+	// Auxiliar vectors
+	libMesh::PetscVector<libMesh::Number> m_aux;
+	libMesh::PetscVector<libMesh::Number> m_aux_bis;
+
 	// Internal matrix and solver pointers and co.
 	libMesh::PetscMatrix<libMesh::Number> * m_sys_mat;
 	generic_solver_interface * m_solver_A;
@@ -145,6 +149,8 @@ private:
 
 	void apply_CG_runtime_nullspace_force_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
 
+	void apply_precond_and_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
+
 	// Flags
 	bool m_bSystemOperatorSet;
 	bool m_brhsSet;
@@ -178,6 +184,8 @@ public:
 		m_coupling_local_M { 0 },
 		m_coupling_N { 0 },
 		m_coupling_local_N { 0 },
+		m_aux { libMesh::PetscVector<libMesh::Number>(*m_comm) },
+		m_aux_bis { libMesh::PetscVector<libMesh::Number>(*m_comm) },
 		m_sys_mat { NULL },
 		m_solver_A { NULL },
 		m_solver_B { NULL },

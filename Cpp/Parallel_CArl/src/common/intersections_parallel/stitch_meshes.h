@@ -76,8 +76,6 @@ protected:
 	unsigned int m_nb_of_elements;
 	unsigned int m_nb_of_nodes;
 	unsigned int m_maximum_nb_of_nodes;
-	unsigned int m_maximum_nb_of_elements_first;
-	unsigned int m_maximum_nb_of_elements_second;
 
 	// Boolean set when the filename base is also set
 	bool m_bFilenamesSet;
@@ -118,8 +116,6 @@ public:
 		m_nb_of_elements { 0 },
 		m_nb_of_nodes { 0 },
 		m_maximum_nb_of_nodes { 0 },
-		m_maximum_nb_of_elements_first { 0 },
-		m_maximum_nb_of_elements_second { 0 },
 		m_bFilenamesSet { false },
 		m_bGridDefined { false },
 		m_bGridPreallocated { false },

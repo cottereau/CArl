@@ -173,14 +173,10 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 	m_nb_of_intersections = 0;
 	m_nb_of_elements = 0;
 	m_maximum_nb_of_nodes = 0;
-	m_maximum_nb_of_elements_first = 0;
-	m_maximum_nb_of_elements_second = 0;
 
 	unsigned int temp_nb_of_intersections = 0;
 	unsigned int temp_nb_of_elements = 0;
 	unsigned int temp_nb_of_nodes = 0;
-	unsigned int temp_nb_of_elements_first = 0;
-	unsigned int temp_nb_of_elements_second = 0;
 
 	for(unsigned int iii = 0; iii < m_nb_files; ++iii)
 	{
@@ -188,16 +184,12 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 		table_file >> temp_nb_of_intersections;
 		table_file >> temp_nb_of_elements;
 		table_file >> temp_nb_of_nodes;
-		table_file >> temp_nb_of_elements_first;
-		table_file >> temp_nb_of_elements_second;
 
 		table_file.close();
 
 		m_nb_of_intersections += temp_nb_of_intersections;
 		m_nb_of_elements += temp_nb_of_elements;
 		m_maximum_nb_of_nodes += temp_nb_of_nodes;
-		m_maximum_nb_of_elements_first += temp_nb_of_elements_first;
-		m_maximum_nb_of_elements_second += temp_nb_of_elements_second;
 	}
 
 	// -> Preallocate the data structures

@@ -708,7 +708,7 @@ public:
 
 	void set_LATIN_solver(	const std::string micro_name,const std::string type_name,
 							double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,
-							double eps = 1E-2, int convIter = 100000, double relax = 0.8);
+							double eps = 1E-2, int convIter = 1000, double relax = 0.8);
 
 	void set_LATIN_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es, const std::string& name,
@@ -716,7 +716,7 @@ public:
 							void fptr_micro(	libMesh::EquationSystems& es, const std::string& name,
 												weight_parameter_function& alpha_mask),
 							double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,
-							double eps = 1E-2, int convIter = 100000, double relax = 0.8);
+							double eps = 1E-2, int convIter = 1000, double relax = 0.8);
 
 	void set_LATIN_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es,
@@ -725,17 +725,17 @@ public:
 												const std::string& name, weight_parameter_function& weight_mask, anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
 							anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj,
 							double k_dA = 2.5, double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,
-							double eps = 1E-2, int convIter = 100000, double relax = 0.8);
+							double eps = 1E-2, int convIter = 1000, double relax = 0.8);
 
 	void set_CG_solver(	const std::string micro_name,const std::string type_name,
-							double eps_abs = 1E-50, double eps_rel = 1E-5, int convIter = 1000, double div_tol = 1E5);
+							double eps_abs = 1E-14, double eps_rel = 1E-5, int convIter = 1000, double div_tol = 1E5);
 
 	void set_CG_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es, const std::string& name,
 												weight_parameter_function& alpha_mask),
 							void fptr_micro(	libMesh::EquationSystems& es, const std::string& name,
 												weight_parameter_function& alpha_mask),
-							double eps_abs = 1E-50, double eps_rel = 1E-5, int convIter = 1000, double div_tol = 1E5);
+							double eps_abs = 1E-14, double eps_rel = 1E-5, int convIter = 1000, double div_tol = 1E5);
 
 	void set_CG_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es,
@@ -743,7 +743,7 @@ public:
 							void fptr_micro(	libMesh::EquationSystems& es,
 												const std::string& name, weight_parameter_function& weight_mask, anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
 							anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj,
-							double eps_abs = 1E-50, double eps_rel = 1E-5, int convIter = 1000, double div_tol = 1E5);
+							double eps_abs = 1E-14, double eps_rel = 1E-5, int convIter = 1000, double div_tol = 1E5);
 
 	void set_LATIN_nonlinear_solver(const std::string micro_name,
 			const std::string type_name_BIG,
@@ -752,7 +752,7 @@ public:
 					weight_parameter_function& alpha_mask),
 			libMesh::EquationSystems& eq_sys_nonlinear, double k_dA = 2.5,
 			double k_dB = 2.5, double k_cA = 2.5, double k_cB = 2.5,
-			double eps = 1E-2, int convIter = 100000, double relax = 0.8);
+			double eps = 1E-2, int convIter = 1000, double relax = 0.8);
 
 	void print_convergence(const std::string& filename);
 

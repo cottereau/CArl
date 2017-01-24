@@ -79,7 +79,7 @@ void base_CG_solver::apply_coupled_sys_precon(libMesh::PetscVector<libMesh::Numb
 
 void base_CG_solver::apply_inverse_coupling_precond(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
-	m_coupling_precond_solver->solve(*m_M_PC,v_out,v_in,1e-5,1000);
+	m_coupling_precond_solver->solve(*m_M_PC,v_out,v_in,1e-10,1000);
 };
 
 void base_CG_solver::set_precond_matrix(libMesh::PetscMatrix<libMesh::Number>& m_in)
@@ -417,6 +417,52 @@ void base_CG_solver::apply_CG_nullspace_force_projection(libMesh::PetscVector<li
 	(this->*apply_force_projection)(vec_in,vec_out);
 }
 
+void base_CG_solver::apply_precond_and_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	// vec_out = vec_in ?
+	// vec_out = M_PC^-1 * vec_in ?
+
+	// vec_out = M_proj * M_PC^-1 * M_proj * vec_in ?
+	// vec_out =                    M_proj * vec_in ?
+
+	if(m_bUseNullSpaceProjector)
+	{
+		// Use projections!
+		if(m_bUsePreconditioner)
+		{
+			// vec_out = M_proj * M_PC^-1 * M_proj * vec_in
+
+			// m_aux = M_proj * vec_in
+			(this->*apply_residual_projection)(vec_in,m_aux);
+
+			// m_aux_bis =  M_PC^-1 * m_aux
+			(this->*apply_preconditioner)(m_aux,m_aux_bis);
+
+			// vec_out = M_proj * m_aux_bis
+			(this->*apply_residual_projection)(m_aux_bis,vec_out);
+		}
+		else
+		{
+			// vec_out = M_proj * vec_in
+			(this->*apply_residual_projection)(vec_in,vec_out);
+		}
+	}
+	else
+	{
+		// Do not use projections!
+		if(m_bUsePreconditioner)
+		{
+			// vec_out = M_PC^-1 * vec_in
+			(this->*apply_preconditioner)(vec_in,vec_out);
+		}
+		else
+		{
+			// vec_out = vec_in
+			vec_out = vec_in;
+		}
+	}
+}
+
 void base_CG_solver::set_solver_matrix(libMesh::PetscMatrix<libMesh::Number>& sys_mat_in)
 {
 	// Set the internal matrix
@@ -579,20 +625,19 @@ void base_CG_solver::solve()
 	libMesh::PetscVector<libMesh::Number> m_z(*m_comm);
 	libMesh::PetscVector<libMesh::Number> m_x(*m_comm), m_x_prev(*m_comm);
 
-	libMesh::PetscVector<libMesh::Number> m_aux(*m_comm);
-
 	m_p.init(m_sys_N,m_sys_local_N);
 	m_p.zero();
 	m_p.close();
 
-	m_p_prev.init(m_p); m_p_prev.close();
-	m_q_prev.init(m_p); m_q_prev.close();
-	m_r.init(m_p);      m_r.close();
-	m_r_prev.init(m_p); m_r_prev.close();
-	m_z.init(m_p);      m_z.close();
-	m_x.init(m_p);      m_x.close();
-	m_x_prev.init(m_p); m_x_prev.close();
-	m_aux.init(m_p);    m_aux.close();
+	m_p_prev.init(m_p); 	m_p_prev.close();
+	m_q_prev.init(m_p); 	m_q_prev.close();
+	m_r.init(m_p);      	m_r.close();
+	m_r_prev.init(m_p); 	m_r_prev.close();
+	m_z.init(m_p);      	m_z.close();
+	m_x.init(m_p);      	m_x.close();
+	m_x_prev.init(m_p); 	m_x_prev.close();
+	m_aux.init(m_p);    	m_aux.close();
+	m_aux_bis.init(m_p);	m_aux_bis.close();
 	m_x_prev = *m_initial_sol;
 
 	// Set the iteration search parameters
@@ -612,29 +657,21 @@ void base_CG_solver::solve()
 	m_solver_A->print_type();
 	m_solver_B->print_type();
 
-	// aux(0) = M_PC * r(0) ?
-	// aux(0) = r(0) ?
-	if(m_bUsePreconditioner)
-	{
-		(this->*apply_preconditioner)(m_r_prev,m_aux);
-	}
-	else
-	{
-		m_aux = m_r_prev;
-	}
-
-	// z(0) = M_proj * aux(0) ?
-	// z(0) = axu(0) ?
 	if(m_bUseNullSpaceProjector)
 	{
 		std::cout << "|     Using the projector ... " << std::endl;
-		(this->*apply_residual_projection)(m_aux,m_z);
 	}
 	else
 	{
 		std::cout << "|     NOT using the projector ... " << std::endl;
-		m_z = m_aux;
 	}
+
+	// z(0) = r(0) ?
+	// z(0) = M_PC^-1 * r(0) ?
+
+	// z(0) = M_proj * M_PC^-1 * M_proj * r(0) ?
+	// z(0) =                    M_proj * r(0) ?
+	this->apply_precond_and_projection(m_r_prev,m_z);
 
 	// rho(0) = r(0) . z(0)
 	m_rho_prev = m_r_prev.dot(m_z);
@@ -676,27 +713,12 @@ void base_CG_solver::solve()
 		//          = r(k) - alpha(k) * q(k)
 		m_r = m_r_prev; m_r.add(-m_alpha_prev,m_q_prev);
 
-		// aux(k + 1) = M_PC * r(k + 1) ?
-		// aux(k + 1) = r(k + 1) ?
-		if(m_bUsePreconditioner)
-		{
-			(this->*apply_preconditioner)(m_r,m_aux);
-		}
-		else
-		{
-			m_aux = m_r;
-		}
+		// z(k + 1) = r(k + 1) ?
+		// z(k + 1) = M_PC^-1 * r(k + 1) ?
 
-		// z(k + 1) = M_proj * aux(k + 1) ?
-		// z(k + 1) = aux(k + 1) ?
-		if(m_bUseNullSpaceProjector)
-		{
-			(this->*apply_residual_projection)(m_aux,m_z);
-		}
-		else
-		{
-			m_z = m_aux;
-		}
+		// z(k + 1) = M_proj * M_PC^-1 * M_proj * r(k + 1) ?
+		// z(k + 1) =                    M_proj * r(k + 1) ?
+		this->apply_precond_and_projection(m_r,m_z);
 
 		// rho(k + 1) = r(k + 1) . z(k + 1)
 		m_rho = m_r.dot(m_z);
@@ -764,7 +786,7 @@ bool base_CG_solver::test_convergence(unsigned int iter, double res_norm, double
 		std::cout << "| Absolute convergence : | " << res_norm  << " | < " << m_CG_conv_eps_abs << std::endl;
 		return true;
 	}
-	if(std::abs(res_norm) < m_CG_conv_eps_rel * init_res_norm) // Relative convergence
+	if(res_norm < m_CG_conv_eps_rel * init_res_norm  && res_norm > 0) // Relative convergence
 	{
 		std::cout << "| Relative convergence : | " << res_norm  << " | < " << m_CG_conv_eps_rel << "*" << init_res_norm << std::endl;
 		return true;
