@@ -775,8 +775,10 @@ libMesh::PetscVector<libMesh::Number>& base_CG_solver::get_solution()
 
 void base_CG_solver::get_residual_vector(libMesh::PetscVector<libMesh::Number>& vec_out)
 {
-	vec_out = *m_rhs;
-	vec_out.add(-1,*m_sol);
+	// vec_out = m_rhs - A * m_sol
+	(this->*apply_system_matrix)(*m_sol,vec_out);
+	vec_out.scale(-1);
+	vec_out.add(1,*m_rhs);
 };
 
 bool base_CG_solver::test_convergence(unsigned int iter, double res_norm, double init_res_norm)
