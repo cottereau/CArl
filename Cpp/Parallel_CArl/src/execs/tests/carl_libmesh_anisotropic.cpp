@@ -51,12 +51,16 @@ struct carl_coupling_generation_input_params {
 
 	std::string weight_domain_idx_file;
 
+	std::string scaling_data_file;
+
 	bool b_UseMesh_BIG_AsMediator;
 	bool b_UseMesh_micro_AsMediator;
 	bool b_UseMesh_extra_AsMediator;
 	bool b_Repartition_micro;
 	bool LATIN_b_UseRestartFiles;
 	bool LATIN_b_PrintRestartFiles;
+	bool b_PrintOutput;
+	bool b_ExportScalingData;
 
 	double mean_distance;
 
@@ -324,6 +328,15 @@ void get_input_params(GetPot& field_parser,
 		input_params.coupled_restart_file_base = field_parser.next(input_params.coupled_restart_file_base);
 	}
 
+	if( field_parser.search(1,"SkipOutput") )
+	{
+		input_params.b_PrintOutput = false;
+	}
+	else
+	{
+		input_params.b_PrintOutput = true;
+	}
+
 	// Set output files
 	input_params.output_file_BIG = "meshes/3D/output/carl_multi_crystal_test_micro.exo";
 	input_params.output_file_micro = "meshes/3D/output/carl_multi_crystal_test_macro.exo";
@@ -362,7 +375,15 @@ void get_input_params(GetPot& field_parser,
 		}
 	}
 
-
+	if( field_parser.search(1,"ExportScalingData") )
+	{
+		input_params.b_ExportScalingData = true;
+		input_params.scaling_data_file = field_parser.next(input_params.scaling_data_file);
+	}
+	else
+	{
+		input_params.b_ExportScalingData = false;
+	}
 }
 ;
 
@@ -840,24 +861,32 @@ int main(int argc, char** argv) {
 
 	// Export solution
 #ifdef LIBMESH_HAVE_EXODUS_API
-	perf_log.push("Save output","Output:");
-	libMesh::ExodusII_IO exo_io_micro(mesh_micro, /*single_precision=*/true);
+	if(input_params.b_PrintOutput)
+	{
+		perf_log.push("Save output","Output:");
+		libMesh::ExodusII_IO exo_io_micro(mesh_micro, /*single_precision=*/true);
 
-	std::set<std::string> system_names_micro;
-	system_names_micro.insert("Elasticity");
-	exo_io_micro.write_equation_systems(input_params.output_file_micro,equation_systems_micro,&system_names_micro);
+		std::set<std::string> system_names_micro;
+		system_names_micro.insert("Elasticity");
+		exo_io_micro.write_equation_systems(input_params.output_file_micro,equation_systems_micro,&system_names_micro);
 
-	exo_io_micro.write_element_data(equation_systems_micro);
+		exo_io_micro.write_element_data(equation_systems_micro);
 
-	libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
+		libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
 
-	std::set<std::string> system_names_BIG;
-	system_names_BIG.insert("Elasticity");
-	exo_io_BIG.write_equation_systems(input_params.output_file_BIG,equation_systems_BIG,&system_names_BIG);
+		std::set<std::string> system_names_BIG;
+		system_names_BIG.insert("Elasticity");
+		exo_io_BIG.write_equation_systems(input_params.output_file_BIG,equation_systems_BIG,&system_names_BIG);
 
-	exo_io_BIG.write_element_data(equation_systems_BIG);
-	perf_log.pop("Save output","Output:");
+		exo_io_BIG.write_element_data(equation_systems_BIG);
+		perf_log.pop("Save output","Output:");
+	}
 #endif
+
+	if(input_params.b_ExportScalingData)
+	{
+		CoupledTest.print_perf_log(input_params.scaling_data_file);
+	}
 
 	return 0;
 }

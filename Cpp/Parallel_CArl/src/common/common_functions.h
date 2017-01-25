@@ -65,6 +65,7 @@ struct PointHash_3D_Equal {
 	}
 };
 
+void print_stats_to_file(std::vector<double>& vec_data, const std::string filename);
 }
 
 #endif /* COMMON_COMMON_FUNCTIONS_H_ */

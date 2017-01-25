@@ -157,6 +157,11 @@ public:
 	void solve_nonlinear(libMesh::EquationSystems& EqSys_micro, const std::string type_name_micro);
 
 	void print_convergence(std::ostream& convergenceOut);
+
+	void print_perf_log(std::string filename_input)
+	{
+
+	}
 };
 
 }

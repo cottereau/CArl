@@ -36,17 +36,6 @@ protected:
 	libMesh::PetscVector<libMesh::Number> * m_F_A;
 	libMesh::PetscVector<libMesh::Number> * m_F_B;
 
-	// Null space projectors
-//	Mat m_null_F;
-//	Mat m_null_PI;
-//
-//	Mat m_null_R;
-//	Mat m_null_RT;
-//
-//	Mat m_null_sol_correction;
-//
-//	Mat 		RI_mat, RI_T_mat;
-
 	// Solution
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_sol_A;
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_sol_B;
@@ -141,20 +130,6 @@ public:
 				   "SOR_BACKWARD","SSOR","RICHARDSON","CHEBYSHEV","SPARSELU","INVALID_SOLVER"};
 	};
 
-//	~coupled_solver()
-//	{
-//		if(m_bCreatedRigidBodyProjectors)
-//		{
-//			MatDestroy(&m_null_F);
-//			MatDestroy(&m_null_PI);
-//			MatDestroy(&m_null_R);
-//			MatDestroy(&m_null_RT);
-//			MatDestroy(&m_null_sol_correction);
-//
-//			MatDestroy(&RI_mat);
-//			MatDestroy(&RI_T_mat);
-//		}
-//	}
 	// Methods
 	void set_sys_names(const std::string& name_A, const std::string& name_B);
 
@@ -182,6 +157,8 @@ public:
 
 	// Virtual methods
 	virtual void solve() = 0;
+
+	virtual void print_perf_log(std::string filename_input) = 0;
 };
 
 };

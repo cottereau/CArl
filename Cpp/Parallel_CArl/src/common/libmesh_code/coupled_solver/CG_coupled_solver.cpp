@@ -240,7 +240,7 @@ void carl::PETSC_CG_coupled_solver::solve()
 		perf_log.pop("CG vector setup","Initialization");
 	}
 
-
+	perf_log.push("Coupling solve");
 	// Set initial solution
 	m_coupling_solver.set_initial_sol(vec_lambda_zero);
 
@@ -249,6 +249,7 @@ void carl::PETSC_CG_coupled_solver::solve()
 	m_coupling_solver.solve();
 
 	vec_lambda = m_coupling_solver.get_solution();
+	perf_log.pop("Coupling solve");
 
 	// Create corrected solution
 	// U_1 = U_0,1 - A_1^-1 * C_1 * lambda
@@ -312,4 +313,48 @@ void carl::PETSC_CG_coupled_solver::build_null_space_projection_matrices(libMesh
 void carl::PETSC_CG_coupled_solver::add_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
 {
 	m_coupling_solver.add_CG_nullspace_correction(vec_in,vec_out);
+}
+
+void carl::PETSC_CG_coupled_solver::print_perf_log(std::string filename_input)
+{
+	// We want to print:
+	/*
+	 * 		Runtime for each solver
+	 * 		Runtime for the coupled solver
+	 * 		Runtime for preconditioner operations
+	 * 		Runtime for projection operations
+	 */
+
+	unsigned int nodes = m_comm->size();
+	unsigned int rank = m_comm->rank();
+
+	std::vector<double> timing_solve_sys_A(nodes,0);
+	std::vector<double> timing_solve_sys_B(nodes,0);
+	std::vector<double> timing_solve_coupled(nodes,0);
+	std::vector<double> timing_precond(nodes,0);
+	std::vector<double> timing_proj(nodes,0);
+
+	int dummy_int = 0;
+
+	m_sys_A_solver->get_perf_log_timing(timing_solve_sys_A[rank],dummy_int);
+	m_sys_B_solver->get_perf_log_timing(timing_solve_sys_B[rank],dummy_int);
+
+	m_coupling_solver.get_perf_log_timing(timing_solve_coupled[rank],timing_precond[rank],timing_proj[rank]);
+
+	m_comm->sum(timing_solve_sys_A);
+	m_comm->sum(timing_solve_sys_B);
+	m_comm->sum(timing_solve_coupled);
+	m_comm->sum(timing_precond);
+	m_comm->sum(timing_proj);
+
+	if(rank == 0)
+	{
+		print_stats_to_file(timing_solve_sys_A,filename_input + "_solve_sys_A.dat");
+		print_stats_to_file(timing_solve_sys_B,filename_input + "_solve_sys_B.dat");
+		print_stats_to_file(timing_solve_coupled,filename_input + "_solve_coupled.dat");
+		print_stats_to_file(timing_precond,filename_input + "_precond.dat");
+		print_stats_to_file(timing_proj,filename_input + "_proj.dat");
+	}
+
+
 }

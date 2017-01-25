@@ -59,3 +59,21 @@ int carl::voigt_index_converter(int aaa, int bbb)
 	homemade_error_msg(" You shouldn't be here! (voigt_index_converter)");
 	return -1;
 };
+
+void carl::print_stats_to_file(std::vector<double>& vec_data, const std::string filename)
+{
+	std::ofstream output_stream(filename,std::ofstream::app);
+	libMesh::StatisticsVector<double> statistics_vec(vec_data.size(),0);
+	for(unsigned int iii = 0; iii < vec_data.size(); ++iii)
+	{
+		statistics_vec[iii] = vec_data[iii];
+	}
+
+	output_stream 	<< statistics_vec.minimum() << " "
+					<< statistics_vec.maximum() << " "
+					<< statistics_vec.mean() << " "
+					<< statistics_vec.median() << " "
+					<< statistics_vec.stddev() << std::endl;
+
+	output_stream.close();
+};

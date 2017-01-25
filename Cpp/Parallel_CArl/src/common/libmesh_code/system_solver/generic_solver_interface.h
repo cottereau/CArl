@@ -22,6 +22,8 @@ protected:
 
 	// Communicator
 	const libMesh::Parallel::Communicator * m_comm;
+	std::string m_solver_name;
+	std::unique_ptr<libMesh::PerfLog> m_perf_log_ptr;
 	generic_solver_interface();
 
 public:
@@ -75,6 +77,8 @@ public:
 	virtual void print_type() = 0;
 
 	virtual void calculate_pseudo_inverse(const std::string& filename) = 0;
+
+	virtual void get_perf_log_timing(double& solve_time, int& solve_calls) = 0;
 };
 
 }

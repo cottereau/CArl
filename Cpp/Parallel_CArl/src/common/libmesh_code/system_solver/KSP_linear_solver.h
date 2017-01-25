@@ -109,6 +109,7 @@ public:
 
 	void calculate_pseudo_inverse(const std::string& filename);
 
+	void get_perf_log_timing(double& solve_time, int& solve_calls);
 
 };
 

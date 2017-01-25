@@ -79,7 +79,9 @@ void base_CG_solver::apply_coupled_sys_precon(libMesh::PetscVector<libMesh::Numb
 
 void base_CG_solver::apply_inverse_coupling_precond(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
+	m_perf_log.push("Apply inverse preconditioner","Preconditioner and projections");
 	m_coupling_precond_solver->solve(*m_M_PC,v_out,v_in,1e-10,1000);
+	m_perf_log.pop("Apply inverse preconditioner","Preconditioner and projections");
 };
 
 void base_CG_solver::set_precond_matrix(libMesh::PetscMatrix<libMesh::Number>& m_in)
@@ -221,6 +223,7 @@ void base_CG_solver::add_CG_runtime_nullspace_correction(libMesh::PetscVector<li
 {
 	// vec_out = vec_out + R * (inv_RITRI_mat) * RC^t * vec_in
 
+	m_perf_log.push("Add nullspace correction","Preconditioner and projections");
 	// aux_vec_input = RC^t * vec_in
 	// -> All the communications are done here!
 	PetscScalar *dummy_array_input;
@@ -242,12 +245,14 @@ void base_CG_solver::add_CG_runtime_nullspace_correction(libMesh::PetscVector<li
 		VecAXPY(vec_out.vec(),dummy_array_output[iii],null_vecs[iii]);
 	}
 	VecRestoreArray(aux_null_vec_output,&dummy_array_output);
+	m_perf_log.pop("Add nullspace correction","Preconditioner and projections");
 }
 
 void base_CG_solver::apply_CG_runtime_nullspace_residual_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
 {
 	// vec_out = [ I - RC * (inv_RITRI_mat) * RC^t ] * vec_in
 
+	m_perf_log.push("Apply nullspace projector - iterations","Preconditioner and projections");
 	// aux_vec_input = RC^t * vec_in
 	// -> All the communications are done here!
 	PetscScalar *dummy_array_input;
@@ -268,12 +273,14 @@ void base_CG_solver::apply_CG_runtime_nullspace_residual_projection(libMesh::Pet
 	VecGetArray(aux_null_vec_output,&dummy_array_output);
 	VecMAXPY(vec_out.vec(),null_nb_vecs,dummy_array_output,null_coupled_vecs);
 	VecRestoreArray(aux_null_vec_output,&dummy_array_output);
+	m_perf_log.pop("Apply nullspace projector - iterations","Preconditioner and projections");
 }
 
 void base_CG_solver::apply_CG_runtime_nullspace_force_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
 {
 	// vec_out = RC * (inv_RITRI_mat) * R^t* vec_in
 
+	m_perf_log.push("Apply nullspace projector - force","Preconditioner and projections");
 	// aux_vec_input = R^t * vec_in
 	// -> All the communications are done here!
 	// Cannot use VecMDot because "null_vecs" is a constant pointer ...
@@ -297,6 +304,7 @@ void base_CG_solver::apply_CG_runtime_nullspace_force_projection(libMesh::PetscV
 	VecGetArray(aux_null_vec_output,&dummy_array_output);
 	VecMAXPY(vec_out.vec(),null_nb_vecs,dummy_array_output,null_coupled_vecs);
 	VecRestoreArray(aux_null_vec_output,&dummy_array_output);
+	m_perf_log.pop("Apply nullspace projector - force","Preconditioner and projections");
 }
 
 void base_CG_solver::build_CG_runtime_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys)
@@ -304,6 +312,7 @@ void base_CG_solver::build_CG_runtime_null_space_projection_matrices(libMesh::Pe
 	// Get the rigid body modes vector and build the corresponding matrix
 	m_bUseNullSpaceProjector = true;
 
+	m_perf_log.push("Set up nullspace projectors","Preconditioner and projections");
 	MatGetNullSpace(M_sys.mat(),&nullsp_sys);
 
 	if(nullsp_sys)
@@ -395,6 +404,8 @@ void base_CG_solver::build_CG_runtime_null_space_projection_matrices(libMesh::Pe
 		// Set up flag
 		m_bCreatedRigidBodyProjectors_runtime = true;
 	}
+
+	m_perf_log.pop("Set up nullspace projectors","Preconditioner and projections");
 };
 
 void base_CG_solver::set_CG_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys)
@@ -618,6 +629,7 @@ void base_CG_solver::solve()
 		homemade_assert_msg(m_bPreconditionerSet,"Preconditioner not set yet!\n");
 	}
 
+	m_perf_log.push("Setup");
 	// Create the iteration vectors
 	libMesh::PetscVector<libMesh::Number> m_p(*m_comm), m_p_prev(*m_comm);
 	libMesh::PetscVector<libMesh::Number> m_q_prev(*m_comm);
@@ -648,8 +660,12 @@ void base_CG_solver::solve()
 
 	std::cout << "|     Finished setup " << std::endl;
 
+	m_perf_log.pop("Setup");
+
+
 	// Initialize the system
 	// r(0) = b - A * x(0)
+	m_perf_log.push("Initalization");
 	m_r_prev = *m_rhs;
 	(this->*apply_system_matrix)(m_x_prev,m_aux);
 	m_r_prev.add(-1,m_aux);
@@ -679,6 +695,7 @@ void base_CG_solver::solve()
 
 	// p(0) = z(0)
 	m_p_prev = m_z;
+	m_perf_log.pop("Initalization");
 
 	std::cout << "|     Finished preamble: " << std::endl;
 
@@ -694,6 +711,7 @@ void base_CG_solver::solve()
 
 	m_CG_Index[0] = m_rho_prev;
 
+	m_perf_log.push("Solve");
 	while(bKeepIterating)
 	{
 		// q(k) = A * p(k)
@@ -757,6 +775,8 @@ void base_CG_solver::solve()
 
 	*m_sol = m_x;
 
+	m_perf_log.pop("Solve");
+
 	// Set solution!
 	if(bConverged)
 	{
@@ -818,4 +838,28 @@ void base_CG_solver::get_convergence_data(std::vector<double>& CG_Index_output, 
 	CG_Index_output = m_CG_Index;
 	CG_conv_n_output = m_CG_conv_n;
 }
+
+void base_CG_solver::get_perf_log_timing(double& solve_time, double& precond_time, double& proj_time)
+{
+	// Solve time ~ Active time
+	solve_time = m_perf_log.get_active_time();
+
+	// Precond time
+	libMesh::PerfData performance_data = m_perf_log.get_perf_data("Apply inverse preconditioner","Preconditioner and projections");
+	precond_time = performance_data.tot_time_incl_sub;
+
+	// Proj time = sum ( proj times )
+	proj_time = 0;
+	performance_data = m_perf_log.get_perf_data("Set up nullspace projectors","Preconditioner and projections");
+	proj_time += performance_data.tot_time_incl_sub;
+
+	performance_data = m_perf_log.get_perf_data("Apply nullspace projector - force","Preconditioner and projections");
+	proj_time += performance_data.tot_time_incl_sub;
+
+	performance_data = m_perf_log.get_perf_data("Apply nullspace projector - iterations","Preconditioner and projections");
+	proj_time += performance_data.tot_time_incl_sub;
+
+	performance_data = m_perf_log.get_perf_data("Add nullspace correction","Preconditioner and projections");
+	proj_time += performance_data.tot_time_incl_sub;
+};
 } /* namespace CArl */

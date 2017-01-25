@@ -21,8 +21,10 @@ libMesh::PetscMatrix<libMesh::Number> * KSP_linear_solver::matrix_ptr()
 void KSP_linear_solver::set_solver(libMesh::PetscMatrix<libMesh::Number>& matrix, const std::string name)
 {
 	m_KSP_solver->reuse_preconditioner(true);
+	m_solver_name = name;
 	this->set_matrix(matrix);
 	m_KSP_solver->init(m_Matrix, name.c_str());
+	m_perf_log_ptr = std::unique_ptr<libMesh::PerfLog>(new libMesh::PerfLog(m_solver_name));
 }
 
 void KSP_linear_solver::set_matrix(libMesh::PetscMatrix<libMesh::Number>& matrix)
@@ -103,11 +105,18 @@ void KSP_linear_solver::apply_ZMZt(libMesh::PetscVector<libMesh::Number>& v_in, 
 	libMesh::PetscVector<libMesh::Number> * aux_vec_sol_ptr = m_aux_vec_2.get();
 
 	// MatMultTranspose(Mat mat,Vec x,Vec y) : y = A^t * x
+	m_perf_log_ptr->push("Transpose coupling mult","Matrix operations");
 	MatMultTranspose(m_Coupling->mat(),v_in.vec(),aux_vec_rhs_ptr->vec());
+	m_perf_log_ptr->pop("Transpose coupling mult","Matrix operations");
+
+	m_perf_log_ptr->push("Sys. mat mult","Matrix operations");
 	m_Matrix->vector_mult(*aux_vec_sol_ptr,*aux_vec_rhs_ptr);
+	m_perf_log_ptr->pop("Sys. mat mult","Matrix operations");
 
 	// vector_mult(dest,arg)
+	m_perf_log_ptr->push("Coupling mult","Matrix operations");
 	m_Coupling->vector_mult(v_out,*aux_vec_sol_ptr);
+	m_perf_log_ptr->pop("Coupling mult","Matrix operations");
 }
 
 void KSP_linear_solver::apply_ZMinvZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
@@ -119,13 +128,17 @@ void KSP_linear_solver::apply_ZMinvZt(libMesh::PetscVector<libMesh::Number>& v_i
 	libMesh::PetscVector<libMesh::Number> * aux_vec_sol_ptr = m_aux_vec_2.get();
 
 	// MatMultTranspose(Mat mat,Vec x,Vec y) : y = A^t * x
+	m_perf_log_ptr->push("Transpose coupling mult","Matrix operations");
 	MatMultTranspose(m_Coupling->mat(),v_in.vec(),aux_vec_rhs_ptr->vec());
+	m_perf_log_ptr->pop("Transpose coupling mult","Matrix operations");
 
 	// solve(v_in,v_out)
 	this->solve(*aux_vec_rhs_ptr,*aux_vec_sol_ptr);
 
 	// vector_mult(dest,arg)
+	m_perf_log_ptr->push("Coupling mult","Matrix operations");
 	m_Coupling->vector_mult(v_out,*aux_vec_sol_ptr);
+	m_perf_log_ptr->pop("Coupling mult","Matrix operations");
 }
 
 void KSP_linear_solver::apply_MinvZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
@@ -135,7 +148,9 @@ void KSP_linear_solver::apply_MinvZt(libMesh::PetscVector<libMesh::Number>& v_in
 
 	libMesh::PetscVector<libMesh::Number> * aux_vec_rhs_ptr = m_aux_vec_1.get();
 
+	m_perf_log_ptr->push("Transpose coupling mult","Matrix operations");
 	MatMultTranspose(m_Coupling->mat(),v_in.vec(),aux_vec_rhs_ptr->vec());
+	m_perf_log_ptr->pop("Transpose coupling mult","Matrix operations");
 	this->solve(*aux_vec_rhs_ptr,v_out);
 }
 
@@ -147,14 +162,18 @@ void KSP_linear_solver::apply_ZMinv(libMesh::PetscVector<libMesh::Number>& v_in,
 	libMesh::PetscVector<libMesh::Number> * aux_vec_sol_ptr = m_aux_vec_1.get();
 
 	this->solve(v_in,*aux_vec_sol_ptr);
+	m_perf_log_ptr->push("Coupling mult","Matrix operations");
 	MatMult(m_Coupling->mat(),aux_vec_sol_ptr->vec(),v_out.vec());
+	m_perf_log_ptr->pop("Coupling mult","Matrix operations");
 }
 
 // Implementations of virtual methods
 void KSP_linear_solver::solve(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
 	homemade_assert_msg(m_bMatrixSet, "Solver matrix not set yet!\n");
+	m_perf_log_ptr->push("KSP solver");
 	m_KSP_solver->solve(*m_Matrix,v_out,v_in,m_KSP_eps,m_KSP_iter_max);
+	m_perf_log_ptr->pop("KSP solver");
 	KSPGetConvergedReason(m_KSP_solver->ksp(),&m_conv_reason);
 }
 
@@ -162,7 +181,9 @@ void KSP_linear_solver::solve(libMesh::PetscVector<libMesh::Number>& v_out)
 {
 	homemade_assert_msg(m_bRhsSet, "Solver RHS not set yet!\n");
 	homemade_assert_msg(m_bMatrixSet, "Solver matrix not set yet!\n");
+	m_perf_log_ptr->push("KSP solver");
 	m_KSP_solver->solve(*m_Matrix,v_out,*m_rhs,m_KSP_eps,m_KSP_iter_max);
+	m_perf_log_ptr->pop("KSP solver");
 	KSPGetConvergedReason(m_KSP_solver->ksp(),&m_conv_reason);
 }
 
@@ -218,6 +239,13 @@ void KSP_linear_solver::calculate_pseudo_inverse(const std::string& filename)
 	VecDestroyVecs(N,&dummy_sol);
 	VecDestroy(&dummy_vec);
 }
+
+void KSP_linear_solver::get_perf_log_timing(double& solve_time, int& solve_calls)
+{
+	libMesh::PerfData performance_data = m_perf_log_ptr->get_perf_data("KSP solver");
+	solve_time = performance_data.tot_time_incl_sub;
+	solve_calls = performance_data.count;
+};
 }
 
 

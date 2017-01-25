@@ -107,6 +107,9 @@ private:
 	Vec			aux_null_vec_input;
 	Vec			aux_null_vec_output;
 
+	// Perf log
+	libMesh::PerfLog m_perf_log;
+
 	// Set solution vectors
 	void set_sol_vectors();
 
@@ -192,6 +195,7 @@ public:
 		m_search_k { 0 },
 		m_M_sys { NULL },
 		m_C_sys { NULL },
+		m_perf_log("Base CG solver"),
 		m_bSystemOperatorSet { false },
 		m_brhsSet { false },
 		m_bUsePreconditioner { false },
@@ -287,6 +291,7 @@ public:
 
 	void get_convergence_data(std::vector<double>& CG_Index_output, int& CG_conv_n_output);
 
+	void get_perf_log_timing(double& solve_time, double& precond_time, double& proj_time);
 };
 
 } /* namespace CArl */

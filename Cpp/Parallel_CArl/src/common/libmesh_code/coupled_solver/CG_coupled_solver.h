@@ -116,6 +116,7 @@ public:
 
 	void add_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
 
+	void print_perf_log(std::string filename_input);
 };
 
 }

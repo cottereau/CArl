@@ -494,40 +494,10 @@ namespace carl
 
 			if(m_rank == 0)
 			{
-				std::string output_search_filename = m_timing_data_file_base + "_search_brute.dat";
-				std::ofstream output_search(output_search_filename,std::ofstream::app);
-				std::string output_intersection_filename = m_timing_data_file_base + "_build_brute.dat";
-				std::ofstream output_build;
+				print_stats_to_file(timing_find_intersections,m_timing_data_file_base + "_search_brute.dat");
 				if(!m_bSkipIntersectionConstruction)
 				{
-					output_build.open(output_intersection_filename,std::ofstream::app);
-				}
-
-				libMesh::StatisticsVector<double> statistics_find(m_nodes,0);
-				libMesh::StatisticsVector<double> statistics_build(m_nodes,0);
-				for(unsigned int iii = 0; iii < m_nodes; ++iii)
-				{
-					statistics_find[iii] = timing_find_intersections[iii];
-					statistics_build[iii] = timing_build_intersections[iii];
-				}
-
-				output_search 	<< statistics_find.minimum() << " "
-								<< statistics_find.maximum() << " "
-								<< statistics_find.mean() << " "
-								<< statistics_find.median() << " "
-								<< statistics_find.stddev() << std::endl;
-
-				output_search.close();
-
-				if(!m_bSkipIntersectionConstruction)
-				{
-					output_build 	<< statistics_build.minimum() << " "
-									<< statistics_build.maximum() << " "
-									<< statistics_build.mean() << " "
-									<< statistics_build.median() << " "
-									<< statistics_build.stddev() << std::endl;
-
-					output_build.close();
+					print_stats_to_file(timing_build_intersections,m_timing_data_file_base + "_build_brute.dat");
 				}
 			}
 		}
@@ -630,40 +600,10 @@ namespace carl
 
 			if(m_rank == 0)
 			{
-				std::string output_search_filename = m_timing_data_file_base + "_search_advancing.dat";
-				std::ofstream output_search(output_search_filename,std::ofstream::app);
-				std::string output_intersection_filename = m_timing_data_file_base + "_build_advancing.dat";
-				std::ofstream output_build;
+				print_stats_to_file(timing_find_intersections,m_timing_data_file_base + "_search_advancing.dat");
 				if(!m_bSkipIntersectionConstruction)
 				{
-					output_build.open(output_intersection_filename,std::ofstream::app);
-				}
-
-				libMesh::StatisticsVector<double> statistics_find(m_nodes,0);
-				libMesh::StatisticsVector<double> statistics_build(m_nodes,0);
-				for(unsigned int iii = 0; iii < m_nodes; ++iii)
-				{
-					statistics_find[iii] = timing_find_intersections[iii];
-					statistics_build[iii] = timing_build_intersections[iii];
-				}
-
-				output_search 	<< statistics_find.minimum() << " "
-								<< statistics_find.maximum() << " "
-								<< statistics_find.mean() << " "
-								<< statistics_find.median() << " "
-								<< statistics_find.stddev() << std::endl;
-
-				output_search.close();
-
-				if(!m_bSkipIntersectionConstruction)
-				{
-					output_build 	<< statistics_build.minimum() << " "
-									<< statistics_build.maximum() << " "
-									<< statistics_build.mean() << " "
-									<< statistics_build.median() << " "
-									<< statistics_build.stddev() << std::endl;
-
-					output_build.close();
+					print_stats_to_file(timing_build_intersections,m_timing_data_file_base + "_build_advancing.dat");
 				}
 			}
 		}

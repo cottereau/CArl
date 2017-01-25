@@ -822,6 +822,8 @@ public:
 	{
 		m_CG_precond_type = CG_precond_type_input;
 	}
+
+	void print_perf_log(std::string filename_input);
 };
 
 }

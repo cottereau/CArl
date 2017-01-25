@@ -172,10 +172,6 @@ int main(int argc, char *argv[])
 	// And set the (single processor) output mesh
 	libMesh::Mesh test_mesh_I(LocalComm);
 
-//	test_mesh_A.allow_renumbering(false);
-//	test_mesh_B.allow_renumbering(false);
-//	test_mesh_C.allow_renumbering(false);
-
 	test_mesh_A.read(input_params.mesh_A);
 	test_mesh_B.read(input_params.mesh_B);
 	test_mesh_C.read(input_params.mesh_C);

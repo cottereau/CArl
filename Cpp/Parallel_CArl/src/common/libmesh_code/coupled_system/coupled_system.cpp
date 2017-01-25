@@ -1076,3 +1076,9 @@ void carl::coupled_system::set_rigid_body_modes_micro(const std::string micro_na
 
 	set_rigid_body_mode(Sys_micro,m_coord_vect_microMap[micro_name],micro_name);
 }
+
+
+void carl::coupled_system::print_perf_log(std::string filename_input)
+{
+	m_coupled_solver->print_perf_log(filename_input);
+}
