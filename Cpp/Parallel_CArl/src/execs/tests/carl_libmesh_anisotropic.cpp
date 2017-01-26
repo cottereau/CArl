@@ -309,7 +309,7 @@ void get_input_params(GetPot& field_parser,
 		input_params.LATIN_relax = field_parser.next(input_params.LATIN_relax);
 	}
 
-	if( field_parser.search(2, "--LATINconvOutput","LATINConvergneceOutput") )
+	if( field_parser.search(2, "--CoupledConvOutput","CoupledConvergneceOutput") )
 	{
 		input_params.coupled_convergence_output = field_parser.next(input_params.coupled_convergence_output);
 	}
@@ -805,6 +805,8 @@ int main(int argc, char** argv) {
 			break;
 		}
 	}
+	perf_log.pop("Set coupling matrices");
+	
 	std::cout << "| restart file    : " << input_params.coupled_restart_file_base << "*" << std::endl;
 
 	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
