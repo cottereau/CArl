@@ -160,7 +160,7 @@ void Stitch_Intersection_Meshes::set_grid_constraints(Mesh_Intersection & mesh_i
 	}
 }
 
-void Stitch_Intersection_Meshes::stitch_meshes()
+void Stitch_Intersection_Meshes::join_tables()
 {
 	// Check if the grids and files were set, and if the grid was preallocated
 	homemade_assert_msg(m_bGridDefined,"Grid not set!\n");
@@ -231,7 +231,10 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 
 		table_file.close();
 	}
+}
 
+void Stitch_Intersection_Meshes::stitch_meshes()
+{
 	homemade_assert_msg(m_bGridPreallocated,"Grid not preallocated!\n");
 
 	// -> Third, stitch the meshes

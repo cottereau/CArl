@@ -151,6 +151,7 @@ public:
 	/*
 	 * 		Stitch the meshes!
 	 */
+	void join_tables();
 	void stitch_meshes();
 
 	/*

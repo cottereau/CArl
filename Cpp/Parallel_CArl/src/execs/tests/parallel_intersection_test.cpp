@@ -17,7 +17,7 @@ struct parallel_intersection_test_params {
 	bool bSkipIntersectionConstruction;
 	bool bSkipIntersectionPartitioning;
 	bool bSkipRestriction;
-
+	bool bSkipMeshStitching;
 	bool bExportScalingData;
 
 	carl::IntersectionMeshingMethod inter_meshing_method;
@@ -112,6 +112,15 @@ void get_input_params(GetPot& field_parser,
 	{
 		input_params.bExportScalingData = false;
 	}
+
+	if(field_parser.search(1,"SkipMeshStitching")) {
+		input_params.bSkipMeshStitching = true;
+	}
+	else
+	{
+		input_params.bSkipMeshStitching = false;
+	}
+
 
 	std::string meshing_method;
 	if (field_parser.search(2, "--meshingMethodType", "MeshingMethod")) {
@@ -244,7 +253,11 @@ int main(int argc, char *argv[])
 		if(rank == 0)
 		{
 			join_meshes.set_base_filenames(input_params.output_base,".e",nodes);
-			join_meshes.stitch_meshes();
+			join_meshes.join_tables();
+			if(!input_params.bSkipMeshStitching)
+			{
+				join_meshes.stitch_meshes();
+			}
 		}
 		perf_log.pop("Stitch intersection meshes");
 
