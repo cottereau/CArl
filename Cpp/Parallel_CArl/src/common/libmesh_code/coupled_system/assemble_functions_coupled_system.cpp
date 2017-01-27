@@ -1183,10 +1183,6 @@ void carl::coupled_system::assemble_coupling_elasticity_3D_parallel(
 	couplingMatrix_mediator_mediator.attach_dof_map(mediator_addresses.dof_map);
 	couplingMatrix_mediator_mediator.init();
 
-	print_matrix_dim(couplingMatrix_mediator_micro);
-	print_matrix_dim(couplingMatrix_mediator_BIG);
-	print_matrix_dim(couplingMatrix_mediator_mediator);
-
 	std::cout << " ----------------- " << std::endl;
 	// Intersection indexes and iterators
 	int inter_idx = -1;
@@ -1598,10 +1594,6 @@ void carl::coupled_system::assemble_coupling_elasticity_3D_parallel(
 
 	couplingMatrix_mediator_mediator.attach_dof_map(mediator_addresses.dof_map);
 	couplingMatrix_mediator_mediator.init();
-
-	print_matrix_dim(couplingMatrix_mediator_micro);
-	print_matrix_dim(couplingMatrix_mediator_BIG);
-	print_matrix_dim(couplingMatrix_mediator_mediator);
 
 	std::cout << " ----------------- " << std::endl;
 	// Intersection indexes and iterators
@@ -2039,10 +2031,6 @@ void carl::coupled_system::check_coupling_construction_3D_parallel(
 	couplingMatrix_mediator_mediator.attach_dof_map(mediator_addresses.dof_map);
 	couplingMatrix_mediator_mediator.init();
 
-	print_matrix_dim(couplingMatrix_mediator_micro);
-	print_matrix_dim(couplingMatrix_mediator_BIG);
-	print_matrix_dim(couplingMatrix_mediator_mediator);
-
 	std::cout << " ----------------- " << std::endl;
 	// Intersection indexes and iterators
 	int inter_idx = -1;
@@ -2227,10 +2215,6 @@ void carl::coupled_system::check_coupling_construction_3D_parallel(
 	couplingMatrix_mediator_micro.close();
 	couplingMatrix_mediator_BIG.close();
 	couplingMatrix_mediator_mediator.close();
-
-	print_matrix_dim(couplingMatrix_mediator_micro);
-	print_matrix_dim(couplingMatrix_mediator_BIG);
-	print_matrix_dim(couplingMatrix_mediator_mediator);
 
 	std::cout << " ----------------- " << std::endl;
 
@@ -2456,10 +2440,6 @@ void carl::coupled_system::check_coupling_construction_3D_parallel(
 	couplingMatrix_mediator_mediator.attach_dof_map(mediator_addresses.dof_map);
 	couplingMatrix_mediator_mediator.init();
 
-	print_matrix_dim(couplingMatrix_mediator_micro);
-	print_matrix_dim(couplingMatrix_mediator_BIG);
-	print_matrix_dim(couplingMatrix_mediator_mediator);
-
 	std::cout << " ----------------- " << std::endl;
 	// Intersection indexes and iterators
 	int inter_idx = -1;
@@ -2647,10 +2627,6 @@ void carl::coupled_system::check_coupling_construction_3D_parallel(
 	couplingMatrix_mediator_micro.close();
 	couplingMatrix_mediator_BIG.close();
 	couplingMatrix_mediator_mediator.close();
-
-	print_matrix_dim(couplingMatrix_mediator_micro);
-	print_matrix_dim(couplingMatrix_mediator_BIG);
-	print_matrix_dim(couplingMatrix_mediator_mediator);
 
 	std::cout << " ----------------- " << std::endl;
 

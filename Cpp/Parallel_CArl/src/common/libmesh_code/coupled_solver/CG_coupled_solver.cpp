@@ -269,7 +269,6 @@ void carl::PETSC_CG_coupled_solver::solve()
 	m_sys_B_solver->apply_MinvZt(vec_lambda,vec_aux_B);
 	*m_sol_B.get() = vec_u0_B;
 	m_sol_B->add(vec_aux_B);
-	m_sol_B->print_matlab("current_sol.m");
 
 	if(m_bUseNullSpaceB)
 	{
