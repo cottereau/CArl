@@ -79,9 +79,16 @@ void base_CG_solver::apply_coupled_sys_precon(libMesh::PetscVector<libMesh::Numb
 
 void base_CG_solver::apply_inverse_coupling_precond(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
-	m_perf_log.push("Apply inverse preconditioner","Preconditioner and projections");
+	m_perf_log.push("Apply preconditioner","Preconditioner and projections");
 	m_coupling_precond_solver->solve(*m_M_PC,v_out,v_in,1e-10,1000);
-	m_perf_log.pop("Apply inverse preconditioner","Preconditioner and projections");
+	m_perf_log.pop("Apply preconditioner","Preconditioner and projections");
+};
+
+void base_CG_solver::apply_jacobi_precond(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
+{
+	m_perf_log.push("Apply preconditioner","Preconditioner and projections");
+	v_out.pointwise_mult(*m_M_PC_jacobi,v_in);
+	m_perf_log.pop("Apply preconditioner","Preconditioner and projections");
 };
 
 void base_CG_solver::set_precond_matrix(libMesh::PetscMatrix<libMesh::Number>& m_in)
@@ -97,6 +104,17 @@ void base_CG_solver::set_inverse_precond(libMesh::PetscMatrix<libMesh::Number>& 
 	m_coupling_precond_solver->reuse_preconditioner(true);
 	m_coupling_precond_solver->init(&m_in,"coupling_sys");
 };
+
+
+void base_CG_solver::set_jacobi_precond(libMesh::PetscMatrix<libMesh::Number>& m_in)
+{
+	m_M_PC_jacobi = std::unique_ptr<libMesh::PetscVector<libMesh::Number> >
+	(new libMesh::PetscVector<libMesh::Number>(*m_comm));
+	m_M_PC_jacobi->init(m_sys_N,m_sys_local_N);
+
+	m_in.get_diagonal(*m_M_PC_jacobi);
+	m_M_PC_jacobi->reciprocal();
+}
 
 void base_CG_solver::set_preconditioner_type(BaseCGPrecondType type_input)
 {
@@ -506,6 +524,12 @@ void base_CG_solver::set_solver_matrix(libMesh::PetscMatrix<libMesh::Number>& sy
 			m_bPreconditionerSet = true;
 			break;
 		}
+		case BaseCGPrecondType::JACOBI:
+		{
+			apply_preconditioner = &base_CG_solver::apply_jacobi_precond;
+			m_bPreconditionerSet = true;
+			break;
+		}
 		case BaseCGPrecondType::COUPLING_OPERATOR:
 		case BaseCGPrecondType::COUPLED_SYSTEM_OPERATOR:
 		{
@@ -589,6 +613,12 @@ void base_CG_solver::set_solver_CG(generic_solver_interface& solver_in_A, generi
 		case BaseCGPrecondType::CUSTOM_MATRIX:
 		{
 			apply_preconditioner = &base_CG_solver::apply_precond_matrix;
+			m_bPreconditionerSet = true;
+			break;
+		}
+		case BaseCGPrecondType::JACOBI:
+		{
+			apply_preconditioner = &base_CG_solver::apply_jacobi_precond;
 			m_bPreconditionerSet = true;
 			break;
 		}
@@ -845,7 +875,7 @@ void base_CG_solver::get_perf_log_timing(double& solve_time, double& precond_tim
 	solve_time = m_perf_log.get_active_time();
 
 	// Precond time
-	libMesh::PerfData performance_data = m_perf_log.get_perf_data("Apply inverse preconditioner","Preconditioner and projections");
+	libMesh::PerfData performance_data = m_perf_log.get_perf_data("Apply preconditioner","Preconditioner and projections");
 	precond_time = performance_data.tot_time_incl_sub;
 
 	// Proj time = sum ( proj times )

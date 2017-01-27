@@ -73,6 +73,11 @@ struct carl_coupling_generation_input_params {
 	int LATIN_conv_max;
 	double LATIN_relax;
 
+	double coupled_conv_abs;
+	double coupled_conv_rel;
+	double coupled_div;
+	int coupled_iter_max;
+
 	std::string coupled_convergence_output;
 	std::string coupled_restart_file_base;
 
@@ -309,9 +314,32 @@ void get_input_params(GetPot& field_parser,
 		input_params.LATIN_relax = field_parser.next(input_params.LATIN_relax);
 	}
 
-	if( field_parser.search(2, "--CoupledConvOutput","CoupledConvergneceOutput") )
+	if( field_parser.search(2, "--CoupledConvOutput","CoupledConvergenceOutput") )
 	{
 		input_params.coupled_convergence_output = field_parser.next(input_params.coupled_convergence_output);
+	}
+
+	// Set coupling solver convergence
+	input_params.coupled_conv_abs = 1e-20;
+	input_params.coupled_conv_rel = 1e-5;
+	input_params.coupled_div = 1e5;
+	input_params.coupled_iter_max = 1e4;
+
+	if( field_parser.search(1,"CoupledConvAbs") )
+	{
+		input_params.coupled_conv_abs = field_parser.next(input_params.coupled_conv_abs);
+	}
+	if( field_parser.search(1,"CoupledConvRel") )
+	{
+		input_params.coupled_conv_rel = field_parser.next(input_params.coupled_conv_rel);
+	}
+	if( field_parser.search(1,"CoupledDiv") )
+	{
+		input_params.coupled_div = field_parser.next(input_params.coupled_div);
+	}
+	if( field_parser.search(1,"CoupledIterMax") )
+	{
+		input_params.coupled_iter_max = field_parser.next(input_params.coupled_iter_max);
 	}
 
 	if( field_parser.search(1,"Use_restart_data") )
@@ -370,6 +398,8 @@ void get_input_params(GetPot& field_parser,
 					input_params.CG_precond_type = carl::BaseCGPrecondType::COUPLING_OPERATOR;
 				if(input_params.CG_precond_type_string == "Coupled_system_operator")
 					input_params.CG_precond_type = carl::BaseCGPrecondType::COUPLED_SYSTEM_OPERATOR;
+				if(input_params.CG_precond_type_string == "Coupling_operator_jacobi")
+					input_params.CG_precond_type = carl::BaseCGPrecondType::JACOBI;
 
 			}
 		}
@@ -839,7 +869,9 @@ int main(int argc, char** argv) {
 			CoupledTest.set_CG_solver(	"MicroSys","Elasticity",
 											assemble_elasticity_with_weight,
 											assemble_elasticity_anisotropic_with_weight,
-											anisotropy_data);
+											anisotropy_data,
+											input_params.coupled_conv_abs,input_params.coupled_conv_rel,
+											input_params.coupled_iter_max,input_params.coupled_div);
 			break;
 		}
 	}

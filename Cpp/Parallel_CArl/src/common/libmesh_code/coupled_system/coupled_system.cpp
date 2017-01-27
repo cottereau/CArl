@@ -419,6 +419,62 @@ void carl::coupled_system::set_micro_system(
 	m_bHasAssembled_micro[micro_name] = true;
 }
 
+void carl::coupled_system::common_set_LATIN_solver(const std::string micro_name, const std::string type_name,
+												double k_dA, double k_dB, double k_cA, double k_cB,
+												double eps, int convIter, double relax)
+{
+	// Get the matrices
+	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
+	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
+
+	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_A =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).rhs);
+
+	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).matrix);
+	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
+			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
+
+	if(m_bUseNullSpace_BIG)
+	{
+		std::cout << "| -> Using null space for macro system!!!" << std::endl;
+		this->set_rigid_body_modes_BIG(type_name);
+	}
+	if(m_bUseNullSpace_micro[micro_name])
+	{
+		std::cout << "| -> Using null space for micro system " << micro_name << "!!!" << std::endl;
+		this->set_rigid_body_modes_micro(micro_name,type_name);
+	}
+
+	switch(m_solver_type)
+	{
+	case LATIN_MODIFIED_STIFFNESS:
+	case LATIN_ORIGINAL_STIFFNESS:
+		{
+			std::shared_ptr<PETSC_LATIN_coupled_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_coupled_solver>(m_coupled_solver);
+
+			// Set the solver parameters
+			cast_LATIN_solver->set_params(k_dA,k_dB,k_cA,k_cB);
+
+			// Set the solver matrices
+			cast_LATIN_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
+
+			// Set the solver matrices
+			cast_LATIN_solver->set_forces(F_A,F_B);
+
+			// Set LATIN parameters (convergence, relaxation ... )
+			cast_LATIN_solver->set_convergence_limits(eps,convIter);
+			cast_LATIN_solver->set_relaxation(relax);
+			break;
+		}
+	case CG:
+		break;
+	}
+};
+
 void carl::coupled_system::set_LATIN_solver(const std::string micro_name,
 		const std::string type_name,
 		double k_dA, double k_dB, double k_cA, double k_cB,
@@ -426,7 +482,45 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name,
 {
 	this->set_macro_system(micro_name,type_name);
 	this->set_micro_system(micro_name,type_name);
+	this->common_set_LATIN_solver(micro_name,type_name,
+			k_dA, k_dB, k_cA, k_cB, eps, convIter, relax);
 
+};
+
+void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const std::string type_name,
+												void fptr_BIG(		libMesh::EquationSystems& es,
+																	const std::string& name, weight_parameter_function& weight_mask),
+												void fptr_micro(	libMesh::EquationSystems& es,
+																	const std::string& name, weight_parameter_function& weight_mask),
+												double k_dA, double k_dB, double k_cA, double k_cB,
+												double eps, int convIter, double relax)
+{
+	this->set_macro_system(micro_name,type_name,fptr_BIG);
+	this->set_micro_system(micro_name,type_name,fptr_micro);
+	this->common_set_LATIN_solver(micro_name,type_name,
+			k_dA, k_dB, k_cA, k_cB, eps, convIter, relax);
+};
+
+void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const std::string type_name,
+												void fptr_BIG(		libMesh::EquationSystems& es,
+																	const std::string& name, weight_parameter_function& weight_mask),
+												void fptr_micro(	libMesh::EquationSystems& es,
+																	const std::string& name, weight_parameter_function& weight_mask, anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
+												anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj,
+												double k_dA, double k_dB, double k_cA, double k_cB,
+												double eps, int convIter, double relax)
+{
+	this->set_macro_system(micro_name,type_name,fptr_BIG);
+	this->set_micro_system(micro_name,type_name,fptr_micro,anisotropy_obj);
+	this->common_set_LATIN_solver(micro_name,type_name,
+			k_dA, k_dB, k_cA, k_cB, eps, convIter, relax);
+};
+
+void carl::coupled_system::common_set_CG_solver(const std::string micro_name, const std::string type_name,
+						  double eps_abs, double eps_rel, int convIter, double div_tol)
+{
+
+	// Get the matrices
 	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
 	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
 	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
@@ -455,152 +549,35 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name,
 	// Set the solver parameters
 	switch(m_solver_type)
 	{
-	case LATIN_MODIFIED_STIFFNESS:
-	case LATIN_ORIGINAL_STIFFNESS:
+	case CG:
 		{
-			std::shared_ptr<PETSC_LATIN_coupled_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_coupled_solver>(m_coupled_solver);
+			std::shared_ptr<PETSC_CG_coupled_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_coupled_solver>(m_coupled_solver);
+			std::shared_ptr<generic_solver_interface> cast_sys_A_solver = std::dynamic_pointer_cast<KSP_linear_solver>(m_sys_A_solver);
+			std::shared_ptr<generic_solver_interface> cast_sys_B_solver = std::dynamic_pointer_cast<KSP_linear_solver>(m_sys_B_solver);
 
-			cast_LATIN_solver->set_params(k_dA,k_dB,k_cA,k_cB);
+			// Use preconditioner
+			cast_CG_solver->set_preconditioner_type(m_CG_precond_type);
 
 			// Set the solver matrices
-			cast_LATIN_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
+			cast_CG_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
 
 			// Set the solver matrices
-			cast_LATIN_solver->set_forces(F_A,F_B);
+			cast_CG_solver->set_forces(F_A,F_B);
 
-			// Set LATIN parameters (convergence, relaxation ... )
-			cast_LATIN_solver->set_convergence_limits(eps,convIter);
-			cast_LATIN_solver->set_relaxation(relax);
+			if(m_bUseNullSpace_micro[micro_name])
+			{
+				cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
+			}
+
+			// Set CG parameters (convergence )
+			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol);
+
+			// Set the system solvers
+			cast_CG_solver->set_solvers(cast_sys_A_solver.get(),cast_sys_B_solver.get());
 			break;
 		}
-	case CG:
-		break;
-	}
-};
-
-void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const std::string type_name,
-												void fptr_BIG(		libMesh::EquationSystems& es,
-																	const std::string& name, weight_parameter_function& weight_mask),
-												void fptr_micro(	libMesh::EquationSystems& es,
-																	const std::string& name, weight_parameter_function& weight_mask),
-												double k_dA, double k_dB, double k_cA, double k_cB,
-												double eps, int convIter, double relax)
-{
-	this->set_macro_system(micro_name,type_name,fptr_BIG);
-	this->set_micro_system(micro_name,type_name,fptr_micro);
-
-	// Get the matrices
-	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
-
-	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).matrix);
-	libMesh::PetscVector<libMesh::Number>& F_A =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).rhs);
-
-	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).matrix);
-	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
-
-	if(m_bUseNullSpace_BIG)
-	{
-		std::cout << "| -> Using null space for macro system!!!" << std::endl;
-		this->set_rigid_body_modes_BIG(type_name);
-	}
-	if(m_bUseNullSpace_micro[micro_name])
-	{
-		std::cout << "| -> Using null space for micro system " << micro_name << "!!!" << std::endl;
-		this->set_rigid_body_modes_micro(micro_name,type_name);
-	}
-
-	switch(m_solver_type)
-	{
 	case LATIN_MODIFIED_STIFFNESS:
 	case LATIN_ORIGINAL_STIFFNESS:
-		{
-			std::shared_ptr<PETSC_LATIN_coupled_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_coupled_solver>(m_coupled_solver);
-
-			// Set the solver parameters
-			cast_LATIN_solver->set_params(k_dA,k_dB,k_cA,k_cB);
-
-			// Set the solver matrices
-			cast_LATIN_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
-
-			// Set the solver matrices
-			cast_LATIN_solver->set_forces(F_A,F_B);
-
-			// Set LATIN parameters (convergence, relaxation ... )
-			cast_LATIN_solver->set_convergence_limits(eps,convIter);
-			cast_LATIN_solver->set_relaxation(relax);
-			break;
-		}
-	case CG:
-		break;
-	}
-};
-
-void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const std::string type_name,
-												void fptr_BIG(		libMesh::EquationSystems& es,
-																	const std::string& name, weight_parameter_function& weight_mask),
-												void fptr_micro(	libMesh::EquationSystems& es,
-																	const std::string& name, weight_parameter_function& weight_mask, anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
-												anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj,
-												double k_dA, double k_dB, double k_cA, double k_cB,
-												double eps, int convIter, double relax)
-{
-	this->set_macro_system(micro_name,type_name,fptr_BIG);
-	this->set_micro_system(micro_name,type_name,fptr_micro,anisotropy_obj);
-
-	// Get the matrices
-	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
-
-	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).matrix);
-	libMesh::PetscVector<libMesh::Number>& F_A =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).rhs);
-
-	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).matrix);
-	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
-
-	if(m_bUseNullSpace_BIG)
-	{
-		std::cout << "| -> Using null space for macro system!!!" << std::endl;
-		this->set_rigid_body_modes_BIG(type_name);
-	}
-	if(m_bUseNullSpace_micro[micro_name])
-	{
-		std::cout << "| -> Using null space for micro system " << micro_name << "!!!" << std::endl;
-		this->set_rigid_body_modes_micro(micro_name,type_name);
-	}
-
-	switch(m_solver_type)
-	{
-	case LATIN_MODIFIED_STIFFNESS:
-	case LATIN_ORIGINAL_STIFFNESS:
-		{
-			std::shared_ptr<PETSC_LATIN_coupled_solver> cast_LATIN_solver = std::dynamic_pointer_cast<PETSC_LATIN_coupled_solver>(m_coupled_solver);
-
-			// Set the solver parameters
-			cast_LATIN_solver->set_params(k_dA,k_dB,k_cA,k_cB);
-
-			// Set the solver matrices
-			cast_LATIN_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
-
-			// Set the solver matrices
-			cast_LATIN_solver->set_forces(F_A,F_B);
-
-			// Set LATIN parameters (convergence, relaxation ... )
-			cast_LATIN_solver->set_convergence_limits(eps,convIter);
-			cast_LATIN_solver->set_relaxation(relax);
-			break;
-		}
-	case CG:
 		break;
 	}
 };
@@ -611,67 +588,7 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name,
 {
 	this->set_macro_system(micro_name,type_name);
 	this->set_micro_system(micro_name,type_name);
-
-	// Get the matrices
-	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
-
-	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).matrix);
-	libMesh::PetscVector<libMesh::Number>& F_A =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).rhs);
-
-	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).matrix);
-	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
-
-	if(m_bUseNullSpace_BIG)
-	{
-		std::cout << "| -> Using null space for macro system!!!" << std::endl;
-		this->set_rigid_body_modes_BIG(type_name);
-	}
-	if(m_bUseNullSpace_micro[micro_name])
-	{
-		std::cout << "| -> Using null space for micro system " << micro_name << "!!!" << std::endl;
-		this->set_rigid_body_modes_micro(micro_name,type_name);
-	}
-
-	// Set the solver parameters
-	switch(m_solver_type)
-	{
-	case CG:
-		{
-			std::shared_ptr<PETSC_CG_coupled_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_coupled_solver>(m_coupled_solver);
-			std::shared_ptr<generic_solver_interface> cast_sys_A_solver = std::dynamic_pointer_cast<KSP_linear_solver>(m_sys_A_solver);
-			std::shared_ptr<generic_solver_interface> cast_sys_B_solver = std::dynamic_pointer_cast<KSP_linear_solver>(m_sys_B_solver);
-
-			// Use preconditioner
-			cast_CG_solver->set_preconditioner_type(m_CG_precond_type);
-
-			// Set the solver matrices
-			cast_CG_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
-
-			// Set the solver matrices
-			cast_CG_solver->set_forces(F_A,F_B);
-
-			if(m_bUseNullSpace_micro[micro_name])
-			{
-				cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
-			}
-
-			// Set CG parameters (convergence )
-			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol);
-
-			// Set the system solvers
-			cast_CG_solver->set_solvers(cast_sys_A_solver.get(),cast_sys_B_solver.get());
-			break;
-		}
-	case LATIN_MODIFIED_STIFFNESS:
-	case LATIN_ORIGINAL_STIFFNESS:
-		break;
-	}
+	this->common_set_CG_solver(micro_name, type_name, eps_abs, eps_rel, convIter, div_tol);
 };
 
 void carl::coupled_system::set_CG_solver(const std::string micro_name, const std::string type_name,
@@ -683,67 +600,7 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 {
 	this->set_macro_system(micro_name,type_name,fptr_BIG);
 	this->set_micro_system(micro_name,type_name,fptr_micro);
-
-	// Get the matrices
-	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
-
-	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).matrix);
-	libMesh::PetscVector<libMesh::Number>& F_A =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).rhs);
-
-	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).matrix);
-	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
-
-	if(m_bUseNullSpace_BIG)
-	{
-		std::cout << "| -> Using null space for macro system!!!" << std::endl;
-		this->set_rigid_body_modes_BIG(type_name);
-	}
-	if(m_bUseNullSpace_micro[micro_name])
-	{
-		std::cout << "| -> Using null space for micro system " << micro_name << "!!!" << std::endl;
-		this->set_rigid_body_modes_micro(micro_name,type_name);
-	}
-
-	// Set the solver parameters
-	switch(m_solver_type)
-	{
-	case CG:
-		{
-			std::shared_ptr<PETSC_CG_coupled_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_coupled_solver>(m_coupled_solver);
-			std::shared_ptr<generic_solver_interface> cast_sys_A_solver = std::dynamic_pointer_cast<KSP_linear_solver>(m_sys_A_solver);
-			std::shared_ptr<generic_solver_interface> cast_sys_B_solver = std::dynamic_pointer_cast<KSP_linear_solver>(m_sys_B_solver);
-
-			// Use preconditioner
-			cast_CG_solver->set_preconditioner_type(m_CG_precond_type);
-
-			// Set the solver matrices
-			cast_CG_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
-
-			// Set the solver matrices
-			cast_CG_solver->set_forces(F_A,F_B);
-
-			if(m_bUseNullSpace_micro[micro_name])
-			{
-				cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
-			}
-
-			// Set CG parameters (convergence )
-			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol);
-
-			// Set the system solvers
-			cast_CG_solver->set_solvers(cast_sys_A_solver.get(),cast_sys_B_solver.get());
-			break;
-		}
-	case LATIN_MODIFIED_STIFFNESS:
-	case LATIN_ORIGINAL_STIFFNESS:
-		break;
-	}
+	this->common_set_CG_solver(micro_name, type_name, eps_abs, eps_rel, convIter, div_tol);
 };
 
 void carl::coupled_system::set_CG_solver(const std::string micro_name, const std::string type_name,
@@ -756,67 +613,7 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 {
 	this->set_macro_system(micro_name,type_name,fptr_BIG);
 	this->set_micro_system(micro_name,type_name,fptr_micro,anisotropy_obj);
-
-	// Get the matrices
-	libMesh::PetscMatrix<libMesh::Number>& C_RA = * m_couplingMatrixMap_mediator_BIG[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RB = * m_couplingMatrixMap_mediator_micro[micro_name];
-	libMesh::PetscMatrix<libMesh::Number>& C_RR = * m_couplingMatrixMap_mediator_mediator[micro_name];
-
-	libMesh::PetscMatrix<libMesh::Number>& M_A = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).matrix);
-	libMesh::PetscVector<libMesh::Number>& F_A =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_BIG_EquationSystem.second->get_system(type_name)).rhs);
-
-	libMesh::PetscMatrix<libMesh::Number>& M_B = libMesh::cast_ref<libMesh::PetscMatrix<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).matrix);
-	libMesh::PetscVector<libMesh::Number>& F_B =libMesh::cast_ref<libMesh::PetscVector<libMesh::Number>& >(
-			* libMesh::cast_ref<libMesh::ImplicitSystem&>(m_micro_EquationSystemMap[micro_name]->get_system(type_name)).rhs);
-
-	if(m_bUseNullSpace_BIG)
-	{
-		std::cout << "| -> Using null space for macro system!!!" << std::endl;
-		this->set_rigid_body_modes_BIG(type_name);
-	}
-	if(m_bUseNullSpace_micro[micro_name])
-	{
-		std::cout << "| -> Using null space for micro system " << micro_name << "!!!" << std::endl;
-		this->set_rigid_body_modes_micro(micro_name,type_name);
-	}
-
-	// Set the solver parameters
-	switch(m_solver_type)
-	{
-	case CG:
-		{
-			std::shared_ptr<PETSC_CG_coupled_solver> cast_CG_solver = std::dynamic_pointer_cast<PETSC_CG_coupled_solver>(m_coupled_solver);
-			std::shared_ptr<generic_solver_interface> cast_sys_A_solver = std::dynamic_pointer_cast<KSP_linear_solver>(m_sys_A_solver);
-			std::shared_ptr<generic_solver_interface> cast_sys_B_solver = std::dynamic_pointer_cast<KSP_linear_solver>(m_sys_B_solver);
-
-			// Use preconditioner
-			cast_CG_solver->set_preconditioner_type(m_CG_precond_type);
-
-			// Set the solver matrices
-			cast_CG_solver->set_matrices(M_A,M_B,C_RA,C_RB,C_RR);
-
-			// Set the solver matrices
-			cast_CG_solver->set_forces(F_A,F_B);
-
-			if(m_bUseNullSpace_micro[micro_name])
-			{
-				cast_CG_solver->build_null_space_projection_matrices(M_B,C_RB);
-			}
-
-			// Set CG parameters (convergence )
-			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol);
-
-			// Set the system solvers
-			cast_CG_solver->set_solvers(cast_sys_A_solver.get(),cast_sys_B_solver.get());
-			break;
-		}
-	case LATIN_MODIFIED_STIFFNESS:
-	case LATIN_ORIGINAL_STIFFNESS:
-		break;
-	}
+	this->common_set_CG_solver(micro_name, type_name, eps_abs, eps_rel, convIter, div_tol);
 };
 
 void carl::coupled_system::set_LATIN_nonlinear_solver(const std::string micro_name, const std::string type_name_BIG,

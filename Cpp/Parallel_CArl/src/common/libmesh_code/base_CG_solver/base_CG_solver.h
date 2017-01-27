@@ -45,6 +45,7 @@ private:
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_sol;
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_initial_sol;
 	libMesh::PetscMatrix<libMesh::Number> * m_M_PC;
+	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_M_PC_jacobi;
 
 	// Function pointers
 	sys_fptr apply_system_matrix;
@@ -131,6 +132,8 @@ private:
 	void apply_coupled_sys_precon(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
 
 	void apply_inverse_coupling_precond(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+
+	void apply_jacobi_precond(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
 
 	// Nullspace methods
 
@@ -242,8 +245,8 @@ public:
 	};
 
 	// Set up parameters
-	void set_convergence_limits(	double conv_eps_abs_in = 1E-5,
-										double conv_eps_rel_in = 1E-20,
+	void set_convergence_limits(	double conv_eps_abs_in = 1E-20,
+										double conv_eps_rel_in = 1E-5,
 										int conv_max_n_in = 1000,
 										double div_tol_in = 10000)
 	{
@@ -259,6 +262,8 @@ public:
 	void set_precond_matrix(libMesh::PetscMatrix<libMesh::Number>& m_in);
 
 	void set_inverse_precond(libMesh::PetscMatrix<libMesh::Number>& m_in);
+
+	void set_jacobi_precond(libMesh::PetscMatrix<libMesh::Number>& m_in);
 
 	void set_preconditioner_type(BaseCGPrecondType type_input = BaseCGPrecondType::NO_PRECONDITIONER);
 

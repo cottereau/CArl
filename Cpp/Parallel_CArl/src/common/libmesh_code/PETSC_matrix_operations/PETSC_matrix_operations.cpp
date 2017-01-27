@@ -162,8 +162,8 @@ void carl::print_matrix_matlab(libMesh::PetscMatrix<libMesh::Number>& CouplingTe
 void carl::print_matrix_dim(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix, bool bDetailed)
 {
 	std::cout << "| M_i,j  : " << CouplingTestMatrix.m() << " x " << CouplingTestMatrix.n() << std::endl;
-	if(bDetailed)
-	{
+//	if(bDetailed)
+//	{
 		MatInfo temp_info;
 		MatGetInfo(CouplingTestMatrix.mat(),MAT_LOCAL,&temp_info);
 		std::cout << "| LOCAL  : memory = " << temp_info.memory << std::endl;
@@ -179,7 +179,7 @@ void carl::print_matrix_dim(libMesh::PetscMatrix<libMesh::Number>& CouplingTestM
 		MatGetInfo(CouplingTestMatrix.mat(),MAT_GLOBAL_MAX,&temp_info);
 		std::cout << "| MAX    : memory = " << temp_info.memory << std::endl;
 		std::cout << "|          non-zeros used = " << (100.*temp_info.nz_used)/temp_info.nz_allocated << " % " << std::endl << std::endl;
-	}
+	//}
 }
 
 void carl::print_matrix_info(libMesh::PetscMatrix<libMesh::Number>& InputMatrix, std::ostream & os)

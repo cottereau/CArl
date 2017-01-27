@@ -37,14 +37,19 @@ void carl::PETSC_CG_coupled_solver::set_solvers(generic_solver_interface * solve
 
 	m_coupling_solver.set_preconditioner_type(m_precond_type);
 
+	// Set up the coupled equation solver
+	m_coupling_solver.set_solver_CG(*m_sys_A_solver,*m_sys_B_solver);
+
 	// Set up the preconditioner - if needed
 	if(m_precond_type == BaseCGPrecondType::COUPLING_OPERATOR)
 	{
 		m_coupling_solver.set_inverse_precond(*m_C_RR);
 	}
 
-	// Set up the coupled equation solver
-	m_coupling_solver.set_solver_CG(*m_sys_A_solver,*m_sys_B_solver);
+	if(m_precond_type == BaseCGPrecondType::JACOBI)
+	{
+		m_coupling_solver.set_jacobi_precond(*m_C_RR);
+	}
 
 	m_coupling_solver.set_convergence_limits(m_CG_conv_eps_abs,m_CG_conv_eps_rel,m_CG_conv_max_n,m_CG_div_tol);
 };
@@ -96,7 +101,7 @@ void carl::PETSC_CG_coupled_solver::solve()
 	std::cout << "| CG solver: " << std::endl;
 	std::cout << "|     Initialization ..." << std::endl; std::cout.flush();
 	std::cout << "|        eps abs. = " << m_CG_conv_eps_abs <<
-			          ", max. iter. = " << m_CG_conv_eps_rel <<
+			          ", eps rel. = " << m_CG_conv_eps_rel <<
 					  ", max. iter. = " << m_CG_conv_max_n <<
 			          ", div. tol. = " << m_CG_div_tol << std::endl;
 
@@ -264,11 +269,13 @@ void carl::PETSC_CG_coupled_solver::solve()
 	m_sys_B_solver->apply_MinvZt(vec_lambda,vec_aux_B);
 	*m_sol_B.get() = vec_u0_B;
 	m_sol_B->add(vec_aux_B);
+	m_sol_B->print_matlab("current_sol.m");
 
 	if(m_bUseNullSpaceB)
 	{
 		// Must add correction
 		// U_2_corr = U_2 + null_space_corr * coupling_residual
+		std::cout << " Adding correction" << std::endl;
 		m_coupling_solver.get_residual_vector(vec_aux_lambda);
 		this->add_nullspace_correction(vec_aux_lambda,*m_sol_B);
 	}

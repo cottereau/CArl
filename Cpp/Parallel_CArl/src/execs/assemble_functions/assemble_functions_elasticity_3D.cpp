@@ -1426,8 +1426,6 @@ void set_constant_physical_properties(libMesh::EquationSystems& es, double meanE
 
 	}
 
-//	std::cout << meanMu*(meanE - 2*meanMu)/(3*meanMu-meanE) << " " << meanMu << std::endl;
-
 	physical_param_system.solution->close();
 	physical_param_system.update();
 }
