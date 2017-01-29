@@ -360,6 +360,10 @@ void carl::PETSC_CG_coupled_solver::print_perf_log(std::string filename_input)
 		print_stats_to_file(timing_solve_coupled,filename_input + "_solve_coupled.dat");
 		print_stats_to_file(timing_precond,filename_input + "_precond.dat");
 		print_stats_to_file(timing_proj,filename_input + "_proj.dat");
+
+		std::ofstream conv_iter(filename_input + "_conv.dat",std::ofstream::app);
+		conv_iter << dummy_int << std::endl;
+		conv_iter.close();
 	}
 
 

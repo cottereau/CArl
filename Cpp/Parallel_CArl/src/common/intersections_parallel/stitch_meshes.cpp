@@ -208,6 +208,7 @@ void Stitch_Intersection_Meshes::join_tables()
 	//    elements per intersection.
 	unsigned int intersection_idx = 0;
 	unsigned int dummy_uint = 0;
+	unsigned int nb_of_elems = 0;
 	for(unsigned int iii = 0; iii < m_nb_files; ++iii)
 	{
 		table_file.open(m_table_filenames[iii]);
@@ -224,6 +225,7 @@ void Stitch_Intersection_Meshes::join_tables()
 			carl::jump_lines(table_file);
 
 			// Prepare data for the restriction mesh
+			nb_of_elems += m_intersection_nb_of_elements[intersection_idx];
 			m_restriction_set_first.insert(m_intersection_pairs[intersection_idx].first);
 			m_restriction_set_second.insert(m_intersection_pairs[intersection_idx].second);
 			++intersection_idx;
@@ -231,6 +233,28 @@ void Stitch_Intersection_Meshes::join_tables()
 
 		table_file.close();
 	}
+
+	// -> Fourth, re-build the intersection tables
+	unsigned int intersection_elem_idx = 0;
+
+	std::ofstream joined_tables_file(m_table_output);
+	joined_tables_file 	<< m_nb_of_intersections << " "
+						<< nb_of_elems << std::endl;
+
+	for(unsigned int iii = 0; iii < m_nb_of_intersections; ++iii)
+	{
+		joined_tables_file 	<< iii << " "
+							<< m_intersection_pairs[iii].first << " "
+							<< m_intersection_pairs[iii].second << " "
+							<< m_intersection_nb_of_elements[iii] << " ";
+		for(unsigned jjj = 0; jjj < m_intersection_nb_of_elements[iii]; ++jjj)
+		{
+			joined_tables_file 	<< intersection_elem_idx << " ";
+			++intersection_elem_idx;
+		}
+		joined_tables_file 	<< std::endl;
+	}
+	joined_tables_file.close();
 }
 
 void Stitch_Intersection_Meshes::stitch_meshes()
@@ -317,27 +341,6 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 	// Print mesh
 	libMesh::NameBasedIO output_mesh(m_Stitched_mesh);
 	output_mesh.write(m_mesh_output);
-
-	// -> Fourth, re-build the intersection tables
-	unsigned int intersection_elem_idx = 0;
-
-	std::ofstream joined_tables_file(m_table_output);
-	joined_tables_file 	<< m_nb_of_intersections << " "
-						<< m_Stitched_mesh.n_elem() << std::endl;
-	for(unsigned int iii = 0; iii < m_nb_of_intersections; ++iii)
-	{
-		joined_tables_file 	<< iii << " "
-							<< m_intersection_pairs[iii].first << " "
-							<< m_intersection_pairs[iii].second << " "
-							<< m_intersection_nb_of_elements[iii] << " ";
-		for(unsigned jjj = 0; jjj < m_intersection_nb_of_elements[iii]; ++jjj)
-		{
-			joined_tables_file 	<< intersection_elem_idx << " ";
-			++intersection_elem_idx;
-		}
-		joined_tables_file 	<< std::endl;
-	}
-	joined_tables_file.close();
 
 	if(m_bPrintDebug)
 	{
