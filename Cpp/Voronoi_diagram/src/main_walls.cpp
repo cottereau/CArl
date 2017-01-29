@@ -127,8 +127,21 @@ int main(int argc, char *argv[])
 	// Create a container with the geometry given above, and make it
 	// non-periodic in each of the three coordinates. Allocate space for
 	// eight particles within each computational block
-	voro::container con(x_min,x_max,y_min,y_max,z_min,z_max,nx,ny,nz,
+	voro::container con_lower(x_min,x_max,y_min,y_max,z_min,z_max,nx,ny,nz,
 			xIsPeriodic,yIsPeriodic,zIsPeriodic,part_per_block);
+	voro::container con_upper(x_min,x_max,y_min,y_max,z_min,z_max,nx,ny,nz,
+			xIsPeriodic,yIsPeriodic,zIsPeriodic,part_per_block);
+
+	voro::wall_plane upper_cut(0.1,0,-1,0,10);
+	voro::wall_plane lower_cut(0.1,0,1,0,10);
+	voro::wall_plane mid_upper_cut(0,0,-1,0,11);
+	voro::wall_plane mid_lower_cut(0,0,1,0,11);
+
+	con_lower.add_wall(lower_cut);
+	con_lower.add_wall(mid_lower_cut);
+
+	con_upper.add_wall(upper_cut);
+	con_upper.add_wall(mid_upper_cut);
 
 	double x,y,z;
 
@@ -137,61 +150,76 @@ int main(int argc, char *argv[])
 		x=x_min+rnd(m_rng)*(x_max-x_min);
 		y=y_min+rnd(m_rng)*(y_max-y_min);
 		z=z_min+rnd(m_rng)*(z_max-z_min);
-		con.put(iii,x,y,z);
+		con_upper.put(iii,x,y,z);
+		con_lower.put(iii,x,y,z);
 	}
 
 	if(!bSkipMesh)
 	{
 		// Export it to Gmsh format
-		NewExportVoronoiToGmsh(con,weight,output_geo_filename);
+//		NewExportVoronoiToGmsh(con,weight,output_geo_filename);
+		std::string custom_format_filename = output_geo_filename + "_raw_upper.dat";
+		con_upper.print_custom("%i %w %s %P %a %t",custom_format_filename.c_str());
+		custom_format_filename = output_geo_filename + "_raw_lower.dat";
+		con_lower.print_custom("%i %w %s %P %a %t",custom_format_filename.c_str());
+
+		custom_format_filename = output_geo_filename + "_gplot_upper_domain.dat";
+		con_upper.draw_domain_gnuplot(custom_format_filename.c_str());
+		custom_format_filename = output_geo_filename + "_gplot_lower_domain.dat";
+		con_lower.draw_domain_gnuplot(custom_format_filename.c_str());
+
+		custom_format_filename = output_geo_filename + "_gplot_upper.dat";
+		con_upper.draw_cells_gnuplot(custom_format_filename.c_str());
+		custom_format_filename = output_geo_filename + "_gplot_lower.dat";
+		con_lower.draw_cells_gnuplot(custom_format_filename.c_str());
 	}
-
-	// Build heterogeneous physical parameters
-	double youngMean = 200;
-	double muMean = 80;
-
-	double youngAmpl = youngMean*0.05;
-	double muAmpl = muMean*0.05;
-
-	std::string  outPhysicalParameters = output_geo_filename + "_physical.dat";
-	std::ofstream physOutput(outPhysicalParameters, std::ofstream::trunc);
-
-	double youngValue = -1;
-	double muValue = -1;
-
-	physOutput << particles << std::endl;
-	for(int iii=0; iii<particles; iii++)
-	{
-		youngValue = youngMean + (2*rnd(m_rng) - 1) * youngAmpl;
-		muValue = muMean + (2*rnd(m_rng) - 1) * muAmpl;
-		physOutput << youngValue << " " << muValue << " " << iii + 1 << std::endl;
-	}
-	physOutput.close();
-
-	// Build an anisotropy file too
-	std::string  outAnglesParameters = output_geo_filename + "_angles.dat";
-	std::ofstream anglesOutput(outAnglesParameters, std::ofstream::trunc);
-
-	double c11 = 198;
-	double c12 = 125;
-	double c44 = 122;
-	anglesOutput 	<< particles << " "
-					<< c11 << " "
-					<< c12 << " "
-					<< c44 << " "
-					<< youngMean << " "
-					<< muMean << std::endl;
-
-	double angle_x = 0;
-	double angle_y = 0;
-	double angle_z = 0;
-
-	for(int iii=0; iii<particles; iii++)
-	{
-		angle_x = 2*rnd(m_rng)*M_PI;
-		angle_y =   rnd(m_rng)*M_PI;
-		angle_z = 2*rnd(m_rng)*M_PI;
-		anglesOutput << angle_x << " " << angle_y << " " << angle_z << " " << iii + 1 << std::endl;
-	}
-	anglesOutput.close();
+//
+//	// Build heterogeneous physical parameters
+//	double youngMean = 200;
+//	double muMean = 80;
+//
+//	double youngAmpl = youngMean*0.05;
+//	double muAmpl = muMean*0.05;
+//
+//	std::string  outPhysicalParameters = output_geo_filename + "_physical.dat";
+//	std::ofstream physOutput(outPhysicalParameters, std::ofstream::trunc);
+//
+//	double youngValue = -1;
+//	double muValue = -1;
+//
+//	physOutput << particles << std::endl;
+//	for(int iii=0; iii<particles; iii++)
+//	{
+//		youngValue = youngMean + (2*rnd(m_rng) - 1) * youngAmpl;
+//		muValue = muMean + (2*rnd(m_rng) - 1) * muAmpl;
+//		physOutput << youngValue << " " << muValue << " " << iii + 1 << std::endl;
+//	}
+//	physOutput.close();
+//
+//	// Build an anisotropy file too
+//	std::string  outAnglesParameters = output_geo_filename + "_angles.dat";
+//	std::ofstream anglesOutput(outAnglesParameters, std::ofstream::trunc);
+//
+//	double c11 = 198;
+//	double c12 = 125;
+//	double c44 = 122;
+//	anglesOutput 	<< particles << " "
+//					<< c11 << " "
+//					<< c12 << " "
+//					<< c44 << " "
+//					<< youngMean << " "
+//					<< muMean << std::endl;
+//
+//	double angle_x = 0;
+//	double angle_y = 0;
+//	double angle_z = 0;
+//
+//	for(int iii=0; iii<particles; iii++)
+//	{
+//		angle_x = 2*rnd(m_rng)*M_PI;
+//		angle_y =   rnd(m_rng)*M_PI;
+//		angle_z = 2*rnd(m_rng)*M_PI;
+//		anglesOutput << angle_x << " " << angle_y << " " << angle_z << " " << iii + 1 << std::endl;
+//	}
+//	anglesOutput.close();
 }
