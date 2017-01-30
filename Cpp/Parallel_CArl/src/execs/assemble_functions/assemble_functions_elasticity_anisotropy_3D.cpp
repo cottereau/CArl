@@ -199,10 +199,10 @@ void assemble_elasticity_anisotropic_with_weight(	libMesh::EquationSystems& es,
 			// Gravity
 			//		if(z_force)
 			//		{
-						for (unsigned int i=0; i<n_w_dofs; i++)
-						  {
-							Fw(i) -= alpha_micro * JxW[qp] * phi[i][qp];
-						  }
+//						for (unsigned int i=0; i<n_w_dofs; i++)
+//						  {
+//							Fw(i) -= alpha_micro * JxW[qp] * phi[i][qp];
+//						  }
 			//		}
 		}
 
@@ -381,10 +381,10 @@ void assemble_elasticity_anisotropic(	libMesh::EquationSystems& es,
 			// Gravity
 			//		if(z_force)
 			//		{
-						for (unsigned int i=0; i<n_w_dofs; i++)
-						  {
-							Fw(i) -= alpha * JxW[qp] * phi[i][qp];
-						  }
+//						for (unsigned int i=0; i<n_w_dofs; i++)
+//						  {
+//							Fw(i) -= alpha * JxW[qp] * phi[i][qp];
+//						  }
 			//		}
 		}
 

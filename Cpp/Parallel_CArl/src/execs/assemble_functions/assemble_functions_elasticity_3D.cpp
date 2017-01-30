@@ -334,10 +334,10 @@ void assemble_elasticity(libMesh::EquationSystems& es,
 			// Gravity
 			//		if(z_force)
 			//		{
-						for (unsigned int i=0; i<n_w_dofs; i++)
-						  {
-							Fw(i) -= JxW[qp] * phi[i][qp];
-						  }
+//						for (unsigned int i=0; i<n_w_dofs; i++)
+//						  {
+//							Fw(i) -= JxW[qp] * phi[i][qp];
+//						  }
 			//		}
 		}
 
@@ -511,10 +511,10 @@ void assemble_elasticity_heterogeneous(libMesh::EquationSystems& es,
 			// Gravity
 			//		if(z_force)
 			//		{
-						for (unsigned int i=0; i<n_w_dofs; i++)
-						  {
-							Fw(i) -= JxW[qp] * phi[i][qp];
-						  }
+//						for (unsigned int i=0; i<n_w_dofs; i++)
+//						  {
+//							Fw(i) -= JxW[qp] * phi[i][qp];
+//						  }
 			//		}
 		}
 
@@ -695,10 +695,10 @@ void assemble_elasticity_with_weight(	libMesh::EquationSystems& es,
 			// Gravity
 			//		if(z_force)
 			//		{
-						for (unsigned int i=0; i<n_w_dofs; i++)
-						  {
-							Fw(i) -= alpha_BIG*JxW[qp] * phi[i][qp];
-						  }
+//						for (unsigned int i=0; i<n_w_dofs; i++)
+//						  {
+//							Fw(i) -= alpha_BIG*JxW[qp] * phi[i][qp];
+//						  }
 			//		}
 		}
 
@@ -877,10 +877,10 @@ void assemble_elasticity_with_weight_micro(	libMesh::EquationSystems& es,
 			// Gravity
 			//		if(z_force)
 			//		{
-						for (unsigned int i=0; i<n_w_dofs; i++)
-						  {
-							Fw(i) -= alpha_micro*JxW[qp] * phi[i][qp];
-						  }
+//						for (unsigned int i=0; i<n_w_dofs; i++)
+//						  {
+//							Fw(i) -= alpha_micro*JxW[qp] * phi[i][qp];
+//						  }
 			//		}
 		}
 
@@ -1064,10 +1064,10 @@ void assemble_elasticity_heterogeneous_with_weight(	libMesh::EquationSystems& es
 			// Gravity
 			//		if(z_force)
 			//		{
-						for (unsigned int i=0; i<n_w_dofs; i++)
-						  {
-							Fw(i) -= alpha_micro*JxW[qp] * phi[i][qp];
-						  }
+//						for (unsigned int i=0; i<n_w_dofs; i++)
+//						  {
+//							Fw(i) -= alpha_micro*JxW[qp] * phi[i][qp];
+//						  }
 			//		}
 		}
 
