@@ -51,12 +51,16 @@ struct carl_coupling_generation_input_params {
 
 	std::string weight_domain_idx_file;
 
+	std::string scaling_data_file;
+
 	bool b_UseMesh_BIG_AsMediator;
 	bool b_UseMesh_micro_AsMediator;
 	bool b_UseMesh_extra_AsMediator;
 	bool b_Repartition_micro;
 	bool LATIN_b_UseRestartFiles;
 	bool LATIN_b_PrintRestartFiles;
+	bool b_PrintOutput;
+	bool b_ExportScalingData;
 
 	double mean_distance;
 
@@ -69,14 +73,21 @@ struct carl_coupling_generation_input_params {
 	int LATIN_conv_max;
 	double LATIN_relax;
 
-	std::string LATIN_convergence_output;
-	std::string LATIN_restart_file_base;
+	double coupled_conv_abs;
+	double coupled_conv_rel;
+	double coupled_div;
+	int coupled_iter_max;
+
+	std::string coupled_convergence_output;
+	std::string coupled_restart_file_base;
 
 	std::string output_file_BIG;
 	std::string output_file_micro;
 
 	std::string solver_type_string;
 	carl::CoupledSolverType solver_type;
+	std::string CG_precond_type_string;
+	carl::BaseCGPrecondType CG_precond_type;
 };
 
 void get_input_params(GetPot& field_parser,
@@ -285,8 +296,8 @@ void get_input_params(GetPot& field_parser,
 	input_params.LATIN_conv_max = 10000;
 	input_params.LATIN_relax = 0.8;
 
-	input_params.LATIN_convergence_output = "LATIN_convergence.dat";
-	input_params.LATIN_restart_file_base = "LATIN_restart";
+	input_params.coupled_convergence_output = "coupled_convergence.dat";
+	input_params.coupled_restart_file_base = "coupled_restart";
 
 	if( field_parser.search(2, "--LATINeps","LATINEps") )
 	{
@@ -303,9 +314,32 @@ void get_input_params(GetPot& field_parser,
 		input_params.LATIN_relax = field_parser.next(input_params.LATIN_relax);
 	}
 
-	if( field_parser.search(2, "--LATINconvOutput","LATINConvergneceOutput") )
+	if( field_parser.search(2, "--CoupledConvOutput","CoupledConvergenceOutput") )
 	{
-		input_params.LATIN_convergence_output = field_parser.next(input_params.LATIN_convergence_output);
+		input_params.coupled_convergence_output = field_parser.next(input_params.coupled_convergence_output);
+	}
+
+	// Set coupling solver convergence
+	input_params.coupled_conv_abs = 1e-20;
+	input_params.coupled_conv_rel = 1e-5;
+	input_params.coupled_div = 1e5;
+	input_params.coupled_iter_max = 1e4;
+
+	if( field_parser.search(1,"CoupledConvAbs") )
+	{
+		input_params.coupled_conv_abs = field_parser.next(input_params.coupled_conv_abs);
+	}
+	if( field_parser.search(1,"CoupledConvRel") )
+	{
+		input_params.coupled_conv_rel = field_parser.next(input_params.coupled_conv_rel);
+	}
+	if( field_parser.search(1,"CoupledDiv") )
+	{
+		input_params.coupled_div = field_parser.next(input_params.coupled_div);
+	}
+	if( field_parser.search(1,"CoupledIterMax") )
+	{
+		input_params.coupled_iter_max = field_parser.next(input_params.coupled_iter_max);
 	}
 
 	if( field_parser.search(1,"Use_restart_data") )
@@ -317,9 +351,18 @@ void get_input_params(GetPot& field_parser,
 		input_params.LATIN_b_PrintRestartFiles = true;
 	}
 
-	if( field_parser.search(1,"LATINRestartDataFiles") )
+	if( field_parser.search(1,"CoupledRestartDataFiles") )
 	{
-		input_params.LATIN_restart_file_base = field_parser.next(input_params.LATIN_restart_file_base);
+		input_params.coupled_restart_file_base = field_parser.next(input_params.coupled_restart_file_base);
+	}
+
+	if( field_parser.search(1,"SkipOutput") )
+	{
+		input_params.b_PrintOutput = false;
+	}
+	else
+	{
+		input_params.b_PrintOutput = true;
 	}
 
 	// Set output files
@@ -334,16 +377,42 @@ void get_input_params(GetPot& field_parser,
 		input_params.output_file_micro = field_parser.next(input_params.output_file_micro);
 	}
 
-	input_params.solver_type = carl::LATIN_MODIFIED_STIFFNESS;
+	input_params.solver_type = carl::CoupledSolverType::LATIN_MODIFIED_STIFFNESS;
+	input_params.CG_precond_type = carl::BaseCGPrecondType::NO_PRECONDITIONER;
 	if ( field_parser.search(1, "SolverType") )
 	{
 		input_params.solver_type_string = field_parser.next(input_params.solver_type_string);
 		if(input_params.solver_type_string == "LATIN_Modified")
-			input_params.solver_type = carl::LATIN_MODIFIED_STIFFNESS;
+			input_params.solver_type = carl::CoupledSolverType::LATIN_MODIFIED_STIFFNESS;
 		if(input_params.solver_type_string == "LATIN_Original_Stiffness")
-			input_params.solver_type = carl::LATIN_ORIGINAL_STIFFNESS;
+			input_params.solver_type = carl::CoupledSolverType::LATIN_ORIGINAL_STIFFNESS;
 		if(input_params.solver_type_string == "CG")
-			input_params.solver_type = carl::CG;
+		{
+			input_params.solver_type = carl::CoupledSolverType::CG;
+			if ( field_parser.search(1, "CGPreconditionerType") )
+			{
+				input_params.CG_precond_type_string = field_parser.next(input_params.CG_precond_type_string);
+				if(input_params.CG_precond_type_string == "NONE")
+					input_params.CG_precond_type = carl::BaseCGPrecondType::NO_PRECONDITIONER;
+				if(input_params.CG_precond_type_string == "Coupling_operator")
+					input_params.CG_precond_type = carl::BaseCGPrecondType::COUPLING_OPERATOR;
+				if(input_params.CG_precond_type_string == "Coupled_system_operator")
+					input_params.CG_precond_type = carl::BaseCGPrecondType::COUPLED_SYSTEM_OPERATOR;
+				if(input_params.CG_precond_type_string == "Coupling_operator_jacobi")
+					input_params.CG_precond_type = carl::BaseCGPrecondType::JACOBI;
+
+			}
+		}
+	}
+
+	if( field_parser.search(1,"ExportScalingData") )
+	{
+		input_params.b_ExportScalingData = true;
+		input_params.scaling_data_file = field_parser.next(input_params.scaling_data_file);
+	}
+	else
+	{
+		input_params.b_ExportScalingData = false;
 	}
 }
 ;
@@ -605,7 +674,6 @@ int main(int argc, char** argv) {
 
 	perf_log.pop("Weight function domain","Read files:");
 
-
 	// - Generate the equation systems -----------------------------------------
 	perf_log.push("Initialization","System initialization:");
 	carl::coupled_system CoupledTest(WorldComm,input_params.solver_type);
@@ -616,6 +684,7 @@ int main(int argc, char** argv) {
 	// Add the weight function mesh
 	CoupledTest.add_alpha_mask("MicroSys",mesh_weight);
 	CoupledTest.set_alpha_mask_parameters("MicroSys",domain_Idx_BIG,domain_Idx_micro[0],domain_Idx_coupling[0]);
+	
 	perf_log.pop("Initialization","System initialization:");
 
 	// - Build the BIG system --------------------------------------------------
@@ -754,20 +823,36 @@ int main(int argc, char** argv) {
 	std::cout << "|    E            : " << BIG_E << std::endl;
 	std::cout << "|    Mu (lamba_2) : " << BIG_Mu << std::endl;
 	std::cout << "|    lambda_1     : " << eval_lambda_1(BIG_E,BIG_Mu) << std::endl;
-	std::cout << "| LATIN :" << std::endl;
-	std::cout << "|    k_dA, k_dB   : " << input_params.k_dA << " " << input_params.k_dB << std::endl;
-	std::cout << "|    k_cA, k_cB   : " << input_params.k_cA << " " << input_params.k_cB << std::endl;
+	std::cout << "| Coupling :" << std::endl;
 	std::cout << "|    kappa        : " << coupling_const << std::endl;
 	std::cout << "|    e            : " << input_params.mean_distance << std::endl;
-	std::cout << "|    restart file : " << input_params.LATIN_restart_file_base << "*" << std::endl;
+
+	switch(input_params.solver_type)
+	{
+		case carl::LATIN_MODIFIED_STIFFNESS:
+		case carl::LATIN_ORIGINAL_STIFFNESS:
+		{
+			std::cout << "| LATIN :" << std::endl;
+			std::cout << "|    k_dA, k_dB   : " << input_params.k_dA << " " << input_params.k_dB << std::endl;
+			std::cout << "|    k_cA, k_cB   : " << input_params.k_cA << " " << input_params.k_cB << std::endl;
+			break;
+		}
+		case carl::CG:
+		{
+			break;
+		}
+	}
+	perf_log.pop("Set coupling matrices");
+	
+	std::cout << "| restart file    : " << input_params.coupled_restart_file_base << "*" << std::endl;
 
 	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
-	perf_log.push("Set up","LATIN Solver:");
+	perf_log.push("Set up","Coupled Solver:");
 	if(input_params.LATIN_b_PrintRestartFiles || input_params.LATIN_b_UseRestartFiles)
 	{
 		CoupledTest.set_restart(	input_params.LATIN_b_UseRestartFiles,
 				input_params.LATIN_b_PrintRestartFiles,
-				input_params.LATIN_restart_file_base);
+				input_params.coupled_restart_file_base);
 	}
 	std::cout << std::endl << "| --> Setting the solver " << std::endl << std::endl;
 
@@ -785,20 +870,23 @@ int main(int argc, char** argv) {
 		}
 		case carl::CG:
 		{
+			CoupledTest.set_cg_preconditioner_type(input_params.CG_precond_type);
 			CoupledTest.set_CG_solver(	"MicroSys","Elasticity",
 											assemble_elasticity_with_weight,
-											assemble_elasticity_with_weight_micro);
+											assemble_elasticity_with_weight_micro,
+											input_params.coupled_conv_abs,input_params.coupled_conv_rel,
+											input_params.coupled_iter_max,input_params.coupled_div);
 			break;
 		}
 	}
 
-	perf_log.pop("Set up","LATIN Solver:");
+	perf_log.pop("Set up","Coupled Solver:");
 
 
 	// Solve !
-	perf_log.push("Solve","LATIN Solver:");
-	CoupledTest.solve("MicroSys","Elasticity",input_params.LATIN_convergence_output);
-	perf_log.pop("Solve","LATIN Solver:");
+	perf_log.push("Solve","Coupled Solver:");
+	CoupledTest.solve("MicroSys","Elasticity",input_params.coupled_convergence_output);
+	perf_log.pop("Solve","Coupled Solver:");
 
 	// Calculate stress
 	perf_log.push("Compute stress - micro","Output:");
@@ -811,27 +899,32 @@ int main(int argc, char** argv) {
 
 	// Export solution
 #ifdef LIBMESH_HAVE_EXODUS_API
-	perf_log.push("Save output","Output:");
-	libMesh::ExodusII_IO exo_io_micro(mesh_micro, /*single_precision=*/true);
+	if(input_params.b_PrintOutput)
+	{
+		perf_log.push("Save output","Output:");
+		libMesh::ExodusII_IO exo_io_micro(mesh_micro, /*single_precision=*/true);
 
-	std::set<std::string> system_names_micro;
-	system_names_micro.insert("Elasticity");
-	exo_io_micro.write_equation_systems(input_params.output_file_micro,equation_systems_micro,&system_names_micro);
+		std::set<std::string> system_names_micro;
+		system_names_micro.insert("Elasticity");
+		exo_io_micro.write_equation_systems(input_params.output_file_micro,equation_systems_micro,&system_names_micro);
 
-	exo_io_micro.write_element_data(equation_systems_micro);
+		exo_io_micro.write_element_data(equation_systems_micro);
 
-	libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
+		libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
 
-	std::set<std::string> system_names_BIG;
-	system_names_BIG.insert("Elasticity");
-	exo_io_BIG.write_equation_systems(input_params.output_file_BIG,equation_systems_BIG,&system_names_BIG);
+		std::set<std::string> system_names_BIG;
+		system_names_BIG.insert("Elasticity");
+		exo_io_BIG.write_equation_systems(input_params.output_file_BIG,equation_systems_BIG,&system_names_BIG);
 
-	exo_io_BIG.write_element_data(equation_systems_BIG);
-	perf_log.pop("Save output","Output:");
+		exo_io_BIG.write_element_data(equation_systems_BIG);
+		perf_log.pop("Save output","Output:");
+	}
 #endif
 
-	std::ofstream perf_log_file("perf_log_" + std::to_string(rank)  + ".txt");
-	perf_log_file << perf_log.get_log();
-	perf_log_file.close();
+	if(input_params.b_ExportScalingData)
+	{
+		CoupledTest.print_perf_log(input_params.scaling_data_file);
+	}
+
 	return 0;
 }
