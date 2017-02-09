@@ -74,17 +74,26 @@ void H1_Coupling_Extra_Term(	libMesh::DenseSubMatrix<libMesh::Number>& Coupl,
 								const libMesh::Number cte
 								)
 {
+	int d_ik = kronecker_delta(C_i,C_k);
+	int d_jl = 0;
+	int d_il = 0;
+	int d_jk = 0;
+	double JW = JxW[qp];
+
 	for (unsigned int iii=0; iii < n_dofs_sysA; iii++)
 	{
+		const libMesh::RealGradient& dphy_sysA_grad = dphi_sysA[iii][qp];
 		for (unsigned int jjj=0; jjj < n_dofs_sysB; jjj++)
 		{
+			const libMesh::RealGradient& dphy_sysB_grad = dphi_sysB[jjj][qp];
 			for(unsigned int C_j=0; C_j<n_components_A; C_j++)
 			{
+				d_jk = kronecker_delta(C_j,C_k);
 				for(unsigned int C_l=0; C_l<n_components_B; C_l++)
 				{
-					Coupl(iii,jjj) += cte*JxW[qp]* dphi_sysA[iii][qp](C_j)*dphi_sysB[jjj][qp](C_l) *
-											( kronecker_delta(C_i,C_k) * kronecker_delta(C_j,C_l) +
-											  kronecker_delta(C_i,C_l) * kronecker_delta(C_j,C_k));
+					d_il = kronecker_delta(C_i,C_l);
+					d_jl = kronecker_delta(C_j,C_l);
+					Coupl(iii,jjj) += cte*JW* dphy_sysA_grad(C_j)*dphy_sysB_grad(C_l) * ( d_ik * d_jl + d_il * d_jk ) ;
 				}
 			}
 		}
