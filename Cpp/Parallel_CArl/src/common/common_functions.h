@@ -11,7 +11,7 @@
 #include "common_header_libmesh.h"
 #include "common_header.h"
 
-libMesh::Real kronecker_delta(unsigned int i,
+int kronecker_delta(unsigned int i,
 				   unsigned int j);
 
 void clear_line();
