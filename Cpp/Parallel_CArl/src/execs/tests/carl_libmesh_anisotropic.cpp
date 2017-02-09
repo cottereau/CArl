@@ -734,10 +734,10 @@ int main(int argc, char** argv) {
 					CoupledTest.set_Restricted_BIG_EquationSystem("BigSys", mesh_R_BIG);
 
 	// [R. MACRO] Set up the physical properties
-	libMesh::LinearImplicitSystem& elasticity_system_R_BIG
-										= add_elasticity(equation_systems_R_BIG);
+	libMesh::ExplicitSystem& elasticity_system_R_BIG
+										= add_explicit_elasticity(equation_systems_R_BIG);
 
-	equation_systems_R_BIG.init();
+	carl::reduced_system_init(elasticity_system_R_BIG);
 
 	perf_log.pop("RESTRICTED macro system","System initialization:");
 
@@ -749,10 +749,11 @@ int main(int argc, char** argv) {
 					CoupledTest.add_Restricted_micro_EquationSystem("MicroSys", mesh_R_micro);
 
 	// [R. MICRO] Set up the physical properties
-	libMesh::LinearImplicitSystem& elasticity_system_R_micro
-										= add_elasticity(equation_systems_R_micro);
+	libMesh::ExplicitSystem& elasticity_system_R_micro
+										= add_explicit_elasticity(equation_systems_R_micro);
 
-	equation_systems_R_micro.init();
+	carl::reduced_system_init(elasticity_system_R_micro);
+
 	perf_log.pop("RESTRICTED micro system","System initialization:");
 
 	// - Build the mediator system ---------------------------------------------
@@ -775,10 +776,10 @@ int main(int argc, char** argv) {
 
 	perf_log.push("Intersection system","System initialization:");
 
-	libMesh::LinearImplicitSystem& elasticity_system_inter
-										= add_elasticity(equation_systems_inter);
+	libMesh::ExplicitSystem& elasticity_system_inter
+										= add_explicit_elasticity(equation_systems_inter);
 
-	equation_systems_inter.init();
+	carl::reduced_system_init(elasticity_system_inter);
 
 	WorldComm.barrier();
 

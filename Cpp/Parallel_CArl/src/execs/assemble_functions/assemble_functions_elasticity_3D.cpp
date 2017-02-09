@@ -126,6 +126,34 @@ libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_s
 	return elasticity_system;
 }
 
+libMesh::ExplicitSystem& add_explicit_elasticity(	libMesh::EquationSystems& input_systems,
+												libMesh::Order order,
+												libMesh::FEFamily family)
+{
+	libMesh::ExplicitSystem& physical_variables =
+			input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
+
+	// Physical constants are set as constant, monomial
+	physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("Index", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("Angle_x", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("Angle_y", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("Angle_z", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("color_r", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("color_g", libMesh::CONSTANT, libMesh::MONOMIAL);
+	physical_variables.add_variable("color_b", libMesh::CONSTANT, libMesh::MONOMIAL);
+
+	libMesh::ExplicitSystem& elasticity_system =
+			input_systems.add_system<libMesh::ExplicitSystem> ("Elasticity");
+
+	elasticity_system.add_variable("u", order, family);
+	elasticity_system.add_variable("v", order, family);
+	elasticity_system.add_variable("w", order, family);
+
+	return elasticity_system;
+}
+
 libMesh::LinearImplicitSystem& add_elasticity_with_assemble(	libMesh::EquationSystems& input_systems,
 						void fptr(	libMesh::EquationSystems& es,
 									const std::string& name),

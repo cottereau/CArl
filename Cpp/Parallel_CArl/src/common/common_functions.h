@@ -66,6 +66,24 @@ struct PointHash_3D_Equal {
 };
 
 void print_stats_to_file(std::vector<double>& vec_data, const std::string filename);
+
+// Do libMesh's system initialization without the matrix and vector memory allocations
+template<typename Sys>
+void reduced_system_init(Sys& system_input)
+{
+	libMesh::DofMap& system_dof_map = system_input.get_dof_map();
+	libMesh::MeshBase& system_mesh = system_input.get_mesh();
+	
+	unsigned int nb_of_variable_groups = system_input.n_variable_groups();
+	for (unsigned int vg=0; vg<nb_of_variable_groups; vg++)
+	{
+		system_dof_map.add_variable_group(system_input.variable_group(vg));
+	}
+
+	system_dof_map.distribute_dofs(system_mesh);
+	system_input.reinit_constraints();
+	system_dof_map.prepare_send_list();
+};
 }
 
 #endif /* COMMON_COMMON_FUNCTIONS_H_ */

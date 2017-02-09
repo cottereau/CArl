@@ -113,6 +113,11 @@ libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_s
 												libMesh::Order order = libMesh::FIRST,
 												libMesh::FEFamily family = libMesh::LAGRANGE);
 
+
+libMesh::ExplicitSystem& add_explicit_elasticity(	libMesh::EquationSystems& input_systems,
+												libMesh::Order order = libMesh::FIRST,
+												libMesh::FEFamily family = libMesh::LAGRANGE);
+
 libMesh::LinearImplicitSystem& add_elasticity_with_assemble(	libMesh::EquationSystems& input_systems,
 												void fptr(	libMesh::EquationSystems& es,
 															const std::string& name),

@@ -18,6 +18,7 @@
 #include "libmesh/gnuplot_io.h"
 #include "libmesh/gmsh_io.h"
 #include "libmesh/linear_implicit_system.h"
+#include "libmesh/explicit_system.h"
 #include "libmesh/equation_systems.h"
 #include "libmesh/fe.h"
 #include "libmesh/fe_interface.h"

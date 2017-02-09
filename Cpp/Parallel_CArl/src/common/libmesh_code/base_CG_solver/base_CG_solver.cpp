@@ -776,7 +776,6 @@ void base_CG_solver::solve()
 
 		m_CG_Index[kkk] = m_rho;
 
-		// p(k + 1) = M_proj * ( z(k + 1) + beta(k + 1) * p(k) ) ?
 		// p(k + 1) = z(k + 1) + beta(k + 1) * p(k) ?
 		m_p = m_z;
 		m_p.add(m_beta,m_p_prev);
