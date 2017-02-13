@@ -702,11 +702,6 @@ void assemble_elasticity_with_weight(	libMesh::EquationSystems& es,
 			Update_SubK(Kww, qp, 2, 2, dphi, n_components, n_u_dofs, JxW, localE, localMu, alpha_BIG);
 
 			perf_log.pop("Rigidity","Matrix element calculations");
-
-			// Gravity
-			//		if(z_force)
-			//		{
-
 		}
 
 		// Apply constraints
@@ -949,7 +944,7 @@ void assemble_elasticity_with_weight_micro_and_traction(	libMesh::EquationSystem
 	// -> Face traction
 	boundary_id_cube boundary_ids;
 	libMesh::DenseVector<libMesh::Number> g_vec(3);
-	g_vec(0) = -1.;
+	g_vec(0) = 100.;
 	g_vec(1) = 0.;
 	g_vec(2) = 0.;
 
@@ -1072,6 +1067,7 @@ void assemble_elasticity_with_weight_micro_and_traction(	libMesh::EquationSystem
 			perf_log.pop("Rigidity","Matrix element calculations");
 		}
 
+
 		// Assemble the traction
 		for (unsigned int side=0; side<elem->n_sides(); side++)
 		{
@@ -1084,12 +1080,11 @@ void assemble_elasticity_with_weight_micro_and_traction(	libMesh::EquationSystem
 				{
 					alpha_micro = weight_mask.get_alpha_micro(qp_face_points[qp]);
 					if (mesh.get_boundary_info().has_boundary_id(elem, side, boundary_ids.MAX_X))
-					{
+					{	
 						for (unsigned int dof_iii=0; dof_iii<n_u_dofs; dof_iii++)
 						{
-							Fu(dof_iii) += alpha_micro*JxW_face[qp] * (g_vec(0) * phi_face[dof_iii][qp]);
+							Fu(dof_iii) += alpha_micro * JxW_face[qp] * (g_vec(0) * phi_face[dof_iii][qp]);
 						}
-
 					}
 				}
 			}

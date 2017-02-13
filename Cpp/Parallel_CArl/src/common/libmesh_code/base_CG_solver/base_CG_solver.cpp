@@ -296,7 +296,7 @@ void base_CG_solver::apply_CG_runtime_nullspace_residual_projection(libMesh::Pet
 
 void base_CG_solver::apply_CG_runtime_nullspace_force_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
 {
-	// vec_out = RC * (inv_RITRI_mat) * R^t* vec_in
+	// vec_out = - RC * (inv_RITRI_mat) * R^t* vec_in
 
 	m_perf_log.push("Apply nullspace projector - force","Preconditioner and projections");
 	// aux_vec_input = R^t * vec_in
@@ -322,6 +322,9 @@ void base_CG_solver::apply_CG_runtime_nullspace_force_projection(libMesh::PetscV
 	VecGetArray(aux_null_vec_output,&dummy_array_output);
 	VecMAXPY(vec_out.vec(),null_nb_vecs,dummy_array_output,null_coupled_vecs);
 	VecRestoreArray(aux_null_vec_output,&dummy_array_output);
+
+	vec_out.scale(-1);
+	
 	m_perf_log.pop("Apply nullspace projector - force","Preconditioner and projections");
 }
 
