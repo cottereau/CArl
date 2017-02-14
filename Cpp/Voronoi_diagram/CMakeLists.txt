@@ -50,15 +50,25 @@ set ( SOURCE_DIR src)
 include_directories( ${SOURCE_DIR} )
 
 # set source sets
-file ( GLOB VORO_TEST_SRC "${SOURCE_DIR}/*.h" "${SOURCE_DIR}/*.cpp" ) 
-
+set ( VORO_LIBS "${SOURCE_DIR}/voro_functions.h" "${SOURCE_DIR}/voro_functions.cpp" )
+set ( VORO_PARSER_LIBS "${SOURCE_DIR}/raw_data_parser.h" "${SOURCE_DIR}/raw_data_parser.cpp" )
+set ( VORO_TEST_SRC "${SOURCE_DIR}/getpot.h" "${SOURCE_DIR}/main.cpp" ) 
+set ( VORO_TEST_CUT_SRC "${SOURCE_DIR}/getpot.h" "${SOURCE_DIR}/test_semi_plan_wall.cpp" ) 
+set ( VORO_TEST_SEMI_SRC "${SOURCE_DIR}/getpot.h" "${SOURCE_DIR}/main_walls.cpp" ) 
+set ( VORO_PARSER "${SOURCE_DIR}/getpot.h" "${SOURCE_DIR}/parse_test.cpp" )
 # Creating entries
 # ############################
 
-add_executable( voro3D ${VORO_TEST_SRC} )
+add_executable( voro3D ${VORO_TEST_SRC} ${VORO_LIBS} )
+add_executable( voro3D_half ${VORO_TEST_SEMI_SRC} ${VORO_LIBS} )
+add_executable( test_half ${VORO_TEST_CUT_SRC} )
+add_executable (data_parser ${VORO_PARSER} ${VORO_LIBS} ${VORO_PARSER_LIBS})
 
 # set ( LIB_DIR /opt/local/lib)
 # set ( BOOST_LIBRARIES ${LIB_DIR}/libboost_filesystem-mt.dylib ${LIB_DIR}/libboost_serialization-mt.dylib)
 
 # Link the executable
 target_link_libraries( voro3D ${BOOST_LIBRARIES} ${Boost_LIBRARIES} voro++ )
+target_link_libraries( voro3D_half ${BOOST_LIBRARIES} ${Boost_LIBRARIES} voro++ )
+target_link_libraries( test_half ${BOOST_LIBRARIES} ${Boost_LIBRARIES} voro++ )
+target_link_libraries( data_parser ${BOOST_LIBRARIES} ${Boost_LIBRARIES} voro++ )

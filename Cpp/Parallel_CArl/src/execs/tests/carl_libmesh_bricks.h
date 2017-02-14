@@ -9,6 +9,7 @@
 #define EXECS_CARL_LIBMESH_BRICKS_MAIN_H_
 
 #include "carl_headers.h"
+#include "carl_input_parser.h"
 
 #include "mesh_tables.h"
 #include "coupled_system.h"
