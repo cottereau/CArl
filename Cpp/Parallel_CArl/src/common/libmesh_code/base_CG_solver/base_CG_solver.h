@@ -169,6 +169,8 @@ private:
 	bool m_bCreatedRigidBodyProjectors_built;
 	bool m_bCreatedRigidBodyProjectors_runtime;
 
+	bool m_bReorthogonalizeCorrections;
+
 	// Preconditioner flag
 	BaseCGPrecondType m_precond_type;
 
@@ -207,6 +209,7 @@ public:
 		m_bUseNullSpaceProjector { false },
 		m_bCreatedRigidBodyProjectors_built { false },
 		m_bCreatedRigidBodyProjectors_runtime { false },
+		m_bReorthogonalizeCorrections { false },
 		m_precond_type { BaseCGPrecondType::NO_PRECONDITIONER }
 	{
 		set_nullspace_matrices = &base_CG_solver::build_CG_runtime_null_space_projection_matrices;

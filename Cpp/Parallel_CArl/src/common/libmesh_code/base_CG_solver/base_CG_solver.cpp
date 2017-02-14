@@ -664,33 +664,64 @@ void base_CG_solver::solve()
 
 	m_perf_log.push("Setup");
 	// Create the iteration vectors
-	libMesh::PetscVector<libMesh::Number> m_p(*m_comm), m_p_prev(*m_comm);
-	libMesh::PetscVector<libMesh::Number> m_q_prev(*m_comm);
+	libMesh::PetscVector<libMesh::Number> m_x(*m_comm), m_x_prev(*m_comm), m_x_delta(*m_comm);
 	libMesh::PetscVector<libMesh::Number> m_r(*m_comm), m_r_prev(*m_comm);
 	libMesh::PetscVector<libMesh::Number> m_z(*m_comm);
-	libMesh::PetscVector<libMesh::Number> m_x(*m_comm), m_x_prev(*m_comm), m_x_delta(*m_comm);
+	libMesh::PetscVector<libMesh::Number> m_p_direct(*m_comm), m_p_prev_direct(*m_comm);
+	libMesh::PetscVector<libMesh::Number> m_q_prev_direct(*m_comm);
 
-	m_p.init(m_sys_N,m_sys_local_N);
-	m_p.zero();
-	m_p.close();
+	libMesh::PetscVector<libMesh::Number> * m_p_ptr;
+	libMesh::PetscVector<libMesh::Number> * m_p_prev_ptr;
+	libMesh::PetscVector<libMesh::Number> * m_q_prev_ptr;
 
-	m_p_prev.init(m_p); 	m_p_prev.close();
-	m_q_prev.init(m_p); 	m_q_prev.close();
-	m_r.init(m_p);      	m_r.close();
-	m_r_prev.init(m_p); 	m_r_prev.close();
-	m_z.init(m_p);      	m_z.close();
-	m_x.init(m_p);      	m_x.close();
-	m_x_prev.init(m_p); 	m_x_prev.close();
-	m_x_delta.init(m_p);	m_x_delta.close();
-	m_aux.init(m_p);    	m_aux.close();
-	m_aux_bis.init(m_p);	m_aux_bis.close();
+	std::vector<std::unique_ptr<libMesh::PetscVector<libMesh::Number> > > m_p_reorth;
+	std::vector<std::unique_ptr<libMesh::PetscVector<libMesh::Number> > > m_q_reorth;
+
+	m_x.init(m_sys_N,m_sys_local_N);
+
+	m_x_prev.init(m_x);
+	m_x_delta.init(m_x);
 	m_x_prev = *m_initial_sol;
+
+	m_r.init(m_x);
+	m_r_prev.init(m_x);
+	m_z.init(m_x);
+
+	if(m_bReorthogonalizeCorrections)
+	{
+		m_p_reorth.resize(m_CG_conv_max_n + 1);
+		m_q_reorth.resize(m_CG_conv_max_n + 1);
+
+		libMesh::PetscVector<libMesh::Number> * copy_p = new libMesh::PetscVector<libMesh::Number>(m_x.comm(), m_x.type());
+		libMesh::PetscVector<libMesh::Number> * copy_p_prev = new libMesh::PetscVector<libMesh::Number>(m_x.comm(), m_x.type());
+		libMesh::PetscVector<libMesh::Number> * copy_q_prev = new libMesh::PetscVector<libMesh::Number>(m_x.comm(), m_x.type());
+		m_q_reorth[0] = std::unique_ptr<libMesh::PetscVector<libMesh::Number> >(copy_q_prev);
+		m_p_reorth[0] = std::unique_ptr<libMesh::PetscVector<libMesh::Number> >(copy_p_prev);
+		m_p_reorth[1] = std::unique_ptr<libMesh::PetscVector<libMesh::Number> >(copy_p);
+
+		m_p_ptr = m_p_reorth[1].get();
+		m_p_prev_ptr = m_p_reorth[0].get();
+		m_q_prev_ptr = m_q_reorth[0].get();
+	}
+	else
+	{
+		m_p_direct.init(m_x);
+		m_p_prev_direct.init(m_x);
+		m_q_prev_direct.init(m_x);
+
+		m_p_ptr = &m_p_direct;
+		m_p_prev_ptr = &m_p_prev_direct;
+		m_q_prev_ptr = &m_q_prev_direct;
+	}
+
+	m_aux.init(m_x);
+	m_aux_bis.init(m_x);
 
 	// Set the iteration search parameters
 	double m_rho = 0, m_beta = 0;
 	double m_rho_prev = 0, m_alpha_prev = 0;
 	double m_rho_zero = 0;
-	double aux_double = 0;
+	std::vector<double> aux_double(m_CG_conv_max_n,0);
 	double rel_sol_eps = 0;
 
 	std::cout << "|     Finished setup " << std::endl;
@@ -729,7 +760,7 @@ void base_CG_solver::solve()
 	m_rho_zero = m_rho_prev;
 
 	// p(0) = z(0)
-	m_p_prev = m_z;
+	*m_p_prev_ptr = m_z;
 	m_perf_log.pop("Initalization");
 
 	std::cout << "|     Finished preamble: " << std::endl;
@@ -739,6 +770,8 @@ void base_CG_solver::solve()
 	bool bKeepIterating = true;
 	bool bConverged = false;
 	bool bDiverged = false;
+
+	double aux_reorth = 0;
 
 	std::cout << "|" << std::endl;
 	std::cout << "|        rho(0)        :" << m_rho_prev << std::endl;
@@ -750,21 +783,21 @@ void base_CG_solver::solve()
 	while(bKeepIterating)
 	{
 		// q(k) = A * p(k)
-		(this->*apply_system_matrix)(m_p_prev,m_q_prev);
+		(this->*apply_system_matrix)(*m_p_prev_ptr,*m_q_prev_ptr);
 
 		// aux_double = p(k) . q(k) = p(k) * A * p(k)
-		aux_double = m_p_prev.dot(m_q_prev);
+		aux_double[kkk] = m_p_prev_ptr->dot(*m_q_prev_ptr);
 
 		// alpha(k) = r(k) . z(k) / ( p(k) * A * p(k) )
 		//          = rho(k)      / aux_double
-		m_alpha_prev = m_rho_prev / aux_double;
+		m_alpha_prev = m_rho_prev / aux_double[kkk];
 
 		// x(k + 1) = x(k) + alpha(k) * p(k)
-		m_x = m_x_prev; m_x.add(m_alpha_prev,m_p_prev);
+		m_x = m_x_prev; m_x.add(m_alpha_prev,*m_p_prev_ptr);
 
 		// r(k + 1) = r(k) - alpha(k) * A * p(k)
 		//          = r(k) - alpha(k) * q(k)
-		m_r = m_r_prev; m_r.add(-m_alpha_prev,m_q_prev);
+		m_r = m_r_prev; m_r.add(-m_alpha_prev,*m_q_prev_ptr);
 
 		// z(k + 1) = r(k + 1) ?
 		// z(k + 1) = M_PC^-1 * r(k + 1) ?
@@ -776,17 +809,32 @@ void base_CG_solver::solve()
 		// rho(k + 1) = r(k + 1) . z(k + 1)
 		m_rho = m_r.dot(m_z);
 
-		// beta(k + 1) = rho(k + 1) / rho(k)
-		m_beta = m_rho / m_rho_prev;
-
 		m_CG_Index[kkk] = m_rho;
-
-		// p(k + 1) = z(k + 1) + beta(k + 1) * p(k) ?
-		m_p = m_z;
-		m_p.add(m_beta,m_p_prev);
 
 		// Advance iteration
 		++kkk;
+
+		if(m_bReorthogonalizeCorrections)
+		{
+			// p(k + 1) = z(k + 1) + \sum (i = 0 ... k ) gamma(i) * p(i)
+			*m_p_ptr = m_z;
+
+			for(int iii = 0; iii < kkk; ++iii)
+			{
+				// gamma(i) = - z(k + 1) . q(i) / p(i) . q(i)
+				aux_reorth = - m_z.dot(*m_q_reorth[iii]) / aux_double[iii];
+				m_p_ptr->add(aux_reorth,*m_p_reorth[iii]);
+			}
+		}
+		else
+		{
+			// beta(k + 1) = rho(k + 1) / rho(k)
+			m_beta = m_rho / m_rho_prev;
+
+			// p(k + 1) = z(k + 1) + beta(k + 1) * p(k)
+			*m_p_ptr = m_z;
+			m_p_ptr->add(m_beta,*m_p_prev_ptr);
+		}
 
 		// Calculate relative iteration error 
 		m_x_delta = m_x;
@@ -804,7 +852,22 @@ void base_CG_solver::solve()
 		}
 		else
 		{
-			m_p_prev = m_p;
+			if(m_bReorthogonalizeCorrections)
+			{
+				libMesh::PetscVector<libMesh::Number> * copy_p = new libMesh::PetscVector<libMesh::Number>(m_x.comm(), m_x.type());
+				libMesh::PetscVector<libMesh::Number> * copy_q_prev = new libMesh::PetscVector<libMesh::Number>(m_x.comm(), m_x.type());
+				m_q_reorth[kkk] = std::unique_ptr<libMesh::PetscVector<libMesh::Number> >(copy_q_prev);
+				m_p_reorth[kkk + 1] = std::unique_ptr<libMesh::PetscVector<libMesh::Number> >(copy_p);
+
+				m_p_ptr      = m_p_reorth[kkk + 1].get();
+				m_p_prev_ptr = m_p_reorth[kkk].get();
+				m_q_prev_ptr = m_q_reorth[kkk].get();
+			}
+			else
+			{
+				m_p_prev_direct = m_p_direct;
+			}
+			
 			m_rho_prev = m_rho;
 			m_x_prev = m_x;
 			m_r_prev = m_r;
