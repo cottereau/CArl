@@ -115,7 +115,7 @@ private:
 	void set_sol_vectors();
 
 	// Convergence / divergence tests
-	bool test_convergence(unsigned int iter, double res_norm, double init_res_norm);
+	bool test_convergence(unsigned int iter, double res_norm, double init_res_norm, double rel_sol_eps);
 
 	bool test_divergence(unsigned int iter, double res_norm, double init_res_norm);
 

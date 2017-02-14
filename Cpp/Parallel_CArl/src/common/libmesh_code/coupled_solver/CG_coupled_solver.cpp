@@ -276,7 +276,7 @@ void carl::PETSC_CG_coupled_solver::solve()
 		// U_2_corr = U_2 + null_space_corr * coupling_residual
 		std::cout << " Adding correction" << std::endl;
 		m_coupling_solver.get_residual_vector(vec_aux_lambda);
-		this->add_nullspace_correction(vec_aux_lambda,*m_sol_B);
+		m_coupling_solver.add_CG_nullspace_correction(vec_aux_lambda,*m_sol_B);
 	}
 
 	perf_log.pop("KSP solver - B","Solution");

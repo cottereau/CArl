@@ -668,7 +668,7 @@ void base_CG_solver::solve()
 	libMesh::PetscVector<libMesh::Number> m_q_prev(*m_comm);
 	libMesh::PetscVector<libMesh::Number> m_r(*m_comm), m_r_prev(*m_comm);
 	libMesh::PetscVector<libMesh::Number> m_z(*m_comm);
-	libMesh::PetscVector<libMesh::Number> m_x(*m_comm), m_x_prev(*m_comm);
+	libMesh::PetscVector<libMesh::Number> m_x(*m_comm), m_x_prev(*m_comm), m_x_delta(*m_comm);
 
 	m_p.init(m_sys_N,m_sys_local_N);
 	m_p.zero();
@@ -681,6 +681,7 @@ void base_CG_solver::solve()
 	m_z.init(m_p);      	m_z.close();
 	m_x.init(m_p);      	m_x.close();
 	m_x_prev.init(m_p); 	m_x_prev.close();
+	m_x_delta.init(m_p);	m_x_delta.close();
 	m_aux.init(m_p);    	m_aux.close();
 	m_aux_bis.init(m_p);	m_aux_bis.close();
 	m_x_prev = *m_initial_sol;
@@ -690,6 +691,7 @@ void base_CG_solver::solve()
 	double m_rho_prev = 0, m_alpha_prev = 0;
 	double m_rho_zero = 0;
 	double aux_double = 0;
+	double rel_sol_eps = 0;
 
 	std::cout << "|     Finished setup " << std::endl;
 
@@ -786,8 +788,14 @@ void base_CG_solver::solve()
 		// Advance iteration
 		++kkk;
 
+		// Calculate relative iteration error 
+		m_x_delta = m_x;
+		m_x_delta.add(-1,m_x_prev);
+
+		rel_sol_eps = m_x_delta.l2_norm() / m_x.l2_norm();
+
 		// Check convergence
-		bConverged = test_convergence(kkk,m_rho,m_rho_zero);
+		bConverged = test_convergence(kkk,m_rho,m_rho_zero,rel_sol_eps);
 		bDiverged = test_divergence(kkk,m_rho,m_rho_zero);
 
 		if(bConverged || bDiverged)
@@ -833,16 +841,22 @@ void base_CG_solver::get_residual_vector(libMesh::PetscVector<libMesh::Number>& 
 	vec_out.add(1,*m_rhs);
 };
 
-bool base_CG_solver::test_convergence(unsigned int iter, double res_norm, double init_res_norm)
+bool base_CG_solver::test_convergence(unsigned int iter, double res_norm, double init_res_norm, double rel_sol_eps)
 {
 	if(std::abs(res_norm) < m_CG_conv_eps_abs) // Absolute convergence
 	{
-		std::cout << "| Absolute convergence : | " << res_norm  << " | < " << m_CG_conv_eps_abs << std::endl;
+		std::cout << "| Absolute convergence : " << res_norm  << " < " << m_CG_conv_eps_abs << std::endl;
 		return true;
 	}
-	if(res_norm < m_CG_conv_eps_rel * init_res_norm  && res_norm > 0) // Relative convergence
+	// if(res_norm < m_CG_conv_eps_rel * init_res_norm  && res_norm > 0) // Relative convergence
+	// {
+	// 	std::cout << "| Relative convergence : | " << res_norm  << " | < " << m_CG_conv_eps_rel << "*" << init_res_norm << std::endl;
+	// 	return true;
+	// }
+	if(rel_sol_eps < m_CG_conv_eps_rel) // Relative solution convergence
 	{
-		std::cout << "| Relative convergence : | " << res_norm  << " | < " << m_CG_conv_eps_rel << "*" << init_res_norm << std::endl;
+		std::cout << "| Relative solution convergence : " << rel_sol_eps  << " < " << m_CG_conv_eps_rel <<  std::endl;
+		
 		return true;
 	}
 
@@ -858,7 +872,7 @@ bool base_CG_solver::test_divergence(unsigned int iter, double res_norm, double 
 	}
 	if(std::abs(res_norm) > m_CG_div_tol * init_res_norm)      // Residual divergence
 	{
-		std::cout << "| Residual divergence : | " << res_norm  << " | > " << m_CG_div_tol << "*" << init_res_norm << std::endl;
+		std::cout << "| Residual divergence : " << res_norm  << " > " << m_CG_div_tol << "*" << init_res_norm << std::endl;
 		return true;
 	}
 
