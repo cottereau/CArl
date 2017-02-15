@@ -209,7 +209,7 @@ public:
 		m_bUseNullSpaceProjector { false },
 		m_bCreatedRigidBodyProjectors_built { false },
 		m_bCreatedRigidBodyProjectors_runtime { false },
-		m_bReorthogonalizeCorrections { false },
+		m_bReorthogonalizeCorrections { true },
 		m_precond_type { BaseCGPrecondType::NO_PRECONDITIONER }
 	{
 		set_nullspace_matrices = &base_CG_solver::build_CG_runtime_null_space_projection_matrices;
@@ -284,7 +284,7 @@ public:
 
 	void set_initial_sol(libMesh::PetscVector<libMesh::Number>& init_sol_in);
 
-	void set_solver_LATIN(generic_solver_interface& solver_correction, libMesh::PetscVector<libMesh::Number>& sys_mat_in, double search_k_in);
+	void set_solver_LATIN(generic_solver_interface& solver_correction, libMesh::PetscMatrix<libMesh::Number>& sys_mat_in, double search_k_in);
 
 	void set_solver_CG(generic_solver_interface& solver_in_A, generic_solver_interface& solver_in_B);
 

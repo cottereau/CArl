@@ -550,13 +550,14 @@ void base_CG_solver::set_solver_matrix(libMesh::PetscMatrix<libMesh::Number>& sy
 	m_bSystemOperatorSet = true;
 };
 
-void base_CG_solver::set_solver_LATIN(generic_solver_interface& solver_correction, libMesh::PetscVector<libMesh::Number>& sys_mat_in, double search_k_in)
+void base_CG_solver::set_solver_LATIN(generic_solver_interface& solver_correction, libMesh::PetscMatrix<libMesh::Number>& sys_mat_in, double search_k_in)
 {
 	// Set the coupling correction solver
 	m_solver_A = &solver_correction;
 	apply_system_matrix = &base_CG_solver::apply_LATIN_operator;
 
 	// Check and set the system dimensions
+	m_sys_mat = &sys_mat_in;
 	homemade_assert_msg(m_sys_mat->n() == m_sys_mat->m(), "System matrix must be square!\n");
 	m_sys_N = m_sys_mat->m();
 	int silly_local;
@@ -667,8 +668,12 @@ void base_CG_solver::solve()
 	libMesh::PetscVector<libMesh::Number> m_x(*m_comm), m_x_prev(*m_comm), m_x_delta(*m_comm);
 	libMesh::PetscVector<libMesh::Number> m_r(*m_comm), m_r_prev(*m_comm);
 	libMesh::PetscVector<libMesh::Number> m_z(*m_comm);
+
 	libMesh::PetscVector<libMesh::Number> m_p_direct(*m_comm), m_p_prev_direct(*m_comm);
 	libMesh::PetscVector<libMesh::Number> m_q_prev_direct(*m_comm);
+
+	// libMesh::PetscVector<libMesh::Number> m_sys_coupled_rhs(*m_comm);
+	// libMesh::PetscVector<libMesh::Number> m_sys_coupled_rhs_prev(*m_comm);
 
 	libMesh::PetscVector<libMesh::Number> * m_p_ptr;
 	libMesh::PetscVector<libMesh::Number> * m_p_prev_ptr;
@@ -699,6 +704,10 @@ void base_CG_solver::solve()
 		m_p_reorth[0] = std::unique_ptr<libMesh::PetscVector<libMesh::Number> >(copy_p_prev);
 		m_p_reorth[1] = std::unique_ptr<libMesh::PetscVector<libMesh::Number> >(copy_p);
 
+		m_q_reorth[0]->init(m_x);
+		m_p_reorth[0]->init(m_x);
+		m_p_reorth[1]->init(m_x);
+
 		m_p_ptr = m_p_reorth[1].get();
 		m_p_prev_ptr = m_p_reorth[0].get();
 		m_q_prev_ptr = m_q_reorth[0].get();
@@ -713,6 +722,8 @@ void base_CG_solver::solve()
 		m_p_prev_ptr = &m_p_prev_direct;
 		m_q_prev_ptr = &m_q_prev_direct;
 	}
+
+	std::cout << m_p_ptr->size() << " " << m_p_prev_ptr->size() << " " << m_q_prev_ptr->size() << std::endl;
 
 	m_aux.init(m_x);
 	m_aux_bis.init(m_x);
@@ -859,6 +870,9 @@ void base_CG_solver::solve()
 				m_q_reorth[kkk] = std::unique_ptr<libMesh::PetscVector<libMesh::Number> >(copy_q_prev);
 				m_p_reorth[kkk + 1] = std::unique_ptr<libMesh::PetscVector<libMesh::Number> >(copy_p);
 
+				m_q_reorth[kkk]->init(m_x);
+				m_p_reorth[kkk + 1]->init(m_x);
+
 				m_p_ptr      = m_p_reorth[kkk + 1].get();
 				m_p_prev_ptr = m_p_reorth[kkk].get();
 				m_q_prev_ptr = m_q_reorth[kkk].get();
@@ -911,17 +925,17 @@ bool base_CG_solver::test_convergence(unsigned int iter, double res_norm, double
 		std::cout << "| Absolute convergence : " << res_norm  << " < " << m_CG_conv_eps_abs << std::endl;
 		return true;
 	}
-	// if(res_norm < m_CG_conv_eps_rel * init_res_norm  && res_norm > 0) // Relative convergence
-	// {
-	// 	std::cout << "| Relative convergence : | " << res_norm  << " | < " << m_CG_conv_eps_rel << "*" << init_res_norm << std::endl;
-	// 	return true;
-	// }
-	if(rel_sol_eps < m_CG_conv_eps_rel) // Relative solution convergence
+	if(res_norm < m_CG_conv_eps_rel * init_res_norm  && res_norm > 0) // Relative convergence
 	{
-		std::cout << "| Relative solution convergence : " << rel_sol_eps  << " < " << m_CG_conv_eps_rel <<  std::endl;
-		
+		std::cout << "| Relative convergence : | " << res_norm  << " | < " << m_CG_conv_eps_rel << "*" << init_res_norm << std::endl;
 		return true;
 	}
+	// if(rel_sol_eps < m_CG_conv_eps_rel) // Relative solution convergence
+	// {
+	// 	std::cout << "| Relative solution convergence : " << rel_sol_eps  << " < " << m_CG_conv_eps_rel <<  std::endl;
+		
+	// 	return true;
+	// }
 
 	return false;
 };
