@@ -27,6 +27,7 @@ private:
 	typedef void (base_CG_solver::*proj_residual_fptr)(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
 	typedef void (base_CG_solver::*proj_force_fptr)(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
 	typedef void (base_CG_solver::*corr_sol_fptr)(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
+	typedef void (base_CG_solver::*get_corr_fptr)(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out);
 
 	// libMesh communicator
 	const libMesh::Parallel::Communicator * m_comm;
@@ -36,8 +37,11 @@ private:
 	double m_CG_conv_eps_rel;
 	int    m_CG_conv_max_n;
 	double m_CG_div_tol;
+	double m_CG_conv_nullspace_corr_rel;
 
 	std::vector<double> m_CG_Index;
+	std::vector<double> m_CG_correction_norm;
+
 	int    m_CG_conv_n;
 
 	// System
@@ -54,6 +58,7 @@ private:
 	proj_force_fptr apply_force_projection;
 	proj_residual_fptr apply_residual_projection;
 	corr_sol_fptr correct_solution;
+	get_corr_fptr get_correction;
 
 	// System and coupling sizes
 	unsigned int m_sys_N;
@@ -117,6 +122,8 @@ private:
 	// Convergence / divergence tests
 	bool test_convergence(unsigned int iter, double res_norm, double init_res_norm, double rel_sol_eps);
 
+	bool test_correction_convergence(unsigned int iter, double corr_norm_prev, double corr_norm);
+
 	bool test_divergence(unsigned int iter, double res_norm, double init_res_norm);
 
 	// Internal system operator functions
@@ -148,6 +155,8 @@ private:
 
 	// -> Runtime
 	void build_CG_runtime_null_space_projection_matrices(libMesh::PetscMatrix<libMesh::Number>& M_sys, libMesh::PetscMatrix<libMesh::Number>& C_sys);
+
+	void get_CG_runtime_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
 
 	void add_CG_runtime_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
 
@@ -181,6 +190,7 @@ public:
 		m_CG_conv_eps_rel { 1E-20 },
 		m_CG_conv_max_n { 1000 },
 		m_CG_div_tol { 10000 },
+		m_CG_conv_nullspace_corr_rel { 1E-6 },
 		m_CG_conv_n { -1 },
 		m_rhs { NULL },
 		m_M_PC { NULL },
@@ -216,6 +226,7 @@ public:
 		apply_force_projection = &base_CG_solver::apply_CG_runtime_nullspace_force_projection;
 		apply_residual_projection = &base_CG_solver::apply_CG_runtime_nullspace_residual_projection;
 		correct_solution = &base_CG_solver::add_CG_runtime_nullspace_correction;
+		get_correction = &base_CG_solver::get_CG_runtime_nullspace_correction;
 	};
 
 	~base_CG_solver()
@@ -251,14 +262,14 @@ public:
 	void set_convergence_limits(	double conv_eps_abs_in = 1E-20,
 										double conv_eps_rel_in = 1E-5,
 										int conv_max_n_in = 1000,
-										double div_tol_in = 10000)
+										double div_tol_in = 10000,
+										double conv_nullspace_corr_rel_in = 1E-6)
 	{
 		m_CG_conv_eps_abs = conv_eps_abs_in;
 		m_CG_conv_eps_rel = conv_eps_rel_in;
 		m_CG_conv_max_n = conv_max_n_in;
 		m_CG_div_tol = div_tol_in;
-
-		m_CG_Index.resize(m_CG_conv_max_n);
+		m_CG_conv_nullspace_corr_rel = conv_nullspace_corr_rel_in;
 	}
 
 	// Preconditioners
@@ -296,8 +307,12 @@ public:
 	libMesh::PetscVector<libMesh::Number>& get_solution();
 
 	void get_residual_vector(libMesh::PetscVector<libMesh::Number>& vec_out);
+	
+	void get_residual_vector(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
 
-	void get_convergence_data(std::vector<double>& CG_Index_output, int& CG_conv_n_output);
+	void get_convergence_data(std::vector<double>& CG_Index_output);
+
+	void get_correction_convergence_data(std::vector<double>& CG_correction_norm_output);
 
 	void get_perf_log_timing(double& solve_time, double& precond_time, double& proj_time);
 };

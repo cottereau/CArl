@@ -34,8 +34,8 @@ protected:
 	double m_CG_conv_eps_rel;
 	int    m_CG_conv_max_n;
 	double m_CG_div_tol;
+	double m_CG_conv_nullspace_corr_rel;
 
-	std::vector<double> m_CG_Index;
 	int    m_CG_conv_n;
 
 	// Flags
@@ -72,13 +72,13 @@ public:
 							m_CG_conv_eps_rel { 1E-20 },
 							m_CG_conv_max_n { 1000 },
 							m_CG_div_tol { 10000 },
+							m_CG_conv_nullspace_corr_rel { 1E-5 },
 							m_bCoordsSetup { false },
 							m_precond_type { BaseCGPrecondType::NO_PRECONDITIONER },
 							m_sys_A_solver { NULL },
 							m_sys_B_solver { NULL },
 							m_coupling_solver(comm)
 	{
-		m_CG_Index.resize(m_CG_conv_max_n);
 		m_bParamsSetUp = true;
 	};
 
@@ -102,7 +102,7 @@ public:
 							libMesh::PetscMatrix<libMesh::Number>& C_RR);
 
 	// Methods
-	void set_convergence_limits(double eps_abs, double eps_rel, int convIter = 1E4, double div_tol = 1E4);
+	void set_convergence_limits(double eps_abs, double eps_rel, int convIter = 1E4, double div_tol = 1E4, double conv_nullspace_corr_rel_in = 1E-6);
 
 	void set_preconditioner_type(BaseCGPrecondType type_input = BaseCGPrecondType::NO_PRECONDITIONER );
 

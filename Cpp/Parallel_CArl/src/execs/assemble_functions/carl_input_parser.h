@@ -59,6 +59,7 @@ struct coupling_generation_input_params {
 	double coupled_conv_abs;
 	double coupled_conv_rel;
 	double coupled_div;
+	double coupled_conv_corr;
 	int coupled_iter_max;
 
 	std::string coupled_convergence_output;
@@ -307,6 +308,7 @@ void get_input_params(GetPot& field_parser,
 	input_params.coupled_conv_rel = 1e-5;
 	input_params.coupled_div = 1e5;
 	input_params.coupled_iter_max = 1e4;
+	input_params.coupled_conv_corr =1e-6;
 
 	if( field_parser.search(1,"CoupledConvAbs") )
 	{
@@ -315,6 +317,10 @@ void get_input_params(GetPot& field_parser,
 	if( field_parser.search(1,"CoupledConvRel") )
 	{
 		input_params.coupled_conv_rel = field_parser.next(input_params.coupled_conv_rel);
+	}
+	if( field_parser.search(1,"CoupledCorrConvRel") )
+	{
+		input_params.coupled_conv_corr = field_parser.next(input_params.coupled_conv_corr);
 	}
 	if( field_parser.search(1,"CoupledDiv") )
 	{

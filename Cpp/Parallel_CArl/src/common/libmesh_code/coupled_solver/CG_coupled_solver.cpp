@@ -51,7 +51,7 @@ void carl::PETSC_CG_coupled_solver::set_solvers(generic_solver_interface * solve
 		m_coupling_solver.set_jacobi_precond(*m_C_RR);
 	}
 
-	m_coupling_solver.set_convergence_limits(m_CG_conv_eps_abs,m_CG_conv_eps_rel,m_CG_conv_max_n,m_CG_div_tol);
+	m_coupling_solver.set_convergence_limits(m_CG_conv_eps_abs,m_CG_conv_eps_rel,m_CG_conv_max_n,m_CG_div_tol,m_CG_conv_nullspace_corr_rel);
 };
 
 void carl::PETSC_CG_coupled_solver::set_restart( 	bool bUseRestart,
@@ -88,12 +88,13 @@ void carl::PETSC_CG_coupled_solver::set_matrices(	libMesh::PetscMatrix<libMesh::
 	std::cout << "| -> Using CG " << std::endl;
 };
 
-void carl::PETSC_CG_coupled_solver::set_convergence_limits(double eps_abs, double eps_rel, int convIter, double div_tol)
+void carl::PETSC_CG_coupled_solver::set_convergence_limits(double eps_abs, double eps_rel, int convIter, double div_tol, double conv_nullspace_corr_rel_in)
 {
 	m_CG_conv_eps_abs = eps_abs;
 	m_CG_conv_eps_rel = eps_rel;
 	m_CG_conv_max_n   = convIter;
 	m_CG_div_tol      = div_tol;
+	m_CG_conv_nullspace_corr_rel = conv_nullspace_corr_rel_in;
 };
 
 void carl::PETSC_CG_coupled_solver::solve()
@@ -103,7 +104,9 @@ void carl::PETSC_CG_coupled_solver::solve()
 	std::cout << "|        eps abs. = " << m_CG_conv_eps_abs <<
 			          ", eps rel. = " << m_CG_conv_eps_rel <<
 					  ", max. iter. = " << m_CG_conv_max_n <<
-			          ", div. tol. = " << m_CG_div_tol << std::endl;
+			          ", div. tol. = " << m_CG_div_tol << 
+					  ", corr. rel. tol. = " << m_CG_conv_nullspace_corr_rel << std::endl;
+
 
 	// -> Test if the parameters are set up
 	homemade_assert_msg( m_bParamsSetUp , "   solve : parameters not set up!");
@@ -290,11 +293,26 @@ void carl::PETSC_CG_coupled_solver::print_convergence(std::ostream& convergenceO
 	{
 		if(m_comm->rank() == 0)
 		{
-			m_coupling_solver.get_convergence_data(m_CG_Index,m_CG_conv_n);
+			std::vector<double> CG_Index;
+			std::vector<double> CG_correction_norm;
+
+			m_coupling_solver.get_convergence_data(CG_Index);
+
+			if(m_bUseNullSpaceB)
+			{
+				m_coupling_solver.get_correction_convergence_data(CG_correction_norm);
+			}
+
+			m_CG_conv_n = CG_Index.size();
 
 			for(int iii = 0; iii < m_CG_conv_n; ++iii)
 			{
-				convergenceOut << iii << " " << m_CG_Index[iii] << std::endl;
+				convergenceOut << iii << " " << CG_Index[iii];
+				if(m_bUseNullSpaceB)
+				{
+					convergenceOut << " " << CG_correction_norm[iii];
+				}
+				convergenceOut << std::endl;
 			}
 		}
 	}

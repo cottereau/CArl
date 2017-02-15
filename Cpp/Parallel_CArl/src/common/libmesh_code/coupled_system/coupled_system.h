@@ -317,7 +317,7 @@ private:
 			double eps = 1E-2, int convIter = 1000, double relax = 0.8);
 
 	void common_set_CG_solver(const std::string micro_name, const std::string type_name,
-							  double eps_abs = 1E-20, double eps_rel = 1E-10, int convIter = 1000, double div_tol = 1E5);
+							  double eps_abs = 1E-20, double eps_rel = 1E-10, int convIter = 1000, double div_tol = 1E5, double conv_nullspace_corr_rel = 1E-6);
 
 public:
 	// Members
@@ -735,14 +735,14 @@ public:
 							double eps = 1E-2, int convIter = 1000, double relax = 0.8);
 
 	void set_CG_solver(	const std::string micro_name,const std::string type_name,
-							double eps_abs = 1E-20, double eps_rel = 1E-10, int convIter = 1000, double div_tol = 1E5);
+							double eps_abs = 1E-20, double eps_rel = 1E-10, int convIter = 1000, double div_tol = 1E5, double conv_nullspace_corr_rel = 1E-6);
 
 	void set_CG_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es, const std::string& name,
 												weight_parameter_function& alpha_mask),
 							void fptr_micro(	libMesh::EquationSystems& es, const std::string& name,
 												weight_parameter_function& alpha_mask),
-							double eps_abs = 1E-20, double eps_rel = 1E-8, int convIter = 1000, double div_tol = 1E5);
+							double eps_abs = 1E-20, double eps_rel = 1E-8, int convIter = 1000, double div_tol = 1E5, double conv_nullspace_corr_rel = 1E-6);
 
 	void set_CG_solver(	const std::string micro_name, const std::string type_name,
 							void fptr_BIG(		libMesh::EquationSystems& es,
@@ -750,7 +750,7 @@ public:
 							void fptr_micro(	libMesh::EquationSystems& es,
 												const std::string& name, weight_parameter_function& weight_mask, anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
 							anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj,
-							double eps_abs = 1E-20, double eps_rel = 1E-10, int convIter = 1000, double div_tol = 1E5);
+							double eps_abs = 1E-20, double eps_rel = 1E-10, int convIter = 1000, double div_tol = 1E5, double conv_nullspace_corr_rel = 1E-6);
 
 
 

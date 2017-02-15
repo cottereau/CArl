@@ -485,7 +485,8 @@ int main(int argc, char** argv) {
 											assemble_elasticity_with_weight,
 											assemble_elasticity_with_weight_micro_and_traction,
 											input_params.coupled_conv_abs,input_params.coupled_conv_rel,
-											input_params.coupled_iter_max,input_params.coupled_div);
+											input_params.coupled_iter_max,input_params.coupled_div,
+											input_params.coupled_conv_corr);
 			break;
 		}
 	}

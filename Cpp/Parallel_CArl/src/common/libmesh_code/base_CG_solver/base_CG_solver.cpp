@@ -237,6 +237,14 @@ void base_CG_solver::apply_CG_built_nullspace_force_projection(libMesh::PetscVec
 	MatMult(m_null_F,vec_in.vec(),vec_out.vec());
 };
 
+void base_CG_solver::get_CG_runtime_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	// vec_out = R * (inv_RITRI_mat) * RC^t * vec_in
+	vec_out.zero();
+
+	this->add_CG_runtime_nullspace_correction(vec_in,vec_out);
+}
+
 void base_CG_solver::add_CG_runtime_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
 {
 	// vec_out = vec_out + R * (inv_RITRI_mat) * RC^t * vec_in
@@ -672,8 +680,7 @@ void base_CG_solver::solve()
 	libMesh::PetscVector<libMesh::Number> m_p_direct(*m_comm), m_p_prev_direct(*m_comm);
 	libMesh::PetscVector<libMesh::Number> m_q_prev_direct(*m_comm);
 
-	// libMesh::PetscVector<libMesh::Number> m_sys_coupled_rhs(*m_comm);
-	// libMesh::PetscVector<libMesh::Number> m_sys_coupled_rhs_prev(*m_comm);
+	libMesh::PetscVector<libMesh::Number> m_rigid_body_corr(*m_comm);
 
 	libMesh::PetscVector<libMesh::Number> * m_p_ptr;
 	libMesh::PetscVector<libMesh::Number> * m_p_prev_ptr;
@@ -723,7 +730,12 @@ void base_CG_solver::solve()
 		m_q_prev_ptr = &m_q_prev_direct;
 	}
 
-	std::cout << m_p_ptr->size() << " " << m_p_prev_ptr->size() << " " << m_q_prev_ptr->size() << std::endl;
+	if(m_bUseNullSpaceProjector)
+	{
+		unsigned int corr_size, corr_size_local;
+		m_solver_B->get_system_dimensions(corr_size,corr_size_local);
+		m_rigid_body_corr.init(corr_size,corr_size_local);
+	}
 
 	m_aux.init(m_x);
 	m_aux_bis.init(m_x);
@@ -743,9 +755,14 @@ void base_CG_solver::solve()
 	// Initialize the system
 	// r(0) = b - A * x(0)
 	m_perf_log.push("Initalization");
-	m_r_prev = *m_rhs;
-	(this->*apply_system_matrix)(m_x_prev,m_aux);
-	m_r_prev.add(-1,m_aux);
+	this->get_residual_vector(m_x_prev,m_r_prev);
+
+	if(m_bUseNullSpaceProjector)
+	{
+		(this->*get_correction)(m_r_prev,m_rigid_body_corr);
+		m_CG_correction_norm.resize(m_CG_conv_max_n + 1,0);
+		m_CG_correction_norm[0] = m_rigid_body_corr.l2_norm();
+	}
 
 	m_solver_A->print_type();
 	m_solver_B->print_type();
@@ -780,6 +797,7 @@ void base_CG_solver::solve()
 	unsigned int kkk = 0;
 	bool bKeepIterating = true;
 	bool bConverged = false;
+	bool bConvergedCorrection = true;
 	bool bDiverged = false;
 
 	double aux_reorth = 0;
@@ -788,6 +806,7 @@ void base_CG_solver::solve()
 	std::cout << "|        rho(0)        :" << m_rho_prev << std::endl;
 	std::cout << "|" << std::endl;
 
+	m_CG_Index.resize(m_CG_conv_max_n + 1,0);
 	m_CG_Index[0] = m_rho_prev;
 
 	m_perf_log.push("Solve");
@@ -820,10 +839,10 @@ void base_CG_solver::solve()
 		// rho(k + 1) = r(k + 1) . z(k + 1)
 		m_rho = m_r.dot(m_z);
 
-		m_CG_Index[kkk] = m_rho;
-
 		// Advance iteration
 		++kkk;
+
+		m_CG_Index[kkk] = m_rho;
 
 		if(m_bReorthogonalizeCorrections)
 		{
@@ -853,11 +872,22 @@ void base_CG_solver::solve()
 
 		rel_sol_eps = m_x_delta.l2_norm() / m_x.l2_norm();
 
+		// Calculate the null space correction
+		if(m_bUseNullSpaceProjector)
+		{
+			// aux = b - A * x(kkk)
+			this->get_residual_vector(m_x,m_aux);
+			(this->*get_correction)(m_aux,m_rigid_body_corr);
+			m_CG_correction_norm[kkk] = m_rigid_body_corr.l2_norm();
+			bConvergedCorrection = test_correction_convergence(kkk,m_CG_correction_norm[kkk-1],m_CG_correction_norm[kkk]);
+		}
+
 		// Check convergence
+
 		bConverged = test_convergence(kkk,m_rho,m_rho_zero,rel_sol_eps);
 		bDiverged = test_divergence(kkk,m_rho,m_rho_zero);
 
-		if(bConverged || bDiverged)
+		if((bConvergedCorrection && bConverged) || bDiverged)
 		{
 			bKeepIterating = false;
 		}
@@ -890,19 +920,12 @@ void base_CG_solver::solve()
 
 	m_CG_conv_n = kkk;
 
+	m_CG_Index.resize(m_CG_conv_n + 1);
+	m_CG_correction_norm.resize(m_CG_conv_n + 1);
+
 	*m_sol = m_x;
 
 	m_perf_log.pop("Solve");
-
-	// Set solution!
-	if(bConverged)
-	{
-		std::cout << "| Converged after " << kkk << " iterations" << std::endl;
-	}
-	if(bDiverged)
-	{
-		std::cout << "| DIVERGED after " << kkk << " iterations" << std::endl;
-	}
 };
 
 libMesh::PetscVector<libMesh::Number>& base_CG_solver::get_solution()
@@ -918,16 +941,24 @@ void base_CG_solver::get_residual_vector(libMesh::PetscVector<libMesh::Number>& 
 	vec_out.add(1,*m_rhs);
 };
 
+void base_CG_solver::get_residual_vector(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+	// vec_out = m_rhs - A * vec_in
+	(this->*apply_system_matrix)(vec_in,vec_out);
+	vec_out.scale(-1);
+	vec_out.add(1,*m_rhs);
+};
+
 bool base_CG_solver::test_convergence(unsigned int iter, double res_norm, double init_res_norm, double rel_sol_eps)
 {
-	if(std::abs(res_norm) < m_CG_conv_eps_abs) // Absolute convergence
+	if(res_norm < m_CG_conv_eps_abs) // Absolute convergence
 	{
-		std::cout << "| Absolute convergence : " << res_norm  << " < " << m_CG_conv_eps_abs << std::endl;
+		std::cout << "| Absolute convergence at iteration " << iter << ": "<< res_norm  << " < " << m_CG_conv_eps_abs << std::endl;
 		return true;
 	}
 	if(res_norm < m_CG_conv_eps_rel * init_res_norm  && res_norm > 0) // Relative convergence
 	{
-		std::cout << "| Relative convergence : | " << res_norm  << " | < " << m_CG_conv_eps_rel << "*" << init_res_norm << std::endl;
+		std::cout << "| Relative convergence at iteration " << iter << ": "<< res_norm << " < " << m_CG_conv_eps_rel << "*" << init_res_norm << std::endl;
 		return true;
 	}
 	// if(rel_sol_eps < m_CG_conv_eps_rel) // Relative solution convergence
@@ -940,6 +971,16 @@ bool base_CG_solver::test_convergence(unsigned int iter, double res_norm, double
 	return false;
 };
 
+bool base_CG_solver::test_correction_convergence(unsigned int iter, double corr_norm_prev, double corr_norm)
+{
+	if(std::abs(corr_norm - corr_norm_prev)/corr_norm < m_CG_conv_nullspace_corr_rel) // Correction convergence
+	{
+		std::cout << "| Null space correction convergence at iteration " << iter << std::endl;
+		return true;
+	}
+	return false;
+}
+
 bool base_CG_solver::test_divergence(unsigned int iter, double res_norm, double init_res_norm)
 {
 	if(iter > m_CG_conv_max_n) // Iteration divergence
@@ -947,19 +988,23 @@ bool base_CG_solver::test_divergence(unsigned int iter, double res_norm, double 
 		std::cout << "| Iteration divergence : " << iter  << " > " << m_CG_conv_max_n << std::endl;
 		return true;
 	}
-	if(std::abs(res_norm) > m_CG_div_tol * init_res_norm)      // Residual divergence
+	if(res_norm > m_CG_div_tol * init_res_norm)      // Residual divergence
 	{
-		std::cout << "| Residual divergence : " << res_norm  << " > " << m_CG_div_tol << "*" << init_res_norm << std::endl;
+		std::cout << "| Residual divergence at iteration " << iter << ": "<<  res_norm  << " > " << m_CG_div_tol << "*" << init_res_norm << std::endl;
 		return true;
 	}
 
 	return false;
 };
 
-void base_CG_solver::get_convergence_data(std::vector<double>& CG_Index_output, int& CG_conv_n_output)
+void base_CG_solver::get_convergence_data(std::vector<double>& CG_Index_output)
 {
 	CG_Index_output = m_CG_Index;
-	CG_conv_n_output = m_CG_conv_n;
+}
+
+void base_CG_solver::get_correction_convergence_data(std::vector<double>& CG_correction_norm_output)
+{
+	CG_correction_norm_output = m_CG_correction_norm;
 }
 
 void base_CG_solver::get_perf_log_timing(double& solve_time, double& precond_time, double& proj_time)

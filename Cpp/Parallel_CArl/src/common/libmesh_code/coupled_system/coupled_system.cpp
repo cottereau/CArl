@@ -517,7 +517,7 @@ void carl::coupled_system::set_LATIN_solver(const std::string micro_name, const 
 };
 
 void carl::coupled_system::common_set_CG_solver(const std::string micro_name, const std::string type_name,
-						  double eps_abs, double eps_rel, int convIter, double div_tol)
+						  double eps_abs, double eps_rel, int convIter, double div_tol, double conv_nullspace_corr_rel)
 {
 
 	// Get the matrices
@@ -570,7 +570,7 @@ void carl::coupled_system::common_set_CG_solver(const std::string micro_name, co
 			}
 
 			// Set CG parameters (convergence )
-			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol);
+			cast_CG_solver->set_convergence_limits(eps_abs,eps_rel,convIter,div_tol,conv_nullspace_corr_rel);
 
 			// Set the system solvers
 			cast_CG_solver->set_solvers(cast_sys_A_solver.get(),cast_sys_B_solver.get());
@@ -584,11 +584,11 @@ void carl::coupled_system::common_set_CG_solver(const std::string micro_name, co
 
 void carl::coupled_system::set_CG_solver(const std::string micro_name,
 		const std::string type_name,
-		double eps_abs, double eps_rel, int convIter, double div_tol)
+		double eps_abs, double eps_rel, int convIter, double div_tol, double conv_nullspace_corr_rel)
 {
 	this->set_macro_system(micro_name,type_name);
 	this->set_micro_system(micro_name,type_name);
-	this->common_set_CG_solver(micro_name, type_name, eps_abs, eps_rel, convIter, div_tol);
+	this->common_set_CG_solver(micro_name, type_name, eps_abs, eps_rel, convIter, div_tol, conv_nullspace_corr_rel);
 };
 
 void carl::coupled_system::set_CG_solver(const std::string micro_name, const std::string type_name,
@@ -596,11 +596,11 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 																	const std::string& name, weight_parameter_function& weight_mask),
 												void fptr_micro(	libMesh::EquationSystems& es,
 																	const std::string& name, weight_parameter_function& weight_mask),
-												double eps_abs, double eps_rel, int convIter, double div_tol)
+												double eps_abs, double eps_rel, int convIter, double div_tol, double conv_nullspace_corr_rel)
 {
 	this->set_macro_system(micro_name,type_name,fptr_BIG);
 	this->set_micro_system(micro_name,type_name,fptr_micro);
-	this->common_set_CG_solver(micro_name, type_name, eps_abs, eps_rel, convIter, div_tol);
+	this->common_set_CG_solver(micro_name, type_name, eps_abs, eps_rel, convIter, div_tol, conv_nullspace_corr_rel);
 };
 
 void carl::coupled_system::set_CG_solver(const std::string micro_name, const std::string type_name,
@@ -609,11 +609,11 @@ void carl::coupled_system::set_CG_solver(const std::string micro_name, const std
 												void fptr_micro(	libMesh::EquationSystems& es,
 																	const std::string& name, weight_parameter_function& weight_mask, anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj_input),
 												anisotropic_elasticity_tensor_cubic_sym& anisotropy_obj,
-												double eps_abs, double eps_rel, int convIter, double div_tol)
+												double eps_abs, double eps_rel, int convIter, double div_tol, double conv_nullspace_corr_rel)
 {
 	this->set_macro_system(micro_name,type_name,fptr_BIG);
 	this->set_micro_system(micro_name,type_name,fptr_micro,anisotropy_obj);
-	this->common_set_CG_solver(micro_name, type_name, eps_abs, eps_rel, convIter, div_tol);
+	this->common_set_CG_solver(micro_name, type_name, eps_abs, eps_rel, convIter, div_tol, conv_nullspace_corr_rel);
 };
 
 void carl::coupled_system::set_LATIN_nonlinear_solver(const std::string micro_name, const std::string type_name_BIG,
