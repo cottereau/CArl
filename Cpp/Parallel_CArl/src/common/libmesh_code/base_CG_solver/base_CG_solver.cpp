@@ -447,6 +447,11 @@ void base_CG_solver::add_CG_nullspace_correction(libMesh::PetscVector<libMesh::N
 	(this->*correct_solution)(vec_in,vec_out);
 }
 
+void base_CG_solver::add_CG_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_out)
+{
+        (this->*correct_solution)(*m_residual,vec_out);
+}
+
 void base_CG_solver::apply_CG_nullspace_residual_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
 {
 	(this->*apply_residual_projection)(vec_in,vec_out);
@@ -609,6 +614,11 @@ void base_CG_solver::set_solver_CG(generic_solver_interface& solver_in_A, generi
 	m_temp_sol_B ->zero();
 	m_temp_sol_B ->close();
 
+	m_residual = std::unique_ptr<libMesh::PetscVector<libMesh::Number> >(new libMesh::PetscVector<libMesh::Number>(*m_comm));
+        m_residual->init(m_sys_N,m_sys_local_N);
+        m_residual->zero();
+        m_residual->close();
+
 	this->set_sol_vectors();
 
 	// Preconditioner to be implemented later
@@ -674,7 +684,7 @@ void base_CG_solver::solve()
 	m_perf_log.push("Setup");
 	// Create the iteration vectors
 	libMesh::PetscVector<libMesh::Number> m_x(*m_comm), m_x_prev(*m_comm), m_x_delta(*m_comm);
-	libMesh::PetscVector<libMesh::Number> m_r(*m_comm), m_r_prev(*m_comm);
+	libMesh::PetscVector<libMesh::Number> m_r_prev(*m_comm);
 	libMesh::PetscVector<libMesh::Number> m_z(*m_comm);
 
 	libMesh::PetscVector<libMesh::Number> m_p_direct(*m_comm), m_p_prev_direct(*m_comm);
@@ -695,14 +705,13 @@ void base_CG_solver::solve()
 	m_x_delta.init(m_x);
 	m_x_prev = *m_initial_sol;
 
-	m_r.init(m_x);
 	m_r_prev.init(m_x);
 	m_z.init(m_x);
 
 	if(m_bReorthogonalizeCorrections)
 	{
-		m_p_reorth.resize(m_CG_conv_max_n + 1);
-		m_q_reorth.resize(m_CG_conv_max_n + 1);
+		m_p_reorth.resize(m_CG_conv_max_n + 2);
+		m_q_reorth.resize(m_CG_conv_max_n + 2);
 
 		libMesh::PetscVector<libMesh::Number> * copy_p = new libMesh::PetscVector<libMesh::Number>(m_x.comm(), m_x.type());
 		libMesh::PetscVector<libMesh::Number> * copy_p_prev = new libMesh::PetscVector<libMesh::Number>(m_x.comm(), m_x.type());
@@ -744,7 +753,7 @@ void base_CG_solver::solve()
 	double m_rho = 0, m_beta = 0;
 	double m_rho_prev = 0, m_alpha_prev = 0;
 	double m_rho_zero = 0;
-	std::vector<double> aux_double(m_CG_conv_max_n,0);
+	std::vector<double> aux_double(m_CG_conv_max_n+2,0);
 	double rel_sol_eps = 0;
 
 	std::cout << "|     Finished setup " << std::endl;
@@ -760,7 +769,7 @@ void base_CG_solver::solve()
 	if(m_bUseNullSpaceProjector)
 	{
 		(this->*get_correction)(m_r_prev,m_rigid_body_corr);
-		m_CG_correction_norm.resize(m_CG_conv_max_n + 1,0);
+		m_CG_correction_norm.resize(m_CG_conv_max_n + 2,0);
 		m_CG_correction_norm[0] = m_rigid_body_corr.l2_norm();
 	}
 
@@ -806,7 +815,7 @@ void base_CG_solver::solve()
 	std::cout << "|        rho(0)        :" << m_rho_prev << std::endl;
 	std::cout << "|" << std::endl;
 
-	m_CG_Index.resize(m_CG_conv_max_n + 1,0);
+	m_CG_Index.resize(m_CG_conv_max_n + 2,0);
 	m_CG_Index[0] = m_rho_prev;
 
 	m_perf_log.push("Solve");
@@ -827,17 +836,17 @@ void base_CG_solver::solve()
 
 		// r(k + 1) = r(k) - alpha(k) * A * p(k)
 		//          = r(k) - alpha(k) * q(k)
-		m_r = m_r_prev; m_r.add(-m_alpha_prev,*m_q_prev_ptr);
+		*m_residual = m_r_prev; m_residual->add(-m_alpha_prev,*m_q_prev_ptr);
 
 		// z(k + 1) = r(k + 1) ?
 		// z(k + 1) = M_PC^-1 * r(k + 1) ?
 
 		// z(k + 1) = M_proj * M_PC^-1 * M_proj * r(k + 1) ?
 		// z(k + 1) =                    M_proj * r(k + 1) ?
-		this->apply_precond_and_projection(m_r,m_z);
+		this->apply_precond_and_projection(*m_residual,m_z);
 
 		// rho(k + 1) = r(k + 1) . z(k + 1)
-		m_rho = m_r.dot(m_z);
+		m_rho = m_residual->dot(m_z);
 
 		// Advance iteration
 		++kkk;
@@ -871,22 +880,26 @@ void base_CG_solver::solve()
 		m_x_delta.add(-1,m_x_prev);
 
 		rel_sol_eps = m_x_delta.l2_norm() / m_x.l2_norm();
+	
 
 		// Calculate the null space correction
 		if(m_bUseNullSpaceProjector)
 		{
 			// aux = b - A * x(kkk)
-			this->get_residual_vector(m_x,m_aux);
-			(this->*get_correction)(m_aux,m_rigid_body_corr);
+			(this->*get_correction)(*m_residual,m_rigid_body_corr);
 			m_CG_correction_norm[kkk] = m_rigid_body_corr.l2_norm();
 			bConvergedCorrection = test_correction_convergence(kkk,m_CG_correction_norm[kkk-1],m_CG_correction_norm[kkk]);
+			std::cout << "| " << kkk << " : " << m_rho << " " << rel_sol_eps << " " << m_CG_correction_norm[kkk] << " " << std::abs(m_CG_correction_norm[kkk-1] - m_CG_correction_norm[kkk])/m_CG_correction_norm[kkk] << std::endl;
+		}
+		else
+		{
+			std::cout << "| " << kkk << " : " << m_rho << " " << rel_sol_eps << std::endl;
 		}
 
 		// Check convergence
-
 		bConverged = test_convergence(kkk,m_rho,m_rho_zero,rel_sol_eps);
 		bDiverged = test_divergence(kkk,m_rho,m_rho_zero);
-
+		
 		if((bConvergedCorrection && bConverged) || bDiverged)
 		{
 			bKeepIterating = false;
@@ -914,7 +927,7 @@ void base_CG_solver::solve()
 			
 			m_rho_prev = m_rho;
 			m_x_prev = m_x;
-			m_r_prev = m_r;
+			m_r_prev = *m_residual;
 		}
 	}
 
@@ -932,6 +945,11 @@ libMesh::PetscVector<libMesh::Number>& base_CG_solver::get_solution()
 {
 	return *m_sol;
 };
+
+libMesh::PetscVector<libMesh::Number>& base_CG_solver::get_residual_vector()
+{
+	return *m_residual;
+}
 
 void base_CG_solver::get_residual_vector(libMesh::PetscVector<libMesh::Number>& vec_out)
 {

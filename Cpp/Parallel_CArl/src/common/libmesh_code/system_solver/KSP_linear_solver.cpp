@@ -173,6 +173,11 @@ void KSP_linear_solver::solve(libMesh::PetscVector<libMesh::Number>& v_in, libMe
 	homemade_assert_msg(m_bMatrixSet, "Solver matrix not set yet!\n");
 	m_perf_log_ptr->push("KSP solver");
 	m_KSP_solver->solve(*m_Matrix,v_out,v_in,m_KSP_eps,m_KSP_iter_max);
+	int dummy_int = 0;
+
+	KSPGetIterationNumber(m_KSP_solver->ksp(),&dummy_int);
+	m_KSP_tot_iter += dummy_int;
+
 	m_perf_log_ptr->pop("KSP solver");
 	KSPGetConvergedReason(m_KSP_solver->ksp(),&m_conv_reason);
 }
@@ -183,6 +188,9 @@ void KSP_linear_solver::solve(libMesh::PetscVector<libMesh::Number>& v_out)
 	homemade_assert_msg(m_bMatrixSet, "Solver matrix not set yet!\n");
 	m_perf_log_ptr->push("KSP solver");
 	m_KSP_solver->solve(*m_Matrix,v_out,*m_rhs,m_KSP_eps,m_KSP_iter_max);
+	int dummy_int = 0;
+        KSPGetIterationNumber(m_KSP_solver->ksp(),&dummy_int);
+        m_KSP_tot_iter += dummy_int;
 	m_perf_log_ptr->pop("KSP solver");
 	KSPGetConvergedReason(m_KSP_solver->ksp(),&m_conv_reason);
 }
@@ -246,6 +254,10 @@ void KSP_linear_solver::get_perf_log_timing(double& solve_time, int& solve_calls
 	solve_time = performance_data.tot_time_incl_sub;
 	solve_calls = performance_data.count;
 };
-}
 
+int KSP_linear_solver::get_iter_total()
+{
+	return m_KSP_tot_iter;
+};
 
+};

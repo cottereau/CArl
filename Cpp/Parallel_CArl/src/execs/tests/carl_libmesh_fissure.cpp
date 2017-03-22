@@ -38,8 +38,8 @@ int main(int argc, char** argv) {
 	libMesh::PerfLog perf_log("Main program", MASTER_bPerfLog_carl_libmesh);
 
 	// - Displacement conditions -----------------------------------------------
-	boundary_displacement z_upper_hole(3,0,0);
-	boundary_displacement z_lower_hole(-3,0,0);
+	boundary_displacement z_upper_hole(0,0,3);
+	boundary_displacement z_lower_hole(0,0,-3);
 
 	int fixed_bound_id  = 3;
 	int z_upper_hole_id = 2;

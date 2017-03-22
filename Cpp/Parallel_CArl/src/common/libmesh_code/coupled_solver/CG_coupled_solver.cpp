@@ -38,6 +38,7 @@ void carl::PETSC_CG_coupled_solver::set_solvers(generic_solver_interface * solve
 	m_coupling_solver.set_preconditioner_type(m_precond_type);
 
 	// Set up the coupled equation solver
+	std::cout << " 111 "<< std::endl;
 	m_coupling_solver.set_solver_CG(*m_sys_A_solver,*m_sys_B_solver);
 
 	// Set up the preconditioner - if needed
@@ -186,7 +187,7 @@ void carl::PETSC_CG_coupled_solver::solve()
 	// Coupling space vectors
 	libMesh::PetscVector<libMesh::Number> vec_lambda(*m_comm, dim_R, dim_R_local);
 	libMesh::PetscVector<libMesh::Number> vec_lambda_zero(*m_comm, dim_R, dim_R_local);
-	libMesh::PetscVector<libMesh::Number> vec_aux_lambda(*m_comm,dim_R, dim_R_local);
+	// libMesh::PetscVector<libMesh::Number> vec_aux_lambda(*m_comm,dim_R, dim_R_local);
 
 	// Coupled system rhs
 	libMesh::PetscVector<libMesh::Number> vec_coupled_rhs(*m_comm, dim_R, dim_R_local);
@@ -197,7 +198,7 @@ void carl::PETSC_CG_coupled_solver::solve()
 	vec_lambda_zero.zero();
 	vec_coupled_rhs.zero();
 	vec_coupled_rhs_aux.zero();
-	vec_aux_lambda.zero();
+	// vec_aux_lambda.zero();
 
 	// Calculate the coupled rhs
 
@@ -278,8 +279,9 @@ void carl::PETSC_CG_coupled_solver::solve()
 		// Must add correction
 		// U_2_corr = U_2 + null_space_corr * coupling_residual
 		std::cout << " Adding correction" << std::endl;
-		m_coupling_solver.get_residual_vector(vec_aux_lambda);
-		m_coupling_solver.add_CG_nullspace_correction(vec_aux_lambda,*m_sol_B);
+		//m_coupling_solver.get_residual_vector(vec_aux_lambda);
+		//m_coupling_solver.add_CG_nullspace_correction(vec_aux_lambda,*m_sol_B);
+		m_coupling_solver.add_CG_nullspace_correction(*m_sol_B);
 	}
 
 	perf_log.pop("KSP solver - B","Solution");

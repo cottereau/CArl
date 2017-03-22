@@ -48,6 +48,7 @@ private:
 	libMesh::PetscVector<libMesh::Number> * m_rhs;
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_sol;
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_initial_sol;
+	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_residual;
 	libMesh::PetscMatrix<libMesh::Number> * m_M_PC;
 	std::unique_ptr<libMesh::PetscVector<libMesh::Number> > m_M_PC_jacobi;
 
@@ -286,6 +287,8 @@ public:
 
 	void add_CG_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
 
+	void add_CG_nullspace_correction(libMesh::PetscVector<libMesh::Number>& vec_out);
+
 	void apply_CG_nullspace_residual_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
 
 	void apply_CG_nullspace_force_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);
@@ -306,6 +309,8 @@ public:
 
 	libMesh::PetscVector<libMesh::Number>& get_solution();
 
+	libMesh::PetscVector<libMesh::Number>& get_residual_vector();
+	
 	void get_residual_vector(libMesh::PetscVector<libMesh::Number>& vec_out);
 	
 	void get_residual_vector(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out);

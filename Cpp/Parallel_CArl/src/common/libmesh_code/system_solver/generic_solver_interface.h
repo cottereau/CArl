@@ -79,6 +79,8 @@ public:
 	virtual void calculate_pseudo_inverse(const std::string& filename) = 0;
 
 	virtual void get_perf_log_timing(double& solve_time, int& solve_calls) = 0;
+
+	virtual int get_iter_total() = 0;
 };
 
 }

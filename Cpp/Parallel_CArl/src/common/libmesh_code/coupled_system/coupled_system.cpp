@@ -672,6 +672,20 @@ void carl::coupled_system::solve(const std::string micro_name, const std::string
 {
 	// Solve!
 	m_coupled_solver->solve();
+        
+	switch(m_solver_type)
+        {
+	case CG:
+		{	
+			std::cout << m_sys_A_solver->get_iter_total() << " " << m_sys_B_solver->get_iter_total() << std::endl;
+			break;
+		}
+        case LATIN_MODIFIED_STIFFNESS:
+        case LATIN_ORIGINAL_STIFFNESS:
+                {
+			break;
+		}
+	}
 
 	// Get the solutions
 	libMesh::NumericVector<libMesh::Number>& sol_BIG =

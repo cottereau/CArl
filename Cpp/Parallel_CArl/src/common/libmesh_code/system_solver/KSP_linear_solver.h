@@ -25,6 +25,8 @@ protected:
 	double 			m_KSP_eps;
 	unsigned int 	m_KSP_iter_max;
 
+	int m_KSP_tot_iter;
+
 	libMesh::PetscMatrix<libMesh::Number> * m_Matrix;
 	libMesh::PetscMatrix<libMesh::Number> * m_Coupling;
 	libMesh::PetscVector<libMesh::Number> * m_rhs;
@@ -44,7 +46,7 @@ public:
 		generic_solver_interface(comm),
 		m_KSP_eps { 1E-5 },
 		m_KSP_iter_max { 10000 },
-
+		m_KSP_tot_iter { 0 },
 		m_Matrix { NULL },
 		m_Coupling { NULL },
 		m_rhs { NULL },
@@ -67,6 +69,13 @@ public:
 
 	// Specific methods
 	KSPConvergedReason get_converged_reason();
+
+	int get_total_iterations()
+	{
+		int dummy_int = 0;
+		KSPGetTotalIterations(m_KSP_solver->ksp(),&dummy_int);
+		return dummy_int;
+	};
 
 	// Implementations of virtual methods
 	void set_solver(libMesh::PetscMatrix<libMesh::Number>& matrix, const std::string name = "");
@@ -111,6 +120,7 @@ public:
 
 	void get_perf_log_timing(double& solve_time, int& solve_calls);
 
+	int get_iter_total();
 };
 
 }

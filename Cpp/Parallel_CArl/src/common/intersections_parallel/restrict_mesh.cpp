@@ -20,8 +20,8 @@ void Mesh_restriction::BuildRestrictionFromSet(const std::unordered_set<unsigned
 		m_Patch_Node_indexes.clear();
 		m_Patch_Elem_Neighbours.clear();
 
-		std::unordered_set<unsigned int >::iterator elem_idx_it = restricted_mesh_set->begin();
-		std::unordered_set<unsigned int >::iterator elem_idx_it_end = restricted_mesh_set->end();
+		std::unordered_set<unsigned int >::const_iterator elem_idx_it = restricted_mesh_set->begin();
+		std::unordered_set<unsigned int >::const_iterator elem_idx_it_end = restricted_mesh_set->end();
 
 		for( ; elem_idx_it != elem_idx_it_end; ++ elem_idx_it)
 		{
