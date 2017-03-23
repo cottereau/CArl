@@ -180,25 +180,28 @@ void KSP_linear_solver::solve(libMesh::PetscVector<libMesh::Number>& v_in, libMe
 	KSPGetIterationNumber(m_KSP_solver->ksp(),&dummy_int);
 	m_KSP_tot_iter += dummy_int;
 
-	m_solve_data_time = m_perf_log_ptr->get_perf_data("KSP solver");
-
-	if(m_comm->rank() == 0)
+	if(bLogTiming)
 	{
-		std::ofstream timing_data(m_log_filename, std::ios::app);
+		m_solve_data_time = m_perf_log_ptr->get_perf_data("KSP solver");
 
-		timing_data << m_solve_data_time.count << " " 
-		            << m_solve_data_time.tot_time - m_previous_time << " " 
-					<< dummy_int << " ";
-		if(dummy_int != 0)
+		if(m_comm->rank() == 0)
 		{
-			timing_data << (m_solve_data_time.tot_time - m_previous_time)/dummy_int << std::endl;
+			std::ofstream timing_data(m_log_filename, std::ios::app);
+
+			timing_data << m_solve_data_time.count << " " 
+		        	    << m_solve_data_time.tot_time - m_previous_time << " " 
+				    << dummy_int << " ";
+			if(dummy_int != 0)
+			{
+				timing_data << (m_solve_data_time.tot_time - m_previous_time)/dummy_int << std::endl;
+			}
+			else
+			{
+				timing_data << "INF" << std::endl;
+			}
+			timing_data.close();
+			m_previous_time = m_solve_data_time.tot_time;
 		}
-		else
-		{
-			timing_data << "INF" << std::endl;
-		}
-		timing_data.close();
-		m_previous_time = m_solve_data_time.tot_time;
 	}
 
 	KSPGetConvergedReason(m_KSP_solver->ksp(),&m_conv_reason);

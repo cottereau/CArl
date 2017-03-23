@@ -30,10 +30,13 @@ protected:
 
 public:
 
+	bool bLogTiming;
+	
 	// Constructor
 	generic_solver_interface(	const libMesh::Parallel::Communicator& comm) :
 		m_comm { &comm },
-		m_log_filename { "generic_solver_timing_data.dat"}
+		m_log_filename { "generic_solver_timing_data.dat"},
+		bLogTiming { false }
 	{
 
 	};

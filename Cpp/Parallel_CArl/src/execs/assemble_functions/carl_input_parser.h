@@ -158,7 +158,7 @@ void get_input_params(GetPot& field_parser,
 	input_params.b_UseMesh_BIG_AsMediator = false;
 	input_params.b_UseMesh_micro_AsMediator = false;
 	input_params.b_UseMesh_extra_AsMediator = false;
-	input_params.b_Repartition_micro = true;
+	input_params.b_Repartition_micro = false;
 	if (field_parser.search(1,"Use_A_AsMediator"))
 	{
 		input_params.b_UseMesh_BIG_AsMediator = true;

@@ -169,6 +169,20 @@ void carl::print_matrix_dim(libMesh::PetscMatrix<libMesh::Number>& CouplingTestM
 		std::cout << "| LOCAL  : memory = " << temp_info.memory << std::endl;
 		std::cout << "|          non-zeros used = " << (100.*temp_info.nz_used)/temp_info.nz_allocated << " % " << std::endl;
 
+//		int non_zeros = temp_info.nz_used;
+//		std::vector<int> all_temp_info;
+//		CouplingTestMatrix.comm().gather(0,non_zeros,all_temp_info);
+
+//		if(CouplingTestMatrix.comm().rank() == 0)
+//		{
+//			std::cout << " | ";
+//			for(unsigned int iii = 0; iii < CouplingTestMatrix.comm().size(); ++iii)
+//			{
+//				std::cout << all_temp_info[iii] << " ";
+//			}
+//			std::cout << std::endl << std::endl;
+//		}
+
 		MatGetInfo(CouplingTestMatrix.mat(),MAT_GLOBAL_SUM,&temp_info);
 		std::cout << "| GLOBAL : memory = " << temp_info.memory << std::endl;
 		std::cout << "|          non-zeros used = " << (100.*temp_info.nz_used)/temp_info.nz_allocated << " % " << std::endl;
