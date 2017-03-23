@@ -37,6 +37,52 @@ struct carl_basic_generation_input_params {
 	std::string output_file_BIG;
 };
 
+void set_rigid_body_mode_dummy(libMesh::ImplicitSystem&  input_system)
+{
+	libMesh::PetscMatrix<libMesh::Number> * mat_sys = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number>* >(input_system.matrix);
+	const libMesh::MeshBase& mesh_sys = input_system.get_mesh();
+	unsigned int sys_sys_number = input_system.number();
+
+	Vec PETSc_vec_sys;
+	PetscInt local_N;
+	MatGetLocalSize(mat_sys->mat(),NULL,&local_N);
+	VecCreate(mesh_sys.comm().get(),&PETSc_vec_sys);
+	VecSetSizes(PETSc_vec_sys,local_N,mat_sys->n());
+	VecSetBlockSize(PETSc_vec_sys,mesh_sys.mesh_dimension());
+	VecSetFromOptions(PETSc_vec_sys);
+
+	libMesh::PetscVector<libMesh::Number> vec_sys(PETSc_vec_sys,mesh_sys.comm());
+	
+	auto node_it = mesh_sys.local_nodes_begin();
+	auto node_it_end = mesh_sys.local_nodes_end();
+
+	unsigned int dof_number_BIG = 0;
+
+	for( ; node_it != node_it_end; ++node_it)
+	{
+		const libMesh::Node* node_BIG = *node_it;
+
+		for(unsigned int var=0; var<node_BIG->n_dofs(sys_sys_number); var++)
+		{
+			dof_number_BIG = node_BIG->dof_number(sys_sys_number,var,0);
+			vec_sys.set(dof_number_BIG,node_BIG->operator ()(var));
+		}
+	}
+
+	MatNullSpace nullsp_sys;
+	MatNullSpaceCreateRigidBody(vec_sys.vec(),&nullsp_sys);
+	        PetscBool null_space_test = PETSC_FALSE;
+        MatNullSpaceTest(nullsp_sys,mat_sys->mat(),&null_space_test);
+        if(null_space_test == PETSC_TRUE )
+                std::cout << " !!!!!!!!!!!! Correct null space !!! " << std::endl;
+	else
+		std::cout << "WTF!?!?" << std::endl;
+
+	MatSetNullSpace(mat_sys->mat(),nullsp_sys);
+	MatNullSpaceDestroy(&nullsp_sys);
+	VecDestroy(&PETSc_vec_sys);
+}
+
 void get_input_params(GetPot& field_parser,
 		carl_basic_generation_input_params& input_params) {
 
@@ -185,13 +231,16 @@ int main(int argc, char** argv) {
 	std::cout << "|    Mu (lamba_2) : " << BIG_Mu << std::endl;
 	std::cout << "|    lambda_1     : " << eval_lambda_1(BIG_E,BIG_Mu) << std::endl;
 
-	elasticity_system_BIG.assemble_before_solve = false;
+        elasticity_system_BIG.assemble_before_solve = false;
         elasticity_system_BIG.assemble();
         elasticity_system_BIG.matrix->close();
         elasticity_system_BIG.rhs->close();
 
+	set_rigid_body_mode_dummy(elasticity_system_BIG);
+	
 	// Solve !
 	perf_log.push("Solve");
+	
 	elasticity_system_BIG.solve();
 //	elasticity_system_BIG.assemble();
 //	elasticity_system_BIG.matrix->close();
@@ -213,13 +262,13 @@ int main(int argc, char** argv) {
 	elasticity_system_BIG.solution->close();
 	elasticity_system_BIG.update();
 	perf_log.pop("Solve");
+	
+	PetscInt iter_nb;
 
-        PetscInt iter_nb;
-
-        libMesh::LinearSolver<libMesh::Number> * dumb_pointer = elasticity_system_BIG.linear_solver.get();
-        libMesh::PetscLinearSolver<libMesh::Number> * dummy_pointer = libMesh::cast_ptr<libMesh::PetscLinearSolver<libMesh::Number>* >(dumb_pointer);
-        KSPGetTotalIterations( dummy_pointer->ksp(),&iter_nb);
-        std::cout << iter_nb << std::endl;
+	libMesh::LinearSolver<libMesh::Number> * dumb_pointer = elasticity_system_BIG.linear_solver.get();
+	libMesh::PetscLinearSolver<libMesh::Number> * dummy_pointer = libMesh::cast_ptr<libMesh::PetscLinearSolver<libMesh::Number>* >(dumb_pointer);
+	KSPGetTotalIterations( dummy_pointer->ksp(),&iter_nb);
+	std::cout << iter_nb << std::endl;
 
 	perf_log.push("Compute stress - macro","Output:");
 	compute_stresses(equation_systems_BIG);
