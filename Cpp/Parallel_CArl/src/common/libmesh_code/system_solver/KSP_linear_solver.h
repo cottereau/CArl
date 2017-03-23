@@ -39,6 +39,9 @@ protected:
 
 	KSPConvergedReason m_conv_reason;
 
+	double m_previous_time;
+	libMesh::PerfData m_solve_data_time;
+
 public:
 
 	// Constructor
@@ -52,7 +55,8 @@ public:
 		m_rhs { NULL },
 		m_bRhsSet { false },
 		m_bMatrixSet { false },
-		m_bCouplingSet { false }
+		m_bCouplingSet { false },
+		m_previous_time { 0 }
 	{
 		m_KSP_solver = std::unique_ptr<libMesh::PetscLinearSolver<libMesh::Number> >
 			(new libMesh::PetscLinearSolver<libMesh::Number>(*m_comm));

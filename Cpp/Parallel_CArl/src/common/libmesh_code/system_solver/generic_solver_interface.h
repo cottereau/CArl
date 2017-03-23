@@ -26,13 +26,26 @@ protected:
 	std::unique_ptr<libMesh::PerfLog> m_perf_log_ptr;
 	generic_solver_interface();
 
+	std::string m_log_filename;
+
 public:
 
 	// Constructor
 	generic_solver_interface(	const libMesh::Parallel::Communicator& comm) :
-		m_comm { &comm }
+		m_comm { &comm },
+		m_log_filename { "generic_solver_timing_data.dat"}
 	{
 
+	};
+
+	void set_log_name(const std::string& filename)
+	{
+		m_log_filename = filename;
+		if(m_comm->rank() == 0)
+		{
+			std::ofstream timing_data(m_log_filename, std::ios::trunc);
+			timing_data.close();
+		}
 	};
 
 	virtual KSPConvergedReason get_converged_reason() = 0;

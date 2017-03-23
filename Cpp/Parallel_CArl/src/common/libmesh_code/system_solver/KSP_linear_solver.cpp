@@ -25,6 +25,7 @@ void KSP_linear_solver::set_solver(libMesh::PetscMatrix<libMesh::Number>& matrix
 	this->set_matrix(matrix);
 	m_KSP_solver->init(m_Matrix, name.c_str());
 	m_perf_log_ptr = std::unique_ptr<libMesh::PerfLog>(new libMesh::PerfLog(m_solver_name));
+	m_previous_time = 0;
 }
 
 void KSP_linear_solver::set_matrix(libMesh::PetscMatrix<libMesh::Number>& matrix)
@@ -173,12 +174,33 @@ void KSP_linear_solver::solve(libMesh::PetscVector<libMesh::Number>& v_in, libMe
 	homemade_assert_msg(m_bMatrixSet, "Solver matrix not set yet!\n");
 	m_perf_log_ptr->push("KSP solver");
 	m_KSP_solver->solve(*m_Matrix,v_out,v_in,m_KSP_eps,m_KSP_iter_max);
-	int dummy_int = 0;
+	m_perf_log_ptr->pop("KSP solver");
 
+	int dummy_int = 0;
 	KSPGetIterationNumber(m_KSP_solver->ksp(),&dummy_int);
 	m_KSP_tot_iter += dummy_int;
 
-	m_perf_log_ptr->pop("KSP solver");
+	m_solve_data_time = m_perf_log_ptr->get_perf_data("KSP solver");
+
+	if(m_comm->rank() == 0)
+	{
+		std::ofstream timing_data(m_log_filename, std::ios::app);
+
+		timing_data << m_solve_data_time.count << " " 
+		            << m_solve_data_time.tot_time - m_previous_time << " " 
+					<< dummy_int << " ";
+		if(dummy_int != 0)
+		{
+			timing_data << (m_solve_data_time.tot_time - m_previous_time)/dummy_int << std::endl;
+		}
+		else
+		{
+			timing_data << "INF" << std::endl;
+		}
+		timing_data.close();
+		m_previous_time = m_solve_data_time.tot_time;
+	}
+
 	KSPGetConvergedReason(m_KSP_solver->ksp(),&m_conv_reason);
 }
 

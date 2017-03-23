@@ -202,6 +202,9 @@ void carl::PETSC_CG_coupled_solver::solve()
 
 	// Calculate the coupled rhs
 
+	m_sys_A_solver->set_log_name("sys_A_timing.dat");
+	m_sys_B_solver->set_log_name("sys_B_timing.dat");
+
 	// u_0,I = M_I^-1 * F_I (KSP SOLVER!)
 	perf_log.push("KSP solver - A","Initialization");
 	m_sys_A_solver->solve(*m_F_A,vec_u0_A);
