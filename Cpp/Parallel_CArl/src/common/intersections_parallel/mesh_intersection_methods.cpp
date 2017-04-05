@@ -150,7 +150,6 @@ long Mesh_Intersection::grid_min_size()
 void Mesh_Intersection::initialize()
 {
 	m_libMesh_Mesh.clear();
-//	m_Grid_to_mesh_vertex_idx.clear();
 	m_discrete_vertices.clear();
 	m_bMeshFinalized = false;
 	m_intersection_pairs.clear();
@@ -243,29 +242,12 @@ void Mesh_Intersection::increase_intersection_mesh(	const std::set<libMesh::Poin
 	unsigned int intersection_range_start = m_nb_of_elements;
 
 	//	First, triangulate the point set!
-//	std::cout 	<< " Triangulating A " << elem_idx_A
-//				<< ", B " << elem_idx_B
-//				<< ", C " << elem_idx_C << std::endl;
 	triangulate_intersection(input_points);
-//	std::cout 	<< " Finished!" << std::endl;
 
 	//	Second, add the points to the grid-to-mesh map and update the intersection mesh,
 	// taking into account if the associated elements are big enough.
 	update_intersection_mesh();
 
-/*	/i/ 	First, add the points to the grid-to-mesh map, and create new
-	// vertices if needed.
-	update_intersection_vertices(input_points);
-
-	//	Second, triagulate the point set
-	triangulate_intersection(input_points);
-
-	//  Third, update the intersection mesh
-	// 	The sets conserve the order, so there is no need of an equivalence
-	// table between the m_libMesh_PolyhedronMesh and m_libMesh_Mesh
-	// vertices.
-	update_intersection_mesh();
-*/
 	//	Third, update the intersection pairs, if needed
 	unsigned int intersection_range_end = m_nb_of_elements;
 	if(intersection_range_end != intersection_range_start)
@@ -373,14 +355,4 @@ void Mesh_Intersection::convert_to_discrete(const libMesh::Point& iPoint, std::v
 	oPoint[1] = lround( (iPoint(1) -  m_Grid_MinPoint(1) )/m_eps);
 	oPoint[2] = lround( (iPoint(2) -  m_Grid_MinPoint(2) )/m_eps);
 }
-
-//long Mesh_Intersection::convert_to_grid(const libMesh::Point iPoint)
-//{
-//	long dummy =  lround( (iPoint(0) -  m_Grid_MinPoint(0) )/m_eps) * m_GridN[1]*m_GridN[2]
-//				+ lround( (iPoint(1) -  m_Grid_MinPoint(1) )/m_eps) * m_GridN[1]
-//				+ lround( (iPoint(2) -  m_Grid_MinPoint(2) )/m_eps);
-//	homemade_assert_msg(dummy > -1, "Negative grid index!\n");
-//
-//	return dummy;
-//}
 }

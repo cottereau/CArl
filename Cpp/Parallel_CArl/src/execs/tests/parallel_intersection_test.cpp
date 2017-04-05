@@ -247,7 +247,7 @@ int main(int argc, char *argv[])
 	{
 		perf_log.push("Stitch intersection meshes");
 		libMesh::Mesh test_mesh_full_I(LocalComm,3);
-		carl::Stitch_Intersection_Meshes	join_meshes(test_mesh_full_I,input_params.output_base + "_stitched");
+		carl::Stitch_Meshes	join_meshes(test_mesh_full_I,input_params.output_base + "_stitched");
 		join_meshes.set_grid_constraints(test_mesh_A,test_mesh_B);
 
 		if(rank == 0)

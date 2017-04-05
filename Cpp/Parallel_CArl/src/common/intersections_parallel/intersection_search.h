@@ -24,154 +24,165 @@ enum SearchMethod
 	BOTH
 };
 
-/*
- * 		Intersection_Search class
- *
- * 			This class contains the structure needed to find all the
- * 		intersections between two meshes A and B, and the coupling region mesh
- * 		(C or Coupling).
- *
+// *************************
+// Intersection_Search class
+// *************************
+
+/** \brief Class containing the structure needed to find all the
+ * 	intersections between two meshes, inside the coupling region mesh.
  */
 
 class	Intersection_Search
 {
 protected:
 
-	// Meshes
+	// Mesh addresses
 	libMesh::Mesh&				   m_Mesh_A;
 	libMesh::Mesh&				   m_Mesh_B;
-	libMesh::Mesh&				   m_Mesh_Coupling;
+	libMesh::Mesh&				   m_Mesh_Coupling;	///< Mesh representing the coupling region
 
 	// Communicators and parallel data
-	/*
-	 * 		The local variants are used for the patch meshes
-	 */
-	const libMesh::Parallel::Communicator& m_comm;
-	const unsigned int					   m_nodes;
-	const unsigned int					   m_rank;
-	const libMesh::Parallel::Communicator& m_local_comm;
+	const libMesh::Parallel::Communicator& m_comm;			///< Global communicator
+	const unsigned int					   m_nodes;			///< Number of MPI processors
+	const unsigned int					   m_rank;			///< This processor's rank (or ID in the communicator)
+	const libMesh::Parallel::Communicator& m_local_comm;	///< Local communicator, used for mesh patches
 
 	// Objects containing the two patches
-	Patch_construction					   m_Patch_Constructor_A;
-	Patch_construction					   m_Patch_Constructor_B;
+	Patch_construction					   m_Patch_Constructor_A;	///< Patch_construction object for mesh A
+	Patch_construction					   m_Patch_Constructor_B;	///< Patch_construction object for mesh B
 
-	// Flag defining the intersection meshing algorithm
-	IntersectionMeshingMethod m_MeshingMethod;
+	/** \brief Flag defining the intersection meshing algorithm.
+	 *
+	 * Can be either CArl::LIBMESH_TETGEN (use LibMesh's tetgen module, problematic with Intel compilers) 
+	 * or CArl::CGAL (use CGAL's Triangulation_3). *Default:* CArl::CGAL.
+	 */
+	IntersectionMeshingMethod m_MeshingMethod;	
 
-	// Object containing the intersection mesh
+	/// \brief Object containing the intersection mesh.
 	Mesh_Intersection					   m_Mesh_Intersection;
 
-	// Output multimap containing the intersection pairs
+	/** \brief Multimap containing the intersection pairs.
+	 *
+	 * The element indexes of the mesh A are used as the keys of the multimap
+	 */
 	std::unordered_multimap<unsigned int,unsigned int> m_Intersection_Pairs_multimap;
 
-	// Objects used to test the intersections
+	/// \brief Intersection operations for the main intersection tests
 	Intersection_Tools m_Intersection_test;
+
+	/// \brief Intersection operations for the neighbor intersection tests. (**why do we need both?**)
 	Intersection_Tools m_Intersection_test_neighbors;
 
-	// Vector saving the number of intersections found inside each of the
-	// coupling mesh elements
+	/// \brief Vector containing the number of intersections found inside each of the coupling mesh elements.
 	std::vector<unsigned int> m_Nb_Of_Intersections_Elem_C;
+
+	/// \brief libMesh::ErrorVector used to repartition the coupling mesh.
 	libMesh::ErrorVector m_coupling_weights;
 
-	// Boolean flag determining if we should save the intersection data or not
+	/// \brief Boolean flag determining if we should save the intersection data or not. *Default:* true.
 	bool m_bSaveInterData;
 
-	// Boolean flag determining if we did a preallocation run or not
-	bool m_bPreparedPreallocation;
+	/// \brief Boolean flag determining if we did a preliminary intersection search, used for the coupling mesh repartition and memory preallocations.
+	bool m_bDidPreliminarySearch;
 
-	// Boolean flag determining if we did a preallocation run or not
-	bool m_bDidPreallocation;
+	/// \brief Boolean flag determining if we have the data for a proper preallocation of m_Intersection_Pairs_multimap.
+	bool m_bHavePreallocData;
 
-	// Boolean flag indicating if the intersections were built
+	/// \brief Boolean flag indicating if the intersections were built. (**A bit useless right now ...**)
 	bool m_bIntersectionsBuilt;
 
-	// Volume cutoff for the intersections
+	/// \brief Volume cutoff for the intersection polyhedrons. *Default:* 1E-15.
 	double m_Min_Inter_Volume;
 
-	// Boolean indicating if intersections must be built or not
+	/// \brief Boolean indicating if we should skip the intersection construction. *Default:* false.
 	bool m_bSkipIntersectionConstruction;
+
+	/// \brief Boolean indicating if we should skip the intersection repartitioning. *Default:* false.
 	bool m_bSkipIntersectionPartitioning;
 
-	// Output
-	std::string m_Output_filename_base;
+	std::string m_Output_filename_base;			///< Output filenames base.
 
-	// Perflog and debug variables
-	bool MASTER_bPerfLog_intersection_search;
-	libMesh::PerfLog m_perf_log;
-	bool m_bPrintDebug;
-	bool m_bPrintTimingData;
-	bool m_bPrintIntersectionsPerPartData;
-	std::string m_timing_data_file_base;
+	bool MASTER_bPerfLog_intersection_search;	///< Do performance log? *Default:* true.
+	libMesh::PerfLog m_perf_log;				///< libMesh::PerfLog object.
+	bool m_bPrintDebug;							///< Print debug data. *Default:* false.
+	bool m_bPrintTimingData;					///< Print timing data. *Default:* false.
+	bool m_bPrintIntersectionsPerPartData;		///< Print intersections per partition. *Default:* false.
+	std::string m_timing_data_file_base;		///< Output filenames base for the timing data. 
 
 	// PROTECTED methods
-	/*
-	 * 		Build both patches associated to the query element
-	 */
+	/** \brief Build both patches associated a given query element from the coupling region mesh.
+	 * 		
+	 * Calls the method Patch_construction::BuildPatch for both patches, and export the patch meshes if Intersection_Search::m_bPrintDebug == true.
+	 */	
 	void BuildCoupledPatches(const libMesh::Elem 	* Query_elem, int patch_counter = 0);
 
-	/*
-	 * 		Find all the intersections between the patches, using a brute force
-	 * 	method (all elements from a patch are tested against all the elements
-	 * 	from the other patch).
+	/** \brief Find all the intersections between the patches associated to the Query_elem, 
+	 * using a brute force method. All elements from a patch are tested against all the elements from the other 
+	 * patch.
 	 */
 	void FindPatchIntersections_Brute(const libMesh::Elem 	* Query_elem);
 
-	/*
-	 * 		Find the first intersecting pair from a patch. Do so by :
-	 *
-	 * 		a) locating the elements from the guide patch that contain the
+	/** \brief Find all the intersections between the patches associated to the Query_elem, using an advancing
+	 * 	front method.
+	 */
+	void FindPatchIntersections_Front(const libMesh::Elem 	* Query_elem);
+
+	/**	\brief Find the first intersecting pair from a patch.
+	 *  
+     *  Do so by :
+	 * 		1. locating the elements from the guide patch that contain the
 	 * 		vertices of an element from the probed patch.
-	 * 		b) for each one of these guide elements, find the one that
+	 * 		2. for each one of these guide elements, find the one that
 	 * 		intersects the probed element inside the coupling.
-	 * 		c) if this fails, use a brute force search method.
+	 * 		3. if this fails, use a brute force search method (call Intersection_Search::BruteForce_FindFirstPair).
 	 */
 	void FindFirstPair(		Patch_construction * 	Patch_guide,
 							Patch_construction * 	Patch_probed,
 							std::pair<unsigned int,unsigned int> &		First_intersection);
 
-	/*
-	 * 		Find the first intersecting pair from a patch, doing a full scan of
-	 * 	the patches (essentially, a brute force algorithm set to stop after the
+	/** \brief Find the first intersecting pair from a patch, doing a full scan of
+	 * 	the patches.
+	 *
+	 *  This is, essentially, a brute force algorithm set to stop after the
 	 * 	first positive test).
 	 */
 	void BruteForce_FindFirstPair(	Patch_construction * 	Patch_guide,
 									Patch_construction * 	Patch_probed,
 									std::pair<unsigned int,unsigned int> &		First_intersection);
 
-	/*
-	 * 		Find all the intersections between the patches, using an advancing
-	 * 	front method.
+	/** \brief Find and build all the intersections, using the brute force method.
+	 *
+	 * Skips build step if Intersection_Search::m_bSkipIntersectionConstruction == true.
 	 */
-	void FindPatchIntersections_Front(const libMesh::Elem 	* Query_elem);
+	void FindAndBuildIntersections_Brute();
 
-	/*
-	 * 		For each coupling element, build the patches and find their
-	 * 	intersections, using the brute force method.
+	/** \brief Find all the intersections, using the brute force method.
+	 *
+	 * Skips saving intersecting element pairs if Intersection_Search::m_bSaveInterData == true.
 	 */
-	void BuildIntersections_Brute();
-	void PrepareIntersections_Brute();
+	void FindIntersections_Brute();
 
-	/*
-	 * 		For each coupling element, build the patches and find their
-	 * 	intersections, using the advancing front method.
+	/** \brief Find and build all the intersections, using the advancing front method.
+	 *
+	 * Skips build step if Intersection_Search::m_bSkipIntersectionConstruction == true.
 	 */
-	void BuildIntersections_Front();
-	void PrepareIntersections_Front();
+	void FindAndBuildIntersections_Front();
 
-	/*
-	 * 		Legacy function, used to calculate the volume of the intersections
-	 * 	without updating the intersection mesh.
+	/** \brief Find all the intersections, using the advancing front method.
+	 *
+	 * Skips saving intersecting element pairs if Intersection_Search::m_bSaveInterData == true.
 	 */
+	void FindIntersections_Front();
+
+	/// \brief Calculate the volume of the intersections associated to Query_elem without updating the intersection mesh. **Currently unused**
 	void CalculateIntersectionVolume(const libMesh::Elem 	* Query_elem);
 
-	/*
-	 * 		Take the intersection tables info and update the intersection mesh.
-	 */
+	/// \brief Build the intersections associated to the Query_elem and update the intersection mesh.
 	void UpdateCouplingIntersection(const libMesh::Elem 	* Query_elem);
 
 public:
 
-	// Constructor
+	/// \brief Constructor.
 	Intersection_Search(libMesh::Mesh & mesh_A,
 						libMesh::Mesh & mesh_B,
 						libMesh::Mesh & mesh_Coupling,
@@ -193,8 +204,8 @@ public:
 		m_MeshingMethod { MeshingMethod },
 		m_Mesh_Intersection { Mesh_Intersection(mesh_I,m_Mesh_A,m_Mesh_B,m_MeshingMethod)},
 		m_bSaveInterData { true },
-		m_bPreparedPreallocation { false },
-		m_bDidPreallocation { false },
+		m_bDidPreliminarySearch { false },
+		m_bHavePreallocData { false },
 		m_bIntersectionsBuilt { false },
 		m_Min_Inter_Volume { Min_Inter_Volume },
 		m_bSkipIntersectionConstruction { false },
@@ -208,52 +219,48 @@ public:
 	{
 		// Reserve space for the intersection multimap
 		m_Nb_Of_Intersections_Elem_C.resize(mesh_Coupling.n_elem(),0);
-		// m_Intersection_Pairs_multimap.reserve(mesh_A.n_elem()*mesh_B.n_elem());
 	};
 
-	// Getters
+	/// \brief Reference to the mesh A.
 	libMesh::Mesh & mesh_A();
+
+	/// \brief Reference to the mesh B.
 	libMesh::Mesh & mesh_B();
+
+	/// \brief Reference to the coupling mesh.
 	libMesh::Mesh & mesh_Coupling();
 
 	// PUBLIC Methods
-	/*
-	 * 		Preallocate run. It essentially does the intersection run, but
-	 * 	without saving the data or building the intersections themselves.
+	/** \brief Do a preliminary search, to optimize the intersection search and construction.
 	 *
+	 * This method finds all the intersecting element pairs, only saving their number for each
+	 * element of the coupling mesh. This information is used to repartition the coupling mesh 
+	 * and to preallocate the Intersection_Search::m_Intersection_Pairs_multimap.
 	 */
 	void PreparePreallocationAndLoad(SearchMethod search_type = BRUTE);
+
+	/// \brief Preallocate Intersection_Search::m_Intersection_Pairs_multimap and repartition the coupling mesh.
 	void PreallocateAndPartitionCoupling();
 
-	/*
-	 * 		Interface for the user to build the intersections. By default, it
-	 * 	uses the brute force algorithm, but the argument can be changed to
-	 * 	carl::FRONT to use the advancing front method, of to carl::BOTH to use
-	 * 	both methods (useful for benchmarking).
-	 */
+	/// \brief Find and build all the intersections.
 	void BuildIntersections(SearchMethod search_type = BRUTE);
 
-	/*
-	 * 		Set up timing output file.
-	 */
+	/// \brief Set up timing output file.
 	void SetScalingFiles(const std::string& timing_data_file_base);
 
-	/*
-	 * 		Skip intersection construction (or not)
-	 */
+	/// \brief Set the "Skip intersection construction" flag.
 	void SkipIntersectionConstruction(bool bSkipIntersectionConstruction)
 	{
 		m_bSkipIntersectionConstruction = bSkipIntersectionConstruction;
 	}
 
+	/// \brief Set the "Skip the coupling mesh repartition" flag.
 	void SkipIntersectionPartitioning(bool bSkipIntersectionPartitioning)
 	{
 		m_bSkipIntersectionPartitioning = bSkipIntersectionPartitioning;
 	}
 
-	/*
-	 * 		Calculate the volume over all the processors
-	 */
+	/// \brief Calculate the total intersection volume over all the processors
 	void CalculateGlobalVolume();
 };
 }

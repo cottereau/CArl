@@ -9,12 +9,12 @@
 
 namespace carl
 {
-const libMesh::ReplicatedMesh & Stitch_Intersection_Meshes::mesh()
+const libMesh::ReplicatedMesh & Stitch_Meshes::mesh()
 {
 	return m_Stitched_mesh;
 }
 
-void Stitch_Intersection_Meshes::set_base_filenames(std::vector<std::string> & mesh_filenames, std::vector<std::string> & table_filenames)
+void Stitch_Meshes::set_base_filenames(std::vector<std::string> & mesh_filenames, std::vector<std::string> & table_filenames)
 {
 	homemade_assert_msg(mesh_filenames.size() == table_filenames.size(), "File lists have different sizes!\n");
 
@@ -33,7 +33,7 @@ void Stitch_Intersection_Meshes::set_base_filenames(std::vector<std::string> & m
 	m_bFilenamesSet = true;
 }
 
-void Stitch_Intersection_Meshes::set_base_filenames(const std::string & filename_base, const std::string & mesh_format, unsigned int nb_of_files )
+void Stitch_Meshes::set_base_filenames(const std::string & filename_base, const std::string & mesh_format, unsigned int nb_of_files )
 {
 	// Set the number of files
 	if(nb_of_files == 0)
@@ -62,14 +62,14 @@ void Stitch_Intersection_Meshes::set_base_filenames(const std::string & filename
 	m_bFilenamesSet = true;
 }
 
-void Stitch_Intersection_Meshes::preallocate_grid(int map_preallocation)
+void Stitch_Meshes::preallocate_grid(int map_preallocation)
 {
 	m_discrete_vertices.reserve(map_preallocation);
 //	m_Grid_to_mesh_vertex_idx.reserve(map_preallocation);
 	m_bGridPreallocated = true;
 }
 
-void Stitch_Intersection_Meshes::set_grid_constraints(const libMesh::Mesh & mesh_A, const libMesh::Mesh & mesh_B, double vol_tol )
+void Stitch_Meshes::set_grid_constraints(const libMesh::Mesh & mesh_A, const libMesh::Mesh & mesh_B, double vol_tol )
 {
 	libMesh::MeshTools::BoundingBox bbox_A = libMesh::MeshTools::bounding_box(mesh_A);
 	libMesh::MeshTools::BoundingBox bbox_B = libMesh::MeshTools::bounding_box(mesh_B);
@@ -138,7 +138,7 @@ void Stitch_Intersection_Meshes::set_grid_constraints(const libMesh::Mesh & mesh
 	}
 }
 
-void Stitch_Intersection_Meshes::set_grid_constraints(Mesh_Intersection & mesh_inter_obj)
+void Stitch_Meshes::set_grid_constraints(Mesh_Intersection & mesh_inter_obj)
 {
 	// Copy everything from the argument
 	m_Grid_MinPoint = mesh_inter_obj.min_point();
@@ -160,7 +160,7 @@ void Stitch_Intersection_Meshes::set_grid_constraints(Mesh_Intersection & mesh_i
 	}
 }
 
-void Stitch_Intersection_Meshes::join_tables()
+void Stitch_Meshes::join_tables()
 {
 	// Check if the grids and files were set, and if the grid was preallocated
 	homemade_assert_msg(m_bGridDefined,"Grid not set!\n");
@@ -257,7 +257,7 @@ void Stitch_Intersection_Meshes::join_tables()
 	joined_tables_file.close();
 }
 
-void Stitch_Intersection_Meshes::stitch_meshes()
+void Stitch_Meshes::stitch_meshes()
 {
 	homemade_assert_msg(m_bGridPreallocated,"Grid not preallocated!\n");
 
@@ -364,19 +364,19 @@ void Stitch_Intersection_Meshes::stitch_meshes()
 	std::cout << " -> bad volumes : " << wrong_volume << " ( " <<  m_vol_tol << " ) " << std::endl;
 };
 
-void Stitch_Intersection_Meshes::convert_to_discrete(const libMesh::Point& iPoint, std::vector<long>& oPoint)
+void Stitch_Meshes::convert_to_discrete(const libMesh::Point& iPoint, std::vector<long>& oPoint)
 {
 	oPoint[0] = lround( (iPoint(0) -  m_Grid_MinPoint(0) )/m_eps);
 	oPoint[1] = lround( (iPoint(1) -  m_Grid_MinPoint(1) )/m_eps);
 	oPoint[2] = lround( (iPoint(2) -  m_Grid_MinPoint(2) )/m_eps);
 }
 
-const std::unordered_set<unsigned int>* Stitch_Intersection_Meshes::get_restricted_set_pointer_first()
+const std::unordered_set<unsigned int>* Stitch_Meshes::get_restricted_set_pointer_first()
 {
 	return &m_restriction_set_first;
 };
 
-const std::unordered_set<unsigned int>* Stitch_Intersection_Meshes::get_restricted_set_pointer_second()
+const std::unordered_set<unsigned int>* Stitch_Meshes::get_restricted_set_pointer_second()
 {
 	return &m_restriction_set_second;
 };

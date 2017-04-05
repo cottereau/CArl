@@ -12,73 +12,73 @@ namespace carl
 
 void Intersection_Tools::set_element_indexes()
 {
-	m_tetra_tetrahedrons.resize(1,std::vector<unsigned int>(4,0));
-	m_tetra_triangles.resize(4,std::vector<unsigned int>(3,0));
-	m_tetra_edges.resize(6,std::vector<unsigned int>(2,0));
+	m_TET_tetrahedrons.resize(1,std::vector<unsigned int>(4,0));
+	m_TET_triangles.resize(4,std::vector<unsigned int>(3,0));
+	m_TET_edges.resize(6,std::vector<unsigned int>(2,0));
 
-	m_hex_tetrahedrons.resize(5,std::vector<unsigned int>(4,0));
-	m_hex_triangles.resize(12,std::vector<unsigned int>(3,0));
-	m_hex_edges.resize(12,std::vector<unsigned int>(2,0));
+	m_HEX_tetrahedrons.resize(5,std::vector<unsigned int>(4,0));
+	m_HEX_triangles.resize(12,std::vector<unsigned int>(3,0));
+	m_HEX_edges.resize(12,std::vector<unsigned int>(2,0));
 
 	// Set up tetra tetrahedrons (...)
-	m_tetra_tetrahedrons[0] = {0, 1, 2, 3};
+	m_TET_tetrahedrons[0] = {0, 1, 2, 3};
 
 	// Set up tetra triangles
-	m_tetra_triangles[0] = {0, 1, 2};
-	m_tetra_triangles[1] = {1, 2, 3};
-	m_tetra_triangles[2] = {0, 1, 3};
-	m_tetra_triangles[3] = {0, 2, 3};
+	m_TET_triangles[0] = {0, 1, 2};
+	m_TET_triangles[1] = {1, 2, 3};
+	m_TET_triangles[2] = {0, 1, 3};
+	m_TET_triangles[3] = {0, 2, 3};
 
 	// Set up tetra edges
-	m_tetra_edges[0] = {0, 1};
-	m_tetra_edges[1] = {0, 2};
-	m_tetra_edges[2] = {0, 3};
-	m_tetra_edges[3] = {1, 3};
-	m_tetra_edges[4] = {3, 2};
-	m_tetra_edges[5] = {2, 1};
+	m_TET_edges[0] = {0, 1};
+	m_TET_edges[1] = {0, 2};
+	m_TET_edges[2] = {0, 3};
+	m_TET_edges[3] = {1, 3};
+	m_TET_edges[4] = {3, 2};
+	m_TET_edges[5] = {2, 1};
 
 	// Set up hex tetrahedrons
-	m_hex_tetrahedrons[0] = {0, 1, 3, 4};
-	m_hex_tetrahedrons[1] = {5, 1, 4, 6};
-	m_hex_tetrahedrons[2] = {7, 3, 4, 6};
-	m_hex_tetrahedrons[3] = {2, 6, 1, 3};
+	m_HEX_tetrahedrons[0] = {0, 1, 3, 4};
+	m_HEX_tetrahedrons[1] = {5, 1, 4, 6};
+	m_HEX_tetrahedrons[2] = {7, 3, 4, 6};
+	m_HEX_tetrahedrons[3] = {2, 6, 1, 3};
 
-	m_hex_tetrahedrons[4] = {1, 4, 6, 3};
+	m_HEX_tetrahedrons[4] = {1, 4, 6, 3};
 
 	// Set up hex triangles
-	m_hex_triangles[0] = {0, 1, 2};
-	m_hex_triangles[1] = {0, 3, 2};
+	m_HEX_triangles[0] = {0, 1, 2};
+	m_HEX_triangles[1] = {0, 3, 2};
 
-	m_hex_triangles[2] = {0, 1, 5};
-	m_hex_triangles[3] = {0, 4, 5};
+	m_HEX_triangles[2] = {0, 1, 5};
+	m_HEX_triangles[3] = {0, 4, 5};
 
-	m_hex_triangles[4] = {0, 3, 7};
-	m_hex_triangles[5] = {0, 4, 7};
+	m_HEX_triangles[4] = {0, 3, 7};
+	m_HEX_triangles[5] = {0, 4, 7};
 
-	m_hex_triangles[6] = {6, 5, 4};
-	m_hex_triangles[7] = {6, 7, 4};
+	m_HEX_triangles[6] = {6, 5, 4};
+	m_HEX_triangles[7] = {6, 7, 4};
 
-	m_hex_triangles[8]  = {6, 5, 1};
-	m_hex_triangles[9]  = {6, 2, 1};
+	m_HEX_triangles[8]  = {6, 5, 1};
+	m_HEX_triangles[9]  = {6, 2, 1};
 
-	m_hex_triangles[10] = {6, 7, 3};
-	m_hex_triangles[11] = {6, 2, 3};
+	m_HEX_triangles[10] = {6, 7, 3};
+	m_HEX_triangles[11] = {6, 2, 3};
 
 	// Set up hex edges
-	m_hex_edges[0] = {0, 1};
-	m_hex_edges[1] = {1, 2};
-	m_hex_edges[2] = {2, 3};
-	m_hex_edges[3] = {3, 0};
+	m_HEX_edges[0] = {0, 1};
+	m_HEX_edges[1] = {1, 2};
+	m_HEX_edges[2] = {2, 3};
+	m_HEX_edges[3] = {3, 0};
 
-	m_hex_edges[4] = {4, 5};
-	m_hex_edges[5] = {5, 6};
-	m_hex_edges[6] = {6, 7};
-	m_hex_edges[7] = {7, 4};
+	m_HEX_edges[4] = {4, 5};
+	m_HEX_edges[5] = {5, 6};
+	m_HEX_edges[6] = {6, 7};
+	m_HEX_edges[7] = {7, 4};
 
-	m_hex_edges[8]  = {0, 4};
-	m_hex_edges[9]  = {1, 5};
-	m_hex_edges[10] = {2, 6};
-	m_hex_edges[11] = {3, 7};
+	m_HEX_edges[8]  = {0, 4};
+	m_HEX_edges[9]  = {1, 5};
+	m_HEX_edges[10] = {2, 6};
+	m_HEX_edges[11] = {3, 7};
 }
 
 bool Intersection_Tools::elements_do_intersect(
@@ -267,14 +267,14 @@ bool Intersection_Tools::libMesh_exact_do_intersect(
 		if(elem_A->type() == libMesh::TET4)
 		{
 			// Use tetrahedron geometry
-			elem_A_tetras = &m_tetra_tetrahedrons;
-			elem_A_triangles = &m_tetra_triangles;
+			elem_A_tetras = &m_TET_tetrahedrons;
+			elem_A_triangles = &m_TET_triangles;
 		}
 		else if(elem_A->type() == libMesh::HEX8)
 		{
 			// Use hexaedron geometry
-			elem_A_tetras = &m_hex_tetrahedrons;
-			elem_A_triangles = &m_hex_triangles;
+			elem_A_tetras = &m_HEX_tetrahedrons;
+			elem_A_triangles = &m_HEX_triangles;
 		}
 		else
 		{
@@ -284,21 +284,21 @@ bool Intersection_Tools::libMesh_exact_do_intersect(
 		if(elem_B->type() == libMesh::TET4)
 		{
 			// Use tetrahedron geometry
-			elem_B_tetras = &m_tetra_tetrahedrons;
-			elem_B_triangles = &m_tetra_triangles;
+			elem_B_tetras = &m_TET_tetrahedrons;
+			elem_B_triangles = &m_TET_triangles;
 		}
 		else if(elem_B->type() == libMesh::HEX8)
 		{
 			// Use hexaedron geometry
-			elem_B_tetras = &m_hex_tetrahedrons;
-			elem_B_triangles = &m_hex_triangles;
+			elem_B_tetras = &m_HEX_tetrahedrons;
+			elem_B_triangles = &m_HEX_triangles;
 		}
 		else
 		{
 			homemade_error_msg("Unsupported element type! Must be either TET4 or HEX8");
 		}
 
-		bElemIntersect = elements_do_intersect(m_exact_points_A, *elem_A_tetras, *elem_A_triangles,
+		bElemIntersect = this->elements_do_intersect(m_exact_points_A, *elem_A_tetras, *elem_A_triangles,
 				m_exact_points_B, *elem_B_tetras, *elem_B_triangles);
 	}
 	else
@@ -618,14 +618,14 @@ void Intersection_Tools::libmesh_set_coupling_nef_polyhedron(const libMesh::Elem
 	if(elem_C->type() == libMesh::TET4)
 	{
 		// Use tetrahedron geometry
-		m_elem_C_tetras = &m_tetra_tetrahedrons;
-		m_elem_C_triangles = &m_tetra_triangles;
+		m_elem_C_tetrahedrons = &m_TET_tetrahedrons;
+		m_elem_C_triangles = &m_TET_triangles;
 	}
 	else if(elem_C->type() == libMesh::HEX8)
 	{
 		// Use hexaedron geometry
-		m_elem_C_tetras = &m_hex_tetrahedrons;
-		m_elem_C_triangles = &m_hex_triangles;
+		m_elem_C_tetrahedrons = &m_HEX_tetrahedrons;
+		m_elem_C_triangles = &m_HEX_triangles;
 	}
 	else
 	{

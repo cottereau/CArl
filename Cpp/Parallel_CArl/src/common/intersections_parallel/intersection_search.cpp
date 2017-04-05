@@ -150,7 +150,7 @@ namespace carl
 				 ++element_probed_it)
 		{
 			Patch_probed_first_elem = * element_probed_it;
-			Patch_probed_first_elem_id = Patch_probed->convert_patch_to_global_elem_id(Patch_probed_first_elem->id());
+			Patch_probed_first_elem_id = Patch_probed->convert_patch_to_parent_elem_id(Patch_probed_first_elem->id());
 			bFoundIntersection = m_Intersection_test.FindAllIntersection(Patch_probed_first_elem,Patch_guide_Locator,Intersecting_guide_elems);
 			if(bFoundIntersection)
 			{
@@ -168,7 +168,7 @@ namespace carl
 				++it_inter)
 		{
 			Patch_guide_first_elem = Mesh_patch_guide.elem(*it_inter);
-			Patch_guide_first_elem_id = Patch_guide->convert_patch_to_global_elem_id(*it_inter);
+			Patch_guide_first_elem_id = Patch_guide->convert_patch_to_parent_elem_id(*it_inter);
 
 			// Must test if the intersection is inside the coupling region
 			bFoundFirstInter = m_Intersection_test_neighbors.libMesh_exact_do_intersect_inside_coupling(Patch_probed_first_elem,Patch_guide_first_elem);
@@ -202,8 +202,8 @@ namespace carl
 		std::unordered_set<unsigned int> & Patch_Set_Guide = Patch_guide->elem_indexes();
 		std::unordered_set<unsigned int> & Patch_Set_Probed = Patch_probed->elem_indexes();
 
-		libMesh::ReplicatedMesh&  	Mesh_patch_guide	= Patch_guide->mesh();
-		libMesh::ReplicatedMesh&		Mesh_patch_probed	= Patch_probed->mesh();
+		libMesh::ReplicatedMesh&  		Mesh_patch_guide	= Patch_guide->patch_mesh();
+		libMesh::ReplicatedMesh&		Mesh_patch_probed	= Patch_probed->patch_mesh();
 
 		std::unordered_set<unsigned int>::iterator it_patch_Guide;
 		std::unordered_set<unsigned int>::iterator it_patch_Probed;
@@ -435,7 +435,7 @@ namespace carl
 	 * 		For each coupling element, build the patches and find their
 	 * 	intersections, using the brute force method.
 	 */
-	void Intersection_Search::BuildIntersections_Brute()
+	void Intersection_Search::FindAndBuildIntersections_Brute()
 	{
 		// Prepare iterators
 		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.local_elements_begin();
@@ -514,7 +514,7 @@ namespace carl
 		}
 	}
 
-	void Intersection_Search::PrepareIntersections_Brute()
+	void Intersection_Search::FindIntersections_Brute()
 	{
 		// Prepare iterators
 		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.local_elements_begin();
@@ -542,7 +542,7 @@ namespace carl
 	 * 		For each coupling element, build the patches and find their
 	 * 	intersections, using the advancing front method.
 	 */
-	void Intersection_Search::BuildIntersections_Front()
+	void Intersection_Search::FindAndBuildIntersections_Front()
 	{
 		// Prepare iterators
 		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.local_elements_begin();
@@ -620,7 +620,7 @@ namespace carl
 		}
 	}
 
-	void Intersection_Search::PrepareIntersections_Front()
+	void Intersection_Search::FindIntersections_Front()
 	{
 		// Prepare iterators
 		libMesh::Mesh::const_element_iterator it_coupl = m_Mesh_Coupling.local_elements_begin();
@@ -654,25 +654,25 @@ namespace carl
 		m_bSaveInterData = false;
 		switch (search_type)
 		{
-			case BRUTE :	PrepareIntersections_Brute();
+			case BRUTE :	FindIntersections_Brute();
 							break;
 
-			case FRONT :	PrepareIntersections_Front();
+			case FRONT :	FindIntersections_Front();
 							break;
 
-			case BOTH :		PrepareIntersections_Brute();
-							PrepareIntersections_Front();
+			case BOTH :		FindIntersections_Brute();
+							FindIntersections_Front();
 							break;
 		}
 
 		m_comm.sum(m_Nb_Of_Intersections_Elem_C);
 
-		m_bPreparedPreallocation = true;
+		m_bDidPreliminarySearch = true;
 	}
 
 	void Intersection_Search::PreallocateAndPartitionCoupling()
 	{
-		if(m_bPreparedPreallocation)
+		if(m_bDidPreliminarySearch)
 		{
 			// Redo the partitioning
 			m_coupling_weights.resize(m_Nb_Of_Intersections_Elem_C.size());
@@ -704,7 +704,7 @@ namespace carl
 
 			// ... and the intersection grid
 			m_Mesh_Intersection.preallocate_grid(192*dummy_nb_of_inters);
-			m_bDidPreallocation = true;
+			m_bHavePreallocData = true;
 
 			if(m_bPrintIntersectionsPerPartData)
 			{
@@ -749,7 +749,7 @@ namespace carl
 	 */
 	void Intersection_Search::BuildIntersections(SearchMethod search_type)
 	{
-		if(!m_bDidPreallocation)
+		if(!m_bHavePreallocData)
 		{
 			// Must do an preeeety expensive preallocation. Ouch ...
 			m_Intersection_Pairs_multimap.reserve(m_Mesh_A.n_elem()*m_Mesh_B.n_elem());
@@ -760,14 +760,14 @@ namespace carl
 
 		switch (search_type)
 		{
-			case BRUTE :	BuildIntersections_Brute();
+			case BRUTE :	FindAndBuildIntersections_Brute();
 							break;
 
-			case FRONT :	BuildIntersections_Front();
+			case FRONT :	FindAndBuildIntersections_Front();
 							break;
 
-			case BOTH :		BuildIntersections_Brute();
-							BuildIntersections_Front();
+			case BOTH :		FindAndBuildIntersections_Brute();
+							FindAndBuildIntersections_Front();
 							break;
 		}
 
