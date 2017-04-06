@@ -654,13 +654,13 @@ namespace carl
 		m_bSaveInterData = false;
 		switch (search_type)
 		{
-			case BRUTE :	FindIntersections_Brute();
+			case SearchMethod::BRUTE :	FindIntersections_Brute();
 							break;
 
-			case FRONT :	FindIntersections_Front();
+			case SearchMethod::FRONT :	FindIntersections_Front();
 							break;
 
-			case BOTH :		FindIntersections_Brute();
+			case SearchMethod::BOTH :		FindIntersections_Brute();
 							FindIntersections_Front();
 							break;
 		}
@@ -760,13 +760,13 @@ namespace carl
 
 		switch (search_type)
 		{
-			case BRUTE :	FindAndBuildIntersections_Brute();
+			case SearchMethod::BRUTE :	FindAndBuildIntersections_Brute();
 							break;
 
-			case FRONT :	FindAndBuildIntersections_Front();
+			case SearchMethod::FRONT :	FindAndBuildIntersections_Front();
 							break;
 
-			case BOTH :		FindAndBuildIntersections_Brute();
+			case SearchMethod::BOTH :		FindAndBuildIntersections_Brute();
 							FindAndBuildIntersections_Front();
 							break;
 		}

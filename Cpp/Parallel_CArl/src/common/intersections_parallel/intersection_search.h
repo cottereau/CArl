@@ -17,13 +17,6 @@
 namespace carl
 {
 
-enum SearchMethod
-{
-	BRUTE,
-	FRONT,
-	BOTH
-};
-
 // *************************
 // Intersection_Search class
 // *************************

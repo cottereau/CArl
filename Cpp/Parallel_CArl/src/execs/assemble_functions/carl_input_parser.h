@@ -12,68 +12,133 @@
 
 namespace carl
 {
+/**	\brief Structure containing the parameters for the coupled solver test programs.
+ *	
+ *		Details on the parameters setup are found in the documentation of carl::get_input_params(GetPot& field_parser,
+ *		coupling_generation_input_params& input_params).
+ */
 struct coupling_generation_input_params {
-	std::string physical_params_file;
+	std::string physical_params_file;	///< Physical parameters.
 
-	std::string mesh_BIG_file;
-	std::string mesh_micro_file;
+	std::string mesh_BIG_file;		///< Path to the macro (BIG) system mesh.
+	std::string mesh_micro_file;	///< Path to the micro system mesh.
 
-	std::string mesh_restrict_BIG_file;
-	std::string mesh_restrict_micro_file;
+	std::string mesh_restrict_BIG_file;		///< Path to the restricted macro (BIG) system mesh.
+	std::string mesh_restrict_micro_file;	///< Path to the restricted micro system mesh.
 
-	std::string mesh_mediator_file;
-	std::string mesh_inter_file;
+	std::string mesh_mediator_file;		///< Path to the mediator system mesh.
+	std::string mesh_inter_file;		///< Common path to the intersection meshes.
 
-	std::string mesh_weight_file;
+	std::string mesh_weight_file;		///< Path to the mesh containing the weight region indices.
 
+	/// Equivalence table between the macro (BIG) system mesh and its restriction mesh
 	std::string equivalence_table_restrict_BIG_file;
+	/// Equivalence table between the micro system mesh and its restriction mesh
 	std::string equivalence_table_restrict_micro_file;
-	std::string equivalence_table_mediator;
-
+	/// Common path to the intersection tables
 	std::string intersection_table_full;
 
+	/// Path to the weight domain index files
 	std::string weight_domain_idx_file;
 
+	/// Path to the scaling data file (if the scaling is done)
 	std::string scaling_data_file;
 
-	bool b_UseMesh_BIG_AsMediator;
-	bool b_UseMesh_micro_AsMediator;
-	bool b_UseMesh_extra_AsMediator;
-	bool b_Repartition_micro;
-	bool LATIN_b_UseRestartFiles;
-	bool LATIN_b_PrintRestartFiles;
-	bool b_PrintOutput;
-	bool b_ExportScalingData;
+	bool b_UseMesh_BIG_AsMediator;		///< Use the macro (BIG) system's restricted mesh as the mediator? *Default*: true.
+	bool b_UseMesh_micro_AsMediator;	///< Use the micro system's restricted mesh as the mediator? *Default*: false.
+	bool b_UseMesh_extra_AsMediator;	///< Use an external mesh as the mediator? *Default*: false.
+	bool b_Repartition_micro;			///< Repartition the micro system? *Default*: false. (DO NOT USE IT WITH CG!!!)
+	bool b_UseRestartFiles;				///< Use the restart files? *Default*: false.
+	bool b_PrintRestartFiles;			///< Export the restart files? *Default*: true.
+	bool b_PrintOutput;					///< Save output? *Default*: true.
+	bool b_ExportScalingData;			///< Export scaling data? *Default*: false.
 
-	double mean_distance;
+	double mean_distance;	///< Mean element length (term `e` in the L2 coupling).
 
-	double k_dA;
-	double k_dB;
-	double k_cA;
-	double k_cB;
+	// LATIN parameters 
+	double k_dA;	///< [LATIN] Search parameter (decoupled, macro system).
+	double k_dB;	///< [LATIN] Search parameter (decoupled, micro system).
+	double k_cA;	///< [LATIN] Search parameter (coupled, macro system).
+	double k_cB;	///< [LATIN] Search parameter (coupled, micro system).
 
-	double LATIN_eps;
-	int LATIN_conv_max;
-	double LATIN_relax;
+	double LATIN_eps;		///< [LATIN] Precision.
+	int LATIN_conv_max;		///< [LATIN] Maximum number of iterations.
+	double LATIN_relax;		///< [LATIN] Relaxation.
 
-	double coupled_conv_abs;
-	double coupled_conv_rel;
-	double coupled_div;
-	double coupled_conv_corr;
-	int coupled_iter_max;
+	// More general / CG parameters
+	double CG_coupled_conv_abs;		///< [CG] Absolute residual convergence.
+	double CG_coupled_conv_rel;		///< [CG] Relative residual convergence.
+	double CG_coupled_div;			///< [CG] Residual divergence.
+	double CG_coupled_conv_corr;	///< [CG] Relative rigid body mode convergence.
+	int CG_coupled_conv_max;		///< [CG] Maximum number of iterations.	
+	
+	carl::BaseCGPrecondType CG_precond_type;	///< [CG] Type of preconditionner.
 
-	std::string coupled_convergence_output;
-	std::string coupled_restart_file_base;
+	std::string coupled_convergence_output;		///< Convergence data output.
+	std::string coupled_restart_file_base;		///< Common path to the solver restart files.
 
-	std::string output_file_BIG;
-	std::string output_file_micro;
+	std::string output_file_BIG;		///< Output file for the macro (BIG) system mesh.
+	std::string output_file_micro;		///< Output file for the micro system mesh.
 
-	std::string solver_type_string;
-	carl::CoupledSolverType solver_type;
-	std::string CG_precond_type_string;
-	carl::BaseCGPrecondType CG_precond_type;
+	carl::CoupledSolverType solver_type;	///< Coupled solver type.
 };
 
+/**	\brief Parser function for the coupled solver test programs.
+ *	
+ *	Required parameters:
+ *  + System and intersection meshes:
+ *	  - `MeshA`, `-mA` or `--meshA` : path to the mesh A.
+ *	  - `MeshB`, `-mB` or `--meshB` : path to the mesh B.
+ *	  - `MeshI`, `-mI` or `--meshI` : common path to the intersection meshes and tables.
+ *  + Arlequin weight parameters:
+ *	  - `MeshWeight`, `-mW` or `--meshWeight` : path to the mesh defining the domains of the Arlequin weight parameters.
+ *    - `WeightIndexes` or `--weightIdx` : path to the indices of the domains of the Arlequin weight parameters.
+ *  + Restricted meshes and tables:
+ *	  - `Mesh_A_Restriction`, `-mAR` or `--meshAR` : path to the restricted mesh A (formed by elements of the mesh A intersecting the coupling region).
+ *	  - `Mesh_B_Restriction`, `-mBR` or `--meshBR` : path to the restricted mesh B (formed by elements of the mesh A intersecting the coupling region).
+ *    - `Mesh_A_RestrictionEquivalenceTable` or `--tableRA` : path to the equivalence table between the mesh A and its restriction.
+ *    - `Mesh_B_RestrictionEquivalenceTable` or `--tableRB` : path to the equivalence table between the mesh B and its restriction.
+ *  + Physical parameters:
+ *    - `PhysicalParameters`, `-p` or `--parameters` : physical parameters.
+ *
+ *  Optional parameters:
+ *  + Mediator mesh boolean flags (only one can be used at each time)
+ *    - `Use_A_AsMediator` : use the restricted mesh A for the mediator space (set by default).
+ *    - `Use_B_AsMediator` : use the restricted mesh B for the mediator space.
+ *    - `Use_extra_AsMediator` : use an extra mesh for the mediator (NOT IMPLEMENTED YET!).
+ *  + Coupling parameters:
+ *    - `SolverType` : coupled solver type. *Values*: "CG", "LATIN_MODIFIED_STIFFNESS" and "LATIN_ORIGINAL_STIFFNESS" (does not modifiy the stiffness matrices, **deprecated**). *Default*: "CG".
+ *    - `CouplingMeshScale` or `--dist` : Mean element length (term `e` in the L2 coupling). *Default*: 0.2.
+ *    - `CoupledConvergenceOutput` or `--CoupledConvOutput` : path for the convergence information file. *Default*: "coupled_convergence.dat".
+ *  + Output and restart parameters:
+ *    - `SkipOutput` (boolean flag): add this flag to skip writing the outputs.
+ *    - `OutputEXOFileA`, `-oA` or `--outputA` : path to the output mesh for the system A. *Default*: "test_macro.exo".
+ *    - `OutputEXOFileB`, `-oB` or `--outputB` : path to the output mesh for the system B. *Default*: "test_micro.exo".
+ *    - `Use_restart_data` (boolean flag): add this flag to start the algorithm from the restart files.
+ *    - `Save_restart_data` (boolean flag): add this flag to save the restart files.
+ *    - `CoupledRestartDataFiles` : *Default*: "coupled_restart".
+ *    - `ExportScalingData`: common path to the scaling files.
+ *
+ *  + LATIN optional parameters:
+ *    - `LATINUseSameSearchParameters` : use the same values for all the search parameters. *Default*: true.
+ *    - `LATINk` or `-k` : common value for the search parameters. *Default*: 2.5.
+ *    - `LATINkDecoupledA` or `-kdA` : search parameters for the system A (decoupled step). *Default*: 2.5.
+ *    - `LATINkDecoupledB` or `-kdB` : search parameters for the system B (decoupled step). *Default*: 2.5.
+ *    - `LATINkCoupledA` or `-kcA` : search parameters for the system A (coupled step). *Default*: 2.5.
+ *    - `LATINkCoupledA` or `-kcB` : search parameters for the system B (coupled step).  *Default*: 2.5.
+ *    - `LATINEps` or `--LATINeps` : LATIN precision parameter. *Default*: 1e-2.
+ *    - `LATINConvergneceLimit` or `--LATINconv` : LATIN maximum number of iterations. *Default*: 1e4.
+ *    - `LATINRelax` or `--LATINrelax` : LATIN relaxation. *Default*: 0.8.
+ *  + CG optional parameters:
+ *    - `CGPreconditionerType` : CG preconditioner type. *Values*: "NONE", "Coupling_operator" or "Coupling_operator_jacobi". *Default*: "NONE".
+ *    - `CoupledConvAbs` : CG absolute convergence on the residual. *Default*: 1e-20.
+ *    - `CoupledConvRel` : CG relative convergence on the residual.  *Default*: 1e-5.
+ *    - `CoupledCorrConvRel` : CG relative convergence on the rigid body corrections. *Default*: 1e-6.
+ *    - `CoupledDiv` : CG residual divergence parameter. *Default*: 1e5.
+ *    - `CoupledIterMax` : CG maximum number of iterations. *Default*: 1e4.
+ *  + **Useless / possible candidate for deletion / for all that's sacred do not use**.
+ *    - `Repartition_Micro` : repartition the micro system mesh, following the modifications due to the coupling (DO NOT USE WITH CG!!!) 
+ */
 void get_input_params(GetPot& field_parser,
 		coupling_generation_input_params& input_params) {
 
@@ -109,8 +174,9 @@ void get_input_params(GetPot& field_parser,
 	if (field_parser.search(3, "--meshI", "-mI", "MeshInter")) {
 		input_params.mesh_inter_file = field_parser.next(
 				input_params.mesh_inter_file);
+		input_params.intersection_table_full = input_params.mesh_inter_file;
 	} else {
-		homemade_error_msg("Missing the intersection mesh file!");
+		homemade_error_msg("Missing the intersection files path!");
 	}
 
 	if ( field_parser.search(3, "--meshWeight", "-mW", "MeshWeight") )
@@ -137,13 +203,6 @@ void get_input_params(GetPot& field_parser,
 		homemade_error_msg("Missing the equivalence table for the mesh B!");
 	}
 
-	if (field_parser.search(2, "--tableFullI", "FullIntersectionElementsTable")) {
-		input_params.intersection_table_full = field_parser.next(
-				input_params.intersection_table_full);
-	} else {
-		homemade_error_msg("Missing the full intersection elements file!");
-	}
-
 	// Set table files
 	if( field_parser.search(2, "--weightIdx", "WeightIndexes") )
 	{
@@ -155,10 +214,10 @@ void get_input_params(GetPot& field_parser,
 	}
 
 	// Set the mediator mesh
-	input_params.b_UseMesh_BIG_AsMediator = false;
+	input_params.b_UseMesh_BIG_AsMediator = true;
 	input_params.b_UseMesh_micro_AsMediator = false;
 	input_params.b_UseMesh_extra_AsMediator = false;
-	input_params.b_Repartition_micro = false;
+
 	if (field_parser.search(1,"Use_A_AsMediator"))
 	{
 		input_params.b_UseMesh_BIG_AsMediator = true;
@@ -177,29 +236,23 @@ void get_input_params(GetPot& field_parser,
 	{
 		homemade_error_msg("Choose only one mesh as mediator!");
 	}
-	if (field_parser.search(1,"Do_notRepartition_Micro"))
+
+	input_params.b_Repartition_micro = false;
+	if (field_parser.search(1,"Repartition_Micro"))
 	{
-		input_params.b_Repartition_micro = false;
+		input_params.b_Repartition_micro = true;
 	}
 
 	if(input_params.b_UseMesh_BIG_AsMediator)
 	{
 		input_params.mesh_mediator_file = input_params.mesh_restrict_BIG_file;
-		input_params.equivalence_table_mediator = input_params.equivalence_table_restrict_BIG_file;
 	}
 	if(input_params.b_UseMesh_micro_AsMediator)
 	{
 		input_params.mesh_mediator_file = input_params.mesh_restrict_micro_file;
-		input_params.equivalence_table_mediator = input_params.equivalence_table_restrict_micro_file;
 	}
 	if(input_params.b_UseMesh_extra_AsMediator)
 	{
-//		if (field_parser.search(3, "--meshM", "-mM", "MeshMediator")) {
-//			input_params.mesh_mediator_file = field_parser.next(
-//					input_params.mesh_mediator_file);
-//		} else {
-//			homemade_error_msg("Missing the mediator mesh file!");
-//		}
 		libmesh_not_implemented_msg("Still implementing the external mesh case!");
 	}
 
@@ -213,17 +266,22 @@ void get_input_params(GetPot& field_parser,
 		homemade_error_msg("Missing the physical parameters file!");
 	}
 
+	// Set coupling parameters
 	input_params.mean_distance = 0.2;
 
-	if (field_parser.search(2, "--dist", "CouplingMeshScale")) {
-		input_params.mean_distance = field_parser.next(
-				input_params.mean_distance);
+	if( field_parser.search(2, "--dist","CouplingMeshScale") )
+	{
+		input_params.mean_distance = field_parser.next(input_params.mean_distance);
 	}
 
-	// Set coupling parameters
-	bool bUseSameSearchCoeff = false;
+	input_params.coupled_convergence_output = "coupled_convergence.dat";
+	if( field_parser.search(2, "--CoupledConvOutput","CoupledConvergenceOutput") )
+	{
+		input_params.coupled_convergence_output = field_parser.next(input_params.coupled_convergence_output);
+	}
 
-	input_params.mean_distance = 0.2;
+	// Set LATIN parameters
+		bool bUseSameSearchCoeff = false;
 
 	input_params.k_dA = 2.5;
 	input_params.k_dB = 2.5;
@@ -268,20 +326,9 @@ void get_input_params(GetPot& field_parser,
 		}
 	}
 
-	if( field_parser.search(2, "--dist","CouplingMeshScale") )
-	{
-		input_params.mean_distance = field_parser.next(input_params.mean_distance);
-	}
-
-	// Set LATIN parameters
-	input_params.LATIN_b_UseRestartFiles = false;
-	input_params.LATIN_b_PrintRestartFiles = false;
 	input_params.LATIN_eps = 1E-2;
 	input_params.LATIN_conv_max = 10000;
 	input_params.LATIN_relax = 0.8;
-
-	input_params.coupled_convergence_output = "coupled_convergence.dat";
-	input_params.coupled_restart_file_base = "coupled_restart";
 
 	if( field_parser.search(2, "--LATINeps","LATINEps") )
 	{
@@ -298,46 +345,46 @@ void get_input_params(GetPot& field_parser,
 		input_params.LATIN_relax = field_parser.next(input_params.LATIN_relax);
 	}
 
-	if( field_parser.search(2, "--CoupledConvOutput","CoupledConvergenceOutput") )
-	{
-		input_params.coupled_convergence_output = field_parser.next(input_params.coupled_convergence_output);
-	}
-
-	// Set coupling solver convergence
-	input_params.coupled_conv_abs = 1e-20;
-	input_params.coupled_conv_rel = 1e-5;
-	input_params.coupled_div = 1e5;
-	input_params.coupled_iter_max = 1e4;
-	input_params.coupled_conv_corr =1e-6;
+	// Set CG coupling solver convergence
+	input_params.CG_coupled_conv_abs = 1e-20;
+	input_params.CG_coupled_conv_rel = 1e-5;
+	input_params.CG_coupled_div = 1e5;
+	input_params.CG_coupled_conv_max = 1e4;
+	input_params.CG_coupled_conv_corr =1e-6;
 
 	if( field_parser.search(1,"CoupledConvAbs") )
 	{
-		input_params.coupled_conv_abs = field_parser.next(input_params.coupled_conv_abs);
+		input_params.CG_coupled_conv_abs = field_parser.next(input_params.CG_coupled_conv_abs);
 	}
 	if( field_parser.search(1,"CoupledConvRel") )
 	{
-		input_params.coupled_conv_rel = field_parser.next(input_params.coupled_conv_rel);
+		input_params.CG_coupled_conv_rel = field_parser.next(input_params.CG_coupled_conv_rel);
 	}
 	if( field_parser.search(1,"CoupledCorrConvRel") )
 	{
-		input_params.coupled_conv_corr = field_parser.next(input_params.coupled_conv_corr);
+		input_params.CG_coupled_conv_corr = field_parser.next(input_params.CG_coupled_conv_corr);
 	}
 	if( field_parser.search(1,"CoupledDiv") )
 	{
-		input_params.coupled_div = field_parser.next(input_params.coupled_div);
+		input_params.CG_coupled_div = field_parser.next(input_params.CG_coupled_div);
 	}
 	if( field_parser.search(1,"CoupledIterMax") )
 	{
-		input_params.coupled_iter_max = field_parser.next(input_params.coupled_iter_max);
+		input_params.CG_coupled_conv_max = field_parser.next(input_params.CG_coupled_conv_max);
 	}
+
+	// Restart files
+	input_params.b_UseRestartFiles = false;
+	input_params.b_PrintRestartFiles = false;
+	input_params.coupled_restart_file_base = "coupled_restart";
 
 	if( field_parser.search(1,"Use_restart_data") )
 	{
-		input_params.LATIN_b_UseRestartFiles = true;
+		input_params.b_UseRestartFiles = true;
 	}
 	if( field_parser.search(1,"Save_restart_data") )
 	{
-		input_params.LATIN_b_PrintRestartFiles = true;
+		input_params.b_PrintRestartFiles = true;
 	}
 
 	if( field_parser.search(1,"CoupledRestartDataFiles") )
@@ -355,8 +402,8 @@ void get_input_params(GetPot& field_parser,
 	}
 
 	// Set output files
-	input_params.output_file_BIG = "meshes/3D/output/carl_multi_crystal_test_micro.exo";
-	input_params.output_file_micro = "meshes/3D/output/carl_multi_crystal_test_macro.exo";
+	input_params.output_file_BIG = "test_macro.exo";
+	input_params.output_file_micro = "test_micro.exo";
 	if ( field_parser.search(3, "-oA","--outputA", "OutputEXOFileA") )
 	{
 		input_params.output_file_BIG = field_parser.next(input_params.output_file_BIG);
@@ -366,30 +413,27 @@ void get_input_params(GetPot& field_parser,
 		input_params.output_file_micro = field_parser.next(input_params.output_file_micro);
 	}
 
-	input_params.solver_type = carl::CoupledSolverType::LATIN_MODIFIED_STIFFNESS;
+	input_params.solver_type = carl::CoupledSolverType::CG;
 	input_params.CG_precond_type = carl::BaseCGPrecondType::NO_PRECONDITIONER;
 	if ( field_parser.search(1, "SolverType") )
 	{
-		input_params.solver_type_string = field_parser.next(input_params.solver_type_string);
-		if(input_params.solver_type_string == "LATIN_Modified")
+		std::string solver_type_string = field_parser.next(solver_type_string);
+		if(solver_type_string == "LATIN_Modified")
 			input_params.solver_type = carl::CoupledSolverType::LATIN_MODIFIED_STIFFNESS;
-		if(input_params.solver_type_string == "LATIN_Original_Stiffness")
+		if(solver_type_string == "LATIN_Original_Stiffness")
 			input_params.solver_type = carl::CoupledSolverType::LATIN_ORIGINAL_STIFFNESS;
-		if(input_params.solver_type_string == "CG")
+		if(solver_type_string == "CG")
 		{
 			input_params.solver_type = carl::CoupledSolverType::CG;
 			if ( field_parser.search(1, "CGPreconditionerType") )
 			{
-				input_params.CG_precond_type_string = field_parser.next(input_params.CG_precond_type_string);
-				if(input_params.CG_precond_type_string == "NONE")
+				std::string CG_precond_type_string = field_parser.next(CG_precond_type_string);
+				if(CG_precond_type_string == "NONE")
 					input_params.CG_precond_type = carl::BaseCGPrecondType::NO_PRECONDITIONER;
-				if(input_params.CG_precond_type_string == "Coupling_operator")
+				if(CG_precond_type_string == "Coupling_operator")
 					input_params.CG_precond_type = carl::BaseCGPrecondType::COUPLING_OPERATOR;
-				if(input_params.CG_precond_type_string == "Coupled_system_operator")
-					input_params.CG_precond_type = carl::BaseCGPrecondType::COUPLED_SYSTEM_OPERATOR;
-				if(input_params.CG_precond_type_string == "Coupling_operator_jacobi")
+				if(CG_precond_type_string == "Coupling_operator_jacobi")
 					input_params.CG_precond_type = carl::BaseCGPrecondType::JACOBI;
-
 			}
 		}
 	}

@@ -4,148 +4,14 @@
  *  Created on: Apr 14, 2016
  *      Author: Thiago Milanetto Schlittler
  */
+
 #include "parallel_intersection_test.h"
 
-struct parallel_intersection_test_params {
-	std::string mesh_A;
-	std::string mesh_B;
-	std::string mesh_C;
-	std::string output_base;
-
-	carl::SearchMethod search_type;
-
-	bool bSkipIntersectionConstruction;
-	bool bSkipIntersectionPartitioning;
-	bool bSkipRestriction;
-	bool bSkipMeshStitching;
-	bool bExportScalingData;
-
-	carl::IntersectionMeshingMethod inter_meshing_method;
-};
-
-void get_input_params(GetPot& field_parser,
-		parallel_intersection_test_params& input_params) {
-
-	// Set mesh files
-	if (field_parser.search(3, "--meshA", "-mA", "MeshA")) {
-		input_params.mesh_A = field_parser.next(
-				input_params.mesh_A);
-	} else {
-		input_params.mesh_A = "meshes/3D/tests/test_intersection_A_1.msh";
-	}
-
-	if (field_parser.search(3, "--meshB", "-mB", "MeshB")) {
-		input_params.mesh_B = field_parser.next(
-				input_params.mesh_B);
-	} else {
-		input_params.mesh_B = "meshes/3D/tests/test_intersection_B_1.msh";
-	}
-
-	if (field_parser.search(3, "--meshC", "-mC", "MeshC")) {
-		input_params.mesh_C = field_parser.next(
-				input_params.mesh_C);
-	} else {
-		input_params.mesh_C = "meshes/3D/tests/test_intersection_C_1.msh";
-	}
-
-	if (field_parser.search(3, "--output", "-mO", "OutputBase")) {
-		input_params.output_base = field_parser.next(
-				input_params.output_base);
-	} else {
-		input_params.output_base = "meshes/3D/tests/output/test";
-	}
-
-	std::string search_type;
-	if (field_parser.search(2, "--searchType", "SearchType")) {
-		search_type = field_parser.next(
-				search_type);
-		if(search_type == "Front" || search_type == "front" || search_type == "FRONT")
-		{
-			input_params.search_type = carl::FRONT;
-		}
-		else if(search_type == "Brute" || search_type == "brute" || search_type == "BRUTE")
-		{
-			input_params.search_type = carl::BRUTE;
-		}
-		else if(search_type == "Both" || search_type == "both" || search_type == "BOTH")
-		{
-			input_params.search_type = carl::BOTH;
-		}
-		else
-		{
-			input_params.search_type = carl::BRUTE;
-		}
-	}
-	else
-	{
-		input_params.search_type = carl::BRUTE;
-	}
-
-	if(field_parser.search(1,"SkipIntersectionConstruction")) {
-		input_params.bSkipIntersectionConstruction = true;
-	}
-	else
-	{
-		input_params.bSkipIntersectionConstruction = false;
-	}
-
-	if(field_parser.search(1,"SkipIntersectionPartitioning")) {
-		input_params.bSkipIntersectionPartitioning = true;
-	}
-	else
-	{
-		input_params.bSkipIntersectionPartitioning = false;
-	}
-
-	if(field_parser.search(1,"SkipRestriction")) {
-		input_params.bSkipRestriction = true;
-	}
-	else
-	{
-		input_params.bSkipRestriction = false;
-	}
-
-	if(field_parser.search(1,"ExportScalingData")) {
-		input_params.bExportScalingData = true;
-	}
-	else
-	{
-		input_params.bExportScalingData = false;
-	}
-
-	if(field_parser.search(1,"SkipMeshStitching")) {
-		input_params.bSkipMeshStitching = true;
-	}
-	else
-	{
-		input_params.bSkipMeshStitching = false;
-	}
-
-
-	std::string meshing_method;
-	if (field_parser.search(2, "--meshingMethodType", "MeshingMethod")) {
-		meshing_method = field_parser.next(
-				search_type);
-		if(meshing_method == "CGAL")
-		{
-			input_params.inter_meshing_method = carl::IntersectionMeshingMethod::CGAL;
-		}
-		else if(meshing_method == "TETGEN" )
-		{
-			input_params.inter_meshing_method = carl::IntersectionMeshingMethod::LIBMESH_TETGEN;
-		}
-		else
-		{
-			input_params.inter_meshing_method = carl::IntersectionMeshingMethod::LIBMESH_TETGEN;
-		}
-	}
-	else
-	{
-		input_params.inter_meshing_method = carl::IntersectionMeshingMethod::LIBMESH_TETGEN;
-	}
-}
-;
-
+/*
+ *
+ *  	This program takes as input a configuration file which is parsed by the carl::get_input_params(GetPot& field_parser,
+		parallel_intersection_test_params& input_params) function.
+ */
 int main(int argc, char *argv[])
 {
 	// Initialize libMesh
@@ -170,8 +36,8 @@ int main(int argc, char *argv[])
 		field_parser = command_line;
 	}
 
-	parallel_intersection_test_params input_params;
-	get_input_params(field_parser, input_params);
+	carl::parallel_intersection_test_params input_params;
+	carl::get_input_params(field_parser, input_params);
 
 	// Read the three meshes
 	libMesh::Mesh test_mesh_A(WorldComm);
@@ -242,10 +108,9 @@ int main(int argc, char *argv[])
 	}
 	perf_log.pop("Search intersection");
 
-	// Stitch the meshes!
+	// Join the intersection tables, stitch the meshes, build the restrictions!
 	if(!input_params.bSkipIntersectionConstruction)
 	{
-		perf_log.push("Stitch intersection meshes");
 		libMesh::Mesh test_mesh_full_I(LocalComm,3);
 		carl::Stitch_Meshes	join_meshes(test_mesh_full_I,input_params.output_base + "_stitched");
 		join_meshes.set_grid_constraints(test_mesh_A,test_mesh_B);
@@ -253,11 +118,18 @@ int main(int argc, char *argv[])
 		if(rank == 0)
 		{
 			join_meshes.set_base_filenames(input_params.output_base,".e",nodes);
+		}
+		perf_log.push("Join intersection tables");
+		if(rank == 0)
+		{
 			join_meshes.join_tables();
-			if(!input_params.bSkipMeshStitching)
-			{
-				join_meshes.stitch_meshes();
-			}
+		}
+		perf_log.pop("Join intersection tables");
+
+		perf_log.push("Stitch intersection meshes");
+		if(rank == 0 && !input_params.bSkipMeshStitching)
+		{
+			join_meshes.stitch_meshes();
 		}
 		perf_log.pop("Stitch intersection meshes");
 

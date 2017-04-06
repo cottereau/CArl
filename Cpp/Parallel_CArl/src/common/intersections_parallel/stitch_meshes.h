@@ -21,15 +21,15 @@ namespace carl
 
 /** \brief Class used to stitch together different meshes.
  *
- *		This class supposes that the meshes being stitched have compatible interfaces
- *	- in other words, that the stitched faces have the same vertices and surface elements.
+ *		This class supposes that the meshes being stitched have compatible interfaces. 
+ *  In other words, that the stitched faces have the same vertices and surface elements.
  *  For the intersection search algorithms, it also joins the local intersection tables 
  *	into a single, global table.
- *
- * 		To avoid rounding error problems during the mesh constructions, each vertex point 
+ *		To avoid rounding error problems during the mesh constructions, each vertex point 
  *  is associated to a discrete point inside a grid. This grid is constructed taking into
  *  account the dimensions of the mesh, in a similar fashion to what is done for the 
- *  carl::Mesh_Intersection class. (**idea**: create a grid class, create a more primitive class ignoring the intersections).
+ *  carl::Mesh_Intersection class. 
+ *  	(**idea**: create a grid class, create a more primitive class ignoring the intersections).
  */
 
 class	Stitch_Meshes
@@ -48,22 +48,24 @@ protected:
 
 	/// File names of intersection tables to joined.
 	std::vector<std::string>				m_table_filenames;
+
+	/// Number of files.
 	unsigned int 							m_nb_files;
 
 	// Output files
-	std::string								m_base_output;	//< Base output filename
-	std::string								m_mesh_output;	//< Mesh output filename
-	std::string								m_table_output;	//< Intersection table output filename
+	std::string								m_base_output;	///< Base output filename
+	std::string								m_mesh_output;	///< Mesh output filename
+	std::string								m_table_output;	///< Intersection table output filename
 
 	/// Vector containing all the intersection pairs
 	std::vector<std::pair<unsigned int, unsigned int> > m_intersection_pairs;
 
 	// Unordered sets containing the elements from each mesh involved
 	// in the intersection
-	std::unordered_set<unsigned int> m_restriction_set_first;	//< Set of elements used for the restriction of the first mesh
-	std::unordered_set<unsigned int> m_restriction_set_second;	//< Set of elements used for the restriction of the second mesh
+	std::unordered_set<unsigned int> m_restriction_set_first;	///< Set of elements used for the restriction of the first mesh
+	std::unordered_set<unsigned int> m_restriction_set_second;	///< Set of elements used for the restriction of the second mesh
 
-	/// nNmber of elements inside each intersection
+	/// Nmber of elements inside each intersection
 	std::vector<unsigned int> m_intersection_nb_of_elements;
 
 	// Data structure and variables associated to the "grid" used to collapse
@@ -94,23 +96,23 @@ protected:
 	long m_GridN_min;
 
 	// Parameters of the final mesh
-	unsigned int m_nb_of_intersections;	//< Final mesh's number of intersections.
-	unsigned int m_nb_of_elements;		//< Final mesh's number of elements.
-	unsigned int m_nb_of_nodes;			//< Final mesh's number of nodes.
-	unsigned int m_maximum_nb_of_nodes;	//< Upper limit for the final mesh's number of nodes.
+	unsigned int m_nb_of_intersections;	///< Final mesh's number of intersections.
+	unsigned int m_nb_of_elements;		///< Final mesh's number of elements.
+	unsigned int m_nb_of_nodes;			///< Final mesh's number of nodes.
+	unsigned int m_maximum_nb_of_nodes;	///< Upper limit for the final mesh's number of nodes.
 
 	// Boolean set when the filename base is also set
-	bool m_bFilenamesSet; //< Have the filenames been set?
+	bool m_bFilenamesSet; ///< Have the filenames been set?
 
 	// Boolean set when the grid is defined
-	bool m_bGridDefined;		//< Is the grid defined?
-	bool m_bGridPreallocated; 	//< Is the grid preallocated?
+	bool m_bGridDefined;		///< Is the grid defined?
+	bool m_bGridPreallocated; 	///< Is the grid preallocated?
 
 	// Boolean controlling if the stitched intersection mesh was finished
-	bool m_bMeshFinalized;		//< Is final mesh finalized?
+	bool m_bMeshFinalized;		///< Is final mesh finalized?
 
 	// Perflog and debug variables
-	bool m_bPrintDebug;		//< Print debug information? *Default:* false.
+	bool m_bPrintDebug;		///< Print debug information? *Default:* false.
 
 	// PROTECTED constructor
 	Stitch_Meshes();

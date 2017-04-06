@@ -22,8 +22,7 @@ enum BaseCGPrecondType {
 	CUSTOM_MATRIX = 1, // User-defined matrix
 	SYSTEM_MATRIX = 2, // System matrix
 	COUPLING_OPERATOR = 3, // C_RR
-	COUPLED_SYSTEM_OPERATOR = 4, // sum ( C_RI * M_I *C_RI^T ) - NOT GOOD
-	JACOBI = 5 // diagonal Jacobi
+	JACOBI = 4 // diagonal Jacobi
 };
 enum IntersectionMeshingMethod {
 	LIBMESH_TETGEN = 0, // libMesh Tetgen algorithm, problematic with
@@ -31,6 +30,14 @@ enum IntersectionMeshingMethod {
 	CGAL = 1 			// Intersection meshing algorithm using
 						// CGAL's Triangulation_3
 };
+
+enum SearchMethod
+{
+	BRUTE,
+	FRONT,
+	BOTH
+};
+
 }
 
 

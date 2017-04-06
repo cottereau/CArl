@@ -38,7 +38,6 @@ void carl::PETSC_CG_coupled_solver::set_solvers(generic_solver_interface * solve
 	m_coupling_solver.set_preconditioner_type(m_precond_type);
 
 	// Set up the coupled equation solver
-	std::cout << " 111 "<< std::endl;
 	m_coupling_solver.set_solver_CG(*m_sys_A_solver,*m_sys_B_solver);
 
 	// Set up the preconditioner - if needed

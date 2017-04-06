@@ -66,17 +66,6 @@ void base_CG_solver::apply_precond_matrix(libMesh::PetscVector<libMesh::Number>&
 	m_M_PC->vector_mult(v_out,v_in);
 };
 
-void base_CG_solver::apply_coupled_sys_precon(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
-{
-	// temp_sol_I = ( CI * MI * CI^t ) * v_in
-	m_solver_A->apply_ZMZt(v_in,*m_temp_sol_A);
-	m_solver_B->apply_ZMZt(v_in,*m_temp_sol_B);
-
-	// v_out = temp_sol_A + temp_sol_B
-	v_out = *m_temp_sol_A;
-	v_out += *m_temp_sol_B;
-};
-
 void base_CG_solver::apply_inverse_coupling_precond(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)
 {
 	m_perf_log.push("Apply preconditioner","Preconditioner and projections");
@@ -547,7 +536,6 @@ void base_CG_solver::set_solver_matrix(libMesh::PetscMatrix<libMesh::Number>& sy
 			break;
 		}
 		case BaseCGPrecondType::COUPLING_OPERATOR:
-		case BaseCGPrecondType::COUPLED_SYSTEM_OPERATOR:
 		{
 			homemade_error_msg("Invalid preconditioner type for direct CG solver!\n");
 			break;
@@ -641,12 +629,6 @@ void base_CG_solver::set_solver_CG(generic_solver_interface& solver_in_A, generi
 		case BaseCGPrecondType::JACOBI:
 		{
 			apply_preconditioner = &base_CG_solver::apply_jacobi_precond;
-			m_bPreconditionerSet = true;
-			break;
-		}
-		case BaseCGPrecondType::COUPLED_SYSTEM_OPERATOR:
-		{
-			apply_preconditioner = &base_CG_solver::apply_coupled_sys_precon;
 			m_bPreconditionerSet = true;
 			break;
 		}

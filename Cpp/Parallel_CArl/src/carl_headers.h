@@ -15,5 +15,4 @@
 #include "common/common_functions.h"
 #include "common/CGAL_typedefs.h"
 
-
 #endif /* CARL_HEADERS_H_ */

@@ -14,6 +14,10 @@
 
 #include "carl_headers.h"
 
+/**
+ /file weak_formulations.h
+ */
+ 
 // --- Matrices
 void Mass(	libMesh::DenseMatrix<libMesh::Number>& Mass,
 			unsigned int qp,
