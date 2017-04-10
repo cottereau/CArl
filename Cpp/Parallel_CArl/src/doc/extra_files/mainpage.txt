@@ -42,7 +42,7 @@
  * \section coupling_assemble Coupling matrix assembly and system definition
  * \image html function_projection.png
  * 
- *  Code example: carl_libmesh_anisotropic.cpp
+ *  Code example: carl_libmesh_fissure.cpp
  *
  *  **Classes:**
  *	+ carl::coupled_system : 
@@ -67,7 +67,7 @@
  * \section coupling_solver Coupled system and external solvers solvers
  * \image html coupling_250_micro_deformed_with_macro_solid.png
  *
- *  Code example: carl_libmesh_anisotropic.cpp
+ *  Code example: carl_libmesh_fissure.cpp
  *
  *  **Classes:**
  *  + carl::coupled_system :
@@ -89,34 +89,8 @@
  *
  * \section todo Work to do ...
  * 
+ *  + Better document the input / output files formats.
  *  + Finish generalizing the external solver interfaces (internally, they are general, but the interfaces themselves are not complete).
  *  + Set up the Amitex external solver interface.
  *  + Re-implement the LATIN solver to use the CG solver.
  */
-
-Code example: carl_*** (pt. 1)
-
-Classes associés à la résolution du système couplé
-carl::coupled_system (pt. 2) : 
-Interface principale de l’utilisateur
-Fait appel au solver du système couplé et aux solvers externes
-set_CG_solver, set_LATIN_solver, solve
-carl::coupled_solver : 
-Eléments comuns des solvers couplés
-Méthodes virtuelles sont implementés dans carl::CG_coupled_solver et carl::LATIN_coupled_solver
-set_forces, set_matrices, solve (VIRTUEL!)
-carl::generic_solver_interface :
-Interface virtuelle des solvers de systèmes
-apply_ZMinvZt (VIRTUEL!), solve (VIRTUEL!)
-carl::KSP_linear_solver :
-Classe derivé de carl::generic_solver_interface
-Implemente l’interface pour le solver Krylov linéaire de PETSc / libMesh
-apply_ZMinvZt, solve
-carl::base_CG_solver
-Implementation du solver CG avec la projection des modes de corps rigides
-Utilisé par carl::CG_coupled_solver pour résoudre l’équation couplé
-Peut être utilisé pour résoudre le pas découplé de LATIN (partiellement implementé)
-set_solver_CG, set_solver_LATIN, apply_CG_nullspace_residual_projection, solve
-TODO: finir la généralisation des fonctions “setup” du système
-
-Code example: carl_*** (pt. 2)

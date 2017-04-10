@@ -1,43 +1,27 @@
 #include "carl_libmesh_anisotropic.h"
 
-/*
- * 		Sketch of the second version of the program ----------------------------
- *
- * 		-> Read the meshes A, B and the coupling region file.
- *
- * 		-> Read the intersection mesh I.
- *
- * 		-> Read the mediator mesh, M.
- *
- * 		-> Read the mesh restrictions, R_A and R_B, and the equivalence tables
- * 		   between them and the original meshes, t_R_A->A and t_R_B->B.
- *
- * 		-> A, B, M and I are partitioned over all processors, while each one
- * 		   will have a copy of R_A and R_B.
- *
- * 		TODO : For now, each processor will read the whole mesh R_A and R_B!
- * 		       This is not practical for large systems!
- *
- * 		-> Run the coupling assemble program using the intersection mesh as the
- * 		   main loop index.
- *
- *		-> The reduced meshes will be used to calculate the values, while the
- *		   equivalence tables will be used to convert them to the full meshes.
- *
- *		-> Solve the system using the LATIN method. Since the matrices are
- *		   associated to A, B and M (which were properly partitioned), no
- *		   further steps are needed to paralellize the solver.
- */
-
 int main(int argc, char** argv) {
 
-	// - Start libmesh ---------------------------------------------------------
-	const bool MASTER_bPerfLog_carl_libmesh = true;
+	// --- Initialize libMesh
 	libMesh::LibMeshInit init(argc, argv);
 
+	// Do performance log?
+	const bool MASTER_bPerfLog_carl_libmesh = true;
 	libMesh::PerfLog perf_log("Main program", MASTER_bPerfLog_carl_libmesh);
 
-	// - Displacement conditions -----------------------------------------------
+	// libMesh's C++ / MPI communicator wrapper
+	libMesh::Parallel::Communicator& WorldComm = init.comm();
+
+	// Number of processors and processor rank.
+	int rank = WorldComm.rank();
+	int nodes = WorldComm.size();
+
+	// Create local communicator
+	libMesh::Parallel::Communicator LocalComm;
+	WorldComm.split(rank,rank,LocalComm);
+
+	// --- Displacement conditions
+	// Boundary displacements
 	boundary_displacement y_max_BIG(0,1.0,0);
 	boundary_displacement y_min_BIG(-0.25,0,0);
 	boundary_id_cube boundary_ids;
@@ -58,17 +42,8 @@ int main(int argc, char** argv) {
 	carl::get_input_params(field_parser, input_params);
 
 	const unsigned int dim = 3;
-
 	libmesh_example_requires(dim == LIBMESH_DIM, "3D support");
 
-	// Set up the communicator and the rank variables
-	libMesh::Parallel::Communicator& WorldComm = init.comm();
-	libMesh::Parallel::Communicator LocalComm;
-
-	int rank = WorldComm.rank();
-	int nodes = WorldComm.size();
-
-	WorldComm.split(rank,rank,LocalComm);
 
 	// - Read the meshes -------------------------------------------------------
 
@@ -76,12 +51,10 @@ int main(int argc, char** argv) {
 
 	perf_log.push("Meshes - Parallel","Read files:");
 	libMesh::Mesh mesh_BIG(WorldComm, dim);
-//	mesh_BIG.allow_renumbering(false);
 	mesh_BIG.read(input_params.mesh_BIG_file);
 	mesh_BIG.prepare_for_use();
 
 	libMesh::Mesh mesh_micro(WorldComm, dim);
-//	mesh_micro.allow_renumbering(false);
 	mesh_micro.read(input_params.mesh_micro_file);
 	mesh_micro.prepare_for_use();
 
@@ -94,28 +67,6 @@ int main(int argc, char** argv) {
 	mesh_weight.allow_renumbering(false);
 	mesh_weight.read(input_params.mesh_weight_file);
 	mesh_weight.prepare_for_use();
-
-//	// DEBUG - Test: print info per proc
-//	{
-//		std::ofstream mesh_info_ofstream;
-//		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_A_" + std::to_string(rank) + "_info.txt");
-//		mesh_BIG.print_info(mesh_info_ofstream);
-//		mesh_info_ofstream.close();
-//
-//		WorldComm.barrier();
-//
-//		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_B_" + std::to_string(rank) + "_info.txt");
-//		mesh_micro.print_info(mesh_info_ofstream);
-//		mesh_info_ofstream.close();
-//
-//		WorldComm.barrier();
-//
-//		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_inter_" + std::to_string(rank) + "_info.txt");
-//		mesh_inter.print_info(mesh_info_ofstream);
-//		mesh_info_ofstream.close();
-//
-//		WorldComm.barrier();
-//	}
 
 	perf_log.pop("Meshes - Parallel","Read files:");
 
@@ -137,38 +88,6 @@ int main(int argc, char** argv) {
 	mesh_R_micro.allow_renumbering(false);
 	mesh_R_micro.read(input_params.mesh_restrict_micro_file);
 	mesh_R_micro.prepare_for_use();
-
-//	// DEBUG - Test: print info per proc
-//	{
-//		std::ofstream mesh_info_ofstream;
-//		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_RA_" + std::to_string(rank) + "_info.txt");
-//		mesh_R_BIG.print_info(mesh_info_ofstream);
-//		mesh_info_ofstream.close();
-//
-//		WorldComm.barrier();
-//
-//		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_RB_" + std::to_string(rank) + "_info.txt");
-//		mesh_R_micro.print_info(mesh_info_ofstream);
-//		mesh_info_ofstream.close();
-//
-//		WorldComm.barrier();
-//
-//		mesh_info_ofstream.open("meshes/parallel_test/output/mesh_mediator_" + std::to_string(rank) + "_info.txt");
-//		mesh_mediator.print_info(mesh_info_ofstream);
-//		mesh_info_ofstream.close();
-//
-//		std::ofstream mesh_data;
-//		mesh_data.open("meshes/parallel_test/output/mesh_A_data_" + std::to_string(rank)  + ".dat");
-//		libMesh::MeshBase::const_element_iterator       el     = mesh_BIG.active_local_elements_begin();
-//		const libMesh::MeshBase::const_element_iterator end_el = mesh_BIG.active_local_elements_end();
-//
-//		for ( ; el != end_el; ++el)
-//		{
-//			const libMesh::Elem* elem = *el;
-//			mesh_data << elem->id() << " " << elem->point(0) << " " << elem->point(1) << " " << elem->point(2)<< " " << elem->point(3)<< std::endl;
-//		}
-//		mesh_data.close();
-//	}
 
 	// - Local mesh: intersection mesh
 	libMesh::Mesh mesh_inter(LocalComm, dim);
@@ -454,10 +373,10 @@ int main(int argc, char** argv) {
 
 	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
 	perf_log.push("Set up","Coupled Solver:");
-	if(input_params.LATIN_b_PrintRestartFiles || input_params.LATIN_b_UseRestartFiles)
+	if(input_params.b_PrintRestartFiles || input_params.b_UseRestartFiles)
 	{
-		CoupledTest.set_restart(	input_params.LATIN_b_UseRestartFiles,
-				input_params.LATIN_b_PrintRestartFiles,
+		CoupledTest.set_restart(	input_params.b_UseRestartFiles,
+				input_params.b_PrintRestartFiles,
 				input_params.coupled_restart_file_base);
 	}
 	std::cout << std::endl << "| --> Setting the solver " << std::endl << std::endl;
@@ -483,9 +402,9 @@ int main(int argc, char** argv) {
 											assemble_elasticity_with_weight,
 											assemble_elasticity_anisotropic_with_weight,
 											anisotropy_data,
-											input_params.coupled_conv_abs,input_params.coupled_conv_rel,
-											input_params.coupled_iter_max,input_params.coupled_div,
-											input_params.coupled_conv_corr);
+											input_params.CG_coupled_conv_abs,input_params.CG_coupled_conv_rel,
+											input_params.CG_coupled_conv_max,input_params.CG_coupled_div,
+											input_params.CG_coupled_conv_corr);
 			break;
 		}
 	}

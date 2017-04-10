@@ -59,8 +59,8 @@ struct carl_coupling_generation_input_params {
 	bool b_UseMesh_extra_AsMediator;
 	bool b_Repartition_micro;
 	bool b_Print_Output;
-	bool LATIN_b_UseRestartFiles;
-	bool LATIN_b_PrintRestartFiles;
+	bool b_UseRestartFiles;
+	bool b_PrintRestartFiles;
 
 	double mean_distance;
 
@@ -344,8 +344,8 @@ void get_input_params(GetPot& field_parser,
 	}
 
 	// Set restart
-	input_params.LATIN_b_UseRestartFiles = false;
-	input_params.LATIN_b_PrintRestartFiles = false;
+	input_params.b_UseRestartFiles = false;
+	input_params.b_PrintRestartFiles = false;
 
 	input_params.LATIN_convergence_output = input_params.base_output + "_convergence.dat";
 	input_params.LATIN_restart_file_base = input_params.base_output + "_restart";
@@ -354,11 +354,11 @@ void get_input_params(GetPot& field_parser,
 	std::cout << input_params.base_output << std::endl;
 	if( field_parser.search(1,"Use_restart_data") )
 	{
-		input_params.LATIN_b_UseRestartFiles = true;
+		input_params.b_UseRestartFiles = true;
 	}
 	if( field_parser.search(1,"Save_restart_data") )
 	{
-		input_params.LATIN_b_PrintRestartFiles = true;
+		input_params.b_PrintRestartFiles = true;
 	}
 
 	if( field_parser.search(1,"LATINRestartDataFiles") )
@@ -780,11 +780,11 @@ int main(int argc, char** argv) {
 
 	std::cout << std::endl << "| --> Testing the solver " << std::endl;
 	perf_log.push("Set up","LATIN Solver:");
-	if(input_params.LATIN_b_PrintRestartFiles || input_params.LATIN_b_UseRestartFiles)
+	if(input_params.b_PrintRestartFiles || input_params.b_UseRestartFiles)
 	{
 		std::cout << "|    restart file : " << input_params.LATIN_restart_file_base << "*" << std::endl;
-		CoupledTest.set_restart(	input_params.LATIN_b_UseRestartFiles,
-				input_params.LATIN_b_PrintRestartFiles,
+		CoupledTest.set_restart(	input_params.b_UseRestartFiles,
+				input_params.b_PrintRestartFiles,
 				input_params.LATIN_restart_file_base);
 	}
 	std::cout << std::endl;

@@ -461,10 +461,10 @@ int main(int argc, char** argv) {
 
 	std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;
 	perf_log.push("Set up","Coupled Solver:");
-	if(input_params.LATIN_b_PrintRestartFiles || input_params.LATIN_b_UseRestartFiles)
+	if(input_params.b_PrintRestartFiles || input_params.b_UseRestartFiles)
 	{
-		CoupledTest.set_restart(	input_params.LATIN_b_UseRestartFiles,
-				input_params.LATIN_b_PrintRestartFiles,
+		CoupledTest.set_restart(	input_params.b_UseRestartFiles,
+				input_params.b_PrintRestartFiles,
 				input_params.coupled_restart_file_base);
 	}
 	std::cout << std::endl << "| --> Setting the solver " << std::endl << std::endl;
@@ -487,9 +487,9 @@ int main(int argc, char** argv) {
 			CoupledTest.set_CG_solver(	"MicroSys","Elasticity",
 											assemble_elasticity_with_weight,
 											assemble_elasticity_with_weight_micro,
-											input_params.coupled_conv_abs,input_params.coupled_conv_rel,
-											input_params.coupled_iter_max,input_params.coupled_div,
-											input_params.coupled_conv_corr);
+											input_params.CG_coupled_conv_abs,input_params.CG_coupled_conv_rel,
+											input_params.CG_coupled_conv_max,input_params.CG_coupled_div,
+											input_params.CG_coupled_conv_corr);
 			break;
 		}
 	}

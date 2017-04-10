@@ -53,24 +53,24 @@ void get_input_params(GetPot& field_parser,
 				search_type);
 		if(search_type == "Front" || search_type == "front" || search_type == "FRONT")
 		{
-			input_params.search_type = carl::FRONT;
+			input_params.search_type = carl::SearchMethod::FRONT;
 		}
 		else if(search_type == "Brute" || search_type == "brute" || search_type == "BRUTE")
 		{
-			input_params.search_type = carl::BRUTE;
+			input_params.search_type = carl::SearchMethod::BRUTE;
 		}
 		else if(search_type == "Both" || search_type == "both" || search_type == "BOTH")
 		{
-			input_params.search_type = carl::BOTH;
+			input_params.search_type = carl::SearchMethod::BOTH;
 		}
 		else
 		{
-			input_params.search_type = carl::BRUTE;
+			input_params.search_type = carl::SearchMethod::BRUTE;
 		}
 	}
 	else
 	{
-		input_params.search_type = carl::BRUTE;
+		input_params.search_type = carl::SearchMethod::BRUTE;
 	}
 }
 ;
