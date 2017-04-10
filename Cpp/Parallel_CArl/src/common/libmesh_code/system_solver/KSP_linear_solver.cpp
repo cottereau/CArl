@@ -44,12 +44,6 @@ void KSP_linear_solver::set_matrix(libMesh::PetscMatrix<libMesh::Number>& matrix
 	m_bMatrixSet = true;
 };
 
-void KSP_linear_solver::set_coupling_matrix(libMesh::PetscMatrix<libMesh::Number>& matrix)
-{
-	m_Coupling = &matrix;
-	m_bCouplingSet = true;
-};
-
 void KSP_linear_solver::set_rhs(libMesh::PetscVector<libMesh::Number>& vector)
 {
 	m_rhs = &vector;
@@ -59,11 +53,6 @@ void KSP_linear_solver::set_rhs(libMesh::PetscVector<libMesh::Number>& vector)
 libMesh::PetscMatrix<libMesh::Number>& KSP_linear_solver::get_matrix()
 {
 	return *m_Matrix;
-}
-
-libMesh::PetscMatrix<libMesh::Number>& KSP_linear_solver::get_coupling_matrix()
-{
-	return *m_Coupling;
 }
 
 libMesh::PetscVector<libMesh::Number>& KSP_linear_solver::get_rhs()
@@ -83,18 +72,6 @@ void KSP_linear_solver::get_system_dimensions(unsigned int& M_out, unsigned int&
 	int silly_local;
 	MatGetLocalSize(m_Matrix->mat(),&silly_local,NULL);
 	M_local_out = silly_local;
-}
-
-void KSP_linear_solver::get_coupling_dimensions(unsigned int& M_out, unsigned int& N_out, unsigned int& M_local_out, unsigned int& N_local_out)
-{
-	homemade_assert_msg(m_bMatrixSet, "Must be called after setting the coupling matrix!\n");
-	M_out = m_Coupling->m();
-	N_out = m_Coupling->n();
-	int silly_local_N;
-	int silly_local_M;
-	MatGetLocalSize(m_Coupling->mat(),&silly_local_M,&silly_local_N);
-	M_local_out = silly_local_M;
-	N_local_out = silly_local_N;
 }
 
 void KSP_linear_solver::apply_ZMZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out)

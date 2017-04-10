@@ -28,6 +28,9 @@ protected:
 
 	std::string m_log_filename;
 
+	libMesh::PetscMatrix<libMesh::Number> * m_Coupling;
+	bool m_bCouplingSet;
+
 public:
 
 	bool bLogTiming;
@@ -36,6 +39,7 @@ public:
 	generic_solver_interface(	const libMesh::Parallel::Communicator& comm) :
 		m_comm { &comm },
 		m_log_filename { "generic_solver_timing_data.dat"},
+		m_bCouplingSet { false },
 		bLogTiming { false }
 	{
 
@@ -51,26 +55,31 @@ public:
 		}
 	};
 
+	// Coupling matrix operations
+
+	/// Get the coupling matrix dimensions
+	void get_coupling_dimensions(unsigned int& M_out, unsigned int& N_out, unsigned int& M_local_out, unsigned int& N_local_out);
+
+	/// Set the coupling matrix
+	void set_coupling_matrix(libMesh::PetscMatrix<libMesh::Number>& matrix);
+
+	/// Returns the coupling matrix
+	libMesh::PetscMatrix<libMesh::Number>& get_coupling_matrix();
+
 	virtual KSPConvergedReason get_converged_reason() = 0;
 
 	virtual void set_solver(libMesh::PetscMatrix<libMesh::Number>& matrix, const std::string name = "") = 0;
 
 	virtual void set_matrix(libMesh::PetscMatrix<libMesh::Number>& matrix) = 0;
 
-	virtual void set_coupling_matrix(libMesh::PetscMatrix<libMesh::Number>& matrix) = 0;
-
 	virtual void set_rhs(libMesh::PetscVector<libMesh::Number>& vector) = 0;
 
 	virtual libMesh::PetscMatrix<libMesh::Number>& get_matrix() = 0;
-
-	virtual libMesh::PetscMatrix<libMesh::Number>& get_coupling_matrix() = 0;
 
 	virtual libMesh::PetscVector<libMesh::Number>& get_rhs() = 0;
 
 	// Get the system's dimensions
 	virtual void get_system_dimensions(unsigned int& M_out, unsigned int& M_local_out) = 0;
-
-	virtual void get_coupling_dimensions(unsigned int& M_out, unsigned int& N_out, unsigned int& M_local_out, unsigned int& N_local_out) = 0;
 
 	// Calculate v_out = [ C * M * C^t ] * v_in
 	virtual void apply_ZMZt(libMesh::PetscVector<libMesh::Number>& v_in, libMesh::PetscVector<libMesh::Number>& v_out) = 0;
