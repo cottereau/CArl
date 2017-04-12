@@ -5,7 +5,7 @@
  *      Author: Thiago Milanetto Schlittler
  */
 
-#include "parallel_intersection_test.h"
+#include "CArl_build_intersections.h"
 
 /*	\brief Main test for the parallel intersection test.
  *

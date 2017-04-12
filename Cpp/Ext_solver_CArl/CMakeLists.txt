@@ -68,82 +68,47 @@ set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LIBMESH_INCLUDE} ${LIBM
 # set directories
 set ( SOURCE_DIR src )
 
-set ( EXEC_SRC_DIR ${SOURCE_DIR}/execs )
-set ( CARL_LIBMESH_PARALLEL_EXEC_DIR    ${EXEC_SRC_DIR}/carl_libmesh_parallel )
-set ( DEVEL_BACKYARD_EXEC_DIR           ${EXEC_SRC_DIR}/devel_backyard )
-set ( TEST_CASES_EXEC_DIR               ${EXEC_SRC_DIR}/tests )
-set ( ASSEMBLE_FUNCTIONS_DIR            ${EXEC_SRC_DIR}/assemble_functions )
+set ( EXEC_SRC_DIR                ${SOURCE_DIR}/execs )
+set ( COMMON_SRC_DIR              ${SOURCE_DIR}/common )
+set ( INCLUDE_SRC_DIR             ${SOURCE_DIR}/include )
 
-set ( COMMON_SRC_DIR             ${SOURCE_DIR}/common )
+set ( INTERSECTION_PARALLEL_DIR   ${COMMON_SRC_DIR}/intersections_parallel )
+set ( FETI_DIR                    ${COMMON_SRC_DIR}/FETI )
+set ( COUPLING_MATRIX_DIR         ${COMMON_SRC_DIR}/coupling_matrix )
+set ( MISC_DIR                    ${COMMON_SRC_DIR}/misc )
 
-set ( INTERSECTION_PARALLEL_DIR  ${COMMON_SRC_DIR}/intersections_parallel )
-set ( LIBMESH_CODE_DIR           ${COMMON_SRC_DIR}/libmesh_code )
-
-set ( LM_BASE_CG_SOLVER_DIR     ${LIBMESH_CODE_DIR}/base_CG_solver )
-set ( LM_COUPLED_SOLVER_DIR     ${LIBMESH_CODE_DIR}/coupled_solver )
-set ( LM_COUPLED_SYSTEM_DIR     ${LIBMESH_CODE_DIR}/coupled_system )
-set ( LM_PETSC_MATRIX_OPS_DIR   ${LIBMESH_CODE_DIR}/PETSC_matrix_operations )
-set ( LM_SYSTEM_SOLVER_DIR      ${LIBMESH_CODE_DIR}/system_solver )
-set ( LM_MISC_DIR               ${LIBMESH_CODE_DIR}/misc )
-
-# include for local directory
-set ( LIBMESH_LIB_DIRS ${LM_BASE_CG_SOLVER_DIR} ${LM_COUPLED_SOLVER_DIR} ${LM_COUPLED_SYSTEM_DIR} ${LM_PETSC_MATRIX_OPS_DIR} ${LM_SYSTEM_SOLVER_DIR} ${LM_MISC_DIR})
-set ( LIB_DIRS ${SOURCE_DIR} ${INTERSECTION_DIR} ${ASSEMBLE_FUNCTIONS_DIR} ${INTERSECTION_PARALLEL_DIR})
-set ( EXEC_DIRS ${CARL_LIBMESH_PARALLEL_EXEC_DIR} ${DEVEL_BACKYARD_EXEC_DIR} ${TEST_CASES_EXEC_DIR})
-
-include_directories( ${LIBMESH_LIB_DIRS} ${LIB_DIRS} ${EXEC_DIR} )
+set ( PARSER_SRC_DIR              ${EXEC_SRC_DIR}/parsers )
 
 # set source sets
-file ( GLOB COMMON_SOURCES                "${COMMON_SRC_DIR}/common*.h"           
-                                          "${COMMON_SRC_DIR}/common*.cpp")
-file ( GLOB INTERSECTION_PARALLEL_SOURCES "${INTERSECTION_PARALLEL_DIR}/*.h"
-                                          "${INTERSECTION_PARALLEL_DIR}/*.cpp")
-file ( GLOB ASSEMBLE_FUNCTIONS_SOURCES    "${ASSEMBLE_FUNCTIONS_DIR}/*.h"
-                                          "${ASSEMBLE_FUNCTIONS_DIR}/*.cpp" )
-
-file ( GLOB LM_BASE_CG_SOLVER_SOURCES     "${LM_BASE_CG_SOLVER_DIR}/*.h"
-                                          "${LM_BASE_CG_SOLVER_DIR}/*.cpp" )
-file ( GLOB LM_COUPLED_SOLVER_SOURCES     "${LM_COUPLED_SOLVER_DIR}/*.h"
-                                          "${LM_COUPLED_SOLVER_DIR}/*.cpp" )
-file ( GLOB LM_COUPLED_SYSTEM_SOURCES     "${LM_COUPLED_SYSTEM_DIR}/*.h"
-                                          "${LM_COUPLED_SYSTEM_DIR}/*.cpp" )
-file ( GLOB LM_PETSC_MATRIX_OPS_SOURCES   "${LM_PETSC_MATRIX_OPS_DIR}/*.h"
-                                          "${LM_PETSC_MATRIX_OPS_DIR}/*.cpp" )
-file ( GLOB LM_SYSTEM_SOLVER_SOURCES      "${LM_SYSTEM_SOLVER_DIR}/*.h"
-                                          "${LM_SYSTEM_SOLVER_DIR}/*.cpp" )
-file ( GLOB LM_MISC_SOURCES               "${LM_MISC_DIR}/*.h"
-                                          "${LM_MISC_DIR}/*.cpp" )
+file ( GLOB COMMON_SOURCES                "${COMMON_SRC_DIR}/common*.cpp" )
+file ( GLOB INCLUDE_SOURCES               "${INCLUDE_SRC_DIR}/*.h" )
+file ( GLOB INTERSECTION_PARALLEL_SOURCES "${INTERSECTION_PARALLEL_DIR}/*.cpp" )
+file ( GLOB MISC_SOURCES                  "${MISC_DIR}/*.cpp" )
 
 # set execs sources
-set ( CARL_LIBMESH_PARALLEL_EXEC_SOURCES       ${CARL_LIBMESH_PARALLEL_EXEC_DIR}/main.cpp )
-set ( DEVEL_BACKYARD_EXEC_SOURCES              ${DEVEL_BACKYARD_EXEC_DIR}/main.cpp )
-file ( GLOB TEST_EXECS ${TEST_CASES_EXEC_DIR}/*.cpp )
+set  ( CARL_INTER_EXEC        ${EXEC_SRC_DIR}/CArl_build_intersections/CArl_build_intersections.cpp )
+file ( GLOB CARL_TOOLS_EXECS  "${EXEC_SRC_DIR}/CArl_tools/*.cpp" )
+file ( GLOB CARL_FETI_EXECS   "${EXEC_SRC_DIR}/CArl_FETI/*.cpp" )
 
-# Creating entries for target: intersections_2D
-# ############################
-add_library( COMMON_OBJS OBJECT                         "${SOURCE_DIR}/carl_headers.h" "${COMMON_SRC_DIR}/CGAL_typedefs.h" ${COMMON_SOURCES})
-add_library( INTERSECTION_PARALLEL_OBJS OBJECT          ${INTERSECTION_PARALLEL_SOURCES})
-add_library( LIBMESH_CODE_OBJS OBJECT                   ${LM_BASE_CG_SOLVER_SOURCES} ${LM_COUPLED_SOLVER_SOURCES} ${LM_COUPLED_SYSTEM_SOURCES} ${LM_PETSC_MATRIX_OPS_SOURCES} ${LM_SYSTEM_SOLVER_SOURCES} ${LM_MISC_SOURCES})
-add_library( ASSEMBLE_FUNCTIONS_OBJS OBJECT             ${ASSEMBLE_FUNCTIONS_SOURCES})
+include_directories( ${INCLUDE_SRC_DIR} ${PARSER_SRC_DIR} )
 
-#add_executable( carl_libmesh_parallel     ${CARL_LIBMESH_PARALLEL_EXEC_SOURCES} 
-#                                                  $<TARGET_OBJECTS:LIBMESH_CODE_OBJS> 
-#                                                  $<TARGET_OBJECTS:COMMON_OBJS>
-#                                                  $<TARGET_OBJECTS:ASSEMBLE_FUNCTIONS_OBJS>)
+# set libraries
+add_library( COMMON_OBJS OBJECT                         ${COMMON_SOURCES} ${MISC_SOURCES} )
+add_library( INTERSECTION_PARALLEL_OBJS OBJECT          ${INTERSECTION_PARALLEL_SOURCES} )
 
-# Set up the test files                                           
-foreach( test_source_file ${TEST_EXECS} )
-    string ( REPLACE ".cpp" "" full_test_exec_name ${test_source_file} )
-    string ( REPLACE "${CMAKE_CURRENT_LIST_DIR}/${TEST_CASES_EXEC_DIR}/" "" test_exec_name ${full_test_exec_name} )
-    add_executable ( ${test_exec_name} ${test_source_file} $<TARGET_OBJECTS:INTERSECTION_PARALLEL_OBJS> 
-                                                           $<TARGET_OBJECTS:LIBMESH_CODE_OBJS> 
-                                                           $<TARGET_OBJECTS:COMMON_OBJS>
-                                                           $<TARGET_OBJECTS:ASSEMBLE_FUNCTIONS_OBJS>)
-    add_to_cached_list( CGAL_EXECUTABLE_TARGETS ${test_exec_name} )
-    target_link_libraries( ${test_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
-endforeach( test_source_file ${TEST_EXECS} )
+add_executable( CArl_build_intersections  ${CARL_INTER_EXEC}
+                                          ${PARSER_SRC_DIR}/intersection_input_parser.h
+                                          $<TARGET_OBJECTS:COMMON_OBJS>
+                                          $<TARGET_OBJECTS:INTERSECTION_PARALLEL_OBJS>)
 
-#add_to_cached_list( CGAL_EXECUTABLE_TARGETS carl_libmesh_parallel )
+add_to_cached_list( CGAL_EXECUTABLE_TARGETS CArl_build_intersections )
+target_link_libraries(CArl_build_intersections ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 
-# Link the executable to CGAL and third-party libraries
-#target_link_libraries(carl_libmesh_parallel ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+# Set up the CArl files                                      
+foreach( CArl_FETI_source_file ${CARL_FETI_EXECS} )
+    string ( REPLACE ".cpp" "" full_CArl_FETI_exec_name ${CArl_FETI_source_file} )
+    string ( REPLACE "${CMAKE_CURRENT_LIST_DIR}/${EXEC_SRC_DIR}/CArl_FETI/" "" CArl_FETI_exec_name ${full_CArl_FETI_exec_name} )
+    add_executable ( ${CArl_FETI_exec_name} ${CArl_FETI_source_file} $<TARGET_OBJECTS:COMMON_OBJS>)
+    add_to_cached_list( CGAL_EXECUTABLE_TARGETS ${CArl_FETI_exec_name} )
+    target_link_libraries( ${CArl_FETI_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+endforeach( CArl_FETI_source_file ${CARL_FETI_EXECS} )
