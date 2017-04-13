@@ -17,6 +17,12 @@ enum CoupledSolverType {
 	CG    = 2  // Conjugate gradient solver
 };
 
+enum MediatorType {
+	USE_MACRO = 0,
+	USE_MICRO = 1,
+	USE_EXTERNAL = 3
+};
+
 enum BaseCGPrecondType {
 	NO_PRECONDITIONER = 0, // Identity matrix
 	CUSTOM_MATRIX = 1, // User-defined matrix
