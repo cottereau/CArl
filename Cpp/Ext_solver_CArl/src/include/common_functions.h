@@ -83,6 +83,7 @@ void reduced_system_init(Sys& system_input)
 	system_dof_map.distribute_dofs(system_mesh);
 	system_input.reinit_constraints();
 	system_dof_map.prepare_send_list();
+	system_dof_map.compute_sparsity(system_mesh);
 };
 }
 

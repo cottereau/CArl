@@ -71,7 +71,6 @@ void get_assemble_coupling_input_params(GetPot& field_parser,
 	if (field_parser.search(3, "--meshA", "-mA", "MeshA")) {
 		input_params.mesh_BIG_file = field_parser.next(
 				input_params.mesh_BIG_file);
-		std::cout << input_params.mesh_BIG_file << std::endl;
 	} else {
 		homemade_error_msg("Missing the A mesh file!");
 	}
@@ -79,7 +78,6 @@ void get_assemble_coupling_input_params(GetPot& field_parser,
 	if (field_parser.search(3, "--meshB", "-mB", "MeshB")) {
 		input_params.mesh_micro_file = field_parser.next(
 				input_params.mesh_micro_file);
-		std::cout << input_params.mesh_micro_file << std::endl;
 	} else {
 		homemade_error_msg("Missing the B mesh file!");
 	}
@@ -87,7 +85,6 @@ void get_assemble_coupling_input_params(GetPot& field_parser,
 	if (field_parser.search(3, "--meshI", "-mI", "InterBase")) {
 		input_params.common_inter_file = field_parser.next(
 				input_params.common_inter_file);
-		std::cout << input_params.common_inter_file << std::endl;
 	} else {
 		homemade_error_msg("Missing the path to the intersection files!");
 	}
@@ -96,7 +93,6 @@ void get_assemble_coupling_input_params(GetPot& field_parser,
 	if( field_parser.search(2, "--ce","CouplingWidth") )
 	{
 		input_params.coupling_width = field_parser.next(input_params.coupling_width);
-		std::cout << input_params.coupling_width << std::endl;
 	} else {
 		homemade_error_msg("Missing the coupling region width!");
 	}
@@ -104,7 +100,6 @@ void get_assemble_coupling_input_params(GetPot& field_parser,
 	if( field_parser.search(2, "--ck","CouplingRigidity") )
 	{
 		input_params.coupling_rigidity = field_parser.next(input_params.coupling_rigidity);
-		std::cout << input_params.coupling_rigidity << std::endl;
 	} else {
 		homemade_error_msg("Missing the coupling rigidity!");
 	}
@@ -114,7 +109,6 @@ void get_assemble_coupling_input_params(GetPot& field_parser,
 	{
 		input_params.output_base = field_parser.next(
 			input_params.output_base);
-		std::cout << input_params.output_base << std::endl;
 	} else {
 		input_params.output_base = "coupling_matrix";
 	}
@@ -125,7 +119,6 @@ void get_assemble_coupling_input_params(GetPot& field_parser,
 	} else {
 		input_params.mesh_restrict_BIG_file = input_params.common_inter_file + "_A_restriction.msh";
 	}
-		std::cout << input_params.mesh_restrict_BIG_file << std::endl;
 
 	if (field_parser.search(3, "--meshBR", "-mBR", "Mesh_B_Restriction")) {
 		input_params.mesh_restrict_micro_file = field_parser.next(
@@ -133,7 +126,6 @@ void get_assemble_coupling_input_params(GetPot& field_parser,
 	} else {
 		input_params.mesh_restrict_micro_file = input_params.common_inter_file + "_B_restriction.msh";
 	}
-		std::cout << input_params.mesh_restrict_micro_file << std::endl;
 
 	// Set the equivalence tables
 	if (field_parser.search(2, "--tableRA", "Mesh_A_RestrictionEquivalenceTable")) {
@@ -142,7 +134,6 @@ void get_assemble_coupling_input_params(GetPot& field_parser,
 	} else {
 		input_params.equivalence_table_restrict_BIG_file = input_params.common_inter_file + "_A_restriction_restrict.dat";
 	}
-		std::cout << input_params.equivalence_table_restrict_BIG_file << std::endl;
 
 	if (field_parser.search(2, "--tableRB", "Mesh_B_RestrictionEquivalenceTable")) {
 		input_params.equivalence_table_restrict_micro_file = field_parser.next(
@@ -150,7 +141,6 @@ void get_assemble_coupling_input_params(GetPot& field_parser,
 	} else {
 		input_params.equivalence_table_restrict_micro_file = input_params.common_inter_file + "_B_restriction_restrict.dat";
 	}
-		std::cout << input_params.equivalence_table_restrict_micro_file << std::endl;
 
 	// Set the mediator mesh
 	input_params.mediator_type = carl::MediatorType::USE_MACRO;
@@ -172,8 +162,6 @@ void get_assemble_coupling_input_params(GetPot& field_parser,
 			input_params.mesh_mediator_file = input_params.mesh_restrict_micro_file;
 		}
 	}
-		std::cout << input_params.mediator_type << std::endl;
-		std::cout << input_params.mesh_mediator_file << std::endl;
 };
 
 };

@@ -75,15 +75,18 @@ set ( INCLUDE_SRC_DIR             ${SOURCE_DIR}/include )
 set ( INTERSECTION_PARALLEL_DIR   ${COMMON_SRC_DIR}/intersections_parallel )
 set ( FETI_DIR                    ${COMMON_SRC_DIR}/FETI )
 set ( COUPLING_MATRIX_DIR         ${COMMON_SRC_DIR}/coupling_matrix )
+set ( PETSC_MATRIX_OPERATIONS_DIR ${COMMON_SRC_DIR}/PETSC_matrix_operations )
 set ( MISC_DIR                    ${COMMON_SRC_DIR}/misc )
 
 set ( PARSER_SRC_DIR              ${EXEC_SRC_DIR}/parsers )
 
 # set source sets
-file ( GLOB COMMON_SOURCES                "${COMMON_SRC_DIR}/common*.cpp" )
-file ( GLOB INCLUDE_SOURCES               "${INCLUDE_SRC_DIR}/*.h" )
-file ( GLOB INTERSECTION_PARALLEL_SOURCES "${INTERSECTION_PARALLEL_DIR}/*.cpp" )
-file ( GLOB MISC_SOURCES                  "${MISC_DIR}/*.cpp" )
+file ( GLOB COMMON_SOURCES                  "${COMMON_SRC_DIR}/common*.cpp" )
+file ( GLOB INCLUDE_SOURCES                 "${INCLUDE_SRC_DIR}/*.h" )
+file ( GLOB INTERSECTION_PARALLEL_SOURCES   "${INTERSECTION_PARALLEL_DIR}/*.cpp" )
+file ( GLOB COUPLING_MATRIX_SOURCES         "${COUPLING_MATRIX_DIR}/*.cpp" )
+file ( GLOB PETSC_MATRIX_OPERATIONS_SOURCES "${PETSC_MATRIX_OPERATIONS_DIR}/*.cpp" )
+file ( GLOB MISC_SOURCES                    "${MISC_DIR}/*.cpp" )
 
 # set execs sources
 set  ( CARL_INTER_EXEC        ${EXEC_SRC_DIR}/CArl_build_intersections/CArl_build_intersections.cpp )
@@ -95,6 +98,8 @@ include_directories( ${INCLUDE_SRC_DIR} ${PARSER_SRC_DIR} )
 # set libraries
 add_library( COMMON_OBJS OBJECT                         ${COMMON_SOURCES} ${MISC_SOURCES} )
 add_library( INTERSECTION_PARALLEL_OBJS OBJECT          ${INTERSECTION_PARALLEL_SOURCES} )
+add_library( COUPLING_MATRIX_OBJS OBJECT                ${COUPLING_MATRIX_SOURCES} )
+add_library( PETSC_MATRIX_OPERATIONS_OBJS OBJECT        ${PETSC_MATRIX_OPERATIONS_SOURCES} )
 
 add_executable( CArl_build_intersections  ${CARL_INTER_EXEC}
                                           ${PARSER_SRC_DIR}/intersection_input_parser.h
@@ -108,7 +113,10 @@ target_link_libraries(CArl_build_intersections ${CGAL_LIBRARIES} ${BOOST_LIBRARI
 foreach( CArl_FETI_source_file ${CARL_FETI_EXECS} )
     string ( REPLACE ".cpp" "" full_CArl_FETI_exec_name ${CArl_FETI_source_file} )
     string ( REPLACE "${CMAKE_CURRENT_LIST_DIR}/${EXEC_SRC_DIR}/CArl_FETI/" "" CArl_FETI_exec_name ${full_CArl_FETI_exec_name} )
-    add_executable ( ${CArl_FETI_exec_name} ${CArl_FETI_source_file} $<TARGET_OBJECTS:COMMON_OBJS>)
+    add_executable ( ${CArl_FETI_exec_name} ${CArl_FETI_source_file} $<TARGET_OBJECTS:COMMON_OBJS>
+                                                                     $<TARGET_OBJECTS:COUPLING_MATRIX_OBJS>
+                                                                     $<TARGET_OBJECTS:PETSC_MATRIX_OPERATIONS_OBJS>
+                                                                     )
     add_to_cached_list( CGAL_EXECUTABLE_TARGETS ${CArl_FETI_exec_name} )
     target_link_libraries( ${CArl_FETI_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 endforeach( CArl_FETI_source_file ${CARL_FETI_EXECS} )
@@ -116,7 +124,10 @@ endforeach( CArl_FETI_source_file ${CARL_FETI_EXECS} )
 foreach( CArl_tools_source_file ${CARL_TOOLS_EXECS} )
     string ( REPLACE ".cpp" "" full_CArl_tools_exec_name ${CArl_tools_source_file} )
     string ( REPLACE "${CMAKE_CURRENT_LIST_DIR}/${EXEC_SRC_DIR}/CArl_tools/" "" CArl_tools_exec_name ${full_CArl_tools_exec_name} )
-    add_executable ( ${CArl_tools_exec_name} ${CArl_tools_source_file} $<TARGET_OBJECTS:COMMON_OBJS>)
+    add_executable ( ${CArl_tools_exec_name} ${CArl_tools_source_file} $<TARGET_OBJECTS:COMMON_OBJS>
+                                                                     $<TARGET_OBJECTS:COUPLING_MATRIX_OBJS>
+                                                                     $<TARGET_OBJECTS:PETSC_MATRIX_OPERATIONS_OBJS>
+                                                                     )
     add_to_cached_list( CGAL_EXECUTABLE_TARGETS ${CArl_tools_exec_name} )
     target_link_libraries( ${CArl_tools_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 endforeach( CArl_tools_source_file ${CARL_TOOLS_EXECS} )
