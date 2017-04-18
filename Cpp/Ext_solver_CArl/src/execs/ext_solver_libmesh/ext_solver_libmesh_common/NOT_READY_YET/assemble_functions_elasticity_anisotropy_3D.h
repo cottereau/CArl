@@ -8,12 +8,12 @@
 #ifndef EXECS_ASSEMBLE_FUNCTIONS_ASSEMBLE_FUNCTIONS_ELASTICITY_ANISOTROPY_3D_H_
 #define EXECS_ASSEMBLE_FUNCTIONS_ASSEMBLE_FUNCTIONS_ELASTICITY_ANISOTROPY_3D_H_
 
-#include "carl_headers.h"
+#include "common_header_ext_solver_libmesh.h"
 
+#include "common_assemble_functions_elasticity_3D.h"
 #include "anisotropic_elasticity_cubic_sym.h"
 #include "weight_parameter_function.h"
-
-#include "assemble_functions_elasticity_3D.h"
+#include "ext_solver_libmesh_enums.h"
 
 void Update_SubK(	libMesh::DenseSubMatrix<libMesh::Number>& SubK,
 					unsigned int qp,

@@ -83,4 +83,10 @@
 #include <petscsys.h>
 #include <petscksp.h>
 
+#define homemade_error_msg(msg) do \
+{ \
+	std::cerr << "Error: " <<  msg << std::endl; \
+	std::exit(EXIT_FAILURE); \
+} while(false)
+
 #endif /* COMMON_EXT_LIBMESH_HEADER_H_ */

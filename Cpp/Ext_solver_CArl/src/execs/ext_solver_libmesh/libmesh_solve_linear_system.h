@@ -8,6 +8,6 @@
 #ifndef EXECS_LIBMESH_SOLVE_LINEAR_SYSTEM_H_
 #define EXECS_LIBMESH_SOLVE_LINEAR_SYSTEM_H_
 
-#include "execs/ext_solver_libmesh/common_ext_libmesh_header.h"
+#include "ext_solver_libmesh_headers.h"
 
 #endif /* EXECS_LIBMESH_SOLVE_LINEAR_SYSTEM_H_ */

@@ -7,7 +7,7 @@
 
 #include "assemble_functions_elasticity_anisotropy_3D.h"
 
-void Update_SubK(	libMesh::DenseSubMatrix<libMesh::Number>& SubK,
+void Update_SubK_anisotropic(	libMesh::DenseSubMatrix<libMesh::Number>& SubK,
 					unsigned int qp,
 					unsigned int C_i,
 					unsigned int C_k,
@@ -199,11 +199,11 @@ void assemble_elasticity_anisotropic_with_weight(	libMesh::EquationSystems& es,
 			// Gravity
 			//		if(z_force)
 			//		{
-//						for (unsigned int i=0; i<n_w_dofs; i++)
-//						  {
-//							Fw(i) -= alpha_micro * JxW[qp] * phi[i][qp];
-//						  }
-			//		}
+						for (unsigned int i=0; i<n_w_dofs; i++)
+						  {
+							Fw(i) -= alpha_micro * JxW[qp] * phi[i][qp];
+						  }
+					}
 		}
 
 		// Apply constraints
@@ -381,11 +381,11 @@ void assemble_elasticity_anisotropic(	libMesh::EquationSystems& es,
 			// Gravity
 			//		if(z_force)
 			//		{
-//						for (unsigned int i=0; i<n_w_dofs; i++)
-//						  {
-//							Fw(i) -= alpha * JxW[qp] * phi[i][qp];
-//						  }
-			//		}
+						for (unsigned int i=0; i<n_w_dofs; i++)
+						  {
+							Fw(i) -= alpha * JxW[qp] * phi[i][qp];
+						  }
+					}
 		}
 
 		// Apply constraints

@@ -1,8 +1,3 @@
-$MacroDomainIdx
-69
-$NbOfMicroDomainIdx
-1
-$MicroDomainIdxs
-67
-$CouplingDomainIdxs
-68
+MacroDomainOnlyIdx 69
+MicroDomainOnlyIdx 67
+CouplingDomainIdx 68

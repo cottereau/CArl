@@ -14,8 +14,7 @@
 
 #include "anisotropic_elasticity_cubic_sym.h"
 
-void carl::anisotropic_elasticity_tensor_cubic_sym::set_parameters(libMesh::EquationSystems& es, std::string& physicalParamsFile,
-		double& meanE, double& meanMu)
+void carl::anisotropic_elasticity_tensor_cubic_sym::set_parameters(libMesh::EquationSystems& es, std::string& physicalParamsFile)
 {
 	const libMesh::Parallel::Communicator& SysComm = es.comm();
 	int rank = SysComm.rank();
@@ -26,8 +25,7 @@ void carl::anisotropic_elasticity_tensor_cubic_sym::set_parameters(libMesh::Equa
 	if(rank == 0)
 	{
 		std::ifstream physicalParamsIFS(physicalParamsFile);
-		physicalParamsIFS >> m_nb_grains >> m_c11 >> m_c12 >> m_c44 >> m_meanE >> m_meanMu;
-//		std::cout << m_nb_grains << m_c11 << m_c12 << m_c44 <<  m_meanE << m_meanMu << std::endl;
+		physicalParamsIFS >> m_nb_grains >> m_c11 >> m_c12 >> m_c44;
 		m_angles_x.resize(m_nb_grains);
 		m_angles_y.resize(m_nb_grains);
 		m_angles_z.resize(m_nb_grains);
@@ -51,8 +49,6 @@ void carl::anisotropic_elasticity_tensor_cubic_sym::set_parameters(libMesh::Equa
 		SysComm.broadcast(m_c12);
 		SysComm.broadcast(m_c44);
 		SysComm.broadcast(m_nb_grains);
-		SysComm.broadcast(m_meanE);
-		SysComm.broadcast(m_meanMu);
 
 		if(rank != 0)
 		{
@@ -67,9 +63,6 @@ void carl::anisotropic_elasticity_tensor_cubic_sym::set_parameters(libMesh::Equa
 		SysComm.broadcast(m_angles_z);
 		SysComm.broadcast(temp_idx);
 	}
-
-	meanE = m_meanE;
-	meanMu = m_meanMu;
 
 	for(int iii = 0; iii < m_nb_grains; ++iii)
 	{
@@ -168,30 +161,6 @@ void  carl::anisotropic_elasticity_tensor_cubic_sym::generate_elasticity_tensors
 		libMesh::DenseMatrix<libMesh::Real>& R = m_Rotation_matrices[nnn];
 		Order4Tensor& C = 						 m_Elasticity_tensors[nnn];
 
-		// LOOOOOOPS!
-		/*
-		 * 		Things would be simpler with a order 4 tensor class and proper
-		 * 	contraction operations, but for now libMesh only has a order 2
-		 * 	tensor class (the order N one is a dummy class).
-		 */
-//		std::cout << nnn << " (before) : " << std::endl;
-//		for(unsigned int iii = 0; iii < 3; ++iii) {
-//		for(unsigned int jjj = 0; jjj < 3; ++jjj) {
-//		for(unsigned int kkk = 0; kkk < 3; ++kkk) {
-//		for(unsigned int lll = 0; lll < 3; ++lll)
-//		{
-//			std::cout << C(iii,jjj,kkk,lll) << " ";
-//		}
-//		std::cout << std::endl;
-//		}
-//		std::cout << std::endl;
-//		}
-//		std::cout << std::endl;
-//		}
-//		std::cout << std::endl;
-
-
-
 		for(unsigned int iii = 0; iii < 3; ++iii)
 		for(unsigned int jjj = 0; jjj < 3; ++jjj)
 		for(unsigned int kkk = 0; kkk < 3; ++kkk)
@@ -207,22 +176,6 @@ void  carl::anisotropic_elasticity_tensor_cubic_sym::generate_elasticity_tensors
 						this->eval_internal_elasticity_tensor(ppp,qqq,rrr,sss);
 			}
 		}
-
-//		std::cout << nnn << " : " << std::endl;
-//		for(unsigned int iii = 0; iii < 3; ++iii) {
-//		for(unsigned int jjj = 0; jjj < 3; ++jjj) {
-//		for(unsigned int kkk = 0; kkk < 3; ++kkk) {
-//		for(unsigned int lll = 0; lll < 3; ++lll)
-//		{
-//			std::cout << C(iii,jjj,kkk,lll) << " ";
-//		}
-//		std::cout << std::endl;
-//		}
-//		std::cout << std::endl;
-//		}
-//		std::cout << std::endl;
-//		}
-//		std::cout << std::endl;
 	}
 }
 

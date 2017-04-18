@@ -1,240 +1,60 @@
-#include "CArl_FETI_setup_init.h"
+#include "libmesh_assemble_lin_anisotropic.h"
 
 int main(int argc, char** argv) {
 
-	std::cout << " > I'm kinda useless right now ..." << std::endl;
-	
-// #include "carl_libmesh_fissure.h"
+	// --- Initialize libMesh
+	libMesh::LibMeshInit init(argc, argv);
 
-// /** \brief Start setup for the FETI solver
-//  *
-//  *	Structure of the program running on `n` processors
-//  *  + Preparing the coupled system
-//  * 	  - Read the meshes A, B.
-//  *    - Read the `n` intersection meshes I_p and table files.
-//  *    - Read the files associated to the weight function domains.
-//  *    - Read / setup the mediator mesh, M.
-//  *    - Read the mesh restrictions, R_A and R_B, and the equivalence tables between them and the original meshes, t_R_A->A and t_R_B->B.
-//  *    - A, B and M are partitioned over all processors.
-//  *    - Each processor `p` has a copy R_A and R_B.
-//  *    - Each processor `p` has a single intersection meshes I_p.
-//  *    - Use the equivalence tables and the intersection files to preallocate the coupling operators (**optimize memory consumption!!**).
-//  *    - Prepare the equation systems associated to the meshes.
-//  *    - Assemble the coupling operators.
-//  *
-//  *  + Solving the coupled system.
-//  *    - Assemble the matrices of the macro and micro systems.
-//  *    - Set up the coupled solver parameters.
-//  *    - Solve!
-//  *    - Export the resulting meshes.
-//  */
+	// Do performance log?
+	const bool MASTER_bPerfLog_carl_libmesh = true;
+	libMesh::PerfLog perf_log("Main program", MASTER_bPerfLog_carl_libmesh);
 
-// int main(int argc, char** argv) {
+	// libMesh's C++ / MPI communicator wrapper
+	libMesh::Parallel::Communicator& WorldComm = init.comm();
 
-// 	// --- Initialize libMesh
-// 	libMesh::LibMeshInit init(argc, argv);
+	// Number of processors and processor rank.
+	int rank = WorldComm.rank();
+	int nodes = WorldComm.size();
 
-// 	// Do performance log?
-// 	const bool MASTER_bPerfLog_carl_libmesh = true;
-// 	libMesh::PerfLog perf_log("Main program", MASTER_bPerfLog_carl_libmesh);
+	// --- Set up inputs
 
-// 	// libMesh's C++ / MPI communicator wrapper
-// 	libMesh::Parallel::Communicator& WorldComm = init.comm();
+	// Command line parser
+	GetPot command_line(argc, argv);
 
-// 	// Number of processors and processor rank.
-// 	int rank = WorldComm.rank();
-// 	int nodes = WorldComm.size();
+	// File parser
+	GetPot field_parser;
 
-// 	// Create local communicator
-// 	libMesh::Parallel::Communicator LocalComm;
-// 	WorldComm.split(rank,rank,LocalComm);
+	// If there is an input file, parse it to get the parameters. Else, parse the command line
+	std::string input_filename;
+	if (command_line.search(2, "--inputfile", "-i")) {
+		input_filename = command_line.next(input_filename);
+		field_parser.parse_input_file(input_filename, "#", "\n", " \t\n");
+	} else {
+		field_parser = command_line;
+	}
 
-// 	// --- Displacement conditions
-// 	// Boundary displacements
-// 	boundary_displacement z_upper_hole(0,0,3);
-// 	boundary_displacement z_lower_hole(0,0,-3);
+	libmesh_assemble_input_params input_params;
+	get_input_params(field_parser, input_params);
 
-// 	// Boundary ID's
-// 	int fixed_bound_id  = 3;
-// 	int z_upper_hole_id = 2;
-// 	int z_lower_hole_id = 1;
+	// Check libMesh installation dimension
+	const unsigned int dim = 3;
 
-// 	// --- Set up inputs
+	libmesh_example_requires(dim == LIBMESH_DIM, "3D support");
 
-// 	// Command line parser
-// 	GetPot command_line(argc, argv);
+	// --- Declare the three meshes to be intersected
 
-// 	// File parser
-// 	GetPot field_parser;
+	// - Parallelized meshes: A, B, mediator and weight
+	perf_log.push("Meshes - Parallel","Read files:");
+	libMesh::Mesh system_mesh(WorldComm, dim);
+	system_mesh.read(input_params.mesh_file);
+	system_mesh.prepare_for_use();
 
-// 	// If there is an input file, parse it to get the parameters. Else, parse the command line
-// 	std::string input_filename;
-// 	if (command_line.search(1, "--inputfile")) {
-// 		input_filename = command_line.next(input_filename);
-// 		field_parser.parse_input_file(input_filename, "#", "\n", " \t\n");
-// 	} else {
-// 		field_parser = command_line;
-// 	}
+	libMesh::Mesh mesh_weight(WorldComm, dim);
+	mesh_weight.allow_renumbering(false);
+	mesh_weight.read(input_params.mesh_weight_file);
+	mesh_weight.prepare_for_use();
 
-// 	carl::coupling_generation_input_params input_params;
-// 	carl::get_input_params(field_parser, input_params);
-
-// 	// Check libMesh installation dimension
-// 	const unsigned int dim = 3;
-
-// 	libmesh_example_requires(dim == LIBMESH_DIM, "3D support");
-
-// 	// --- Declare the three meshes to be intersected
-
-// 	// - Parallelized meshes: A, B, mediator and weight
-// 	perf_log.push("Meshes - Parallel","Read files:");
-// 	libMesh::Mesh mesh_BIG(WorldComm, dim);
-// 	mesh_BIG.read(input_params.mesh_BIG_file);
-// 	mesh_BIG.prepare_for_use();
-
-// 	libMesh::Mesh mesh_micro(WorldComm, dim);
-// 	mesh_micro.read(input_params.mesh_micro_file);
-// 	mesh_micro.prepare_for_use();
-
-// 	libMesh::Mesh mesh_mediator(WorldComm, dim);
-// 	mesh_mediator.allow_renumbering(false);
-// 	mesh_mediator.read(input_params.mesh_mediator_file);
-// 	mesh_mediator.prepare_for_use();
-
-// 	libMesh::Mesh mesh_weight(WorldComm, dim);
-// 	mesh_weight.allow_renumbering(false);
-// 	mesh_weight.read(input_params.mesh_weight_file);
-// 	mesh_weight.prepare_for_use();
-
-// 	perf_log.pop("Meshes - Parallel","Read files:");
-
-// 	// - Local meshes: restrict A and restrict B
-
-// 	// -> libMesh's default mesh IS the ReplicatedMesh, which creates a copy of
-// 	//    itself on each processor, but partitions the iterators over each
-// 	//    processor to allow the parallelization of the code. The usage of
-// 	//    ParallelMesh is still a bit risky, and, performance-wise, is worse
-// 	//    than ReplicatedMesh for less than a few thousand processors.
-
-// 	perf_log.push("Meshes - Serial","Read files:");
-// 	libMesh::ReplicatedMesh mesh_R_BIG(WorldComm, dim);
-// 	mesh_R_BIG.allow_renumbering(false);
-// 	mesh_R_BIG.read(input_params.mesh_restrict_BIG_file);
-// 	mesh_R_BIG.prepare_for_use();
-
-// 	libMesh::ReplicatedMesh mesh_R_micro(WorldComm, dim);
-// 	mesh_R_micro.allow_renumbering(false);
-// 	mesh_R_micro.read(input_params.mesh_restrict_micro_file);
-// 	mesh_R_micro.prepare_for_use();
-
-// 	// - Local mesh: intersection mesh
-// 	libMesh::Mesh mesh_inter(LocalComm, dim);
-// 	mesh_inter.allow_renumbering(false);
-// 	std::string local_inter_mesh_filename = input_params.mesh_inter_file + "_r_"
-// 										+ std::to_string(rank) + "_n_" + std::to_string(nodes) + ".e";
-// 	std::string local_inter_table_filename = input_params.intersection_table_full + "_r_"
-// 										+ std::to_string(rank) + "_n_" + std::to_string(nodes) + "_inter_table_Full.dat";
-// 	std::string global_inter_table_filename = input_params.intersection_table_full + "_stitched_inter_table_Full.dat";
-
-// 	mesh_inter.read(local_inter_mesh_filename);
-// 	mesh_inter.prepare_for_use();
-
-// 	perf_log.pop("Meshes - Serial","Read files:");
-
-// 	// --- Prepare the equivalence tables and the intersection mappings
-// 	perf_log.push("Equivalence / intersection tables","Read files:");
-
-// 	// Local intersection pairs (system meshes)
-// 	std::unordered_map<int,std::pair<int,int> > local_intersection_pairs_map;
-
-// 	// Local intersection pairs (restricted meshes)
-// 	std::unordered_map<int,std::pair<int,int> > local_intersection_restricted_pairs_map;
-
-// 	// Intersection elements to be treated by this processor
-// 	std::unordered_map<int,int> local_intersection_meshI_to_inter_map;
-
-// 	// Equivalence tables between system and restricted meshes (and vice-versa)
-// 	std::unordered_map<int,int> equivalence_table_BIG_to_R_BIG;
-// 	std::unordered_map<int,int> equivalence_table_micro_to_R_micro;
-// 	std::unordered_map<int,int> equivalence_table_R_BIG_to_BIG;
-// 	std::unordered_map<int,int> equivalence_table_R_micro_to_micro;
-
-// 	//	Start by reading and broadcasting the equivalence tables
-// 	carl::set_equivalence_tables(
-// 			WorldComm,
-// 			input_params.equivalence_table_restrict_BIG_file,
-// 			input_params.equivalence_table_restrict_micro_file,
-
-// 			equivalence_table_BIG_to_R_BIG,
-// 			equivalence_table_micro_to_R_micro,
-// 			equivalence_table_R_BIG_to_BIG,
-// 			equivalence_table_R_micro_to_micro);
-
-// 	// Set the local intersection tables
-// 	if(input_params.b_UseMesh_BIG_AsMediator)
-// 	{
-// 		carl::set_local_intersection_tables(
-// 				WorldComm,
-// 				mesh_inter,
-// 				local_inter_table_filename,
-// 				input_params.equivalence_table_restrict_BIG_file,
-// 				input_params.equivalence_table_restrict_micro_file,
-
-// 				equivalence_table_BIG_to_R_BIG,
-// 				equivalence_table_micro_to_R_micro,
-
-// 				local_intersection_pairs_map,
-// 				local_intersection_restricted_pairs_map,
-// 				local_intersection_meshI_to_inter_map);
-// 	}
-// 	else if(input_params.b_UseMesh_micro_AsMediator)
-// 	{
-// 		carl::set_local_intersection_tables(
-// 				WorldComm,
-// 				mesh_inter,
-// 				local_inter_table_filename,
-// 				input_params.equivalence_table_restrict_micro_file,
-// 				input_params.equivalence_table_restrict_BIG_file,
-
-// 				equivalence_table_micro_to_R_micro,
-// 				equivalence_table_BIG_to_R_BIG,
-
-// 				local_intersection_pairs_map,
-// 				local_intersection_restricted_pairs_map,
-// 				local_intersection_meshI_to_inter_map);
-// 	}
-
-// 	// Possibly deprecated code ...
-// //	if(input_params.b_Repartition_micro)
-// //		carl::repartition_system_meshes(WorldComm,mesh_micro,mesh_BIG,local_intersection_pairs_map);
-
-// 	// Build mappings with the intersections of the mediator mesh with the micro and macro meshes - used to preallocate the coupling matrices
-// 	std::unordered_multimap<int,int> inter_mediator_BIG;
-// 	std::unordered_multimap<int,int> inter_mediator_micro;
-// 	carl::set_global_mediator_system_intersection_lists(
-// 			WorldComm,
-// 			global_inter_table_filename,
-// 			equivalence_table_BIG_to_R_BIG,
-// 			equivalence_table_R_BIG_to_BIG,
-// 			inter_mediator_BIG,
-// 			inter_mediator_micro);
-// 	perf_log.pop("Equivalence / intersection tables","Read files:");
-
-// 	perf_log.push("Weight function domain","Read files:");
-
-// 	// Set weight functions
-// 	int domain_Idx_BIG = -1;
-// 	int nb_of_domain_Idx = 1;
-// 	std::vector<int> domain_Idx_micro;
-// 	std::vector<int> domain_Idx_coupling;
-// 	carl::set_weight_function_domain_idx(	input_params.weight_domain_idx_file,
-// 											domain_Idx_BIG, nb_of_domain_Idx,
-// 											domain_Idx_micro, domain_Idx_coupling
-// 											);
-
-// 	WorldComm.barrier();
-
-// 	perf_log.pop("Weight function domain","Read files:");
+	perf_log.pop("Meshes - Parallel","Read files:");
 
 // 	// --- Generate the equation systems
 // 	perf_log.push("Initialization","System initialization:");
@@ -253,7 +73,7 @@ int main(int argc, char** argv) {
 
 // 	perf_log.push("Macro system","System initialization:");
 // 	libMesh::EquationSystems& equation_systems_BIG =
-// 					CoupledTest.set_BIG_EquationSystem("BigSys", mesh_BIG);
+// 					CoupledTest.set_BIG_EquationSystem("BigSys", system_mesh);
 
 // 	// [MACRO] Set up the physical properties
 // 	libMesh::LinearImplicitSystem& elasticity_system_BIG
@@ -478,7 +298,7 @@ int main(int argc, char** argv) {
 
 // 		exo_io_micro.write_element_data(equation_systems_micro);
 
-// 		libMesh::ExodusII_IO exo_io_BIG(mesh_BIG, /*single_precision=*/true);
+// 		libMesh::ExodusII_IO exo_io_BIG(system_mesh, /*single_precision=*/true);
 
 // 		std::set<std::string> system_names_BIG;
 // 		system_names_BIG.insert("Elasticity");

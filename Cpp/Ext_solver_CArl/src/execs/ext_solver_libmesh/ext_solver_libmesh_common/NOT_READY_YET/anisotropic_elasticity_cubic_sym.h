@@ -10,10 +10,6 @@
 
 #include "carl_headers.h"
 
-#include "weight_parameter_function.h"
-
-namespace carl
-{
 class Order4Tensor
 {
 private:
@@ -52,7 +48,7 @@ public:
 	libMesh::Real& operator () (unsigned int iii, unsigned int jjj, unsigned int kkk, unsigned int lll);
 };
 
-inline libMesh::Real& carl::Order4Tensor::operator () (unsigned int iii, unsigned int jjj, unsigned int kkk, unsigned int lll)
+inline libMesh::Real& Order4Tensor::operator () (unsigned int iii, unsigned int jjj, unsigned int kkk, unsigned int lll)
 {
 	m_idx =   m_idx_mult[0] * iii
 			+ m_idx_mult[1] * jjj
@@ -75,9 +71,6 @@ private:
 	double 					m_c12;
 	double					m_c44;
 
-	double m_meanE;
-	double m_meanMu;
-
 	int 					m_nb_grains;
 
 	void generate_rotation_matrices();
@@ -89,17 +82,14 @@ public:
 		m_c11 { -1 },
 		m_c12 { -1 },
 		m_c44 { -1 },
-		m_meanE { -1 },
-		m_meanMu { -1 },
 		m_nb_grains { -1}
 	{
 
 	};
 
-	anisotropic_elasticity_tensor_cubic_sym(libMesh::EquationSystems& es, std::string& physicalParamsFile,
-			double& meanE, double& meanMu)
+	anisotropic_elasticity_tensor_cubic_sym(libMesh::EquationSystems& es, std::string& physicalParamsFile)
 	{
-		this->set_parameters(es, physicalParamsFile,meanE,meanMu);
+		this->set_parameters(es, physicalParamsFile);
 	};
 
 	libMesh::Real eval_internal_elasticity_tensor(unsigned int i,
@@ -107,7 +97,7 @@ public:
 							  unsigned int k,
 							  unsigned int l);
 
-	void set_parameters(libMesh::EquationSystems& es, std::string& physicalParamsFile,double& meanE, double& meanMu);
+	void set_parameters(libMesh::EquationSystems& es, std::string& physicalParamsFile);
 
 	libMesh::DenseMatrix<libMesh::Real>& get_rotation(int idx_grain);
 	Order4Tensor&  get_elasticity(int idx_grain);
@@ -118,7 +108,5 @@ public:
 							  unsigned int l,
 							  int idx_grain);
 };
-}
-
 
 #endif /* COMMON_LIBMESH_CODE_ANISOTROPIC_ELASTICITY_CUBIC_SYM_H_ */

@@ -8,6 +8,7 @@
 #ifndef EXECS_LIBMESH_ASSEMBLE_LIN_ANISOTROPIC_H_
 #define EXECS_LIBMESH_ASSEMBLE_LIN_ANISOTROPIC_H_
 
-#include "execs/ext_solver_libmesh/common_ext_libmesh_header.h"
+#include "ext_solver_libmesh_headers.h"
+#include "libmesh_assemble_system_input_parser.h"
 
 #endif /* EXECS_LIBMESH_ASSEMBLE_LIN_ANISOTROPIC_H_ */
