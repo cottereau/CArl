@@ -66,11 +66,17 @@ int main(int argc, char** argv) {
 	// Solve!
 	KSP_solver.solve(sys_mat,sys_sol_vec,sys_rhs_vec,input_params.sys_eps,input_params.sys_iter_div);
 
-	// Export the solution vector
+#ifndef NDEBUG
+	// Only print these for debugging
 	sys_sol_vec.print_matlab(input_params.output_base + "_sys_sol_vec.m");
-	carl::write_PETSC_vector(sys_sol_vec.vec(), input_params.output_base + "_sys_sol_vec.petscmat",WorldComm.get());
+#endif
+
+	// Export the solution vector
+	carl::write_PETSC_vector(sys_sol_vec.vec(), input_params.output_base + "_sys_sol_vec.petscvec",WorldComm.get());
 
 	// --- Cleanup!
 	MatDestroy(&sys_mat_PETSC);
 	VecDestroy(&sys_rhs_vec_PETSC);
+
+	return 0;
 }

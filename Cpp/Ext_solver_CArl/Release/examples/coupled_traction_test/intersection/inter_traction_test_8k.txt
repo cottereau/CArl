@@ -20,5 +20,3 @@ MeshingMethod CGAL
 # > Verbose output?
 #   (prints coupling mesh partitioning before and after rebalancing)
 #VerboseOutput
-
-

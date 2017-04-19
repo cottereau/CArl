@@ -60,6 +60,8 @@ void write_PETSC_matrix( Mat input_mat, const std::string& filename, MPI_Comm co
 
 void read_PETSC_matrix(	Mat input_mat, const std::string& filename, MPI_Comm comm = PETSC_COMM_WORLD);
 
+void write_PETSC_vector_MATLAB( Vec input_vec, const std::string& filename, MPI_Comm comm  = PETSC_COMM_WORLD);
+
 void create_PETSC_dense_matrix_from_vectors(const Vec *vecs_in, int nb_vecs, Mat& matrix_out);
 
 void PETSC_invert_dense_matrix(Mat& matrix_in, Mat& matrix_out);

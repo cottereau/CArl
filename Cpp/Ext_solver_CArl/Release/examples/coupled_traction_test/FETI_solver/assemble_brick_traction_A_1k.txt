@@ -6,5 +6,3 @@ SystemType	Macro
 
 MeshWeight examples/coupled_traction_test/meshes/test_brick_mask.msh
 WeightIndexes examples/coupled_traction_test/meshes/test_brick_mask_idx.dat
-
-OutputBase examples/coupled_traction_test/FETI_solver/system_matrices/brick_traction_1k/clamped_model_A

@@ -336,6 +336,18 @@ void carl::read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 	VecLoad(input_vec.vec(),viewer);
 
 	PetscViewerDestroy(&viewer);
+};
+
+void carl::write_PETSC_vector_MATLAB(	Vec input_vec,
+		const std::string& filename, MPI_Comm comm)
+{
+	PetscViewer    viewer;
+	PetscViewerCreate(comm,&viewer);
+	PetscViewerASCIIOpen(comm,filename.c_str(),&viewer);
+	PetscViewerPushFormat (viewer,PETSC_VIEWER_ASCII_MATLAB);
+	VecView(input_vec,viewer);
+
+	PetscViewerDestroy(&viewer);
 }
 
 void carl::write_PETSC_vector(	Vec input_vec,

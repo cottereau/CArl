@@ -20,6 +20,7 @@ struct libmesh_assemble_input_params {
 	std::string weight_domain_idx_file; ///< Path to the file identifying the weight function regions.
 
 	std::string output_base; 	///< Output filename base.
+	bool bCalculateRBVectors;	///< Build and export the rigid body modes vectors?
 };
 
 /**	\brief Parser function for the coupled solver test programs.
@@ -30,7 +31,12 @@ struct libmesh_assemble_input_params {
  *    - `SystemType` : parameter used to tell the assembler which weight functions must be used. *Values*: `Micro` or `Macro`.
  *	  - `MeshWeight` : path to the mesh defining the domains of the Arlequin weight parameters.
  *    - `WeightIndexes` : path to the indices of the domains of the Arlequin weight parameters.
+ *
+ *  Optional parameter:
  *    - `OutputBase` or `--output` : base of the output files (including folders). *Default*: `test_system`.
+ *
+ *  Boolean flags:
+ *    - `ExportRBVectors` : build and export the rigid body modes vectors.
  */
 void get_input_params(GetPot& field_parser,
 		libmesh_assemble_input_params& input_params) {
@@ -100,6 +106,12 @@ void get_input_params(GetPot& field_parser,
 			input_params.output_base);
 	} else {
 		input_params.output_base = "test_system";
+	}
+
+	if (field_parser.search(1, "ExportRBVectors")) {
+		input_params.bCalculateRBVectors = true;
+	} else {
+		input_params.bCalculateRBVectors = false;
 	}
 };
 #endif /* LIBMESH_ASSEMBLE_SYSTEM_INPUT_PARSER_H_ */
