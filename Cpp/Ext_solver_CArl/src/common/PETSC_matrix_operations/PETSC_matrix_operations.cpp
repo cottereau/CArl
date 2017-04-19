@@ -326,18 +326,6 @@ void carl::write_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 	PetscViewerDestroy(&viewer);
 }
 
-void carl::print_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
-		const std::string& filename)
-{
-	const libMesh::Parallel::Communicator& WorldComm = input_vec.comm();
-
-	PetscViewer    viewer;
-	PetscViewerASCIIOpen(WorldComm.get(),filename.c_str(),&viewer);
-	VecView(input_vec.vec(),viewer);
-
-	PetscViewerDestroy(&viewer);
-}
-
 void carl::read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 		const std::string& filename)
 {
@@ -346,6 +334,47 @@ void carl::read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 	PetscViewer    viewer;
 	PetscViewerBinaryOpen(WorldComm.get(),filename.c_str(),FILE_MODE_READ,&viewer);
 	VecLoad(input_vec.vec(),viewer);
+
+	PetscViewerDestroy(&viewer);
+}
+
+void carl::write_PETSC_vector(	Vec input_vec,
+		const std::string& filename, MPI_Comm comm)
+{
+	PetscViewer    viewer;
+	PetscViewerBinaryOpen(comm,filename.c_str(),FILE_MODE_WRITE,&viewer);
+	VecView(input_vec,viewer);
+
+	PetscViewerDestroy(&viewer);
+}
+
+void carl::read_PETSC_vector(	Vec input_vec,
+		const std::string& filename, MPI_Comm comm)
+{
+	PetscViewer    viewer;
+	PetscViewerBinaryOpen(comm,filename.c_str(),FILE_MODE_READ,&viewer);
+	VecLoad(input_vec,viewer);
+
+	PetscViewerDestroy(&viewer);
+}
+
+void carl::write_PETSC_matrix(	Mat input_mat,
+		const std::string& filename, MPI_Comm comm)
+{
+	PetscViewer    viewer;
+	PetscViewerBinaryOpen(comm,filename.c_str(),FILE_MODE_WRITE,&viewer);
+	MatView(input_mat,viewer);
+
+	PetscViewerDestroy(&viewer);
+}
+
+void carl::read_PETSC_matrix(	Mat input_mat,
+		const std::string& filename, MPI_Comm comm)
+{
+
+	PetscViewer    viewer;
+	PetscViewerBinaryOpen(comm,filename.c_str(),FILE_MODE_READ,&viewer);
+	MatLoad(input_mat,viewer);
 
 	PetscViewerDestroy(&viewer);
 }

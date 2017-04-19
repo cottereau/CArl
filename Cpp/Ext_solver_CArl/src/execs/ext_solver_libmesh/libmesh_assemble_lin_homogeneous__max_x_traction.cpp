@@ -91,6 +91,11 @@ int main(int argc, char** argv) {
 	// Export matrix and vector
 	elasticity_system.matrix->print_matlab(input_params.output_base + "_sys_mat.m");
 	elasticity_system.rhs->print_matlab(input_params.output_base + "_sys_rhs_vec.m");
-	
+
+	libMesh::PetscMatrix<libMesh::Number> * temp_mat_ptr = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number> * >(elasticity_system.matrix);
+	libMesh::PetscVector<libMesh::Number> * temp_vec_ptr = libMesh::cast_ptr<libMesh::PetscVector<libMesh::Number> * >(elasticity_system.rhs);
+
+	carl::write_PETSC_matrix(temp_mat_ptr->mat(), input_params.output_base + "_sys_mat.petscmat",WorldComm.get());
+	carl::write_PETSC_vector(temp_vec_ptr->vec(), input_params.output_base + "_sys_rhs_vec.petscmat",WorldComm.get());
 	return 0;
 }

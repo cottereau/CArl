@@ -5,6 +5,10 @@ int main(int argc, char** argv) {
 	// [USER] Fixed boudary
 	boundary_id_cube fixed_bound_id = boundary_id_cube::MIN_X;
 	
+	// [USER] Traction force density
+	std::vector<double> traction_density(3,0);
+	traction_density[0] = 100.;
+
 	// --- Initialize libMesh
 	libMesh::LibMeshInit init(argc, argv);
 
@@ -85,8 +89,10 @@ int main(int argc, char** argv) {
 	perf_log.pop("System setup:");
 
 	// Assemble!
-	assemble_elasticity_with_weight(equation_systems,"Elasticity",system_weight,
-							input_params.system_type);
+	assemble_elasticity_with_weight_and_traction(equation_systems,"Elasticity",system_weight,
+							input_params.system_type,
+							boundary_id_cube::MAX_X,
+							traction_density);
 
 	// Export matrix and vector
 	elasticity_system.matrix->print_matlab(input_params.output_base + "_sys_mat.m");

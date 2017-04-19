@@ -11,9 +11,6 @@
 #include "common_header_ext_solver_libmesh.h"
 #include "ext_solver_libmesh_enums.h"
 
-int kronecker_delta(unsigned int i,
-				   unsigned int j);
-
 /// 3D border displacement class, derived from libMesh::FunctionBase<libMesh::Number>.
 class border_displacement_function : public libMesh::FunctionBase<libMesh::Number>
 {

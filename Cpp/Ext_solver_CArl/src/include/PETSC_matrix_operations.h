@@ -52,6 +52,14 @@ void read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 void print_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 		const std::string& filename);
 
+void write_PETSC_vector( Vec input_vec, const std::string& filename, MPI_Comm comm = PETSC_COMM_WORLD);
+
+void read_PETSC_vector(	Vec input_vec, const std::string& filename, MPI_Comm comm = PETSC_COMM_WORLD);
+
+void write_PETSC_matrix( Mat input_mat, const std::string& filename, MPI_Comm comm = PETSC_COMM_WORLD);
+
+void read_PETSC_matrix(	Mat input_mat, const std::string& filename, MPI_Comm comm = PETSC_COMM_WORLD);
+
 void create_PETSC_dense_matrix_from_vectors(const Vec *vecs_in, int nb_vecs, Mat& matrix_out);
 
 void PETSC_invert_dense_matrix(Mat& matrix_in, Mat& matrix_out);

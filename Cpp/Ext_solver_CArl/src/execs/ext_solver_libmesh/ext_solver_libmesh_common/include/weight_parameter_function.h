@@ -134,6 +134,23 @@ public:
 		}
 	}
 
+	double get_alpha(const libMesh::Point& qpoint, WeightFunctionSystemType system_type)
+	{
+		switch (system_type)
+		{
+			case WeightFunctionSystemType::MICRO :	
+					return this->get_alpha_micro(qpoint);
+					break;
+			case WeightFunctionSystemType::MACRO :	
+					return this->get_alpha_BIG(qpoint);
+					break;
+			case WeightFunctionSystemType::NO_WEIGHT :	
+					return 1.;
+					break;
+		}
+		homemade_error_msg("Why are you here!?");
+	}
+
 	double get_alpha_BIG(const libMesh::Point& qpoint)
 	{
 		libMesh::PointLocatorBase& locator = *m_locator_unique_ptr.get();

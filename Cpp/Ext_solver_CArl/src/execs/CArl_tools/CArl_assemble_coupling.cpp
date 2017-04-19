@@ -297,6 +297,7 @@ int main(int argc, char** argv) {
 
 	// Print matrices!
 	CoupledMatrices.print_matrices_matlab("MicroSys",input_params.output_base);
+	CoupledMatrices.print_PETSC_matrices("MicroSys",input_params.output_base);
 
 	return 0;
 }

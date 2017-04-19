@@ -404,6 +404,7 @@ public:
 	void print_matrices_matlab(const std::string& name,
 			const std::string& outputRoot = "coupling");
 
+	void print_PETSC_matrices(const std::string& name, const std::string& outputRoot = "coupling");
 	void use_H1_coupling(std::string name);
 
 	void use_L2_coupling(std::string name);

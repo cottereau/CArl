@@ -10,5 +10,6 @@
 
 #include "ext_solver_libmesh_headers.h"
 #include "libmesh_assemble_system_input_parser.h"
+#include "PETSC_matrix_operations.h"
 
 #endif /* EXECS_LIBMESH_ASSEMBLE_LIN_HOMOGENEOUS_H_ */

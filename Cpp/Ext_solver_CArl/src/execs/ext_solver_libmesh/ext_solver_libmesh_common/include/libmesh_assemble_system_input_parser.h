@@ -62,12 +62,17 @@ void get_input_params(GetPot& field_parser,
 			input_params.system_type = WeightFunctionSystemType::MACRO;
 		else if(sys_type == "Micro" || sys_type == "MICRO" || sys_type == "micro")
 			input_params.system_type = WeightFunctionSystemType::MICRO;
+		else if(sys_type == "NoWeight" || sys_type == "NOWEIGHT" || sys_type == "noweight")
+		{
+			input_params.system_type = WeightFunctionSystemType::NO_WEIGHT;
+			std::cout << " >> Warning: Will not use the weight parameters!" << std::endl;
+		}
 		else
-			homemade_error_msg("Invalid system type (must be either Macro or Micro)!");
+			homemade_error_msg("Invalid system type (must be either Macro, Micro or NoWeight)!");
 	}
 	else
 	{
-		homemade_error_msg("Missing the system type (must be either Macro or Micro)!");
+		homemade_error_msg("Missing the system type (must be either Macro, Micro or NoWeight)!");
 	}
 
 	if ( field_parser.search(1, "MeshWeight") )

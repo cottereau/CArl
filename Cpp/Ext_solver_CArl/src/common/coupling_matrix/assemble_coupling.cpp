@@ -386,6 +386,20 @@ namespace carl
 		CouplingTestMatrix_mediator.print_matlab(outputRoot + "_mediator.m");
 	}
 
+	void assemble_coupling_matrices::print_PETSC_matrices(const std::string& name, const std::string& outputRoot)
+	{
+		libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix_BIG =
+								* m_couplingMatrixMap_mediator_BIG[name];
+		libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix_micro=
+								* m_couplingMatrixMap_mediator_micro[name];
+		libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix_mediator=
+								* m_couplingMatrixMap_mediator_mediator[name];
+
+		write_PETSC_matrix(CouplingTestMatrix_BIG.mat(), outputRoot + "_macro.petscmat",m_comm->get());
+		write_PETSC_matrix(CouplingTestMatrix_micro.mat(), outputRoot + "_micro.petscmat",m_comm->get());
+		write_PETSC_matrix(CouplingTestMatrix_mediator.mat(), outputRoot + "_mediator.petscmat",m_comm->get());
+	}
+
 	void assemble_coupling_matrices::use_H1_coupling(std::string name)
 	{
 		m_bUseH1Coupling[name] = true;

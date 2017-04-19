@@ -1,11 +1,5 @@
 #include "common_assemble_functions_elasticity_3D.h"
 
-int kronecker_delta(unsigned int i,
-				   unsigned int j)
-{
-	return i == j ? 1. : 0.;
-};
-
 // Some boundary conditions functions
 void set_displaced_border_translation(libMesh::ImplicitSystem& elasticity_system, border_displacement_values& displ, int boundary_id)
 {

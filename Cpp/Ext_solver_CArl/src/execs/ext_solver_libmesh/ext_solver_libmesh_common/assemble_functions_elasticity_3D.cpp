@@ -361,10 +361,7 @@ void assemble_elasticity_with_weight(	libMesh::EquationSystems& es,
 		{
 
 			perf_log.push("Rigidity","Matrix element calculations");
-			if(system_type == WeightFunctionSystemType::MICRO)
-				weight_alpha = weight_mask.get_alpha_micro(qp_points[qp]);
-			else if (system_type == WeightFunctionSystemType::MACRO)
-				weight_alpha = weight_mask.get_alpha_BIG(qp_points[qp]);
+			weight_alpha = weight_mask.get_alpha(qp_points[qp],system_type);
 
 			// Internal tension
 			Update_SubK_isotropic(Kuu, qp, 0, 0, dphi, n_components, n_u_dofs, JxW, localE, localMu, weight_alpha);
@@ -557,10 +554,7 @@ void assemble_elasticity_with_weight_and_traction(libMesh::EquationSystems& es,
 		{
 
 			perf_log.push("Rigidity","Matrix element calculations");
-			if(system_type == WeightFunctionSystemType::MICRO)
-				weight_alpha = weight_mask.get_alpha_micro(qp_points[qp]);
-			else if (system_type == WeightFunctionSystemType::MACRO)
-				weight_alpha = weight_mask.get_alpha_BIG(qp_points[qp]);
+			weight_alpha = weight_mask.get_alpha(qp_points[qp],system_type);
 
 			// Internal tension
 			Update_SubK_isotropic(Kuu, qp, 0, 0, dphi, n_components, n_u_dofs, JxW, localE, localMu, weight_alpha);
@@ -588,10 +582,8 @@ void assemble_elasticity_with_weight_and_traction(libMesh::EquationSystems& es,
 				// Apply a traction
 				for (unsigned int qp=0; qp<qface.n_points(); qp++)
 				{
-					if(system_type == WeightFunctionSystemType::MICRO)
-						weight_alpha = weight_mask.get_alpha_micro(qp_face_points[qp]);
-					else if (system_type == WeightFunctionSystemType::MACRO)
-						weight_alpha = weight_mask.get_alpha_BIG(qp_face_points[qp]);
+					weight_alpha = weight_mask.get_alpha(qp_face_points[qp],system_type);
+
 					if (mesh.get_boundary_info().has_boundary_id(elem, side, traction_boundary_id))
 					{	
 						for (unsigned int dof_iii=0; dof_iii<n_u_dofs; dof_iii++)
@@ -766,11 +758,7 @@ void assemble_elasticity_heterogeneous_with_weight(	libMesh::EquationSystems& es
 		{
 
 			perf_log.push("Rigidity","Matrix element calculations");
-			// Internal tension
-			if(system_type == WeightFunctionSystemType::MICRO)
-				weight_alpha = weight_mask.get_alpha_micro(qp_points[qp]);
-			else if (system_type == WeightFunctionSystemType::MACRO)
-				weight_alpha = weight_mask.get_alpha_BIG(qp_points[qp]);
+			weight_alpha = weight_mask.get_alpha(qp_points[qp],system_type);
 
 			// Internal tension
 			Update_SubK_isotropic(Kuu, qp, 0, 0, dphi, n_components, n_u_dofs, JxW, localE, localMu, weight_alpha);

@@ -145,7 +145,9 @@ foreach( libmesh_ext_source_file ${LIBMESH_EXT_EXECS} )
     string ( REPLACE ".cpp" "" full_libmesh_ext_exec_name ${libmesh_ext_source_file} )
     string ( REPLACE "${CMAKE_CURRENT_LIST_DIR}/${EXEC_SRC_DIR}/ext_solver_libmesh/" "" libmesh_ext_exec_name ${full_libmesh_ext_exec_name} )
     add_executable ( ${libmesh_ext_exec_name} ${libmesh_ext_source_file}
-                   $<TARGET_OBJECTS:COMMON_EXT_LIBMESH_SOLVER_OBJS> )
+                   $<TARGET_OBJECTS:COMMON_EXT_LIBMESH_SOLVER_OBJS>
+                   $<TARGET_OBJECTS:PETSC_MATRIX_OPERATIONS_OBJS>
+                   $<TARGET_OBJECTS:COMMON_OBJS> )
     add_to_cached_list( CGAL_EXECUTABLE_TARGETS ${libmesh_ext_exec_name} )
     target_link_libraries( ${libmesh_ext_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 endforeach( libmesh_ext_source_file ${LIBMESH_EXT_EXECS} )

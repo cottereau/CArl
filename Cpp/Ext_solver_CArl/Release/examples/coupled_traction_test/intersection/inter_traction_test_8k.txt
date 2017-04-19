@@ -1,12 +1,12 @@
 ### Required parameters
 # - Mesh files
-MeshA examples/traction_test/meshes/test_brick_A_8k.msh
-MeshB examples/traction_test/meshes/test_brick_B_8k.msh
-MeshC examples/traction_test/meshes/test_brick_C.msh
+MeshA examples/coupled_traction_test/meshes/test_brick_A_8k.msh
+MeshB examples/coupled_traction_test/meshes/test_brick_B_8k.msh
+MeshC examples/coupled_traction_test/meshes/test_brick_C.msh
 
 ### Optional parameters
 # - Output filename base
-OutputBase examples/traction_test/intersection/output/inter_8k/inter
+OutputBase examples/coupled_traction_test/intersection/output/inter_8k/inter
 
 # - Meshing algorithm choice
 MeshingMethod CGAL

@@ -12,8 +12,9 @@
 
 /// Enumerate used to define which weight function must be used to assemble the system
 enum   WeightFunctionSystemType {
-	MACRO = 0,
-	MICRO = 1
+	NO_WEIGHT = 0,
+	MACRO = 1,
+	MICRO = 2
 };
 
 /// Small enumerate defining a cube's boundary ID's
