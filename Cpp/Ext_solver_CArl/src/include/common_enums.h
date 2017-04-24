@@ -10,6 +10,12 @@
 
 namespace carl
 {
+
+enum ClusterSchedulerType {
+	PBS = 0, // PBS / Torque
+	SLURM = 1 // SLURM, not implemented right now
+};
+
 // Coupled system solver type
 enum CoupledSolverType {
 	LATIN_MODIFIED_STIFFNESS = 0, // Original LATIN solver

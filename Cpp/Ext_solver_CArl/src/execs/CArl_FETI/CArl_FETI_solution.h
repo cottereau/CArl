@@ -9,5 +9,6 @@
 #define EXECS_CARL_FETI_SOLUTION_H_
 
 #include "carl_headers.h"
+#include "carl_feti_set_sol_input_parser.h"
 
 #endif /* EXECS_CARL_FETI_SOLUTION_H_ */

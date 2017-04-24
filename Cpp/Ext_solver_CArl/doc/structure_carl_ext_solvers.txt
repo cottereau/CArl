@@ -13,8 +13,8 @@
 	  > More like a step than an executable
 	  > (libMesh) Example : assemble homogeneous linear system, assemble heterogeneous 
 	                        anisotropic system
-	    * CArl_libmesh_lin_homogeneous
-		* CArl_libmesh_lin_aniso
+	    * libmesh_assemble_lin_homogeneous__max_x_traction
+	    * libmesh_assemble_lin_homogeneous__min_x_clamped
 	  > Includes preparing base PBS files for external software
 	  > Includes exporting the force vector for the rigid body modes, F_2, and the modes 
 	    themselves, RB
@@ -23,12 +23,11 @@
     > These guys are automated, and launch each other
 	- CArl_FETI_setup_init
 	  > Read F_2, C_2 and RB : build phi(0)
-	  > EXPORT : phi(0)
+	  > EXPORT : phi(0), C_i^T*phi(0)
 	  > PBS : Prepare initial PBS call chain
 	    * [PBS A,i] Call external solver to solve K_i * u_0,i = F_i
-	    * [PBS B,i] After ok with [A,i], multiply u_0,i by C_i^T (call 'CArl_coupl_mult')
-		* [PBS C,i] After ok with [B,i], call ext. sol. to solve K_i * x_0,i = C_i^T*u_0,i
-		* [PBS D]   After ok with [C,1] and [C,2], call 'CArl_FETI_setup_finish'
+	    * [PBS B,i] Call external solver to solve K_i * x_0,i = C_i^T*phi(0)
+	    * [PBS C]   After ok with [A,*] and [B,*], call 'CArl_FETI_setup_finish'
 
 	- CArl_FETI_setup_finish
 	  > Read C_i, C_M, RB, u_0,i, x_0,i
@@ -40,11 +39,11 @@
 	  >                 rho(0) = r(0) . z(0)
 	  >                   p(0) = z(0)
 	  >
-	  > EXPORT : [single ] RB_corr(0), r(0), z(0), C_1^T * p(0), C_2^T * p(0)
+	  > EXPORT : [single ] RB_corr(0), r(0), z(0), C_1^T * p(0), C_2^T * p(0), M_PC
 	  >          [several] p(0), rho(0)
 	  > PBS : Lauch first iteration PBS chain, with k = 0 :
 	    * [PBS E_0,i] Call external solver to solve K_i * y(0)_i = C_i^T * p(0)
-		* [PBS F_0]   After ok with [E_0,1] and [E_0,2], call 'CArl_FETI_iterate'
+            * [PBS F_0]   After ok with [E_0,1] and [E_0,2], call 'CArl_FETI_iterate'
 
 	- CArl_FETI_iterate
 	  > Read C_i, C_M, RB, y(k),i, r(k), z(k), RB_corr(k), rho(0..k), p(0..k), q(0..k-1)
@@ -100,10 +99,3 @@
 	    coupling operators)
 	  > (libMesh) Example : calculate stress and save a Paraview mesh
 	    * CArl_libmesh_calculate_stress
-	- Tool: CArl_coupl_mult
-	  > Multiply vec_in by coupling matrix. Stupid, but needed ...
-	- Tool: Convert_matlab_vec_to_external_vec, Convert_external_vec_to_matlab_vec
-	  > Convert the vectors for compatibility between CArl / MATLAB and the 
-	    external solvers
-	  > To be built by the user and inserted respectivelly before and after each 
-	    external solver call 

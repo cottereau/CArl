@@ -9,5 +9,6 @@
 #define EXECS_CARL_FETI_SETUP_INIT_H_
 
 #include "carl_headers.h"
+#include "carl_feti_setup_init_input_parser.h"
 
 #endif /* EXECS_CARL_FETI_SETUP_INIT_H_ */
