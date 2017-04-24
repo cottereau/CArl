@@ -41,6 +41,7 @@
 #include <iterator>
 #include <algorithm>
 #include <tuple>
+#include <map>
 
 // --- C++ strings
 #include <string>

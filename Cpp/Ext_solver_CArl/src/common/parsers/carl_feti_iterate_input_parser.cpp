@@ -26,20 +26,6 @@ void get_input_params(GetPot& field_parser,
 		homemade_error_msg("Missing the scheduler type!");
 	}
 
-	if (field_parser.search(1, "ExtSolverA")) {
-		input_params.ext_solver_BIG = field_parser.next(
-				input_params.ext_solver_BIG);
-	} else {
-		homemade_error_msg("Missing the external solver A command line!");
-	}
-
-	if (field_parser.search(1, "ExtSolverB")) {
-		input_params.ext_solver_micro = field_parser.next(
-				input_params.ext_solver_micro);
-	} else {
-		homemade_error_msg("Missing the external solver B command line!");
-	}
-
 	if (field_parser.search(1, "ScratchFolderPath")) {
 		input_params.scratch_folder_path = field_parser.next(
 				input_params.scratch_folder_path);
@@ -62,6 +48,13 @@ void get_input_params(GetPot& field_parser,
 					input_params.RB_vectors_base);
 		} else {
 			homemade_error_msg("Missing the system B's rigid body mode vectors!");
+		}
+				
+		if (field_parser.search(1, "NbOfRBVectors")) {
+			input_params.nb_of_rb_vectors = field_parser.next(
+					input_params.nb_of_rb_vectors);
+		} else {
+			input_params.nb_of_rb_vectors = 6;
 		}
 	}
 	else

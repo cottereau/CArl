@@ -29,9 +29,6 @@ struct feti_setup_init_params {
 	std::string ext_solver_BIG_input;		///< Path to a file containing the input parameters of the external solve for system A.
 	std::string ext_solver_micro_input;		///< Path to a file containing the input parameters of the external solve for system B.
 
-	std::string libmesh_rhs_vector_BIG;	///< Path to the RHS used for the external solver A.
-	std::string libmesh_rhs_vector_micro;	///< Path to the RHS used for the external solver B.
-
 	// Path to "scratch" folder
 	std::string scratch_folder_path;	///< Path to the folder which will be used to save the temporary files during the solve operation
 	std::string script_filename; ///< Path to the file used to generate the scripts.
@@ -44,6 +41,7 @@ struct feti_setup_init_params {
 	bool bUseRigidBodyModes;			///< [RB] Use the rigid body modes for the micro system?
 	std::string force_micro_path;		///< [RB] Path to the vector containing the external forces for the system B.
 	std::string RB_vectors_base;		///< [RB] Common path base for the micro system's rigid body mode vectors.
+	int nb_of_rb_vectors;				///< [RB] Number of RB mode vectors.
 
 	// Coupling matrices path
 	std::string coupling_path_base;		///< Base of the coupling matrices path.
@@ -83,6 +81,7 @@ struct feti_setup_init_params {
  *  Rigid body mode parameters (only read if `UseRigidBodyModesB` is used):
  *	  - `ExtForceSystemB` : path to the vector containing the external forces for the system B.
  *	  - `RBVectorBase` : filename base of the rigid body modes vectors.
+ *    - `NbOfRBVectors` : number of RB mode vectors. *Default*: 6.
  *
  *  Optional parameters:
  *  + FETI / CG optional parameters:

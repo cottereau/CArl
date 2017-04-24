@@ -16,32 +16,29 @@ enum ClusterSchedulerType {
 	SLURM = 1 // SLURM, not implemented right now
 };
 
+
 // External solver types
 enum ExtSolverType {
 	LIBMESH_LINEAR = 0,
 	DUMMY = 1
 };
 
-// Coupled system solver type
-enum CoupledSolverType {
-	LATIN_MODIFIED_STIFFNESS = 0, // Original LATIN solver
-	LATIN_ORIGINAL_STIFFNESS = 1, // Original LATIN solver, with unmodified K's
-	CG    = 2  // Conjugate gradient solver
-};
-
+// Mediator space type
 enum MediatorType {
 	USE_MACRO = 0,
 	USE_MICRO = 1,
-	USE_EXTERNAL = 3
+	USE_EXTERNAL = 2
 };
 
+// CG preconditioner type
 enum BaseCGPrecondType {
 	NO_PRECONDITIONER = 0, // Identity matrix
-	CUSTOM_MATRIX = 1, // User-defined matrix
-	SYSTEM_MATRIX = 2, // System matrix
-	COUPLING_OPERATOR = 3, // C_RR
-	JACOBI = 4 // diagonal Jacobi
+	COUPLING_OPERATOR = 1, // C_RR
+	COUPLING_JACOBI = 2 // diagonal(C_RR)
 };
+
+
+
 enum IntersectionMeshingMethod {
 	LIBMESH_TETGEN = 0, // libMesh Tetgen algorithm, problematic with
 						// Intel compilers
@@ -51,9 +48,9 @@ enum IntersectionMeshingMethod {
 
 enum SearchMethod
 {
-	BRUTE,
-	FRONT,
-	BOTH
+	BRUTE = 0,
+	FRONT = 1,
+	BOTH = 2
 };
 
 }

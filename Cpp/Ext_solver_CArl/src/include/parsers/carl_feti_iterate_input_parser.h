@@ -18,10 +18,6 @@ struct feti_iterate_params {
 
 	// Cluster 
 	ClusterSchedulerType scheduler; ///< Cluster scheduler software type. *Values*: PBS, SLURM (code not implemented for the later yet).
-
-	// External solver commands
-	std::string ext_solver_BIG;			///< Command used for the external solver for system A.
-	std::string ext_solver_micro;		///< Command used for the external solver for system B.
 	
 	// Path to "scratch" folder
 	std::string scratch_folder_path;	///< Path to the folder which will be used to save the temporary files during the solve operation
@@ -29,6 +25,7 @@ struct feti_iterate_params {
 	// Rigid body mode options for the micro system
 	bool bUseRigidBodyModes;			///< [RB] Use the rigid body modes for the micro system?
 	std::string RB_vectors_base;		///< [RB] Common path base for the micro system's rigid body mode vectors.
+	int nb_of_rb_vectors;				///< [RB] Number of RB mode vectors.
 
 	// Coupling matrices path
 	std::string coupling_path_base;		///< Base of the coupling matrices path.
@@ -49,8 +46,6 @@ struct feti_iterate_params {
  *	
  *	Required parameters:
  *    - `ClusterSchedulerType` : scheduler type. *Values*: PBS or SLURM (code not implemented for the later yet).
- *	  - `ExtSolverA` : command line for the external solver for system A.
- *	  - `ExtSolverB` : command line for the external solver for system B.
  *	  - `ScratchFolderPath` : path to the folder where the temporary files used by the coupled solver will be saved.
  *    - `CouplingMatricesBase` : filename base of the coupling matrices files.
  *

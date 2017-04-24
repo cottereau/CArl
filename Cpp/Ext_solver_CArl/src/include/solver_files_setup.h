@@ -65,6 +65,11 @@ protected:
 	std::string m_FETI_iter_launch_script_filename;
 	std::string m_FETI_sol_launch_script_filename;
 
+	void print_feti_setup_finish_params(const std::string& output_filename);
+	void print_feti_iterate_params(const std::string& output_filename);
+	void print_feti_solution_params(const std::string& output_filename);
+	void print_PBS_script(const std::string& output_filename, const std::string& job_name, const std::string& output_name, const std::string& error_name, const std::string& common_script, const std::string& command_to_run);
+	
 	Solver_Files_Setup();
 public:
 	Solver_Files_Setup(libMesh::Parallel::Communicator& comm) :

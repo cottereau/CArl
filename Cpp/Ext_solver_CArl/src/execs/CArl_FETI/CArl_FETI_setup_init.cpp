@@ -39,9 +39,21 @@ int main(int argc, char** argv) {
 	// Create the scratch folder, if needed
 	FETI_files_setup.set_scratch_folder();
 
-	// Create the input files
+	// [LIBMESH] Create the external solver input files
 	FETI_files_setup.generate_libmesh_external_solver_inputs();
 
+	// [LIBMESH] Create the external solver scripts
+	FETI_files_setup.generate_libmesh_external_solver_scripts();
+
+	// Create FETI input files
+	FETI_files_setup.generate_FETI_inputs();
+
+	// Create FETI script files
+	FETI_files_setup.generate_FETI_scripts();
+
+	// Create FETI lauch script files
+	FETI_files_setup.generate_FETI_launch_scripts();
+	
 	/* --- What this program must do:
 	 *
 	 * 1) Generate the qsub files for the following external solvers - DONE
@@ -50,12 +62,12 @@ int main(int argc, char** argv) {
 	 *    K_i * y(k)_i = C_i^T * p(k)
 	 *    K_i * x_f,i  = C_i^T * phi(k+1)
 	 *
-	 * 2) Generate the input files for the other FETI programs
+	 * 2) Generate the input files for the other FETI - DONE
 	 *	  CArl_FETI_setup_finish
 	 *    CArl_FETI_iterate
 	 *	  CArl_FETI_set_sol
 	 * 
-	 * 3) Generate the qsub files for the other FETI programs
+	 * 3) Generate the qsub files for the other FETI programs - DONE
 	 *
 	 * 4) Generate the scripts to launch the programs - DONE
 	 *	  init_script

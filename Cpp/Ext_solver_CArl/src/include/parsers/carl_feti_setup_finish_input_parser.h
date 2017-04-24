@@ -29,6 +29,7 @@ struct feti_setup_finish_params {
 	// Rigid body mode options for the micro system
 	bool bUseRigidBodyModes;			///< [RB] Use the rigid body modes for the micro system?
 	std::string RB_vectors_base;		///< [RB] Common path base for the micro system's rigid body mode vectors.
+	int nb_of_rb_vectors;				///< [RB] Number of RB mode vectors.
 
 	// Coupling matrices path
 	std::string coupling_path_base;		///< Base of the coupling matrices path.
@@ -40,8 +41,6 @@ struct feti_setup_finish_params {
  *	
  *	Required parameters:
  *    - `ClusterSchedulerType` : scheduler type. *Values*: PBS or SLURM (code not implemented for the later yet).
- *	  - `ExtSolverA` : command line for the external solver for system A.
- *	  - `ExtSolverB` : command line for the external solver for system B.
  *	  - `ScratchFolderPath` : path to the folder where the temporary files used by the coupled solver will be saved.
  *    - `CouplingMatricesBase` : filename base of the coupling matrices files.
  *  + FETI / CG optional parameters:
@@ -52,10 +51,10 @@ struct feti_setup_finish_params {
  *
  *  Rigid body mode parameters (only read if `UseRigidBodyModesB` is used):
  *	  - `RBVectorBase` : filename base of the rigid body modes vectors.
+ *    - `NbOfRBVectors` : number of RB mode vectors. *Default*: 6.
  *
  */
 void get_input_params(GetPot& field_parser,
 		feti_setup_finish_params& input_params);
-
 };
 #endif /* CARL_FETI_SETUP_FINISH_INPUT_PARSER_H_ */

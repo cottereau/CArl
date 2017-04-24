@@ -131,6 +131,13 @@ void get_input_params(GetPot& field_parser,
 		} else {
 			homemade_error_msg("Missing the system B's rigid body mode vectors!");
 		}
+		
+		if (field_parser.search(1, "NbOfRBVectors")) {
+			input_params.nb_of_rb_vectors = field_parser.next(
+					input_params.nb_of_rb_vectors);
+		} else {
+			input_params.nb_of_rb_vectors = 6;
+		}
 	}
 	else
 	{
@@ -174,7 +181,7 @@ void get_input_params(GetPot& field_parser,
 		else if(CG_precond_type_string == "Coupling_operator")
 			input_params.CG_precond_type = carl::BaseCGPrecondType::COUPLING_OPERATOR;
 		else if(CG_precond_type_string == "Coupling_operator_jacobi")
-			input_params.CG_precond_type = carl::BaseCGPrecondType::JACOBI;
+			input_params.CG_precond_type = carl::BaseCGPrecondType::COUPLING_JACOBI;
 	}
 
 	if (field_parser.search(1,"OutputBase")) {

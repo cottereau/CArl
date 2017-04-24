@@ -2,8 +2,8 @@
 ClusterSchedulerType PBS
 
 ### External solvers - must set the commands between ' ' !!!
-ExtSolverA 'libmesh_solve_linear_system -i'
-ExtSolverB 'libmesh_solve_linear_system -i'
+ExtSolverA 'mpirun -n 4 ./libmesh_solve_linear_system -i '
+ExtSolverB 'mpirun -n 4 ./libmesh_solve_linear_system -i '
 
 ExtSolverAType LIBMESH_LINEAR
 ExtSolverBType LIBMESH_LINEAR
@@ -13,7 +13,7 @@ ExtSolverBInput examples/coupled_traction_test/FETI_solver/solve_traction_test_B
 
 ### Coupld solver
 ScratchFolderPath examples/coupled_traction_test/FETI_solver/scratch_folder
-ScriptFile examples/coupled_traction_test/FETI_solver/script_base.sh
+ScriptFile examples/coupled_traction_test/FETI_solver/common_script.sh
 
 CouplingMatricesBase examples/coupled_traction_test/FETI_solver/coupling_matrices/coupling_1k/coupling_matrix
 

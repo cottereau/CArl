@@ -10,19 +10,19 @@
 
 #include "common_header_libmesh.h"
 #include "common_header.h"
+#include "common_enums.h"
 
 int kronecker_delta(unsigned int i,
 				   unsigned int j);
 
 void clear_line();
 
-/*
- *  A little structure used to save the intersection data
- */
-
 namespace carl
 {
-	
+std::string ClusterSchedulerType_to_string(ClusterSchedulerType input);
+std::string BaseCGPrecondType_to_string(BaseCGPrecondType input);
+std::string ExtSolverType_to_string(ExtSolverType input);
+
 std::string exec_command(const char* cmd);
 
 void invert_index_unordered_map(
