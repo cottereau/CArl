@@ -50,6 +50,12 @@
 #include <math.h>
 #include <unistd.h>
 
+#include <cstdio>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <array>
+
 extern boost::random::lagged_fibonacci607 m_rng;
 
 // A small homemade assert

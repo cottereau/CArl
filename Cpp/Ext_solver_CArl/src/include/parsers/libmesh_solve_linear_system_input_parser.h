@@ -8,8 +8,11 @@
 #ifndef LIBMESH_SOLVE_LINEAR_SYSTEM_INPUT_PARSER_H_
 #define LIBMESH_SOLVE_LINEAR_SYSTEM_INPUT_PARSER_H_
 
-#include "common_header_ext_solver_libmesh.h"
+#include "carl_headers.h"
 #include "ext_solver_libmesh_enums.h"
+
+namespace carl
+{
 
 struct libmesh_solve_linear_system_input_params {
 	std::string sys_matrix_file;	///< Path to the system matrix file.
@@ -38,57 +41,12 @@ struct libmesh_solve_linear_system_input_params {
  *    - `NbOfRBVectors` : number of RB mode vectors. *Default*: 6.
  */
 void get_input_params(GetPot& field_parser,
-		libmesh_solve_linear_system_input_params& input_params) {
+		libmesh_solve_linear_system_input_params& input_params);
 
-	if (field_parser.search(1, "SysMatrix")) {
-		input_params.sys_matrix_file = field_parser.next(
-				input_params.sys_matrix_file);
-	} else {
-		homemade_error_msg("Missing the system matrix file!");
-	}
+/// Function used to generate a solver input file from "input_params"
+void print_input_params(const std::string& output_filename,
+		libmesh_solve_linear_system_input_params& input_params);
+}
 
-	if (field_parser.search(1, "SysRHSVector")) {
-		input_params.sys_rhs_vec_file = field_parser.next(
-				input_params.sys_rhs_vec_file);
-	} else {
-		homemade_error_msg("Missing the system RHS vector file!");
-	}
 
-	if (field_parser.search(1, "OutputBase")) {
-		input_params.output_base = field_parser.next(
-				input_params.output_base);
-	} else {
-		homemade_error_msg("Missing the output filename base!");
-	}
-
-	if (field_parser.search(1, "SysEps")) {
-		input_params.sys_eps = field_parser.next(
-				input_params.sys_eps);
-	} else {
-		input_params.sys_eps = 1e-5;
-	}
-
-	if (field_parser.search(1, "SysIterDiv")) {
-		input_params.sys_iter_div = field_parser.next(
-				input_params.sys_iter_div);
-	} else {
-		input_params.sys_iter_div = 1000;
-	}
-
-	if (field_parser.search(1, "RBVectorBase")) {
-		input_params.path_to_rb_vectors = field_parser.next(
-				input_params.path_to_rb_vectors);
-		input_params.bUseRBVectors = true;
-
-		if (field_parser.search(1, "NbOfRBVectors")) {
-			input_params.nb_of_rb_vectors = field_parser.next(
-					input_params.nb_of_rb_vectors);
-		} else {
-			input_params.nb_of_rb_vectors = 6;
-		}
-
-	} else {
-		input_params.bUseRBVectors = false;
-	}
-};
 #endif /* LIBMESH_SOLVE_LINEAR_SYSTEM_INPUT_PARSER_H_ */

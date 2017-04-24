@@ -16,6 +16,12 @@ enum ClusterSchedulerType {
 	SLURM = 1 // SLURM, not implemented right now
 };
 
+// External solver types
+enum ExtSolverType {
+	LIBMESH_LINEAR = 0,
+	DUMMY = 1
+};
+
 // Coupled system solver type
 enum CoupledSolverType {
 	LATIN_MODIFIED_STIFFNESS = 0, // Original LATIN solver

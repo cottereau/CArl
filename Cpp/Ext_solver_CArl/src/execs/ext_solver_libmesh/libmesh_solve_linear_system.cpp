@@ -32,8 +32,8 @@ int main(int argc, char** argv) {
 		field_parser = command_line;
 	}
 
-	libmesh_solve_linear_system_input_params input_params;
-	get_input_params(field_parser, input_params);
+	carl::libmesh_solve_linear_system_input_params input_params;
+	carl::get_input_params(field_parser, input_params);
 
 	// Check libMesh installation dimension
 	const unsigned int dim = 3;

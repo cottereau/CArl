@@ -22,6 +22,8 @@ void clear_line();
 
 namespace carl
 {
+	
+std::string exec_command(const char* cmd);
 
 void invert_index_unordered_map(
 		const std::unordered_map<int,int>& input_map,
