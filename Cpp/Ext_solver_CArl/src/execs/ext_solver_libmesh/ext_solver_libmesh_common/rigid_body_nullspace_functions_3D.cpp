@@ -46,7 +46,7 @@ void build_rigid_body_vectors(libMesh::ImplicitSystem&  input_system, MatNullSpa
 };
 
 
-void write_rigid_body_vectors(MatNullSpace& nullsp_sys, const std::string output_base)
+void write_rigid_body_vectors(MatNullSpace& nullsp_sys, const std::string output_base, int rank)
 {
 	// PETSc variables
 	PetscInt    nullsp_nvecs;
@@ -61,12 +61,9 @@ void write_rigid_body_vectors(MatNullSpace& nullsp_sys, const std::string output
 	for(int iii = 0; iii < nullsp_nvecs; ++iii)
 	{
 		filename = output_base + "_rb_vector_" + std::to_string(iii) + "_n_" + std::to_string(nullsp_nvecs);
-
-#ifndef NDEBUG
 		carl::write_PETSC_vector_MATLAB(nullsp_vecs[iii],filename + ".m",PETSC_COMM_WORLD);
-#endif
 
 		// Export the RB vector
-		carl::write_PETSC_vector(nullsp_vecs[iii], filename + ".petscvec",PETSC_COMM_WORLD);
+		carl::write_PETSC_vector(nullsp_vecs[iii], filename + ".petscvec",rank,PETSC_COMM_WORLD);
 	};
 };

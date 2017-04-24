@@ -15,6 +15,6 @@
 void build_rigid_body_vectors(libMesh::ImplicitSystem&  input_system, MatNullSpace& nullsp_sys);
 
 /// Export the rigid body mode vectors to a folder
-void write_rigid_body_vectors(MatNullSpace& nullsp_sys, const std::string output_base);
+void write_rigid_body_vectors(MatNullSpace& nullsp_sys, const std::string output_base, int rank);
 
 #endif /* RIGID_BODY_NULLSPACE_FUNCTIONS_3D_H_ */

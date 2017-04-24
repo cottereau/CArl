@@ -395,9 +395,9 @@ namespace carl
 		libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix_mediator=
 								* m_couplingMatrixMap_mediator_mediator[name];
 
-		write_PETSC_matrix(CouplingTestMatrix_BIG.mat(), outputRoot + "_macro.petscmat",m_comm->get());
-		write_PETSC_matrix(CouplingTestMatrix_micro.mat(), outputRoot + "_micro.petscmat",m_comm->get());
-		write_PETSC_matrix(CouplingTestMatrix_mediator.mat(), outputRoot + "_mediator.petscmat",m_comm->get());
+		write_PETSC_matrix(CouplingTestMatrix_BIG.mat(), outputRoot + "_macro.petscmat",m_comm->rank(),m_comm->get());
+		write_PETSC_matrix(CouplingTestMatrix_micro.mat(), outputRoot + "_micro.petscmat",m_comm->rank(),m_comm->get());
+		write_PETSC_matrix(CouplingTestMatrix_mediator.mat(), outputRoot + "_mediator.petscmat",m_comm->rank(),m_comm->get());
 	}
 
 	void assemble_coupling_matrices::use_H1_coupling(std::string name)

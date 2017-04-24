@@ -67,13 +67,11 @@ int main(int argc, char** argv) {
 	// --- Multiply ...
 	coupl_mat.vector_mult(output_vec,input_vec);
 
-#ifndef NDEBUG
 	// Only print these for debugging
 	output_vec.print_matlab(input_params.output_base + "_output_vec.m");
-#endif
 
 	// Export the solution vector
-	carl::write_PETSC_vector(output_vec.vec(), input_params.output_base + "_output_vec.petscvec",WorldComm.get());
+	carl::write_PETSC_vector(output_vec, input_params.output_base + "_output_vec.petscvec");
 
 	// --- Cleanup!
 	MatDestroy(&coupl_mat_PETSC);

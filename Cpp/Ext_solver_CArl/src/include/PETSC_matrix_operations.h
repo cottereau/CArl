@@ -44,7 +44,7 @@ void check_coupling_matrix( libMesh::PetscMatrix<libMesh::Number>& CouplingTestM
 		int n_var = 3);
 
 void write_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
-										const std::string& filename);
+										const std::string& filename, int dim = 3);
 
 void read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 										const std::string& filename);
@@ -52,15 +52,21 @@ void read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 void print_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
 		const std::string& filename);
 
-void write_PETSC_vector( Vec input_vec, const std::string& filename, MPI_Comm comm = PETSC_COMM_WORLD);
+void write_PETSC_vector( Vec input_vec, const std::string& filename, int rank, MPI_Comm comm = PETSC_COMM_WORLD, int dim = 3);
 
 void read_PETSC_vector(	Vec input_vec, const std::string& filename, MPI_Comm comm = PETSC_COMM_WORLD);
 
-void write_PETSC_matrix( Mat input_mat, const std::string& filename, MPI_Comm comm = PETSC_COMM_WORLD);
+void write_PETSC_matrix( Mat input_mat, const std::string& filename,  int rank, MPI_Comm comm = PETSC_COMM_WORLD, int dim = 3);
+
+void write_PETSC_matrix(libMesh::PetscMatrix<libMesh::Number>& input_mat,
+		const std::string& filename, int dim = 3);
 
 void read_PETSC_matrix(	Mat input_mat, const std::string& filename, MPI_Comm comm = PETSC_COMM_WORLD);
 
 void write_PETSC_vector_MATLAB( Vec input_vec, const std::string& filename, MPI_Comm comm  = PETSC_COMM_WORLD);
+
+void attach_rigid_body_mode_vectors(libMesh::PetscMatrix<libMesh::Number>& mat_sys,
+								const std::string& filename_base, int nb_of_vecs, int dimension );
 
 void create_PETSC_dense_matrix_from_vectors(const Vec *vecs_in, int nb_vecs, Mat& matrix_out);
 

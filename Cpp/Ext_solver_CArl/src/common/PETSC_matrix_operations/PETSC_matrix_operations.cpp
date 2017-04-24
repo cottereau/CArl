@@ -314,29 +314,29 @@ void carl::check_coupling_matrix(	libMesh::PetscMatrix<libMesh::Number>& Couplin
 	std::cout << "| >  Difference     = " << difference << std::endl << std::endl;
 }
 
-void carl::write_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
-		const std::string& filename)
+void carl::write_PETSC_vector(	Vec input_vec,
+		const std::string& filename, int rank, MPI_Comm comm, int dim)
 {
-	const libMesh::Parallel::Communicator& WorldComm = input_vec.comm();
-
 	PetscViewer    viewer;
-	PetscViewerBinaryOpen(WorldComm.get(),filename.c_str(),FILE_MODE_WRITE,&viewer);
-	VecView(input_vec.vec(),viewer);
+	PetscViewerBinaryOpen(comm,filename.c_str(),FILE_MODE_WRITE,&viewer);
+	VecView(input_vec,viewer);
 
 	PetscViewerDestroy(&viewer);
+
+	// Hack to guarantee the proper vector division without forcing libMesh's --enable-blocked-storage
+	if(rank == 0)
+	{
+		std::ofstream vec_info(filename + ".info");
+		vec_info << "-vecload_block_size " << std::to_string(dim) << std::endl;
+		vec_info.close();
+	}
 }
 
-void carl::read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
-		const std::string& filename)
+void carl::write_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
+		const std::string& filename, int dim )
 {
-	const libMesh::Parallel::Communicator& WorldComm = input_vec.comm();
-
-	PetscViewer    viewer;
-	PetscViewerBinaryOpen(WorldComm.get(),filename.c_str(),FILE_MODE_READ,&viewer);
-	VecLoad(input_vec.vec(),viewer);
-
-	PetscViewerDestroy(&viewer);
-};
+	write_PETSC_vector(input_vec.vec(),filename,input_vec.comm().rank(),input_vec.comm().get(),dim);
+}
 
 void carl::write_PETSC_vector_MATLAB(	Vec input_vec,
 		const std::string& filename, MPI_Comm comm)
@@ -345,16 +345,6 @@ void carl::write_PETSC_vector_MATLAB(	Vec input_vec,
 	PetscViewerCreate(comm,&viewer);
 	PetscViewerASCIIOpen(comm,filename.c_str(),&viewer);
 	PetscViewerPushFormat (viewer,PETSC_VIEWER_ASCII_MATLAB);
-	VecView(input_vec,viewer);
-
-	PetscViewerDestroy(&viewer);
-}
-
-void carl::write_PETSC_vector(	Vec input_vec,
-		const std::string& filename, MPI_Comm comm)
-{
-	PetscViewer    viewer;
-	PetscViewerBinaryOpen(comm,filename.c_str(),FILE_MODE_WRITE,&viewer);
 	VecView(input_vec,viewer);
 
 	PetscViewerDestroy(&viewer);
@@ -370,14 +360,66 @@ void carl::read_PETSC_vector(	Vec input_vec,
 	PetscViewerDestroy(&viewer);
 }
 
+void carl::read_PETSC_vector(	libMesh::PetscVector<libMesh::Number>& input_vec,
+		const std::string& filename)
+{
+	read_PETSC_vector(input_vec.vec(),filename,input_vec.comm().get());
+};
+
+void carl::attach_rigid_body_mode_vectors(libMesh::PetscMatrix<libMesh::Number>& mat_sys,
+								const std::string& filename_base, int nb_of_vecs, int dimension )
+{
+	// Read the dummy vector
+	Vec rb_vecs[6];
+
+	PetscInt local_N;
+	MatGetLocalSize(mat_sys.mat(),NULL,&local_N);
+
+	std::string vector_path;
+
+	// Read the vectors
+	for(int iii = 0; iii < nb_of_vecs; ++iii)
+	{
+		VecCreate(mat_sys.comm().get(),&rb_vecs[iii]);
+		VecSetSizes(rb_vecs[iii],local_N,mat_sys.n());
+
+		vector_path = filename_base + "_" + std::to_string(iii) + "_n_" + std::to_string(nb_of_vecs) + ".petscvec";
+		read_PETSC_vector(rb_vecs[iii],vector_path,mat_sys.comm().get());
+	}
+
+	MatNullSpace nullsp_sys;
+	MatNullSpaceCreate(mat_sys.comm().get(), PETSC_FALSE, nb_of_vecs, rb_vecs, &nullsp_sys);
+	MatSetNullSpace(mat_sys.mat(),nullsp_sys);
+
+	MatNullSpaceDestroy(&nullsp_sys);
+	for(int iii = 0; iii < nb_of_vecs; ++iii)
+	{
+		VecDestroy(&rb_vecs[iii]);
+	}
+};
+
 void carl::write_PETSC_matrix(	Mat input_mat,
-		const std::string& filename, MPI_Comm comm)
+		const std::string& filename, int rank, MPI_Comm comm, int dim)
 {
 	PetscViewer    viewer;
 	PetscViewerBinaryOpen(comm,filename.c_str(),FILE_MODE_WRITE,&viewer);
 	MatView(input_mat,viewer);
 
 	PetscViewerDestroy(&viewer);
+
+	// Hack to guarantee the proper matrix division without forcing libMesh's --enable-blocked-storage
+	if(rank == 0)
+	{
+		std::ofstream mat_info(filename + ".info");
+		mat_info << "-matload_block_size " << std::to_string(dim) << std::endl;
+		mat_info.close();
+	}
+}
+
+void carl::write_PETSC_matrix(libMesh::PetscMatrix<libMesh::Number>& input_mat,
+		const std::string& filename, int dim)
+{
+	write_PETSC_matrix(input_mat.mat(),filename,input_mat.comm().rank(),input_mat.comm().get(),dim);
 }
 
 void carl::read_PETSC_matrix(	Mat input_mat,

@@ -46,8 +46,8 @@ int main(int argc, char** argv) {
 	Mat sys_mat_PETSC;
 	Vec sys_rhs_vec_PETSC;
 
-	MatCreate(PETSC_COMM_WORLD,&sys_mat_PETSC);
-	VecCreate(PETSC_COMM_WORLD,&sys_rhs_vec_PETSC);
+	MatCreate(WorldComm.get(),&sys_mat_PETSC);
+	VecCreate(WorldComm.get(),&sys_rhs_vec_PETSC);
 	
 	// Read
 	carl::read_PETSC_matrix(sys_mat_PETSC, input_params.sys_matrix_file, WorldComm.get());
@@ -59,20 +59,31 @@ int main(int argc, char** argv) {
 	libMesh::PetscVector<libMesh::Number> sys_sol_vec(WorldComm);
 	sys_sol_vec.init(sys_rhs_vec);
 
+	PetscInt local_N;
+	MatGetLocalSize(sys_mat_PETSC,NULL,&local_N);
+
 	// --- Linear solver
 	libMesh::PetscLinearSolver<libMesh::Number> KSP_solver(WorldComm);
 	KSP_solver.init("sys");
 
+	// If the nullspace vectors were given, read them
+	if ( input_params.bUseRBVectors )
+	{
+		std::cout << " > Using the " << input_params.nb_of_rb_vectors << " RB modes vectors!" << std::endl;
+		carl::attach_rigid_body_mode_vectors(sys_mat,input_params.path_to_rb_vectors,input_params.nb_of_rb_vectors,dim);
+		std::cout << " > Attached the RB modes vectors!" << std::endl;
+	}
+
 	// Solve!
 	KSP_solver.solve(sys_mat,sys_sol_vec,sys_rhs_vec,input_params.sys_eps,input_params.sys_iter_div);
 
-#ifndef NDEBUG
+	KSP_solver.print_converged_reason();
+
 	// Only print these for debugging
 	sys_sol_vec.print_matlab(input_params.output_base + "_sys_sol_vec.m");
-#endif
 
 	// Export the solution vector
-	carl::write_PETSC_vector(sys_sol_vec.vec(), input_params.output_base + "_sys_sol_vec.petscvec",WorldComm.get());
+	carl::write_PETSC_vector(sys_sol_vec, input_params.output_base + "_sys_sol_vec.petscvec");
 
 	// --- Cleanup!
 	MatDestroy(&sys_mat_PETSC);
