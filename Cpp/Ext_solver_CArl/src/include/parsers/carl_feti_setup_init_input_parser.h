@@ -61,7 +61,7 @@ struct feti_setup_init_params {
 /**	\brief Parser function for the coupled solver test programs.
  *	
  *	Required parameters:
-*   + External solvers
+ *  + External solvers
  *    - `ClusterSchedulerType` : scheduler type. *Values*: PBS or SLURM (code not implemented for the later yet).
  *	  - `ExtSolverA` : command line for the external solver for system A.
  *	  - `ExtSolverB` : command line for the external solver for system B.
@@ -87,7 +87,7 @@ struct feti_setup_init_params {
  *  + FETI / CG optional parameters:
  *    - `CGPreconditionerType` : CG preconditioner type. *Values*: "NONE", "Coupling_operator" or "Coupling_operator_jacobi". *Default*: "Coupling_operator".
  *    - `CoupledConvAbs` : CG absolute convergence on the residual. *Default*: 1e-20.
- *    - `CoupledConvRel` : CG relative convergence on the residual.  *Default*: 1e-5.
+ *    - `CoupledConvRel` : CG relative convergence on the residual. *Default*: 1e-5.
  *    - `CoupledCorrConvRel` : CG relative convergence on the rigid body corrections. *Default*: 1e-6.
  *    - `CoupledDiv` : CG residual divergence parameter. *Default*: 100000.
  *    - `CoupledIterMax` : CG maximum number of iterations. *Default*: 1000.

@@ -350,6 +350,17 @@ void carl::write_PETSC_vector_MATLAB(	Vec input_vec,
 	PetscViewerDestroy(&viewer);
 }
 
+void carl::write_PETSC_matrix_MATLAB( Mat input_mat, const std::string& filename, MPI_Comm comm)
+{
+	PetscViewer    viewer;
+	PetscViewerCreate(comm,&viewer);
+	PetscViewerASCIIOpen(comm,filename.c_str(),&viewer);
+	PetscViewerPushFormat (viewer,PETSC_VIEWER_ASCII_MATLAB);
+	MatView(input_mat,viewer);
+
+	PetscViewerDestroy(&viewer);
+}
+
 void carl::read_PETSC_vector(	Vec input_vec,
 		const std::string& filename, MPI_Comm comm)
 {
@@ -431,6 +442,12 @@ void carl::read_PETSC_matrix(	Mat input_mat,
 	MatLoad(input_mat,viewer);
 
 	PetscViewerDestroy(&viewer);
+}
+
+void carl::read_PETSC_matrix(libMesh::PetscMatrix<libMesh::Number>& input_mat,
+		const std::string& filename)
+{
+	read_PETSC_matrix(input_mat.mat(),filename,input_mat.comm().get());
 }
 
 void carl::create_PETSC_dense_matrix_from_vectors(const Vec *vecs_in, int nb_vecs, Mat& matrix_out)

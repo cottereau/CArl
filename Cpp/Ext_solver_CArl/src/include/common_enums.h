@@ -37,8 +37,6 @@ enum BaseCGPrecondType {
 	COUPLING_JACOBI = 2 // diagonal(C_RR)
 };
 
-
-
 enum IntersectionMeshingMethod {
 	LIBMESH_TETGEN = 0, // libMesh Tetgen algorithm, problematic with
 						// Intel compilers
@@ -53,6 +51,10 @@ enum SearchMethod
 	BOTH = 2
 };
 
+enum RBModesSystem {
+	MACRO = 0,
+	MICRO = 1
+};
 }
 
 

@@ -11,5 +11,6 @@
 #include "carl_headers.h"
 #include "carl_feti_setup_init_input_parser.h"
 #include "solver_files_setup.h"
+#include "FETI_operations.h"
 
 #endif /* EXECS_CARL_FETI_SETUP_INIT_H_ */

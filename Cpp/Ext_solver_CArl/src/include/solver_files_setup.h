@@ -51,14 +51,14 @@ protected:
 	std::string m_ext_solver_xf_B_script_filename;
 
 	bool m_bSetCArlFETIInputs;
-	std::string m_CArl_FETI_init_finish_input_filename;
+	std::string m_CArl_FETI_setup_finish_input_filename;
 	std::string m_CArl_FETI_iterate_input_filename;
-	std::string m_CArl_FETI_set_sol_input_filename;
+	std::string m_CArl_FETI_solution_input_filename;
 
 	bool m_bSetCArlFETIScripts;
-	std::string m_CArl_FETI_init_finish_script_filename;
+	std::string m_CArl_FETI_setup_finish_script_filename;
 	std::string m_CArl_FETI_iterate_script_filename;
-	std::string m_CArl_FETI_set_sol_script_filename;
+	std::string m_CArl_FETI_solution_script_filename;
 
 	bool m_bSetFETILaunchScripts;
 	std::string m_FETI_init_launch_script_filename;

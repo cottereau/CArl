@@ -283,15 +283,15 @@ void Solver_Files_Setup::generate_FETI_inputs()
 	homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
 	homemade_assert_msg(m_bScratchFolderExists,"Scratch folder not set yet!");
 
-	m_CArl_FETI_init_finish_input_filename = m_input_params.scratch_folder_path + "/CArl_FETI_init_finish.txt";
+	m_CArl_FETI_setup_finish_input_filename = m_input_params.scratch_folder_path + "/CArl_FETI_init_finish.txt";
 	m_CArl_FETI_iterate_input_filename = m_input_params.scratch_folder_path + "/CArl_FETI_iterate.txt";
-	m_CArl_FETI_set_sol_input_filename = m_input_params.scratch_folder_path + "/CArl_FETI_set_sol.txt";
+	m_CArl_FETI_solution_input_filename = m_input_params.scratch_folder_path + "/CArl_FETI_set_sol.txt";
 
 	if(m_comm.rank() == 0)
 	{
-		this->print_feti_setup_finish_params(m_CArl_FETI_init_finish_input_filename);
+		this->print_feti_setup_finish_params(m_CArl_FETI_setup_finish_input_filename);
 		this->print_feti_iterate_params(m_CArl_FETI_iterate_input_filename);
-		this->print_feti_solution_params(m_CArl_FETI_set_sol_input_filename);
+		this->print_feti_solution_params(m_CArl_FETI_solution_input_filename);
 	}
 
 	m_bSetCArlFETIInputs = true;
@@ -306,9 +306,9 @@ void Solver_Files_Setup::generate_FETI_scripts()
 	if(m_input_params.scheduler == ClusterSchedulerType::PBS )
 	{	
 
-		m_CArl_FETI_init_finish_script_filename = m_input_params.scratch_folder_path + "/ext_solver_u0_A.pbs";
-		m_CArl_FETI_iterate_script_filename = m_input_params.scratch_folder_path + "/ext_solver_u0_B.pbs";
-		m_CArl_FETI_set_sol_script_filename = m_input_params.scratch_folder_path + "/ext_solver_x0_A.pbs";
+		m_CArl_FETI_setup_finish_script_filename = m_input_params.scratch_folder_path + "/FETI_setup_finish.pbs";
+		m_CArl_FETI_iterate_script_filename = m_input_params.scratch_folder_path + "/FETI_iterate.pbs";
+		m_CArl_FETI_solution_script_filename = m_input_params.scratch_folder_path + "/FETI_solution.pbs";
 
 		if(m_comm.rank() == 0)
 		{
@@ -323,12 +323,12 @@ void Solver_Files_Setup::generate_FETI_scripts()
 			std::string command_to_run;
 
 			// Set the u0_i scripts
-			pbs_output = m_input_params.scratch_folder_path + "/output_CArl_FETI_init_finish.txt";
-			pbs_error  = m_input_params.scratch_folder_path + "/error_CArl_FETI_init_finish.txt";
+			pbs_output = m_input_params.scratch_folder_path + "/output_CArl_FETI_setup_finish.txt";
+			pbs_error  = m_input_params.scratch_folder_path + "/error_CArl_FETI_setup_finish.txt";
 			command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + "./CArl_FETI_setup_finish -i " +
-								m_CArl_FETI_init_finish_input_filename;
+								m_CArl_FETI_setup_finish_input_filename;
 
-			this->print_PBS_script(	m_CArl_FETI_init_finish_script_filename, "CArl_init_f",
+			this->print_PBS_script(	m_CArl_FETI_setup_finish_script_filename, "CArl_setup_f",
 								pbs_output, pbs_error, common_script,
 								command_to_run);
 			
@@ -344,9 +344,9 @@ void Solver_Files_Setup::generate_FETI_scripts()
 			pbs_output = m_input_params.scratch_folder_path + "/output_CArl_FETI_solution.txt";
 			pbs_error  = m_input_params.scratch_folder_path + "/error_CArl_FETI_solution.txt";
 			command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + "./CArl_FETI_solution -i " +
-								m_CArl_FETI_set_sol_input_filename;
+								m_CArl_FETI_solution_input_filename;
 
-			this->print_PBS_script(	m_CArl_FETI_set_sol_script_filename, "CArl_sol",
+			this->print_PBS_script(	m_CArl_FETI_solution_script_filename, "CArl_sol",
 								pbs_output, pbs_error, common_script,
 								command_to_run);
 		}
@@ -383,7 +383,7 @@ void Solver_Files_Setup::generate_FETI_launch_scripts()
 			FETI_init_script << "job2_A = `qsub " << m_ext_solver_x0_A_script_filename << "`" << std::endl;
 			FETI_init_script << "job2_B = `qsub " << m_ext_solver_x0_B_script_filename << "`" << std::endl;
 			FETI_init_script << "job3 = `qsub -W depend=afterok:$job1_A:$job1_B:$job2_A:$job2_B "
-					         << m_CArl_FETI_init_finish_script_filename << "`" << std::endl;
+					         << m_CArl_FETI_setup_finish_script_filename << "`" << std::endl;
 			FETI_init_script.close();
 
 			std::ofstream FETI_iter_script(m_FETI_iter_launch_script_filename);
@@ -401,7 +401,7 @@ void Solver_Files_Setup::generate_FETI_launch_scripts()
 			FETI_set_sol_script << "job6_A = `qsub " << m_ext_solver_xf_A_script_filename << "`" << std::endl;
 			FETI_set_sol_script << "job6_B = `qsub " << m_ext_solver_xf_A_script_filename << "`" << std::endl;
 			FETI_set_sol_script << "job7 = `qsub -W depend=afterok:$job4_A:$job4_B "
-					         << m_CArl_FETI_set_sol_script_filename << "`" << std::endl;
+					         << m_CArl_FETI_solution_script_filename << "`" << std::endl;
 			FETI_set_sol_script.close();
 		}
 	}

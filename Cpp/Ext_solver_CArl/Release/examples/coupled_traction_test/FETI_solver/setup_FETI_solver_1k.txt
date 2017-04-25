@@ -2,7 +2,7 @@
 ClusterSchedulerType PBS
 
 ### External solvers - must set the commands between ' ' !!!
-ExtSolverA 'mpirun -n 4 ./libmesh_solve_linear_system -i '
+ExtSolverA 'mpirun -n 4 ./libmesh_solve_linear_system -i ' 
 ExtSolverB 'mpirun -n 4 ./libmesh_solve_linear_system -i '
 
 ExtSolverAType LIBMESH_LINEAR

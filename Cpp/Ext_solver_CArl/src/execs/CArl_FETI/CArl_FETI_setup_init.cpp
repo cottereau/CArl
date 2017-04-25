@@ -36,7 +36,8 @@ int main(int argc, char** argv) {
 	get_input_params(field_parser, input_params);
 	carl::Solver_Files_Setup FETI_files_setup(WorldComm,input_params);
 	
-	// Create the scratch folder, if needed
+	// --- Crete the files / folders needed
+	// Create the scratch folder
 	FETI_files_setup.set_scratch_folder();
 
 	// [LIBMESH] Create the external solver input files
@@ -54,33 +55,16 @@ int main(int argc, char** argv) {
 	// Create FETI lauch script files
 	FETI_files_setup.generate_FETI_launch_scripts();
 	
-	/* --- What this program must do:
-	 *
-	 * 1) Generate the qsub files for the following external solvers - DONE
-	 *    K_i * u_0,i  = F_i
-	 *    K_i * x_0,i  = C_i^T * phi(0)
-	 *    K_i * y(k)_i = C_i^T * p(k)
-	 *    K_i * x_f,i  = C_i^T * phi(k+1)
-	 *
-	 * 2) Generate the input files for the other FETI - DONE
-	 *	  CArl_FETI_setup_finish
-	 *    CArl_FETI_iterate
-	 *	  CArl_FETI_set_sol
-	 * 
-	 * 3) Generate the qsub files for the other FETI programs - DONE
-	 *
-	 * 4) Generate the scripts to launch the programs - DONE
-	 *	  init_script
-	 *    iter_script
-	 *	  sol_script
-	 * 
-	 * 5) Read F_2, C_2 and RB to generate phi(0)
-	 *
-	 * >>> Create a carl::solver_files_setup class to do 1), 2), 3) and 4)
-	 * >>> Create a carl::FETI_operations class to do 5) (and the other programs steps)
-	 *
-	 */
+	// --- Calculate phi(0), if needed
+	if(input_params.bUseRigidBodyModes)
+	{
+		carl::FETI_Operations feti_op(WorldComm);
 
+		feti_op.set_coupling_matrix_R_micro(input_params.coupling_path_base + "_micro.petscmat");
+		feti_op.set_coupling_matrix_R_BIG(input_params.coupling_path_base + "_macro.petscmat");
+		feti_op.set_null_space_vecs_micro(input_params.RB_vectors_base,input_params.scratch_folder_path,input_params.nb_of_rb_vectors);
+		feti_op.calculate_phi_0(input_params.force_micro_path, input_params.scratch_folder_path);
+	}
 
 	return 0;
 }
