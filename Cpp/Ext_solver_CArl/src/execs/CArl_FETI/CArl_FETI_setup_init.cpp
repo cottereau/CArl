@@ -58,13 +58,20 @@ int main(int argc, char** argv) {
 	// --- Calculate phi(0), if needed
 	if(input_params.bUseRigidBodyModes)
 	{
-		carl::FETI_Operations feti_op(WorldComm);
+		carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path);
 
 		feti_op.set_coupling_matrix_R_micro(input_params.coupling_path_base + "_micro.petscmat");
 		feti_op.set_coupling_matrix_R_BIG(input_params.coupling_path_base + "_macro.petscmat");
-		feti_op.set_null_space_vecs_micro(input_params.RB_vectors_base,input_params.scratch_folder_path,input_params.nb_of_rb_vectors);
-		feti_op.calculate_phi_0(input_params.force_micro_path, input_params.scratch_folder_path);
+		feti_op.set_null_space_vecs_micro(input_params.RB_vectors_base,input_params.nb_of_rb_vectors);
+		feti_op.calculate_phi_0(input_params.force_micro_path);
 	}
+
+	// // --- Launch the "init_script.sh" script --- ONLY ON THE FIRST PROC!
+	// if(WorldComm.rank() == 0)
+	// {
+	// 	std::string init_script_command = ". " + input_params.scratch_folder_path + "/FETI_init_script.sh";
+	// 	carl::exec_command(init_script_command);
+	// }
 
 	return 0;
 }

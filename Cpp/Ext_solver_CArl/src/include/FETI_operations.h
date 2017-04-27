@@ -33,6 +33,7 @@ protected:
 	bool 	    m_bC_R_micro_MatrixSet;
 	bool 	    m_bC_RR_MatrixSet;
 	bool 	    m_bCouplingMatricesSet;
+	bool        m_bScratchFolderSet;
 	
 	Mat m_C_R_BIG;
 	Mat m_C_R_micro;
@@ -43,11 +44,13 @@ protected:
 
 	RBModesSystem m_RB_modes_system;
 
+	std::string m_scratch_folder_path;
+
 	FETI_Operations();
 
 
 public:
-	FETI_Operations(libMesh::Parallel::Communicator& comm) :
+	FETI_Operations(libMesh::Parallel::Communicator& comm, const std::string& scratch_folder_path ) :
 		m_comm { comm },
 		m_C_R_micro_M { -1},
 		m_C_R_micro_N { -1},
@@ -65,7 +68,9 @@ public:
 		m_bC_R_micro_MatrixSet  { false },
 		m_bC_RR_MatrixSet  { false },
 		m_bCouplingMatricesSet  { false },
-		m_RB_modes_system { RBModesSystem::MICRO }
+		m_bScratchFolderSet { true },
+		m_RB_modes_system { RBModesSystem::MICRO },
+		m_scratch_folder_path { scratch_folder_path }
 	{
 	};
 
@@ -84,7 +89,7 @@ public:
 		}
 	};
 	
-	void set_null_space_vecs_micro(const std::string& input_filename_base, const std::string& output_filename_base, int nb_of_vecs);
+	void set_null_space_vecs_micro(const std::string& input_filename_base, int nb_of_vecs);
 
 	void set_coupling_matrix_R_micro(const std::string& filename);
 
@@ -92,9 +97,9 @@ public:
 
 	void set_coupling_matrix_RR(const std::string& filename);
 
-	void set_coupling_matrices(const std::string& filename_base);
+	void read_coupling_matrices(const std::string& filename_base);
 
-	void calculate_phi_0(const std::string& force_micro_path, const std::string& scratch_folder_path);
+	void calculate_phi_0(const std::string& force_micro_path);
 };
 }
 

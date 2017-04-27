@@ -23,7 +23,7 @@ std::string ClusterSchedulerType_to_string(ClusterSchedulerType input);
 std::string BaseCGPrecondType_to_string(BaseCGPrecondType input);
 std::string ExtSolverType_to_string(ExtSolverType input);
 
-std::string exec_command(const char* cmd);
+std::string exec_command(const std::string& cmd);
 
 void invert_index_unordered_map(
 		const std::unordered_map<int,int>& input_map,

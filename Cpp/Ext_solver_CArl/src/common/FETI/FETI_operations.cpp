@@ -33,14 +33,14 @@ void FETI_Operations::set_coupling_matrix_RR(const std::string& filename)
 	m_bCouplingMatricesSet = m_bC_R_BIG_MatrixSet && m_bC_R_micro_MatrixSet && m_bC_RR_MatrixSet;
 }
 
-void FETI_Operations::set_coupling_matrices(const std::string& filename_base)
+void FETI_Operations::read_coupling_matrices(const std::string& filename_base)
 {
 	this->set_coupling_matrix_R_micro(filename_base + "_micro.petscmat");
 	this->set_coupling_matrix_R_BIG(filename_base + "_macro.petscmat");
 	this->set_coupling_matrix_RR(filename_base + "_mediator.petscmat");
 }
 
-void FETI_Operations::set_null_space_vecs_micro(const std::string& input_filename_base, const std::string& output_filename_base, int nb_of_vecs)
+void FETI_Operations::set_null_space_vecs_micro(const std::string& input_filename_base, int nb_of_vecs)
 {
 	homemade_assert_msg(m_bC_R_micro_MatrixSet,"Micro coupling matrix not set yet!");
 
@@ -59,7 +59,7 @@ void FETI_Operations::set_null_space_vecs_micro(const std::string& input_filenam
 	VecSetSizes(m_null_vecs[0],m_C_R_micro_N_local,m_C_R_micro_N);
 	read_PETSC_vector(m_null_vecs[0],input_filename, m_comm.get());
 	
-	std::string output_filename = output_filename_base + "/rb_coupl_vector_0_n_" + std::to_string(m_null_nb_vecs) + ".petscvec";
+	std::string output_filename = m_scratch_folder_path + "/rb_coupl_vector_0_n_" + std::to_string(m_null_nb_vecs) + ".petscvec";
 	VecCreate(m_comm.get(),&m_null_coupled_vecs[0]);
 	VecSetSizes(m_null_coupled_vecs[0],m_C_R_micro_M_local,m_C_R_micro_M);
 	VecSetFromOptions(m_null_coupled_vecs[0]);
@@ -67,8 +67,8 @@ void FETI_Operations::set_null_space_vecs_micro(const std::string& input_filenam
 	write_PETSC_vector(m_null_coupled_vecs[0],output_filename,m_comm.rank(),m_comm.get());
 
 	// DEBUG print
-	// write_PETSC_vector_MATLAB(m_null_coupled_vecs[0],output_filename_base + "/rb_coupl_vector_0_n_" + std::to_string(m_null_nb_vecs) + ".m",m_comm.get());
-	// write_PETSC_vector_MATLAB(m_null_vecs[0],output_filename_base + "/rb_vector_0_n_" + std::to_string(m_null_nb_vecs) + ".m",m_comm.get());
+	// write_PETSC_vector_MATLAB(m_null_coupled_vecs[0],m_scratch_folder_path + "/rb_coupl_vector_0_n_" + std::to_string(m_null_nb_vecs) + ".m",m_comm.get());
+	// write_PETSC_vector_MATLAB(m_null_vecs[0],m_scratch_folder_path + "/rb_vector_0_n_" + std::to_string(m_null_nb_vecs) + ".m",m_comm.get());
 
 	// Read and calculate the rest of the nullspace vectors
 	for(int iii = 1; iii < m_null_nb_vecs; ++iii)
@@ -77,16 +77,15 @@ void FETI_Operations::set_null_space_vecs_micro(const std::string& input_filenam
 		VecDuplicate(m_null_vecs[0],&m_null_vecs[iii]);
 		read_PETSC_vector(m_null_vecs[iii],input_filename, m_comm.get());
 
-		std::string output_filename = output_filename_base + "/rb_coupl_vector_" + std::to_string(iii) + "_n_" + std::to_string(m_null_nb_vecs) + ".petscvec";
+		std::string output_filename = m_scratch_folder_path + "/rb_coupl_vector_" + std::to_string(iii) + "_n_" + std::to_string(m_null_nb_vecs) + ".petscvec";
 		VecDuplicate(m_null_coupled_vecs[0],&m_null_coupled_vecs[iii]);
 		MatMult(m_C_R_micro,m_null_vecs[iii],m_null_coupled_vecs[iii]);
 
 		write_PETSC_vector(m_null_coupled_vecs[iii],output_filename,m_comm.rank(),m_comm.get());
 
-
 		// DEBUG print
-		// write_PETSC_vector_MATLAB(m_null_coupled_vecs[iii],output_filename_base + "/rb_coupl_vector_" + std::to_string(iii) + "_n_" + std::to_string(m_null_nb_vecs) + ".m",m_comm.get());
-		// write_PETSC_vector_MATLAB(m_null_vecs[iii],output_filename_base + "/rb_vector_" + std::to_string(iii) + "_n_" + std::to_string(m_null_nb_vecs) + ".m",m_comm.get());
+		// write_PETSC_vector_MATLAB(m_null_coupled_vecs[iii],m_scratch_folder_path + "/rb_coupl_vector_" + std::to_string(iii) + "_n_" + std::to_string(m_null_nb_vecs) + ".m",m_comm.get());
+		// write_PETSC_vector_MATLAB(m_null_vecs[iii],m_scratch_folder_path + "/rb_vector_" + std::to_string(iii) + "_n_" + std::to_string(m_null_nb_vecs) + ".m",m_comm.get());
 	}
 
 	// Build the LOCAL dense matrix
@@ -112,51 +111,17 @@ void FETI_Operations::set_null_space_vecs_micro(const std::string& input_filenam
 
 	if(m_comm.rank() == 0)
 	{
-		write_PETSC_matrix(m_inv_RITRI_mat,output_filename_base + "/rb_inv_RITRI.petscmat",0,PETSC_COMM_SELF);
+		write_PETSC_matrix(m_inv_RITRI_mat,m_scratch_folder_path + "/rb_inv_RITRI.petscmat",0,PETSC_COMM_SELF);
 
 		// DEBUG print
-		// write_PETSC_matrix_MATLAB(m_inv_RITRI_mat,output_filename_base + "/rb_inv_RITRI.m",PETSC_COMM_SELF);
+		// write_PETSC_matrix_MATLAB(m_inv_RITRI_mat,m_scratch_folder_path + "/rb_inv_RITRI.m",PETSC_COMM_SELF);
 	}
 
 	// Set up flag
 	m_bNullVecsSet = true;
 }
 
-// void FETI_Operations::apply_CG_runtime_nullspace_force_projection(libMesh::PetscVector<libMesh::Number>& vec_in, libMesh::PetscVector<libMesh::Number>& vec_out)
-// {
-// 	// vec_out = - RC * (inv_RITRI_mat) * R^t* vec_in
-
-// 	m_perf_log.push("Apply nullspace projector - force","Preconditioner and projections");
-// 	// aux_vec_input = R^t * vec_in
-// 	// -> All the communications are done here!
-// 	// Cannot use VecMDot because "null_vecs" is a constant pointer ...
-// 	PetscScalar *dummy_array_input;
-// 	VecGetArray(aux_null_vec_input,&dummy_array_input);
-// 	for(int iii = 0; iii < null_nb_vecs; ++iii)
-// 	{
-// 		VecDot(vec_in.vec(),null_vecs[iii],&dummy_array_input[iii]);
-// 	}
-// 	VecRestoreArray(aux_null_vec_input,&dummy_array_input);
-
-// 	// aux_vec_output = inv_RITRI_mat * aux_vec_input
-// 	// -> Completely local operation!
-// 	MatMult(inv_RITRI_mat,aux_null_vec_input,aux_null_vec_output);
-
-// 	// vec_out = sum ( aux_null_vec_output[i] * vec_RC[i])
-// 	// -> This should have no communications at all!
-// 	vec_out.zero();
-
-// 	PetscScalar *dummy_array_output;
-// 	VecGetArray(aux_null_vec_output,&dummy_array_output);
-// 	VecMAXPY(vec_out.vec(),null_nb_vecs,dummy_array_output,null_coupled_vecs);
-// 	VecRestoreArray(aux_null_vec_output,&dummy_array_output);
-
-// 	vec_out.scale(-1);
-	
-// 	m_perf_log.pop("Apply nullspace projector - force","Preconditioner and projections");
-// }
-
-void FETI_Operations::calculate_phi_0(const std::string& force_path, const std::string& scratch_folder_path)
+void FETI_Operations::calculate_phi_0(const std::string& force_path)
 {
 	// 	phi0 = - RC * (inv_RITRI_mat) * R^t* Force
 	homemade_assert_msg(m_bNullVecsSet,"Null space vectors not set yet!");
@@ -225,11 +190,11 @@ void FETI_Operations::calculate_phi_0(const std::string& force_path, const std::
 	MatMultTranspose(m_C_R_micro,vec_phi_0_PETSc,vec_C_micro_t_phi_0_PETSc);
 	MatMultTranspose(m_C_R_BIG,vec_phi_0_PETSc,vec_C_BIG_t_phi_0_PETSc);
 
-	write_PETSC_vector(vec_C_BIG_t_phi_0_PETSc,scratch_folder_path + "/vec_C1t_phi0.petscvec",m_comm.rank(),m_comm.get());
-	write_PETSC_vector_MATLAB(vec_C_BIG_t_phi_0_PETSc,scratch_folder_path + "/vec_C1t_phi0.m",m_comm.get());
+	write_PETSC_vector(vec_C_BIG_t_phi_0_PETSc,m_scratch_folder_path + "/ext_solver_A_rhs.petscvec",m_comm.rank(),m_comm.get());
+	write_PETSC_vector_MATLAB(vec_C_BIG_t_phi_0_PETSc,m_scratch_folder_path + "/ext_solver_A_rhs.m",m_comm.get());
 
-	write_PETSC_vector(vec_C_micro_t_phi_0_PETSc,scratch_folder_path + "/vec_C2t_phi0.petscvec",m_comm.rank(),m_comm.get());
-	write_PETSC_vector_MATLAB(vec_C_micro_t_phi_0_PETSc,scratch_folder_path + "/vec_C2t_phi0.m",m_comm.get());
+	write_PETSC_vector(vec_C_micro_t_phi_0_PETSc,m_scratch_folder_path + "/ext_solver_B_rhs.petscvec",m_comm.rank(),m_comm.get());
+	write_PETSC_vector_MATLAB(vec_C_micro_t_phi_0_PETSc,m_scratch_folder_path + "/ext_solver_B_rhs.m",m_comm.get());
 
 	VecDestroy(&vec_phi_0_PETSc);
 	VecDestroy(&vec_force_PETSc);

@@ -18,10 +18,6 @@ struct feti_setup_finish_params {
 
 	// Cluster 
 	ClusterSchedulerType scheduler; ///< Cluster scheduler software type. *Values*: PBS, SLURM (code not implemented for the later yet).
-
-	// External solver commands
-	std::string ext_solver_BIG;			///< Command used for the external solver for system A.
-	std::string ext_solver_micro;		///< Command used for the external solver for system B.
 	
 	// Path to "scratch" folder
 	std::string scratch_folder_path;	///< Path to the folder which will be used to save the temporary files during the solve operation

@@ -108,14 +108,8 @@ void Solver_Files_Setup::generate_libmesh_external_solver_inputs()
 	m_ext_solver_u0_A_input_filename = m_input_params.scratch_folder_path + "/ext_solver_u0_A.txt";
 	m_ext_solver_u0_B_input_filename = m_input_params.scratch_folder_path + "/ext_solver_u0_B.txt";
 
-	m_ext_solver_x0_A_input_filename = m_input_params.scratch_folder_path + "/ext_solver_x0_A.txt";
-	m_ext_solver_x0_B_input_filename = m_input_params.scratch_folder_path + "/ext_solver_x0_B.txt";
-
-	m_ext_solver_yk_A_input_filename = m_input_params.scratch_folder_path + "/ext_solver_yk_A.txt";
-	m_ext_solver_yk_B_input_filename = m_input_params.scratch_folder_path + "/ext_solver_yk_B.txt";
-
-	m_ext_solver_xf_A_input_filename = m_input_params.scratch_folder_path + "/ext_solver_xf_A.txt";
-	m_ext_solver_xf_B_input_filename = m_input_params.scratch_folder_path + "/ext_solver_xf_B.txt";
+	m_ext_solver_A_input_filename = m_input_params.scratch_folder_path + "/ext_solver_A.txt";
+	m_ext_solver_B_input_filename = m_input_params.scratch_folder_path + "/ext_solver_B.txt";
 
 	GetPot field_parser_A, field_parser_B;
 
@@ -129,41 +123,21 @@ void Solver_Files_Setup::generate_libmesh_external_solver_inputs()
 	carl::get_input_params(field_parser_B, solver_B_input_params);
 
 	// Set K_i * u_0,i  = F_i
-	solver_A_input_params.output_base = m_input_params.scratch_folder_path + "/output_A_u0";
-	solver_B_input_params.output_base = m_input_params.scratch_folder_path + "/output_B_u0";
+	solver_A_input_params.output_base = m_input_params.scratch_folder_path + "/ext_solver_u0_A";
+	solver_B_input_params.output_base = m_input_params.scratch_folder_path + "/ext_solver_u0_B";
 
 	carl::print_input_params(m_ext_solver_u0_A_input_filename,solver_A_input_params);
 	carl::print_input_params(m_ext_solver_u0_B_input_filename,solver_B_input_params);
 
-	// Set K_i * x_0,i  = C_i^T * phi(0)
-	solver_A_input_params.output_base = m_input_params.scratch_folder_path + "/output_A_x0";
-	solver_B_input_params.output_base = m_input_params.scratch_folder_path + "/output_B_x0";
+	// Set K_i * y(k)_i = C_i^T * p(k), K_i * x_f,i  = C_i^T * phi(k+1) and K_i * x_0,i  = C_i^T * phi(0)
+	solver_A_input_params.output_base = m_input_params.scratch_folder_path + "/ext_solver_A";
+	solver_B_input_params.output_base = m_input_params.scratch_folder_path + "/ext_solver_B";
 
-	solver_A_input_params.sys_rhs_vec_file = m_input_params.scratch_folder_path + "/output_Ct_A_phi0.petscvec";
-	solver_B_input_params.sys_rhs_vec_file = m_input_params.scratch_folder_path + "/output_Ct_B_phi0.petscvec";
+	solver_A_input_params.sys_rhs_vec_file = m_input_params.scratch_folder_path + "/ext_solver_A_rhs.petscvec";
+	solver_B_input_params.sys_rhs_vec_file = m_input_params.scratch_folder_path + "/ext_solver_B_rhs.petscvec";
 
-	carl::print_input_params(m_ext_solver_x0_A_input_filename,solver_A_input_params);
-	carl::print_input_params(m_ext_solver_x0_B_input_filename,solver_B_input_params);
-
-	// Set K_i * y(k)_i = C_i^T * p(k)
-	solver_A_input_params.output_base = m_input_params.scratch_folder_path + "/output_A_yk";
-	solver_B_input_params.output_base = m_input_params.scratch_folder_path + "/output_B_yk";
-
-	solver_A_input_params.sys_rhs_vec_file = m_input_params.scratch_folder_path + "/output_Ct_A_pk.petscvec";
-	solver_B_input_params.sys_rhs_vec_file = m_input_params.scratch_folder_path + "/output_Ct_B_pk.petscvec";
-
-	carl::print_input_params(m_ext_solver_yk_A_input_filename,solver_A_input_params);
-	carl::print_input_params(m_ext_solver_yk_B_input_filename,solver_B_input_params);
-
-	// Set K_i * x_f,i  = C_i^T * phi(k+1)
-	solver_A_input_params.output_base = m_input_params.scratch_folder_path + "/output_A_xf";
-	solver_B_input_params.output_base = m_input_params.scratch_folder_path + "/output_B_xf";
-
-	solver_A_input_params.sys_rhs_vec_file = m_input_params.scratch_folder_path + "/output_Ct_A_pk.petscvec";
-	solver_B_input_params.sys_rhs_vec_file = m_input_params.scratch_folder_path + "/output_Ct_B_pk.petscvec";
-
-	carl::print_input_params(m_ext_solver_xf_A_input_filename,solver_A_input_params);
-	carl::print_input_params(m_ext_solver_xf_B_input_filename,solver_B_input_params);
+	carl::print_input_params(m_ext_solver_A_input_filename,solver_A_input_params);
+	carl::print_input_params(m_ext_solver_B_input_filename,solver_B_input_params);
 
 	m_bSetExternalSolversInputFiles = true;
 }
@@ -180,14 +154,8 @@ void Solver_Files_Setup::generate_libmesh_external_solver_scripts()
 		m_ext_solver_u0_A_script_filename = m_input_params.scratch_folder_path + "/ext_solver_u0_A.pbs";
 		m_ext_solver_u0_B_script_filename = m_input_params.scratch_folder_path + "/ext_solver_u0_B.pbs";
 
-		m_ext_solver_x0_A_script_filename = m_input_params.scratch_folder_path + "/ext_solver_x0_A.pbs";
-		m_ext_solver_x0_B_script_filename = m_input_params.scratch_folder_path + "/ext_solver_x0_B.pbs";
-
-		m_ext_solver_yk_A_script_filename = m_input_params.scratch_folder_path + "/ext_solver_yk_A.pbs";
-		m_ext_solver_yk_B_script_filename = m_input_params.scratch_folder_path + "/ext_solver_yk_B.pbs";
-
-		m_ext_solver_xf_A_script_filename = m_input_params.scratch_folder_path + "/ext_solver_xf_A.pbs";
-		m_ext_solver_xf_B_script_filename = m_input_params.scratch_folder_path + "/ext_solver_xf_B.pbs";
+		m_ext_solver_A_script_filename = m_input_params.scratch_folder_path + "/ext_solver_A.pbs";
+		m_ext_solver_B_script_filename = m_input_params.scratch_folder_path + "/ext_solver_B.pbs";
 
 		if(m_comm.rank() == 0)
 		{
@@ -218,54 +186,20 @@ void Solver_Files_Setup::generate_libmesh_external_solver_scripts()
 								pbs_output, pbs_error,common_script,
 								command_to_run);
 
-			// Set the x0_i scripts
-			pbs_output = m_input_params.scratch_folder_path + "/output_ext_x0_A.txt";
-			pbs_error  = m_input_params.scratch_folder_path + "/error_ext_x0_A.txt";
-			command_to_run = m_input_params.ext_solver_BIG + " " + m_ext_solver_x0_A_input_filename;
-
-			this->print_PBS_script(	m_ext_solver_x0_A_script_filename, "ext_x0_A",
-								pbs_output, pbs_error,common_script,
-								command_to_run);
-
-			pbs_output = m_input_params.scratch_folder_path + "/output_ext_x0_B.txt";
-			pbs_error  = m_input_params.scratch_folder_path + "/error_ext_x0_B.txt";
-			command_to_run = m_input_params.ext_solver_micro + " " + m_ext_solver_x0_B_input_filename;
-
-			this->print_PBS_script(	m_ext_solver_x0_B_script_filename, "ext_x0_B",
-								pbs_output, pbs_error,common_script,
-								command_to_run);
-
 			// Set the yk_i scripts
-			pbs_output = m_input_params.scratch_folder_path + "/output_ext_yk_A.txt";
-			pbs_error  = m_input_params.scratch_folder_path + "/error_ext_yk_A.txt";
-			command_to_run = m_input_params.ext_solver_BIG + " " + m_ext_solver_yk_A_input_filename;
+			pbs_output = m_input_params.scratch_folder_path + "/output_ext_A.txt";
+			pbs_error  = m_input_params.scratch_folder_path + "/error_ext_A.txt";
+			command_to_run = m_input_params.ext_solver_BIG + " " + m_ext_solver_A_input_filename;
 
-			this->print_PBS_script(	m_ext_solver_yk_A_script_filename, "ext_yk_A",
+			this->print_PBS_script(	m_ext_solver_A_script_filename, "ext_A",
 								pbs_output, pbs_error,common_script,
 								command_to_run);
 
-			pbs_output = m_input_params.scratch_folder_path + "/output_ext_yk_B.txt";
-			pbs_error  = m_input_params.scratch_folder_path + "/error_ext_yk_B.txt";
-			command_to_run = m_input_params.ext_solver_micro + " " + m_ext_solver_yk_B_input_filename;
+			pbs_output = m_input_params.scratch_folder_path + "/output_ext_B.txt";
+			pbs_error  = m_input_params.scratch_folder_path + "/error_ext_B.txt";
+			command_to_run = m_input_params.ext_solver_micro + " " + m_ext_solver_B_input_filename;
 
-			this->print_PBS_script(	m_ext_solver_yk_B_script_filename, "ext_yk_B",
-								pbs_output, pbs_error,common_script,
-								command_to_run);
-
-			// Set the xf_i scripts
-			pbs_output = m_input_params.scratch_folder_path + "/output_ext_xf_A.txt";
-			pbs_error  = m_input_params.scratch_folder_path + "/error_ext_xf_A.txt";
-			command_to_run = m_input_params.ext_solver_BIG + " " + m_ext_solver_xf_A_input_filename;
-
-			this->print_PBS_script(	m_ext_solver_xf_A_script_filename, "ext_xf_A",
-								pbs_output, pbs_error,common_script,
-								command_to_run);
-
-			pbs_output = m_input_params.scratch_folder_path + "/output_ext_xf_B.txt";
-			pbs_error  = m_input_params.scratch_folder_path + "/error_ext_xf_B.txt";
-			command_to_run = m_input_params.ext_solver_micro + " " + m_ext_solver_xf_B_input_filename;
-
-			this->print_PBS_script(	m_ext_solver_xf_B_script_filename, "ext_xf_B",
+			this->print_PBS_script(	m_ext_solver_B_script_filename, "ext_B",
 								pbs_output, pbs_error,common_script,
 								command_to_run);
 		}
@@ -380,17 +314,24 @@ void Solver_Files_Setup::generate_FETI_launch_scripts()
 			FETI_init_script << std::endl;
 			FETI_init_script << "job1_A = `qsub " << m_ext_solver_u0_A_script_filename << "`" << std::endl;
 			FETI_init_script << "job1_B = `qsub " << m_ext_solver_u0_B_script_filename << "`" << std::endl;
-			FETI_init_script << "job2_A = `qsub " << m_ext_solver_x0_A_script_filename << "`" << std::endl;
-			FETI_init_script << "job2_B = `qsub " << m_ext_solver_x0_B_script_filename << "`" << std::endl;
-			FETI_init_script << "job3 = `qsub -W depend=afterok:$job1_A:$job1_B:$job2_A:$job2_B "
+			// --- We will only need job2_i if the rigid body modes are needed
+			if(m_input_params.bUseRigidBodyModes)
+			{
+				FETI_init_script << "job2_A = `qsub " << m_ext_solver_A_script_filename << "`" << std::endl;
+				FETI_init_script << "job2_B = `qsub " << m_ext_solver_B_script_filename << "`" << std::endl;
+				FETI_init_script << "job3 = `qsub -W depend=afterok:$job1_A:$job1_B:$job2_A:$job2_B "
 					         << m_CArl_FETI_setup_finish_script_filename << "`" << std::endl;
+			} else {
+				FETI_init_script << "job3 = `qsub -W depend=afterok:$job1_A:$job1_B "
+					         << m_CArl_FETI_setup_finish_script_filename << "`" << std::endl;
+			}
 			FETI_init_script.close();
 
 			std::ofstream FETI_iter_script(m_FETI_iter_launch_script_filename);
 			FETI_iter_script << "#!/bin/bash" << std::endl;
 			FETI_iter_script << std::endl;
-			FETI_iter_script << "job4_A = `qsub " << m_ext_solver_yk_A_script_filename << "`" << std::endl;
-			FETI_iter_script << "job4_B = `qsub " << m_ext_solver_yk_B_script_filename << "`" << std::endl;
+			FETI_iter_script << "job4_A = `qsub " << m_ext_solver_A_script_filename << "`" << std::endl;
+			FETI_iter_script << "job4_B = `qsub " << m_ext_solver_B_script_filename << "`" << std::endl;
 			FETI_iter_script << "job5 = `qsub -W depend=afterok:$job4_A:$job4_B "
 					         << m_CArl_FETI_iterate_script_filename << "`" << std::endl;
 			FETI_iter_script.close();
@@ -398,8 +339,8 @@ void Solver_Files_Setup::generate_FETI_launch_scripts()
 			std::ofstream FETI_set_sol_script(m_FETI_sol_launch_script_filename);
 			FETI_set_sol_script << "#!/bin/bash" << std::endl;
 			FETI_set_sol_script << std::endl;
-			FETI_set_sol_script << "job6_A = `qsub " << m_ext_solver_xf_A_script_filename << "`" << std::endl;
-			FETI_set_sol_script << "job6_B = `qsub " << m_ext_solver_xf_A_script_filename << "`" << std::endl;
+			FETI_set_sol_script << "job6_A = `qsub " << m_ext_solver_A_script_filename << "`" << std::endl;
+			FETI_set_sol_script << "job6_B = `qsub " << m_ext_solver_B_script_filename << "`" << std::endl;
 			FETI_set_sol_script << "job7 = `qsub -W depend=afterok:$job4_A:$job4_B "
 					         << m_CArl_FETI_solution_script_filename << "`" << std::endl;
 			FETI_set_sol_script.close();

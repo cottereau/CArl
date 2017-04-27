@@ -28,28 +28,16 @@ protected:
 	std::string m_ext_solver_u0_A_input_filename;
 	std::string m_ext_solver_u0_B_input_filename;
 
-	std::string m_ext_solver_x0_A_input_filename;
-	std::string m_ext_solver_x0_B_input_filename;
-
-	std::string m_ext_solver_yk_A_input_filename;
-	std::string m_ext_solver_yk_B_input_filename;
-
-	std::string m_ext_solver_xf_A_input_filename;
-	std::string m_ext_solver_xf_B_input_filename;
+	std::string m_ext_solver_A_input_filename;
+	std::string m_ext_solver_B_input_filename;
 
 	bool m_bSetExternalSolversFiles;
 	std::string m_ext_solver_u0_A_script_filename;
 	std::string m_ext_solver_u0_B_script_filename;
 
-	std::string m_ext_solver_x0_A_script_filename;
-	std::string m_ext_solver_x0_B_script_filename;
-
-	std::string m_ext_solver_yk_A_script_filename;
-	std::string m_ext_solver_yk_B_script_filename;
-
-	std::string m_ext_solver_xf_A_script_filename;
-	std::string m_ext_solver_xf_B_script_filename;
-
+	std::string m_ext_solver_A_script_filename;
+	std::string m_ext_solver_B_script_filename;
+	
 	bool m_bSetCArlFETIInputs;
 	std::string m_CArl_FETI_setup_finish_input_filename;
 	std::string m_CArl_FETI_iterate_input_filename;
