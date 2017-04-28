@@ -217,7 +217,7 @@ void Solver_Files_Setup::generate_FETI_inputs()
 	homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
 	homemade_assert_msg(m_bScratchFolderExists,"Scratch folder not set yet!");
 
-	m_CArl_FETI_setup_finish_input_filename = m_input_params.scratch_folder_path + "/CArl_FETI_init_finish.txt";
+	m_CArl_FETI_setup_finish_input_filename = m_input_params.scratch_folder_path + "/CArl_FETI_setup_finish.txt";
 	m_CArl_FETI_iterate_input_filename = m_input_params.scratch_folder_path + "/CArl_FETI_iterate.txt";
 	m_CArl_FETI_solution_input_filename = m_input_params.scratch_folder_path + "/CArl_FETI_set_sol.txt";
 

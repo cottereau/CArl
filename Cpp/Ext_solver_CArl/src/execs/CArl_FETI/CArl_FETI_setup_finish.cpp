@@ -81,28 +81,28 @@ int main(int argc, char** argv) {
 	// Object containing the FETI operations
 	carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path);
 
-	// // --- Define if the rb modes will be used or not
-	// feti_op.using_rb_modes(input_params.bUseRigidBodyModes);
+	// --- Define if the rb modes will be used or not
+	feti_op.using_rb_modes(input_params.bUseRigidBodyModes);
 
-	// // --- Read the files!
+	// --- Read the files!
 
-	// // Read up the coupling matricesconst std::string& filename)
-	// feti_op.set_coupling_matrix_R_micro(input_params.coupling_path_base + "_micro.petscmat");
-	// feti_op.set_coupling_matrix_R_BIG(input_params.coupling_path_base + "_macro.petscmat");
+	// Read up the coupling matricesconst std::string& filename)
+	feti_op.set_coupling_matrix_R_micro(input_params.coupling_path_base + "_micro.petscmat");
+	feti_op.set_coupling_matrix_R_BIG(input_params.coupling_path_base + "_macro.petscmat");
 
-	// // Read the decoupled solutions, u_0,i
-	// feti_op.read_decoupled_solutions();
+	// Read the decoupled solutions, u_0,i
+	feti_op.read_decoupled_solutions();
 
-	// // Read operations needed if we are using the rigid body modes
-	// if(input_params.bUseRigidBodyModes)
-	// {
-	// 	// Read the solutions of K_i * x_0,i  = C_i^T * phi(0)
-	// 	feti_op.read_ext_solver_output();
+	// Read operations needed if we are using the rigid body modes
+	if(input_params.bUseRigidBodyModes)
+	{
+		// Read the solutions of K_i * x_0,i  = C_i^T * phi(0)
+		feti_op.read_ext_solver_output();
 
-	// 	// Read the RB-related vectors and matrices
-	// 	feti_op.read_null_space_vecs(input_params.RB_vectors_base,input_params.nb_of_rb_vectors);
-	// 	feti_op.read_null_space_inv_RITRI_mat();
-	// }
+		// Read the RB-related vectors and matrices
+		feti_op.read_null_space_vecs(input_params.RB_vectors_base,input_params.nb_of_rb_vectors);
+		feti_op.read_null_space_inv_RITRI_mat();
+	}
 
 	// // --- Set up any matrices or vectors needed before calculating the outputs
 	// // Set up the preconditioner, if needed

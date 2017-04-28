@@ -37,6 +37,12 @@ enum BaseCGPrecondType {
 	COUPLING_JACOBI = 2 // diagonal(C_RR)
 };
 
+enum IterationStatus {
+	ITERATING = 0,
+	DIVERGED = 1,
+	CONVERGED = 2
+};
+
 enum IntersectionMeshingMethod {
 	LIBMESH_TETGEN = 0, // libMesh Tetgen algorithm, problematic with
 						// Intel compilers
