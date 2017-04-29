@@ -2,11 +2,66 @@
 
 namespace carl
 {
-//  --- Coupling matrix and preconditioner methods
-void FETI_Operations::set_coupling_matrix_R_micro(const std::string& filename)
+//  --- Protected methods
+void FETI_Operations::set_inverse_precond_solver()
 {
+	homemade_assert_msg(m_bC_RR_MatrixSet,"Preconditioner matrix not set yet!");
+
+	KSPCreate(m_comm.get(), &m_coupling_precond_solver);
+	KSPSetOperators(m_coupling_precond_solver, m_C_RR, m_C_RR);
+	KSPSetFromOptions(m_coupling_precond_solver);
+
+	m_bCreatedPrecondSolver = true;
+}
+
+void FETI_Operations::set_jacobi_precond_vector()
+{
+	homemade_assert_msg(m_bC_RR_MatrixSet,"Preconditioner matrix not set yet!");
+
+	// Create and set the vector
+	VecCreate(m_comm.get(),&m_coupling_jacobi_precond_vec);
+	VecSetSizes(m_coupling_jacobi_precond_vec,m_C_RR_M_local,m_C_RR_M);
+	VecSetFromOptions(m_coupling_jacobi_precond_vec);
+
+	// Get the diagonal
+	MatGetDiagonal(m_C_RR,m_coupling_jacobi_precond_vec);
+
+	// Calculate the reciprocal
+	VecReciprocal(m_coupling_jacobi_precond_vec);
+
+	// Export it
+	write_PETSC_vector(m_coupling_jacobi_precond_vec,m_scratch_folder_path + "/precond_Jacobi_vector.petscvec",m_comm.rank(),m_comm.get());
+	write_PETSC_vector_MATLAB(m_coupling_jacobi_precond_vec,m_scratch_folder_path + "/precond_Jacobi_vector.m",m_comm.get());
+
+	// Set flag
+	m_bCreatedPrecondJacobiVec = true;
+}
+
+void FETI_Operations::read_jacobi_precond_vector()
+{
+	// Create and set the vector
+	VecCreate(m_comm.get(),&m_coupling_jacobi_precond_vec);
+	VecSetSizes(m_coupling_jacobi_precond_vec,m_C_RR_M_local,m_C_RR_M);
+
+	// Read it
+	read_PETSC_vector(m_coupling_jacobi_precond_vec,m_scratch_folder_path + "/precond_Jacobi_vector.petscvec", m_comm.get());
+
+	// Set flag
+	m_bCreatedPrecondJacobiVec = true;
+}
+
+void FETI_Operations::apply_inverse_coupling_precond(Vec vec_in, Vec vec_out)
+{
+	homemade_assert_msg(m_bCreatedPrecondSolver,"Preconditioner system not set yet!");
+	KSPSolve(m_coupling_precond_solver, vec_in, vec_out);
+}
+
+//  --- Coupling matrix and preconditioner methods
+void FETI_Operations::set_coupling_matrix_R_micro()
+{
+	homemade_assert_msg(m_bCouplingFolderSet,"Common coupling matrix path not set yet!");
 	MatCreate(m_comm.get(),&m_C_R_micro);
-	read_PETSC_matrix(m_C_R_micro,filename,m_comm.get());
+	read_PETSC_matrix(m_C_R_micro,m_coupling_path_base + "_micro.petscmat",m_comm.get());
 	MatGetLocalSize(m_C_R_micro,&m_C_R_micro_M_local,&m_C_R_micro_N_local);
 	MatGetSize(m_C_R_micro,&m_C_R_micro_M,&m_C_R_micro_N);
 	m_C_RR_M = m_C_R_micro_M; m_C_RR_M_local = m_C_R_micro_M_local;
@@ -22,10 +77,11 @@ void FETI_Operations::set_coupling_matrix_R_micro(const std::string& filename)
 	m_bCouplingMatricesSet = m_bC_R_BIG_MatrixSet && m_bC_R_micro_MatrixSet && m_bC_RR_MatrixSet;
 }
 
-void FETI_Operations::set_coupling_matrix_R_BIG(const std::string& filename)
+void FETI_Operations::set_coupling_matrix_R_BIG()
 {
+	homemade_assert_msg(m_bCouplingFolderSet,"Common coupling matrix path not set yet!");
 	MatCreate(m_comm.get(),&m_C_R_BIG);
-	read_PETSC_matrix(m_C_R_BIG,filename,m_comm.get());
+	read_PETSC_matrix(m_C_R_BIG,m_coupling_path_base + "_macro.petscmat",m_comm.get());
 	MatGetLocalSize(m_C_R_BIG,&m_C_R_BIG_M_local,&m_C_R_BIG_N_local);
 	MatGetSize(m_C_R_BIG,&m_C_R_BIG_M,&m_C_R_BIG_N);
 	m_C_RR_M = m_C_R_BIG_M; m_C_RR_M_local = m_C_R_BIG_M_local;
@@ -41,24 +97,54 @@ void FETI_Operations::set_coupling_matrix_R_BIG(const std::string& filename)
 	m_bCouplingMatricesSet = m_bC_R_BIG_MatrixSet && m_bC_R_micro_MatrixSet && m_bC_RR_MatrixSet;
 }
 
-void FETI_Operations::set_coupling_matrix_RR(const std::string& filename)
+void FETI_Operations::set_coupling_matrix_RR()
 {
+	homemade_assert_msg(m_bCouplingFolderSet,"Common coupling matrix path not set yet!");
 	MatCreate(m_comm.get(),&m_C_RR);
-	read_PETSC_matrix(m_C_RR,filename,m_comm.get());
+	read_PETSC_matrix(m_C_RR,m_coupling_path_base + "_mediator.petscmat",m_comm.get());
+	MatGetLocalSize(m_C_RR,&m_C_RR_M_local,NULL);
+	MatGetSize(m_C_RR,&m_C_RR_M,NULL);
 	m_bC_RR_MatrixSet = true;
 	m_bCouplingMatricesSet = m_bC_R_BIG_MatrixSet && m_bC_R_micro_MatrixSet && m_bC_RR_MatrixSet;
 }
 
-void FETI_Operations::read_coupling_matrices(const std::string& filename_base)
+void FETI_Operations::read_coupling_matrices()
 {
-	this->set_coupling_matrix_R_micro(filename_base + "_micro.petscmat");
-	this->set_coupling_matrix_R_BIG(filename_base + "_macro.petscmat");
-	this->set_coupling_matrix_RR(filename_base + "_mediator.petscmat");
+	homemade_assert_msg(m_bCouplingFolderSet,"Common coupling matrix path not set yet!");
+	this->set_coupling_matrix_R_micro();
+	this->set_coupling_matrix_R_BIG();
+	this->set_coupling_matrix_RR();
 }
 
-void FETI_Operations::set_preconditioner(BaseCGPrecondType CG_precond_type)
+void FETI_Operations::set_preconditioner(BaseCGPrecondType CG_precond_type, bool bInitialSet)
 {
 	m_precond_type = CG_precond_type;
+
+	switch (m_precond_type)
+	{
+		case BaseCGPrecondType::NO_PRECONDITIONER : 
+				// Well ... nothing to do ...
+				break;
+
+		case BaseCGPrecondType::COUPLING_OPERATOR :	
+				// Read the mediator - mediator coupling matrix and set the solver
+				this->set_coupling_matrix_RR();
+				this->set_inverse_precond_solver();
+				break;
+
+		case BaseCGPrecondType::COUPLING_JACOBI :
+				if(bInitialSet)
+				{
+					// Read the mediator - mediator coupling matrix and build the Jacobi coupling preconditioner vector
+					this->set_coupling_matrix_RR();
+					this->set_jacobi_precond_vector();
+				} else {
+					// Just read the Jacobi coupling preconditioner vector
+					this->read_jacobi_precond_vector();
+				}
+				break;
+	}
+
 }
 
 //  --- Null space / rigid body modes methods
@@ -352,24 +438,164 @@ void FETI_Operations::read_decoupled_solutions()
 	homemade_assert_msg(m_bC_R_micro_MatrixSet,"Micro system dimensions not set yet!");
 	homemade_assert_msg(m_bC_R_BIG_MatrixSet,"Macro system dimensions not set yet!");
 
-	
+	// Create the vectors
+	VecCreate(m_comm.get(),&m_u_0_BIG);
+	VecSetSizes(m_u_0_BIG,m_C_R_BIG_N_local,m_C_R_BIG_N);
+	read_PETSC_vector(m_u_0_BIG,m_scratch_folder_path + "/ext_solver_u0_A_sys_sol_vec.petscvec", m_comm.get());
+
+	VecCreate(m_comm.get(),&m_u_0_micro);
+	VecSetSizes(m_u_0_micro,m_C_R_micro_N_local,m_C_R_micro_N);
+	read_PETSC_vector(m_u_0_micro,m_scratch_folder_path + "/ext_solver_u0_B_sys_sol_vec.petscvec", m_comm.get());
+
+	// Set the flag
+	m_bSet_u_0 = true;
 }
 
 void FETI_Operations::read_ext_solver_output()
 {
 	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
-	// NOT IMPLEMENTED!
+	homemade_assert_msg(m_bC_R_micro_MatrixSet,"Micro system dimensions not set yet!");
+	homemade_assert_msg(m_bC_R_BIG_MatrixSet,"Macro system dimensions not set yet!");
+
+	// Create the vectors
+	VecCreate(m_comm.get(),&m_ext_solver_sol_BIG);
+	VecSetSizes(m_ext_solver_sol_BIG,m_C_R_BIG_N_local,m_C_R_BIG_N);
+	read_PETSC_vector(m_ext_solver_sol_BIG,m_scratch_folder_path + "/ext_solver_A_sys_sol_vec.petscvec", m_comm.get());
+
+	VecCreate(m_comm.get(),&m_ext_solver_sol_micro);
+	VecSetSizes(m_ext_solver_sol_micro,m_C_R_micro_N_local,m_C_R_micro_N);
+	read_PETSC_vector(m_ext_solver_sol_micro,m_scratch_folder_path + "/ext_solver_B_sys_sol_vec.petscvec", m_comm.get());
+
+	// Set the flag
+	m_bSet_ext_solver_sol = true;
 }
 
 //  --- FETI steps methods
 void FETI_Operations::calculate_initial_r()
 {
-	// NOT IMPLEMENTED!
+	/*
+	 *		If m_bUsingNullVecs == true :
+	 *			r(0) = ( C_1 * u_0,1 - C_2 * u_0,2 ) - C_1 * x_0,1 - C_2 * x_0,2
+	 *
+	 *		eles
+	 *			r(0) = ( C_1 * u_0,1 - C_2 * u_0,2 )
+	 */
+
+	// Common asserts
+	homemade_assert_msg(m_bC_R_micro_MatrixSet,"Micro coupling matrix not set yet!");
+	homemade_assert_msg(m_bC_R_BIG_MatrixSet,"Macro coupling matrix not set yet!");
+	homemade_assert_msg(m_bC_R_micro_MatrixSet,"Micro system dimensions not set yet!");
+	homemade_assert_msg(m_bC_R_BIG_MatrixSet,"Macro system dimensions not set yet!");
+	homemade_assert_msg(m_bSet_u_0,"Decoupled solution not set yet!");
+
+	// Assert for only m_bUsingNullVecs == true
+	homemade_assert_msg(m_bSet_ext_solver_sol && m_bUsingNullVecs,"Ext. solver solutions not set yet!");
+
+	// Create the vector
+	VecCreate(m_comm.get(),&m_current_residual);
+	VecSetSizes(m_current_residual,m_C_RR_M_local,m_C_RR_M);
+	VecSetFromOptions(m_current_residual);
+
+	// - C_2 * u_0,2
+	MatMult(m_C_R_micro,m_u_0_micro,m_current_residual);
+	VecScale(m_current_residual,-1);
+
+	// C_1 * u_0,1
+	// --> r(0) = ( C_1 * u_0,1 - C_2 * u_0,2 )
+	MatMultAdd(m_C_R_BIG,m_u_0_BIG,m_current_residual,m_current_residual);
+	
+	if(m_bUsingNullVecs)
+	{
+		Vec dummy_vec;
+		VecDuplicate(m_current_residual,&dummy_vec);
+
+		// C_1 * x_0,1
+		MatMult(m_C_R_BIG,m_ext_solver_sol_BIG,dummy_vec);
+
+		// C_2 * x_0,2
+		MatMultAdd(m_C_R_micro,m_u_0_micro,dummy_vec,dummy_vec);
+
+		// --> r(0) = ( C_1 * u_0,1 - C_2 * u_0,2 ) - C_1 * x_0,1 - C_2 * x_0,2
+		VecAXPY(m_current_residual,-1,dummy_vec);
+		VecDestroy(&dummy_vec);
+	}
+
+	// Set flag
+	m_bSet_current_residual = true;
 }
 
 void FETI_Operations::calculate_initial_z_and_p()
 {
-	// NOT IMPLEMENTED!
+	this->calculate_z();
+}
+
+void FETI_Operations::calculate_z()
+{
+	/*	
+	 *  Four possibilities:
+	 *	 - m_bUsingNullVecs == false
+	 *     m_precond_type == BaseCGPrecondType::NO_PRECONDITIONER
+	 *     -> m_current_z = m_current_residual
+	 *
+	 *	 - m_bUsingNullVecs == false
+	 *     m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER
+	 *     -> m_current_z = M_PC^-1 * m_current_residual
+	 *
+	 *	 - m_bUsingNullVecs == true
+	 *     m_precond_type == BaseCGPrecondType::NO_PRECONDITIONER
+	 *     -> m_current_z = M_proj * m_current_residual
+	 *
+	 *	 - m_bUsingNullVecs == true
+	 *     m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER
+	 *     -> m_current_z = M_proj * M_PC^-1 * M_proj * m_current_residual
+	 */
+
+	homemade_assert_msg((m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER) && m_bC_RR_MatrixSet,"Preconditioner matrix not set yet!");
+	homemade_assert_msg(m_bSet_current_residual,"Current residual not calculated yet!");
+
+	if(m_bUsingNullVecs)
+	{
+		// Use projections!
+		if(m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER)
+		{
+	 		// -> m_current_z = M_proj * M_PC^-1 * M_proj * m_current_residual
+
+			// Vec dummy_vec, dummy_vec_bis;
+			// VecDuplicate(m_current_residual,&dummy_vec);
+			// VecDuplicate(m_current_residual,&dummy_vec_bis);
+
+			// // dummy_vec = M_proj * m_current_residual
+			// this->apply_residual_projection(vec_in,m_aux);
+
+			// // dummy_vec_bis =  M_PC^-1 * dummy_vec
+			// this->apply_preconditioner(m_aux,m_aux_bis);
+
+			// // m_current_z = M_proj * dummy_vec_bis
+			// this->apply_residual_projection(m_aux_bis,vec_out);
+
+			// VecDestory(&dummy_vec);
+			// VecDestory(&dummy_vec_bis);
+			// // Set flag
+			// m_bSet_current_z = true;
+		}
+		else
+		{
+			// -> m_current_z = M_proj * m_current_residual
+			// this->apply_residual_projection(vec_in,vec_out);
+			// m_bSet_current_z = true;
+		}
+	}
+	else
+	{
+		// Do not use projections!
+		if(m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER)
+		{
+			// -> m_current_z = M_PC^-1 * m_current_residual
+			// (this->*apply_preconditioner)(vec_in,vec_out);
+			// m_bSet_current_z = true;
+		}
+		// else, m_current_z = m_current_residual -> DO NOTHING!
+	}
 }
 
 void FETI_Operations::calculate_rb_correction()

@@ -58,10 +58,10 @@ int main(int argc, char** argv) {
 	// --- Calculate phi(0), if needed
 	if(input_params.bUseRigidBodyModes)
 	{
-		carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path);
+		carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path,input_params.coupling_path_base);
 
-		feti_op.set_coupling_matrix_R_micro(input_params.coupling_path_base + "_micro.petscmat");
-		feti_op.set_coupling_matrix_R_BIG(input_params.coupling_path_base + "_macro.petscmat");
+		feti_op.set_coupling_matrix_R_micro();
+		feti_op.set_coupling_matrix_R_BIG();
 		feti_op.set_null_space(input_params.RB_vectors_base,input_params.nb_of_rb_vectors);
 		feti_op.calculate_null_space_phi_0(input_params.force_micro_path);
 	}

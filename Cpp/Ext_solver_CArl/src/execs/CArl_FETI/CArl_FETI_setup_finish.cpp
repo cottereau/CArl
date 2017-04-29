@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
 	get_input_params(field_parser, input_params);
 
 	// Object containing the FETI operations
-	carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path);
+	carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path,input_params.coupling_path_base);
 
 	// --- Define if the rb modes will be used or not
 	feti_op.using_rb_modes(input_params.bUseRigidBodyModes);
@@ -87,10 +87,10 @@ int main(int argc, char** argv) {
 	// --- Read the files!
 
 	// Read up the coupling matricesconst std::string& filename)
-	feti_op.set_coupling_matrix_R_micro(input_params.coupling_path_base + "_micro.petscmat");
-	feti_op.set_coupling_matrix_R_BIG(input_params.coupling_path_base + "_macro.petscmat");
+	feti_op.set_coupling_matrix_R_micro();
+	feti_op.set_coupling_matrix_R_BIG();
 
-	// Read the decoupled solutions, u_0,i
+	// Read the decoupled solutions, K_i * u_0,i  = F_i 
 	feti_op.read_decoupled_solutions();
 
 	// Read operations needed if we are using the rigid body modes
@@ -104,20 +104,16 @@ int main(int argc, char** argv) {
 		feti_op.read_null_space_inv_RITRI_mat();
 	}
 
-	// // --- Set up any matrices or vectors needed before calculating the outputs
-	// // Set up the preconditioner, if needed
-	// if(input_params.CG_precond_type != carl::BaseCGPrecondType::NO_PRECONDITIONER)
-	// {
-	// 	feti_op.set_coupling_matrix_RR(input_params.coupling_path_base + "_mediator.petscmat");
-	// 	feti_op.set_preconditioner(input_params.CG_precond_type);
-	// }
+	// --- Set up any matrices or vectors needed before calculating the outputs
+	// Set up the preconditioner
+	feti_op.set_preconditioner(input_params.CG_precond_type /*, initial_set = true */ );
 
-	// // --- Calculate the output vectors! All are saved internaly inside the object
-	// // Calculate r(0)
-	// feti_op.calculate_initial_r();
+	// --- Calculate the output vectors! All are saved internaly inside the object
+	// Calculate r(0)
+	feti_op.calculate_initial_r();
 
 	// // Calculate z(0) and p(0) - they are identical
-	// feti_op.calculate_initial_z_and_p();
+	feti_op.calculate_initial_z_and_p();
 
 	// // Calculations needed if we are using the rigid body modes
 	// if(input_params.bUseRigidBodyModes)

@@ -13,6 +13,16 @@
 
 namespace carl
 {
+
+/**	\brief Class containing the operations needed for the FETI solver.
+ *
+ *		This class is used by the several `CArl_FETI` programs to do operations of the FETI solver,
+ *  including matrix and vector I/O and iteration operations. Due to the need to read vectors and 
+ *  matrices and the usage of several PETSc operations for which the libMesh interface was not 
+ *  implemented, direct PETSc `Vec`'s and `Mat`'s are used instead of their libMesh interfaces.
+ *  libMesh's parallel communicators are still used, though.
+ *
+ */
 class	FETI_Operations
 {
 protected:
@@ -20,7 +30,9 @@ protected:
 	//  --- Miscellaneous declarations
 	libMesh::Parallel::Communicator& m_comm;	///< Communicator
 	bool        m_bScratchFolderSet;			///< Have the scratch folder been set?
+	bool        m_bCouplingFolderSet;			///< Have the Coupling matrices folder been set?
 	std::string m_scratch_folder_path;			///< Scratch folder path
+	std::string m_coupling_path_base;			///< Coupling matrices path
 	IterationStatus	m_FETI_solver_status;		///< Current FETI / CG solver status
 
 	//  --- Coupling matrix and preconditioner declarations
@@ -31,9 +43,20 @@ protected:
 	Mat m_C_RR;			///< Mediator - mediator system coupling matrix
 
 	// Matrix dimensions
+	/*
+	 *					 M	   x N
+	 * m_C_R_micro     : n_med x n_sys_micro
+	 * m_C_R_BIG       : n_med x n_sys_BIG
+	 * m_C_RR          : n_med x n_med
+	 *
+	 */
 	PetscInt	m_C_R_micro_M, m_C_R_micro_N, m_C_R_micro_M_local, m_C_R_micro_N_local;
 	PetscInt	m_C_R_BIG_M, m_C_R_BIG_N, m_C_R_BIG_M_local, m_C_R_BIG_N_local;
 	PetscInt	m_C_RR_M, m_C_RR_M_local;
+
+	// Objects used by the preconditioner
+	KSP 		m_coupling_precond_solver; 	///< Preconditioner system solver
+	Vec			m_coupling_jacobi_precond_vec;	///< Preconditioner Jacobi vector
 
 	// Boolean flags
 	bool 	    m_bC_R_micro_MatrixSet;	///< Mediator - micro coupling matrix has been set? 
@@ -44,8 +67,10 @@ protected:
 	BaseCGPrecondType	m_precond_type;	///< Preconditioner type. *Default*: `BaseCGPrecondType::NO_PRECONDITIONER`.
 
 	//  --- Null space / rigid body modes declarations
-
 	RBModesSystem m_RB_modes_system;	///< Which model is associated to the RB modes? *Default*: `RBModesSystem::MICRO`.
+
+	bool		m_bCreatedPrecondSolver;	///< Have the preconditioner system solver been set?
+	bool		m_bCreatedPrecondJacobiVec;	///< Have the preconditioner system solver been set?
 
 	// Vectors
 	/*
@@ -73,6 +98,7 @@ protected:
 	bool 	    m_binvRITRIMatSet;				///< Have the inv(RI^T * RI) matrix been set?
 
 	//  --- FETI operations declarations
+	// Vectors
 	Vec		m_u_0_micro;				///< Solution of the decoupled micro model
 	Vec		m_u_0_BIG;					///< Solution of the decoupled macro model
 
@@ -86,15 +112,37 @@ protected:
 	Vec		m_current_phi;				///< Current Lagrange multipliers
 	Vec		m_current_rb_correction;	///< Current rigid body modes correction
 
-	/// Default constructor, set as protected
+	// Boolean flags
+	bool		m_bSet_u_0;				///< Have the u_0 vectors been set?
+	bool		m_bSet_ext_solver_sol;	///< Have the external solvers solutions been set vectors been set?
+	bool		m_bSet_current_residual; ///< Have the current_r vector been set?
+	bool		m_bSet_current_z;		 ///< Have the current_z vector been set?
+
+
+
+	//  --- Protected methods
+	// Preconditioner methods
+	void set_inverse_precond_solver();	///< Set up the full inversed coupling matrix preconditioner
+
+	void set_jacobi_precond_vector();	///< Set up the Jacobi coupling matrix preconditioner vector
+
+	void read_jacobi_precond_vector();	///< Read the Jacobi coupling matrix preconditioner vector
+
+	void apply_inverse_coupling_precond(Vec vec_in, Vec vec_out);	///< Apply the full inversed coupling matrix preconditioner
+
+	void applt_jacobi_coupling_precond(Vec vec_in, Vec vec_out);	///< Apply the Jacobi coupling matrix preconditioner vector
+
+	/// Default constructor
 	FETI_Operations();
 
-
 public:
-	FETI_Operations(libMesh::Parallel::Communicator& comm, const std::string& scratch_folder_path ) :
+	/// Constructor with scratch folder path, coupling matrices base filename, and libMesh communicator
+	FETI_Operations(libMesh::Parallel::Communicator& comm, const std::string& scratch_folder_path , const std::string& coupling_path_base) :
 		m_comm { comm },
 		m_bScratchFolderSet { true },
+		m_bCouplingFolderSet { true },
 		m_scratch_folder_path { scratch_folder_path },
+		m_coupling_path_base { coupling_path_base },
 		m_FETI_solver_status { IterationStatus::ITERATING },
 		m_C_R_micro_M { -1},
 		m_C_R_micro_N { -1},
@@ -112,13 +160,18 @@ public:
 		m_bCouplingMatricesSet  { false },
 		m_precond_type { BaseCGPrecondType::NO_PRECONDITIONER },
 		m_RB_modes_system { RBModesSystem::MICRO },
+		m_bCreatedPrecondSolver { false },
+		m_bCreatedPrecondJacobiVec { false },
 		m_null_nb_vecs { -1 },
 		m_null_vecs_N { -1 },
 		m_null_vecs_N_local { -1 },
 		m_bUsingNullVecs { false },
 		m_bNullVecsSet { false },
 		m_bNullVecsDimensionsSet { false },
-		m_binvRITRIMatSet { false }
+		m_binvRITRIMatSet { false },
+		m_bSet_u_0 { false },
+		m_bSet_ext_solver_sol { false },
+		m_bSet_current_residual { false }
 	{
 	};
 
@@ -139,23 +192,47 @@ public:
 		{
 			MatDestroy(&m_inv_RITRI_mat);
 		}
+		if(m_bSet_u_0)
+		{
+			VecDestroy(&m_u_0_BIG);
+			VecDestroy(&m_u_0_micro);	
+		}
+		if(m_bSet_ext_solver_sol)
+		{
+			VecDestroy(&m_ext_solver_sol_BIG);
+			VecDestroy(&m_ext_solver_sol_micro);	
+		}
+		if(m_bSet_current_residual)
+		{
+			VecDestroy(&m_current_residual);
+		}
+		if(m_bCreatedPrecondSolver)
+		{
+			KSPDestroy(&m_coupling_precond_solver);
+		}
+		if(m_bCreatedPrecondJacobiVec)
+		{
+			VecDestroy(&m_coupling_jacobi_precond_vec);
+		}
 	};
 
 	//  --- Coupling matrix and preconditioner methods
 	/// Read the mediator - micro system coupling matrix
-	void set_coupling_matrix_R_micro(const std::string& filename);
+	void set_coupling_matrix_R_micro();
 
 	/// Read the mediator - macro system coupling matrix
-	void set_coupling_matrix_R_BIG(const std::string& filename);
+	void set_coupling_matrix_R_BIG();
 
 	/// Read the mediator - mediator system coupling matrix
-	void set_coupling_matrix_RR(const std::string& filename);
+	void set_coupling_matrix_RR();
 
 	/// Read all the coupling matrices 
-	void read_coupling_matrices(const std::string& filename_base);
+	void read_coupling_matrices();
 
-	/// Set the preconditioner type
-	void set_preconditioner(BaseCGPrecondType CG_precond_type);
+	/// Set the preconditioner type. The boolean `bInitialSet` determinates if, in the case
+	/// of a COUPLING_JACOBI preconditioner, if it will calculate the needed vector (`true`) 
+	/// or if it will read it (`false`).
+	void set_preconditioner(BaseCGPrecondType CG_precond_type, bool bInitialSet = true);
 
 	//  --- Null space / rigid body modes methods
 	/// Set up the 
@@ -187,6 +264,9 @@ public:
 	/// Calculate the initial `z_0` = `p_0` vectors
 	void calculate_initial_z_and_p();
 
+	/// Calculate the current `z` vector
+	void calculate_z();
+	
 	/// Calculate the rigid body modes corrections
 	void calculate_rb_correction();
 
