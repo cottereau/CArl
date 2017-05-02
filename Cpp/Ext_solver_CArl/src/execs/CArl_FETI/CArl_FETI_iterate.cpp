@@ -87,5 +87,96 @@ int main(int argc, char** argv) {
 	carl::feti_iterate_params input_params;
 	get_input_params(field_parser, input_params);
 
+		// Object containing the FETI operations
+	carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path,input_params.coupling_path_base);
+
+	// --- Set current iteration
+	feti_op.set_iteration_from_file();
+
+	// --- Define if the rb modes will be used or not
+	feti_op.using_rb_modes(input_params.bUseRigidBodyModes);
+
+	// --- Read the files!
+
+	// Read up the coupling matricesconst std::string& filename)
+	feti_op.set_coupling_matrix_R_micro();
+	feti_op.set_coupling_matrix_R_BIG();
+
+	// Read operations needed if we are using the rigid body modes
+	if(input_params.bUseRigidBodyModes)
+	{
+		// Read the RB-related vectors and matrices
+		feti_op.read_null_space_vecs(input_params.RB_vectors_base,input_params.nb_of_rb_vectors);
+		feti_op.read_null_space_inv_RITRI_mat();
+	}
+
+	// // --- Set up any matrices or vectors needed before calculating the outputs
+	// // Set up the preconditioner
+	// feti_op.set_preconditioner(input_params.CG_precond_type /*, initial_set = */ false);
+
+	// // --- "Finish" the current iteration, kkk + 1
+	// // Calculate q(kkk) and gamma(kkk)
+	// feti_op.calculate_q_and_gamma();
+
+	// // Calculate phi(kkk+1) and r(kkk+1)
+	// feti_op.calculate_phi_and_r();
+
+	// // Calculations needed if we are using the rigid body modes
+	// if(input_params.bUseRigidBodyModes)
+	// {
+	// 	// Calculate the rigid body modes correction RB_corr
+	// 	feti_op.calculate_rb_correction();
+	// }
+
+	// // Check the convergence
+	// IterationStatus current_iteration_status = CArl::IterationStatus::ITERATING;
+	// feti_op.check_convergence(input_params);
+
+	// // Calculate r(kkk+1), q(kkk+1) and p(kkk+1)
+	// feti_op.calculate_iter_vecs();
+
+	// // Export them
+	// feti_op.export_iter_vecs();
+
+	// // In all cases, export the scalar data, rho(kkk+1), gamma(kkk+1) and, if pertinent, |RB_corr| 
+	// // feti_op.export_scalar_data();
+
+	// switch (current_iteration_status)
+	// {
+	// 	case CArl::IterationStatus::ITERATING :
+	// 			// --- Continue the iteration
+	// 			std::cout << " > Still iterating ... " << std::endl;
+
+	// 			// Export the Ct_i * p(kkk+1) vectors
+	// 			feti_op.export_ext_solver_rhs_iteration();
+
+	// 			// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
+	// 			// if(WorldComm.rank() == 0)
+	// 			// {
+	// 			// 	std::string iter_script_command = ". " + input_params.scratch_folder_path + "/FETI_iter_script.sh";
+	// 			// 	carl::exec_command(iter_script_command);
+	// 			// }
+	// 			break;
+	// 	case CArl::IterationStatus::CONVERGED :
+	// 			// --- Well ... converged!
+	// 			std::cout << " > Converged !" << std::endl;
+
+	// 			// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
+	// 			// if(WorldComm.rank() == 0)
+	// 			// {
+	// 			// 	std::string sol_script_command = ". " + input_params.scratch_folder_path + "/FETI_sol_script.sh";
+	// 			// 	carl::exec_command(sol_script_command);
+	// 			// }
+	// 			break;
+	// 	case CArl::IterationStatus::DIVERGED :
+	// 			// --- Well, we have to stop here ...
+	// 			std::cout << " > DIVERGED !" << std::endl;
+				
+	// 			break;
+	// }
+
+	// // Print the current values of the convergence parameters
+	// feti_op.print_previous_iters_conv( /* nb. of iterations = 5 */);
+
 	return 0;
 }
