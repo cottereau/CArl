@@ -34,6 +34,8 @@ protected:
 	std::string m_scratch_folder_path;			///< Scratch folder path
 	std::string m_coupling_path_base;			///< Coupling matrices path
 	IterationStatus	m_FETI_solver_status;		///< Current FETI / CG solver status
+	int         m_kkk;							///< Current iteration index
+	bool		m_bIterationSet;				///< Have the current iteration index been set?
 
 	//  --- Coupling matrix and preconditioner declarations
 
@@ -137,6 +139,9 @@ protected:
 	// Projection methods
 	void apply_RB_projection(Vec vec_in, Vec vec_out);	///< Apply the rigid body modes projection operation
 
+	/// Calculate and export the external solver RHS's
+	void export_ext_solver_rhs(Vec vec_in);
+
 	/// Default constructor
 	FETI_Operations();
 
@@ -149,6 +154,8 @@ public:
 		m_scratch_folder_path { scratch_folder_path },
 		m_coupling_path_base { coupling_path_base },
 		m_FETI_solver_status { IterationStatus::ITERATING },
+		m_kkk { -1 },
+		m_bIterationSet { false },
 		m_C_R_micro_M { -1},
 		m_C_R_micro_N { -1},
 		m_C_R_micro_M_local { -1},
@@ -225,6 +232,9 @@ public:
 		}
 	};
 
+	/// Set the current iteration index
+	void set_iteration(int kkk);
+
 	//  --- Coupling matrix and preconditioner methods
 	/// Read the mediator - micro system coupling matrix
 	void set_coupling_matrix_R_micro();
@@ -280,11 +290,12 @@ public:
 	void calculate_rb_correction();
 
 	//  --- Write methods
+	
+	/// Calculate and export the external solver RHS's for the next iteration
+	void export_ext_solver_rhs_iteration();
+
 	/// Export the initial iteration vectors, `r_0`, `z_0` and `p_0`
 	void export_inital_vecs();
-
-	/// Calculate and export the external solver RHS's
-	void export_ext_solver_rhs();
 
 	/// Export the iteration scalar data, `rho_0` and `| RB_corr_0 |`
 	void export_scalar_data();

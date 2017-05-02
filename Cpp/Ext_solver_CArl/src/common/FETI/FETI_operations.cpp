@@ -123,6 +123,40 @@ void FETI_Operations::apply_RB_projection(Vec vec_in, Vec vec_out)
 	VecDestroy(&dummy_seq_vec_bis);
 }
 
+void FETI_Operations::export_ext_solver_rhs(Vec vec_in)
+{
+	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
+
+	Vec vec_C_micro_t_p_kkk_PETSc;
+	VecCreate(m_comm.get(),&vec_C_micro_t_p_kkk_PETSc);
+	VecSetSizes(vec_C_micro_t_p_kkk_PETSc,m_C_R_micro_N_local,m_C_R_micro_N);
+	VecSetFromOptions(vec_C_micro_t_p_kkk_PETSc);
+
+	Vec vec_C_BIG_t_p_kkk_PETSc;
+	VecCreate(m_comm.get(),&vec_C_BIG_t_p_kkk_PETSc);
+	VecSetSizes(vec_C_BIG_t_p_kkk_PETSc,m_C_R_BIG_N_local,m_C_R_BIG_N);
+	VecSetFromOptions(vec_C_BIG_t_p_kkk_PETSc);
+
+	MatMultTranspose(m_C_R_micro,vec_in,vec_C_micro_t_p_kkk_PETSc);
+	MatMultTranspose(m_C_R_BIG,vec_in,vec_C_BIG_t_p_kkk_PETSc);
+
+	write_PETSC_vector(vec_C_BIG_t_p_kkk_PETSc,m_scratch_folder_path + "/ext_solver_A_rhs.petscvec",m_comm.rank(),m_comm.get());
+	write_PETSC_vector_MATLAB(vec_C_BIG_t_p_kkk_PETSc,m_scratch_folder_path + "/ext_solver_A_rhs.m",m_comm.get());
+
+	write_PETSC_vector(vec_C_micro_t_p_kkk_PETSc,m_scratch_folder_path + "/ext_solver_B_rhs.petscvec",m_comm.rank(),m_comm.get());
+	write_PETSC_vector_MATLAB(vec_C_micro_t_p_kkk_PETSc,m_scratch_folder_path + "/ext_solver_B_rhs.m",m_comm.get());
+
+
+	VecDestroy(&vec_C_micro_t_p_kkk_PETSc);
+	VecDestroy(&vec_C_BIG_t_p_kkk_PETSc);
+}
+
+void FETI_Operations::set_iteration(int kkk)
+{
+	m_kkk = kkk;
+	m_bIterationSet = true;
+}
+
 //  --- Coupling matrix and preconditioner methods
 void FETI_Operations::set_coupling_matrix_R_micro()
 {
@@ -469,32 +503,13 @@ void FETI_Operations::calculate_null_space_phi_0(const std::string& force_path)
 	VecScale(vec_phi_0_PETSc,-1);
 
 	// Set outputs
-	Vec vec_C_micro_t_phi_0_PETSc;
-	VecCreate(m_comm.get(),&vec_C_micro_t_phi_0_PETSc);
-	VecSetSizes(vec_C_micro_t_phi_0_PETSc,m_C_R_micro_N_local,m_C_R_micro_N);
-	VecSetFromOptions(vec_C_micro_t_phi_0_PETSc);
-
-	Vec vec_C_BIG_t_phi_0_PETSc;
-	VecCreate(m_comm.get(),&vec_C_BIG_t_phi_0_PETSc);
-	VecSetSizes(vec_C_BIG_t_phi_0_PETSc,m_C_R_BIG_N_local,m_C_R_BIG_N);
-	VecSetFromOptions(vec_C_BIG_t_phi_0_PETSc);
-
-	MatMultTranspose(m_C_R_micro,vec_phi_0_PETSc,vec_C_micro_t_phi_0_PETSc);
-	MatMultTranspose(m_C_R_BIG,vec_phi_0_PETSc,vec_C_BIG_t_phi_0_PETSc);
-
-	write_PETSC_vector(vec_C_BIG_t_phi_0_PETSc,m_scratch_folder_path + "/ext_solver_A_rhs.petscvec",m_comm.rank(),m_comm.get());
-	write_PETSC_vector_MATLAB(vec_C_BIG_t_phi_0_PETSc,m_scratch_folder_path + "/ext_solver_A_rhs.m",m_comm.get());
-
-	write_PETSC_vector(vec_C_micro_t_phi_0_PETSc,m_scratch_folder_path + "/ext_solver_B_rhs.petscvec",m_comm.rank(),m_comm.get());
-	write_PETSC_vector_MATLAB(vec_C_micro_t_phi_0_PETSc,m_scratch_folder_path + "/ext_solver_B_rhs.m",m_comm.get());
+	this->export_ext_solver_rhs(vec_phi_0_PETSc);
 
 	// Cleanup
 	VecDestroy(&vec_phi_0_PETSc);
 	VecDestroy(&vec_force_PETSc);
 	VecDestroy(&aux_null_vec_input);
 	VecDestroy(&aux_null_vec_output);
-	VecDestroy(&vec_C_micro_t_phi_0_PETSc);
-	VecDestroy(&vec_C_BIG_t_phi_0_PETSc);
 }
 
 //  --- FETI read methods
@@ -711,20 +726,76 @@ void FETI_Operations::calculate_rb_correction()
 //  --- Write methods
 void FETI_Operations::export_inital_vecs()
 {
+	// Export r(0) and z(0) ( p(0) is identical to z(0))
 	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
-	// NOT IMPLEMENTED!
+	homemade_assert_msg(m_bSet_current_residual,"Current residual not calculated yet!");
+
+	// In all cases, print r(0)
+	write_PETSC_vector(m_current_residual,m_scratch_folder_path + "/FETI_iter__r__0.petscvec",m_comm.rank(),m_comm.get());
+	write_PETSC_vector_MATLAB(m_current_residual,m_scratch_folder_path + "/FETI_iter__r__0.m",m_comm.get());
+
+	// z(0) is only identical to r(0) if neither a preconditioner or the RB modes are used
+	if(m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER || m_bUsingNullVecs)
+	{
+		write_PETSC_vector(m_current_z,m_scratch_folder_path + "/FETI_iter__z__0.petscvec",m_comm.rank(),m_comm.get());
+		write_PETSC_vector_MATLAB(m_current_z,m_scratch_folder_path + "/FETI_iter__z__0.m",m_comm.get());
+	}
 }
 
-void FETI_Operations::export_ext_solver_rhs()
+void FETI_Operations::export_ext_solver_rhs_iteration()
 {
-	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
-	// NOT IMPLEMENTED!
+	if(m_kkk == 0)
+	{
+		this->export_ext_solver_rhs(m_current_z);
+	} else {
+		this->export_ext_solver_rhs(m_current_p);
+	}
 }
 
 void FETI_Operations::export_scalar_data()
 {
 	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
-	// NOT IMPLEMENTED!
+
+	// Calculate the values
+	homemade_assert_msg(m_bSet_current_residual,"Current residual not calculated yet!");
+	PetscScalar residual = 0;
+	PetscScalar RB_correct = 0;
+
+	if(m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER || m_bUsingNullVecs)
+	{
+		VecDot(m_current_residual,m_current_z,&residual);
+	} else {
+		VecDot(m_current_residual,m_current_residual,&residual);
+	}
+
+	if(m_bUsingNullVecs)
+	{
+		VecDot(m_RB_mode_correction,m_RB_mode_correction,&RB_correct);
+	}
+
+	// ONLY write in proc 0!
+	if(m_comm.rank() == 0)
+	{
+		std::ofstream scalar_data;
+
+		if(m_kkk == 0)
+		{
+			scalar_data.open(m_scratch_folder_path + "/FETI_iter_scalar_data.dat");
+		} else {
+			scalar_data.open(m_scratch_folder_path + "/FETI_iter_scalar_data.dat",std::ofstream::app);
+		}
+
+		scalar_data << m_kkk << " " << residual;
+
+		if(m_bUsingNullVecs)
+		{
+			scalar_data <<  " " << RB_correct;
+		}
+
+		scalar_data << std::endl;
+
+		scalar_data.close();
+	}
 }
 
 }

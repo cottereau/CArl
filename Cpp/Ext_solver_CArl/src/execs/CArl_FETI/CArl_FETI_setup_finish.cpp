@@ -81,6 +81,9 @@ int main(int argc, char** argv) {
 	// Object containing the FETI operations
 	carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path,input_params.coupling_path_base);
 
+	// --- Set inital iteration
+	feti_op.set_iteration(0);
+
 	// --- Define if the rb modes will be used or not
 	feti_op.using_rb_modes(input_params.bUseRigidBodyModes);
 
@@ -122,15 +125,15 @@ int main(int argc, char** argv) {
 		feti_op.calculate_rb_correction();
 	}
 
-	// // --- Export output vectors!
-	// // Export r(0), z(0) and p(0)
-	// feti_op.export_inital_vecs();
+	// --- Export output vectors!
+	// Export r(0) and z(0) ( p(0) is identical to z(0))
+	feti_op.export_inital_vecs();
 
-	// // Export the Ct_i * p(0) vectors
-	// feti_op.export_ext_solver_rhs();
+	// Export the Ct_i * p(0) vectors
+	feti_op.export_ext_solver_rhs_iteration();
 
-	// // Export the scalar data, rho(0) and, if pertinent, |RB_corr|
-	// feti_op.export_scalar_data();
+	// Export the scalar data, rho(0) and, if pertinent, |RB_corr|
+	feti_op.export_scalar_data();
 
 	// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
 	// if(WorldComm.rank() == 0)
