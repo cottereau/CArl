@@ -181,6 +181,7 @@ public:
 		m_bNullVecsSet { false },
 		m_bNullVecsDimensionsSet { false },
 		m_binvRITRIMatSet { false },
+		m_bRBModeSet { false },
 		m_bSet_u_0 { false },
 		m_bSet_ext_solver_sol { false },
 		m_bSet_current_residual { false }

@@ -505,6 +505,10 @@ void FETI_Operations::calculate_null_space_phi_0(const std::string& force_path)
 	// Set outputs
 	this->export_ext_solver_rhs(vec_phi_0_PETSc);
 
+	// Write initial solution
+	write_PETSC_vector(vec_phi_0_PETSc,m_scratch_folder_path + "/FETI_iter__phi__0.petscvec",m_comm.rank(),m_comm.get());
+	write_PETSC_vector_MATLAB(vec_phi_0_PETSc,m_scratch_folder_path + "/FETI_iter__phi__0.m",m_comm.get());
+
 	// Cleanup
 	VecDestroy(&vec_phi_0_PETSc);
 	VecDestroy(&vec_force_PETSc);
@@ -721,6 +725,9 @@ void FETI_Operations::calculate_rb_correction()
 	// Cleanup
 	VecDestroy(&dummy_seq_vec);
 	VecDestroy(&dummy_seq_vec_bis);
+
+	// Set flag
+	m_bRBModeSet = true;
 }
 
 //  --- Write methods
@@ -737,8 +744,8 @@ void FETI_Operations::export_inital_vecs()
 	// z(0) is only identical to r(0) if neither a preconditioner or the RB modes are used
 	if(m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER || m_bUsingNullVecs)
 	{
-		write_PETSC_vector(m_current_z,m_scratch_folder_path + "/FETI_iter__z__0.petscvec",m_comm.rank(),m_comm.get());
-		write_PETSC_vector_MATLAB(m_current_z,m_scratch_folder_path + "/FETI_iter__z__0.m",m_comm.get());
+		write_PETSC_vector(m_current_z,m_scratch_folder_path + "/FETI_iter__p__0.petscvec",m_comm.rank(),m_comm.get());
+		write_PETSC_vector_MATLAB(m_current_z,m_scratch_folder_path + "/FETI_iter__p__0.m",m_comm.get());
 	}
 }
 

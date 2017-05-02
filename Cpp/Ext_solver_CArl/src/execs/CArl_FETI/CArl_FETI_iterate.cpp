@@ -1,5 +1,57 @@
 #include "CArl_FETI_iterate.h"
 
+/**	\brief Program responsible to finish the FETI setup and launch the iterations
+ *
+ *	This program's input file description can be found at the documentation of the function 
+ *  CArl::get_input_params(GetPot& field_parser, feti_iterate_params& input_params).
+ *  
+ *  It will use the following files ... 
+ *  * ... from the `input_params.coupling_path_base` folder:
+ *    + coupling matrices C_1 and C_2. *Files*:
+ *      - `coupling_matrix_macro.petscmat`
+ *      - `coupling_matrix_micro.petscmat`
+ *
+ *  * ... from the `input_params.scratch_folder_path` folder:
+ *    + scalar values (iteration, residual, RB mode corrections). *Files*:
+ *      - `FETI_iter_scalar_data.dat`
+ *    + solutions x_kkk,1 and x_kkk,2, from the system K_i * x_kkk,i = C_i^T*p_kkk. *Files*:
+ *      - `ext_solver_A_sys_sol_vec.petscvec`
+ *      - `ext_solver_B_sys_sol_vec.petscvec`
+ *    + previous iteration vectors r(kkk) anf phi(kkk)
+ *      - `FETI_iter__phi__[kkk].petscvec`
+ *	    - `FETI_iter__r__[kkk].petscvec`
+ *    + (several) previous iterations vectors p(jjj), q(jjj) (used for re-orthogonalization). *Files*:
+ *      - `FETI_iter__q__[jjj].petscvec`, jjj = 0 ... kkk - 1
+ *      - `FETI_iter__p__[jjj].petscvec`, jjj = 0 ... kkk
+ *    + previous p(jjj).q(jjj) values (with jjj = 0 ... kkk - 1). *Files*:
+ *      - `FETI_iter_p_dot_q.dat`
+ *    + matrix inv (R_I^t * R_I) = inv(R_2^t*C_2^t*C_2*R_2), used for the rigid body modes projections. *Files*:
+ *      - [RB] `rb_inv_RITRI.petscmat`.
+ *    + rigid body mode vectors multiplied by C_2. *Files*:
+ *      - [RB] `rb_coupl_vector_[iii]_n_[nb. of vectors].petscvec`
+ *  * ... from the micro system folder (common vector path given by `input_params.RB_vectors_base`):
+ *    + rigid body mode vectors. *Files*:
+ *      - [RB] `[input_params.RB_vectors_base]_rb_vector_[iii]_n_[nb. of vectors].petscvec`
+ *
+ * The items marked with a [RB] are only needed if the rigid body modes projectors are used.
+ * In the last two cases, [nb. of vectors] is the number of rigid body mode vectors (given by `input_params.nb_of_rb_vectors`)
+ * and [iii] is an integer going from 0 to `input_params.nb_of_rb_vectors - 1` (following C++ notation).
+ *
+ * This program outputs a series of files, all inside the `input_params.scratch_folder_path` folder:
+ *   + (append) scalar values (iteration, residual, RB mode corrections). *Files*:
+ *     - `FETI_iter_scalar_data.dat`
+ *   + (overwrite) vectors used as the RHS for the external solvers. *Files*:
+ *     - `ext_solver_A_rhs.petscvec`
+ *     - `ext_solver_B_rhs.petscvec`
+ *   + next iteration vectors, phi(kkk+1), r(kkk+1), q(kkk+1), p(kkk+1). *Files*:
+ *     - `FETI_iter__phi__[kkk+1].petscvec`
+ *     - `FETI_iter__r__[kkk+1].petscvec`
+ *     - `FETI_iter__q__[kkk+1].petscvec`
+ *     - `FETI_iter__p__[kkk+1].petscvec`
+ *   + (append) p(kkk).q(kkk) value. *Files*:
+ *     - `FETI_iter_p_dot_q.dat`
+ */
+
 int main(int argc, char** argv) {
 
 	// --- Initialize libMesh

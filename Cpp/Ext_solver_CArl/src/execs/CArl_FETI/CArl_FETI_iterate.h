@@ -10,5 +10,6 @@
 
 #include "carl_headers.h"
 #include "carl_feti_iterate_input_parser.h"
+#include "FETI_operations.h"
 
 #endif /* EXECS_CARL_FETI_ITERATE_H_ */

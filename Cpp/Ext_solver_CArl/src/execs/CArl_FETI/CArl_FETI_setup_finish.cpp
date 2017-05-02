@@ -34,14 +34,13 @@
  *
  * This program outputs a series of files, all inside the `input_params.scratch_folder_path` folder:
  *   + initial iteration vectors, r(0), z(0), p(0). *Files*:
- *     - `iter_r__0.petscvec`
- *     - `iter_z__0.petscvec`
- *     - `iter_p__0.petscvec`
- *   + vectors used as the RHS for the external solvers. *Files*:
+ *     - `FETI_iter__r__0.petscvec`
+ *     - `FETI_iter__p__0.petscvec`
+ *   + (overwrite) vectors used as the RHS for the external solvers. *Files*:
  *     - `ext_solver_A_rhs.petscvec`
  *     - `ext_solver_B_rhs.petscvec`
- *   + file which will keep the convergence parameters, including number of iterations, residual and rigid body modes correction norm:
- *     - `convergence_data.txt`.
+ *   + (create) scalar values (iteration, residual, RB mode corrections). *Files*:
+ *     - `FETI_iter_scalar_data.dat`
  */
 int main(int argc, char** argv) {
 
@@ -126,7 +125,7 @@ int main(int argc, char** argv) {
 	}
 
 	// --- Export output vectors!
-	// Export r(0) and z(0) ( p(0) is identical to z(0))
+	// Export r(0) and p(0)
 	feti_op.export_inital_vecs();
 
 	// Export the Ct_i * p(0) vectors
