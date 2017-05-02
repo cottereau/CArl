@@ -56,6 +56,73 @@ void FETI_Operations::apply_inverse_coupling_precond(Vec vec_in, Vec vec_out)
 	KSPSolve(m_coupling_precond_solver, vec_in, vec_out);
 }
 
+void FETI_Operations::apply_jacobi_coupling_precond(Vec vec_in, Vec vec_out)
+{	
+	homemade_assert_msg(m_bCreatedPrecondJacobiVec,"Preconditioner vector not set yet!");
+	VecPointwiseMult(vec_out, m_coupling_jacobi_precond_vec, vec_in);
+}
+
+void FETI_Operations::apply_precond(Vec vec_in, Vec vec_out)
+{	
+	switch (m_precond_type)
+	{
+		case BaseCGPrecondType::NO_PRECONDITIONER : 
+				// Shouldn't call this function in this case
+				homemade_error_msg("No preconditioner to be applied!");
+				break;
+
+		case BaseCGPrecondType::COUPLING_OPERATOR :	
+				this->apply_inverse_coupling_precond(vec_in, vec_out);
+				break;
+
+		case BaseCGPrecondType::COUPLING_JACOBI :
+				this->apply_jacobi_coupling_precond(vec_in, vec_out);
+				break;
+		default :
+				// Undefined preconditioner
+				homemade_error_msg("Undefined preconditioner");
+	}
+}
+
+void FETI_Operations::apply_RB_projection(Vec vec_in, Vec vec_out)
+{
+	homemade_assert_msg(m_bNullVecsSet,"Null space vectors not set yet!");
+	homemade_assert_msg(m_binvRITRIMatSet,"Null space matrices not set yet!");
+
+	// vec_out = [ I - RC * (inv_RITRI_mat) * RC^t ] * vec_in
+
+	// Declaration of Vecs with size 'm_null_nb_vecs'
+	Vec dummy_seq_vec;
+	Vec dummy_seq_vec_bis;
+	VecCreateSeq(PETSC_COMM_SELF,m_null_nb_vecs,&dummy_seq_vec);
+	VecZeroEntries(dummy_seq_vec);
+	VecDuplicate(dummy_seq_vec,&dummy_seq_vec_bis);
+
+	// dummy_seq_vec = RC^t * vec_in
+	// -> All the communications are done here!
+	PetscScalar *dummy_seq_array;
+	VecGetArray(dummy_seq_vec,&dummy_seq_array);
+	VecMDot(vec_in,m_null_nb_vecs,m_null_coupled_vecs,dummy_seq_array);
+	VecRestoreArray(dummy_seq_vec,&dummy_seq_array);
+
+	// dummy_seq_vec_bis = - inv_RITRI_mat * dummy_seq_vec
+	// -> Completely local operation!
+	MatMult(m_inv_RITRI_mat,dummy_seq_vec,dummy_seq_vec_bis);
+	VecScale(dummy_seq_vec_bis,-1);
+
+	// vec_out = vec_in + sum ( dummy_seq_vec_bis[i] * vec_RC[i])
+	// -> This should have no communications at all!
+	VecCopy(vec_in,vec_out);
+	
+	VecGetArray(dummy_seq_vec_bis,&dummy_seq_array);
+	VecMAXPY(vec_out,m_null_nb_vecs,dummy_seq_array,m_null_coupled_vecs);
+	VecRestoreArray(dummy_seq_vec_bis,&dummy_seq_array);
+
+	// Cleanup
+	VecDestroy(&dummy_seq_vec);
+	VecDestroy(&dummy_seq_vec_bis);
+}
+
 //  --- Coupling matrix and preconditioner methods
 void FETI_Operations::set_coupling_matrix_R_micro()
 {
@@ -144,7 +211,6 @@ void FETI_Operations::set_preconditioner(BaseCGPrecondType CG_precond_type, bool
 				}
 				break;
 	}
-
 }
 
 //  --- Null space / rigid body modes methods
@@ -559,30 +625,33 @@ void FETI_Operations::calculate_z()
 		if(m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER)
 		{
 	 		// -> m_current_z = M_proj * M_PC^-1 * M_proj * m_current_residual
+			VecDuplicate(m_current_residual,&m_current_z);
 
-			// Vec dummy_vec, dummy_vec_bis;
-			// VecDuplicate(m_current_residual,&dummy_vec);
-			// VecDuplicate(m_current_residual,&dummy_vec_bis);
+			Vec dummy_vec, dummy_vec_bis;
+			VecDuplicate(m_current_residual,&dummy_vec);
+			VecDuplicate(m_current_residual,&dummy_vec_bis);
 
-			// // dummy_vec = M_proj * m_current_residual
-			// this->apply_residual_projection(vec_in,m_aux);
+			// dummy_vec = M_proj * m_current_residual
+			this->apply_RB_projection(m_current_residual,dummy_vec);
 
-			// // dummy_vec_bis =  M_PC^-1 * dummy_vec
-			// this->apply_preconditioner(m_aux,m_aux_bis);
+			// dummy_vec_bis =  M_PC^-1 * dummy_vec
+			this->apply_precond(dummy_vec,dummy_vec_bis);
 
-			// // m_current_z = M_proj * dummy_vec_bis
-			// this->apply_residual_projection(m_aux_bis,vec_out);
+			// m_current_z = M_proj * dummy_vec_bis
+			this->apply_RB_projection(dummy_vec_bis,m_current_z);
 
-			// VecDestory(&dummy_vec);
-			// VecDestory(&dummy_vec_bis);
-			// // Set flag
-			// m_bSet_current_z = true;
+			VecDestroy(&dummy_vec);
+			VecDestroy(&dummy_vec_bis);
+			// Set flag
+			m_bSet_current_z = true;
 		}
 		else
 		{
 			// -> m_current_z = M_proj * m_current_residual
-			// this->apply_residual_projection(vec_in,vec_out);
-			// m_bSet_current_z = true;
+			VecDuplicate(m_current_residual,&m_current_z);
+
+			this->apply_RB_projection(m_current_residual,m_current_z);
+			m_bSet_current_z = true;
 		}
 	}
 	else
@@ -591,8 +660,10 @@ void FETI_Operations::calculate_z()
 		if(m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER)
 		{
 			// -> m_current_z = M_PC^-1 * m_current_residual
-			// (this->*apply_preconditioner)(vec_in,vec_out);
-			// m_bSet_current_z = true;
+			VecDuplicate(m_current_residual,&m_current_z);
+
+			this->apply_precond(m_current_residual,m_current_z);
+			m_bSet_current_z = true;
 		}
 		// else, m_current_z = m_current_residual -> DO NOTHING!
 	}

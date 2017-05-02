@@ -118,8 +118,6 @@ protected:
 	bool		m_bSet_current_residual; ///< Have the current_r vector been set?
 	bool		m_bSet_current_z;		 ///< Have the current_z vector been set?
 
-
-
 	//  --- Protected methods
 	// Preconditioner methods
 	void set_inverse_precond_solver();	///< Set up the full inversed coupling matrix preconditioner
@@ -130,7 +128,13 @@ protected:
 
 	void apply_inverse_coupling_precond(Vec vec_in, Vec vec_out);	///< Apply the full inversed coupling matrix preconditioner
 
-	void applt_jacobi_coupling_precond(Vec vec_in, Vec vec_out);	///< Apply the Jacobi coupling matrix preconditioner vector
+	void apply_jacobi_coupling_precond(Vec vec_in, Vec vec_out);	///< Apply the Jacobi coupling matrix preconditioner vector
+
+	void apply_precond(Vec vec_in, Vec vec_out);	///< Common interface to the preconditionners 
+
+	// Projection methods
+	void apply_RB_projection(Vec vec_in, Vec vec_out);	///< Apply the rigid body modes projection operation
+
 
 	/// Default constructor
 	FETI_Operations();
