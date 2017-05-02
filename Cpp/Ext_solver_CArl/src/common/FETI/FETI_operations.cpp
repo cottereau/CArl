@@ -671,7 +671,41 @@ void FETI_Operations::calculate_z()
 
 void FETI_Operations::calculate_rb_correction()
 {
-	// NOT IMPLEMENTED!
+	homemade_assert_msg(m_bNullVecsSet,"Null space vectors not set yet!");
+	homemade_assert_msg(m_bSet_current_residual,"Current residual not calculated yet!");
+
+	// Declare and create vectors
+	Vec dummy_seq_vec;
+	Vec dummy_seq_vec_bis;
+	VecCreateSeq(PETSC_COMM_SELF,m_null_nb_vecs,&dummy_seq_vec);
+	VecZeroEntries(dummy_seq_vec);
+	VecDuplicate(dummy_seq_vec,&dummy_seq_vec_bis);
+
+	VecDuplicate(m_null_vecs[0],&m_RB_mode_correction);
+	VecZeroEntries(m_RB_mode_correction);
+
+	// m_RB_mode_correction = R * (inv_RITRI_mat) * RC^t * m_current_residual
+
+	// dummy_seq_vec = RC^t * m_current_residual
+	// -> All the communications are done here!
+	PetscScalar *dummy_seq_array;
+	VecGetArray(dummy_seq_vec,&dummy_seq_array);
+	VecMDot(m_current_residual,m_null_nb_vecs,m_null_coupled_vecs,dummy_seq_array);
+	VecRestoreArray(dummy_seq_vec,&dummy_seq_array);
+
+	// dummy_seq_vec_bis = inv_RITRI_mat * dummy_seq_vec
+	// -> Completely local operation!
+	MatMult(m_inv_RITRI_mat,dummy_seq_vec,dummy_seq_vec_bis);
+
+	// m_RB_mode_correction = sum ( dummy_seq_vec_bis[i] * m_null_vecs[i])
+	// -> This should have no communications at all!
+	VecGetArray(dummy_seq_vec_bis,&dummy_seq_array);
+	VecMAXPY(m_RB_mode_correction,m_null_nb_vecs,dummy_seq_array,m_null_vecs);
+	VecRestoreArray(dummy_seq_vec_bis,&dummy_seq_array);
+
+	// Cleanup
+	VecDestroy(&dummy_seq_vec);
+	VecDestroy(&dummy_seq_vec_bis);
 }
 
 //  --- Write methods

@@ -83,6 +83,7 @@ protected:
 	enum 		{ maxVecLimit = 6 };	///< Hack to allow setting the Vec arrays size
 	Vec        	m_null_vecs[maxVecLimit];			///< Null space vectors
 	Vec		    m_null_coupled_vecs[maxVecLimit]; 	///< Null space vectors times the coupling matrix
+	Vec			m_RB_mode_correction;
 
 	// Null vector dimensions
 	PetscInt	m_null_vecs_N, m_null_vecs_N_local;
@@ -96,6 +97,7 @@ protected:
 	bool 	    m_bNullVecsSet;					///< Have the null space vectors been set?
 	bool 	    m_bNullVecsDimensionsSet;		///< Have the null space vectors' dimensions been set?
 	bool 	    m_binvRITRIMatSet;				///< Have the inv(RI^T * RI) matrix been set?
+	bool		m_bRBModeSet;					///< Have the RB modes correction vector been set?
 
 	//  --- FETI operations declarations
 	// Vectors
@@ -134,7 +136,6 @@ protected:
 
 	// Projection methods
 	void apply_RB_projection(Vec vec_in, Vec vec_out);	///< Apply the rigid body modes projection operation
-
 
 	/// Default constructor
 	FETI_Operations();
@@ -217,6 +218,10 @@ public:
 		if(m_bCreatedPrecondJacobiVec)
 		{
 			VecDestroy(&m_coupling_jacobi_precond_vec);
+		}
+		if(m_bRBModeSet)
+		{
+			VecDestroy(&m_RB_mode_correction);
 		}
 	};
 

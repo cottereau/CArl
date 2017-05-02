@@ -112,15 +112,15 @@ int main(int argc, char** argv) {
 	// Calculate r(0)
 	feti_op.calculate_initial_r();
 
-	// // Calculate z(0) and p(0) - they are identical
+	// Calculate z(0) and p(0) - they are identical
 	feti_op.calculate_initial_z_and_p();
 
-	// // Calculations needed if we are using the rigid body modes
-	// if(input_params.bUseRigidBodyModes)
-	// {
-	// 	// Calculate the rigid body modes correction RB_corr
-	// 	feti_op.calculate_rb_correction();
-	// }
+	// Calculations needed if we are using the rigid body modes
+	if(input_params.bUseRigidBodyModes)
+	{
+		// Calculate the rigid body modes correction RB_corr
+		feti_op.calculate_rb_correction();
+	}
 
 	// // --- Export output vectors!
 	// // Export r(0), z(0) and p(0)
