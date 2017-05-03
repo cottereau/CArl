@@ -151,10 +151,53 @@ void FETI_Operations::export_ext_solver_rhs(Vec vec_in)
 	VecDestroy(&vec_C_BIG_t_p_kkk_PETSc);
 }
 
-void FETI_Operations::set_iteration(int kkk)
+void FETI_Operations::clear_PETSc()
 {
-	m_kkk = kkk;
-	m_bIterationSet = true;
+	if(m_bC_R_BIG_MatrixSet)
+		MatDestroy(&m_C_R_BIG);
+	if(m_bC_R_micro_MatrixSet)
+		MatDestroy(&m_C_R_micro);
+	if(m_bC_RR_MatrixSet)
+		MatDestroy(&m_C_RR);
+	if(m_bNullVecsSet)
+	{
+		for(int iii = 0; iii < m_null_nb_vecs; ++iii)
+			VecDestroy(&m_null_vecs[iii]);
+	}
+	if(m_binvRITRIMatSet)
+	{
+		MatDestroy(&m_inv_RITRI_mat);
+	}
+	if(m_bSet_u_0)
+	{
+		VecDestroy(&m_u_0_BIG);
+		VecDestroy(&m_u_0_micro);	
+	}
+	if(m_bSet_ext_solver_sol)
+	{
+		VecDestroy(&m_ext_solver_sol_BIG);
+		VecDestroy(&m_ext_solver_sol_micro);	
+	}
+	if(m_bSet_current_phi)
+	{
+		VecDestroy(&m_current_phi);
+	}
+	if(m_bSet_current_residual)
+	{
+		VecDestroy(&m_current_residual);
+	}
+	if(m_bCreatedPrecondSolver)
+	{
+		KSPDestroy(&m_coupling_precond_solver);
+	}
+	if(m_bCreatedPrecondJacobiVec)
+	{
+		VecDestroy(&m_coupling_jacobi_precond_vec);
+	}
+	if(m_bSet_current_RB_correction)
+	{
+		VecDestroy(&m_current_rb_correction);
+	}
 }
 
 //  --- Coupling matrix and preconditioner methods
@@ -454,15 +497,14 @@ void FETI_Operations::calculate_null_space_phi_0(const std::string& force_path)
 	homemade_assert_msg(m_bC_R_micro_MatrixSet,"Micro coupling matrix not set yet!");
 	homemade_assert_msg(m_bC_R_BIG_MatrixSet,"Macro coupling matrix not set yet!");
 
-	// --- Declare the vectors
-	// phi0 vector
-	Vec vec_phi_0_PETSc;
-	Vec vec_force_PETSc;
-	VecCreate(m_comm.get(),&vec_phi_0_PETSc);
-	VecSetSizes(vec_phi_0_PETSc,m_C_RR_M_local,m_C_RR_M);
-	VecSetFromOptions(vec_phi_0_PETSc);
+	// --- Declare / create the vectors
+	// phi(0)
+	VecCreate(m_comm.get(),&m_current_phi);
+	VecSetSizes(m_current_phi,m_C_RR_M_local,m_C_RR_M);
+	VecSetFromOptions(m_current_phi);
 
 	// Force vector
+	Vec vec_force_PETSc;
 	VecCreate(m_comm.get(),&vec_force_PETSc);
 	read_PETSC_vector(vec_force_PETSc,force_path,m_comm.get());
 
@@ -493,27 +535,22 @@ void FETI_Operations::calculate_null_space_phi_0(const std::string& force_path)
 
 	// vec_out = sum ( aux_null_vec_output[i] * vec_RC[i])
 	// -> This should have no communications at all!
-	VecZeroEntries(vec_phi_0_PETSc);
+	VecZeroEntries(m_current_phi);
 
 	PetscScalar *dummy_array_output;
 	VecGetArray(aux_null_vec_output,&dummy_array_output);
-	VecMAXPY(vec_phi_0_PETSc,m_null_nb_vecs,dummy_array_output,m_null_coupled_vecs);
+	VecMAXPY(m_current_phi,m_null_nb_vecs,dummy_array_output,m_null_coupled_vecs);
 	VecRestoreArray(aux_null_vec_output,&dummy_array_output);
 
-	VecScale(vec_phi_0_PETSc,-1);
-
-	// Set outputs
-	this->export_ext_solver_rhs(vec_phi_0_PETSc);
-
-	// Write initial solution
-	write_PETSC_vector(vec_phi_0_PETSc,m_scratch_folder_path + "/FETI_iter__phi__0.petscvec",m_comm.rank(),m_comm.get());
-	write_PETSC_vector_MATLAB(vec_phi_0_PETSc,m_scratch_folder_path + "/FETI_iter__phi__0.m",m_comm.get());
+	VecScale(m_current_phi,-1);
 
 	// Cleanup
-	VecDestroy(&vec_phi_0_PETSc);
 	VecDestroy(&vec_force_PETSc);
 	VecDestroy(&aux_null_vec_input);
 	VecDestroy(&aux_null_vec_output);
+
+	// Set flags
+	m_bSet_current_phi = true;
 }
 
 //  --- FETI read methods
@@ -555,7 +592,62 @@ void FETI_Operations::read_ext_solver_output()
 	m_bSet_ext_solver_sol = true;
 }
 
+void FETI_Operations::read_previous_phi()
+{
+	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
+
+	// Create the vectors
+	VecCreate(m_comm.get(),&m_previous_phi);
+	VecSetSizes(m_previous_phi,m_C_R_BIG_N_local,m_C_R_BIG_N);
+	read_PETSC_vector(m_previous_phi,m_scratch_folder_path + "/FETI_iter__phi__" + std::to_string(m_kkk) + ".petscvec", m_comm.get());
+
+	// Set flag
+	m_bSet_previous_phi = true;
+}
+
+void FETI_Operations::read_previous_r()
+{
+	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
+
+	// Create the vectors
+	VecCreate(m_comm.get(),&m_previous_r);
+	VecSetSizes(m_previous_r,m_C_R_BIG_N_local,m_C_R_BIG_N);
+	read_PETSC_vector(m_previous_r,m_scratch_folder_path + "/FETI_iter__r__" + std::to_string(m_kkk) + ".petscvec", m_comm.get());
+
+	// Set flag
+	m_bSet_previous_residual = true;
+}
+
+void FETI_Operations::read_all_previous_p()
+{
+	// NOT IMPLEMENTED YET!!!
+}
+
+void FETI_Operations::read_all_previous_q()
+{
+	// NOT IMPLEMENTED YET!!!
+}
+
+void FETI_Operations::read_scalar_data()
+{
+// 	m_rho.resize(kkk+2);			// Goes from 0 to kkk + 1
+// 	m_RB_mode_corr.resize(kkk+2);	// Goes from 0 to kkk + 1
+// 	m_p_dot_q.resize(kkk+1)			// Goes from 0 to kkk
+	// NOT IMPLEMENTED YET!!!
+}
+
+void FETI_Operations::read_vector_data()
+{
+	// NOT IMPLEMENTED YET!!!
+}
+
 //  --- FETI steps methods
+void FETI_Operations::calculate_initial_p()
+{
+	// `p(0)` is identical to `z(0)`, so just calculate the latter
+	this->calculate_z();
+}
+
 void FETI_Operations::calculate_initial_r()
 {
 	/*
@@ -609,9 +701,19 @@ void FETI_Operations::calculate_initial_r()
 	m_bSet_current_residual = true;
 }
 
-void FETI_Operations::calculate_initial_z_and_p()
+void FETI_Operations::calculate_p()
 {
-	this->calculate_z();
+	// NOT IMPLEMENTED YET!!!
+}
+
+void FETI_Operations::calculate_q()
+{
+	// NOT IMPLEMENTED YET!!!
+}
+
+void FETI_Operations::calculate_r()
+{
+	// NOT IMPLEMENTED YET!!!
 }
 
 void FETI_Operations::calculate_z()
@@ -688,6 +790,11 @@ void FETI_Operations::calculate_z()
 	}
 }
 
+void FETI_Operations::calculate_phi()
+{
+	// NOT IMPLEMENTED YET!!!
+}
+
 void FETI_Operations::calculate_rb_correction()
 {
 	homemade_assert_msg(m_bNullVecsSet,"Null space vectors not set yet!");
@@ -700,10 +807,10 @@ void FETI_Operations::calculate_rb_correction()
 	VecZeroEntries(dummy_seq_vec);
 	VecDuplicate(dummy_seq_vec,&dummy_seq_vec_bis);
 
-	VecDuplicate(m_null_vecs[0],&m_RB_mode_correction);
-	VecZeroEntries(m_RB_mode_correction);
+	VecDuplicate(m_null_vecs[0],&m_current_rb_correction);
+	VecZeroEntries(m_current_rb_correction);
 
-	// m_RB_mode_correction = R * (inv_RITRI_mat) * RC^t * m_current_residual
+	// m_current_rb_correction = R * (inv_RITRI_mat) * RC^t * m_current_residual
 
 	// dummy_seq_vec = RC^t * m_current_residual
 	// -> All the communications are done here!
@@ -716,10 +823,10 @@ void FETI_Operations::calculate_rb_correction()
 	// -> Completely local operation!
 	MatMult(m_inv_RITRI_mat,dummy_seq_vec,dummy_seq_vec_bis);
 
-	// m_RB_mode_correction = sum ( dummy_seq_vec_bis[i] * m_null_vecs[i])
+	// m_current_rb_correction = sum ( dummy_seq_vec_bis[i] * m_null_vecs[i])
 	// -> This should have no communications at all!
 	VecGetArray(dummy_seq_vec_bis,&dummy_seq_array);
-	VecMAXPY(m_RB_mode_correction,m_null_nb_vecs,dummy_seq_array,m_null_vecs);
+	VecMAXPY(m_current_rb_correction,m_null_nb_vecs,dummy_seq_array,m_null_vecs);
 	VecRestoreArray(dummy_seq_vec_bis,&dummy_seq_array);
 
 	// Cleanup
@@ -727,13 +834,82 @@ void FETI_Operations::calculate_rb_correction()
 	VecDestroy(&dummy_seq_vec_bis);
 
 	// Set flag
-	m_bRBModeSet = true;
+	m_bSet_current_RB_correction = true;
+}
+
+void FETI_Operations::calculate_scalar_data()
+{
+	homemade_assert_msg(m_bSet_current_residual,"Current residual not calculated yet!");
+	homemade_assert_msg(m_bSet_current_z,"Current 'z' not calculated yet!");
+	if(m_bUsingNullVecs)
+	{
+		homemade_assert_msg(m_bSet_current_RB_correction,"Current RB modes correction not calculated yet!");
+	}
+
+	// --- Calculate the values
+	// rho(kkk+1)
+	if(m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER || m_bUsingNullVecs)
+	{
+		VecDot(m_current_residual,m_current_z,&m_rho[m_kkk+1]);
+	} else {
+		VecDot(m_current_residual,m_current_residual,&m_rho[m_kkk+1]);
+	}
+
+	// RB_corr(kkk+1)
+	if(m_bUsingNullVecs)
+	{
+		VecDot(m_current_rb_correction,m_current_rb_correction,&m_RB_mode_corr[m_kkk+1]);
+	}
+
+	// gamma(kkk)
+	VecDot(m_previous_p_ptr[m_kkk],m_previous_q_ptr[m_kkk],&m_p_dot_q[m_kkk]);
+
+	// Set flags
+	m_bCalculatedScalar = true;
+}
+
+IterationStatus FETI_Operations::check_convergence(double rel_residual_conv, double abs_residual_conv, int max_iter_div, double rel_residual_div, double rb_modes_conv)
+{
+	// NOT IMPLEMENTED YET!!!
+	return IterationStatus::ITERATING;
 }
 
 //  --- Write methods
+void FETI_Operations::export_ext_solver_rhs_iteration()
+{
+	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
+
+	if(m_kkk == 0)
+	{
+		// p(0) = z(0)
+		homemade_assert_msg(m_bSet_current_z,"Current 'p' not calculated yet!");
+		this->export_ext_solver_rhs(m_current_z);
+	} else {
+		homemade_assert_msg(m_bSet_current_p,"Current 'p' not calculated yet!");
+		this->export_ext_solver_rhs(m_current_p);
+	}
+}
+
+void FETI_Operations::export_ext_solver_rhs_decoupled()
+{
+	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
+	homemade_assert_msg(m_bSet_current_phi,"Current 'phi' not calculated yet!");
+
+	this->export_ext_solver_rhs(m_current_phi);
+}
+
+void FETI_Operations::export_phi()
+{
+	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
+	homemade_assert_msg(m_bSet_current_phi,"Current 'phi' not calculated yet!");
+
+	write_PETSC_vector(m_current_phi,m_scratch_folder_path + "/FETI_iter__phi__" + std::to_string(m_kkk) + ".petscvec",m_comm.rank(),m_comm.get());
+	write_PETSC_vector_MATLAB(m_current_phi,m_scratch_folder_path + "/FETI_iter__phi__" + std::to_string(m_kkk) + ".m",m_comm.get());
+}
+
 void FETI_Operations::export_inital_vecs()
 {
-	// Export r(0) and z(0) ( p(0) is identical to z(0))
+	// Export r(0) and p(0) ( p(0) is identical to z(0))
 	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
 	homemade_assert_msg(m_bSet_current_residual,"Current residual not calculated yet!");
 
@@ -741,7 +917,7 @@ void FETI_Operations::export_inital_vecs()
 	write_PETSC_vector(m_current_residual,m_scratch_folder_path + "/FETI_iter__r__0.petscvec",m_comm.rank(),m_comm.get());
 	write_PETSC_vector_MATLAB(m_current_residual,m_scratch_folder_path + "/FETI_iter__r__0.m",m_comm.get());
 
-	// z(0) is only identical to r(0) if neither a preconditioner or the RB modes are used
+	// p(0) is only identical to r(0) if neither a preconditioner or the RB modes are used
 	if(m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER || m_bUsingNullVecs)
 	{
 		write_PETSC_vector(m_current_z,m_scratch_folder_path + "/FETI_iter__p__0.petscvec",m_comm.rank(),m_comm.get());
@@ -749,25 +925,22 @@ void FETI_Operations::export_inital_vecs()
 	}
 }
 
-void FETI_Operations::export_ext_solver_rhs_iteration()
-{
-	if(m_kkk == 0)
-	{
-		this->export_ext_solver_rhs(m_current_z);
-	} else {
-		this->export_ext_solver_rhs(m_current_p);
-	}
-}
-
-void FETI_Operations::export_scalar_data()
+void FETI_Operations::export_initial_scalar_data()
 {
 	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
 
-	// Calculate the values
+
 	homemade_assert_msg(m_bSet_current_residual,"Current residual not calculated yet!");
 	PetscScalar residual = 0;
 	PetscScalar RB_correct = 0;
 
+	if(m_bUsingNullVecs)
+	{
+		homemade_assert_msg(m_bSet_current_RB_correction,"Current RB modes correction not calculated yet!");
+	}
+
+	// --- Calculate the values
+	// rho(0)
 	if(m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER || m_bUsingNullVecs)
 	{
 		VecDot(m_current_residual,m_current_z,&residual);
@@ -775,9 +948,10 @@ void FETI_Operations::export_scalar_data()
 		VecDot(m_current_residual,m_current_residual,&residual);
 	}
 
+	// RB_corr(0)
 	if(m_bUsingNullVecs)
 	{
-		VecDot(m_RB_mode_correction,m_RB_mode_correction,&RB_correct);
+		VecDot(m_current_rb_correction,m_current_rb_correction,&RB_correct);
 	}
 
 	// ONLY write in proc 0!
@@ -785,13 +959,7 @@ void FETI_Operations::export_scalar_data()
 	{
 		std::ofstream scalar_data;
 
-		if(m_kkk == 0)
-		{
-			scalar_data.open(m_scratch_folder_path + "/FETI_iter_scalar_data.dat");
-		} else {
-			scalar_data.open(m_scratch_folder_path + "/FETI_iter_scalar_data.dat",std::ofstream::app);
-		}
-
+		scalar_data.open(m_scratch_folder_path + "/FETI_iter_scalar_data.dat");
 		scalar_data << m_kkk << " " << residual;
 
 		if(m_bUsingNullVecs)
@@ -803,6 +971,53 @@ void FETI_Operations::export_scalar_data()
 
 		scalar_data.close();
 	}
+}
+
+void FETI_Operations::export_scalar_data()
+{
+	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
+	homemade_assert_msg(m_bCalculatedScalar,"Scalar data not calculated yet!");
+
+	// ONLY write in proc 0!
+	if(m_comm.rank() == 0)
+	{
+		std::ofstream scalar_data;
+
+		// Export `rho(kkk+1)` and `RB_corr(kkk+1)`
+		scalar_data.open(m_scratch_folder_path + "/FETI_iter_scalar_data.dat",std::ofstream::app);
+		scalar_data << m_kkk + 1 << " " << m_rho[m_kkk+1];
+
+		if(m_bUsingNullVecs)
+		{
+			scalar_data <<  " " << m_RB_mode_corr[m_kkk+1];
+		}
+		scalar_data << std::endl;
+
+		scalar_data.close();
+
+		// Export `p(kkk).q(kkk)`
+		if(m_kkk == 0)
+		{
+			scalar_data.open(m_scratch_folder_path + "/FETI_iter_p_dot_q.dat");
+		} else {
+
+			scalar_data.open(m_scratch_folder_path + "/FETI_iter_p_dot_q.dat",std::ofstream::app);
+		}
+
+		scalar_data << m_p_dot_q[m_kkk] << std::endl;
+
+		scalar_data.close();
+	}
+}
+
+void FETI_Operations::export_iter_vecs()
+{
+	// NOT IMPLEMENTED YET!!!
+}
+
+void FETI_Operations::print_previous_iters_conv(int nb_of_iters)
+{
+	// NOT IMPLEMENTED YET!!!
 }
 
 }

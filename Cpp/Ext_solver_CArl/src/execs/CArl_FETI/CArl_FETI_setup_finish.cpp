@@ -3,7 +3,7 @@
 /**	\brief Program responsible to finish the FETI setup and launch the iterations
  *
  *	This program's input file description can be found at the documentation of the function 
- *  CArl::get_input_params(GetPot& field_parser, feti_setup_finish_params& input_params).
+ *  carl::get_input_params(GetPot& field_parser, feti_setup_finish_params& input_params).
  *  
  *  It will use the following files ... 
  *  * ... from the `input_params.coupling_path_base` folder:
@@ -80,9 +80,6 @@ int main(int argc, char** argv) {
 	// Object containing the FETI operations
 	carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path,input_params.coupling_path_base);
 
-	// --- Set inital iteration
-	feti_op.set_iteration(0);
-
 	// --- Define if the rb modes will be used or not
 	feti_op.using_rb_modes(input_params.bUseRigidBodyModes);
 
@@ -114,8 +111,8 @@ int main(int argc, char** argv) {
 	// Calculate r(0)
 	feti_op.calculate_initial_r();
 
-	// Calculate z(0) and p(0) - they are identical
-	feti_op.calculate_initial_z_and_p();
+	// Calculate p(0)
+	feti_op.calculate_initial_p();
 
 	// Calculations needed if we are using the rigid body modes
 	if(input_params.bUseRigidBodyModes)
@@ -125,14 +122,14 @@ int main(int argc, char** argv) {
 	}
 
 	// --- Export output vectors!
-	// Export r(0) and p(0)
+	// Export 'r(0)' and 'p(0)'
 	feti_op.export_inital_vecs();
 
 	// Export the Ct_i * p(0) vectors
 	feti_op.export_ext_solver_rhs_iteration();
 
 	// Export the scalar data, rho(0) and, if pertinent, |RB_corr|
-	feti_op.export_scalar_data();
+	feti_op.export_initial_scalar_data();
 
 	// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
 	// if(WorldComm.rank() == 0)

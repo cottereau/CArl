@@ -46,8 +46,8 @@ protected:
 
 	/** \brief Flag defining the intersection meshing algorithm.
 	 *
-	 * Can be either CArl::LIBMESH_TETGEN (use LibMesh's tetgen module, problematic with Intel compilers) 
-	 * or CArl::CGAL (use CGAL's Triangulation_3). *Default:* CArl::CGAL.
+	 * Can be either carl::LIBMESH_TETGEN (use LibMesh's tetgen module, problematic with Intel compilers) 
+	 * or carl::CGAL (use CGAL's Triangulation_3). *Default:* carl::CGAL.
 	 */
 	IntersectionMeshingMethod m_MeshingMethod;	
 
