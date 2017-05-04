@@ -118,13 +118,18 @@ protected:
 	Vec		m_current_phi;				///< Current Lagrange multipliers / solution, `phi(kkk+1)` (`phi(0)` for the initialization)
 	Vec		m_current_rb_correction;	///< Current rigid body modes correction, `RB_corr(kkk+1)` (`RB_corr(0)` for the initialization)
 
-	Vec     m_previous_r;				///< Previous residual vector, `r(kkk)`
+	Vec     m_previous_residual;		///< Previous residual vector, `r(kkk)`
 	Vec		m_previous_phi;				///< Previous Lagrange multipliers / solution, `phi(kkk)`
 	Vec *   m_previous_p_ptr;			///< Pointer to the previous `p` vectors, `p(0 ... kkk)`
 	Vec *   m_previous_q_ptr;			///< Pointer to the previous `q` vectors, `q(0 ... kkk)`
 
 	// Real values
-	double m_gamma;
+	double m_gamma;						///< Double containing the value of `rho(kkk) / p(kkk) . q(kkk)`
+	double m_rho_0;						///< Double containing the initial `rho(0)`
+	double m_current_rho;				///< Double containing the current `rho(kkk+1)`
+	double m_current_RB_mode_corr;		///< Double containing the current `RB_mode_corr(kkk+1)`
+	double m_previous_rho;				///< Double containing the previous `rho(kkk)`
+	double m_previous_RB_mode_corr;		///< Double containing the previous `RB_mode_corr(kkk)`
 
 	// Boolean flags
 	bool	m_bSet_u_0;				 		///< Have the u_0 vectors been set?
@@ -142,8 +147,6 @@ protected:
 	bool	m_bSet_previous_q_ptr;		///< Have the previous `q` vectors, `q(0 ... kkk)`, been set?
 
 	//  --- Vectors containing the scalar data
-	std::vector<double> m_rho;			///< Vector containing the residual squared norms
-	std::vector<double> m_RB_mode_corr; ///< Vector containing the RB modes squared norms
 	std::vector<double> m_p_dot_q;		///< Vector containing the `p.q` scalar products
 
 	// Boolean flags
@@ -210,8 +213,13 @@ public:
 		m_bUsingNullVecs { false },
 		m_bNullVecsSet { false },
 		m_bNullVecsDimensionsSet { false },
-		m_binvRITRIMatSet { false },
-		m_gamma { 0 },
+		m_binvRITRIMatSet { false }, 
+		m_gamma { -1 },
+		m_rho_0 { -1 },
+		m_current_rho { -1 },
+		m_current_RB_mode_corr { -1 },
+		m_previous_rho { -1 },
+		m_previous_RB_mode_corr { -1 },
 		m_bSet_u_0 { false },
 		m_bSet_ext_solver_sol { false },
 		m_bSet_current_residual { false },
@@ -300,16 +308,16 @@ public:
 	/// Calculate the inital residual vector, `r(0)`
 	void calculate_initial_r();
 
-	/// Calculate the current `p(kkk)` vector
+	/// Calculate the current `p(kkk+1)` vector
 	void calculate_p();
 
-	/// Calculate the current `q(kkk)` vector (and also the new `gamma(kkk)`)
+	/// Calculate the current `q(kkk)` vector
 	void calculate_q();
 
 	/// Calculate the current `r(kkk+1)` residual vector
 	void calculate_r();
 
-	/// Calculate the current `z(kkk)` vector
+	/// Calculate the current `z(kkk+1)` vector
 	void calculate_z();
 
 	/// Calculate the current `phi(kkk+1)` solution vector
@@ -333,6 +341,15 @@ public:
 
 	/// Calculate and export the external solver RHS's for the decoupled problem
 	void export_ext_solver_rhs_decoupled();
+
+	/// Export the current `p(kkk+1)` vector
+	void export_p();
+
+	/// Export the current `q(kkk)` vector
+	void export_q();
+
+	/// Export the current `r(kkk+1)` residual vector
+	void export_r();
 
 	/// Export the current Lagrange multiplier / solution
 	void export_phi();

@@ -18,8 +18,8 @@
  *      - `ext_solver_A_sys_sol_vec.petscvec`
  *      - `ext_solver_B_sys_sol_vec.petscvec`
  *    + previous iteration vectors r(kkk) anf phi(kkk)
- *      - `FETI_iter__phi__[kkk].petscvec`
- *	    - `FETI_iter__r__[kkk].petscvec`
+ *      - `FETI_iter__phi__current.petscvec`
+ *	    - `FETI_iter__r__current.petscvec`
  *    + (several) previous iterations vectors p(jjj), q(jjj) (used for re-orthogonalization). *Files*:
  *      - `FETI_iter__q__[jjj].petscvec`, jjj = 0 ... kkk - 1
  *      - `FETI_iter__p__[jjj].petscvec`, jjj = 0 ... kkk
@@ -44,8 +44,8 @@
  *     - `ext_solver_A_rhs.petscvec`
  *     - `ext_solver_B_rhs.petscvec`
  *   + next iteration vectors, phi(kkk+1), r(kkk+1), q(kkk+1), p(kkk+1). *Files*:
- *     - `FETI_iter__phi__[kkk+1].petscvec`
- *     - `FETI_iter__r__[kkk+1].petscvec`
+ *     - `FETI_iter__phi__current.petscvec`
+ *     - `FETI_iter__r__current.petscvec`
  *     - `FETI_iter__q__[kkk+1].petscvec`
  *     - `FETI_iter__p__[kkk+1].petscvec`
  *   + (append) p(kkk).q(kkk) value. *Files*:
@@ -98,6 +98,10 @@ int main(int argc, char** argv) {
 	feti_op.set_coupling_matrix_R_micro();
 	feti_op.set_coupling_matrix_R_BIG();
 
+	// --- Set up any matrices or vectors needed before calculating the outputs
+	// Set up the preconditioner
+	feti_op.set_preconditioner(input_params.CG_precond_type, /* initial_set = */ false);
+
 	// Read operations needed if we are using the rigid body modes
 	if(input_params.bUseRigidBodyModes)
 	{
@@ -106,15 +110,12 @@ int main(int argc, char** argv) {
 		feti_op.read_null_space_inv_RITRI_mat();
 	}
 
-	// --- Set up any matrices or vectors needed before calculating the outputs
-	// Set up the preconditioner
-	feti_op.set_preconditioner(input_params.CG_precond_type, /* initial_set = */ false);
-
 	// --- Read the previous iteration files: scalar data, iteration vectors ...
 	/* Read the scalar data from the previous iterations '0 ... kkk'
 	 * We now have: 'kkk'
-	 *				'rho(0 ... kkk)'
-	 *				'| RB_corr(0 ... kkk) |'
+	 *				'rho(0)'
+	 *				'rho(kkk)'
+	 *				'| RB_corr(kkk) |'
 	 *				'p(0 ... kkk - 1).q(0 ... kkk - 1)'
 	 */
 	feti_op.read_scalar_data();
@@ -156,58 +157,69 @@ int main(int argc, char** argv) {
 	// Calculate the scalar data, 'rho(kkk+1)' and '| RB_corr(kkk+1) |'
 	feti_op.calculate_scalar_data();
 
-	// Export the scalar data
+	/* Export scalar data
+	 * Data to export: 'kkk+1'
+	 *				   'rho(0)'
+	 *				   'rho(kkk+1)'
+	 *				   '| RB_corr(kkk+1) |'
+	 *				   'p(kkk).q(kkk)'
+	 */
 	feti_op.export_scalar_data();
 
-	// Export the iteration vectors
+	/* Export the iteration vectors
+	 * Vectors to export: 'r(kkk+1)'
+	 *                    'phi(kkk+1)'
+	 *                    'p(kkk+1)'
+	 *                    'q(kkk)'
+	 */
 	feti_op.export_iter_vecs();
 
-	// --- Check the convergence
-	carl::IterationStatus current_iteration_status = carl::IterationStatus::ITERATING;
+	// // --- Check the convergence
+	// carl::IterationStatus current_iteration_status = carl::IterationStatus::ITERATING;
 	
-	if(input_params.bUseRigidBodyModes)
-	{
-		current_iteration_status = feti_op.check_convergence(input_params.CG_coupled_conv_rel, input_params.CG_coupled_conv_abs, input_params.CG_coupled_conv_max, input_params.CG_coupled_div, input_params.CG_coupled_conv_corr);
-	} else {
-		current_iteration_status = feti_op.check_convergence(input_params.CG_coupled_conv_rel, input_params.CG_coupled_conv_abs, input_params.CG_coupled_conv_max, input_params.CG_coupled_div);
-	}
+	// if(input_params.bUseRigidBodyModes)
+	// {
+	// 	current_iteration_status = feti_op.check_convergence(input_params.CG_coupled_conv_rel, input_params.CG_coupled_conv_abs, input_params.CG_coupled_conv_max, input_params.CG_coupled_div, input_params.CG_coupled_conv_corr);
+	// } else {
+	// 	current_iteration_status = feti_op.check_convergence(input_params.CG_coupled_conv_rel, input_params.CG_coupled_conv_abs, input_params.CG_coupled_conv_max, input_params.CG_coupled_div);
+	// }
 
-	switch (current_iteration_status)
-	{
-		case carl::IterationStatus::ITERATING :
-				// --- Continue the iteration
-				std::cout << " > Still iterating ... " << std::endl;
+	// switch (current_iteration_status)
+	// {
+	// 	case carl::IterationStatus::ITERATING :
+	// 			// --- Continue the iteration
+	// 			std::cout << " > Still iterating ... " << std::endl;
 
-				// Export the Ct_i * p(kkk+1) vectors
-				feti_op.export_ext_solver_rhs_iteration();
+	// 			// Export the Ct_i * p(kkk+1) vectors
+	// 			feti_op.export_ext_solver_rhs_iteration();
 
-				// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
-				// if(WorldComm.rank() == 0)
-				// {
-				// 	std::string iter_script_command = ". " + input_params.scratch_folder_path + "/FETI_iter_script.sh";
-				// 	carl::exec_command(iter_script_command);
-				// }
-				break;
-		case carl::IterationStatus::CONVERGED :
-				// --- Well ... converged!
-				std::cout << " > Converged !" << std::endl;
+	// 			// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
+	// 			// if(WorldComm.rank() == 0)
+	// 			// {
+	// 			// 	std::string iter_script_command = ". " + input_params.scratch_folder_path + "/FETI_iter_script.sh";
+	// 			// 	carl::exec_command(iter_script_command);
+	// 			// }
+	// 			break;
+	// 	case carl::IterationStatus::CONVERGED :
+	// 			// --- Well ... converged!
+	// 			std::cout << " > Converged !" << std::endl;
 
-				// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
-				// if(WorldComm.rank() == 0)
-				// {
-				// 	std::string sol_script_command = ". " + input_params.scratch_folder_path + "/FETI_sol_script.sh";
-				// 	carl::exec_command(sol_script_command);
-				// }
-				break;
-		case carl::IterationStatus::DIVERGED :
-				// --- Well, we have to stop here ...
-				std::cout << " > DIVERGED !" << std::endl;
+	// 			// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
+	// 			// if(WorldComm.rank() == 0)
+	// 			// {
+	// 			// 	std::string sol_script_command = ". " + input_params.scratch_folder_path + "/FETI_sol_script.sh";
+	// 			// 	carl::exec_command(sol_script_command);
+	// 			// }
+	// 			break;
+	// 	case carl::IterationStatus::DIVERGED :
+	// 			// --- Well, we have to stop here ...
+	// 			std::cout << " > DIVERGED !" << std::endl;
 				
-				break;
-	}
+	// 			break;
+	// }
 
-	// Print the current values of the convergence parameters
-	feti_op.print_previous_iters_conv( /* nb. of iterations = 5 */);
+	// // Print the current values of the convergence parameters
+	// feti_op.print_previous_iters_conv( /* nb. of iterations = 5 */);
 
 	return 0;
 }

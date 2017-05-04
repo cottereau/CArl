@@ -89,6 +89,21 @@ void get_input_params(GetPot& field_parser,
 	{
 		input_params.CG_coupled_conv_max = field_parser.next(input_params.CG_coupled_conv_max);
 	}
+
+	if ( field_parser.search(1, "CGPreconditionerType") )
+	{
+		std::string CG_precond_type_string = field_parser.next(CG_precond_type_string);
+		if(CG_precond_type_string == "NONE")
+			input_params.CG_precond_type = carl::BaseCGPrecondType::NO_PRECONDITIONER;
+		else if(CG_precond_type_string == "Coupling_operator")
+			input_params.CG_precond_type = carl::BaseCGPrecondType::COUPLING_OPERATOR;
+		else if(CG_precond_type_string == "Coupling_operator_jacobi")
+			input_params.CG_precond_type = carl::BaseCGPrecondType::COUPLING_JACOBI;
+		else
+			homemade_error_msg("Invalid preconditionner type!");
+	} else {
+		homemade_error_msg("Missing preconditionner type!");
+	}
 };
 
 };
