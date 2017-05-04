@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
 	feti_op.export_inital_vecs();
 
 	// Export the Ct_i * p(0) vectors
-	feti_op.export_ext_solver_rhs_iteration();
+	feti_op.export_ext_solver_rhs_initial();
 
 	// Export the scalar data, rho(0) and, if pertinent, |RB_corr|
 	feti_op.export_initial_scalar_data();

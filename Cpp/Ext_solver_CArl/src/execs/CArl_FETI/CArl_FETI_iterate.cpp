@@ -175,51 +175,46 @@ int main(int argc, char** argv) {
 	feti_op.export_iter_vecs();
 
 	// // --- Check the convergence
-	// carl::IterationStatus current_iteration_status = carl::IterationStatus::ITERATING;
+	carl::IterationStatus current_iteration_status = carl::IterationStatus::ITERATING;
 	
-	// if(input_params.bUseRigidBodyModes)
-	// {
-	// 	current_iteration_status = feti_op.check_convergence(input_params.CG_coupled_conv_rel, input_params.CG_coupled_conv_abs, input_params.CG_coupled_conv_max, input_params.CG_coupled_div, input_params.CG_coupled_conv_corr);
-	// } else {
-	// 	current_iteration_status = feti_op.check_convergence(input_params.CG_coupled_conv_rel, input_params.CG_coupled_conv_abs, input_params.CG_coupled_conv_max, input_params.CG_coupled_div);
-	// }
+	if(input_params.bUseRigidBodyModes)
+	{
+		current_iteration_status = feti_op.check_convergence(input_params.CG_coupled_conv_rel, input_params.CG_coupled_conv_abs, input_params.CG_coupled_conv_max, input_params.CG_coupled_div, input_params.CG_coupled_conv_corr);
+	} else {
+		current_iteration_status = feti_op.check_convergence(input_params.CG_coupled_conv_rel, input_params.CG_coupled_conv_abs, input_params.CG_coupled_conv_max, input_params.CG_coupled_div);
+	}
 
-	// switch (current_iteration_status)
-	// {
-	// 	case carl::IterationStatus::ITERATING :
-	// 			// --- Continue the iteration
-	// 			std::cout << " > Still iterating ... " << std::endl;
+	switch (current_iteration_status)
+	{
+		case carl::IterationStatus::ITERATING :
+				// --- Continue the iteration
+				// Export the Ct_i * p(kkk+1) vectors
+				feti_op.export_ext_solver_rhs_iteration();
 
-	// 			// Export the Ct_i * p(kkk+1) vectors
-	// 			feti_op.export_ext_solver_rhs_iteration();
-
-	// 			// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
-	// 			// if(WorldComm.rank() == 0)
-	// 			// {
-	// 			// 	std::string iter_script_command = ". " + input_params.scratch_folder_path + "/FETI_iter_script.sh";
-	// 			// 	carl::exec_command(iter_script_command);
-	// 			// }
-	// 			break;
-	// 	case carl::IterationStatus::CONVERGED :
-	// 			// --- Well ... converged!
-	// 			std::cout << " > Converged !" << std::endl;
-
-	// 			// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
-	// 			// if(WorldComm.rank() == 0)
-	// 			// {
-	// 			// 	std::string sol_script_command = ". " + input_params.scratch_folder_path + "/FETI_sol_script.sh";
-	// 			// 	carl::exec_command(sol_script_command);
-	// 			// }
-	// 			break;
-	// 	case carl::IterationStatus::DIVERGED :
-	// 			// --- Well, we have to stop here ...
-	// 			std::cout << " > DIVERGED !" << std::endl;
+				// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
+				// if(WorldComm.rank() == 0)
+				// {
+				// 	std::string iter_script_command = ". " + input_params.scratch_folder_path + "/FETI_iter_script.sh";
+				// 	carl::exec_command(iter_script_command);
+				// }
+				break;
+		case carl::IterationStatus::CONVERGED :
+				// --- Well ... converged!
+				// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
+				// if(WorldComm.rank() == 0)
+				// {
+				// 	std::string sol_script_command = ". " + input_params.scratch_folder_path + "/FETI_sol_script.sh";
+				// 	carl::exec_command(sol_script_command);
+				// }
+				break;
+		case carl::IterationStatus::DIVERGED :
+				// --- Well, we have to stop here ...
 				
-	// 			break;
-	// }
+				break;
+	}
 
-	// // Print the current values of the convergence parameters
-	// feti_op.print_previous_iters_conv( /* nb. of iterations = 5 */);
+	// Print the current values of the convergence parameters
+	feti_op.print_previous_iters_conv( /* nb. of iterations = 5 */);
 
 	return 0;
 }

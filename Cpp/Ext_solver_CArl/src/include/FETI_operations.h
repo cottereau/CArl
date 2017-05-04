@@ -153,6 +153,23 @@ protected:
 	bool 	m_bReadPreviousScalar;		///< Read the previous iterations scalar data?
 	bool	m_bCalculatedScalar;		///< Calculated the current iterations scalar data?
 
+	// --- Convergence parameters
+	double m_abs_residual_conv;			///< Absolute residual convergence
+	double m_rel_residual_conv;			///< Relative residual convergence (relative to initial value)
+	double m_rb_modes_conv;				///< Relative RB correction convergence (relative to previous value)
+	double m_rel_residual_div;			///< Relative residual divergence (relative to initial value)
+ 	int m_max_iter_div;					///< Number of iterations divergence
+
+	// Boolean flags
+	bool 	m_bConvResidualAbs;			///< The residual converged? (absolute)
+	bool 	m_bConvResidualRel;			///< The residual converged? (relative to initial value)
+	bool 	m_bConvRBCorrRel;			///< The RB correction converged? (relative to previous value)
+	bool 	m_bDivResidualRel;			///< The residual diverged? (relative to initial value)
+	bool 	m_bDivResidualNeg;			///< The residual is negative? (more usefull for debugging, really)
+	bool 	m_bDivIter;					///< The number of iterations diverged?
+	bool    m_bConv;					///< Did the solver converge?
+	bool    m_bDiv;						///< Did the solver diverge?
+
 	//  --- Protected methods
 	// Preconditioner methods
 	void set_inverse_precond_solver();	///< Set up the full inversed coupling matrix preconditioner
@@ -232,7 +249,20 @@ public:
 		m_bSet_previous_p_ptr { false },
 		m_bSet_previous_q_ptr { false },
 		m_bReadPreviousScalar { false },
-		m_bCalculatedScalar { false }
+		m_bCalculatedScalar { false },
+		m_abs_residual_conv { -1 },
+		m_rel_residual_conv { -1 },
+		m_rb_modes_conv { -1 },
+		m_rel_residual_div { -1 },
+		m_max_iter_div { -1 },
+		m_bConvResidualAbs { false },
+		m_bConvResidualRel { false },
+		m_bConvRBCorrRel { false },
+		m_bDivResidualRel { false },
+		m_bDivResidualNeg { false },
+		m_bDivIter { false },
+		m_bConv { false },
+		m_bDiv { false }
 	{
 	};
 
@@ -339,6 +369,9 @@ public:
 	/// Calculate and export the external solver RHS's for the next iteration
 	void export_ext_solver_rhs_iteration();
 
+	/// Calculate and export the external solver RHS's for the first iteration
+	void export_ext_solver_rhs_initial();
+
 	/// Calculate and export the external solver RHS's for the decoupled problem
 	void export_ext_solver_rhs_decoupled();
 
@@ -366,7 +399,7 @@ public:
 	// Export the iteration vectors
 	void export_iter_vecs();
 
-	// Print on `std::cout` the current values of the convergence parameters
+	// Print on `std::cout` the current values of the convergence parameters - and if we converged
 	void print_previous_iters_conv(int nb_of_iters = 5);
 };
 }

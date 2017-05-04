@@ -1041,8 +1041,74 @@ void FETI_Operations::calculate_scalar_data()
 
 IterationStatus FETI_Operations::check_convergence(double rel_residual_conv, double abs_residual_conv, int max_iter_div, double rel_residual_div, double rb_modes_conv)
 {
-	// NOT IMPLEMENTED YET!!!
-	return IterationStatus::ITERATING;
+	homemade_assert_msg(m_bCalculatedScalar,"Scalar quantities not calculated yet!");
+
+	m_abs_residual_conv = abs_residual_conv;
+	m_rel_residual_conv = rel_residual_conv;
+	m_rb_modes_conv = rb_modes_conv;
+	m_rel_residual_div = rel_residual_div;
+	m_max_iter_div = max_iter_div;
+
+	// Check the iteration divergence
+	if(m_kkk == m_max_iter_div) // Iteration divergence
+	{
+		m_bDivIter = true;
+	}
+
+	// Check the residual convergence / divergence
+	if(m_current_rho > 0)
+	{
+		// Check the residual convergence
+		if(m_current_rho < m_abs_residual_conv) // Absolute convergence
+		{
+			m_bConvResidualAbs = true;
+		}
+
+		if(m_current_rho < m_rel_residual_conv * m_rho_0) // Relative convergence
+		{
+			m_bConvResidualRel = true;
+		}
+
+		// Check the residual divergence
+		if(m_current_rho > m_rel_residual_div * m_rho_0) // Relative divergence
+		{
+			m_bDivResidualRel = true;
+		}
+	} else {
+		// There's something wrong ...
+		m_bDivResidualNeg = true;
+	} 
+
+	// Check the rigid body modes correction convergence
+	if(m_bUsingNullVecs)
+	{
+		if(std::abs(m_current_RB_mode_corr - m_previous_RB_mode_corr)/m_current_RB_mode_corr < m_rb_modes_conv) // Correction convergence
+		{
+			m_bConvRBCorrRel = true;
+		}
+	} else {
+		// Short-circuit this boolean
+		m_bConvRBCorrRel = true;
+	}
+
+	// Possible cases:
+	// - Any diverged flag is true: diverged!
+	// - Both the RB modes correction AND one of the residual convergence flags are true: converged!
+	// - All flags false: continue iterating!
+
+	m_bConv = ( m_bConvResidualAbs || m_bConvResidualRel ) && m_bConvRBCorrRel;
+	m_bDiv = m_bDivResidualNeg || m_bDivResidualRel || m_bDivIter;
+
+	IterationStatus output_status = IterationStatus::ITERATING;
+	if(m_bDiv) {
+		output_status = IterationStatus::DIVERGED;
+	} else if(m_bConv) {
+		output_status = IterationStatus::CONVERGED;
+	} else {
+		output_status = IterationStatus::ITERATING;
+	}
+
+	return output_status;
 }
 
 //  --- Write methods
@@ -1050,15 +1116,16 @@ void FETI_Operations::export_ext_solver_rhs_iteration()
 {
 	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
 
-	if(m_kkk == 0)
-	{
-		// p(0) = z(0)
-		homemade_assert_msg(m_bSet_current_z,"Current 'p' not calculated yet!");
-		this->export_ext_solver_rhs(m_current_z);
-	} else {
-		homemade_assert_msg(m_bSet_current_p,"Current 'p' not calculated yet!");
-		this->export_ext_solver_rhs(m_current_p);
-	}
+	homemade_assert_msg(m_bSet_current_p,"Current 'p' not calculated yet!");
+	this->export_ext_solver_rhs(m_current_p);
+}
+
+void FETI_Operations::export_ext_solver_rhs_initial()
+{
+	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
+
+	homemade_assert_msg(m_bSet_current_z,"Current 'p' not calculated yet!");
+	this->export_ext_solver_rhs(m_current_z);
 }
 
 void FETI_Operations::export_ext_solver_rhs_decoupled()
@@ -1197,7 +1264,7 @@ void FETI_Operations::export_scalar_data()
 
 		// Export the scalar data
 		scalar_data.open(m_scratch_folder_path + "/FETI_iter_scalar_data.dat");
-		scalar_data << m_kkk << " " << m_rho_0 << " " << m_current_rho;
+		scalar_data << m_kkk + 1 << " " << m_rho_0 << " " << m_current_rho;
 
 		if(m_bUsingNullVecs)
 		{
@@ -1259,7 +1326,64 @@ void FETI_Operations::export_iter_vecs()
 
 void FETI_Operations::print_previous_iters_conv(int nb_of_iters)
 {
-	// NOT IMPLEMENTED YET!!!
+	std::cout << " ------ CArl_FETI_iterate ------" << std::endl << std::endl;
+
+	std::cout << " --> Iteration no. " << m_kkk + 1 << " : ";
+	if( m_bConv ) {
+		std::cout << " converged!" << std::endl;
+	} else if ( m_bDiv ) {
+		std::cout << " DIVERGED!" << std::endl;
+	} else {
+		std::cout << " iterating ..." << std::endl;
+	}
+	std::cout << std::endl;
+
+	if(m_bConvResidualAbs)
+	{
+		std::cout << "   > Abs. residual convergence : rho(kkk+1) < " << m_abs_residual_conv << std::endl;
+	}
+	if(m_bConvResidualRel)
+	{
+		std::cout << "   > Rel. residual convergence : rho(kkk+1) < " << m_rel_residual_conv << " * rho(0) " << std::endl;
+	}
+	if(m_bDivResidualRel)
+	{
+		std::cout << "   > Rel. residual DIVERGENCE : rho(kkk+1) > " << m_rel_residual_div << " * rho(0) " << std::endl;
+	}
+	if(m_bDivResidualNeg)
+	{
+		std::cout << "   > Negative residual DIVERGENCE" << std::endl;
+	}
+	if(m_bConvResidualAbs)
+	{
+		std::cout << "   > Iter. DIVERGENCE : kkk + 1 > " << m_max_iter_div << std::endl;
+	}
+	if(m_bUsingNullVecs)
+	{	
+		if(m_bConvRBCorrRel)
+		{
+			std::cout << "   > Rel. RB mode correction convergence : abs( RB(kkk+1) - RB_(kkk) ) / RB(kkk+1) < " << m_rb_modes_conv << std::endl;
+		}
+	}
+	std::cout << std::endl;
+
+	std::cout << " --> Previous " << std::min(m_kkk+2,nb_of_iters) << " iterations convergence parameter : " << std::endl;
+	if(m_bUsingNullVecs)
+	{	
+		std::cout << "[ kkk ] [ rho(kkk) ] [ | RB_corr(kkk) | ]" << std::endl;
+	}
+	else
+	{
+		std::cout << "[ kkk ] [ rho(kkk) ]" << std::endl;
+	}
+
+	std::string command_string = "tail -n " + std::to_string(nb_of_iters) + " " + m_scratch_folder_path + "/FETI_convergence.dat";
+
+	if(m_comm.rank() == 0)
+	{
+		std::cout << exec_command(command_string) << std::endl;
+	}
+	std::cout << " ------ CArl_FETI_iterate ------" << std::endl;
 }
 
 }
