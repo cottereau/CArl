@@ -222,12 +222,16 @@ void FETI_Operations::clear_PETSc()
 void FETI_Operations::set_coupling_matrix_R_micro()
 {
 	homemade_assert_msg(m_bCouplingFolderSet,"Common coupling matrix path not set yet!");
+
+	// Create matrix and get sizes
 	MatCreate(m_comm.get(),&m_C_R_micro);
 	read_PETSC_matrix(m_C_R_micro,m_coupling_path_base + "_micro.petscmat",m_comm.get());
 	MatGetLocalSize(m_C_R_micro,&m_C_R_micro_M_local,&m_C_R_micro_N_local);
 	MatGetSize(m_C_R_micro,&m_C_R_micro_M,&m_C_R_micro_N);
+
 	m_C_RR_M = m_C_R_micro_M; m_C_RR_M_local = m_C_R_micro_M_local;
 
+	// Set null vector dimensions (if needed)
 	if(m_RB_modes_system == RBModesSystem::MICRO)
 	{
 		m_null_vecs_N = m_C_R_micro_N;
@@ -235,6 +239,7 @@ void FETI_Operations::set_coupling_matrix_R_micro()
 		m_bNullVecsDimensionsSet = true;
 	}
 
+	// Set flags
 	m_bC_R_micro_MatrixSet = true;
 	m_bCouplingMatricesSet = m_bC_R_BIG_MatrixSet && m_bC_R_micro_MatrixSet && m_bC_RR_MatrixSet;
 }
@@ -242,12 +247,16 @@ void FETI_Operations::set_coupling_matrix_R_micro()
 void FETI_Operations::set_coupling_matrix_R_BIG()
 {
 	homemade_assert_msg(m_bCouplingFolderSet,"Common coupling matrix path not set yet!");
+
+	// Create matrix and get sizes
 	MatCreate(m_comm.get(),&m_C_R_BIG);
 	read_PETSC_matrix(m_C_R_BIG,m_coupling_path_base + "_macro.petscmat",m_comm.get());
 	MatGetLocalSize(m_C_R_BIG,&m_C_R_BIG_M_local,&m_C_R_BIG_N_local);
 	MatGetSize(m_C_R_BIG,&m_C_R_BIG_M,&m_C_R_BIG_N);
+
 	m_C_RR_M = m_C_R_BIG_M; m_C_RR_M_local = m_C_R_BIG_M_local;
 
+	// Set null vector dimensions (if needed)
 	if(m_RB_modes_system == RBModesSystem::MACRO)
 	{
 		m_null_vecs_N = m_C_R_BIG_N;
@@ -255,6 +264,7 @@ void FETI_Operations::set_coupling_matrix_R_BIG()
 		m_bNullVecsDimensionsSet = true;
 	}
 
+	// Set flags
 	m_bC_R_BIG_MatrixSet = true;
 	m_bCouplingMatricesSet = m_bC_R_BIG_MatrixSet && m_bC_R_micro_MatrixSet && m_bC_RR_MatrixSet;
 }
@@ -262,10 +272,14 @@ void FETI_Operations::set_coupling_matrix_R_BIG()
 void FETI_Operations::set_coupling_matrix_RR()
 {
 	homemade_assert_msg(m_bCouplingFolderSet,"Common coupling matrix path not set yet!");
+
+	// Create matrix and get sizes
 	MatCreate(m_comm.get(),&m_C_RR);
 	read_PETSC_matrix(m_C_RR,m_coupling_path_base + "_mediator.petscmat",m_comm.get());
 	MatGetLocalSize(m_C_RR,&m_C_RR_M_local,NULL);
 	MatGetSize(m_C_RR,&m_C_RR_M,NULL);
+
+	// Set flags
 	m_bC_RR_MatrixSet = true;
 	m_bCouplingMatricesSet = m_bC_R_BIG_MatrixSet && m_bC_R_micro_MatrixSet && m_bC_RR_MatrixSet;
 }
@@ -603,10 +617,12 @@ void FETI_Operations::read_ext_solver_output()
 	// Create the vectors
 	VecCreate(m_comm.get(),&m_ext_solver_sol_BIG);
 	VecSetSizes(m_ext_solver_sol_BIG,m_C_R_BIG_N_local,m_C_R_BIG_N);
-	read_PETSC_vector(m_ext_solver_sol_BIG,m_scratch_folder_path + "/ext_solver_A_sys_sol_vec.petscvec", m_comm.get());
 
 	VecCreate(m_comm.get(),&m_ext_solver_sol_micro);
 	VecSetSizes(m_ext_solver_sol_micro,m_C_R_micro_N_local,m_C_R_micro_N);
+
+	// Read them
+	read_PETSC_vector(m_ext_solver_sol_BIG,m_scratch_folder_path + "/ext_solver_A_sys_sol_vec.petscvec", m_comm.get());
 	read_PETSC_vector(m_ext_solver_sol_micro,m_scratch_folder_path + "/ext_solver_B_sys_sol_vec.petscvec", m_comm.get());
 
 	// Set the flag
@@ -644,10 +660,11 @@ void FETI_Operations::read_all_previous_p()
 	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
 	homemade_assert_msg(m_bSet_previous_residual,"Previous residual vector not set yet!");
 
-	// Create the vectors
+	// Create p(0 ... kkk),
 	m_previous_p_ptr = new Vec[m_kkk+1];
 	VecDuplicateVecs(m_previous_residual,m_kkk+1,&m_previous_p_ptr);
 
+	// Read p(0 ... kkk)
 	for(int iii = 0; iii < m_kkk+1; ++iii)
 	{
 		read_PETSC_vector(m_previous_p_ptr[iii],m_scratch_folder_path + "/FETI_iter__p__" + std::to_string(iii) + ".petscvec", m_comm.get());
@@ -662,9 +679,11 @@ void FETI_Operations::read_all_previous_q()
 	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
 	homemade_assert_msg(m_bSet_previous_residual,"Previous residual vector not set yet!");
 
-	// Create q(0 ... kkk), read q(0 ... kkk - 1)
+	// Create q(0 ... kkk)
 	m_previous_q_ptr = new Vec[m_kkk+1];
 	VecDuplicateVecs(m_previous_residual,m_kkk+1,&m_previous_q_ptr);
+
+	// Read q(0 ... kkk - 1)
 	if(m_kkk > 0)
 	{
 		for(int iii = 0; iii < m_kkk; ++iii)
@@ -840,7 +859,7 @@ void FETI_Operations::calculate_p()
 	VecCopy(m_current_z,m_current_p);
 
 	// p(kkk+1) = z(kkk+1) + \sum ( beta(iii) * p(iii) )
-	VecMAXPY(m_current_p,m_kkk+1,beta.data(),m_previous_q_ptr);
+	VecMAXPY(m_current_p,m_kkk+1,beta.data(),m_previous_p_ptr);
 
 	m_bSet_current_p = true;
 }
@@ -920,6 +939,7 @@ void FETI_Operations::calculate_z()
 
 			VecDestroy(&dummy_vec);
 			VecDestroy(&dummy_vec_bis);
+
 			// Set flag
 			m_bSet_current_z = true;
 		}
@@ -1226,6 +1246,7 @@ void FETI_Operations::export_initial_scalar_data()
 
 		// Export the scalar data
 		scalar_data.open(m_scratch_folder_path + "/FETI_iter_scalar_data.dat");
+		scalar_data.precision(15);
 		scalar_data << m_kkk << " " << residual << " " << residual;
 
 		if(m_bUsingNullVecs)
@@ -1239,6 +1260,7 @@ void FETI_Operations::export_initial_scalar_data()
 
 		// Export the convergence data
 		scalar_data.open(m_scratch_folder_path + "/FETI_convergence.dat");
+		scalar_data.precision(15);
 		scalar_data << m_kkk << " " << residual;
 
 		if(m_bUsingNullVecs)
@@ -1264,6 +1286,7 @@ void FETI_Operations::export_scalar_data()
 
 		// Export the scalar data
 		scalar_data.open(m_scratch_folder_path + "/FETI_iter_scalar_data.dat");
+		scalar_data.precision(15);
 		scalar_data << m_kkk + 1 << " " << m_rho_0 << " " << m_current_rho;
 
 		if(m_bUsingNullVecs)
@@ -1277,6 +1300,7 @@ void FETI_Operations::export_scalar_data()
 
 		// Export the convergence data
 		scalar_data.open(m_scratch_folder_path + "/FETI_convergence.dat",std::ofstream::app);
+		scalar_data.precision(15);
 		scalar_data << m_kkk + 1 << " " << m_current_rho;
 
 		if(m_bUsingNullVecs)
@@ -1295,7 +1319,7 @@ void FETI_Operations::export_scalar_data()
 
 			scalar_data.open(m_scratch_folder_path + "/FETI_iter_p_dot_q.dat",std::ofstream::app);
 		}
-
+		scalar_data.precision(15);
 		scalar_data << m_p_dot_q[m_kkk] << std::endl;
 
 		scalar_data.close();

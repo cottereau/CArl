@@ -174,6 +174,9 @@ int main(int argc, char** argv) {
 	 */
 	feti_op.export_iter_vecs();
 
+	// Export the Ct_i * p(kkk+1) vectors
+	feti_op.export_ext_solver_rhs_iteration();
+
 	// // --- Check the convergence
 	carl::IterationStatus current_iteration_status = carl::IterationStatus::ITERATING;
 	
@@ -188,9 +191,6 @@ int main(int argc, char** argv) {
 	{
 		case carl::IterationStatus::ITERATING :
 				// --- Continue the iteration
-				// Export the Ct_i * p(kkk+1) vectors
-				feti_op.export_ext_solver_rhs_iteration();
-
 				// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
 				// if(WorldComm.rank() == 0)
 				// {
