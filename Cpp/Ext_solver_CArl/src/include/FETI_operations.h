@@ -27,6 +27,11 @@ namespace carl
  *  the previous iterations's scalar data, and is kept constant during an iteration - following the
  *  of Alg. 1 in the article.
  *
+ *  This class methods' implementations are separated into three different files: 
+ *  - FETI_operations_setup.cpp, for setup and internal calculations (including all `protected` methods).
+ *  - FETI_operations_operations.cpp, for FETI operations called by the `CArl_FETI` programs.
+ *  - FETI_operations_IO.cpp, for read/write methods.
+ *
  */
 class	FETI_Operations
 {
@@ -69,6 +74,10 @@ protected:
 	bool 	    m_bC_R_BIG_MatrixSet;	///< Mediator - macro coupling matrix has been set? 
 	bool 	    m_bC_RR_MatrixSet;		///< Mediator - mediator coupling matrix has been set? 
 	bool 	    m_bCouplingMatricesSet;	///< All coupling matrices has been set? 
+
+	bool		m_bmicro_sizes_set;		///< Have the micro dimensions been set yet?
+	bool		m_bBIG_sizes_set;		///< Have the macro dimensions been set yet?
+	bool		m_bR_sizes_set;			///< Have the mediator dimensions been set yet?
 
 	BaseCGPrecondType	m_precond_type;	///< Preconditioner type. *Default*: `BaseCGPrecondType::NO_PRECONDITIONER`.
 
@@ -170,6 +179,12 @@ protected:
 	bool    m_bConv;					///< Did the solver converge?
 	bool    m_bDiv;						///< Did the solver diverge?
 
+	//  --- Converged coupled solution vectors
+	Vec		m_coupled_sol_micro;	///< Coupled system solution for the micro model
+	Vec		m_coupled_sol_BIG;		///< Coupled system solution for the macro model
+
+	bool	m_bCoupled_sols_set;	///< Have the coupled solutions been set yet?
+
 	//  --- Protected methods
 	// Preconditioner methods
 	void set_inverse_precond_solver();	///< Set up the full inversed coupling matrix preconditioner
@@ -220,6 +235,9 @@ public:
 		m_bC_R_BIG_MatrixSet  { false },
 		m_bC_RR_MatrixSet  { false },
 		m_bCouplingMatricesSet  { false },
+		m_bmicro_sizes_set { false },
+		m_bBIG_sizes_set { false },
+		m_bR_sizes_set { false },
 		m_precond_type { BaseCGPrecondType::NO_PRECONDITIONER },
 		m_RB_modes_system { RBModesSystem::MICRO },
 		m_bCreatedPrecondSolver { false },
@@ -262,7 +280,81 @@ public:
 		m_bDivResidualNeg { false },
 		m_bDivIter { false },
 		m_bConv { false },
-		m_bDiv { false }
+		m_bDiv { false },
+		m_bCoupled_sols_set {false}
+	{
+	};
+
+	/// Constructor with scratch folder path and libMesh communicator
+	FETI_Operations(libMesh::Parallel::Communicator& comm, const std::string& scratch_folder_path) :
+		m_comm { comm },
+		m_bScratchFolderSet { true },
+		m_bCouplingFolderSet { false },
+		m_scratch_folder_path { scratch_folder_path },
+		m_coupling_path_base { "" },
+		m_FETI_solver_status { IterationStatus::ITERATING },
+		m_kkk { 0 },
+		m_C_R_micro_M { -1},
+		m_C_R_micro_N { -1},
+		m_C_R_micro_M_local { -1},
+		m_C_R_micro_N_local { -1},
+		m_C_R_BIG_M { -1},
+		m_C_R_BIG_N { -1},
+		m_C_R_BIG_M_local { -1},
+		m_C_R_BIG_N_local { -1},
+		m_C_RR_M { -1},
+		m_C_RR_M_local { -1},
+		m_bC_R_micro_MatrixSet  { false },
+		m_bC_R_BIG_MatrixSet  { false },
+		m_bC_RR_MatrixSet  { false },
+		m_bCouplingMatricesSet  { false },
+		m_bmicro_sizes_set { false },
+		m_bBIG_sizes_set { false },
+		m_bR_sizes_set { false },
+		m_precond_type { BaseCGPrecondType::NO_PRECONDITIONER },
+		m_RB_modes_system { RBModesSystem::MICRO },
+		m_bCreatedPrecondSolver { false },
+		m_bCreatedPrecondJacobiVec { false },
+		m_null_nb_vecs { -1 },
+		m_null_vecs_N { -1 },
+		m_null_vecs_N_local { -1 },
+		m_bUsingNullVecs { false },
+		m_bNullVecsSet { false },
+		m_bNullVecsDimensionsSet { false },
+		m_binvRITRIMatSet { false }, 
+		m_gamma { -1 },
+		m_rho_0 { -1 },
+		m_current_rho { -1 },
+		m_current_RB_mode_corr { -1 },
+		m_previous_rho { -1 },
+		m_previous_RB_mode_corr { -1 },
+		m_bSet_u_0 { false },
+		m_bSet_ext_solver_sol { false },
+		m_bSet_current_residual { false },
+		m_bSet_current_z { false },
+		m_bSet_current_p { false },
+		m_bSet_current_phi { false },
+		m_bSet_current_RB_correction { false },
+		m_bSet_previous_residual { false },
+		m_bSet_previous_phi { false },
+		m_bSet_previous_p_ptr { false },
+		m_bSet_previous_q_ptr { false },
+		m_bReadPreviousScalar { false },
+		m_bCalculatedScalar { false },
+		m_abs_residual_conv { -1 },
+		m_rel_residual_conv { -1 },
+		m_rb_modes_conv { -1 },
+		m_rel_residual_div { -1 },
+		m_max_iter_div { -1 },
+		m_bConvResidualAbs { false },
+		m_bConvResidualRel { false },
+		m_bConvRBCorrRel { false },
+		m_bDivResidualRel { false },
+		m_bDivResidualNeg { false },
+		m_bDivIter { false },
+		m_bConv { false },
+		m_bDiv { false },
+		m_bCoupled_sols_set {false}
 	{
 	};
 
@@ -313,6 +405,9 @@ public:
 	/// Read the latest external solver output
 	void read_ext_solver_output();
 
+	/// Read the rigid body modes correction vector
+	void read_rb_corr();
+
 	/// Read the previous Lagrage multiplier / solution
 	void read_previous_phi();
 
@@ -359,6 +454,9 @@ public:
 	/// Calculate the scalar quantities
 	void calculate_scalar_data();
 
+	/// Calculate the final coupled solution
+	void calculate_coupled_solution();
+
 	/// Check the convergence
 	IterationStatus check_convergence(double rel_residual_conv, double abs_residual_conv, int max_iter_div, double rel_residual_div, double rb_modes_conv = -1);
 
@@ -367,13 +465,16 @@ public:
 
 	//  --- Write methods
 	/// Calculate and export the external solver RHS's for the next iteration
-	void export_ext_solver_rhs_iteration();
+	void export_ext_solver_rhs_Ct_p();
 
 	/// Calculate and export the external solver RHS's for the first iteration
 	void export_ext_solver_rhs_initial();
 
 	/// Calculate and export the external solver RHS's for the decoupled problem
-	void export_ext_solver_rhs_decoupled();
+	void export_ext_solver_rhs_Ct_phi();
+
+	/// Export the rigid body modes correction
+	void export_rb_correction_vector();
 
 	/// Export the current `p(kkk+1)` vector
 	void export_p();
@@ -398,6 +499,12 @@ public:
 
 	// Export the iteration vectors
 	void export_iter_vecs();
+
+	// Export the final coupled solution
+	void export_coupled_solution(std::string output_base)
+	{
+
+	};
 
 	// Print on `std::cout` the current values of the convergence parameters - and if we converged
 	void print_previous_iters_conv(int nb_of_iters = 5);

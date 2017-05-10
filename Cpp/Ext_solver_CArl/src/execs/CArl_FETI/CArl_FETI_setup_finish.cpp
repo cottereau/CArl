@@ -16,7 +16,7 @@
  *    + solutions u_0,1 and u_0,2, from the system K_i * u_0,i = F_i. *Files*:
  *      - `ext_solver_u0_A_sys_sol_vec.petscvec`
  *      - `ext_solver_u0_B_sys_sol_vec.petscvec`
- *    + solutions x_0,1 and x_0,2, from the system K_i * x_0,i = C_i^T*phi_0. *Files*:
+ *    + solutions x_1(kkk) and x_2(kkk), from the system K_i * x_i(kkk) = C_i^T*phi_0. *Files*:
  *      - [RB] `ext_solver_A_sys_sol_vec.petscvec`
  *      - [RB] `ext_solver_B_sys_sol_vec.petscvec`
  *    + matrix inv (R_I^t * R_I) = inv(R_2^t*C_2^t*C_2*R_2), used for the rigid body modes projections. *Files*:
@@ -95,7 +95,7 @@ int main(int argc, char** argv) {
 	// Read operations needed if we are using the rigid body modes
 	if(input_params.bUseRigidBodyModes)
 	{
-		// Read the solutions of K_i * x_0,i  = C_i^T * phi(0)
+		// Read the solutions of K_i * x_i(0)  = C_i^T * phi(0)
 		feti_op.read_ext_solver_output();
 
 		// Read the RB-related vectors and matrices

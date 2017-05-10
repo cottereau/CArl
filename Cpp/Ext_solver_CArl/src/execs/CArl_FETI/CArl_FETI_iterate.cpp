@@ -1,6 +1,6 @@
 #include "CArl_FETI_iterate.h"
 
-/**	\brief Program responsible to finish the FETI setup and launch the iterations
+/**	\brief Program responsible to running the FETI iterations
  *
  *	This program's input file description can be found at the documentation of the function 
  *  carl::get_input_params(GetPot& field_parser, feti_iterate_params& input_params).
@@ -14,7 +14,7 @@
  *  * ... from the `input_params.scratch_folder_path` folder:
  *    + scalar values (iteration, residual, RB mode corrections). *Files*:
  *      - `FETI_iter_scalar_data.dat`
- *    + solutions x_kkk,1 and x_kkk,2, from the system K_i * x_kkk,i = C_i^T*p_kkk. *Files*:
+ *    + solutions x_1(kkk) and x_2(kkk), from the system K_i * x_i(kkk) = C_i^T*p(kkk). *Files*:
  *      - `ext_solver_A_sys_sol_vec.petscvec`
  *      - `ext_solver_B_sys_sol_vec.petscvec`
  *    + previous iteration vectors r(kkk) anf phi(kkk)
@@ -174,9 +174,6 @@ int main(int argc, char** argv) {
 	 */
 	feti_op.export_iter_vecs();
 
-	// Export the Ct_i * p(kkk+1) vectors
-	feti_op.export_ext_solver_rhs_iteration();
-
 	// // --- Check the convergence
 	carl::IterationStatus current_iteration_status = carl::IterationStatus::ITERATING;
 	
@@ -190,7 +187,10 @@ int main(int argc, char** argv) {
 	switch (current_iteration_status)
 	{
 		case carl::IterationStatus::ITERATING :
-				// --- Continue the iteration
+				// --- Continue the iteration	
+				// Export the Ct_i * p(kkk+1) vectors
+				feti_op.export_ext_solver_rhs_Ct_p();
+
 				// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
 				// if(WorldComm.rank() == 0)
 				// {
@@ -200,6 +200,12 @@ int main(int argc, char** argv) {
 				break;
 		case carl::IterationStatus::CONVERGED :
 				// --- Well ... converged!
+				// Export the Ct_i * phi(kkk+1) vectors
+				feti_op.export_ext_solver_rhs_Ct_phi();
+
+				// Export the rigid body modes correction vector
+				feti_op.export_rb_correction_vector();
+				
 				// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
 				// if(WorldComm.rank() == 0)
 				// {
@@ -208,8 +214,7 @@ int main(int argc, char** argv) {
 				// }
 				break;
 		case carl::IterationStatus::DIVERGED :
-				// --- Well, we have to stop here ...
-				
+				// --- Well, we have to stop here ...			
 				break;
 	}
 

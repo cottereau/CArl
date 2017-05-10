@@ -129,7 +129,7 @@ void Solver_Files_Setup::generate_libmesh_external_solver_inputs()
 	carl::print_input_params(m_ext_solver_u0_A_input_filename,solver_A_input_params);
 	carl::print_input_params(m_ext_solver_u0_B_input_filename,solver_B_input_params);
 
-	// Set K_i * y(k)_i = C_i^T * p(k), K_i * x_f,i  = C_i^T * phi(k+1) and K_i * x_0,i  = C_i^T * phi(0)
+	// Set K_i * y(k)_i = C_i^T * p(k) and K_i * x_i(kkk)  = C_i^T * phi(kkk)
 	solver_A_input_params.output_base = m_input_params.scratch_folder_path + "/ext_solver_A";
 	solver_B_input_params.output_base = m_input_params.scratch_folder_path + "/ext_solver_B";
 

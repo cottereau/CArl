@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 
 		// Export the vectors
 		feti_op.export_phi();
-		feti_op.export_ext_solver_rhs_decoupled();
+		feti_op.export_ext_solver_rhs_Ct_phi();
 	}
 
 	// // --- Launch the "init_script.sh" script --- ONLY ON THE FIRST PROC!

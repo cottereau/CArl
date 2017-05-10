@@ -1,5 +1,29 @@
 #include "CArl_FETI_solution.h"
 
+/**	\brief Program responsible to calculate the coupled system solution of the FETI algorithm
+ *
+ *	This program's input file description can be found at the documentation of the function 
+ *  carl::get_input_params(GetPot& field_parser, feti_set_sol_params& input_params).
+ *  
+ *  It will use the following files from the `input_params.scratch_folder_path` folder:
+ *    + solutions u_0,1 and u_0,2, from the system K_i * u_0,i = F_i. *Files*:
+ *      - `ext_solver_u0_A_sys_sol_vec.petscvec`
+ *      - `ext_solver_u0_B_sys_sol_vec.petscvec`
+ *    + solutions x_1(kkk) and x_2(kkk), from the system K_i * x_i(kkk) = C_i^T*phi(kkk). *Files*:
+ *      - `ext_solver_A_sys_sol_vec.petscvec`
+ *      - `ext_solver_B_sys_sol_vec.petscvec`
+ *    + rigid body mode correction vector. *Files*:
+ *      - [RB] `FETI_RB_correction.petscvec`
+ *
+ *  The items marked with a [RB] are only needed if the rigid body modes projectors are used.
+ *  In the last two cases, [nb. of vectors] is the number of rigid body mode vectors (given by `input_params.nb_of_rb_vectors`)
+ *  and [iii] is an integer going from 0 to `input_params.nb_of_rb_vectors - 1` (following C++ notation).
+ *
+ *  This program outputs the solution vectors inside the `input_params.output_base` folder. *Files*:
+ *   + `[input_params.output_base]_coupled_sol_A.petscvec`
+ *   + `[input_params.output_base]_coupled_sol_B.petscvec`
+ */
+
 int main(int argc, char** argv) {
 
 	// --- Initialize libMesh
@@ -34,6 +58,30 @@ int main(int argc, char** argv) {
 
 	carl::feti_set_sol_params input_params;
 	get_input_params(field_parser, input_params);
+
+	// Object containing the FETI operations
+	carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path);
+
+	// --- Define if the rb modes will be used or not
+	feti_op.using_rb_modes(input_params.bUseRigidBodyModes);
+
+	// Read the decoupled solutions, K_i * u_0,i  = F_i 
+	feti_op.read_decoupled_solutions();
+
+	// Read the solutions of K_i * x_i(FINAL)  = C_i^T * phi(FINAL)
+	feti_op.read_ext_solver_output();
+
+	// Read the rb modes correction, 'RB_corr(FINAL)'
+	if(input_params.bUseRigidBodyModes)
+	{
+		feti_op.read_rb_corr();
+	}
+
+	// Calculate the solution
+	feti_op.calculate_coupled_solution();
+
+	// Export it (finallly!)
+	feti_op.export_coupled_solution(input_params.output_base);
 
 	return 0;
 }
