@@ -13,7 +13,7 @@ CouplingRigidity 2e5
 
 ### Optional parameters
 # - Output filename base
-OutputBase examples/coupled_traction_test/intersection/output/coupling_matrices/coupling_8k
+OutputFolder examples/coupled_traction_test/FETI_solver/brick_traction_8k/coupling_matrices
 
 # - Restriction meshes and tables
 #Mesh_A_Restriction [PATH_TO_MESH_A_RESTRICTION]

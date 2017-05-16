@@ -12,8 +12,8 @@ CouplingWidth 0.5
 CouplingRigidity 2e5
 
 ### Optional parameters
-# - Output filename base
-OutputBase examples/coupled_traction_test/FETI_solver/coupling_matrices/coupling_1k/coupling_matrix
+# - Output folder path
+OutputFolder examples/coupled_traction_test/FETI_solver/brick_traction_1k/coupling_matrices
 
 # - Restriction meshes and tables
 #Mesh_A_Restriction [PATH_TO_MESH_A_RESTRICTION]
