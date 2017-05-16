@@ -16,14 +16,20 @@ void get_input_params(GetPot& field_parser,
 	if (field_parser.search(1, "ClusterSchedulerType")) {
 		std::string cluster_scheduler_type;
 		cluster_scheduler_type = field_parser.next(cluster_scheduler_type);
-		if(cluster_scheduler_type == "PBS")
+		if(cluster_scheduler_type == "LOCAL")
+		{
+			std::cout << " !!! WARNING: " << std::endl;
+			std::cout << "        The LOCAL 'scheduler' type is only intended for small and fast test cases" << std::endl;
+			std::cout << "     on computers without a job scheduler (PBS, SLURM). You will have to launch" << std::endl;
+			std::cout << "     each script MANUALLY!!! Reason: MPI does not support recursive 'mpirun' calls" << std::endl;
+			input_params.scheduler = carl::ClusterSchedulerType::LOCAL;
+		}
+		else if(cluster_scheduler_type == "PBS")
 			input_params.scheduler = carl::ClusterSchedulerType::PBS;
 		else if(cluster_scheduler_type == "SLURM")
 			input_params.scheduler = carl::ClusterSchedulerType::SLURM;
 		else
 			homemade_error_msg("Invalid scheduler type!");
-
-		std::cout << input_params.scheduler << std::endl;
 	} else {
 		homemade_error_msg("Missing the scheduler type!");
 	}
@@ -105,10 +111,10 @@ void get_input_params(GetPot& field_parser,
 		homemade_error_msg("Missing the script file!");
 	}
 
-	if (field_parser.search(1, "CouplingMatricesBase")) {
-		input_params.coupling_path_base = field_parser.next(
-				input_params.coupling_path_base);
-		std::cout << input_params.coupling_path_base << std::endl;
+	if (field_parser.search(1, "CouplingMatricesFolder")) {
+		input_params.coupling_folder_path = field_parser.next(
+				input_params.coupling_folder_path);
+		std::cout << input_params.coupling_folder_path << std::endl;
 	} else {
 		homemade_error_msg("Missing the coupling matrices path!");
 	}
@@ -149,7 +155,7 @@ void get_input_params(GetPot& field_parser,
 	input_params.CG_coupled_conv_rel = 1e-5;
 	input_params.CG_coupled_div = 1e5;
 	input_params.CG_coupled_conv_max = 1e4;
-	input_params.CG_coupled_conv_corr =1e-6;
+	input_params.CG_coupled_conv_corr =1e-5;
 
 	if( field_parser.search(1,"CoupledConvAbs") )
 	{
@@ -184,9 +190,9 @@ void get_input_params(GetPot& field_parser,
 			input_params.CG_precond_type = carl::BaseCGPrecondType::COUPLING_JACOBI;
 	}
 
-	if (field_parser.search(1,"OutputBase")) {
-		input_params.output_base = field_parser.next(
-				input_params.output_base);
+	if (field_parser.search(1,"OutputFolder")) {
+		input_params.output_folder = field_parser.next(
+				input_params.output_folder);
 	} else {
 		homemade_error_msg("Missing the output filename base!");
 	}

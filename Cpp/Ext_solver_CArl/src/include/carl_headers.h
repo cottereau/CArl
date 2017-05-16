@@ -8,6 +8,9 @@
 #ifndef CARL_HEADERS_H_
 #define CARL_HEADERS_H_
 
+// Uncomment the following line to print testing Matlab outputs
+// #define PRINT_MATLAB_DEBUG
+
 #include "common_header.h"
 #include "common_enums.h"
 

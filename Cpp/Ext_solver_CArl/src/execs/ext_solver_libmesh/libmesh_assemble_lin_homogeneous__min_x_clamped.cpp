@@ -88,9 +88,11 @@ int main(int argc, char** argv) {
 	assemble_elasticity_with_weight(equation_systems,"Elasticity",system_weight,
 							input_params.system_type);
 
-	// Only print these for debugging
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
 	elasticity_system.matrix->print_matlab(input_params.output_base + "_sys_mat.m");
 	elasticity_system.rhs->print_matlab(input_params.output_base + "_sys_rhs_vec.m");
+#endif
 
 	// Export matrix and vector
 	libMesh::PetscMatrix<libMesh::Number> * temp_mat_ptr = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number> * >(elasticity_system.matrix);

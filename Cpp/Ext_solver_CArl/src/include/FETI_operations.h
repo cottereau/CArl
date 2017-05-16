@@ -42,7 +42,7 @@ protected:
 	bool        m_bScratchFolderSet;			///< Have the scratch folder been set?
 	bool        m_bCouplingFolderSet;			///< Have the Coupling matrices folder been set?
 	std::string m_scratch_folder_path;			///< Scratch folder path
-	std::string m_coupling_path_base;			///< Coupling matrices path
+	std::string m_coupling_folder_path;			///< Coupling matrices path
 	IterationStatus	m_FETI_solver_status;		///< Current FETI / CG solver status
 	int         m_kkk;							///< Current iteration index
 
@@ -213,12 +213,12 @@ protected:
 
 public:
 	/// Constructor with scratch folder path, coupling matrices base filename, and libMesh communicator
-	FETI_Operations(libMesh::Parallel::Communicator& comm, const std::string& scratch_folder_path , const std::string& coupling_path_base) :
+	FETI_Operations(libMesh::Parallel::Communicator& comm, const std::string& scratch_folder_path , const std::string& coupling_folder_path) :
 		m_comm { comm },
 		m_bScratchFolderSet { true },
 		m_bCouplingFolderSet { true },
 		m_scratch_folder_path { scratch_folder_path },
-		m_coupling_path_base { coupling_path_base },
+		m_coupling_folder_path { coupling_folder_path },
 		m_FETI_solver_status { IterationStatus::ITERATING },
 		m_kkk { 0 },
 		m_C_R_micro_M { -1},
@@ -291,7 +291,7 @@ public:
 		m_bScratchFolderSet { true },
 		m_bCouplingFolderSet { false },
 		m_scratch_folder_path { scratch_folder_path },
-		m_coupling_path_base { "" },
+		m_coupling_folder_path { "" },
 		m_FETI_solver_status { IterationStatus::ITERATING },
 		m_kkk { 0 },
 		m_C_R_micro_M { -1},
@@ -501,10 +501,7 @@ public:
 	void export_iter_vecs();
 
 	// Export the final coupled solution
-	void export_coupled_solution(std::string output_base)
-	{
-
-	};
+	void export_coupled_solution(std::string output_base);
 
 	// Print on `std::cout` the current values of the convergence parameters - and if we converged
 	void print_previous_iters_conv(int nb_of_iters = 5);

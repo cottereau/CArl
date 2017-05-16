@@ -17,7 +17,7 @@ void FETI_Operations::set_coupling_matrix_R_micro()
 	}
 
 	// Read the matrix
-	read_PETSC_matrix(m_C_R_micro,m_coupling_path_base + "_micro.petscmat",m_comm.get());
+	read_PETSC_matrix(m_C_R_micro,m_coupling_folder_path + "/coupling_matrix_micro.petscmat",m_comm.get());
 
 	// If the micro sizes were not defined yet, define them 
 	if(!m_bmicro_sizes_set)
@@ -61,7 +61,7 @@ void FETI_Operations::set_coupling_matrix_R_BIG()
 	}
 
 	// Read the matrix
-	read_PETSC_matrix(m_C_R_BIG,m_coupling_path_base + "_macro.petscmat",m_comm.get());
+	read_PETSC_matrix(m_C_R_BIG,m_coupling_folder_path + "/coupling_matrix_macro.petscmat",m_comm.get());
 
 	// If the macro sizes were not defined yet, define them 
 	if(!m_bBIG_sizes_set)
@@ -104,7 +104,7 @@ void FETI_Operations::set_coupling_matrix_RR()
 		MatSetSizes(m_C_RR,m_C_RR_M_local,m_C_RR_M_local,m_C_RR_M,m_C_RR_M);
 	}
 
-	read_PETSC_matrix(m_C_RR,m_coupling_path_base + "_mediator.petscmat",m_comm.get());
+	read_PETSC_matrix(m_C_RR,m_coupling_folder_path + "/coupling_matrix_mediator.petscmat",m_comm.get());
 
 	// If the mediator sizes were not defined yet, define them
 	if(!m_bR_sizes_set)
@@ -538,7 +538,11 @@ void FETI_Operations::export_rb_correction_vector()
 
 	
 	write_PETSC_vector(m_current_rb_correction,m_scratch_folder_path + "/FETI_RB_correction.petscvec",m_comm.rank(),m_comm.get());
+
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
 	write_PETSC_vector_MATLAB(m_current_rb_correction,m_scratch_folder_path + "/FETI_RB_correction.m",m_comm.get());
+#endif
 }
 
 void FETI_Operations::export_p()
@@ -547,7 +551,11 @@ void FETI_Operations::export_p()
 	homemade_assert_msg(m_bSet_current_p,"Current 'p' not calculated yet!");
 
 	write_PETSC_vector(m_current_p,m_scratch_folder_path + "/FETI_iter__p__" + std::to_string(m_kkk+1) + ".petscvec",m_comm.rank(),m_comm.get());
+
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
 	write_PETSC_vector_MATLAB(m_current_p,m_scratch_folder_path + "/FETI_iter__p__" + std::to_string(m_kkk+1) + ".m",m_comm.get());
+#endif
 }
 
 void FETI_Operations::export_q()
@@ -556,7 +564,11 @@ void FETI_Operations::export_q()
 	homemade_assert_msg(m_bSet_previous_q_ptr,"'q' vectors not calculated yet!");
 
 	write_PETSC_vector(m_previous_q_ptr[m_kkk],m_scratch_folder_path + "/FETI_iter__q__" + std::to_string(m_kkk) + ".petscvec",m_comm.rank(),m_comm.get());
+
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
 	write_PETSC_vector_MATLAB(m_previous_q_ptr[m_kkk],m_scratch_folder_path + "/FETI_iter__q__" + std::to_string(m_kkk) + ".m",m_comm.get());
+#endif
 }
 
 void FETI_Operations::export_r()
@@ -565,7 +577,11 @@ void FETI_Operations::export_r()
 	homemade_assert_msg(m_bSet_current_residual,"Current residual not calculated yet!");
 
 	write_PETSC_vector(m_current_residual,m_scratch_folder_path + "/FETI_iter__r__current.petscvec",m_comm.rank(),m_comm.get());
+
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
 	write_PETSC_vector_MATLAB(m_current_residual,m_scratch_folder_path + "/FETI_iter__r__current.m",m_comm.get());
+#endif
 }
 
 void FETI_Operations::export_phi()
@@ -574,7 +590,11 @@ void FETI_Operations::export_phi()
 	homemade_assert_msg(m_bSet_current_phi,"Current 'phi' not calculated yet!");
 
 	write_PETSC_vector(m_current_phi,m_scratch_folder_path + "/FETI_iter__phi__current.petscvec",m_comm.rank(),m_comm.get());
+
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
 	write_PETSC_vector_MATLAB(m_current_phi,m_scratch_folder_path + "/FETI_iter__phi__current.m",m_comm.get());
+#endif
 }
 
 void FETI_Operations::export_inital_vecs()
@@ -585,13 +605,21 @@ void FETI_Operations::export_inital_vecs()
 
 	// In all cases, print r(0)
 	write_PETSC_vector(m_current_residual,m_scratch_folder_path + "/FETI_iter__r__current.petscvec",m_comm.rank(),m_comm.get());
+
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
 	write_PETSC_vector_MATLAB(m_current_residual,m_scratch_folder_path + "/FETI_iter__r__current.m",m_comm.get());
+#endif
 
 	// p(0) is only identical to r(0) if neither a preconditioner or the RB modes are used
 	if(m_precond_type != BaseCGPrecondType::NO_PRECONDITIONER || m_bUsingNullVecs)
 	{
 		write_PETSC_vector(m_current_z,m_scratch_folder_path + "/FETI_iter__p__0.petscvec",m_comm.rank(),m_comm.get());
+
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
 		write_PETSC_vector_MATLAB(m_current_z,m_scratch_folder_path + "/FETI_iter__p__0.m",m_comm.get());
+#endif
 	}
 }
 
@@ -733,19 +761,25 @@ void FETI_Operations::export_iter_vecs()
 	this->export_q();
 }
 
+void FETI_Operations::export_coupled_solution(std::string output_base)
+{
+	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
+	homemade_assert_msg(m_bCoupled_sols_set,"Coupled solutions not calculated yet!");
+
+	write_PETSC_vector(m_coupled_sol_BIG,output_base + "/coupled_sol_A.petscvec",m_comm.rank(),m_comm.get());
+	write_PETSC_vector(m_coupled_sol_micro,output_base + "/coupled_sol_B.petscvec",m_comm.rank(),m_comm.get());
+
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
+	write_PETSC_vector_MATLAB(m_coupled_sol_BIG,output_base + "/coupled_sol_A.m",m_comm.get());
+	write_PETSC_vector_MATLAB(m_coupled_sol_micro,output_base + "/coupled_sol_B.m",m_comm.get());
+#endif
+}
+
 void FETI_Operations::print_previous_iters_conv(int nb_of_iters)
 {
-	std::cout << " ------ CArl_FETI_iterate ------" << std::endl << std::endl;
-
-	std::cout << " --> Iteration no. " << m_kkk + 1 << " : ";
-	if( m_bConv ) {
-		std::cout << " converged!" << std::endl;
-	} else if ( m_bDiv ) {
-		std::cout << " DIVERGED!" << std::endl;
-	} else {
-		std::cout << " iterating ..." << std::endl;
-	}
 	std::cout << std::endl;
+	std::cout << " --> Iteration no. " << m_kkk + 1 << " : ";
 
 	if(m_bConvResidualAbs)
 	{
@@ -792,7 +826,14 @@ void FETI_Operations::print_previous_iters_conv(int nb_of_iters)
 	{
 		std::cout << exec_command(command_string) << std::endl;
 	}
-	std::cout << " ------ CArl_FETI_iterate ------" << std::endl;
+	if( m_bConv ) {
+		std::cout << " --> Converged!" << std::endl;
+	} else if ( m_bDiv ) {
+		std::cout << " --> DIVERGED!" << std::endl;
+	} else {
+		std::cout << " --> Iterating ..." << std::endl;
+	}
+	std::cout << std::endl;
 }
 
 }

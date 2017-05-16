@@ -12,8 +12,9 @@ namespace carl
 {
 
 enum ClusterSchedulerType {
-	PBS = 0, // PBS / Torque
-	SLURM = 1 // SLURM, not implemented right now
+	LOCAL = 0, // No scheduler present, will use carl::exec_command
+	PBS = 1, // PBS / Torque
+	SLURM = 2 // SLURM, not implemented right now
 };
 
 

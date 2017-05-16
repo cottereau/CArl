@@ -28,9 +28,9 @@ void get_input_params(GetPot& field_parser,
 		input_params.bUseRigidBodyModes = false;
 	}
 
-	if (field_parser.search(1,"OutputBase")) {
-		input_params.output_base = field_parser.next(
-				input_params.output_base);
+	if (field_parser.search(1,"OutputFolder")) {
+		input_params.output_folder = field_parser.next(
+				input_params.output_folder);
 	} else {
 		homemade_error_msg("Missing the output filename base!");
 	}

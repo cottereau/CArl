@@ -148,8 +148,11 @@ void carl::print_matrix_col_line_sum(libMesh::PetscMatrix<libMesh::Number>& Coup
 		}
 	}
 
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
 	col_sum.print_matlab(name_base + "_col.m");
 	row_sum.print_matlab(name_base + "_row.m");
+#endif
 }
 
 void carl::print_matrix_matlab(libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix, const std::string name_base)

@@ -31,7 +31,11 @@ void FETI_Operations::set_jacobi_precond_vector()
 
 	// Export it
 	write_PETSC_vector(m_coupling_jacobi_precond_vec,m_scratch_folder_path + "/precond_Jacobi_vector.petscvec",m_comm.rank(),m_comm.get());
+
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
 	write_PETSC_vector_MATLAB(m_coupling_jacobi_precond_vec,m_scratch_folder_path + "/precond_Jacobi_vector.m",m_comm.get());
+#endif
 
 	// Set flag
 	m_bCreatedPrecondJacobiVec = true;
@@ -141,11 +145,13 @@ void FETI_Operations::export_ext_solver_rhs(Vec vec_in)
 	MatMultTranspose(m_C_R_BIG,vec_in,vec_C_BIG_t_p_kkk_PETSc);
 
 	write_PETSC_vector(vec_C_BIG_t_p_kkk_PETSc,m_scratch_folder_path + "/ext_solver_A_rhs.petscvec",m_comm.rank(),m_comm.get());
-	write_PETSC_vector_MATLAB(vec_C_BIG_t_p_kkk_PETSc,m_scratch_folder_path + "/ext_solver_A_rhs.m",m_comm.get());
-
 	write_PETSC_vector(vec_C_micro_t_p_kkk_PETSc,m_scratch_folder_path + "/ext_solver_B_rhs.petscvec",m_comm.rank(),m_comm.get());
-	write_PETSC_vector_MATLAB(vec_C_micro_t_p_kkk_PETSc,m_scratch_folder_path + "/ext_solver_B_rhs.m",m_comm.get());
 
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
+	write_PETSC_vector_MATLAB(vec_C_micro_t_p_kkk_PETSc,m_scratch_folder_path + "/ext_solver_B_rhs.m",m_comm.get());
+	write_PETSC_vector_MATLAB(vec_C_BIG_t_p_kkk_PETSc,m_scratch_folder_path + "/ext_solver_A_rhs.m",m_comm.get());
+#endif
 
 	VecDestroy(&vec_C_micro_t_p_kkk_PETSc);
 	VecDestroy(&vec_C_BIG_t_p_kkk_PETSc);
@@ -307,10 +313,6 @@ void FETI_Operations::set_null_space(const std::string& input_filename_base, int
 	MatMult(*coupling_matrix,m_null_vecs[0],m_null_coupled_vecs[0]);
 	write_PETSC_vector(m_null_coupled_vecs[0],output_filename,m_comm.rank(),m_comm.get());
 
-	// DEBUG print
-	// write_PETSC_vector_MATLAB(m_null_coupled_vecs[0],m_scratch_folder_path + "/rb_coupl_vector_0_n_" + std::to_string(m_null_nb_vecs) + ".m",m_comm.get());
-	// write_PETSC_vector_MATLAB(m_null_vecs[0],m_scratch_folder_path + "/rb_vector_0_n_" + std::to_string(m_null_nb_vecs) + ".m",m_comm.get());
-
 	// Read and calculate the rest of the nullspace vectors
 	for(int iii = 1; iii < m_null_nb_vecs; ++iii)
 	{
@@ -323,10 +325,6 @@ void FETI_Operations::set_null_space(const std::string& input_filename_base, int
 		MatMult(*coupling_matrix,m_null_vecs[iii],m_null_coupled_vecs[iii]);
 
 		write_PETSC_vector(m_null_coupled_vecs[iii],output_filename,m_comm.rank(),m_comm.get());
-
-		// DEBUG print
-		// write_PETSC_vector_MATLAB(m_null_coupled_vecs[iii],m_scratch_folder_path + "/rb_coupl_vector_" + std::to_string(iii) + "_n_" + std::to_string(m_null_nb_vecs) + ".m",m_comm.get());
-		// write_PETSC_vector_MATLAB(m_null_vecs[iii],m_scratch_folder_path + "/rb_vector_" + std::to_string(iii) + "_n_" + std::to_string(m_null_nb_vecs) + ".m",m_comm.get());
 	}
 
 	// Build the LOCAL dense matrix
@@ -353,9 +351,6 @@ void FETI_Operations::set_null_space(const std::string& input_filename_base, int
 	if(m_comm.rank() == 0)
 	{
 		write_PETSC_matrix(m_inv_RITRI_mat,m_scratch_folder_path + "/rb_inv_RITRI.petscmat",0,PETSC_COMM_SELF);
-
-		// DEBUG print
-		// write_PETSC_matrix_MATLAB(m_inv_RITRI_mat,m_scratch_folder_path + "/rb_inv_RITRI.m",PETSC_COMM_SELF);
 	}
 
 	// Set up flag

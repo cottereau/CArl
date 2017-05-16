@@ -66,9 +66,11 @@ int main(int argc, char** argv) {
 
 	// --- Multiply ...
 	coupl_mat.vector_mult(output_vec,input_vec);
-
-	// Only print these for debugging
+	
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
 	output_vec.print_matlab(input_params.output_base + "_output_vec.m");
+#endif
 
 	// Export the solution vector
 	carl::write_PETSC_vector(output_vec, input_params.output_base + "_output_vec.petscvec");

@@ -296,8 +296,18 @@ int main(int argc, char** argv) {
 			inter_mediator_micro);
 
 	// Print matrices!
-	CoupledMatrices.print_matrices_matlab("MicroSys",input_params.output_base);
-	CoupledMatrices.print_PETSC_matrices("MicroSys",input_params.output_base);
+	if(rank == 0)
+	{
+		std::string command_string = "mkdir -p " + input_params.output_folder;
+		carl::exec_command(command_string.c_str());
+	}
+	WorldComm.barrier();
+
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
+	CoupledMatrices.print_matrices_matlab("MicroSys",input_params.output_folder);
+#endif
+	CoupledMatrices.print_PETSC_matrices("MicroSys",input_params.output_folder);
 
 	return 0;
 }

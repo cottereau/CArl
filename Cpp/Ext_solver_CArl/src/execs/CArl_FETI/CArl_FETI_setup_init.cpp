@@ -58,7 +58,10 @@ int main(int argc, char** argv) {
 	// --- Calculate phi(0), if needed
 	if(input_params.bUseRigidBodyModes)
 	{
-		carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path,input_params.coupling_path_base);
+		carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path,input_params.coupling_folder_path);
+
+		// --- Define if the rb modes will be used or not
+		feti_op.using_rb_modes(input_params.bUseRigidBodyModes);
 
 		// Read the matrices
 		feti_op.set_coupling_matrix_R_micro();
@@ -75,12 +78,18 @@ int main(int argc, char** argv) {
 		feti_op.export_ext_solver_rhs_Ct_phi();
 	}
 
-	// // --- Launch the "init_script.sh" script --- ONLY ON THE FIRST PROC!
-	// if(WorldComm.rank() == 0)
-	// {
-	// 	std::string init_script_command = ". " + input_params.scratch_folder_path + "/FETI_init_script.sh";
-	// 	carl::exec_command(init_script_command);
-	// }
+	// --- Launch the "init_script.sh" script --- ONLY ON THE FIRST PROC!
+	if(WorldComm.rank() == 0)
+	{
+		std::string init_script_command = ". " + input_params.scratch_folder_path + "/FETI_init_script.sh";
+		if(input_params.scheduler == carl::ClusterSchedulerType::LOCAL)
+		{
+			std::cout << " !!! LOCAL job 'scheduler: Run the following script manually: " << std::endl;
+			std::cout << init_script_command << std::endl << std::endl;
+		} else {
+			carl::exec_command(init_script_command);
+		}
+	}
 
 	return 0;
 }

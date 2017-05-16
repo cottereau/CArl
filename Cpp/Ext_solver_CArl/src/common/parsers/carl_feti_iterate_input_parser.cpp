@@ -16,7 +16,14 @@ void get_input_params(GetPot& field_parser,
 	if (field_parser.search(1, "ClusterSchedulerType")) {
 		std::string cluster_scheduler_type;
 		cluster_scheduler_type = field_parser.next(cluster_scheduler_type);
-		if(cluster_scheduler_type == "PBS")
+		if(cluster_scheduler_type == "LOCAL")
+		{
+			std::cout << " !!! WARNING: " << std::endl;
+			std::cout << "        Using the LOCAL job 'scheduler'. You will have to launch each script" << std::endl;
+			std::cout << "     MANUALLY!!! Reason: MPI does not support recursive 'mpirun' calls" << std::endl;
+			input_params.scheduler = carl::ClusterSchedulerType::LOCAL;
+		}
+		else if(cluster_scheduler_type == "PBS")
 			input_params.scheduler = carl::ClusterSchedulerType::PBS;
 		else if(cluster_scheduler_type == "SLURM")
 			input_params.scheduler = carl::ClusterSchedulerType::SLURM;
@@ -33,9 +40,9 @@ void get_input_params(GetPot& field_parser,
 		homemade_error_msg("Missing the external scratch folder path!");
 	}
 
-	if (field_parser.search(1, "CouplingMatricesBase")) {
-		input_params.coupling_path_base = field_parser.next(
-				input_params.coupling_path_base);
+	if (field_parser.search(1, "CouplingMatricesFolder")) {
+		input_params.coupling_folder_path = field_parser.next(
+				input_params.coupling_folder_path);
 	} else {
 		homemade_error_msg("Missing the coupling matrices path!");
 	}
@@ -67,7 +74,7 @@ void get_input_params(GetPot& field_parser,
 	input_params.CG_coupled_conv_rel = 1e-5;
 	input_params.CG_coupled_div = 1e5;
 	input_params.CG_coupled_conv_max = 1e4;
-	input_params.CG_coupled_conv_corr =1e-6;
+	input_params.CG_coupled_conv_corr =1e-5;
 
 	if( field_parser.search(1,"CoupledConvAbs") )
 	{

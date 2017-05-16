@@ -79,8 +79,10 @@ int main(int argc, char** argv) {
 
 	KSP_solver.print_converged_reason();
 
-	// Only print these for debugging
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
 	sys_sol_vec.print_matlab(input_params.output_base + "_sys_sol_vec.m");
+#endif
 
 	// Export the solution vector
 	carl::write_PETSC_vector(sys_sol_vec, input_params.output_base + "_sys_sol_vec.petscvec");

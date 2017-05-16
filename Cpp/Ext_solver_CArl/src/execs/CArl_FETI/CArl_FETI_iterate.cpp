@@ -6,7 +6,7 @@
  *  carl::get_input_params(GetPot& field_parser, feti_iterate_params& input_params).
  *  
  *  It will use the following files ... 
- *  * ... from the `input_params.coupling_path_base` folder:
+ *  * ... from the `input_params.coupling_folder_path` folder:
  *    + coupling matrices C_1 and C_2. *Files*:
  *      - `coupling_matrix_macro.petscmat`
  *      - `coupling_matrix_micro.petscmat`
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
 	get_input_params(field_parser, input_params);
 
 	// Object containing the FETI operations
-	carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path,input_params.coupling_path_base);
+	carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path,input_params.coupling_folder_path);
 
 	// --- Define if the rb modes will be used or not
 	feti_op.using_rb_modes(input_params.bUseRigidBodyModes);
@@ -184,42 +184,56 @@ int main(int argc, char** argv) {
 		current_iteration_status = feti_op.check_convergence(input_params.CG_coupled_conv_rel, input_params.CG_coupled_conv_abs, input_params.CG_coupled_conv_max, input_params.CG_coupled_div);
 	}
 
+	// Print the current values of the convergence parameters
+	feti_op.print_previous_iters_conv( /* nb. of iterations = 5 */);
+
 	switch (current_iteration_status)
 	{
 		case carl::IterationStatus::ITERATING :
-				// --- Continue the iteration	
+				// --- Continue the iteration
+
 				// Export the Ct_i * p(kkk+1) vectors
 				feti_op.export_ext_solver_rhs_Ct_p();
 
-				// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
-				// if(WorldComm.rank() == 0)
-				// {
-				// 	std::string iter_script_command = ". " + input_params.scratch_folder_path + "/FETI_iter_script.sh";
-				// 	carl::exec_command(iter_script_command);
-				// }
+				// --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
+				if(WorldComm.rank() == 0)
+				{
+					std::string iter_script_command = ". " + input_params.scratch_folder_path + "/FETI_iter_script.sh";
+					if(input_params.scheduler == carl::ClusterSchedulerType::LOCAL)
+					{
+						std::cout << " !!! LOCAL job 'scheduler: Run the following script manually: " << std::endl;
+						std::cout << iter_script_command << std::endl << std::endl;
+					} else {
+						carl::exec_command(iter_script_command);
+					}
+				}
 				break;
 		case carl::IterationStatus::CONVERGED :
 				// --- Well ... converged!
+
 				// Export the Ct_i * phi(kkk+1) vectors
 				feti_op.export_ext_solver_rhs_Ct_phi();
 
 				// Export the rigid body modes correction vector
 				feti_op.export_rb_correction_vector();
 				
-				// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
-				// if(WorldComm.rank() == 0)
-				// {
-				// 	std::string sol_script_command = ". " + input_params.scratch_folder_path + "/FETI_sol_script.sh";
-				// 	carl::exec_command(sol_script_command);
-				// }
+				// --- Launch the "sol_script.sh" script --- ONLY ON THE FIRST PROC!
+				if(WorldComm.rank() == 0)
+				{
+					std::string sol_script_command = ". " + input_params.scratch_folder_path + "/FETI_sol_script.sh";
+					if(input_params.scheduler == carl::ClusterSchedulerType::LOCAL)
+					{
+						std::cout << " !!! LOCAL job 'scheduler: Run the following script manually: " << std::endl;
+						std::cout << sol_script_command << std::endl << std::endl;
+					} else {
+						carl::exec_command(sol_script_command);
+					}
+				}
 				break;
 		case carl::IterationStatus::DIVERGED :
-				// --- Well, we have to stop here ...			
+				// --- Well, we have to stop here ...
 				break;
 	}
-
-	// Print the current values of the convergence parameters
-	feti_op.print_previous_iters_conv( /* nb. of iterations = 5 */);
 
 	return 0;
 }

@@ -28,7 +28,7 @@ struct feti_setup_finish_params {
 	int nb_of_rb_vectors;				///< [RB] Number of RB mode vectors.
 
 	// Coupling matrices path
-	std::string coupling_path_base;		///< Base of the coupling matrices path.
+	std::string coupling_folder_path;		///< Folder containing the coupling matrices.
 
 	carl::BaseCGPrecondType CG_precond_type;	///< [CG] Type of preconditionner.
 };
@@ -36,9 +36,9 @@ struct feti_setup_finish_params {
 /**	\brief Parser function for the coupled solver test programs.
  *	
  *	Required parameters:
- *    - `ClusterSchedulerType` : scheduler type. *Values*: PBS or SLURM (code not implemented for the later yet).
+ *    - `ClusterSchedulerType` : scheduler type. *Values*: LOCAL, PBS or SLURM (code not implemented for the later yet, `LOCAL` runs the code without a scheduler).
  *	  - `ScratchFolderPath` : path to the folder where the temporary files used by the coupled solver will be saved.
- *    - `CouplingMatricesBase` : filename base of the coupling matrices files.
+ *    - `CouplingMatricesFolder` : path to the folder containing the coupling matrices.
  *  + FETI / CG optional parameters:
  *    - `CGPreconditionerType` : CG preconditioner type. *Values*: "NONE", "Coupling_operator" or "Coupling_operator_jacobi".
  *

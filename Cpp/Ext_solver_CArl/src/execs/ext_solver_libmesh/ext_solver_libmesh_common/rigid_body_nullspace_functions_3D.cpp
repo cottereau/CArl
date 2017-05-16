@@ -61,9 +61,13 @@ void write_rigid_body_vectors(MatNullSpace& nullsp_sys, const std::string output
 	for(int iii = 0; iii < nullsp_nvecs; ++iii)
 	{
 		filename = output_base + "_rb_vector_" + std::to_string(iii) + "_n_" + std::to_string(nullsp_nvecs);
-		carl::write_PETSC_vector_MATLAB(nullsp_vecs[iii],filename + ".m",PETSC_COMM_WORLD);
 
 		// Export the RB vector
 		carl::write_PETSC_vector(nullsp_vecs[iii], filename + ".petscvec",rank,PETSC_COMM_WORLD);
+
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
+		carl::write_PETSC_vector_MATLAB(nullsp_vecs[iii],filename + ".m",PETSC_COMM_WORLD);
+#endif
 	};
 };

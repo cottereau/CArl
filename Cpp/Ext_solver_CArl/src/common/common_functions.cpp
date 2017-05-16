@@ -10,6 +10,9 @@ std::string carl::ClusterSchedulerType_to_string(ClusterSchedulerType input)
 {
 	switch (input)
 	{
+		case ClusterSchedulerType::LOCAL :	return "LOCAL";
+						break;
+
 		case ClusterSchedulerType::PBS :	return "PBS";
 						break;
 

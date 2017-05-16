@@ -38,7 +38,7 @@ struct coupling_assemble_coupling_input_params {
 	double coupling_width;		///< Width  of the coupling region.
 	double coupling_rigidity; 	///< Rigidity used for the coupling matrix.
 
-	std::string output_base; 	///< Output filename base.
+	std::string output_folder; 	///< Path to output folder.
 
 };
 
@@ -55,7 +55,7 @@ struct coupling_assemble_coupling_input_params {
  *
  *  Optional parameters:
  *  + Output:
- *    - `OutputBase` or `--output` : base of the output files (including folders). *Default*: `coupling_matrix`.
+ *    - `OutputFolder` or `--output` : base of the output folder. *Default*: "".
  *  + Restriction meshes and tables:
  *	  - `Mesh_A_Restriction`, `-mAR` or `--meshAR` : path to the restricted mesh A (formed by elements of the mesh A intersecting the coupling region). *Default*: `[InterBase]_A_restriction.msh`.
  *	  - `Mesh_B_Restriction`, `-mBR` or `--meshBR` : path to the restricted mesh B (formed by elements of the mesh A intersecting the coupling region). *Default*: `[InterBase]_B_restriction.msh`.

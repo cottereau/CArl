@@ -51,12 +51,12 @@ void get_assemble_coupling_input_params(GetPot& field_parser,
 	}
 
 	// Output
-	if (field_parser.search(3, "--output", "-mO", "OutputBase"))
+	if (field_parser.search(3, "--output", "-mO", "OutputFolder"))
 	{
-		input_params.output_base = field_parser.next(
-			input_params.output_base);
+		input_params.output_folder = field_parser.next(
+			input_params.output_folder);
 	} else {
-		input_params.output_base = "coupling_matrix";
+		input_params.output_folder = "";
 	}
 
 	if (field_parser.search(3, "--meshAR", "-mAR", "Mesh_A_Restriction")) {

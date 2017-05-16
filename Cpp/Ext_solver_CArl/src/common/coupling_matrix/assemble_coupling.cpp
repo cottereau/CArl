@@ -381,9 +381,12 @@ namespace carl
 		libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix_mediator=
 								* m_couplingMatrixMap_mediator_mediator[name];
 
-		CouplingTestMatrix_BIG.print_matlab(outputRoot + "_macro.m");
-		CouplingTestMatrix_micro.print_matlab(outputRoot + "_micro.m");
-		CouplingTestMatrix_mediator.print_matlab(outputRoot + "_mediator.m");
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
+		CouplingTestMatrix_BIG.print_matlab(outputRoot + "/coupling_matrix_macro.m");
+		CouplingTestMatrix_micro.print_matlab(outputRoot + "/coupling_matrix_micro.m");
+		CouplingTestMatrix_mediator.print_matlab(outputRoot + "/coupling_matrix_mediator.m");
+#endif
 	}
 
 	void assemble_coupling_matrices::print_PETSC_matrices(const std::string& name, const std::string& outputRoot)
@@ -395,9 +398,9 @@ namespace carl
 		libMesh::PetscMatrix<libMesh::Number>& CouplingTestMatrix_mediator=
 								* m_couplingMatrixMap_mediator_mediator[name];
 
-		write_PETSC_matrix(CouplingTestMatrix_BIG.mat(), outputRoot + "_macro.petscmat",m_comm->rank(),m_comm->get());
-		write_PETSC_matrix(CouplingTestMatrix_micro.mat(), outputRoot + "_micro.petscmat",m_comm->rank(),m_comm->get());
-		write_PETSC_matrix(CouplingTestMatrix_mediator.mat(), outputRoot + "_mediator.petscmat",m_comm->rank(),m_comm->get());
+		write_PETSC_matrix(CouplingTestMatrix_BIG.mat(), outputRoot + "/coupling_matrix_macro.petscmat",m_comm->rank(),m_comm->get());
+		write_PETSC_matrix(CouplingTestMatrix_micro.mat(), outputRoot + "/coupling_matrix_micro.petscmat",m_comm->rank(),m_comm->get());
+		write_PETSC_matrix(CouplingTestMatrix_mediator.mat(), outputRoot + "/coupling_matrix_mediator.petscmat",m_comm->rank(),m_comm->get());
 	}
 
 	void assemble_coupling_matrices::use_H1_coupling(std::string name)

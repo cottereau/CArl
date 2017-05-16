@@ -33,8 +33,8 @@ struct feti_setup_init_params {
 	std::string scratch_folder_path;	///< Path to the folder which will be used to save the temporary files during the solve operation
 	std::string script_filename; ///< Path to the file used to generate the scripts.
 
-	// Path to the "final" output base
-	std::string output_base;			///< Base of the final output path.
+	// Path to the "final" output folder
+	std::string output_folder;			///< Path to the coupled solution folder.
 
 
 	// Rigid body mode options for the micro system
@@ -44,7 +44,7 @@ struct feti_setup_init_params {
 	int nb_of_rb_vectors;				///< [RB] Number of RB mode vectors.
 
 	// Coupling matrices path
-	std::string coupling_path_base;		///< Base of the coupling matrices path.
+	std::string coupling_folder_path;		///< Path to the folder containing the coupling matrices.
 
 	// --- Parameters used to set up the other CArl_FETI input files
 
@@ -62,7 +62,7 @@ struct feti_setup_init_params {
  *	
  *	Required parameters:
  *  + External solvers
- *    - `ClusterSchedulerType` : scheduler type. *Values*: PBS or SLURM (code not implemented for the later yet).
+ *    - `ClusterSchedulerType` : scheduler type. *Values*: LOCAL, PBS or SLURM (code not implemented for the later yet, `LOCAL` runs the code without a scheduler).
  *	  - `ExtSolverA` : command line for the external solver for system A.
  *	  - `ExtSolverB` : command line for the external solver for system B.
  *    - `ExtSolverAType` : type of external solver used for system A. *Values*: `LIBMESH_LINEAR`.
@@ -72,8 +72,8 @@ struct feti_setup_init_params {
  *   + Coupled solver
  *	  - `ScratchFolderPath` : path to the folder where the temporary files used by the coupled solver will be saved.
  *    - `ScriptFile` : path to the file used to generate the scripts.
- *    - `CouplingMatricesBase` : filename base of the coupling matrices files.
- *	  - `OutputBase` : base of the final output files.
+ *    - `CouplingMatricesFolder` : path to the folder containing the coupling matrices.
+ *	  - `OutputFolder` : path to the coupled solution folder.
  *
  *  Boolean flags:
  *    - `UseRigidBodyModesB` : use the rigid body modes for system B.

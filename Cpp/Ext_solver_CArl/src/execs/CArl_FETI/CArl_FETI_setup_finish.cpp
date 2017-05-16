@@ -6,7 +6,7 @@
  *  carl::get_input_params(GetPot& field_parser, feti_setup_finish_params& input_params).
  *  
  *  It will use the following files ... 
- *  * ... from the `input_params.coupling_path_base` folder:
+ *  * ... from the `input_params.coupling_folder_path` folder:
  *    + coupling matrices C_1, C_2 and C_M (the latter used for the preconditioner). *Files*:
  *      - `coupling_matrix_macro.petscmat`
  *      - `coupling_matrix_micro.petscmat`
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
 	get_input_params(field_parser, input_params);
 
 	// Object containing the FETI operations
-	carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path,input_params.coupling_path_base);
+	carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path,input_params.coupling_folder_path);
 
 	// --- Define if the rb modes will be used or not
 	feti_op.using_rb_modes(input_params.bUseRigidBodyModes);
@@ -131,12 +131,19 @@ int main(int argc, char** argv) {
 	// Export the scalar data, rho(0) and, if pertinent, |RB_corr|
 	feti_op.export_initial_scalar_data();
 
-	// // --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
-	// if(WorldComm.rank() == 0)
-	// {
-	// 	std::string iter_script_command = ". " + input_params.scratch_folder_path + "/FETI_iter_script.sh";
-	// 	carl::exec_command(iter_script_command);
-	// }
+	// --- Launch the "iter_script.sh" script --- ONLY ON THE FIRST PROC!
+	if(WorldComm.rank() == 0)
+	{
+		std::string iter_script_command = ". " + input_params.scratch_folder_path + "/FETI_iter_script.sh";
+		if(input_params.scheduler == carl::ClusterSchedulerType::LOCAL)
+		{
+			std::cout << " !!! LOCAL test: MPI commands cannot be launched recursivelly !!! " << std::endl;
+			std::cout << "     Run the following program by hand: " << std::endl;
+			std::cout << iter_script_command << std::endl;
+		} else {
+			carl::exec_command(iter_script_command);
+		}
+	}
 
 	return 0;
 }

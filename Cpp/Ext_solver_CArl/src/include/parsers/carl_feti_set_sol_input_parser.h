@@ -22,15 +22,15 @@ struct feti_set_sol_params {
 	// Rigid body mode options for the micro system
 	bool bUseRigidBodyModes;			///< [RB] Use the rigid body modes for the micro system?
 
-	// Path to the "final" output base
-	std::string output_base;			///< Base of the final output path.
+	// Path to the coupled outup folder.
+	std::string output_folder;			///< Path to the coupled outup folder.
 };
 
 /**	\brief Parser function for the coupled solver test programs.
  *	
  *	Required parameters:
  *	  - `ScratchFolderPath` : path to the folder where the temporary files used by the coupled solver will be saved.
- *	  - `OutputBase` : base of the final output files.
+ *	  - `OutputFolder` : path to the coupled outup folder.
  *
  *  Boolean flags:
  *    - `UseRigidBodyModesB` : use the rigid body modes for system B.

@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
 	feti_op.calculate_coupled_solution();
 
 	// Export it (finallly!)
-	feti_op.export_coupled_solution(input_params.output_base);
+	feti_op.export_coupled_solution(input_params.output_folder);
 
 	return 0;
 }
