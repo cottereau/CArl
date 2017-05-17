@@ -45,10 +45,16 @@ void FETI_Operations::calculate_null_space_phi_0(const std::string& force_path)
 	VecRestoreArray(aux_null_vec_input,&dummy_array_input);
 
 	// aux_vec_output = inv_RITRI_mat * aux_vec_input
-	// -> Completely local operation!
-	MatMult(m_inv_RITRI_mat,aux_null_vec_input,aux_null_vec_output);
+        // -> Calculate aux_vec_output on the first proc, and then broadcast the value
+        /*    
+         *    Originally, this operation was done locally, but due to a syncing issue,
+         *    we have to do it this way to avoid a "Value must the same in all processors" error
+         *    when calling VecMAXPY below.
+         */
+        PETSC_MatMultScale_Bcast(m_inv_RITRI_mat,aux_null_vec_input,aux_null_vec_output,1);
 
-	// vec_out = sum ( aux_null_vec_output[i] * vec_RC[i])
+	m_comm.barrier();
+	
 	// -> This should have no communications at all!
 	VecZeroEntries(m_current_phi);
 
@@ -298,11 +304,18 @@ void FETI_Operations::calculate_rb_correction()
 	PetscScalar *dummy_seq_array;
 	VecGetArray(dummy_seq_vec,&dummy_seq_array);
 	VecMDot(m_current_residual,m_null_nb_vecs,m_null_coupled_vecs,dummy_seq_array);
+
 	VecRestoreArray(dummy_seq_vec,&dummy_seq_array);
 
 	// dummy_seq_vec_bis = inv_RITRI_mat * dummy_seq_vec
-	// -> Completely local operation!
-	MatMult(m_inv_RITRI_mat,dummy_seq_vec,dummy_seq_vec_bis);
+        /*    
+         *    Originally, this operation was done locally, but due to a syncing issue,
+         *    we have to do it this way to avoid a "Value must the same in all processors" error
+         *    when calling VecMAXPY below.
+         */
+        PETSC_MatMultScale_Bcast(m_inv_RITRI_mat,dummy_seq_vec,dummy_seq_vec_bis,1);
+
+	m_comm.barrier();
 
 	// m_current_rb_correction = sum ( dummy_seq_vec_bis[i] * m_null_vecs[i])
 	// -> This should have no communications at all!

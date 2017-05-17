@@ -110,9 +110,16 @@ void FETI_Operations::apply_RB_projection(Vec vec_in, Vec vec_out)
 	VecRestoreArray(dummy_seq_vec,&dummy_seq_array);
 
 	// dummy_seq_vec_bis = - inv_RITRI_mat * dummy_seq_vec
-	// -> Completely local operation!
-	MatMult(m_inv_RITRI_mat,dummy_seq_vec,dummy_seq_vec_bis);
-	VecScale(dummy_seq_vec_bis,-1);
+	// -> Calculate dummy_seq_vec_bis on the first proc, and then broadcast the value
+	
+	/*    
+	 *    Originally, this operation was done locally, but due to a syncing issue,
+	 *    we have to do it this way to avoid a "Value must the same in all processors" error
+	 *    when calling VecMAXPY below.
+	 */ 
+	PETSC_MatMultScale_Bcast(m_inv_RITRI_mat,dummy_seq_vec,dummy_seq_vec_bis,-1);
+
+	m_comm.barrier();
 
 	// vec_out = vec_in + sum ( dummy_seq_vec_bis[i] * vec_RC[i])
 	// -> This should have no communications at all!

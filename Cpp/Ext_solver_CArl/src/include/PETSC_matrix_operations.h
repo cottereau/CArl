@@ -76,6 +76,8 @@ void attach_rigid_body_mode_vectors(libMesh::PetscMatrix<libMesh::Number>& mat_s
 void create_PETSC_dense_matrix_from_vectors(const Vec *vecs_in, int nb_vecs, Mat& matrix_out);
 
 void PETSC_invert_dense_matrix(Mat& matrix_in, Mat& matrix_out);
+
+void PETSC_MatMultScale_Bcast(Mat mat_seq, Vec vec_seq_in, Vec vec_seq_out, double a_const);
 }
 
 

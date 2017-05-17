@@ -519,3 +519,46 @@ void carl::PETSC_invert_dense_matrix(Mat& matrix_in, Mat& matrix_out)
 	// Cleanup
 	MatDestroy(&Id_mat);
 }
+
+void carl::PETSC_MatMultScale_Bcast(Mat mat_seq, Vec vec_seq_in, Vec vec_seq_out, double a_const)
+{
+	// Calculate the product vec_seq_out = a_const * (mat_seq * vec_seq_in)
+	// on the first processor, and then sync the result
+	
+	// First, check if the matrices and vectors are sequential
+	MatType mat_type_query;
+	VecType vec_in_type_query;
+	VecType vec_out_type_query;
+
+	MatGetType(mat_seq,&mat_type_query);
+	VecGetType(vec_seq_in,&vec_in_type_query);
+	VecGetType(vec_seq_out,&vec_out_type_query);
+
+	homemade_assert_msg(std::strcmp(mat_type_query,MATSEQDENSE) == 0 ,"Matrix is not dense and sequential");
+	homemade_assert_msg(std::strcmp(vec_in_type_query,VECSEQ) == 0 ,"Input vector is not sequential");
+	homemade_assert_msg(std::strcmp(vec_out_type_query,VECSEQ) == 0 ,"Output vector is not sequential");
+
+	// Get the vector dimension
+	PetscInt vec_dim = 0;
+	VecGetSize(vec_seq_in,&vec_dim);
+
+	// Get the ranks
+	int rank;
+	MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+
+	// Set the dummy pointer and vector
+	PetscScalar * dummy_seq_array;
+	
+	// Do the product in the first processor
+	if(rank == 0)
+	{
+		MatMult(mat_seq,vec_seq_in,vec_seq_out);
+		VecScale(vec_seq_out,a_const);
+	}
+
+	// Sync
+	VecGetArray(vec_seq_out,&dummy_seq_array);
+	MPI_Bcast(dummy_seq_array, vec_dim, MPIU_SCALAR, 0, PETSC_COMM_WORLD);
+	MPI_Barrier(PETSC_COMM_WORLD);
+	VecRestoreArray(vec_seq_out,&dummy_seq_array);
+}
