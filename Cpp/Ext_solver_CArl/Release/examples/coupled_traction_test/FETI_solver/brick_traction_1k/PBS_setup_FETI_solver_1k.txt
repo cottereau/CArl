@@ -1,5 +1,5 @@
 ### Required parameters
-ClusterSchedulerType LOCAL
+ClusterSchedulerType PBS
 
 ### External solvers - must set the commands between ' ' !!!
 ExtSolverA 'mpirun -n 4 ./libmesh_solve_linear_system -i ' 

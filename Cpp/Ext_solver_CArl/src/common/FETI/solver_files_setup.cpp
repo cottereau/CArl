@@ -351,7 +351,7 @@ void Solver_Files_Setup::generate_FETI_scripts_PBS()
 		// Set the u0_i scripts
 		pbs_output = m_input_params.scratch_folder_path + "/output_CArl_FETI_setup_finish.txt";
 		pbs_error  = m_input_params.scratch_folder_path + "/error_CArl_FETI_setup_finish.txt";
-		command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + "./CArl_FETI_setup_finish -i " +
+		command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + " ./CArl_FETI_setup_finish -i " +
 							m_CArl_FETI_setup_finish_input_filename;
 
 		this->print_PBS_script(	m_CArl_FETI_setup_finish_script_filename, "CArl_setup_f",
@@ -360,7 +360,7 @@ void Solver_Files_Setup::generate_FETI_scripts_PBS()
 		
 		pbs_output = m_input_params.scratch_folder_path + "/output_CArl_FETI_iterate.txt";
 		pbs_error  = m_input_params.scratch_folder_path + "/error_CArl_FETI_iterate.txt";
-		command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + "./CArl_FETI_iterate -i " +
+		command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + " ./CArl_FETI_iterate -i " +
 							m_CArl_FETI_iterate_input_filename;
 
 		this->print_PBS_script(	m_CArl_FETI_iterate_script_filename, "CArl_iter",
@@ -369,7 +369,7 @@ void Solver_Files_Setup::generate_FETI_scripts_PBS()
 
 		pbs_output = m_input_params.scratch_folder_path + "/output_CArl_FETI_solution.txt";
 		pbs_error  = m_input_params.scratch_folder_path + "/error_CArl_FETI_solution.txt";
-		command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + "./CArl_FETI_solution -i " +
+		command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + " ./CArl_FETI_solution -i " +
 							m_CArl_FETI_solution_input_filename;
 
 		this->print_PBS_script(	m_CArl_FETI_solution_script_filename, "CArl_sol",
@@ -463,17 +463,17 @@ void Solver_Files_Setup::generate_FETI_launch_scripts_PBS()
 		std::ofstream FETI_init_script(m_FETI_init_launch_script_filename);
 		FETI_init_script << "#!/bin/bash" << std::endl;
 		FETI_init_script << std::endl;
-		FETI_init_script << "job1_A = `qsub " << m_ext_solver_u0_A_script_filename << "`" << std::endl;
-		FETI_init_script << "job1_B = `qsub " << m_ext_solver_u0_B_script_filename << "`" << std::endl;
+		FETI_init_script << "job1_A=`qsub " << m_ext_solver_u0_A_script_filename << "`" << std::endl;
+		FETI_init_script << "job1_B=`qsub " << m_ext_solver_u0_B_script_filename << "`" << std::endl;
 		// --- We will only need job2_i if the rigid body modes are needed
 		if(m_input_params.bUseRigidBodyModes)
 		{
-			FETI_init_script << "job2_A = `qsub " << m_ext_solver_A_script_filename << "`" << std::endl;
-			FETI_init_script << "job2_B = `qsub " << m_ext_solver_B_script_filename << "`" << std::endl;
-			FETI_init_script << "job3 = `qsub -W depend=afterok:$job1_A:$job1_B:$job2_A:$job2_B "
+			FETI_init_script << "job2_A=`qsub " << m_ext_solver_A_script_filename << "`" << std::endl;
+			FETI_init_script << "job2_B=`qsub " << m_ext_solver_B_script_filename << "`" << std::endl;
+			FETI_init_script << "job3=`qsub -W depend=afterok:$job1_A:$job1_B:$job2_A:$job2_B "
 							<< m_CArl_FETI_setup_finish_script_filename << "`" << std::endl;
 		} else {
-			FETI_init_script << "job3 = `qsub -W depend=afterok:$job1_A:$job1_B "
+			FETI_init_script << "job3=`qsub -W depend=afterok:$job1_A:$job1_B "
 							<< m_CArl_FETI_setup_finish_script_filename << "`" << std::endl;
 		}
 		FETI_init_script.close();
@@ -481,18 +481,18 @@ void Solver_Files_Setup::generate_FETI_launch_scripts_PBS()
 		std::ofstream FETI_iter_script(m_FETI_iter_launch_script_filename);
 		FETI_iter_script << "#!/bin/bash" << std::endl;
 		FETI_iter_script << std::endl;
-		FETI_iter_script << "job4_A = `qsub " << m_ext_solver_A_script_filename << "`" << std::endl;
-		FETI_iter_script << "job4_B = `qsub " << m_ext_solver_B_script_filename << "`" << std::endl;
-		FETI_iter_script << "job5 = `qsub -W depend=afterok:$job4_A:$job4_B "
+		FETI_iter_script << "job4_A=`qsub " << m_ext_solver_A_script_filename << "`" << std::endl;
+		FETI_iter_script << "job4_B=`qsub " << m_ext_solver_B_script_filename << "`" << std::endl;
+		FETI_iter_script << "job5=`qsub -W depend=afterok:$job4_A:$job4_B "
 							<< m_CArl_FETI_iterate_script_filename << "`" << std::endl;
 		FETI_iter_script.close();
 
 		std::ofstream FETI_set_sol_script(m_FETI_sol_launch_script_filename);
 		FETI_set_sol_script << "#!/bin/bash" << std::endl;
 		FETI_set_sol_script << std::endl;
-		FETI_set_sol_script << "job6_A = `qsub " << m_ext_solver_A_script_filename << "`" << std::endl;
-		FETI_set_sol_script << "job6_B = `qsub " << m_ext_solver_B_script_filename << "`" << std::endl;
-		FETI_set_sol_script << "job7 = `qsub -W depend=afterok:$job4_A:$job4_B "
+		FETI_set_sol_script << "job6_A=`qsub " << m_ext_solver_A_script_filename << "`" << std::endl;
+		FETI_set_sol_script << "job6_B=`qsub " << m_ext_solver_B_script_filename << "`" << std::endl;
+		FETI_set_sol_script << "job7=`qsub -W depend=afterok:$job6_A:$job6_B "
 							<< m_CArl_FETI_solution_script_filename << "`" << std::endl;
 		FETI_set_sol_script.close();
 	}

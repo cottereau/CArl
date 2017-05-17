@@ -1,9 +1,14 @@
-#PBS -l walltime=0:10:00
+#!/bin/bash
+
+#PBS -S /bin/bash
+#PBS -N test_i_1k
+#PBS -l walltime=3:59:00
 #PBS -q haswellq
 #PBS -P couest
 #PBS -l select=1:ncpus=4:mpiprocs=4
+#PBS -m abe
 
-# Charge the modules here
+# Chargement des modules
 module purge
 module load boost/1.61.0
 module load gcc/5.4.0
@@ -14,4 +19,7 @@ module load metis/5.1.0
 module load parmetis/4.0.3
 module load hdf5/1.8.16
 
+# On se place dans le repertoire depuis lequel le job a ete soumis
 cd $PBS_O_WORKDIR
+
+mpirun -np 4 ./CArl_build_intersections -i examples/coupled_traction_test/intersection/inter_traction_test_1k.txt
