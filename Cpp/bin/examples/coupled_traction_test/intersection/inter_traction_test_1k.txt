@@ -1,0 +1,24 @@
+### Required parameters
+# - Mesh files
+MeshA examples/coupled_traction_test/meshes/test_brick_A_1k.msh
+MeshB examples/coupled_traction_test/meshes/test_brick_B_1k.msh
+MeshC examples/coupled_traction_test/meshes/test_brick_C.msh
+
+### Optional parameters
+# - Output filename base
+OutputBase examples/coupled_traction_test/intersection/output/inter_1k/inter
+
+# - Meshing algorithm choice
+MeshingMethod CGAL
+
+# - Boolean flags, uncomment to activate
+
+# > Stitch together the intersection meshes? 
+#   (done in a single processor, can be numerically expensive)
+#StitchInterMeshes
+
+# > Verbose output?
+#   (prints coupling mesh partitioning before and after rebalancing)
+#VerboseOutput
+
+

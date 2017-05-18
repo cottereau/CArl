@@ -1,0 +1,25 @@
+### Required parameters
+ClusterSchedulerType PBS
+
+### External solvers - must set the commands between ' ' !!!
+ExtSolverA 'mpirun -n 4 ./libmesh_solve_linear_system -i ' 
+ExtSolverB 'mpirun -n 4 ./libmesh_solve_linear_system -i '
+
+ExtSolverAType LIBMESH_LINEAR
+ExtSolverBType LIBMESH_LINEAR
+
+ExtSolverAInput examples/coupled_traction_test/FETI_solver/brick_traction_1k/solve_traction_test_A_1k.txt
+ExtSolverBInput examples/coupled_traction_test/FETI_solver/brick_traction_1k/solve_traction_test_B_1k.txt
+
+### Coupld solver
+ScratchFolderPath examples/coupled_traction_test/FETI_solver/brick_traction_1k/scratch_folder
+ScriptFile examples/coupled_traction_test/FETI_solver/common_script.sh
+
+CouplingMatricesFolder examples/coupled_traction_test/FETI_solver/brick_traction_1k/coupling_matrices
+
+OutputFolder examples/coupled_traction_test/FETI_solver/brick_traction_1k/coupled_solution
+
+UseRigidBodyModesB 
+
+ExtForceSystemB examples/coupled_traction_test/FETI_solver/brick_traction_1k/system_matrices/traction_model_B_sys_rhs_vec.petscvec
+RBVectorBase examples/coupled_traction_test/FETI_solver/brick_traction_1k/system_matrices/traction_model_B_rb_vector

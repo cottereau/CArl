@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#PBS -S /bin/bash
+#PBS -N test_si_1k
+#PBS -l walltime=3:59:00
+#PBS -q haswellq
+#PBS -P couest
+#PBS -l select=1:ncpus=4:mpiprocs=4
+#PBS -m abe
+
+# Chargement des modules
+module purge
+module load boost/1.61.0
+module load gcc/5.4.0
+module load intel-compilers/16.0.3
+module load intel-mkl/11.3.3
+module load intel-mpi/5.1.2
+module load metis/5.1.0
+module load parmetis/4.0.3
+module load hdf5/1.8.16
+
+# On se place dans le repertoire depuis lequel le job a ete soumis
+cd $PBS_O_WORKDIR
+
+mpirun -np 4 ./CArl_FETI_setup_init -i examples/coupled_traction_test/FETI_solver/brick_traction_1k/PBS_setup_FETI_solver_1k.txt
