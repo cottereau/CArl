@@ -70,7 +70,9 @@ This code was not tested or compiled with other operational systems.
 The installation is done using [CMake](https://cmake.org) (version 3.4.2), and the following commands:
 
 `cd [CArl root directory]/Cpp/bin`
+
 `cmake ..`
+
 `make`
 
 This will compile the CArl software using the default system compilers and with the `Release` optimization flags (`-O3 -DNDEBUG`). If you want to change these, use the appropriate flags or an interface such as `ccmake` or `cmake-gui`.
