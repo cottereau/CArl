@@ -1,0 +1,96 @@
+/** \file mainpage.txt
+ * 
+ * \mainpage CArl (Code Arlequin) documentation
+ *
+ * This page contains the documentation and examples for the `CArl` library, an implementation of the Arlequin method based on libMesh and CGAL.
+ * 
+ * The classes of this library can be classified into three large groups: 
+ *  1. mesh intersection search and construction classes;
+ *  2. coupling matrix assemble and system initialization classes; and 
+ *  3. coupled system and external solvers.
+ *
+ * \section inter_classes Intersection classes
+ * \image html patches_final_article.png
+ *  
+ *  Code example: parallel_intersection_test.cpp
+ *
+ *  **Classes:**
+ *	+ carl::Intersection_Search : 
+ *    - Main user interface.
+ *    - Intersection search and construction algorithms.
+ *    - Generate local intersection tables and meshes.
+ *    - Method examples: carl::Intersection_Search::PreparePreallocationAndLoad, carl::Intersection_Search::BuildIntersections ...
+ *  + carl::Intersection_Tools :
+ *    - Methods to intersect elements, using CGAL's Nef polyhedrons.
+ *    - Method examples: carl::Intersection_Tools::libMesh_exact_do_intersect_inside_coupling, carl::Intersection_Tools::libMesh_exact_intersection_inside_coupling ...
+ *  + carl::Mesh_Intersection :
+ *    - Mesh the intersection polyhedrons, using either CGAL or libMesh / tetgen.
+ *    - Method examples: carl::Mesh_Intersection::triangulate_intersection, carl::Mesh_Intersection::increase_intersection_mesh ...
+ *  + carl::Patch_construction :
+ *    - Construction of the mesh patches, used to distribute the intersection search over the processors.
+ *    - Also contains interfaces needed for the "advancing front" intersection search method.
+ *    - Method examples: carl::Patch_construction::BuildPatch ...
+ *  + carl::Mesh_restriction :
+ *    - Construction of the restriction of a mesh to the coupling region.
+ *    - Derived from carl::Patch_construction.
+ *    - Method examples: carl::Mesh_restriction::BuildRestriction ...
+ *  + carl::Stitch_Meshes :
+ *    - Methods to stitch together meshes with compatible interfaces (such as the intersection meshes).
+ *    - As a by-product, it also contains methods to generate global intersection tables
+ *    - Method examples: carl::Stitch_Meshes::join_tables, carl::Stitch_Meshes::stitch_meshes ...
+ *
+ * \section coupling_assemble Coupling matrix assembly and system definition
+ * \image html function_projection.png
+ * 
+ *  Code example: carl_libmesh_fissure.cpp
+ *
+ *  **Classes:**
+ *	+ carl::coupled_system : 
+ *    - Main user interface.
+ *    - Contains the coupling matrices and their assemble algorithms.
+ *    - Contains pointers to the system objects (libMesh::EquationSystems)
+ *    - Contains pointers to the external system solver interfaces and to the coupled system solver (more about them further down).
+ *    - Method examples: carl::coupled_system::add_micro_EquationSystem, carl::coupled_system::add_Restricted_micro_EquationSystem, carl::coupled_system::assemble_coupling_elasticity_3D_parallel, carl::coupled_system::set_corrected_shapes ...
+ *  + carl::libMesh_fe_addresses_3 :
+ *    - Hides repeated libMesh-based code used to assemble the matrices: degree of freedom (DoF) tables, quadrature rules ...
+ *    - Method examples: carl::libMesh_fe_addresses_3::set_DoFs ...
+ *  + carl::coupling_matrices_3 :
+ *    - Fills the coupling matrices with the L2 and H1 terms.
+ *    - Method examples: carl::coupling_matrices::build_L2_coupling_matrix, carl::coupling_matrices::add_H1_coupling_matrix ...
+ *
+ * **Functions:**
+ * + Read and set the several tables used: intersection, weight parameter domains, equivalence between the full and restricted meshes ...
+ *   - carl::set_local_intersection_tables, carl::set_weight_function_domain_idx, carl::set_equivalence_tables ...
+ * + Calculate the L2 and H1 terms for a given quadrature point
+ *   - #L2_Coupling, #H1_Coupling_Extra_Term
+ *
+ * \section coupling_solver Coupled system and external solvers solvers
+ * \image html coupling_250_micro_deformed_with_macro_solid.png
+ *
+ *  Code example: carl_libmesh_fissure.cpp
+ *
+ *  **Classes:**
+ *  + carl::coupled_system :
+ *    - Main user interface.
+ *    - Calls the coupled system solver and the external solvers.
+ *    - Method examples: carl::coupled_system::set_CG_solver, carl::coupled_system::set_LATIN_solver, carl::coupled_system::solve ...
+ *  + carl::coupled_solver :
+ *    - Mostly a virtual class, contains common interfaces to different coupled solvers.
+ *      * carl::PETSC_CG_coupled_solver : CG / FETI solver implementation.
+ *      * carl::PETSC_LATIN_coupled_solver : LATIN solver implementation.
+ *    - Method examples: carl::coupled_solver::set_forces, carl::coupled_solver::set_matrices, carl::coupled_solver::solve ...
+ *  + carl::generic_solver_interface :
+ *    - Mostly a virtual class, contains common interfaces to different external solvers.
+ *      * carl::KSP_linear_solver : PETSC / libMesh linear Krylov solver interface.
+ *    - Method examples: carl::generic_solver_interface::apply_ZMinvZt, carl::generic_solver_interface::solve ...
+ *  + carl::base_CG_solver :
+ *    - Implementation of the conjugate gradient solver, including projection operations needed by the FETI coupled solver. Could be used to solve LATIN's decoupled step (partially implemented).
+ *    - Method examples: carl::base_CG_solver::set_solver_CG, carl::base_CG_solver::set_solver_LATIN, carl::base_CG_solver::apply_CG_nullspace_residual_projection, carl::base_CG_solver::solve ...
+ *
+ * \section todo Work to do ...
+ * 
+ *  + Better document the input / output files formats.
+ *  + Finish generalizing the external solver interfaces (internally, they are general, but the interfaces themselves are not complete).
+ *  + Set up the Amitex external solver interface.
+ *  + Re-implement the LATIN solver to use the CG solver.
+ */

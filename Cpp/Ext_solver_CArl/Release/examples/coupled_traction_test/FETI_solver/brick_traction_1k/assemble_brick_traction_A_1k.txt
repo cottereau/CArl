@@ -1,0 +1,10 @@
+### Required parameters
+# - System
+Mesh examples/coupled_traction_test/meshes/test_brick_A_1k.msh
+PhysicalParameters examples/coupled_traction_test/meshes/test_brick_I_1_physical.dat
+SystemType	Macro
+
+MeshWeight examples/coupled_traction_test/meshes/test_brick_mask.msh
+WeightIndexes examples/coupled_traction_test/meshes/test_brick_mask_idx.dat
+
+OutputBase examples/coupled_traction_test/FETI_solver/brick_traction_1k/system_matrices/traction_model_A
