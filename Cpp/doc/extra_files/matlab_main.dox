@@ -1,0 +1,34 @@
+/** \file matlab_main.dox
+
+\page matlab_main MATLAB implementation
+
+The MATLAB implementation of the CArl software can be found at the directory `MATLAB`. Currently, the software to which it is interfaced includes :
+
+1. a 1D/2D FEM acoustic code,
+1. a Timoschenko beam code, 
+1. an elastic code, and 
+1. Comsol (http://www.comsol.com).
+
+# INSTALLATION
+
+Before using the software, you should make sure that you update the matlab path with the appropriate directories. In matlab, run
+`>> addpath( genpath('install_dir_CArl/'));`
+where you replace `install_dir_CArl` by the full path to the directory `CArl/`
+
+Additionally, you might want to write this line in the startup file (generally located in `~/matlab/startup.m`)
+
+This code has not been extensively tested, but should run on Matlab versions R2013a and newer (mainly because the objects triangulation and delaunayTriangulation are required)
+
+To use the option __FE2D__ (optional), one should install and make available in the path the functions downloadable at http://www.mathworks.in/matlabcentral/fileexchange/27826-fast-assembly-of-stiffness-and-matrices-in-finite-element-method (by Talal Rahman and Jan Valdman)
+
+To use the option __beam__ (optional), one should install and make available in the path the functions downloadable at https://github.com/wme7/aero-matlab/tree/master/FEM/Timoshenko_beam (by Manuel Diaz and A Ferreira)
+
+To use the option __Comsol__ (optional), one should install and make available in the path COMSOL Multiphysics (see http://www.comsol.com/)
+
+# USE
+
+The main calling routine is `CArl.m`
+
+Some examples (in 1D and 2D) can be launched through use of the routine `Test.m` (see the corresponding help). The tests should run without any problem on computers with around 2Go.
+
+ */

@@ -1,0 +1,9 @@
+/** \file cpp_main.dox
+
+	\page cpp_main C++ implementation
+
+	- \subpage cpp_installation
+	- \subpage cpp_usage
+	- \subpage cpp_examples
+
+ */

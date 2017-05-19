@@ -1,0 +1,18 @@
+/** \file articles.dox
+
+\page articles References
+
+Original references for the theory are (among others)
+
+1. H. Ben Dhia. Multiscale mechanical problems: the Arlequin method, _Comptes Rendus de l'Academie des Sciences - Series IIB 326_ (1998), pp. 899-904.
+1. H. Ben Dhia, G. Rateau. The Arlequin method as a flexible engineering design tool, _Int. J. Numer. Meths. Engr._ 62 (2005), pp. 1442-1462.
+
+A non-exhaustive list of papers that make use of the software includes
+
+1. R. Cottereau, D. Clouteau, H. Ben Dhia, C. Zaccardi. _A stochastic-deterministic coupling method for continuum mechanics_, Comp. Meth. Appl. Mech. Engr. 200, pp. 3280-3288 (2011).
+2. R. Cottereau. _Numerical strategy for the unbiased homogenization of random materials_ , Int. J. Numer. Meth. Engr. 95(1), pp. 71-90 (2013).
+3. C. Zaccardi, L. Chamoin, R. Cottereau, H. Ben Dhia. _Error estimation and model adaptation for a stochastic-deterministic coupling method based on the Arlequin framework_ , Int. J. Numer. Meth. Engr. 96(2), pp. 87-109 (2013).
+4. Y. Le Guennec, R. Cottereau, D. Clouteau, C. Soize. _A coupling method for stochastic continuum models at different scales_ . Accepted for publication in Prob. Engr. Mech. (2013).
+5. T. Milanetto Schlittler, R. Cottereau. _Fully scalable implementation of a volume coupling scheme for the modeling of polycrystalline materials_ . Submited to Comp. Mech. (under review)
+
+ */
