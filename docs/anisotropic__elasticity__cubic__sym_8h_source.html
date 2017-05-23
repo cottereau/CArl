@@ -49,7 +49,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -110,7 +109,7 @@ $(document).ready(function(){initNavTree('anisotropic__elasticity__cubic__sym_8h
 <div class="title">anisotropic_elasticity_cubic_sym.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="anisotropic__elasticity__cubic__sym_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * anisotropic_elasticity_cubic_sym.h</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: Sep 4, 2016</span></div>
@@ -120,7 +119,7 @@ $(document).ready(function(){initNavTree('anisotropic__elasticity__cubic__sym_8h
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifndef COMMON_LIBMESH_CODE_ANISOTROPIC_ELASTICITY_CUBIC_SYM_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#define COMMON_LIBMESH_CODE_ANISOTROPIC_ELASTICITY_CUBIC_SYM_H_</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="carl__headers_8h.html">carl_headers.h</a>&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;carl_headers.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
 <div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="class_order4_tensor.html">   13</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_order4_tensor.html">Order4Tensor</a></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;{</div>
@@ -130,23 +129,23 @@ $(document).ready(function(){initNavTree('anisotropic__elasticity__cubic__sym_8h
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> m_idx;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="class_order4_tensor.html#a3f8130422a7e64a9d1dbe764d5bee4e2">   21</a></span>&#160;    <a class="code" href="class_order4_tensor.html#a3f8130422a7e64a9d1dbe764d5bee4e2">Order4Tensor</a>() :</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <a class="code" href="class_order4_tensor.html">Order4Tensor</a>() :</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        m_dim { 0 },</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        m_idx { 0 }</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    {</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    };</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="class_order4_tensor.html#a91ac3e32ce3ad0e4334699e77783a295">   28</a></span>&#160;    <a class="code" href="class_order4_tensor.html#a91ac3e32ce3ad0e4334699e77783a295">Order4Tensor</a>(<span class="keywordtype">int</span> dim) :</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="class_order4_tensor.html">Order4Tensor</a>(<span class="keywordtype">int</span> dim) :</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        m_idx { 0 }</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    {</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        m_dim = dim;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        <a class="code" href="class_order4_tensor.html#af1900935b9a3e18edf46c24bac6027af">set_dimension</a>(dim);</div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="class_order4_tensor.html#acec0c420962426e3104218af2ad02b4d">   33</a></span>&#160;    };</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        set_dimension(dim);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    };</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    std::vector&lt;libMesh::Real&gt; <a class="code" href="class_order4_tensor.html#acec0c420962426e3104218af2ad02b4d">vector</a>;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    std::vector&lt;libMesh::Real&gt; vector;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="class_order4_tensor.html#af1900935b9a3e18edf46c24bac6027af">   37</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_order4_tensor.html#af1900935b9a3e18edf46c24bac6027af">set_dimension</a>(<span class="keywordtype">int</span> dim)</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">void</span> set_dimension(<span class="keywordtype">int</span> dim)</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    {</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        m_dim = dim;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        m_idx_mult.resize(4);</div>
@@ -157,16 +156,16 @@ $(document).ready(function(){initNavTree('anisotropic__elasticity__cubic__sym_8h
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            m_idx_mult[iii] = std::pow(m_dim,iii);</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        }</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    }</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    libMesh::Real&amp; <a class="code" href="class_order4_tensor.html#ae2e5d607539ad64353deda3bb6ec623b">operator () </a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iii, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> jjj, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> kkk, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> lll);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    libMesh::Real&amp; operator () (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iii, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> jjj, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> kkk, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> lll);</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;};</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="class_order4_tensor.html#ae2e5d607539ad64353deda3bb6ec623b">   51</a></span>&#160;<span class="keyword">inline</span> libMesh::Real&amp; <a class="code" href="class_order4_tensor.html#ae2e5d607539ad64353deda3bb6ec623b">Order4Tensor::operator () </a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iii, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> jjj, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> kkk, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> lll)</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">inline</span> libMesh::Real&amp; Order4Tensor::operator () (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iii, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> jjj, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> kkk, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> lll)</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;{</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    m_idx =   m_idx_mult[0] * iii</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            + m_idx_mult[1] * jjj</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            + m_idx_mult[2] * kkk</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            + m_idx_mult[3] * lll;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="class_order4_tensor.html#acec0c420962426e3104218af2ad02b4d">vector</a>[m_idx];</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> vector[m_idx];</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;}</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
 <div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classanisotropic__elasticity__tensor__cubic__sym.html">   60</a></span>&#160;<span class="keyword">class </span><a class="code" href="classanisotropic__elasticity__tensor__cubic__sym.html">anisotropic_elasticity_tensor_cubic_sym</a></div>
@@ -190,7 +189,7 @@ $(document).ready(function(){initNavTree('anisotropic__elasticity__cubic__sym_8h
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="classanisotropic__elasticity__tensor__cubic__sym.html#a5675387d480fa66bca402e45beb1511b">   81</a></span>&#160;    <a class="code" href="classanisotropic__elasticity__tensor__cubic__sym.html#a5675387d480fa66bca402e45beb1511b">anisotropic_elasticity_tensor_cubic_sym</a>() :</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <a class="code" href="classanisotropic__elasticity__tensor__cubic__sym.html">anisotropic_elasticity_tensor_cubic_sym</a>() :</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        m_c11 { -1 },</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        m_c12 { -1 },</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        m_c44 { -1 },</div>
@@ -199,22 +198,22 @@ $(document).ready(function(){initNavTree('anisotropic__elasticity__cubic__sym_8h
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    };</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="classanisotropic__elasticity__tensor__cubic__sym.html#aa9c882754ad85c8bc4ee029768314dee">   90</a></span>&#160;    <a class="code" href="classanisotropic__elasticity__tensor__cubic__sym.html#aa9c882754ad85c8bc4ee029768314dee">anisotropic_elasticity_tensor_cubic_sym</a>(libMesh::EquationSystems&amp; es, std::string&amp; physicalParamsFile)</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <a class="code" href="classanisotropic__elasticity__tensor__cubic__sym.html">anisotropic_elasticity_tensor_cubic_sym</a>(libMesh::EquationSystems&amp; es, std::string&amp; physicalParamsFile)</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    {</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        this-&gt;<a class="code" href="classanisotropic__elasticity__tensor__cubic__sym.html#ad878b72419cd348ea928793686c584af">set_parameters</a>(es, physicalParamsFile);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        this-&gt;set_parameters(es, physicalParamsFile);</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    };</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    libMesh::Real <a class="code" href="classanisotropic__elasticity__tensor__cubic__sym.html#a996d32f5c4caaa98626d67388a42199e">eval_internal_elasticity_tensor</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i,</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    libMesh::Real eval_internal_elasticity_tensor(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i,</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                              <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j,</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                              <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> k,</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                              <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> l);</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classanisotropic__elasticity__tensor__cubic__sym.html#ad878b72419cd348ea928793686c584af">set_parameters</a>(libMesh::EquationSystems&amp; es, std::string&amp; physicalParamsFile);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordtype">void</span> set_parameters(libMesh::EquationSystems&amp; es, std::string&amp; physicalParamsFile);</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    libMesh::DenseMatrix&lt;libMesh::Real&gt;&amp; <a class="code" href="classanisotropic__elasticity__tensor__cubic__sym.html#a7506fd6962d7e0bb1af1110db1f879b3">get_rotation</a>(<span class="keywordtype">int</span> idx_grain);</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <a class="code" href="class_order4_tensor.html">Order4Tensor</a>&amp;  <a class="code" href="classanisotropic__elasticity__tensor__cubic__sym.html#a3480e2bebf2d536c880a3a496d0e8042">get_elasticity</a>(<span class="keywordtype">int</span> idx_grain);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    libMesh::DenseMatrix&lt;libMesh::Real&gt;&amp; get_rotation(<span class="keywordtype">int</span> idx_grain);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <a class="code" href="class_order4_tensor.html">Order4Tensor</a>&amp;  get_elasticity(<span class="keywordtype">int</span> idx_grain);</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    libMesh::Real <a class="code" href="classanisotropic__elasticity__tensor__cubic__sym.html#a872fab76533ebcd85f8139b60b2c1bbc">eval_elasticity_tensor</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i,</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    libMesh::Real eval_elasticity_tensor(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i,</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                              <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j,</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                              <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> k,</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                              <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> l,</div>
@@ -222,27 +221,14 @@ $(document).ready(function(){initNavTree('anisotropic__elasticity__cubic__sym_8h
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;};</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* COMMON_LIBMESH_CODE_ANISOTROPIC_ELASTICITY_CUBIC_SYM_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="class_order4_tensor_html_a3f8130422a7e64a9d1dbe764d5bee4e2"><div class="ttname"><a href="class_order4_tensor.html#a3f8130422a7e64a9d1dbe764d5bee4e2">Order4Tensor::Order4Tensor</a></div><div class="ttdeci">Order4Tensor()</div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8h_source.html#l00021">anisotropic_elasticity_cubic_sym.h:21</a></div></div>
-<div class="ttc" id="class_order4_tensor_html_af1900935b9a3e18edf46c24bac6027af"><div class="ttname"><a href="class_order4_tensor.html#af1900935b9a3e18edf46c24bac6027af">Order4Tensor::set_dimension</a></div><div class="ttdeci">void set_dimension(int dim)</div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8h_source.html#l00037">anisotropic_elasticity_cubic_sym.h:37</a></div></div>
-<div class="ttc" id="classanisotropic__elasticity__tensor__cubic__sym_html_ad878b72419cd348ea928793686c584af"><div class="ttname"><a href="classanisotropic__elasticity__tensor__cubic__sym.html#ad878b72419cd348ea928793686c584af">anisotropic_elasticity_tensor_cubic_sym::set_parameters</a></div><div class="ttdeci">void set_parameters(libMesh::EquationSystems &amp;es, std::string &amp;physicalParamsFile)</div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8cpp_source.html#l00017">anisotropic_elasticity_cubic_sym.cpp:17</a></div></div>
-<div class="ttc" id="carl__headers_8h_html"><div class="ttname"><a href="carl__headers_8h.html">carl_headers.h</a></div></div>
-<div class="ttc" id="class_order4_tensor_html_acec0c420962426e3104218af2ad02b4d"><div class="ttname"><a href="class_order4_tensor.html#acec0c420962426e3104218af2ad02b4d">Order4Tensor::vector</a></div><div class="ttdeci">std::vector&lt; libMesh::Real &gt; vector</div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8h_source.html#l00033">anisotropic_elasticity_cubic_sym.h:33</a></div></div>
 <div class="ttc" id="class_order4_tensor_html"><div class="ttname"><a href="class_order4_tensor.html">Order4Tensor</a></div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8h_source.html#l00013">anisotropic_elasticity_cubic_sym.h:13</a></div></div>
-<div class="ttc" id="classanisotropic__elasticity__tensor__cubic__sym_html_a996d32f5c4caaa98626d67388a42199e"><div class="ttname"><a href="classanisotropic__elasticity__tensor__cubic__sym.html#a996d32f5c4caaa98626d67388a42199e">anisotropic_elasticity_tensor_cubic_sym::eval_internal_elasticity_tensor</a></div><div class="ttdeci">libMesh::Real eval_internal_elasticity_tensor(unsigned int i, unsigned int j, unsigned int k, unsigned int l)</div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8cpp_source.html#l00182">anisotropic_elasticity_cubic_sym.cpp:182</a></div></div>
-<div class="ttc" id="classanisotropic__elasticity__tensor__cubic__sym_html_a5675387d480fa66bca402e45beb1511b"><div class="ttname"><a href="classanisotropic__elasticity__tensor__cubic__sym.html#a5675387d480fa66bca402e45beb1511b">anisotropic_elasticity_tensor_cubic_sym::anisotropic_elasticity_tensor_cubic_sym</a></div><div class="ttdeci">anisotropic_elasticity_tensor_cubic_sym()</div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8h_source.html#l00081">anisotropic_elasticity_cubic_sym.h:81</a></div></div>
-<div class="ttc" id="class_order4_tensor_html_ae2e5d607539ad64353deda3bb6ec623b"><div class="ttname"><a href="class_order4_tensor.html#ae2e5d607539ad64353deda3bb6ec623b">Order4Tensor::operator()</a></div><div class="ttdeci">libMesh::Real &amp; operator()(unsigned int iii, unsigned int jjj, unsigned int kkk, unsigned int lll)</div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8h_source.html#l00051">anisotropic_elasticity_cubic_sym.h:51</a></div></div>
-<div class="ttc" id="classanisotropic__elasticity__tensor__cubic__sym_html_a3480e2bebf2d536c880a3a496d0e8042"><div class="ttname"><a href="classanisotropic__elasticity__tensor__cubic__sym.html#a3480e2bebf2d536c880a3a496d0e8042">anisotropic_elasticity_tensor_cubic_sym::get_elasticity</a></div><div class="ttdeci">Order4Tensor &amp; get_elasticity(int idx_grain)</div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8cpp_source.html#l00213">anisotropic_elasticity_cubic_sym.cpp:213</a></div></div>
 <div class="ttc" id="classanisotropic__elasticity__tensor__cubic__sym_html"><div class="ttname"><a href="classanisotropic__elasticity__tensor__cubic__sym.html">anisotropic_elasticity_tensor_cubic_sym</a></div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8h_source.html#l00060">anisotropic_elasticity_cubic_sym.h:60</a></div></div>
-<div class="ttc" id="classanisotropic__elasticity__tensor__cubic__sym_html_a872fab76533ebcd85f8139b60b2c1bbc"><div class="ttname"><a href="classanisotropic__elasticity__tensor__cubic__sym.html#a872fab76533ebcd85f8139b60b2c1bbc">anisotropic_elasticity_tensor_cubic_sym::eval_elasticity_tensor</a></div><div class="ttdeci">libMesh::Real eval_elasticity_tensor(unsigned int i, unsigned int j, unsigned int k, unsigned int l, int idx_grain)</div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8cpp_source.html#l00218">anisotropic_elasticity_cubic_sym.cpp:218</a></div></div>
-<div class="ttc" id="class_order4_tensor_html_a91ac3e32ce3ad0e4334699e77783a295"><div class="ttname"><a href="class_order4_tensor.html#a91ac3e32ce3ad0e4334699e77783a295">Order4Tensor::Order4Tensor</a></div><div class="ttdeci">Order4Tensor(int dim)</div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8h_source.html#l00028">anisotropic_elasticity_cubic_sym.h:28</a></div></div>
-<div class="ttc" id="classanisotropic__elasticity__tensor__cubic__sym_html_aa9c882754ad85c8bc4ee029768314dee"><div class="ttname"><a href="classanisotropic__elasticity__tensor__cubic__sym.html#aa9c882754ad85c8bc4ee029768314dee">anisotropic_elasticity_tensor_cubic_sym::anisotropic_elasticity_tensor_cubic_sym</a></div><div class="ttdeci">anisotropic_elasticity_tensor_cubic_sym(libMesh::EquationSystems &amp;es, std::string &amp;physicalParamsFile)</div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8h_source.html#l00090">anisotropic_elasticity_cubic_sym.h:90</a></div></div>
-<div class="ttc" id="classanisotropic__elasticity__tensor__cubic__sym_html_a7506fd6962d7e0bb1af1110db1f879b3"><div class="ttname"><a href="classanisotropic__elasticity__tensor__cubic__sym.html#a7506fd6962d7e0bb1af1110db1f879b3">anisotropic_elasticity_tensor_cubic_sym::get_rotation</a></div><div class="ttdeci">libMesh::DenseMatrix&lt; libMesh::Real &gt; &amp; get_rotation(int idx_grain)</div><div class="ttdef"><b>Definition:</b> <a href="anisotropic__elasticity__cubic__sym_8cpp_source.html#l00208">anisotropic_elasticity_cubic_sym.cpp:208</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d44054de776ac2dd1b3fc6b7ee338f3e.html">execs</a></li><li class="navelem"><a class="el" href="dir_a63ec64ffea6c51d9559f4b3c33d129e.html">ext_solver_libmesh</a></li><li class="navelem"><a class="el" href="dir_d1b5fc4f6775fb613f87cc5788c3f6a4.html">ext_solver_libmesh_common</a></li><li class="navelem"><a class="el" href="dir_17efffe9cf8b30251ccedbf307c9c670.html">NOT_READY_YET</a></li><li class="navelem"><a class="el" href="anisotropic__elasticity__cubic__sym_8h.html">anisotropic_elasticity_cubic_sym.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d44054de776ac2dd1b3fc6b7ee338f3e.html">execs</a></li><li class="navelem"><a class="el" href="dir_a63ec64ffea6c51d9559f4b3c33d129e.html">ext_solver_libmesh</a></li><li class="navelem"><a class="el" href="dir_d1b5fc4f6775fb613f87cc5788c3f6a4.html">ext_solver_libmesh_common</a></li><li class="navelem"><a class="el" href="dir_17efffe9cf8b30251ccedbf307c9c670.html">NOT_READY_YET</a></li><li class="navelem"><b>anisotropic_elasticity_cubic_sym.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>

@@ -1,14 +1,19 @@
 var searchData=
 [
-  ['n_5fdofs',['n_dofs',['../classcarl_1_1lib_mesh__fe__addresses__3.html#a58f0a44b9a123347f35281cbc58e7206',1,'carl::libMesh_fe_addresses_3']]],
-  ['n_5fdofs_5fu',['n_dofs_u',['../classcarl_1_1lib_mesh__fe__addresses__3.html#a4f131cedd24e8c5ec44bfbb50acf8b17',1,'carl::libMesh_fe_addresses_3']]],
-  ['n_5fdofs_5fv',['n_dofs_v',['../classcarl_1_1lib_mesh__fe__addresses__3.html#a8e5c89ad957ccce0c03fcc14f51ab4ba',1,'carl::libMesh_fe_addresses_3']]],
-  ['n_5fdofs_5fw',['n_dofs_w',['../classcarl_1_1lib_mesh__fe__addresses__3.html#ac62177ed269417b444a1174e142b48fa',1,'carl::libMesh_fe_addresses_3']]],
-  ['nb_5fof_5frb_5fvectors',['nb_of_rb_vectors',['../structcarl_1_1feti__iterate__params.html#a5565d7f7666b2417af811d423e37d270',1,'carl::feti_iterate_params::nb_of_rb_vectors()'],['../structcarl_1_1feti__setup__finish__params.html#a3fea6d0b9c2825b61e90714790c716de',1,'carl::feti_setup_finish_params::nb_of_rb_vectors()'],['../structcarl_1_1feti__setup__init__params.html#a29d1a28ace280fb7fc2b7194fd9cea4a',1,'carl::feti_setup_init_params::nb_of_rb_vectors()'],['../structcarl_1_1libmesh__solve__linear__system__input__params.html#abe24bbe9e6a211c17bbb0d2f58d4cd90',1,'carl::libmesh_solve_linear_system_input_params::nb_of_rb_vectors()']]],
-  ['nef_5fpolyhedron',['Nef_Polyhedron',['../_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f',1,'CGAL_typedefs.h']]],
-  ['nefplane_5f3',['NefPlane_3',['../_c_g_a_l__typedefs_8h.html#aa0abd26637f642e3a168dce7c18e0824',1,'CGAL_typedefs.h']]],
-  ['neighbors_5fto_5fsearch_5fnext_5fpair',['neighbors_to_search_next_pair',['../classcarl_1_1_patch__construction.html#a053beda8441a91cbb12ffab38b38e524',1,'carl::Patch_construction']]],
-  ['no_5fpreconditioner',['NO_PRECONDITIONER',['../namespacecarl.html#ad52f21755b51ffa926038b59ae194ea8ad142a27fc7dfef6e36c5d01689880cc4',1,'carl']]],
-  ['no_5fweight',['NO_WEIGHT',['../ext__solver__libmesh__enums_8h.html#acc44f45992a493fb31c90d260d4ab83fa5e5d71a60495f64ef008c623f40c784e',1,'ext_solver_libmesh_enums.h']]],
-  ['node_5findexes',['node_indexes',['../classcarl_1_1_patch__construction.html#a36b55aaf8de17b8c00612907d159979e',1,'carl::Patch_construction']]]
+  ['references',['References',['../articles.html',1,'']]],
+  ['rb_5fvectors_5fbase',['RB_vectors_base',['../structcarl_1_1feti__iterate__params.html#aa1d86f53ac7316537089cda134f7dd00',1,'carl::feti_iterate_params::RB_vectors_base()'],['../structcarl_1_1feti__setup__finish__params.html#aebec4649657ad7602a20111ffdb01e06',1,'carl::feti_setup_finish_params::RB_vectors_base()'],['../structcarl_1_1feti__setup__init__params.html#aa70293e2d51c3475ebbdda0e338e8bbb',1,'carl::feti_setup_init_params::RB_vectors_base()']]],
+  ['read_5fall_5fprevious_5fp',['read_all_previous_p',['../classcarl_1_1_f_e_t_i___operations.html#a6c9eb129b4f4818d66d164edd140fa6e',1,'carl::FETI_Operations']]],
+  ['read_5fall_5fprevious_5fq',['read_all_previous_q',['../classcarl_1_1_f_e_t_i___operations.html#ab0897275bdbd8f8859e4b47e34adbf63',1,'carl::FETI_Operations']]],
+  ['read_5fcoupling_5fmatrices',['read_coupling_matrices',['../classcarl_1_1_f_e_t_i___operations.html#a3feae6ca919b9439b79f02f55b20677f',1,'carl::FETI_Operations']]],
+  ['read_5fdecoupled_5fsolutions',['read_decoupled_solutions',['../classcarl_1_1_f_e_t_i___operations.html#a21f21442d768b053c891e832f31a7d6e',1,'carl::FETI_Operations']]],
+  ['read_5fext_5fsolver_5foutput',['read_ext_solver_output',['../classcarl_1_1_f_e_t_i___operations.html#ad925f9a61ac106d011e3b05f47fd3afe',1,'carl::FETI_Operations']]],
+  ['read_5fjacobi_5fprecond_5fvector',['read_jacobi_precond_vector',['../classcarl_1_1_f_e_t_i___operations.html#ac5592b98960866a9fbc214919030bf01',1,'carl::FETI_Operations']]],
+  ['read_5fnull_5fspace_5finv_5fritri_5fmat',['read_null_space_inv_RITRI_mat',['../classcarl_1_1_f_e_t_i___operations.html#a9b32c7f7321f1eb9e068708293485013',1,'carl::FETI_Operations']]],
+  ['read_5fnull_5fspace_5fvecs',['read_null_space_vecs',['../classcarl_1_1_f_e_t_i___operations.html#a265fad70304acb55178dfe0126c83d0d',1,'carl::FETI_Operations']]],
+  ['read_5fprevious_5fphi',['read_previous_phi',['../classcarl_1_1_f_e_t_i___operations.html#a7a6171a43ee7325245c5dfc0cde63cbc',1,'carl::FETI_Operations']]],
+  ['read_5fprevious_5fr',['read_previous_r',['../classcarl_1_1_f_e_t_i___operations.html#ad1eaddadddc43ef7e666a31028c8de3e',1,'carl::FETI_Operations']]],
+  ['read_5frb_5fcorr',['read_rb_corr',['../classcarl_1_1_f_e_t_i___operations.html#a33e80968b86803c9e4dc388bcfdb23d7',1,'carl::FETI_Operations']]],
+  ['read_5fscalar_5fdata',['read_scalar_data',['../classcarl_1_1_f_e_t_i___operations.html#a27cc382607116e63781e803c0491d581',1,'carl::FETI_Operations']]],
+  ['read_5fvector_5fdata',['read_vector_data',['../classcarl_1_1_f_e_t_i___operations.html#a8abe893893239a353379bc843895b9c7',1,'carl::FETI_Operations']]],
+  ['restricted_5fmesh',['restricted_mesh',['../classcarl_1_1_mesh__restriction.html#a1313c9ef12044e000a03b35b379b56bc',1,'carl::Mesh_restriction']]]
 ];

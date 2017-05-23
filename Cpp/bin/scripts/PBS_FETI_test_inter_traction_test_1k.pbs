@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#PBS -S /bin/bash
+#PBS -N test_i_1k
+#PBS -l walltime=3:59:00
+#PBS -l select=1:ncpus=4:mpiprocs=4
+
+# "fusion" PBS options
+# #PBS -q haswellq
+# #PBS -P [PROJECT NAME]
+
+# Chargement des modules
+# "fusion" cluster modules
+# module purge
+# module load intel-compilers/16.0.3
+# module load intel-mpi/5.1.2
+
+# On se place dans le repertoire depuis lequel le job a ete soumis
+cd $PBS_O_WORKDIR
+
+mpirun -np 4 ./CArl_build_intersections -i examples/coupled_traction_test/intersection/inter_traction_test_1k.txt

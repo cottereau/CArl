@@ -49,7 +49,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -125,23 +124,27 @@ $(document).ready(function(){initNavTree('classcarl_1_1_intersection___tools.htm
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aaa38c1df73695938d2fb032dfe305ef2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#aaa38c1df73695938d2fb032dfe305ef2">Intersection_Tools</a> (const libMesh::Elem *elem_C, double Min_Inter_Volume=1E-21, bool bDoPerf_log=false)</td></tr>
-<tr class="memdesc:aaa38c1df73695938d2fb032dfe305ef2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with a pre-defined coupling element. It preallocates most objects and build the decomposition mappings.  <a href="#aaa38c1df73695938d2fb032dfe305ef2">More...</a><br /></td></tr>
+<tr class="memitem:aaa38c1df73695938d2fb032dfe305ef2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaa38c1df73695938d2fb032dfe305ef2"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#aaa38c1df73695938d2fb032dfe305ef2">Intersection_Tools</a> (const libMesh::Elem *elem_C, double Min_Inter_Volume=1E-21, bool bDoPerf_log=false)</td></tr>
+<tr class="memdesc:aaa38c1df73695938d2fb032dfe305ef2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with a pre-defined coupling element. It preallocates most objects and build the decomposition mappings. <br /></td></tr>
 <tr class="separator:aaa38c1df73695938d2fb032dfe305ef2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44115a8f785906bc1bed089fe92e526a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a44115a8f785906bc1bed089fe92e526a">Intersection_Tools</a> (double Min_Inter_Volume=1E-21, bool bDoPerf_log=false)</td></tr>
-<tr class="memdesc:a44115a8f785906bc1bed089fe92e526a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor preallocating most objects and building the decomposition mappings.  <a href="#a44115a8f785906bc1bed089fe92e526a">More...</a><br /></td></tr>
+<tr class="memitem:a44115a8f785906bc1bed089fe92e526a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a44115a8f785906bc1bed089fe92e526a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a44115a8f785906bc1bed089fe92e526a">Intersection_Tools</a> (double Min_Inter_Volume=1E-21, bool bDoPerf_log=false)</td></tr>
+<tr class="memdesc:a44115a8f785906bc1bed089fe92e526a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor preallocating most objects and building the decomposition mappings. <br /></td></tr>
 <tr class="separator:a44115a8f785906bc1bed089fe92e526a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e1ed1a0e6f1044108bf4ac77a25e8e0"><td class="memItemLeft" align="right" valign="top">const libMesh::Elem *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a2e1ed1a0e6f1044108bf4ac77a25e8e0">FindFirstIntersection</a> (const libMesh::Elem *Query_elem, std::unique_ptr&lt; libMesh::PointLocatorBase &gt; &amp;point_locator, bool bGuaranteeQueryIsInMesh=false)</td></tr>
 <tr class="memdesc:a2e1ed1a0e6f1044108bf4ac77a25e8e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find an element from a mesh intersecting Query_elem, using the mesh's libMesh::PointLocatorBase.  <a href="#a2e1ed1a0e6f1044108bf4ac77a25e8e0">More...</a><br /></td></tr>
 <tr class="separator:a2e1ed1a0e6f1044108bf4ac77a25e8e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8238069bd83ef1029c6a5b60a188763b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a8238069bd83ef1029c6a5b60a188763b">FindAllIntersection</a> (const libMesh::Elem *Query_elem, std::unique_ptr&lt; libMesh::PointLocatorBase &gt; &amp;point_locator, std::set&lt; unsigned int &gt; &amp;Intersecting_elems)</td></tr>
-<tr class="memdesc:a8238069bd83ef1029c6a5b60a188763b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find all elements from the mesh intersecting Query_elem, using the mesh's libMesh::PointLocatorBase.  <a href="#a8238069bd83ef1029c6a5b60a188763b">More...</a><br /></td></tr>
+<tr class="memitem:a8238069bd83ef1029c6a5b60a188763b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8238069bd83ef1029c6a5b60a188763b"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a8238069bd83ef1029c6a5b60a188763b">FindAllIntersection</a> (const libMesh::Elem *Query_elem, std::unique_ptr&lt; libMesh::PointLocatorBase &gt; &amp;point_locator, std::set&lt; unsigned int &gt; &amp;Intersecting_elems)</td></tr>
+<tr class="memdesc:a8238069bd83ef1029c6a5b60a188763b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find all elements from the mesh intersecting Query_elem, using the mesh's libMesh::PointLocatorBase. <br /></td></tr>
 <tr class="separator:a8238069bd83ef1029c6a5b60a188763b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7b16748a45a0579bafecb48ef2fc4ce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#ae7b16748a45a0579bafecb48ef2fc4ce">libMesh_exact_do_intersect</a> (const libMesh::Elem *elem_A, const libMesh::Elem *elem_B)</td></tr>
 <tr class="memdesc:ae7b16748a45a0579bafecb48ef2fc4ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determinate if two elements intersect.  <a href="#ae7b16748a45a0579bafecb48ef2fc4ce">More...</a><br /></td></tr>
 <tr class="separator:ae7b16748a45a0579bafecb48ef2fc4ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad57f9ae9fd2cce1ff7fc2430bf6c6b71"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#ad57f9ae9fd2cce1ff7fc2430bf6c6b71">libMesh_exact_intersection</a> (const libMesh::Elem *elem_A, const libMesh::Elem *elem_B, std::set&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a9dc49a828e77bbd58c1f5db13edde547">Point_3</a> &gt; &amp;points_out, bool bCreateNewNefForA=true, bool bConvertPoints=true, bool bTestNeeded=true)</td></tr>
-<tr class="memdesc:ad57f9ae9fd2cce1ff7fc2430bf6c6b71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the intersection between two elements.  <a href="#ad57f9ae9fd2cce1ff7fc2430bf6c6b71">More...</a><br /></td></tr>
+<tr class="memitem:ad57f9ae9fd2cce1ff7fc2430bf6c6b71"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad57f9ae9fd2cce1ff7fc2430bf6c6b71"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#ad57f9ae9fd2cce1ff7fc2430bf6c6b71">libMesh_exact_intersection</a> (const libMesh::Elem *elem_A, const libMesh::Elem *elem_B, std::set&lt; Point_3 &gt; &amp;points_out, bool bCreateNewNefForA=true, bool bConvertPoints=true, bool bTestNeeded=true)</td></tr>
+<tr class="memdesc:ad57f9ae9fd2cce1ff7fc2430bf6c6b71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the intersection between two elements. <br /></td></tr>
 <tr class="separator:ad57f9ae9fd2cce1ff7fc2430bf6c6b71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98929a97acb94aa77fc8952d80993d88"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a98929a97acb94aa77fc8952d80993d88">libMesh_exact_do_intersect_inside_coupling</a> (const libMesh::Elem *elem_A, const libMesh::Elem *elem_B, bool bCreateNewNefForA=true)</td></tr>
 <tr class="memdesc:a98929a97acb94aa77fc8952d80993d88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determinate if two elements intersect inside the coupling region.  <a href="#a98929a97acb94aa77fc8952d80993d88">More...</a><br /></td></tr>
@@ -149,14 +152,17 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad5aaf7b9475dcfb6a51ea1c20d22aacd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#ad5aaf7b9475dcfb6a51ea1c20d22aacd">libMesh_exact_intersection_inside_coupling</a> (const libMesh::Elem *elem_A, const libMesh::Elem *elem_B, std::set&lt; libMesh::Point &gt; &amp;points_out, bool bCreateNewNefForA=true, bool bConvertPoints=true, bool bTestNeeded=false)</td></tr>
 <tr class="memdesc:ad5aaf7b9475dcfb6a51ea1c20d22aacd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the intersection between two elements intersect inside the coupling region.  <a href="#ad5aaf7b9475dcfb6a51ea1c20d22aacd">More...</a><br /></td></tr>
 <tr class="separator:ad5aaf7b9475dcfb6a51ea1c20d22aacd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf2d17e703441bc9e3ed05d98f51ba85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#acf2d17e703441bc9e3ed05d98f51ba85">libmesh_set_coupling_nef_polyhedron</a> (const libMesh::Elem *elem_C)</td></tr>
-<tr class="memdesc:acf2d17e703441bc9e3ed05d98f51ba85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Nef polyhedron for the coupling mesh element.  <a href="#acf2d17e703441bc9e3ed05d98f51ba85">More...</a><br /></td></tr>
+<tr class="memitem:acf2d17e703441bc9e3ed05d98f51ba85"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acf2d17e703441bc9e3ed05d98f51ba85"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#acf2d17e703441bc9e3ed05d98f51ba85">libmesh_set_coupling_nef_polyhedron</a> (const libMesh::Elem *elem_C)</td></tr>
+<tr class="memdesc:acf2d17e703441bc9e3ed05d98f51ba85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Nef polyhedron for the coupling mesh element. <br /></td></tr>
 <tr class="separator:acf2d17e703441bc9e3ed05d98f51ba85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d6303ff6ffc19b6df42626e29a507ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">convert_elem_to_exact_points</a> (const libMesh::Elem *elem_input, std::vector&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a> &gt; &amp;points_output)</td></tr>
-<tr class="memdesc:a1d6303ff6ffc19b6df42626e29a507ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert an libMesh element to a list of CGAL exact points.  <a href="#a1d6303ff6ffc19b6df42626e29a507ce">More...</a><br /></td></tr>
+<tr class="memitem:a1d6303ff6ffc19b6df42626e29a507ce"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1d6303ff6ffc19b6df42626e29a507ce"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">convert_elem_to_exact_points</a> (const libMesh::Elem *elem_input, std::vector&lt; ExactPoint_3 &gt; &amp;points_output)</td></tr>
+<tr class="memdesc:a1d6303ff6ffc19b6df42626e29a507ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert an libMesh element to a list of CGAL exact points. <br /></td></tr>
 <tr class="separator:a1d6303ff6ffc19b6df42626e29a507ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af689c53cf00359c518234d8d070c4e53"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#af689c53cf00359c518234d8d070c4e53">convert_exact_points_to_Nef</a> (std::vector&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a> &gt;::const_iterator it_begin, std::vector&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a> &gt;::const_iterator it_end, <a class="el" href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a> &amp;nef_out)</td></tr>
-<tr class="memdesc:af689c53cf00359c518234d8d070c4e53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert an CGAL exact point set to a CGAL Nef polyhedron.  <a href="#af689c53cf00359c518234d8d070c4e53">More...</a><br /></td></tr>
+<tr class="memitem:af689c53cf00359c518234d8d070c4e53"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af689c53cf00359c518234d8d070c4e53"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#af689c53cf00359c518234d8d070c4e53">convert_exact_points_to_Nef</a> (std::vector&lt; ExactPoint_3 &gt;::const_iterator it_begin, std::vector&lt; ExactPoint_3 &gt;::const_iterator it_end, Nef_Polyhedron &amp;nef_out)</td></tr>
+<tr class="memdesc:af689c53cf00359c518234d8d070c4e53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert an CGAL exact point set to a CGAL Nef polyhedron. <br /></td></tr>
 <tr class="separator:af689c53cf00359c518234d8d070c4e53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
@@ -164,311 +170,111 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:ac2eb9f8074d4dc2511b3f36d3cfd5f3b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#ac2eb9f8074d4dc2511b3f36d3cfd5f3b">set_element_indexes</a> ()</td></tr>
 <tr class="memdesc:ac2eb9f8074d4dc2511b3f36d3cfd5f3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the tetrahedron and triangle decomposition mappings.  <a href="#ac2eb9f8074d4dc2511b3f36d3cfd5f3b">More...</a><br /></td></tr>
 <tr class="separator:ac2eb9f8074d4dc2511b3f36d3cfd5f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a355a95eefdfdd30b4a332fdd99a11150"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a355a95eefdfdd30b4a332fdd99a11150">elements_do_intersect</a> (std::vector&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a> &gt; &amp;elem_C_points, std::vector&lt; std::vector&lt; unsigned int &gt; &gt; &amp;elem_C_tetras, std::vector&lt; std::vector&lt; unsigned int &gt; &gt; &amp;elem_C_triangles, std::vector&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a> &gt; &amp;elem_D_points, std::vector&lt; std::vector&lt; unsigned int &gt; &gt; &amp;elem_D_tetras, std::vector&lt; std::vector&lt; unsigned int &gt; &gt; &amp;elem_D_triangles)</td></tr>
+<tr class="memitem:a355a95eefdfdd30b4a332fdd99a11150"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a355a95eefdfdd30b4a332fdd99a11150">elements_do_intersect</a> (std::vector&lt; ExactPoint_3 &gt; &amp;elem_C_points, std::vector&lt; std::vector&lt; unsigned int &gt; &gt; &amp;elem_C_tetras, std::vector&lt; std::vector&lt; unsigned int &gt; &gt; &amp;elem_C_triangles, std::vector&lt; ExactPoint_3 &gt; &amp;elem_D_points, std::vector&lt; std::vector&lt; unsigned int &gt; &gt; &amp;elem_D_tetras, std::vector&lt; std::vector&lt; unsigned int &gt; &gt; &amp;elem_D_triangles)</td></tr>
 <tr class="memdesc:a355a95eefdfdd30b4a332fdd99a11150"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determinate if two elements intersect, using their points and decompositions.  <a href="#a355a95eefdfdd30b4a332fdd99a11150">More...</a><br /></td></tr>
 <tr class="separator:a355a95eefdfdd30b4a332fdd99a11150"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a66a33158af0779366d4109e96a10ddc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">m_nef_A</a></td></tr>
-<tr class="memdesc:a66a33158af0779366d4109e96a10ddc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nef polyhedrons for the elements.  <a href="#a66a33158af0779366d4109e96a10ddc4">More...</a><br /></td></tr>
+<tr class="memitem:a66a33158af0779366d4109e96a10ddc4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66a33158af0779366d4109e96a10ddc4"></a>
+Nef_Polyhedron&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">m_nef_A</a></td></tr>
+<tr class="memdesc:a66a33158af0779366d4109e96a10ddc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nef polyhedrons for the elements. <br /></td></tr>
 <tr class="separator:a66a33158af0779366d4109e96a10ddc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b134a30452c8a767fc4265c7c0296a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a0b134a30452c8a767fc4265c7c0296a9">m_nef_B</a></td></tr>
+<tr class="memitem:a0b134a30452c8a767fc4265c7c0296a9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0b134a30452c8a767fc4265c7c0296a9"></a>
+Nef_Polyhedron&#160;</td><td class="memItemRight" valign="bottom"><b>m_nef_B</b></td></tr>
 <tr class="separator:a0b134a30452c8a767fc4265c7c0296a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a47353dc1c374f45bf3dbaae667270cf3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a></td></tr>
+<tr class="memitem:a47353dc1c374f45bf3dbaae667270cf3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a47353dc1c374f45bf3dbaae667270cf3"></a>
+Nef_Polyhedron&#160;</td><td class="memItemRight" valign="bottom"><b>m_nef_I</b></td></tr>
 <tr class="separator:a47353dc1c374f45bf3dbaae667270cf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf2892a8902442fbfebb913e9a4fb8ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#adf2892a8902442fbfebb913e9a4fb8ac">m_nef_C</a></td></tr>
+<tr class="memitem:adf2892a8902442fbfebb913e9a4fb8ac"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adf2892a8902442fbfebb913e9a4fb8ac"></a>
+Nef_Polyhedron&#160;</td><td class="memItemRight" valign="bottom"><b>m_nef_C</b></td></tr>
 <tr class="separator:adf2892a8902442fbfebb913e9a4fb8ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8333f16787459e65c4fe913dad50b5c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a></td></tr>
-<tr class="memdesc:a8333f16787459e65c4fe913dad50b5c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nef polyhedron used to save the intersection between m_nef_A and m_nef_C, reducing the number of intersection operations.  <a href="#a8333f16787459e65c4fe913dad50b5c6">More...</a><br /></td></tr>
+<tr class="memitem:a8333f16787459e65c4fe913dad50b5c6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8333f16787459e65c4fe913dad50b5c6"></a>
+Nef_Polyhedron&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a></td></tr>
+<tr class="memdesc:a8333f16787459e65c4fe913dad50b5c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nef polyhedron used to save the intersection between m_nef_A and m_nef_C, reducing the number of intersection operations. <br /></td></tr>
 <tr class="separator:a8333f16787459e65c4fe913dad50b5c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad636117b292272044b252be62124eb0a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">m_exact_points_A</a></td></tr>
-<tr class="memdesc:ad636117b292272044b252be62124eb0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">CGAL Exact point vectors.  <a href="#ad636117b292272044b252be62124eb0a">More...</a><br /></td></tr>
+<tr class="memitem:ad636117b292272044b252be62124eb0a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad636117b292272044b252be62124eb0a"></a>
+std::vector&lt; ExactPoint_3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">m_exact_points_A</a></td></tr>
+<tr class="memdesc:ad636117b292272044b252be62124eb0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">CGAL Exact point vectors. <br /></td></tr>
 <tr class="separator:ad636117b292272044b252be62124eb0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c3b6211dd1f9b0aa5f2ac8ffc383182"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">m_exact_points_B</a></td></tr>
+<tr class="memitem:a2c3b6211dd1f9b0aa5f2ac8ffc383182"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2c3b6211dd1f9b0aa5f2ac8ffc383182"></a>
+std::vector&lt; ExactPoint_3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_exact_points_B</b></td></tr>
 <tr class="separator:a2c3b6211dd1f9b0aa5f2ac8ffc383182"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a473d6a254b10623659a1d8f81bbe695f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a473d6a254b10623659a1d8f81bbe695f">m_exact_points_C</a></td></tr>
+<tr class="memitem:a473d6a254b10623659a1d8f81bbe695f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a473d6a254b10623659a1d8f81bbe695f"></a>
+std::vector&lt; ExactPoint_3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_exact_points_C</b></td></tr>
 <tr class="separator:a473d6a254b10623659a1d8f81bbe695f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1bc3cab10caf53e5de762c4dea2ef1ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_c_g_a_l__typedefs_8h.html#aedf4279eda927d338212e13db24116eb">ExactPolyhedron</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a1bc3cab10caf53e5de762c4dea2ef1ba">m_dummyPoly</a></td></tr>
-<tr class="memdesc:a1bc3cab10caf53e5de762c4dea2ef1ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Intersection polyhedron.  <a href="#a1bc3cab10caf53e5de762c4dea2ef1ba">More...</a><br /></td></tr>
+<tr class="memitem:a1bc3cab10caf53e5de762c4dea2ef1ba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1bc3cab10caf53e5de762c4dea2ef1ba"></a>
+ExactPolyhedron&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a1bc3cab10caf53e5de762c4dea2ef1ba">m_dummyPoly</a></td></tr>
+<tr class="memdesc:a1bc3cab10caf53e5de762c4dea2ef1ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Intersection polyhedron. <br /></td></tr>
 <tr class="separator:a1bc3cab10caf53e5de762c4dea2ef1ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a3b4e978977cd29ebac810dc0a2baf6"><td class="memItemLeft" align="right" valign="top">CGAL::Convex_hull_traits_3&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#ab014831fee2bac62051dfa390ec66d6f">ExactKernel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a0a3b4e978977cd29ebac810dc0a2baf6">ExactHullTraits</a></td></tr>
-<tr class="memdesc:a0a3b4e978977cd29ebac810dc0a2baf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">CGAL ExactKernel's convex hull traits.  <a href="#a0a3b4e978977cd29ebac810dc0a2baf6">More...</a><br /></td></tr>
+<tr class="memitem:a0a3b4e978977cd29ebac810dc0a2baf6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0a3b4e978977cd29ebac810dc0a2baf6"></a>
+CGAL::Convex_hull_traits_3&lt; ExactKernel &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a0a3b4e978977cd29ebac810dc0a2baf6">ExactHullTraits</a></td></tr>
+<tr class="memdesc:a0a3b4e978977cd29ebac810dc0a2baf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">CGAL ExactKernel's convex hull traits. <br /></td></tr>
 <tr class="separator:a0a3b4e978977cd29ebac810dc0a2baf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89118c79160362561c0cf7f1743568a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_c_g_a_l__typedefs_8h.html#a7fee49db11d7ad002fa79aedabf4d2cc">Kernel_to_ExactKernel</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a89118c79160362561c0cf7f1743568a6">ConvertInexactToExact</a></td></tr>
-<tr class="memdesc:a89118c79160362561c0cf7f1743568a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert inexact CGAL constructs to exact constructs.  <a href="#a89118c79160362561c0cf7f1743568a6">More...</a><br /></td></tr>
+<tr class="memitem:a89118c79160362561c0cf7f1743568a6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a89118c79160362561c0cf7f1743568a6"></a>
+Kernel_to_ExactKernel&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a89118c79160362561c0cf7f1743568a6">ConvertInexactToExact</a></td></tr>
+<tr class="memdesc:a89118c79160362561c0cf7f1743568a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert inexact CGAL constructs to exact constructs. <br /></td></tr>
 <tr class="separator:a89118c79160362561c0cf7f1743568a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8cd632ee9314f5981c620af325245413"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_c_g_a_l__typedefs_8h.html#aa71268402de3c241e32cd09e20cbe44c">ExactKernel_to_Kernel</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a8cd632ee9314f5981c620af325245413">ConvertExactToInexact</a></td></tr>
-<tr class="memdesc:a8cd632ee9314f5981c620af325245413"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert exact CGAL constructs to inexact constructs.  <a href="#a8cd632ee9314f5981c620af325245413">More...</a><br /></td></tr>
+<tr class="memitem:a8cd632ee9314f5981c620af325245413"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8cd632ee9314f5981c620af325245413"></a>
+ExactKernel_to_Kernel&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a8cd632ee9314f5981c620af325245413">ConvertExactToInexact</a></td></tr>
+<tr class="memdesc:a8cd632ee9314f5981c620af325245413"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert exact CGAL constructs to inexact constructs. <br /></td></tr>
 <tr class="separator:a8cd632ee9314f5981c620af325245413"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69657597ebb9655f8797b289939835a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_c_g_a_l__typedefs_8h.html#a02a72c8dcf4a17c7460e7e71301d2d3f">ExactTetrahedron</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a69657597ebb9655f8797b289939835a3">m_test_tetra</a></td></tr>
+<tr class="memitem:a69657597ebb9655f8797b289939835a3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a69657597ebb9655f8797b289939835a3"></a>
+ExactTetrahedron&#160;</td><td class="memItemRight" valign="bottom"><b>m_test_tetra</b></td></tr>
 <tr class="separator:a69657597ebb9655f8797b289939835a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4331121a50baaa93e499f6cfb446c1b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_c_g_a_l__typedefs_8h.html#acb9586e4ea704b6a4c4502ad0cb03c62">ExactTriangle_3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a4331121a50baaa93e499f6cfb446c1b0">m_test_triangle</a></td></tr>
+<tr class="memitem:a4331121a50baaa93e499f6cfb446c1b0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4331121a50baaa93e499f6cfb446c1b0"></a>
+ExactTriangle_3&#160;</td><td class="memItemRight" valign="bottom"><b>m_test_triangle</b></td></tr>
 <tr class="separator:a4331121a50baaa93e499f6cfb446c1b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a931ecd3fd3103656ede9c84a2eed10d2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a931ecd3fd3103656ede9c84a2eed10d2">m_Min_Inter_Volume</a></td></tr>
-<tr class="memdesc:a931ecd3fd3103656ede9c84a2eed10d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimal volume cutoff for the intersections.  <a href="#a931ecd3fd3103656ede9c84a2eed10d2">More...</a><br /></td></tr>
+<tr class="memitem:a931ecd3fd3103656ede9c84a2eed10d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a931ecd3fd3103656ede9c84a2eed10d2"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a931ecd3fd3103656ede9c84a2eed10d2">m_Min_Inter_Volume</a></td></tr>
+<tr class="memdesc:a931ecd3fd3103656ede9c84a2eed10d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimal volume cutoff for the intersections. <br /></td></tr>
 <tr class="separator:a931ecd3fd3103656ede9c84a2eed10d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a651c43f074c2955bd58ef0d519c6ef73"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a651c43f074c2955bd58ef0d519c6ef73">MASTER_bPerfLog_intersection_tools</a></td></tr>
-<tr class="memdesc:a651c43f074c2955bd58ef0d519c6ef73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Do performance log? <em>Default:</em> false.  <a href="#a651c43f074c2955bd58ef0d519c6ef73">More...</a><br /></td></tr>
+<tr class="memitem:a651c43f074c2955bd58ef0d519c6ef73"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a651c43f074c2955bd58ef0d519c6ef73"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a651c43f074c2955bd58ef0d519c6ef73">MASTER_bPerfLog_intersection_tools</a></td></tr>
+<tr class="memdesc:a651c43f074c2955bd58ef0d519c6ef73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Do performance log? <em>Default:</em> false. <br /></td></tr>
 <tr class="separator:a651c43f074c2955bd58ef0d519c6ef73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe18e6ca5fd12bae08efb98f69c71a48"><td class="memItemLeft" align="right" valign="top">libMesh::PerfLog&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a></td></tr>
-<tr class="memdesc:afe18e6ca5fd12bae08efb98f69c71a48"><td class="mdescLeft">&#160;</td><td class="mdescRight">libMesh::PerfLog object.  <a href="#afe18e6ca5fd12bae08efb98f69c71a48">More...</a><br /></td></tr>
+<tr class="memitem:afe18e6ca5fd12bae08efb98f69c71a48"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afe18e6ca5fd12bae08efb98f69c71a48"></a>
+libMesh::PerfLog&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a></td></tr>
+<tr class="memdesc:afe18e6ca5fd12bae08efb98f69c71a48"><td class="mdescLeft">&#160;</td><td class="mdescRight">libMesh::PerfLog object. <br /></td></tr>
 <tr class="separator:afe18e6ca5fd12bae08efb98f69c71a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e9a49f3b382810c884ba46b791bfcb8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a6e9a49f3b382810c884ba46b791bfcb8">m_TET_tetrahedrons</a></td></tr>
-<tr class="memdesc:a6e9a49f3b382810c884ba46b791bfcb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex indices for a TET* element tetrahedron.  <a href="#a6e9a49f3b382810c884ba46b791bfcb8">More...</a><br /></td></tr>
+<tr class="memitem:a6e9a49f3b382810c884ba46b791bfcb8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6e9a49f3b382810c884ba46b791bfcb8"></a>
+std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a6e9a49f3b382810c884ba46b791bfcb8">m_TET_tetrahedrons</a></td></tr>
+<tr class="memdesc:a6e9a49f3b382810c884ba46b791bfcb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex indices for a TET* element tetrahedron. <br /></td></tr>
 <tr class="separator:a6e9a49f3b382810c884ba46b791bfcb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54e026b256ab6894b1f77950a425b1eb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a54e026b256ab6894b1f77950a425b1eb">m_TET_triangles</a></td></tr>
-<tr class="memdesc:a54e026b256ab6894b1f77950a425b1eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex indices for a TET* element surface triangles.  <a href="#a54e026b256ab6894b1f77950a425b1eb">More...</a><br /></td></tr>
+<tr class="memitem:a54e026b256ab6894b1f77950a425b1eb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a54e026b256ab6894b1f77950a425b1eb"></a>
+std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a54e026b256ab6894b1f77950a425b1eb">m_TET_triangles</a></td></tr>
+<tr class="memdesc:a54e026b256ab6894b1f77950a425b1eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex indices for a TET* element surface triangles. <br /></td></tr>
 <tr class="separator:a54e026b256ab6894b1f77950a425b1eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a153baf989b64fb7033e42ba2342e0fc5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a153baf989b64fb7033e42ba2342e0fc5">m_TET_edges</a></td></tr>
-<tr class="memdesc:a153baf989b64fb7033e42ba2342e0fc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex indices for a TET* element edges (<b>not used!</b>)  <a href="#a153baf989b64fb7033e42ba2342e0fc5">More...</a><br /></td></tr>
+<tr class="memitem:a153baf989b64fb7033e42ba2342e0fc5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a153baf989b64fb7033e42ba2342e0fc5"></a>
+std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a153baf989b64fb7033e42ba2342e0fc5">m_TET_edges</a></td></tr>
+<tr class="memdesc:a153baf989b64fb7033e42ba2342e0fc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex indices for a TET* element edges (<b>not used!</b>) <br /></td></tr>
 <tr class="separator:a153baf989b64fb7033e42ba2342e0fc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af74ec1bcb1a896df19642d340dd2762c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#af74ec1bcb1a896df19642d340dd2762c">m_HEX_tetrahedrons</a></td></tr>
-<tr class="memdesc:af74ec1bcb1a896df19642d340dd2762c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex indices for a HEX* element tetrahedron decomposition.  <a href="#af74ec1bcb1a896df19642d340dd2762c">More...</a><br /></td></tr>
+<tr class="memitem:af74ec1bcb1a896df19642d340dd2762c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af74ec1bcb1a896df19642d340dd2762c"></a>
+std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#af74ec1bcb1a896df19642d340dd2762c">m_HEX_tetrahedrons</a></td></tr>
+<tr class="memdesc:af74ec1bcb1a896df19642d340dd2762c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex indices for a HEX* element tetrahedron decomposition. <br /></td></tr>
 <tr class="separator:af74ec1bcb1a896df19642d340dd2762c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca79d0350f0969670dd9d06814c26583"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#aca79d0350f0969670dd9d06814c26583">m_HEX_triangles</a></td></tr>
-<tr class="memdesc:aca79d0350f0969670dd9d06814c26583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex indices for a HEX* element surface triangles decomposition.  <a href="#aca79d0350f0969670dd9d06814c26583">More...</a><br /></td></tr>
+<tr class="memitem:aca79d0350f0969670dd9d06814c26583"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aca79d0350f0969670dd9d06814c26583"></a>
+std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#aca79d0350f0969670dd9d06814c26583">m_HEX_triangles</a></td></tr>
+<tr class="memdesc:aca79d0350f0969670dd9d06814c26583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex indices for a HEX* element surface triangles decomposition. <br /></td></tr>
 <tr class="separator:aca79d0350f0969670dd9d06814c26583"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a418dc03e4edc3f5bba1f78f6fc5afe71"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a418dc03e4edc3f5bba1f78f6fc5afe71">m_HEX_edges</a></td></tr>
-<tr class="memdesc:a418dc03e4edc3f5bba1f78f6fc5afe71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex indices for a HEX* element edges (<b>not used!</b>)  <a href="#a418dc03e4edc3f5bba1f78f6fc5afe71">More...</a><br /></td></tr>
+<tr class="memitem:a418dc03e4edc3f5bba1f78f6fc5afe71"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a418dc03e4edc3f5bba1f78f6fc5afe71"></a>
+std::vector&lt; std::vector&lt; unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a418dc03e4edc3f5bba1f78f6fc5afe71">m_HEX_edges</a></td></tr>
+<tr class="memdesc:a418dc03e4edc3f5bba1f78f6fc5afe71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertex indices for a HEX* element edges (<b>not used!</b>) <br /></td></tr>
 <tr class="separator:a418dc03e4edc3f5bba1f78f6fc5afe71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f6b6fff82b9a02400d3aeb3db1f4c82"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a2f6b6fff82b9a02400d3aeb3db1f4c82">m_elem_C_tetrahedrons</a></td></tr>
-<tr class="memdesc:a2f6b6fff82b9a02400d3aeb3db1f4c82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer for the appropriate tetrahedron vertex index list (<b>useless!</b>)  <a href="#a2f6b6fff82b9a02400d3aeb3db1f4c82">More...</a><br /></td></tr>
+<tr class="memitem:a2f6b6fff82b9a02400d3aeb3db1f4c82"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2f6b6fff82b9a02400d3aeb3db1f4c82"></a>
+std::vector&lt; std::vector&lt; unsigned int &gt; &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a2f6b6fff82b9a02400d3aeb3db1f4c82">m_elem_C_tetrahedrons</a></td></tr>
+<tr class="memdesc:a2f6b6fff82b9a02400d3aeb3db1f4c82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer for the appropriate tetrahedron vertex index list (<b>useless!</b>) <br /></td></tr>
 <tr class="separator:a2f6b6fff82b9a02400d3aeb3db1f4c82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89a78135b49b49c32bec8be4016782b3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a89a78135b49b49c32bec8be4016782b3">m_elem_C_triangles</a></td></tr>
-<tr class="memdesc:a89a78135b49b49c32bec8be4016782b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer for the appropriate triangle vertex index list (<b>useless!</b>)  <a href="#a89a78135b49b49c32bec8be4016782b3">More...</a><br /></td></tr>
+<tr class="memitem:a89a78135b49b49c32bec8be4016782b3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a89a78135b49b49c32bec8be4016782b3"></a>
+std::vector&lt; std::vector&lt; unsigned int &gt; &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_intersection___tools.html#a89a78135b49b49c32bec8be4016782b3">m_elem_C_triangles</a></td></tr>
+<tr class="memdesc:a89a78135b49b49c32bec8be4016782b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer for the appropriate triangle vertex index list (<b>useless!</b>) <br /></td></tr>
 <tr class="separator:a89a78135b49b49c32bec8be4016782b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class with a series of methods to find the intersections between libMesh's elements, using CGAL internally. </p>
 
 <p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00025">25</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="aaa38c1df73695938d2fb032dfe305ef2"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">carl::Intersection_Tools::Intersection_Tools </td>
-          <td>(</td>
-          <td class="paramtype">const libMesh::Elem *&#160;</td>
-          <td class="paramname"><em>elem_C</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>Min_Inter_Volume</em> = <code>1E-21</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>bDoPerf_log</em> = <code>false</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Constructor with a pre-defined coupling element. It preallocates most objects and build the decomposition mappings. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00114">114</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-<div class="fragment"><div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                                                                                                              :</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a931ecd3fd3103656ede9c84a2eed10d2">m_Min_Inter_Volume</a> { Min_Inter_Volume },</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a651c43f074c2955bd58ef0d519c6ef73">MASTER_bPerfLog_intersection_tools</a> {bDoPerf_log},</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a> { libMesh::PerfLog(<span class="stringliteral">&quot;Intersection tools&quot;</span>, <a class="code" href="classcarl_1_1_intersection___tools.html#a651c43f074c2955bd58ef0d519c6ef73">MASTER_bPerfLog_intersection_tools</a>) }</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    {</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">m_exact_points_A</a>.resize(8);</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">m_exact_points_B</a>.resize(8);</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a473d6a254b10623659a1d8f81bbe695f">m_exact_points_C</a>.resize(8);</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a1bc3cab10caf53e5de762c4dea2ef1ba">m_dummyPoly</a>.reserve(8,18,12);</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        this-&gt;<a class="code" href="classcarl_1_1_intersection___tools.html#acf2d17e703441bc9e3ed05d98f51ba85">libmesh_set_coupling_nef_polyhedron</a>(elem_C);</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        this-&gt;<a class="code" href="classcarl_1_1_intersection___tools.html#ac2eb9f8074d4dc2511b3f36d3cfd5f3b">set_element_indexes</a>();</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a2f6b6fff82b9a02400d3aeb3db1f4c82">m_elem_C_tetrahedrons</a> = NULL;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a89a78135b49b49c32bec8be4016782b3">m_elem_C_triangles</a> = NULL;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    };</div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a931ecd3fd3103656ede9c84a2eed10d2"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a931ecd3fd3103656ede9c84a2eed10d2">carl::Intersection_Tools::m_Min_Inter_Volume</a></div><div class="ttdeci">double m_Min_Inter_Volume</div><div class="ttdoc">Minimal volume cutoff for the intersections. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00057">intersection_tools.h:57</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_ac2eb9f8074d4dc2511b3f36d3cfd5f3b"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#ac2eb9f8074d4dc2511b3f36d3cfd5f3b">carl::Intersection_Tools::set_element_indexes</a></div><div class="ttdeci">void set_element_indexes()</div><div class="ttdoc">Build the tetrahedron and triangle decomposition mappings. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00013">intersection_tools.cpp:13</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a2c3b6211dd1f9b0aa5f2ac8ffc383182"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">carl::Intersection_Tools::m_exact_points_B</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_B</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00042">intersection_tools.h:42</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_ad636117b292272044b252be62124eb0a"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">carl::Intersection_Tools::m_exact_points_A</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_A</div><div class="ttdoc">CGAL Exact point vectors. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00041">intersection_tools.h:41</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_acf2d17e703441bc9e3ed05d98f51ba85"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#acf2d17e703441bc9e3ed05d98f51ba85">carl::Intersection_Tools::libmesh_set_coupling_nef_polyhedron</a></div><div class="ttdeci">void libmesh_set_coupling_nef_polyhedron(const libMesh::Elem *elem_C)</div><div class="ttdoc">Set the Nef polyhedron for the coupling mesh element. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00604">intersection_tools.cpp:604</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a651c43f074c2955bd58ef0d519c6ef73"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a651c43f074c2955bd58ef0d519c6ef73">carl::Intersection_Tools::MASTER_bPerfLog_intersection_tools</a></div><div class="ttdeci">bool MASTER_bPerfLog_intersection_tools</div><div class="ttdoc">Do performance log? Default: false. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00060">intersection_tools.h:60</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a1bc3cab10caf53e5de762c4dea2ef1ba"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a1bc3cab10caf53e5de762c4dea2ef1ba">carl::Intersection_Tools::m_dummyPoly</a></div><div class="ttdeci">ExactPolyhedron m_dummyPoly</div><div class="ttdoc">Intersection polyhedron. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00045">intersection_tools.h:45</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a2f6b6fff82b9a02400d3aeb3db1f4c82"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a2f6b6fff82b9a02400d3aeb3db1f4c82">carl::Intersection_Tools::m_elem_C_tetrahedrons</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; * m_elem_C_tetrahedrons</div><div class="ttdoc">Pointer for the appropriate tetrahedron vertex index list (useless!) </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00077">intersection_tools.h:77</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a473d6a254b10623659a1d8f81bbe695f"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a473d6a254b10623659a1d8f81bbe695f">carl::Intersection_Tools::m_exact_points_C</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_C</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00043">intersection_tools.h:43</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_afe18e6ca5fd12bae08efb98f69c71a48"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">carl::Intersection_Tools::m_perf_log</a></div><div class="ttdeci">libMesh::PerfLog m_perf_log</div><div class="ttdoc">libMesh::PerfLog object. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00061">intersection_tools.h:61</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a89a78135b49b49c32bec8be4016782b3"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a89a78135b49b49c32bec8be4016782b3">carl::Intersection_Tools::m_elem_C_triangles</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; * m_elem_C_triangles</div><div class="ttdoc">Pointer for the appropriate triangle vertex index list (useless!) </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00078">intersection_tools.h:78</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<a class="anchor" id="a44115a8f785906bc1bed089fe92e526a"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">carl::Intersection_Tools::Intersection_Tools </td>
-          <td>(</td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>Min_Inter_Volume</em> = <code>1E-21</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>bDoPerf_log</em> = <code>false</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Constructor preallocating most objects and building the decomposition mappings. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00135">135</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-<div class="fragment"><div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;                                                                                  :</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a931ecd3fd3103656ede9c84a2eed10d2">m_Min_Inter_Volume</a> { Min_Inter_Volume },</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a651c43f074c2955bd58ef0d519c6ef73">MASTER_bPerfLog_intersection_tools</a> {bDoPerf_log},</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a> { libMesh::PerfLog(<span class="stringliteral">&quot;Intersection tools&quot;</span>, <a class="code" href="classcarl_1_1_intersection___tools.html#a651c43f074c2955bd58ef0d519c6ef73">MASTER_bPerfLog_intersection_tools</a>) }</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    {</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">m_exact_points_A</a>.resize(8);</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">m_exact_points_B</a>.resize(8);</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a473d6a254b10623659a1d8f81bbe695f">m_exact_points_C</a>.resize(8);</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a1bc3cab10caf53e5de762c4dea2ef1ba">m_dummyPoly</a>.reserve(8,18,12);</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#adf2892a8902442fbfebb913e9a4fb8ac">m_nef_C</a>.clear(Nef_Polyhedron::EMPTY);</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        this-&gt;<a class="code" href="classcarl_1_1_intersection___tools.html#ac2eb9f8074d4dc2511b3f36d3cfd5f3b">set_element_indexes</a>();</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a2f6b6fff82b9a02400d3aeb3db1f4c82">m_elem_C_tetrahedrons</a> = NULL;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a89a78135b49b49c32bec8be4016782b3">m_elem_C_triangles</a> = NULL;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    };</div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a931ecd3fd3103656ede9c84a2eed10d2"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a931ecd3fd3103656ede9c84a2eed10d2">carl::Intersection_Tools::m_Min_Inter_Volume</a></div><div class="ttdeci">double m_Min_Inter_Volume</div><div class="ttdoc">Minimal volume cutoff for the intersections. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00057">intersection_tools.h:57</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_ac2eb9f8074d4dc2511b3f36d3cfd5f3b"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#ac2eb9f8074d4dc2511b3f36d3cfd5f3b">carl::Intersection_Tools::set_element_indexes</a></div><div class="ttdeci">void set_element_indexes()</div><div class="ttdoc">Build the tetrahedron and triangle decomposition mappings. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00013">intersection_tools.cpp:13</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a2c3b6211dd1f9b0aa5f2ac8ffc383182"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">carl::Intersection_Tools::m_exact_points_B</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_B</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00042">intersection_tools.h:42</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_ad636117b292272044b252be62124eb0a"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">carl::Intersection_Tools::m_exact_points_A</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_A</div><div class="ttdoc">CGAL Exact point vectors. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00041">intersection_tools.h:41</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a651c43f074c2955bd58ef0d519c6ef73"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a651c43f074c2955bd58ef0d519c6ef73">carl::Intersection_Tools::MASTER_bPerfLog_intersection_tools</a></div><div class="ttdeci">bool MASTER_bPerfLog_intersection_tools</div><div class="ttdoc">Do performance log? Default: false. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00060">intersection_tools.h:60</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a1bc3cab10caf53e5de762c4dea2ef1ba"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a1bc3cab10caf53e5de762c4dea2ef1ba">carl::Intersection_Tools::m_dummyPoly</a></div><div class="ttdeci">ExactPolyhedron m_dummyPoly</div><div class="ttdoc">Intersection polyhedron. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00045">intersection_tools.h:45</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_adf2892a8902442fbfebb913e9a4fb8ac"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#adf2892a8902442fbfebb913e9a4fb8ac">carl::Intersection_Tools::m_nef_C</a></div><div class="ttdeci">Nef_Polyhedron m_nef_C</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00033">intersection_tools.h:33</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a2f6b6fff82b9a02400d3aeb3db1f4c82"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a2f6b6fff82b9a02400d3aeb3db1f4c82">carl::Intersection_Tools::m_elem_C_tetrahedrons</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; * m_elem_C_tetrahedrons</div><div class="ttdoc">Pointer for the appropriate tetrahedron vertex index list (useless!) </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00077">intersection_tools.h:77</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a473d6a254b10623659a1d8f81bbe695f"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a473d6a254b10623659a1d8f81bbe695f">carl::Intersection_Tools::m_exact_points_C</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_C</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00043">intersection_tools.h:43</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_afe18e6ca5fd12bae08efb98f69c71a48"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">carl::Intersection_Tools::m_perf_log</a></div><div class="ttdeci">libMesh::PerfLog m_perf_log</div><div class="ttdoc">libMesh::PerfLog object. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00061">intersection_tools.h:61</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a89a78135b49b49c32bec8be4016782b3"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a89a78135b49b49c32bec8be4016782b3">carl::Intersection_Tools::m_elem_C_triangles</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; * m_elem_C_triangles</div><div class="ttdoc">Pointer for the appropriate triangle vertex index list (useless!) </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00078">intersection_tools.h:78</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a1d6303ff6ffc19b6df42626e29a507ce"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void carl::Intersection_Tools::convert_elem_to_exact_points </td>
-          <td>(</td>
-          <td class="paramtype">const libMesh::Elem *&#160;</td>
-          <td class="paramname"><em>elem_input</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>points_output</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Convert an libMesh element to a list of CGAL exact points. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8cpp_source.html#l00636">636</a> of file <a class="el" href="intersection__tools_8cpp_source.html">intersection_tools.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;{</div>
-<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;    libMesh::Point dummyPoint;</div>
-<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iii = 0; iii &lt; elem_input-&gt;n_nodes(); ++iii)</div>
-<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;    {</div>
-<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;        dummyPoint = elem_input-&gt;point(iii);</div>
-<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;        points_output[iii] = <a class="code" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a>(  dummyPoint(0),</div>
-<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;                                            dummyPoint(1),</div>
-<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;                                            dummyPoint(2));</div>
-<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;    }</div>
-<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;}</div>
-<div class="ttc" id="_c_g_a_l__typedefs_8h_html_a162dbf669b38ca5632e00c9c02e000a5"><div class="ttname"><a href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a></div><div class="ttdeci">ExactKernel::Point_3 ExactPoint_3</div><div class="ttdef"><b>Definition:</b> <a href="_c_g_a_l__typedefs_8h_source.html#l00094">CGAL_typedefs.h:94</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<a class="anchor" id="af689c53cf00359c518234d8d070c4e53"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void carl::Intersection_Tools::convert_exact_points_to_Nef </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a> &gt;::const_iterator&#160;</td>
-          <td class="paramname"><em>it_begin</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a> &gt;::const_iterator&#160;</td>
-          <td class="paramname"><em>it_end</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a> &amp;&#160;</td>
-          <td class="paramname"><em>nef_out</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Convert an CGAL exact point set to a CGAL Nef polyhedron. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8cpp_source.html#l00649">649</a> of file <a class="el" href="intersection__tools_8cpp_source.html">intersection_tools.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;{</div>
-<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;    CGAL::convex_hull_3(it_begin,it_end,<a class="code" href="classcarl_1_1_intersection___tools.html#a1bc3cab10caf53e5de762c4dea2ef1ba">m_dummyPoly</a>,<a class="code" href="classcarl_1_1_intersection___tools.html#a0a3b4e978977cd29ebac810dc0a2baf6">ExactHullTraits</a>);</div>
-<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160;    nef_out = <a class="code" href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a>(<a class="code" href="classcarl_1_1_intersection___tools.html#a1bc3cab10caf53e5de762c4dea2ef1ba">m_dummyPoly</a>);</div>
-<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;}</div>
-<div class="ttc" id="_c_g_a_l__typedefs_8h_html_ab85d2fceadc71a761aa3a184793f8c5f"><div class="ttname"><a href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a></div><div class="ttdeci">CGAL::Nef_polyhedron_3&lt; ExactKernel, CGAL::SNC_indexed_items &gt; Nef_Polyhedron</div><div class="ttdef"><b>Definition:</b> <a href="_c_g_a_l__typedefs_8h_source.html#l00102">CGAL_typedefs.h:102</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a0a3b4e978977cd29ebac810dc0a2baf6"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a0a3b4e978977cd29ebac810dc0a2baf6">carl::Intersection_Tools::ExactHullTraits</a></div><div class="ttdeci">CGAL::Convex_hull_traits_3&lt; ExactKernel &gt; ExactHullTraits</div><div class="ttdoc">CGAL ExactKernel&#39;s convex hull traits. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00047">intersection_tools.h:47</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a1bc3cab10caf53e5de762c4dea2ef1ba"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a1bc3cab10caf53e5de762c4dea2ef1ba">carl::Intersection_Tools::m_dummyPoly</a></div><div class="ttdeci">ExactPolyhedron m_dummyPoly</div><div class="ttdoc">Intersection polyhedron. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00045">intersection_tools.h:45</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a355a95eefdfdd30b4a332fdd99a11150"></a>
 <div class="memitem">
 <div class="memproto">
@@ -479,7 +285,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">bool carl::Intersection_Tools::elements_do_intersect </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; ExactPoint_3 &gt; &amp;&#160;</td>
           <td class="paramname"><em>elem_C_points</em>, </td>
         </tr>
         <tr>
@@ -497,7 +303,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; ExactPoint_3 &gt; &amp;&#160;</td>
           <td class="paramname"><em>elem_D_points</em>, </td>
         </tr>
         <tr>
@@ -536,19 +342,19 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> jjj = 0; jjj &lt; elem_D_triangles.size(); ++jjj)</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    {</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        std::vector&lt;unsigned int&gt; &amp; work_triangle = elem_D_triangles[jjj];</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a4331121a50baaa93e499f6cfb446c1b0">m_test_triangle</a> = <a class="code" href="_c_g_a_l__typedefs_8h.html#acb9586e4ea704b6a4c4502ad0cb03c62">ExactTriangle_3</a>(elem_D_points[work_triangle[0]],</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        m_test_triangle = ExactTriangle_3(elem_D_points[work_triangle[0]],</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                elem_D_points[work_triangle[1]],</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                elem_D_points[work_triangle[2]]);</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iii = 0; iii &lt; elem_C_tetras.size(); ++iii)</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        {</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;            std::vector&lt;unsigned int&gt; &amp; work_tetra = elem_C_tetras[iii];</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;            <a class="code" href="classcarl_1_1_intersection___tools.html#a69657597ebb9655f8797b289939835a3">m_test_tetra</a> = <a class="code" href="_c_g_a_l__typedefs_8h.html#a02a72c8dcf4a17c7460e7e71301d2d3f">ExactTetrahedron</a>(    elem_C_points[work_tetra[0]],</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;            m_test_tetra = ExactTetrahedron(    elem_C_points[work_tetra[0]],</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                    elem_C_points[work_tetra[1]],</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                    elem_C_points[work_tetra[2]],</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                    elem_C_points[work_tetra[3]]);</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;            bElemIntersect = CGAL::do_intersect(<a class="code" href="classcarl_1_1_intersection___tools.html#a4331121a50baaa93e499f6cfb446c1b0">m_test_triangle</a>,<a class="code" href="classcarl_1_1_intersection___tools.html#a69657597ebb9655f8797b289939835a3">m_test_tetra</a>);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;            bElemIntersect = CGAL::do_intersect(m_test_triangle,m_test_tetra);</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;            <span class="keywordflow">if</span>(bElemIntersect)</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;            {</div>
@@ -570,19 +376,19 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> jjj = 0; jjj &lt; elem_C_triangles.size(); ++jjj)</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;        {</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;            std::vector&lt;unsigned int&gt; &amp; work_triangle = elem_C_triangles[jjj];</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;            <a class="code" href="classcarl_1_1_intersection___tools.html#a4331121a50baaa93e499f6cfb446c1b0">m_test_triangle</a> = <a class="code" href="_c_g_a_l__typedefs_8h.html#acb9586e4ea704b6a4c4502ad0cb03c62">ExactTriangle_3</a>(elem_C_points[work_triangle[0]],</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;            m_test_triangle = ExactTriangle_3(elem_C_points[work_triangle[0]],</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                    elem_C_points[work_triangle[1]],</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;                    elem_C_points[work_triangle[2]]);</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;            <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iii = 0; iii &lt; elem_D_tetras.size(); ++iii)</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;            {</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;                std::vector&lt;unsigned int&gt; &amp; work_tetra = elem_D_tetras.at(iii);</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                <a class="code" href="classcarl_1_1_intersection___tools.html#a69657597ebb9655f8797b289939835a3">m_test_tetra</a> = <a class="code" href="_c_g_a_l__typedefs_8h.html#a02a72c8dcf4a17c7460e7e71301d2d3f">ExactTetrahedron</a>(    elem_D_points[work_tetra[0]],</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                m_test_tetra = ExactTetrahedron(    elem_D_points[work_tetra[0]],</div>
 <div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;                        elem_D_points[work_tetra[1]],</div>
 <div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;                        elem_D_points[work_tetra[2]],</div>
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;                        elem_D_points[work_tetra[3]]);</div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;                bElemIntersect = CGAL::do_intersect(<a class="code" href="classcarl_1_1_intersection___tools.html#a4331121a50baaa93e499f6cfb446c1b0">m_test_triangle</a>,<a class="code" href="classcarl_1_1_intersection___tools.html#a69657597ebb9655f8797b289939835a3">m_test_tetra</a>);</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;                bElemIntersect = CGAL::do_intersect(m_test_triangle,m_test_tetra);</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;                <span class="keywordflow">if</span>(bElemIntersect)</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;                {</div>
@@ -600,73 +406,6 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    }</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    <span class="keywordflow">return</span> bElemIntersect;</div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;}</div>
-<div class="ttc" id="_c_g_a_l__typedefs_8h_html_acb9586e4ea704b6a4c4502ad0cb03c62"><div class="ttname"><a href="_c_g_a_l__typedefs_8h.html#acb9586e4ea704b6a4c4502ad0cb03c62">ExactTriangle_3</a></div><div class="ttdeci">ExactKernel::Triangle_3 ExactTriangle_3</div><div class="ttdef"><b>Definition:</b> <a href="_c_g_a_l__typedefs_8h_source.html#l00095">CGAL_typedefs.h:95</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a69657597ebb9655f8797b289939835a3"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a69657597ebb9655f8797b289939835a3">carl::Intersection_Tools::m_test_tetra</a></div><div class="ttdeci">ExactTetrahedron m_test_tetra</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00054">intersection_tools.h:54</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a4331121a50baaa93e499f6cfb446c1b0"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a4331121a50baaa93e499f6cfb446c1b0">carl::Intersection_Tools::m_test_triangle</a></div><div class="ttdeci">ExactTriangle_3 m_test_triangle</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00055">intersection_tools.h:55</a></div></div>
-<div class="ttc" id="_c_g_a_l__typedefs_8h_html_a02a72c8dcf4a17c7460e7e71301d2d3f"><div class="ttname"><a href="_c_g_a_l__typedefs_8h.html#a02a72c8dcf4a17c7460e7e71301d2d3f">ExactTetrahedron</a></div><div class="ttdeci">CGAL::Tetrahedron_3&lt; ExactKernel &gt; ExactTetrahedron</div><div class="ttdef"><b>Definition:</b> <a href="_c_g_a_l__typedefs_8h_source.html#l00100">CGAL_typedefs.h:100</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<a class="anchor" id="a8238069bd83ef1029c6a5b60a188763b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool carl::Intersection_Tools::FindAllIntersection </td>
-          <td>(</td>
-          <td class="paramtype">const libMesh::Elem *&#160;</td>
-          <td class="paramname"><em>Query_elem</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::unique_ptr&lt; libMesh::PointLocatorBase &gt; &amp;&#160;</td>
-          <td class="paramname"><em>point_locator</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::set&lt; unsigned int &gt; &amp;&#160;</td>
-          <td class="paramname"><em>Intersecting_elems</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Find all elements from the mesh intersecting Query_elem, using the mesh's libMesh::PointLocatorBase. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8cpp_source.html#l00200">200</a> of file <a class="el" href="intersection__tools_8cpp_source.html">intersection_tools.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;{</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    libMesh::PointLocatorBase&amp; locator = *point_locator.get();</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    <span class="comment">// Clear output</span></div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    Intersecting_elems.clear();</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    <span class="comment">// Search each vertex</span></div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> elem_nb_nodes = Query_elem-&gt;n_nodes();</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    libMesh::Point dummyPoint;</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    <span class="keywordtype">int</span> nbOfInters = 0;</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    <span class="comment">// Just to be sure, check if one of the points intersect the mesh</span></div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iii = 0; iii &lt; elem_nb_nodes; ++iii)</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    {</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        dummyPoint = Query_elem-&gt;point(iii);</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        <span class="keyword">const</span> libMesh::Elem * Patch_elem = locator(Query_elem-&gt;point(iii));</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;        <span class="keywordflow">if</span>(Patch_elem != NULL)</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        {</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;            Intersecting_elems.insert(Patch_elem-&gt;id());</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;            ++nbOfInters;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        }</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    }</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    <span class="keywordflow">return</span> nbOfInters != 0;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -731,12 +470,11 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;            }</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        }</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;        <a class="code" href="common__header_8h.html#a593ccc80b790b2268653fcf6597bf451">homemade_assert_msg</a>(bInsideTheMesh, <span class="stringliteral">&quot;Query element is not fully inside tested mesh!\n&quot;</span>);</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;        homemade_assert_msg(bInsideTheMesh, <span class="stringliteral">&quot;Query element is not fully inside tested mesh!\n&quot;</span>);</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    }</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    <span class="keywordflow">return</span> locator(Query_elem-&gt;point(0));</div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;};</div>
-<div class="ttc" id="common__header_8h_html_a593ccc80b790b2268653fcf6597bf451"><div class="ttname"><a href="common__header_8h.html#a593ccc80b790b2268653fcf6597bf451">homemade_assert_msg</a></div><div class="ttdeci">#define homemade_assert_msg(asserted, msg)</div><div class="ttdef"><b>Definition:</b> <a href="common__header_8h_source.html#l00063">common_header.h:63</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -778,14 +516,14 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;</div>
 <div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="comment">// First, convert both elements to CGAL exact point vectors</span></div>
 <div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    <a class="code" href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">convert_elem_to_exact_points</a>(elem_A,<a class="code" href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">m_exact_points_A</a>);</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <a class="code" href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">convert_elem_to_exact_points</a>(elem_B,<a class="code" href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">m_exact_points_B</a>);</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <a class="code" href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">convert_elem_to_exact_points</a>(elem_B,m_exact_points_B);</div>
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    <span class="comment">// Fast check: bounding boxes</span></div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    std::vector&lt;ExactPoint_3&gt;::const_iterator exact_points_A_begin = <a class="code" href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">m_exact_points_A</a>.begin();</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    std::vector&lt;ExactPoint_3&gt;::const_iterator exact_points_B_begin = <a class="code" href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">m_exact_points_B</a>.begin();</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    std::vector&lt;ExactPoint_3&gt;::const_iterator exact_points_B_begin = m_exact_points_B.begin();</div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    <a class="code" href="_c_g_a_l__typedefs_8h.html#addfe23033005db95e2e48130a55c8a6c">Bbox_3</a> exact_bbox_A = CGAL::bbox_3(exact_points_A_begin,exact_points_A_begin + n_nodes_A);</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    <a class="code" href="_c_g_a_l__typedefs_8h.html#addfe23033005db95e2e48130a55c8a6c">Bbox_3</a> exact_bbox_B = CGAL::bbox_3(exact_points_B_begin,exact_points_B_begin + n_nodes_B);</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    Bbox_3 exact_bbox_A = CGAL::bbox_3(exact_points_A_begin,exact_points_A_begin + n_nodes_A);</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    Bbox_3 exact_bbox_B = CGAL::bbox_3(exact_points_B_begin,exact_points_B_begin + n_nodes_B);</div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;</div>
 <div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    bBboxIntersect = CGAL::do_intersect(exact_bbox_A,exact_bbox_B);</div>
 <div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;</div>
@@ -814,7 +552,7 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        }</div>
 <div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;        <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;        {</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;            <a class="code" href="common__header_8h.html#a05d65d26b911668ac90085745dca71f6">homemade_error_msg</a>(<span class="stringliteral">&quot;Unsupported element type! Must be either TET4 or HEX8&quot;</span>);</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;            homemade_error_msg(<span class="stringliteral">&quot;Unsupported element type! Must be either TET4 or HEX8&quot;</span>);</div>
 <div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;        }</div>
 <div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;</div>
 <div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;        <span class="keywordflow">if</span>(elem_B-&gt;type() == libMesh::TET4)</div>
@@ -831,11 +569,11 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;        }</div>
 <div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;        {</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;            <a class="code" href="common__header_8h.html#a05d65d26b911668ac90085745dca71f6">homemade_error_msg</a>(<span class="stringliteral">&quot;Unsupported element type! Must be either TET4 or HEX8&quot;</span>);</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;            homemade_error_msg(<span class="stringliteral">&quot;Unsupported element type! Must be either TET4 or HEX8&quot;</span>);</div>
 <div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;        }</div>
 <div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;</div>
 <div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;        bElemIntersect = this-&gt;<a class="code" href="classcarl_1_1_intersection___tools.html#a355a95eefdfdd30b4a332fdd99a11150">elements_do_intersect</a>(<a class="code" href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">m_exact_points_A</a>, *elem_A_tetras, *elem_A_triangles,</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                <a class="code" href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">m_exact_points_B</a>, *elem_B_tetras, *elem_B_triangles);</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                m_exact_points_B, *elem_B_tetras, *elem_B_triangles);</div>
 <div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;    }</div>
 <div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    {</div>
@@ -844,12 +582,9 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;</div>
 <div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    <span class="keywordflow">return</span> bElemIntersect;</div>
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;}</div>
-<div class="ttc" id="common__header_8h_html_a05d65d26b911668ac90085745dca71f6"><div class="ttname"><a href="common__header_8h.html#a05d65d26b911668ac90085745dca71f6">homemade_error_msg</a></div><div class="ttdeci">#define homemade_error_msg(msg)</div><div class="ttdef"><b>Definition:</b> <a href="common__header_8h_source.html#l00073">common_header.h:73</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_af74ec1bcb1a896df19642d340dd2762c"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#af74ec1bcb1a896df19642d340dd2762c">carl::Intersection_Tools::m_HEX_tetrahedrons</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; m_HEX_tetrahedrons</div><div class="ttdoc">Vertex indices for a HEX* element tetrahedron decomposition. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00073">intersection_tools.h:73</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a2c3b6211dd1f9b0aa5f2ac8ffc383182"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">carl::Intersection_Tools::m_exact_points_B</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_B</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00042">intersection_tools.h:42</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_ad636117b292272044b252be62124eb0a"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">carl::Intersection_Tools::m_exact_points_A</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_A</div><div class="ttdoc">CGAL Exact point vectors. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00041">intersection_tools.h:41</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_aca79d0350f0969670dd9d06814c26583"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#aca79d0350f0969670dd9d06814c26583">carl::Intersection_Tools::m_HEX_triangles</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; m_HEX_triangles</div><div class="ttdoc">Vertex indices for a HEX* element surface triangles decomposition. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00074">intersection_tools.h:74</a></div></div>
-<div class="ttc" id="_c_g_a_l__typedefs_8h_html_addfe23033005db95e2e48130a55c8a6c"><div class="ttname"><a href="_c_g_a_l__typedefs_8h.html#addfe23033005db95e2e48130a55c8a6c">Bbox_3</a></div><div class="ttdeci">CGAL::Bbox_3 Bbox_3</div><div class="ttdef"><b>Definition:</b> <a href="_c_g_a_l__typedefs_8h_source.html#l00118">CGAL_typedefs.h:118</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_a1d6303ff6ffc19b6df42626e29a507ce"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">carl::Intersection_Tools::convert_elem_to_exact_points</a></div><div class="ttdeci">void convert_elem_to_exact_points(const libMesh::Elem *elem_input, std::vector&lt; ExactPoint_3 &gt; &amp;points_output)</div><div class="ttdoc">Convert an libMesh element to a list of CGAL exact points. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00636">intersection_tools.cpp:636</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_a54e026b256ab6894b1f77950a425b1eb"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a54e026b256ab6894b1f77950a425b1eb">carl::Intersection_Tools::m_TET_triangles</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; m_TET_triangles</div><div class="ttdoc">Vertex indices for a TET* element surface triangles. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00070">intersection_tools.h:70</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_a355a95eefdfdd30b4a332fdd99a11150"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a355a95eefdfdd30b4a332fdd99a11150">carl::Intersection_Tools::elements_do_intersect</a></div><div class="ttdeci">bool elements_do_intersect(std::vector&lt; ExactPoint_3 &gt; &amp;elem_C_points, std::vector&lt; std::vector&lt; unsigned int &gt; &gt; &amp;elem_C_tetras, std::vector&lt; std::vector&lt; unsigned int &gt; &gt; &amp;elem_C_triangles, std::vector&lt; ExactPoint_3 &gt; &amp;elem_D_points, std::vector&lt; std::vector&lt; unsigned int &gt; &gt; &amp;elem_D_tetras, std::vector&lt; std::vector&lt; unsigned int &gt; &gt; &amp;elem_D_triangles)</div><div class="ttdoc">Determinate if two elements intersect, using their points and decompositions. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00084">intersection_tools.cpp:84</a></div></div>
@@ -895,7 +630,7 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;    <span class="keywordtype">bool</span> bElemIntersect = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;</div>
 <div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    <span class="comment">// Assert if C was built</span></div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    <a class="code" href="common__header_8h.html#a593ccc80b790b2268653fcf6597bf451">homemade_assert_msg</a>(!<a class="code" href="classcarl_1_1_intersection___tools.html#adf2892a8902442fbfebb913e9a4fb8ac">m_nef_C</a>.is_empty(), <span class="stringliteral">&quot;Coupling restriction element was not set yet!\n&quot;</span>);</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    homemade_assert_msg(!m_nef_C.is_empty(), <span class="stringliteral">&quot;Coupling restriction element was not set yet!\n&quot;</span>);</div>
 <div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;</div>
 <div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    <span class="comment">// Test the intersection beforehand. This also generates the exact</span></div>
 <div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;    <span class="comment">// points needed.</span></div>
@@ -908,7 +643,7 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n_nodes_B = elem_B-&gt;n_nodes();</div>
 <div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;</div>
 <div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;        std::vector&lt;ExactPoint_3&gt;::const_iterator exact_points_A_begin = <a class="code" href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">m_exact_points_A</a>.begin();</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        std::vector&lt;ExactPoint_3&gt;::const_iterator exact_points_B_begin = <a class="code" href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">m_exact_points_B</a>.begin();</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        std::vector&lt;ExactPoint_3&gt;::const_iterator exact_points_B_begin = m_exact_points_B.begin();</div>
 <div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;</div>
 <div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;        <span class="keywordflow">if</span>(bCreateNewNefForA)</div>
 <div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;        {</div>
@@ -916,20 +651,20 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;            <a class="code" href="classcarl_1_1_intersection___tools.html#af689c53cf00359c518234d8d070c4e53">convert_exact_points_to_Nef</a>(    exact_points_A_begin,</div>
 <div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;                                            exact_points_A_begin + n_nodes_A,</div>
 <div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;                                            <a class="code" href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">m_nef_A</a>);</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;            <a class="code" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a> = <a class="code" href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">m_nef_A</a>*<a class="code" href="classcarl_1_1_intersection___tools.html#adf2892a8902442fbfebb913e9a4fb8ac">m_nef_C</a>;</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;            <a class="code" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a> = <a class="code" href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">m_nef_A</a>*m_nef_C;</div>
 <div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;        }</div>
 <div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;        <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;        {</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;            <a class="code" href="common__header_8h.html#a593ccc80b790b2268653fcf6597bf451">homemade_assert_msg</a>(!<a class="code" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a>.is_empty(), <span class="stringliteral">&quot;Intersection base is empty!\n&quot;</span>);</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;            homemade_assert_msg(!<a class="code" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a>.is_empty(), <span class="stringliteral">&quot;Intersection base is empty!\n&quot;</span>);</div>
 <div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;        }</div>
 <div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#af689c53cf00359c518234d8d070c4e53">convert_exact_points_to_Nef</a>(    exact_points_B_begin,</div>
 <div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;                                        exact_points_B_begin + n_nodes_B,</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;                                        <a class="code" href="classcarl_1_1_intersection___tools.html#a0b134a30452c8a767fc4265c7c0296a9">m_nef_B</a>);</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;                                        m_nef_B);</div>
 <div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;</div>
 <div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;        <span class="comment">// Intersect them</span></div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a> = <a class="code" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a>*<a class="code" href="classcarl_1_1_intersection___tools.html#a0b134a30452c8a767fc4265c7c0296a9">m_nef_B</a>;</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;        m_nef_I = <a class="code" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a>*m_nef_B;</div>
 <div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;        <span class="keywordflow">if</span>(!<a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a>.is_empty() &amp;&amp; <a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a>.number_of_volumes() &gt; 1)</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;        <span class="keywordflow">if</span>(!m_nef_I.is_empty() &amp;&amp; m_nef_I.number_of_volumes() &gt; 1)</div>
 <div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;        {</div>
 <div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;            <span class="comment">// Intersection exists!</span></div>
 <div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;            bElemIntersect = <span class="keyword">true</span>;</div>
@@ -942,158 +677,10 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;</div>
 <div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;    <span class="keywordflow">return</span> bElemIntersect;</div>
 <div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;}</div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a47353dc1c374f45bf3dbaae667270cf3"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">carl::Intersection_Tools::m_nef_I</a></div><div class="ttdeci">Nef_Polyhedron m_nef_I</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00032">intersection_tools.h:32</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a2c3b6211dd1f9b0aa5f2ac8ffc383182"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">carl::Intersection_Tools::m_exact_points_B</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_B</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00042">intersection_tools.h:42</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_ad636117b292272044b252be62124eb0a"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">carl::Intersection_Tools::m_exact_points_A</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_A</div><div class="ttdoc">CGAL Exact point vectors. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00041">intersection_tools.h:41</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_a8333f16787459e65c4fe913dad50b5c6"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">carl::Intersection_Tools::m_nef_I_AC</a></div><div class="ttdeci">Nef_Polyhedron m_nef_I_AC</div><div class="ttdoc">Nef polyhedron used to save the intersection between m_nef_A and m_nef_C, reducing the number of inte...</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00038">intersection_tools.h:38</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a0b134a30452c8a767fc4265c7c0296a9"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a0b134a30452c8a767fc4265c7c0296a9">carl::Intersection_Tools::m_nef_B</a></div><div class="ttdeci">Nef_Polyhedron m_nef_B</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00031">intersection_tools.h:31</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_adf2892a8902442fbfebb913e9a4fb8ac"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#adf2892a8902442fbfebb913e9a4fb8ac">carl::Intersection_Tools::m_nef_C</a></div><div class="ttdeci">Nef_Polyhedron m_nef_C</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00033">intersection_tools.h:33</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_ae7b16748a45a0579bafecb48ef2fc4ce"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#ae7b16748a45a0579bafecb48ef2fc4ce">carl::Intersection_Tools::libMesh_exact_do_intersect</a></div><div class="ttdeci">bool libMesh_exact_do_intersect(const libMesh::Elem *elem_A, const libMesh::Elem *elem_B)</div><div class="ttdoc">Determinate if two elements intersect. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00232">intersection_tools.cpp:232</a></div></div>
-<div class="ttc" id="common__header_8h_html_a593ccc80b790b2268653fcf6597bf451"><div class="ttname"><a href="common__header_8h.html#a593ccc80b790b2268653fcf6597bf451">homemade_assert_msg</a></div><div class="ttdeci">#define homemade_assert_msg(asserted, msg)</div><div class="ttdef"><b>Definition:</b> <a href="common__header_8h_source.html#l00063">common_header.h:63</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_a66a33158af0779366d4109e96a10ddc4"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">carl::Intersection_Tools::m_nef_A</a></div><div class="ttdeci">Nef_Polyhedron m_nef_A</div><div class="ttdoc">Nef polyhedrons for the elements. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00030">intersection_tools.h:30</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_af689c53cf00359c518234d8d070c4e53"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#af689c53cf00359c518234d8d070c4e53">carl::Intersection_Tools::convert_exact_points_to_Nef</a></div><div class="ttdeci">void convert_exact_points_to_Nef(std::vector&lt; ExactPoint_3 &gt;::const_iterator it_begin, std::vector&lt; ExactPoint_3 &gt;::const_iterator it_end, Nef_Polyhedron &amp;nef_out)</div><div class="ttdoc">Convert an CGAL exact point set to a CGAL Nef polyhedron. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00649">intersection_tools.cpp:649</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<a class="anchor" id="ad57f9ae9fd2cce1ff7fc2430bf6c6b71"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool carl::Intersection_Tools::libMesh_exact_intersection </td>
-          <td>(</td>
-          <td class="paramtype">const libMesh::Elem *&#160;</td>
-          <td class="paramname"><em>elem_A</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const libMesh::Elem *&#160;</td>
-          <td class="paramname"><em>elem_B</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::set&lt; <a class="el" href="_c_g_a_l__typedefs_8h.html#a9dc49a828e77bbd58c1f5db13edde547">Point_3</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>points_out</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>bCreateNewNefForA</em> = <code>true</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>bConvertPoints</em> = <code>true</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>bTestNeeded</em> = <code>true</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Build the intersection between two elements. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8cpp_source.html#l00312">312</a> of file <a class="el" href="intersection__tools_8cpp_source.html">intersection_tools.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;{</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    <span class="keywordtype">bool</span> bElemIntersect = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keywordflow">if</span>(bTestNeeded)</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    {</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;        <span class="comment">// Test the intersection beforehand</span></div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.push(<span class="stringliteral">&quot;Test intersection&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction&quot;</span>);</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        bElemIntersect = <a class="code" href="classcarl_1_1_intersection___tools.html#ae7b16748a45a0579bafecb48ef2fc4ce">libMesh_exact_do_intersect</a>(elem_A,elem_B);</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.pop(<span class="stringliteral">&quot;Test intersection&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction&quot;</span>);</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    }</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(bConvertPoints)</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    {</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        <span class="comment">// Test already made somewhere else, but we need to set up the exact</span></div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        <span class="comment">// points.</span></div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.push(<span class="stringliteral">&quot;Point conversion to exact&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction&quot;</span>);</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;        <span class="keywordflow">if</span>(bCreateNewNefForA)</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;        {</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;            <a class="code" href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">convert_elem_to_exact_points</a>(elem_A,<a class="code" href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">m_exact_points_A</a>);</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;        }</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">convert_elem_to_exact_points</a>(elem_B,<a class="code" href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">m_exact_points_B</a>);</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.pop(<span class="stringliteral">&quot;Point conversion to exact&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction&quot;</span>);</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    }</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keywordflow">if</span>(bElemIntersect)</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    {</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;        <span class="comment">// Generate the Nef polyhedrons</span></div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n_nodes_A = elem_A-&gt;n_nodes();</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n_nodes_B = elem_B-&gt;n_nodes();</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;        std::vector&lt;ExactPoint_3&gt;::const_iterator exact_points_A_begin = <a class="code" href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">m_exact_points_A</a>.begin();</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;        std::vector&lt;ExactPoint_3&gt;::const_iterator exact_points_B_begin = <a class="code" href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">m_exact_points_B</a>.begin();</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.push(<span class="stringliteral">&quot;Nef polyhedron construction&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction&quot;</span>);</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;        <span class="keywordflow">if</span>(bCreateNewNefForA)</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;        {</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;            <a class="code" href="classcarl_1_1_intersection___tools.html#af689c53cf00359c518234d8d070c4e53">convert_exact_points_to_Nef</a>(    exact_points_A_begin,</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;                                            exact_points_A_begin + n_nodes_A,</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;                                            <a class="code" href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">m_nef_A</a>);</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;        }</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;        <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;        {</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;            <a class="code" href="common__header_8h.html#a593ccc80b790b2268653fcf6597bf451">homemade_assert_msg</a>(!<a class="code" href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">m_nef_A</a>.is_empty(), <span class="stringliteral">&quot;Intersection base is empty!\n&quot;</span>);</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;        }</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#af689c53cf00359c518234d8d070c4e53">convert_exact_points_to_Nef</a>(    exact_points_B_begin,</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;                                        exact_points_B_begin + n_nodes_B,</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;                                        <a class="code" href="classcarl_1_1_intersection___tools.html#a0b134a30452c8a767fc4265c7c0296a9">m_nef_B</a>);</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.pop(<span class="stringliteral">&quot;Nef polyhedron construction&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction&quot;</span>);</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;        <span class="comment">// Intersect them</span></div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.push(<span class="stringliteral">&quot;Nef polyhedron intersection&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction&quot;</span>);</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a> = <a class="code" href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">m_nef_A</a>*<a class="code" href="classcarl_1_1_intersection___tools.html#a0b134a30452c8a767fc4265c7c0296a9">m_nef_B</a>;</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.pop(<span class="stringliteral">&quot;Nef polyhedron intersection&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction&quot;</span>);</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.push(<span class="stringliteral">&quot;Point set output&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction&quot;</span>);</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;        <span class="keywordflow">if</span>(!<a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a>.is_empty())</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;        {</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;            <span class="comment">// Intersection exists! Create output</span></div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;            bElemIntersect = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;            points_out.clear();</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;            <span class="keywordflow">for</span>(Nef_Polyhedron::Vertex_const_iterator it_vertex = <a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a>.vertices_begin();</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;                    it_vertex != <a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a>.vertices_end();</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;                    ++it_vertex)</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;            {</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;                points_out.insert(<a class="code" href="classcarl_1_1_intersection___tools.html#a8cd632ee9314f5981c620af325245413">ConvertExactToInexact</a>(it_vertex-&gt;point()));</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;            }</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;        }</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;        <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;        {</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;            bElemIntersect = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;        }</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.pop(<span class="stringliteral">&quot;Point set output&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction&quot;</span>);</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;    }</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;    <span class="keywordflow">return</span> bElemIntersect;</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;}</div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a8cd632ee9314f5981c620af325245413"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a8cd632ee9314f5981c620af325245413">carl::Intersection_Tools::ConvertExactToInexact</a></div><div class="ttdeci">ExactKernel_to_Kernel ConvertExactToInexact</div><div class="ttdoc">Convert exact CGAL constructs to inexact constructs. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00051">intersection_tools.h:51</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a47353dc1c374f45bf3dbaae667270cf3"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">carl::Intersection_Tools::m_nef_I</a></div><div class="ttdeci">Nef_Polyhedron m_nef_I</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00032">intersection_tools.h:32</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a2c3b6211dd1f9b0aa5f2ac8ffc383182"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">carl::Intersection_Tools::m_exact_points_B</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_B</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00042">intersection_tools.h:42</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_ad636117b292272044b252be62124eb0a"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">carl::Intersection_Tools::m_exact_points_A</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_A</div><div class="ttdoc">CGAL Exact point vectors. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00041">intersection_tools.h:41</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a0b134a30452c8a767fc4265c7c0296a9"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a0b134a30452c8a767fc4265c7c0296a9">carl::Intersection_Tools::m_nef_B</a></div><div class="ttdeci">Nef_Polyhedron m_nef_B</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00031">intersection_tools.h:31</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a1d6303ff6ffc19b6df42626e29a507ce"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">carl::Intersection_Tools::convert_elem_to_exact_points</a></div><div class="ttdeci">void convert_elem_to_exact_points(const libMesh::Elem *elem_input, std::vector&lt; ExactPoint_3 &gt; &amp;points_output)</div><div class="ttdoc">Convert an libMesh element to a list of CGAL exact points. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00636">intersection_tools.cpp:636</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_ae7b16748a45a0579bafecb48ef2fc4ce"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#ae7b16748a45a0579bafecb48ef2fc4ce">carl::Intersection_Tools::libMesh_exact_do_intersect</a></div><div class="ttdeci">bool libMesh_exact_do_intersect(const libMesh::Elem *elem_A, const libMesh::Elem *elem_B)</div><div class="ttdoc">Determinate if two elements intersect. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00232">intersection_tools.cpp:232</a></div></div>
-<div class="ttc" id="common__header_8h_html_a593ccc80b790b2268653fcf6597bf451"><div class="ttname"><a href="common__header_8h.html#a593ccc80b790b2268653fcf6597bf451">homemade_assert_msg</a></div><div class="ttdeci">#define homemade_assert_msg(asserted, msg)</div><div class="ttdef"><b>Definition:</b> <a href="common__header_8h_source.html#l00063">common_header.h:63</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a66a33158af0779366d4109e96a10ddc4"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">carl::Intersection_Tools::m_nef_A</a></div><div class="ttdeci">Nef_Polyhedron m_nef_A</div><div class="ttdoc">Nef polyhedrons for the elements. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00030">intersection_tools.h:30</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_afe18e6ca5fd12bae08efb98f69c71a48"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">carl::Intersection_Tools::m_perf_log</a></div><div class="ttdeci">libMesh::PerfLog m_perf_log</div><div class="ttdoc">libMesh::PerfLog object. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00061">intersection_tools.h:61</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_af689c53cf00359c518234d8d070c4e53"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#af689c53cf00359c518234d8d070c4e53">carl::Intersection_Tools::convert_exact_points_to_Nef</a></div><div class="ttdeci">void convert_exact_points_to_Nef(std::vector&lt; ExactPoint_3 &gt;::const_iterator it_begin, std::vector&lt; ExactPoint_3 &gt;::const_iterator it_end, Nef_Polyhedron &amp;nef_out)</div><div class="ttdoc">Convert an CGAL exact point set to a CGAL Nef polyhedron. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00649">intersection_tools.cpp:649</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1154,10 +741,10 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;    <span class="keywordtype">bool</span> bElemIntersect = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;</div>
 <div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;    <span class="comment">// Assert if C was built</span></div>
-<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;    <a class="code" href="common__header_8h.html#a593ccc80b790b2268653fcf6597bf451">homemade_assert_msg</a>(!<a class="code" href="classcarl_1_1_intersection___tools.html#adf2892a8902442fbfebb913e9a4fb8ac">m_nef_C</a>.is_empty(), <span class="stringliteral">&quot;Coupling restriction element was not set yet!\n&quot;</span>);</div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;    homemade_assert_msg(!m_nef_C.is_empty(), <span class="stringliteral">&quot;Coupling restriction element was not set yet!\n&quot;</span>);</div>
 <div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;</div>
 <div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;    <span class="comment">// Dummy CGAL point</span></div>
-<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;    <a class="code" href="_c_g_a_l__typedefs_8h.html#a9dc49a828e77bbd58c1f5db13edde547">Point_3</a>     dummy_CGAL_point;</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;    Point_3     dummy_CGAL_point;</div>
 <div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;    libMesh::Point dummy_libMesh_point;</div>
 <div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;</div>
 <div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;    std::vector&lt;double&gt; bbox_dims(6,0);</div>
@@ -1176,7 +763,7 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;        <span class="comment">// points.</span></div>
 <div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.push(<span class="stringliteral">&quot;Point conversion to exact&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction inside coupling&quot;</span>);</div>
 <div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">convert_elem_to_exact_points</a>(elem_A,<a class="code" href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">m_exact_points_A</a>);</div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">convert_elem_to_exact_points</a>(elem_B,<a class="code" href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">m_exact_points_B</a>);</div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">convert_elem_to_exact_points</a>(elem_B,m_exact_points_B);</div>
 <div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.pop(<span class="stringliteral">&quot;Point conversion to exact&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction inside coupling&quot;</span>);</div>
 <div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;    }</div>
 <div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;</div>
@@ -1187,7 +774,7 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n_nodes_B = elem_B-&gt;n_nodes();</div>
 <div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;</div>
 <div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;        std::vector&lt;ExactPoint_3&gt;::const_iterator exact_points_A_begin = <a class="code" href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">m_exact_points_A</a>.begin();</div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;        std::vector&lt;ExactPoint_3&gt;::const_iterator exact_points_B_begin = <a class="code" href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">m_exact_points_B</a>.begin();</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;        std::vector&lt;ExactPoint_3&gt;::const_iterator exact_points_B_begin = m_exact_points_B.begin();</div>
 <div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;</div>
 <div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.push(<span class="stringliteral">&quot;Nef polyhedron construction&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction inside coupling&quot;</span>);</div>
 <div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;        <span class="keywordflow">if</span>(bCreateNewNefForA)</div>
@@ -1196,38 +783,38 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;            <a class="code" href="classcarl_1_1_intersection___tools.html#af689c53cf00359c518234d8d070c4e53">convert_exact_points_to_Nef</a>(    exact_points_A_begin,</div>
 <div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;                                            exact_points_A_begin + n_nodes_A,</div>
 <div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;                                            <a class="code" href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">m_nef_A</a>);</div>
-<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;            <a class="code" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a> = <a class="code" href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">m_nef_A</a>*<a class="code" href="classcarl_1_1_intersection___tools.html#adf2892a8902442fbfebb913e9a4fb8ac">m_nef_C</a>;</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;            <a class="code" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a> = <a class="code" href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">m_nef_A</a>*m_nef_C;</div>
 <div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;        }</div>
 <div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;        <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;        {</div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;            <a class="code" href="common__header_8h.html#a593ccc80b790b2268653fcf6597bf451">homemade_assert_msg</a>(!<a class="code" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a>.is_empty(), <span class="stringliteral">&quot;Intersection base is empty!\n&quot;</span>);</div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;            homemade_assert_msg(!<a class="code" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a>.is_empty(), <span class="stringliteral">&quot;Intersection base is empty!\n&quot;</span>);</div>
 <div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;        }</div>
 <div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;</div>
 <div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#af689c53cf00359c518234d8d070c4e53">convert_exact_points_to_Nef</a>(    exact_points_B_begin,</div>
 <div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;                                        exact_points_B_begin + n_nodes_B,</div>
-<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;                                        <a class="code" href="classcarl_1_1_intersection___tools.html#a0b134a30452c8a767fc4265c7c0296a9">m_nef_B</a>);</div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;                                        m_nef_B);</div>
 <div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.pop(<span class="stringliteral">&quot;Nef polyhedron construction&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction inside coupling&quot;</span>);</div>
 <div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;</div>
 <div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;        <span class="comment">// Intersect them</span></div>
 <div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.push(<span class="stringliteral">&quot;Nef polyhedron intersection&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction inside coupling&quot;</span>);</div>
 <div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;</div>
-<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a> = <a class="code" href="classcarl_1_1_intersection___tools.html#a0b134a30452c8a767fc4265c7c0296a9">m_nef_B</a>*<a class="code" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a>;</div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;        m_nef_I = m_nef_B*<a class="code" href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">m_nef_I_AC</a>;</div>
 <div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;</div>
 <div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.pop(<span class="stringliteral">&quot;Nef polyhedron intersection&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction inside coupling&quot;</span>);</div>
 <div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;</div>
 <div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">m_perf_log</a>.push(<span class="stringliteral">&quot;Point set output&quot;</span>,<span class="stringliteral">&quot;Exact intersection construction inside coupling&quot;</span>);</div>
 <div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;</div>
-<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;        <span class="keywordflow">if</span>(     !<a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a>.is_empty() &amp;&amp;</div>
-<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;                 <a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a>.number_of_volumes() &gt; 1 &amp;&amp;</div>
-<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;                 <a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a>.number_of_vertices() &gt; 3 &amp;&amp;</div>
-<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;                 <a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a>.number_of_facets() &gt; 1)</div>
+<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;        <span class="keywordflow">if</span>(     !m_nef_I.is_empty() &amp;&amp;</div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;                 m_nef_I.number_of_volumes() &gt; 1 &amp;&amp;</div>
+<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;                 m_nef_I.number_of_vertices() &gt; 3 &amp;&amp;</div>
+<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;                 m_nef_I.number_of_facets() &gt; 1)</div>
 <div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;        {</div>
 <div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;            <span class="comment">// Intersection exists! Extract points!</span></div>
 <div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;            points_out.clear();</div>
 <div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;            bElemIntersect = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;</div>
-<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;            <span class="keywordflow">for</span>(Nef_Polyhedron::Vertex_const_iterator it_vertex = <a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a>.vertices_begin();</div>
-<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;                    it_vertex != <a class="code" href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">m_nef_I</a>.vertices_end();</div>
+<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;            <span class="keywordflow">for</span>(Nef_Polyhedron::Vertex_const_iterator it_vertex = m_nef_I.vertices_begin();</div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;                    it_vertex != m_nef_I.vertices_end();</div>
 <div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;                    ++it_vertex)</div>
 <div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;            {</div>
 <div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;                dummy_CGAL_point = <a class="code" href="classcarl_1_1_intersection___tools.html#a8cd632ee9314f5981c620af325245413">ConvertExactToInexact</a>(it_vertex-&gt;point());</div>
@@ -1297,80 +884,13 @@ Protected Attributes</h2></td></tr>
 <div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;}</div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_a931ecd3fd3103656ede9c84a2eed10d2"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a931ecd3fd3103656ede9c84a2eed10d2">carl::Intersection_Tools::m_Min_Inter_Volume</a></div><div class="ttdeci">double m_Min_Inter_Volume</div><div class="ttdoc">Minimal volume cutoff for the intersections. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00057">intersection_tools.h:57</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_a8cd632ee9314f5981c620af325245413"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a8cd632ee9314f5981c620af325245413">carl::Intersection_Tools::ConvertExactToInexact</a></div><div class="ttdeci">ExactKernel_to_Kernel ConvertExactToInexact</div><div class="ttdoc">Convert exact CGAL constructs to inexact constructs. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00051">intersection_tools.h:51</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a47353dc1c374f45bf3dbaae667270cf3"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a47353dc1c374f45bf3dbaae667270cf3">carl::Intersection_Tools::m_nef_I</a></div><div class="ttdeci">Nef_Polyhedron m_nef_I</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00032">intersection_tools.h:32</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a2c3b6211dd1f9b0aa5f2ac8ffc383182"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a2c3b6211dd1f9b0aa5f2ac8ffc383182">carl::Intersection_Tools::m_exact_points_B</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_B</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00042">intersection_tools.h:42</a></div></div>
-<div class="ttc" id="_c_g_a_l__typedefs_8h_html_a9dc49a828e77bbd58c1f5db13edde547"><div class="ttname"><a href="_c_g_a_l__typedefs_8h.html#a9dc49a828e77bbd58c1f5db13edde547">Point_3</a></div><div class="ttdeci">Kernel::Point_3 Point_3</div><div class="ttdef"><b>Definition:</b> <a href="_c_g_a_l__typedefs_8h_source.html#l00115">CGAL_typedefs.h:115</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_ad636117b292272044b252be62124eb0a"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#ad636117b292272044b252be62124eb0a">carl::Intersection_Tools::m_exact_points_A</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_A</div><div class="ttdoc">CGAL Exact point vectors. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00041">intersection_tools.h:41</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_a8333f16787459e65c4fe913dad50b5c6"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a8333f16787459e65c4fe913dad50b5c6">carl::Intersection_Tools::m_nef_I_AC</a></div><div class="ttdeci">Nef_Polyhedron m_nef_I_AC</div><div class="ttdoc">Nef polyhedron used to save the intersection between m_nef_A and m_nef_C, reducing the number of inte...</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00038">intersection_tools.h:38</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a0b134a30452c8a767fc4265c7c0296a9"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a0b134a30452c8a767fc4265c7c0296a9">carl::Intersection_Tools::m_nef_B</a></div><div class="ttdeci">Nef_Polyhedron m_nef_B</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00031">intersection_tools.h:31</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_a1d6303ff6ffc19b6df42626e29a507ce"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">carl::Intersection_Tools::convert_elem_to_exact_points</a></div><div class="ttdeci">void convert_elem_to_exact_points(const libMesh::Elem *elem_input, std::vector&lt; ExactPoint_3 &gt; &amp;points_output)</div><div class="ttdoc">Convert an libMesh element to a list of CGAL exact points. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00636">intersection_tools.cpp:636</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_adf2892a8902442fbfebb913e9a4fb8ac"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#adf2892a8902442fbfebb913e9a4fb8ac">carl::Intersection_Tools::m_nef_C</a></div><div class="ttdeci">Nef_Polyhedron m_nef_C</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00033">intersection_tools.h:33</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_ae7b16748a45a0579bafecb48ef2fc4ce"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#ae7b16748a45a0579bafecb48ef2fc4ce">carl::Intersection_Tools::libMesh_exact_do_intersect</a></div><div class="ttdeci">bool libMesh_exact_do_intersect(const libMesh::Elem *elem_A, const libMesh::Elem *elem_B)</div><div class="ttdoc">Determinate if two elements intersect. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00232">intersection_tools.cpp:232</a></div></div>
-<div class="ttc" id="common__header_8h_html_a593ccc80b790b2268653fcf6597bf451"><div class="ttname"><a href="common__header_8h.html#a593ccc80b790b2268653fcf6597bf451">homemade_assert_msg</a></div><div class="ttdeci">#define homemade_assert_msg(asserted, msg)</div><div class="ttdef"><b>Definition:</b> <a href="common__header_8h_source.html#l00063">common_header.h:63</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_a66a33158af0779366d4109e96a10ddc4"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a66a33158af0779366d4109e96a10ddc4">carl::Intersection_Tools::m_nef_A</a></div><div class="ttdeci">Nef_Polyhedron m_nef_A</div><div class="ttdoc">Nef polyhedrons for the elements. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00030">intersection_tools.h:30</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_afe18e6ca5fd12bae08efb98f69c71a48"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#afe18e6ca5fd12bae08efb98f69c71a48">carl::Intersection_Tools::m_perf_log</a></div><div class="ttdeci">libMesh::PerfLog m_perf_log</div><div class="ttdoc">libMesh::PerfLog object. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00061">intersection_tools.h:61</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_af689c53cf00359c518234d8d070c4e53"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#af689c53cf00359c518234d8d070c4e53">carl::Intersection_Tools::convert_exact_points_to_Nef</a></div><div class="ttdeci">void convert_exact_points_to_Nef(std::vector&lt; ExactPoint_3 &gt;::const_iterator it_begin, std::vector&lt; ExactPoint_3 &gt;::const_iterator it_end, Nef_Polyhedron &amp;nef_out)</div><div class="ttdoc">Convert an CGAL exact point set to a CGAL Nef polyhedron. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00649">intersection_tools.cpp:649</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<a class="anchor" id="acf2d17e703441bc9e3ed05d98f51ba85"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void carl::Intersection_Tools::libmesh_set_coupling_nef_polyhedron </td>
-          <td>(</td>
-          <td class="paramtype">const libMesh::Elem *&#160;</td>
-          <td class="paramname"><em>elem_C</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Set the Nef polyhedron for the coupling mesh element. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8cpp_source.html#l00604">604</a> of file <a class="el" href="intersection__tools_8cpp_source.html">intersection_tools.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;{</div>
-<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> n_nodes_C = elem_C-&gt;n_nodes();</div>
-<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;</div>
-<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;    <span class="comment">// First, convert the element to a CGAL exact point vector</span></div>
-<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;    <a class="code" href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">convert_elem_to_exact_points</a>(elem_C,<a class="code" href="classcarl_1_1_intersection___tools.html#a473d6a254b10623659a1d8f81bbe695f">m_exact_points_C</a>);</div>
-<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;</div>
-<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;    <span class="comment">// Second, convert to Nef</span></div>
-<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;    std::vector&lt;ExactPoint_3&gt;::const_iterator exact_points_C_begin = <a class="code" href="classcarl_1_1_intersection___tools.html#a473d6a254b10623659a1d8f81bbe695f">m_exact_points_C</a>.begin();</div>
-<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;    <a class="code" href="classcarl_1_1_intersection___tools.html#af689c53cf00359c518234d8d070c4e53">convert_exact_points_to_Nef</a>(    exact_points_C_begin,</div>
-<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;                                    exact_points_C_begin + n_nodes_C,</div>
-<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;                                    <a class="code" href="classcarl_1_1_intersection___tools.html#adf2892a8902442fbfebb913e9a4fb8ac">m_nef_C</a>);</div>
-<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;</div>
-<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;    <span class="comment">// And, finally, associate the tetra and triangle tables to it</span></div>
-<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;    <span class="keywordflow">if</span>(elem_C-&gt;type() == libMesh::TET4)</div>
-<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;    {</div>
-<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;        <span class="comment">// Use tetrahedron geometry</span></div>
-<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a2f6b6fff82b9a02400d3aeb3db1f4c82">m_elem_C_tetrahedrons</a> = &amp;<a class="code" href="classcarl_1_1_intersection___tools.html#a6e9a49f3b382810c884ba46b791bfcb8">m_TET_tetrahedrons</a>;</div>
-<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a89a78135b49b49c32bec8be4016782b3">m_elem_C_triangles</a> = &amp;<a class="code" href="classcarl_1_1_intersection___tools.html#a54e026b256ab6894b1f77950a425b1eb">m_TET_triangles</a>;</div>
-<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;    }</div>
-<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(elem_C-&gt;type() == libMesh::HEX8)</div>
-<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;    {</div>
-<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;        <span class="comment">// Use hexaedron geometry</span></div>
-<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a2f6b6fff82b9a02400d3aeb3db1f4c82">m_elem_C_tetrahedrons</a> = &amp;<a class="code" href="classcarl_1_1_intersection___tools.html#af74ec1bcb1a896df19642d340dd2762c">m_HEX_tetrahedrons</a>;</div>
-<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;        <a class="code" href="classcarl_1_1_intersection___tools.html#a89a78135b49b49c32bec8be4016782b3">m_elem_C_triangles</a> = &amp;<a class="code" href="classcarl_1_1_intersection___tools.html#aca79d0350f0969670dd9d06814c26583">m_HEX_triangles</a>;</div>
-<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;    }</div>
-<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;    {</div>
-<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;        <a class="code" href="common__header_8h.html#a05d65d26b911668ac90085745dca71f6">homemade_error_msg</a>(<span class="stringliteral">&quot;Unsupported element type! Must be either TET4 or HEX8&quot;</span>);</div>
-<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;    }</div>
-<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;}</div>
-<div class="ttc" id="common__header_8h_html_a05d65d26b911668ac90085745dca71f6"><div class="ttname"><a href="common__header_8h.html#a05d65d26b911668ac90085745dca71f6">homemade_error_msg</a></div><div class="ttdeci">#define homemade_error_msg(msg)</div><div class="ttdef"><b>Definition:</b> <a href="common__header_8h_source.html#l00073">common_header.h:73</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_af74ec1bcb1a896df19642d340dd2762c"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#af74ec1bcb1a896df19642d340dd2762c">carl::Intersection_Tools::m_HEX_tetrahedrons</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; m_HEX_tetrahedrons</div><div class="ttdoc">Vertex indices for a HEX* element tetrahedron decomposition. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00073">intersection_tools.h:73</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_aca79d0350f0969670dd9d06814c26583"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#aca79d0350f0969670dd9d06814c26583">carl::Intersection_Tools::m_HEX_triangles</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; m_HEX_triangles</div><div class="ttdoc">Vertex indices for a HEX* element surface triangles decomposition. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00074">intersection_tools.h:74</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a1d6303ff6ffc19b6df42626e29a507ce"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a1d6303ff6ffc19b6df42626e29a507ce">carl::Intersection_Tools::convert_elem_to_exact_points</a></div><div class="ttdeci">void convert_elem_to_exact_points(const libMesh::Elem *elem_input, std::vector&lt; ExactPoint_3 &gt; &amp;points_output)</div><div class="ttdoc">Convert an libMesh element to a list of CGAL exact points. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00636">intersection_tools.cpp:636</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a54e026b256ab6894b1f77950a425b1eb"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a54e026b256ab6894b1f77950a425b1eb">carl::Intersection_Tools::m_TET_triangles</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; m_TET_triangles</div><div class="ttdoc">Vertex indices for a TET* element surface triangles. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00070">intersection_tools.h:70</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_adf2892a8902442fbfebb913e9a4fb8ac"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#adf2892a8902442fbfebb913e9a4fb8ac">carl::Intersection_Tools::m_nef_C</a></div><div class="ttdeci">Nef_Polyhedron m_nef_C</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00033">intersection_tools.h:33</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a2f6b6fff82b9a02400d3aeb3db1f4c82"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a2f6b6fff82b9a02400d3aeb3db1f4c82">carl::Intersection_Tools::m_elem_C_tetrahedrons</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; * m_elem_C_tetrahedrons</div><div class="ttdoc">Pointer for the appropriate tetrahedron vertex index list (useless!) </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00077">intersection_tools.h:77</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a473d6a254b10623659a1d8f81bbe695f"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a473d6a254b10623659a1d8f81bbe695f">carl::Intersection_Tools::m_exact_points_C</a></div><div class="ttdeci">std::vector&lt; ExactPoint_3 &gt; m_exact_points_C</div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00043">intersection_tools.h:43</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_af689c53cf00359c518234d8d070c4e53"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#af689c53cf00359c518234d8d070c4e53">carl::Intersection_Tools::convert_exact_points_to_Nef</a></div><div class="ttdeci">void convert_exact_points_to_Nef(std::vector&lt; ExactPoint_3 &gt;::const_iterator it_begin, std::vector&lt; ExactPoint_3 &gt;::const_iterator it_end, Nef_Polyhedron &amp;nef_out)</div><div class="ttdoc">Convert an CGAL exact point set to a CGAL Nef polyhedron. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00649">intersection_tools.cpp:649</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a89a78135b49b49c32bec8be4016782b3"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a89a78135b49b49c32bec8be4016782b3">carl::Intersection_Tools::m_elem_C_triangles</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; * m_elem_C_triangles</div><div class="ttdoc">Pointer for the appropriate triangle vertex index list (useless!) </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00078">intersection_tools.h:78</a></div></div>
-<div class="ttc" id="classcarl_1_1_intersection___tools_html_a6e9a49f3b382810c884ba46b791bfcb8"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a6e9a49f3b382810c884ba46b791bfcb8">carl::Intersection_Tools::m_TET_tetrahedrons</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; unsigned int &gt; &gt; m_TET_tetrahedrons</div><div class="ttdoc">Vertex indices for a TET* element tetrahedron. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8h_source.html#l00069">intersection_tools.h:69</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1477,593 +997,6 @@ Protected Attributes</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="a8cd632ee9314f5981c620af325245413"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="_c_g_a_l__typedefs_8h.html#aa71268402de3c241e32cd09e20cbe44c">ExactKernel_to_Kernel</a> carl::Intersection_Tools::ConvertExactToInexact</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Convert exact CGAL constructs to inexact constructs. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00051">51</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a89118c79160362561c0cf7f1743568a6"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="_c_g_a_l__typedefs_8h.html#a7fee49db11d7ad002fa79aedabf4d2cc">Kernel_to_ExactKernel</a> carl::Intersection_Tools::ConvertInexactToExact</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Convert inexact CGAL constructs to exact constructs. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00050">50</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a0a3b4e978977cd29ebac810dc0a2baf6"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">CGAL::Convex_hull_traits_3&lt;<a class="el" href="_c_g_a_l__typedefs_8h.html#ab014831fee2bac62051dfa390ec66d6f">ExactKernel</a>&gt; carl::Intersection_Tools::ExactHullTraits</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>CGAL ExactKernel's convex hull traits. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00047">47</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a1bc3cab10caf53e5de762c4dea2ef1ba"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="_c_g_a_l__typedefs_8h.html#aedf4279eda927d338212e13db24116eb">ExactPolyhedron</a> carl::Intersection_Tools::m_dummyPoly</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Intersection polyhedron. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00045">45</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a2f6b6fff82b9a02400d3aeb3db1f4c82"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;std::vector&lt;unsigned int&gt; &gt;* carl::Intersection_Tools::m_elem_C_tetrahedrons</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Pointer for the appropriate tetrahedron vertex index list (<b>useless!</b>) </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00077">77</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a89a78135b49b49c32bec8be4016782b3"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;std::vector&lt;unsigned int&gt; &gt;* carl::Intersection_Tools::m_elem_C_triangles</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Pointer for the appropriate triangle vertex index list (<b>useless!</b>) </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00078">78</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ad636117b292272044b252be62124eb0a"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a>&gt; carl::Intersection_Tools::m_exact_points_A</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>CGAL Exact point vectors. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00041">41</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a2c3b6211dd1f9b0aa5f2ac8ffc383182"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a>&gt; carl::Intersection_Tools::m_exact_points_B</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00042">42</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a473d6a254b10623659a1d8f81bbe695f"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="_c_g_a_l__typedefs_8h.html#a162dbf669b38ca5632e00c9c02e000a5">ExactPoint_3</a>&gt; carl::Intersection_Tools::m_exact_points_C</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00043">43</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a418dc03e4edc3f5bba1f78f6fc5afe71"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;std::vector&lt;unsigned int&gt; &gt; carl::Intersection_Tools::m_HEX_edges</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Vertex indices for a HEX* element edges (<b>not used!</b>) </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00075">75</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="af74ec1bcb1a896df19642d340dd2762c"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;std::vector&lt;unsigned int&gt; &gt; carl::Intersection_Tools::m_HEX_tetrahedrons</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Vertex indices for a HEX* element tetrahedron decomposition. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00073">73</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="aca79d0350f0969670dd9d06814c26583"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;std::vector&lt;unsigned int&gt; &gt; carl::Intersection_Tools::m_HEX_triangles</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Vertex indices for a HEX* element surface triangles decomposition. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00074">74</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a931ecd3fd3103656ede9c84a2eed10d2"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double carl::Intersection_Tools::m_Min_Inter_Volume</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Minimal volume cutoff for the intersections. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00057">57</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a66a33158af0779366d4109e96a10ddc4"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a> carl::Intersection_Tools::m_nef_A</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Nef polyhedrons for the elements. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00030">30</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a0b134a30452c8a767fc4265c7c0296a9"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a> carl::Intersection_Tools::m_nef_B</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00031">31</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="adf2892a8902442fbfebb913e9a4fb8ac"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a> carl::Intersection_Tools::m_nef_C</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00033">33</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a47353dc1c374f45bf3dbaae667270cf3"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a> carl::Intersection_Tools::m_nef_I</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00032">32</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a8333f16787459e65c4fe913dad50b5c6"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="_c_g_a_l__typedefs_8h.html#ab85d2fceadc71a761aa3a184793f8c5f">Nef_Polyhedron</a> carl::Intersection_Tools::m_nef_I_AC</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Nef polyhedron used to save the intersection between m_nef_A and m_nef_C, reducing the number of intersection operations. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00038">38</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="afe18e6ca5fd12bae08efb98f69c71a48"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">libMesh::PerfLog carl::Intersection_Tools::m_perf_log</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>libMesh::PerfLog object. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00061">61</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a69657597ebb9655f8797b289939835a3"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="_c_g_a_l__typedefs_8h.html#a02a72c8dcf4a17c7460e7e71301d2d3f">ExactTetrahedron</a> carl::Intersection_Tools::m_test_tetra</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00054">54</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a4331121a50baaa93e499f6cfb446c1b0"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="_c_g_a_l__typedefs_8h.html#acb9586e4ea704b6a4c4502ad0cb03c62">ExactTriangle_3</a> carl::Intersection_Tools::m_test_triangle</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00055">55</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a153baf989b64fb7033e42ba2342e0fc5"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;std::vector&lt;unsigned int&gt; &gt; carl::Intersection_Tools::m_TET_edges</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Vertex indices for a TET* element edges (<b>not used!</b>) </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00071">71</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a6e9a49f3b382810c884ba46b791bfcb8"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;std::vector&lt;unsigned int&gt; &gt; carl::Intersection_Tools::m_TET_tetrahedrons</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Vertex indices for a TET* element tetrahedron. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00069">69</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a54e026b256ab6894b1f77950a425b1eb"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;std::vector&lt;unsigned int&gt; &gt; carl::Intersection_Tools::m_TET_triangles</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Vertex indices for a TET* element surface triangles. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00070">70</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a651c43f074c2955bd58ef0d519c6ef73"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool carl::Intersection_Tools::MASTER_bPerfLog_intersection_tools</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Do performance log? <em>Default:</em> false. </p>
-
-<p>Definition at line <a class="el" href="intersection__tools_8h_source.html#l00060">60</a> of file <a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a>.</p>
-
-</div>
-</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>/Users/breubreubreu/Programming/CArl/Cpp/src/include/<a class="el" href="intersection__tools_8h_source.html">intersection_tools.h</a></li>
 <li>/Users/breubreubreu/Programming/CArl/Cpp/src/common/intersections_parallel/<a class="el" href="intersection__tools_8cpp_source.html">intersection_tools.cpp</a></li>
@@ -2073,7 +1006,7 @@ Protected Attributes</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacecarl.html">carl</a></li><li class="navelem"><a class="el" href="classcarl_1_1_intersection___tools.html">Intersection_Tools</a></li>
+    <li class="navelem"><b>carl</b></li><li class="navelem"><a class="el" href="classcarl_1_1_intersection___tools.html">Intersection_Tools</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>

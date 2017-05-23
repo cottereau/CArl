@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#PBS -S /bin/bash
+#PBS -N test_s_1k
+#PBS -l walltime=3:59:00
+#PBS -l select=1:ncpus=4:mpiprocs=4
+
+# "fusion" PBS options
+# #PBS -q haswellq
+# #PBS -P [PROJECT NAME]
+
+# Chargement des modules
+# "fusion" cluster modules
+# module purge
+# module load intel-compilers/16.0.3
+# module load intel-mpi/5.1.2
+
+# On se place dans le repertoire depuis lequel le job a ete soumis
+cd $PBS_O_WORKDIR
+
+mpirun -n 4 ./libmesh_apply_solution_homogeneous -i examples/coupled_traction_test/FETI_solver/brick_traction_1k/apply_solution_brick_traction_A_1k.txt
+
+mpirun -n 4 ./libmesh_apply_solution_homogeneous -i examples/coupled_traction_test/FETI_solver/brick_traction_1k/apply_solution_brick_traction_B_1k.txt  

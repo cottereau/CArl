@@ -49,7 +49,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li class="current"><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -113,13 +112,14 @@ Usage</h1>
 <li>and the coupled system solver.</li>
 </ol>
 <p>The first two steps are implemented in the <a class="el" href="_c_arl__build__intersections_8cpp.html">CArl_build_intersections</a> and <a class="el" href="_c_arl__assemble__coupling_8cpp.html">CArl_assemble_coupling</a>, respectivelly. Their corresponding pages contain the documentation of the input parameters.</p>
-<p>The coupled system solver uses the FETI method [[[REF]]] to calculate the coupled solutions of the two systems. To allow the usage of external solvers in a non-intrusive way, the implementation is broken down into several <code>CArl_FETI_***</code> binaries. If the user is using a scheduler program such as PBS, he only has to configure and launch the <a class="el" href="_c_arl___f_e_t_i__setup__init_8cpp.html">CArl_FETI_setup_init</a> binary (see note <a class="el" href="cpp_usage.html#note_1">1</a>).</p>
+<p>The coupled system solver uses the FETI method [[[REF]]] to calculate the coupled solutions of the two systems. To allow the usage of external solvers in a non-intrusive way, the implementation is broken down into several <code>CArl_FETI_***</code> binaries. If the user is using a scheduler program such as PBS, he only has to configure and launch the <a class="el" href="_c_arl___f_e_t_i__setup__init_8cpp_source.html">CArl_FETI_setup_init</a> binary (see note <a class="el" href="cpp_usage.html#note_1">1</a>).</p>
 <p>Before calling the coupled system solver, though, the user has to do any preliminary operations involving the external solvers, including preparing their input parameter files. The output of the coupled system solver is a vector in the PETSc binary format.</p>
-<p>The figure below presents a workflow for using the C++ version of CArl. The page <a class="el" href="cpp_examples.html">Examples</a> shows, in detailed steps, how to run a simple test case using external solvers based on the libMesh library. Finally, a more detailed description of the role of each <code>CArl_FETI_***</code> binaries is presented in the following section.</p>
+<p>The figure below presents a workflow for using the C++ version of CArl. The page <a class="el" href="cpp_examples.html">Examples</a> shows, in detailed steps, how to run a simple test case using external solvers based on the libMesh library. Finally, a more detailed description of the role of each <code>CArl_FETI_***</code> binaries is presented in the section <a class="el" href="cpp_usage.html#sec_cpp_implementation">Implementation of the FETI solver</a>.</p>
 <div class="image">
 <img src="CArl_FETI_structure_slide_reduced.png" alt="CArl_FETI_structure_slide_reduced.png"/>
-</div>
-<h1><a class="anchor" id="sec_cpp_implementation"></a>
+<div class="caption">
+Workflow of the C++ version of CArl</div></div>
+ <h1><a class="anchor" id="sec_cpp_implementation"></a>
 Implementation of the FETI solver</h1>
 <p>This section enters in some details of the implementation of the FETI solver, and as such reading the references [[[REF]]] and [[[REF]]] beforehand is highly recommended.</p>
 <p>As said above, our implementation of the FETI algortihm is broken down into several <code>CArl_FETI_***</code> binaries. The "break points" correspont to the operations of the FETI algorithm where the solutions of the external solvers are needed. Before closing, each one of these binaries executes a script which first submits the jobs for the external solver, and then calls the appropriate <code>CArl_FETI_***</code> binary to continue the algortihm.</p>
@@ -127,14 +127,14 @@ Implementation of the FETI solver</h1>
 <p>The figure below shows the structure of the FETI solver. It proceeds in the following manner:</p>
 <ol type="1">
 <li><b>Setup</b>:<ol type="a">
-<li><a class="el" href="_c_arl___f_e_t_i__setup__init_8cpp.html">CArl_FETI_setup_init</a> generates the input parameter files for the other binaries, and the three execution scripts: <code>init_script.sh</code>, <code>iter_script.sh</code> and <code>sol_script.sh</code>. It then starts the setup of conjugate gradient method (CG) used by the coupled solver to calculate the Lagrange multipliers, and finally executes the <code>init_script.sh</code> script.</li>
-<li>The <code>init_script.sh</code> script runs the external solvers for the uncoupled solutions <img class="formulaInl" alt="$u_{m,0}$" src="form_8.png"/> ( <img class="formulaInl" alt="$m = 1,2$" src="form_9.png"/>), and the initial auxiliary vectors <img class="formulaInl" alt="$x_m(0)$" src="form_10.png"/> (if needed). After these solvers are finished, the script launches <a class="el" href="_c_arl___f_e_t_i__setup__finish_8cpp.html">CArl_FETI_setup_finish</a>.</li>
-<li><a class="el" href="_c_arl___f_e_t_i__setup__finish_8cpp.html">CArl_FETI_setup_finish</a> finishes the CG solver setup, and executes <code>iter_script.sh</code>.</li>
+<li><a class="el" href="_c_arl___f_e_t_i__setup__init_8cpp_source.html">CArl_FETI_setup_init</a> generates the input parameter files for the other binaries, and the three execution scripts: <code>init_script.sh</code>, <code>iter_script.sh</code> and <code>sol_script.sh</code>. It then starts the setup of conjugate gradient method (CG) used by the coupled solver to calculate the Lagrange multipliers, and finally executes the <code>init_script.sh</code> script.</li>
+<li>The <code>init_script.sh</code> script runs the external solvers for the uncoupled solutions <img class="formulaInl" alt="$u_{m,0}$" src="form_8.png"/> ( <img class="formulaInl" alt="$m = 1,2$" src="form_9.png"/>), and the initial auxiliary vectors <img class="formulaInl" alt="$x_m(0)$" src="form_10.png"/> (if needed). After these solvers are finished, the script launches <a class="el" href="_c_arl___f_e_t_i__setup__finish_8cpp_source.html">CArl_FETI_setup_finish</a>.</li>
+<li><a class="el" href="_c_arl___f_e_t_i__setup__finish_8cpp_source.html">CArl_FETI_setup_finish</a> finishes the CG solver setup, and executes <code>iter_script.sh</code>.</li>
 </ol>
 </li>
 <li><b>Iterate</b><ol type="a">
-<li>The <code>iter_script.sh</code> script runs the external solvers for the <img class="formulaInl" alt="$iii$" src="form_11.png"/>-th auxiliary vectors <img class="formulaInl" alt="$x_m(iii)$" src="form_12.png"/>. After these solvers are finished, the script launches <a class="el" href="_c_arl___f_e_t_i__iterate_8cpp.html">CArl_FETI_iterate</a></li>
-<li><a class="el" href="_c_arl___f_e_t_i__iterate_8cpp.html">CArl_FETI_iterate</a> all the other operations involved in the CG solver iteration, and checks the convergence parameters:<ul>
+<li>The <code>iter_script.sh</code> script runs the external solvers for the <img class="formulaInl" alt="$iii$" src="form_11.png"/>-th auxiliary vectors <img class="formulaInl" alt="$x_m(iii)$" src="form_12.png"/>. After these solvers are finished, the script launches <a class="el" href="_c_arl___f_e_t_i__iterate_8cpp_source.html">CArl_FETI_iterate</a></li>
+<li><a class="el" href="_c_arl___f_e_t_i__iterate_8cpp_source.html">CArl_FETI_iterate</a> all the other operations involved in the CG solver iteration, and checks the convergence parameters:<ul>
 <li>If the CG solver neither converged or diverged, it executes <code>iter_script.sh</code> again.</li>
 <li>If the CG solver converged, it executes <code>sol_script.sh</code>.</li>
 <li>If the CG solver diverged, it stops the algorithm.</li>
@@ -150,10 +150,11 @@ Implementation of the FETI solver</h1>
 <p>As said above, this process is completely automated if a scheduling software, such as PBS, is used: the user only has to configure and execute the <code>CArl_FETI_setup_init</code> binary. Details about the input parameters of each binary can be found at its documentation page (linked above).</p>
 <div class="image">
 <img src="CArl_FETI_structure_slide_feti_solver.png" alt="CArl_FETI_structure_slide_feti_solver.png"/>
-</div>
-<h1><a class="anchor" id="cpp_usage_refs"></a>
+<div class="caption">
+Structure of the CArl / FETI solver</div></div>
+ <h1><a class="anchor" id="cpp_usage_refs"></a>
 Notes and references</h1>
-<p><a class="anchor" id="note_1"></a>1. If the user is not using a scheduler, the <a class="el" href="_c_arl___f_e_t_i__setup__init_8cpp.html">CArl_FETI_setup_init</a> binary will still take care of preparing the other binaries input files, but the user will have to launch them by hand! Each binary will still return the command that the user has to run, but due to this limitation, the usage of a scheduler is highly recomended.</p>
+<p><a class="anchor" id="note_1"></a>1. If the user is not using a scheduler, the <a class="el" href="_c_arl___f_e_t_i__setup__init_8cpp_source.html">CArl_FETI_setup_init</a> binary will still take care of preparing the other binaries input files, but the user will have to launch them by hand! Each binary will still return the command that the user has to run, but due to this limitation, the usage of a scheduler is highly recomended.</p>
 <p><a class="anchor" id="note_2"></a>2. At the moment, the binaries are capable of reading and writing vectors and matrices in the PETSc binary vectors and matrices. Details of their usage can be found at the documentation of each executable. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->

@@ -17,9 +17,9 @@ The coupled system solver uses the FETI method [[[REF]]] to calculate the couple
 
 Before calling the coupled system solver, though, the user has to do any preliminary operations involving the external solvers, including preparing their input parameter files. The output of the coupled system solver is a vector in the PETSc binary format.
 
-The figure below presents a workflow for using the C++ version of CArl. The page \ref cpp_examples shows, in detailed steps, how to run a simple test case using external solvers based on the libMesh library. Finally, a more detailed description of the role of each `CArl_FETI_***` binaries is presented in the following section.
+The figure below presents a workflow for using the C++ version of CArl. The page \ref cpp_examples shows, in detailed steps, how to run a simple test case using external solvers based on the libMesh library. Finally, a more detailed description of the role of each `CArl_FETI_***` binaries is presented in the section \ref sec_cpp_implementation.
 
-\image html CArl_FETI_structure_slide_reduced.png
+\image html CArl_FETI_structure_slide_reduced.png "Workflow of the C++ version of CArl"
 
 \section sec_cpp_implementation Implementation of the FETI solver
 
@@ -46,10 +46,7 @@ The figure below shows the structure of the FETI solver. It proceeds in the foll
    
 As said above, this process is completely automated if a scheduling software, such as PBS, is used: the user only has to configure and execute the `CArl_FETI_setup_init` binary. Details about the input parameters of each binary can be found at its documentation page (linked above).
 
-\image html CArl_FETI_structure_slide_feti_solver.png
-
-\section sec_cpp_files Filename conventions
-
+\image html CArl_FETI_structure_slide_feti_solver.png "Structure of the CArl / FETI solver"
 
 \section cpp_usage_refs Notes and references
 

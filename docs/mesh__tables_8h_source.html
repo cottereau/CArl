@@ -49,7 +49,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -110,7 +109,7 @@ $(document).ready(function(){initNavTree('mesh__tables_8h_source.html','');});
 <div class="title">mesh_tables.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="mesh__tables_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * mesh_tables.h</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: Jan 26, 2016</span></div>
@@ -122,13 +121,13 @@ $(document).ready(function(){initNavTree('mesh__tables_8h_source.html','');});
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#ifndef COMMON_LIBMESH_CODE_MESH_TABLES_H_</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#define COMMON_LIBMESH_CODE_MESH_TABLES_H_</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="carl__headers_8h.html">carl_headers.h</a>&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="mpi__carl__tools_8h.html">mpi_carl_tools.h</a>&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;carl_headers.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;mpi_carl_tools.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacecarl.html">carl</a></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#aab1c0aca80d848937579e63a21c9a270">set_weight_function_domain_idx</a>(    std::string &amp;filename,</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keywordtype">void</span> set_weight_function_domain_idx(    std::string &amp;filename,</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                                        <span class="keywordtype">int</span>&amp; domain_Idx_BIG,</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                                        <span class="keywordtype">int</span>&amp; nb_of_domain_Idx_micro,</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                                        std::vector&lt;int&gt;&amp; domain_Idx_micro,</div>
@@ -200,7 +199,7 @@ $(document).ready(function(){initNavTree('mesh__tables_8h_source.html','');});
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment">//      std::unordered_map&lt;int,int&gt; &amp;element_libmesh_to_gmsh_map</span></div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment">//      );</span></div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#ada178344184a369ba2db2926999a7446">build_intersection_and_restriction_tables</a>(</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keywordtype">void</span> build_intersection_and_restriction_tables(</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keyword">const</span> libMesh::Parallel::Communicator&amp; WorldComm,</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <span class="keyword">const</span> std::string&amp; intersection_full_table_Filename,</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        <span class="keyword">const</span> std::string&amp; equivalence_table_A_Filename,</div>
@@ -212,7 +211,7 @@ $(document).ready(function(){initNavTree('mesh__tables_8h_source.html','');});
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;        std::unordered_map&lt;int,int&gt;&amp; equivalence_table_R_B_to_B</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        );</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#a8aedfd6e81c99d9651093ff26b9c5a55">generate_intersection_tables_partial</a>(  std::string&amp; intersection_table_restrict_B_Filename,</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="keywordtype">void</span> generate_intersection_tables_partial(  std::string&amp; intersection_table_restrict_B_Filename,</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        std::string&amp; intersection_table_I_Filename,</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        std::unordered_map&lt;int,int&gt;&amp; mesh_restrict_ElemMap,</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        std::unordered_map&lt;int,int&gt;&amp; mesh_micro_ElemMap,</div>
@@ -221,7 +220,7 @@ $(document).ready(function(){initNavTree('mesh__tables_8h_source.html','');});
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        std::unordered_multimap&lt;int,int&gt;&amp; intersection_table_I</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        );</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#ac207572d2bb1b2f6558bbb96bfa89edc">generate_intersection_tables_full</a>(     std::string&amp; equivalence_table_restrict_A_Filename,</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="keywordtype">void</span> generate_intersection_tables_full(     std::string&amp; equivalence_table_restrict_A_Filename,</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        std::string&amp; intersection_table_restrict_B_Filename,</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        std::string&amp; intersection_table_I_Filename,</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        std::unordered_map&lt;int,int&gt;&amp; mesh_restrict_ElemMap,</div>
@@ -233,7 +232,7 @@ $(document).ready(function(){initNavTree('mesh__tables_8h_source.html','');});
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        std::unordered_multimap&lt;int,int&gt;&amp; intersection_table_I</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        );</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#a995bb6a3c01d8cede8268c2f39ce0768">set_equivalence_tables</a>(</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="keywordtype">void</span> set_equivalence_tables(</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        <span class="keyword">const</span> libMesh::Parallel::Communicator&amp; WorldComm,</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        <span class="keyword">const</span> std::string&amp; equivalence_table_A_Filename,</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        <span class="keyword">const</span> std::string&amp; equivalence_table_B_Filename,</div>
@@ -243,20 +242,20 @@ $(document).ready(function(){initNavTree('mesh__tables_8h_source.html','');});
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        std::unordered_map&lt;int,int&gt;&amp; equivalence_table_R_A_to_A,</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        std::unordered_map&lt;int,int&gt;&amp; equivalence_table_R_B_to_B );</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#a17eb70b3f2c2574e7b3085108205e38c">set_restricted_intersection_pairs_table</a>(</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="keywordtype">void</span> set_restricted_intersection_pairs_table(</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        <span class="keyword">const</span> std::unordered_map&lt;<span class="keywordtype">int</span>,std::pair&lt;int,int&gt; &gt;&amp;  full_intersection_pairs_map,</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        <span class="keyword">const</span> std::unordered_map&lt;int,int&gt;&amp; equivalence_table_A_to_R_A,</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        <span class="keyword">const</span> std::unordered_map&lt;int,int&gt;&amp; equivalence_table_B_to_R_B,</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        std::unordered_map&lt;<span class="keywordtype">int</span>,std::pair&lt;int,int&gt; &gt;&amp; full_intersection_restricted_pairs_map);</div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#a0fef8616ca5e61709ef9a013c8a2ee43">set_full_intersection_tables</a>(</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="keywordtype">void</span> set_full_intersection_tables(</div>
 <div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;        <span class="keyword">const</span> libMesh::Parallel::Communicator&amp; WorldComm,</div>
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;        <span class="keyword">const</span> std::string&amp; intersection_full_table_Filename,</div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;</div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        std::unordered_map&lt;<span class="keywordtype">int</span>,std::pair&lt;int,int&gt; &gt;&amp; full_intersection_pairs_map,</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        std::unordered_map&lt;int,int&gt;&amp; full_intersection_meshI_to_inter_map);</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#a880bd07cae964f085e21e5ac75ede10d">set_intersection_tables</a>(</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="keywordtype">void</span> set_intersection_tables(</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        <span class="keyword">const</span> libMesh::Parallel::Communicator&amp; WorldComm,</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        <span class="keyword">const</span> libMesh::Mesh&amp; mesh_intersection,</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keyword">const</span> std::string&amp; intersection_full_table_Filename,</div>
@@ -271,14 +270,14 @@ $(document).ready(function(){initNavTree('mesh__tables_8h_source.html','');});
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        std::unordered_map&lt;int,int&gt;&amp; local_intersection_meshI_to_inter_map</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        );</div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#aeceaf9a878847b9ea2f623aa51e3b392">read_local_intersection_tables</a>(</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="keywordtype">void</span> read_local_intersection_tables(</div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        <span class="keyword">const</span> libMesh::Parallel::Communicator&amp; WorldComm,</div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        <span class="keyword">const</span> std::string&amp; intersection_local_table_Filename,</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        std::unordered_map&lt;<span class="keywordtype">int</span>,std::pair&lt;int,int&gt; &gt;&amp; local_intersection_pairs_map,</div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        std::unordered_map&lt;int,int&gt;&amp; local_intersection_meshI_to_inter_map);</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#a8d1c90daac3238ed5d53465740e072b3">set_local_intersection_tables</a>(</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="keywordtype">void</span> set_local_intersection_tables(</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keyword">const</span> libMesh::Parallel::Communicator&amp; WorldComm,</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        <span class="keyword">const</span> libMesh::Mesh&amp; mesh_intersection,</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        <span class="keyword">const</span> std::string&amp; intersection_local_table_Filename,</div>
@@ -293,7 +292,7 @@ $(document).ready(function(){initNavTree('mesh__tables_8h_source.html','');});
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;        std::unordered_map&lt;int,int&gt;&amp; local_intersection_meshI_to_inter_map</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;        );</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#ab4df2c3a7c53c68fc2628569f4b4bd17">set_global_mediator_system_intersection_lists</a>(</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="keywordtype">void</span> set_global_mediator_system_intersection_lists(</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;        <span class="keyword">const</span> libMesh::Parallel::Communicator&amp; WorldComm,</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;        <span class="keyword">const</span> std::string&amp; intersection_global_table_Filename,</div>
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;        <span class="keyword">const</span> std::unordered_map&lt;int,int&gt;&amp; equivalence_table_system_to_mediator,</div>
@@ -302,7 +301,7 @@ $(document).ready(function(){initNavTree('mesh__tables_8h_source.html','');});
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        std::unordered_multimap&lt;int,int&gt;&amp; inter_mediator_A,</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        std::unordered_multimap&lt;int,int&gt;&amp; inter_mediator_B);</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#ad1869df8fcc16b806a4c0b262922672f">repartition_system_meshes</a>(</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="keywordtype">void</span> repartition_system_meshes(</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;        <span class="keyword">const</span> libMesh::Parallel::Communicator&amp; WorldComm,</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        libMesh::Mesh&amp; mesh_input,</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        libMesh::Mesh&amp; mesh_intersect,</div>
@@ -317,27 +316,13 @@ $(document).ready(function(){initNavTree('mesh__tables_8h_source.html','');});
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;</div>
 <div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;</div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* COMMON_LIBMESH_CODE_MESH_TABLES_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="namespacecarl_html_a17eb70b3f2c2574e7b3085108205e38c"><div class="ttname"><a href="namespacecarl.html#a17eb70b3f2c2574e7b3085108205e38c">carl::set_restricted_intersection_pairs_table</a></div><div class="ttdeci">void set_restricted_intersection_pairs_table(const std::unordered_map&lt; int, std::pair&lt; int, int &gt; &gt; &amp;full_intersection_pairs_map, const std::unordered_map&lt; int, int &gt; &amp;equivalence_table_A_to_R_A, const std::unordered_map&lt; int, int &gt; &amp;equivalence_table_B_to_R_B, std::unordered_map&lt; int, std::pair&lt; int, int &gt; &gt; &amp;full_intersection_restricted_pairs_map)</div><div class="ttdef"><b>Definition:</b> <a href="mesh__tables_8cpp_source.html#l00402">mesh_tables.cpp:402</a></div></div>
-<div class="ttc" id="namespacecarl_html_ac207572d2bb1b2f6558bbb96bfa89edc"><div class="ttname"><a href="namespacecarl.html#ac207572d2bb1b2f6558bbb96bfa89edc">carl::generate_intersection_tables_full</a></div><div class="ttdeci">void generate_intersection_tables_full(std::string &amp;equivalence_table_restrict_A_Filename, std::string &amp;intersection_table_restrict_B_Filename, std::string &amp;intersection_table_I_Filename, std::unordered_map&lt; int, int &gt; &amp;mesh_restrict_ElemMap, std::unordered_map&lt; int, int &gt; &amp;mesh_micro_ElemMap, std::unordered_map&lt; int, int &gt; &amp;mesh_BIG_ElemMap, std::unordered_map&lt; int, int &gt; &amp;mesh_inter_ElemMap, std::unordered_map&lt; int, int &gt; &amp;equivalence_table_restrict_A, std::vector&lt; std::pair&lt; int, int &gt; &gt; &amp;intersection_table_restrict_B, std::unordered_multimap&lt; int, int &gt; &amp;intersection_table_I)</div><div class="ttdef"><b>Definition:</b> <a href="mesh__tables_8cpp_source.html#l00104">mesh_tables.cpp:104</a></div></div>
-<div class="ttc" id="namespacecarl_html_a8d1c90daac3238ed5d53465740e072b3"><div class="ttname"><a href="namespacecarl.html#a8d1c90daac3238ed5d53465740e072b3">carl::set_local_intersection_tables</a></div><div class="ttdeci">void set_local_intersection_tables(const libMesh::Parallel::Communicator &amp;WorldComm, const libMesh::Mesh &amp;mesh_intersection, const std::string &amp;intersection_local_table_Filename, const std::string &amp;equivalence_table_A_Filename, const std::string &amp;equivalence_table_B_Filename, const std::unordered_map&lt; int, int &gt; &amp;equivalence_table_A_to_R_A, const std::unordered_map&lt; int, int &gt; &amp;equivalence_table_B_to_R_B, std::unordered_map&lt; int, std::pair&lt; int, int &gt; &gt; &amp;local_intersection_pairs_map, std::unordered_map&lt; int, std::pair&lt; int, int &gt; &gt; &amp;local_intersection_restricted_pairs_map, std::unordered_map&lt; int, int &gt; &amp;local_intersection_meshI_to_inter_map)</div><div class="ttdef"><b>Definition:</b> <a href="mesh__tables_8cpp_source.html#l00639">mesh_tables.cpp:639</a></div></div>
-<div class="ttc" id="namespacecarl_html_a880bd07cae964f085e21e5ac75ede10d"><div class="ttname"><a href="namespacecarl.html#a880bd07cae964f085e21e5ac75ede10d">carl::set_intersection_tables</a></div><div class="ttdeci">void set_intersection_tables(const libMesh::Parallel::Communicator &amp;WorldComm, const libMesh::Mesh &amp;mesh_intersection, const std::string &amp;intersection_full_table_Filename, const std::string &amp;equivalence_table_A_Filename, const std::string &amp;equivalence_table_B_Filename, const std::unordered_map&lt; int, int &gt; &amp;equivalence_table_A_to_R_A, const std::unordered_map&lt; int, int &gt; &amp;equivalence_table_B_to_R_B, std::unordered_map&lt; int, std::pair&lt; int, int &gt; &gt; &amp;full_intersection_pairs_map, std::unordered_map&lt; int, std::pair&lt; int, int &gt; &gt; &amp;full_intersection_restricted_pairs_map, std::unordered_map&lt; int, int &gt; &amp;local_intersection_meshI_to_inter_map)</div><div class="ttdef"><b>Definition:</b> <a href="mesh__tables_8cpp_source.html#l00595">mesh_tables.cpp:595</a></div></div>
-<div class="ttc" id="carl__headers_8h_html"><div class="ttname"><a href="carl__headers_8h.html">carl_headers.h</a></div></div>
-<div class="ttc" id="namespacecarl_html_aab1c0aca80d848937579e63a21c9a270"><div class="ttname"><a href="namespacecarl.html#aab1c0aca80d848937579e63a21c9a270">carl::set_weight_function_domain_idx</a></div><div class="ttdeci">void set_weight_function_domain_idx(std::string &amp;filename, int &amp;domain_Idx_BIG, int &amp;nb_of_domain_Idx_micro, std::vector&lt; int &gt; &amp;domain_Idx_micro, std::vector&lt; int &gt; &amp;domain_Idx_coupling)</div><div class="ttdef"><b>Definition:</b> <a href="mesh__tables_8cpp_source.html#l00004">mesh_tables.cpp:4</a></div></div>
-<div class="ttc" id="mpi__carl__tools_8h_html"><div class="ttname"><a href="mpi__carl__tools_8h.html">mpi_carl_tools.h</a></div></div>
-<div class="ttc" id="namespacecarl_html_a0fef8616ca5e61709ef9a013c8a2ee43"><div class="ttname"><a href="namespacecarl.html#a0fef8616ca5e61709ef9a013c8a2ee43">carl::set_full_intersection_tables</a></div><div class="ttdeci">void set_full_intersection_tables(const libMesh::Parallel::Communicator &amp;WorldComm, const std::string &amp;intersection_full_table_Filename, std::unordered_map&lt; int, std::pair&lt; int, int &gt; &gt; &amp;full_intersection_pairs_map, std::unordered_map&lt; int, int &gt; &amp;full_intersection_meshI_to_inter_map)</div><div class="ttdef"><b>Definition:</b> <a href="mesh__tables_8cpp_source.html#l00437">mesh_tables.cpp:437</a></div></div>
 <div class="ttc" id="namespacecarl_html"><div class="ttname"><a href="namespacecarl.html">carl</a></div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8cpp_source.html#l00003">assemble_coupling.cpp:3</a></div></div>
-<div class="ttc" id="namespacecarl_html_ada178344184a369ba2db2926999a7446"><div class="ttname"><a href="namespacecarl.html#ada178344184a369ba2db2926999a7446">carl::build_intersection_and_restriction_tables</a></div><div class="ttdeci">void build_intersection_and_restriction_tables(const libMesh::Parallel::Communicator &amp;WorldComm, const std::string &amp;intersection_full_table_Filename, const std::string &amp;equivalence_table_A_Filename, const std::string &amp;equivalence_table_B_Filename, std::vector&lt; carl::IntersectionData &gt; &amp;intersection_full_table, std::unordered_map&lt; int, int &gt; &amp;equivalence_table_A_to_R_A, std::unordered_map&lt; int, int &gt; &amp;equivalence_table_B_to_R_B, std::unordered_map&lt; int, int &gt; &amp;equivalence_table_R_A_to_A, std::unordered_map&lt; int, int &gt; &amp;equivalence_table_R_B_to_B)</div><div class="ttdef"><b>Definition:</b> <a href="mesh__tables_8cpp_source.html#l00182">mesh_tables.cpp:182</a></div></div>
-<div class="ttc" id="namespacecarl_html_a995bb6a3c01d8cede8268c2f39ce0768"><div class="ttname"><a href="namespacecarl.html#a995bb6a3c01d8cede8268c2f39ce0768">carl::set_equivalence_tables</a></div><div class="ttdeci">void set_equivalence_tables(const libMesh::Parallel::Communicator &amp;WorldComm, const std::string &amp;equivalence_table_A_Filename, const std::string &amp;equivalence_table_B_Filename, std::unordered_map&lt; int, int &gt; &amp;equivalence_table_A_to_R_A, std::unordered_map&lt; int, int &gt; &amp;equivalence_table_B_to_R_B, std::unordered_map&lt; int, int &gt; &amp;equivalence_table_R_A_to_A, std::unordered_map&lt; int, int &gt; &amp;equivalence_table_R_B_to_B)</div><div class="ttdef"><b>Definition:</b> <a href="mesh__tables_8cpp_source.html#l00306">mesh_tables.cpp:306</a></div></div>
-<div class="ttc" id="namespacecarl_html_ad1869df8fcc16b806a4c0b262922672f"><div class="ttname"><a href="namespacecarl.html#ad1869df8fcc16b806a4c0b262922672f">carl::repartition_system_meshes</a></div><div class="ttdeci">void repartition_system_meshes(const libMesh::Parallel::Communicator &amp;WorldComm, libMesh::Mesh &amp;mesh_input, libMesh::Mesh &amp;mesh_intersect, std::unordered_map&lt; int, std::pair&lt; int, int &gt; &gt; &amp;local_intersection_pairs_map, bool bUseSecond=true)</div><div class="ttdef"><b>Definition:</b> <a href="mesh__tables_8cpp_source.html#l00753">mesh_tables.cpp:753</a></div></div>
-<div class="ttc" id="namespacecarl_html_aeceaf9a878847b9ea2f623aa51e3b392"><div class="ttname"><a href="namespacecarl.html#aeceaf9a878847b9ea2f623aa51e3b392">carl::read_local_intersection_tables</a></div><div class="ttdeci">void read_local_intersection_tables(const libMesh::Parallel::Communicator &amp;WorldComm, const std::string &amp;intersection_local_table_Filename, std::unordered_map&lt; int, std::pair&lt; int, int &gt; &gt; &amp;local_intersection_pairs_map, std::unordered_map&lt; int, int &gt; &amp;local_intersection_meshI_to_inter_map)</div><div class="ttdef"><b>Definition:</b> <a href="mesh__tables_8cpp_source.html#l00546">mesh_tables.cpp:546</a></div></div>
-<div class="ttc" id="namespacecarl_html_a8aedfd6e81c99d9651093ff26b9c5a55"><div class="ttname"><a href="namespacecarl.html#a8aedfd6e81c99d9651093ff26b9c5a55">carl::generate_intersection_tables_partial</a></div><div class="ttdeci">void generate_intersection_tables_partial(std::string &amp;intersection_table_restrict_B_Filename, std::string &amp;intersection_table_I_Filename, std::unordered_map&lt; int, int &gt; &amp;mesh_restrict_ElemMap, std::unordered_map&lt; int, int &gt; &amp;mesh_micro_ElemMap, std::unordered_map&lt; int, int &gt; &amp;mesh_inter_ElemMap, std::vector&lt; std::pair&lt; int, int &gt; &gt; &amp;intersection_table_restrict_B, std::unordered_multimap&lt; int, int &gt; &amp;intersection_table_I)</div><div class="ttdef"><b>Definition:</b> <a href="mesh__tables_8cpp_source.html#l00054">mesh_tables.cpp:54</a></div></div>
-<div class="ttc" id="namespacecarl_html_ab4df2c3a7c53c68fc2628569f4b4bd17"><div class="ttname"><a href="namespacecarl.html#ab4df2c3a7c53c68fc2628569f4b4bd17">carl::set_global_mediator_system_intersection_lists</a></div><div class="ttdeci">void set_global_mediator_system_intersection_lists(const libMesh::Parallel::Communicator &amp;WorldComm, const std::string &amp;intersection_global_table_Filename, const std::unordered_map&lt; int, int &gt; &amp;equivalence_table_system_to_mediator, const std::unordered_map&lt; int, int &gt; &amp;equivalence_table_mediator_to_system, std::unordered_multimap&lt; int, int &gt; &amp;inter_mediator_A, std::unordered_multimap&lt; int, int &gt; &amp;inter_mediator_B)</div><div class="ttdef"><b>Definition:</b> <a href="mesh__tables_8cpp_source.html#l00683">mesh_tables.cpp:683</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_b0856f6b0d80ccb263b2f415c91f9e17.html">include</a></li><li class="navelem"><a class="el" href="mesh__tables_8h.html">mesh_tables.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_b0856f6b0d80ccb263b2f415c91f9e17.html">include</a></li><li class="navelem"><b>mesh_tables.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>

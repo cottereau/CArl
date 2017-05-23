@@ -1,6 +1,94 @@
 /** \file cpp_example_traction.dox
 
-	\page cpp_exampletraction 3D traction test
+\page cpp_exampletraction 3D traction test
 
-	This page contains an example with a coupled 3D traction system, with a detailed description of the input parameter files and the progression of the solver.
+This page contains an example with a coupled 3D traction system, with a detailed description of the input parameter files and the progression of the solver. The files associated to this example can be found at the `[CArl root directory]/Cpp/bin` folder - and the scripts must be launched submited from there.
+
+**NOTE**: before launching the PBS files, configure them to load the appropriate modules (MPI, compilers).
+
+\section traction_example_physical Physical model
+
+\image html all_traction_bricks_horizontal.png "Domains of the meshes used for the 3D coupled traction test: (a) coupled system, (b) and (c) system mesh domains, and (d) coupling region"
+
+Consider two coupled bricks, both with an linear elasticy model with a Young modulus \f$E = 200 GPa\f$ and a shear modulus \f$\mu = 80 GPa\f$. Their domains \f$\Omega_1\f$ and \f$\Omega_2\f$ are represented at the figure above. Both models are coupled at the region \f$\Omega_{12}^c\f$. A force density \f$\mathbf{F}=100kPa\f$ is applied on the face \f$\Gamma_F\f$ of the domain \f$\Omega_2\f$, and the face \f$\Gamma_0\f$ of the domain \f$\Omega_1\f$ is clamped.
+
+\section traction_example_physical Mesh and physical parameter files
+
+All the meshes and physical parameter files are found at the `examples/coupled_traction_test/meshes` folder. The domains \f$\Omega_1\f$ and \f$\Omega_2\f$ are modelized by the meshes `test_brick_A_1k.msh` and `test_brick_B_1k.msh` (each one of them has around \f$\sim1000\f$ elements). The coupling region is represented by the mesh `test_brick_C.msh` (with \f$\sim3500\f$ elements). The physical parameters are saved in the `test_brick_I_1_physical.dat`.
+
+\section traction_example_inter Intersection search
+
+Before solving the coupled system we have to assemble the coupling matrices - and before doing this, we have to find the intersections between the meshes `test_brick_A_1k.msh` and `test_brick_B_1k.msh`, inside the coupling region defined by `test_brick_C.msh`. This can be done by either submiting the file `scripts/PBS_FETI_test_inter_traction_test_1k.pbs`, if using a PBS scheduler, or by launching the `scripts/LOCAL_FETI_test_inter_traction_test_1k.sh` script, if running locally. In either case, the following command will be executed
+
+    mpirun -np 4 ./CArl_build_intersections -i examples/coupled_traction_test/intersection/inter_traction_test_1k.txt
+
+\subsection Input
+
+Here is the input file, `examples/coupled_traction_test/intersection/inter_traction_test_1k.txt`, and a break down of the options
+
+ - Paths to the model and coupling meshes
+
+	    # - Mesh files
+	    MeshA examples/coupled_traction_test/meshes/test_brick_A_1k.msh
+	    MeshB examples/coupled_traction_test/meshes/test_brick_B_1k.msh
+	    MeshC examples/coupled_traction_test/meshes/test_brick_C.msh
+
+ - Common output filename. All the intersection output files will be named `[OutputBase]_***`. The folders of the path must be created beforehand.
+
+	    # - Output filename base
+	    OutputBase examples/coupled_traction_test/intersection/output/inter_1k/inter
+
+ - Type of intersection meshing method, either based on `CGAL` or `TETGEN`. The usage of `CGAL` is highly recommended.
+
+	    # - Meshing algorithm choice
+		MeshingMethod CGAL
+
+ - Stitch together the intersection meshes? Only really useful for visualization of the intersection mesh, done in a single processor and numerically expensive.
+
+		# > Stitch together the intersection meshes? 
+		#   (done in a single processor, can be numerically expensive)
+		#StitchInterMeshes
+
+ - Print some extra information about the intersection search? (partitioning)
+
+		# > Verbose output?
+		#   (prints coupling mesh partitioning before and after rebalancing)
+		#VerboseOutput
+
+\subsection Output
+
+Here are the output files, with their descriptions
+
+ - "Restricted" meshes. Meshes containing the elements of the system meshes that intersect the coupling region.
+
+		inter_A_restriction.msh
+		inter_B_restriction.msh 
+
+ - Element mapping tables between the restricted and model meshes. [[[FORMAT]]]
+
+		inter_A_restriction_restrict.dat
+		inter_B_restriction_restrict.dat
+
+ - Intersection meshes. Each processor generates its own (local) intersection mesh.
+
+		inter_r_0_n_4.e
+		inter_r_1_n_4.e
+		inter_r_2_n_4.e
+		inter_r_3_n_4.e
+
+ - Tables containing information about the intersections (intersecting element pairs, and indexes of the intersection mesh elements used to build it) [[[FORMAT]]]. Each processor generates its own (local) intersection mesh.
+
+		inter_r_0_n_4_inter_table_Full.dat  
+		inter_r_1_n_4_inter_table_Full.dat 
+		inter_r_2_n_4_inter_table_Full.dat
+		inter_r_3_n_4_inter_table_Full.dat
+
+\section traction_example_coupl_assemble Coupling matrices assembly
+
+\section traction_example_sys_assemble External solver assembly
+
+\section traction_example_coupled_solver Coupled system solver
+
+\section traction_example_treating Post-treatment of the solution
+
  */

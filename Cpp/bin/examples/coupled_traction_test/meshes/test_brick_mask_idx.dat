@@ -1,3 +1,32 @@
+###   
+#     The file "test_brick_mask.msh" contains a "mask" that identifies, in the 
+#   full coupled model domain, the regions with:
+#
+#   - only one of the models
+#   - the coupling area
+#   - both models, but outside the coupling area
+#
+#     This file contains the physical indexes identifying each of these domains, and the 
+#   weights associated to them.
+###
+
+# Only the "macro" model
 MacroDomainOnlyIdx 69
+
+# Only the "micro" model
 MicroDomainOnlyIdx 67
+
+# Coupling area
 CouplingDomainIdx 68
+
+# Both models, outside the coupling area
+# !!! not used in this example !!!
+#BothDomainsIdx = -1
+
+# Weight of the macro model at the coupling region
+# [ micro weight ] = 1 - [ macro weight ]
+AlphaCouplingMacro 0.5
+
+# Weight of the macro model on the area with both models, outside the coupling area
+# !!! not used in this example !!!
+#AlphaEps 1e-2
