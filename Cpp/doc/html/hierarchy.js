@@ -3,7 +3,6 @@ var hierarchy =
     [ "anisotropic_elasticity_tensor_cubic_sym", "classanisotropic__elasticity__tensor__cubic__sym.html", null ],
     [ "carl::assemble_coupling_matrices", "classcarl_1_1assemble__coupling__matrices.html", null ],
     [ "border_displacement_values", "structborder__displacement__values.html", null ],
-    [ "carl::carl_mult_coupling_input_params", "structcarl_1_1carl__mult__coupling__input__params.html", null ],
     [ "CellInfo", "struct_cell_info.html", null ],
     [ "carl::coupling_assemble_coupling_input_params", "structcarl_1_1coupling__assemble__coupling__input__params.html", null ],
     [ "carl::coupling_matrices_3", "classcarl_1_1coupling__matrices__3.html", null ],
@@ -35,6 +34,6 @@ var hierarchy =
     [ "carl::Stitch_Meshes", "classcarl_1_1_stitch___meshes.html", null ],
     [ "VertexInfo_2", "struct_vertex_info__2.html", null ],
     [ "VertexInfo_3", "struct_vertex_info__3.html", null ],
-    [ "carl::weight_parameter_function", "classcarl_1_1weight__parameter__function.html", null ],
-    [ "weight_parameter_function", "classweight__parameter__function.html", null ]
+    [ "weight_parameter_function", "classweight__parameter__function.html", null ],
+    [ "carl::weight_parameter_function", "classcarl_1_1weight__parameter__function.html", null ]
 ];

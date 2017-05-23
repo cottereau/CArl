@@ -2,5 +2,5 @@
 
 	\page cpp_exampletraction 3D traction test
 
-	This page contains detailed examples of the usage of the C++ CArl implementation
+	This page contains an example with a coupled 3D traction system, with a detailed description of the input parameter files and the progression of the solver.
  */

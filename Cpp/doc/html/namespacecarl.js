@@ -1,7 +1,6 @@
 var namespacecarl =
 [
     [ "assemble_coupling_matrices", "classcarl_1_1assemble__coupling__matrices.html", "classcarl_1_1assemble__coupling__matrices" ],
-    [ "carl_mult_coupling_input_params", "structcarl_1_1carl__mult__coupling__input__params.html", "structcarl_1_1carl__mult__coupling__input__params" ],
     [ "coupling_assemble_coupling_input_params", "structcarl_1_1coupling__assemble__coupling__input__params.html", "structcarl_1_1coupling__assemble__coupling__input__params" ],
     [ "coupling_matrices_3", "classcarl_1_1coupling__matrices__3.html", "classcarl_1_1coupling__matrices__3" ],
     [ "feti_iterate_params", "structcarl_1_1feti__iterate__params.html", "structcarl_1_1feti__iterate__params" ],
