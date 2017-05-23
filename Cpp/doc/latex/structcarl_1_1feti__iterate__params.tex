@@ -1,0 +1,185 @@
+\hypertarget{structcarl_1_1feti__iterate__params}{}\section{carl\+:\+:feti\+\_\+iterate\+\_\+params Struct Reference}
+\label{structcarl_1_1feti__iterate__params}\index{carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}}
+
+
+Structure containing the parameters for the setup initialization of the F\+E\+T\+I solver.  
+
+
+
+
+{\ttfamily \#include $<$carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h$>$}
+
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{namespacecarl_a67066fdf35a0c326f5147098c0cf45d1}{Cluster\+Scheduler\+Type} \hyperlink{structcarl_1_1feti__iterate__params_a5154ac3475a52b9973386fde31d82c83}{scheduler}
+\begin{DoxyCompactList}\small\item\em Cluster scheduler software type. {\itshape Values}\+: P\+B\+S, S\+L\+U\+R\+M (code not implemented for the later yet). \end{DoxyCompactList}\item 
+std\+::string \hyperlink{structcarl_1_1feti__iterate__params_a6f87360ece51431590f3a03f15945e55}{scratch\+\_\+folder\+\_\+path}
+\begin{DoxyCompactList}\small\item\em Path to the folder which will be used to save the temporary files during the solve operation. \end{DoxyCompactList}\item 
+bool \hyperlink{structcarl_1_1feti__iterate__params_a934be934df429fddea7600c8965bca89}{b\+Use\+Rigid\+Body\+Modes}
+\begin{DoxyCompactList}\small\item\em \mbox{[}R\+B\mbox{]} Use the rigid body modes for the micro system? \end{DoxyCompactList}\item 
+std\+::string \hyperlink{structcarl_1_1feti__iterate__params_aa1d86f53ac7316537089cda134f7dd00}{R\+B\+\_\+vectors\+\_\+base}
+\begin{DoxyCompactList}\small\item\em \mbox{[}R\+B\mbox{]} Common path base for the micro system\textquotesingle{}s rigid body mode vectors. \end{DoxyCompactList}\item 
+int \hyperlink{structcarl_1_1feti__iterate__params_a5565d7f7666b2417af811d423e37d270}{nb\+\_\+of\+\_\+rb\+\_\+vectors}
+\begin{DoxyCompactList}\small\item\em \mbox{[}R\+B\mbox{]} Number of R\+B mode vectors. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{structcarl_1_1feti__iterate__params_a198b85f203c17fa0f5973f9c2ced2110}{coupling\+\_\+folder\+\_\+path}
+\begin{DoxyCompactList}\small\item\em Folder containing the coupling matrices. \end{DoxyCompactList}\item 
+double \hyperlink{structcarl_1_1feti__iterate__params_a60effd55cacd7ea048aef5d603d7b763}{C\+G\+\_\+coupled\+\_\+conv\+\_\+abs}
+\begin{DoxyCompactList}\small\item\em \mbox{[}C\+G\mbox{]} Absolute residual convergence. \end{DoxyCompactList}\item 
+double \hyperlink{structcarl_1_1feti__iterate__params_a27dca64808ece87470d8b3c8e29f1209}{C\+G\+\_\+coupled\+\_\+conv\+\_\+rel}
+\begin{DoxyCompactList}\small\item\em \mbox{[}C\+G\mbox{]} Relative residual convergence. \end{DoxyCompactList}\item 
+double \hyperlink{structcarl_1_1feti__iterate__params_aa6c49632bdf6096cdc8d6e960d269484}{C\+G\+\_\+coupled\+\_\+div}
+\begin{DoxyCompactList}\small\item\em \mbox{[}C\+G\mbox{]} Residual divergence. \end{DoxyCompactList}\item 
+double \hyperlink{structcarl_1_1feti__iterate__params_ac059145cfe8efc1f101e3dca789cf74d}{C\+G\+\_\+coupled\+\_\+conv\+\_\+corr}
+\begin{DoxyCompactList}\small\item\em \mbox{[}C\+G\mbox{]} Relative rigid body mode convergence. \end{DoxyCompactList}\item 
+int \hyperlink{structcarl_1_1feti__iterate__params_a84ca6f789614c1f57bd00256706f6180}{C\+G\+\_\+coupled\+\_\+conv\+\_\+max}
+\begin{DoxyCompactList}\small\item\em \mbox{[}C\+G\mbox{]} Maximum number of iterations. \end{DoxyCompactList}\item 
+\hyperlink{namespacecarl_ad52f21755b51ffa926038b59ae194ea8}{carl\+::\+Base\+C\+G\+Precond\+Type} \hyperlink{structcarl_1_1feti__iterate__params_ac48e02bc42d7a5e3f3a0f70418fbae10}{C\+G\+\_\+precond\+\_\+type}
+\begin{DoxyCompactList}\small\item\em \mbox{[}C\+G\mbox{]} Type of preconditionner. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Structure containing the parameters for the setup initialization of the F\+E\+T\+I solver. 
+
+Definition at line 16 of file carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{structcarl_1_1feti__iterate__params_a934be934df429fddea7600c8965bca89}{}\index{carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}!b\+Use\+Rigid\+Body\+Modes@{b\+Use\+Rigid\+Body\+Modes}}
+\index{b\+Use\+Rigid\+Body\+Modes@{b\+Use\+Rigid\+Body\+Modes}!carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}}
+\subsubsection[{b\+Use\+Rigid\+Body\+Modes}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::feti\+\_\+iterate\+\_\+params\+::b\+Use\+Rigid\+Body\+Modes}\label{structcarl_1_1feti__iterate__params_a934be934df429fddea7600c8965bca89}
+
+
+\mbox{[}R\+B\mbox{]} Use the rigid body modes for the micro system? 
+
+
+
+Definition at line 26 of file carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1feti__iterate__params_a60effd55cacd7ea048aef5d603d7b763}{}\index{carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}!C\+G\+\_\+coupled\+\_\+conv\+\_\+abs@{C\+G\+\_\+coupled\+\_\+conv\+\_\+abs}}
+\index{C\+G\+\_\+coupled\+\_\+conv\+\_\+abs@{C\+G\+\_\+coupled\+\_\+conv\+\_\+abs}!carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}}
+\subsubsection[{C\+G\+\_\+coupled\+\_\+conv\+\_\+abs}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::feti\+\_\+iterate\+\_\+params\+::\+C\+G\+\_\+coupled\+\_\+conv\+\_\+abs}\label{structcarl_1_1feti__iterate__params_a60effd55cacd7ea048aef5d603d7b763}
+
+
+\mbox{[}C\+G\mbox{]} Absolute residual convergence. 
+
+
+
+Definition at line 36 of file carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1feti__iterate__params_ac059145cfe8efc1f101e3dca789cf74d}{}\index{carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}!C\+G\+\_\+coupled\+\_\+conv\+\_\+corr@{C\+G\+\_\+coupled\+\_\+conv\+\_\+corr}}
+\index{C\+G\+\_\+coupled\+\_\+conv\+\_\+corr@{C\+G\+\_\+coupled\+\_\+conv\+\_\+corr}!carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}}
+\subsubsection[{C\+G\+\_\+coupled\+\_\+conv\+\_\+corr}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::feti\+\_\+iterate\+\_\+params\+::\+C\+G\+\_\+coupled\+\_\+conv\+\_\+corr}\label{structcarl_1_1feti__iterate__params_ac059145cfe8efc1f101e3dca789cf74d}
+
+
+\mbox{[}C\+G\mbox{]} Relative rigid body mode convergence. 
+
+
+
+Definition at line 39 of file carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1feti__iterate__params_a84ca6f789614c1f57bd00256706f6180}{}\index{carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}!C\+G\+\_\+coupled\+\_\+conv\+\_\+max@{C\+G\+\_\+coupled\+\_\+conv\+\_\+max}}
+\index{C\+G\+\_\+coupled\+\_\+conv\+\_\+max@{C\+G\+\_\+coupled\+\_\+conv\+\_\+max}!carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}}
+\subsubsection[{C\+G\+\_\+coupled\+\_\+conv\+\_\+max}]{\setlength{\rightskip}{0pt plus 5cm}int carl\+::feti\+\_\+iterate\+\_\+params\+::\+C\+G\+\_\+coupled\+\_\+conv\+\_\+max}\label{structcarl_1_1feti__iterate__params_a84ca6f789614c1f57bd00256706f6180}
+
+
+\mbox{[}C\+G\mbox{]} Maximum number of iterations. 
+
+
+
+Definition at line 40 of file carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1feti__iterate__params_a27dca64808ece87470d8b3c8e29f1209}{}\index{carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}!C\+G\+\_\+coupled\+\_\+conv\+\_\+rel@{C\+G\+\_\+coupled\+\_\+conv\+\_\+rel}}
+\index{C\+G\+\_\+coupled\+\_\+conv\+\_\+rel@{C\+G\+\_\+coupled\+\_\+conv\+\_\+rel}!carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}}
+\subsubsection[{C\+G\+\_\+coupled\+\_\+conv\+\_\+rel}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::feti\+\_\+iterate\+\_\+params\+::\+C\+G\+\_\+coupled\+\_\+conv\+\_\+rel}\label{structcarl_1_1feti__iterate__params_a27dca64808ece87470d8b3c8e29f1209}
+
+
+\mbox{[}C\+G\mbox{]} Relative residual convergence. 
+
+
+
+Definition at line 37 of file carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1feti__iterate__params_aa6c49632bdf6096cdc8d6e960d269484}{}\index{carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}!C\+G\+\_\+coupled\+\_\+div@{C\+G\+\_\+coupled\+\_\+div}}
+\index{C\+G\+\_\+coupled\+\_\+div@{C\+G\+\_\+coupled\+\_\+div}!carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}}
+\subsubsection[{C\+G\+\_\+coupled\+\_\+div}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::feti\+\_\+iterate\+\_\+params\+::\+C\+G\+\_\+coupled\+\_\+div}\label{structcarl_1_1feti__iterate__params_aa6c49632bdf6096cdc8d6e960d269484}
+
+
+\mbox{[}C\+G\mbox{]} Residual divergence. 
+
+
+
+Definition at line 38 of file carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1feti__iterate__params_ac48e02bc42d7a5e3f3a0f70418fbae10}{}\index{carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}!C\+G\+\_\+precond\+\_\+type@{C\+G\+\_\+precond\+\_\+type}}
+\index{C\+G\+\_\+precond\+\_\+type@{C\+G\+\_\+precond\+\_\+type}!carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}}
+\subsubsection[{C\+G\+\_\+precond\+\_\+type}]{\setlength{\rightskip}{0pt plus 5cm}{\bf carl\+::\+Base\+C\+G\+Precond\+Type} carl\+::feti\+\_\+iterate\+\_\+params\+::\+C\+G\+\_\+precond\+\_\+type}\label{structcarl_1_1feti__iterate__params_ac48e02bc42d7a5e3f3a0f70418fbae10}
+
+
+\mbox{[}C\+G\mbox{]} Type of preconditionner. 
+
+
+
+Definition at line 42 of file carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1feti__iterate__params_a198b85f203c17fa0f5973f9c2ced2110}{}\index{carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}!coupling\+\_\+folder\+\_\+path@{coupling\+\_\+folder\+\_\+path}}
+\index{coupling\+\_\+folder\+\_\+path@{coupling\+\_\+folder\+\_\+path}!carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}}
+\subsubsection[{coupling\+\_\+folder\+\_\+path}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::feti\+\_\+iterate\+\_\+params\+::coupling\+\_\+folder\+\_\+path}\label{structcarl_1_1feti__iterate__params_a198b85f203c17fa0f5973f9c2ced2110}
+
+
+Folder containing the coupling matrices. 
+
+
+
+Definition at line 31 of file carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1feti__iterate__params_a5565d7f7666b2417af811d423e37d270}{}\index{carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}!nb\+\_\+of\+\_\+rb\+\_\+vectors@{nb\+\_\+of\+\_\+rb\+\_\+vectors}}
+\index{nb\+\_\+of\+\_\+rb\+\_\+vectors@{nb\+\_\+of\+\_\+rb\+\_\+vectors}!carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}}
+\subsubsection[{nb\+\_\+of\+\_\+rb\+\_\+vectors}]{\setlength{\rightskip}{0pt plus 5cm}int carl\+::feti\+\_\+iterate\+\_\+params\+::nb\+\_\+of\+\_\+rb\+\_\+vectors}\label{structcarl_1_1feti__iterate__params_a5565d7f7666b2417af811d423e37d270}
+
+
+\mbox{[}R\+B\mbox{]} Number of R\+B mode vectors. 
+
+
+
+Definition at line 28 of file carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1feti__iterate__params_aa1d86f53ac7316537089cda134f7dd00}{}\index{carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}!R\+B\+\_\+vectors\+\_\+base@{R\+B\+\_\+vectors\+\_\+base}}
+\index{R\+B\+\_\+vectors\+\_\+base@{R\+B\+\_\+vectors\+\_\+base}!carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}}
+\subsubsection[{R\+B\+\_\+vectors\+\_\+base}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::feti\+\_\+iterate\+\_\+params\+::\+R\+B\+\_\+vectors\+\_\+base}\label{structcarl_1_1feti__iterate__params_aa1d86f53ac7316537089cda134f7dd00}
+
+
+\mbox{[}R\+B\mbox{]} Common path base for the micro system\textquotesingle{}s rigid body mode vectors. 
+
+
+
+Definition at line 27 of file carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1feti__iterate__params_a5154ac3475a52b9973386fde31d82c83}{}\index{carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}!scheduler@{scheduler}}
+\index{scheduler@{scheduler}!carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}}
+\subsubsection[{scheduler}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Cluster\+Scheduler\+Type} carl\+::feti\+\_\+iterate\+\_\+params\+::scheduler}\label{structcarl_1_1feti__iterate__params_a5154ac3475a52b9973386fde31d82c83}
+
+
+Cluster scheduler software type. {\itshape Values}\+: P\+B\+S, S\+L\+U\+R\+M (code not implemented for the later yet). 
+
+
+
+Definition at line 20 of file carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1feti__iterate__params_a6f87360ece51431590f3a03f15945e55}{}\index{carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}!scratch\+\_\+folder\+\_\+path@{scratch\+\_\+folder\+\_\+path}}
+\index{scratch\+\_\+folder\+\_\+path@{scratch\+\_\+folder\+\_\+path}!carl\+::feti\+\_\+iterate\+\_\+params@{carl\+::feti\+\_\+iterate\+\_\+params}}
+\subsubsection[{scratch\+\_\+folder\+\_\+path}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::feti\+\_\+iterate\+\_\+params\+::scratch\+\_\+folder\+\_\+path}\label{structcarl_1_1feti__iterate__params_a6f87360ece51431590f3a03f15945e55}
+
+
+Path to the folder which will be used to save the temporary files during the solve operation. 
+
+
+
+Definition at line 23 of file carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/parsers/\hyperlink{carl__feti__iterate__input__parser_8h}{carl\+\_\+feti\+\_\+iterate\+\_\+input\+\_\+parser.\+h}\end{DoxyCompactItemize}

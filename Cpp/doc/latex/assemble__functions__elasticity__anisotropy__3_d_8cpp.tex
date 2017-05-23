@@ -1,0 +1,464 @@
+\hypertarget{assemble__functions__elasticity__anisotropy__3_d_8cpp}{}\section{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/\+N\+O\+T\+\_\+\+R\+E\+A\+D\+Y\+\_\+\+Y\+E\+T/assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.cpp File Reference}
+\label{assemble__functions__elasticity__anisotropy__3_d_8cpp}\index{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/\+N\+O\+T\+\_\+\+R\+E\+A\+D\+Y\+\_\+\+Y\+E\+T/assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp@{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/\+N\+O\+T\+\_\+\+R\+E\+A\+D\+Y\+\_\+\+Y\+E\+T/assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp}}
+{\ttfamily \#include \char`\"{}assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8cpp_a08e704d5ed03a4f411be8647d34c1699}{Update\+\_\+\+Sub\+K\+\_\+anisotropic} (lib\+Mesh\+::\+Dense\+Sub\+Matrix$<$ lib\+Mesh\+::\+Number $>$ \&Sub\+K, unsigned int qp, unsigned int C\+\_\+i, unsigned int C\+\_\+k, const std\+::vector$<$ std\+::vector$<$ lib\+Mesh\+::\+Real\+Gradient $>$ $>$ \&dphi, const unsigned int n\+\_\+components, const unsigned int n\+\_\+u\+\_\+dofs, const std\+::vector$<$ lib\+Mesh\+::\+Real $>$ \&Jx\+W, carl\+::anisotropic\+\_\+elasticity\+\_\+tensor\+\_\+cubic\+\_\+sym \&anisotropy\+\_\+obj\+\_\+input, int grain\+\_\+idx, double cte)
+\item 
+void \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8cpp_ab1099fbb43de39290ed5cf8d18982c54}{assemble\+\_\+elasticity\+\_\+anisotropic\+\_\+with\+\_\+weight} (lib\+Mesh\+::\+Equation\+Systems \&es, const std\+::string \&system\+\_\+name, \hyperlink{classcarl_1_1weight__parameter__function}{carl\+::weight\+\_\+parameter\+\_\+function} \&weight\+\_\+mask, carl\+::anisotropic\+\_\+elasticity\+\_\+tensor\+\_\+cubic\+\_\+sym \&anisotropy\+\_\+obj\+\_\+input)
+\item 
+void \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8cpp_ab58d7cb4944c95d2d79c846693b5109e}{assemble\+\_\+elasticity\+\_\+anisotropic} (lib\+Mesh\+::\+Equation\+Systems \&es, const std\+::string \&system\+\_\+name, carl\+::anisotropic\+\_\+elasticity\+\_\+tensor\+\_\+cubic\+\_\+sym \&anisotropy\+\_\+obj\+\_\+input)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{assemble__functions__elasticity__anisotropy__3_d_8cpp_ab58d7cb4944c95d2d79c846693b5109e}{}\index{assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp@{assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp}!assemble\+\_\+elasticity\+\_\+anisotropic@{assemble\+\_\+elasticity\+\_\+anisotropic}}
+\index{assemble\+\_\+elasticity\+\_\+anisotropic@{assemble\+\_\+elasticity\+\_\+anisotropic}!assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp@{assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp}}
+\subsubsection[{assemble\+\_\+elasticity\+\_\+anisotropic(lib\+Mesh\+::\+Equation\+Systems \&es, const std\+::string \&system\+\_\+name, carl\+::anisotropic\+\_\+elasticity\+\_\+tensor\+\_\+cubic\+\_\+sym \&anisotropy\+\_\+obj\+\_\+input)}]{\setlength{\rightskip}{0pt plus 5cm}void assemble\+\_\+elasticity\+\_\+anisotropic (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Equation\+Systems \&}]{es, }
+\item[{const std\+::string \&}]{system\+\_\+name, }
+\item[{carl\+::anisotropic\+\_\+elasticity\+\_\+tensor\+\_\+cubic\+\_\+sym \&}]{anisotropy\+\_\+obj\+\_\+input}
+\end{DoxyParamCaption}
+)}\label{assemble__functions__elasticity__anisotropy__3_d_8cpp_ab58d7cb4944c95d2d79c846693b5109e}
+
+
+Definition at line 221 of file assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+224 \{
+225     libmesh\_assert\_equal\_to (system\_name, \textcolor{stringliteral}{"Elasticity"});
+226 
+227     libMesh::PerfLog perf\_log (\textcolor{stringliteral}{"Matrix Assembly (Heterogeneous elasticity)"},
+      \hyperlink{assemble__functions__elasticity__3_d_8h_ab37296de69e82d9b93c8f6db72aa6a89}{MASTER\_bPerfLog\_assemble\_fem});
+228 
+229     perf\_log.push(\textcolor{stringliteral}{"Preamble"});
+230     \textcolor{comment}{// Set up mesh}
+231     \textcolor{keyword}{const} libMesh::MeshBase& mesh = es.get\_mesh();
+232 
+233     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} dim = mesh.mesh\_dimension();
+234 
+235     \textcolor{comment}{// - Set up physical properties system ------------------------------------}
+236     \textcolor{keywordtype}{int} localIdx;
+237 
+238     libMesh::ExplicitSystem& physical\_param\_system = es.get\_system<libMesh::ExplicitSystem>(\textcolor{stringliteral}{"
+      PhysicalConstants"});
+239     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} idx\_var = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"Index"});
+240 
+241     \textcolor{keyword}{const} libMesh::DofMap& physical\_dof\_map = physical\_param\_system.get\_dof\_map();
+242     std::vector<libMesh::dof\_id\_type> physical\_dof\_indices\_var;
+243 
+244     \textcolor{comment}{// - Set up elasticity system ---------------------------------------------}
+245     libMesh::LinearImplicitSystem& system = es.get\_system<libMesh::LinearImplicitSystem>(\textcolor{stringliteral}{"Elasticity"});
+246 
+247     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_components = 3;
+248     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} u\_var = system.variable\_number (\textcolor{stringliteral}{"u"});
+249     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} v\_var = system.variable\_number (\textcolor{stringliteral}{"v"});
+250     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} w\_var = system.variable\_number (\textcolor{stringliteral}{"w"});
+251 
+252     \textcolor{keyword}{const} libMesh::DofMap& dof\_map = system.get\_dof\_map();
+253     libMesh::FEType fe\_type = dof\_map.variable\_type(u\_var);
+254 
+255     \textcolor{comment}{// Set up pointers to FEBase's of dimension dim and FE type fe\_type}
+256     \textcolor{comment}{// -> 3D elements}
+257     libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe\_type));
+258     libMesh::QGauss qrule (dim, fe\_type.default\_quadrature\_order());
+259     fe->attach\_quadrature\_rule (&qrule);
+260 
+261     \textcolor{comment}{// -> Faces}
+262     libMesh::UniquePtr<libMesh::FEBase> fe\_face (libMesh::FEBase::build(dim, fe\_type));
+263     libMesh::QGauss qface(dim-1, fe\_type.default\_quadrature\_order());
+264     fe\_face->attach\_quadrature\_rule (&qface);
+265 
+266     \textcolor{comment}{// Jacobian}
+267     \textcolor{keyword}{const} std::vector<libMesh::Real>& JxW = fe->get\_JxW();
+268 
+269     \textcolor{comment}{// Shape functions}
+270     \textcolor{keyword}{const} std::vector<std::vector<libMesh::Real> >& phi = fe->get\_phi();
+271 
+272     \textcolor{comment}{// Shape functions derivatives}
+273     \textcolor{keyword}{const} std::vector<std::vector<libMesh::RealGradient> >& dphi = fe->get\_dphi();
+274 
+275     \textcolor{comment}{// Quadrature points}
+276     \textcolor{keyword}{const} std::vector<libMesh::Point>& qp\_points = fe->get\_xyz();
+277 
+278     \textcolor{comment}{// Weights for the Arlequin method}
+279     \textcolor{keywordtype}{double} alpha = 1;
+280 
+281     libMesh::DenseMatrix<libMesh::Number> Ke;
+282     libMesh::DenseVector<libMesh::Number> Fe;
+283 
+284     libMesh::DenseSubMatrix<libMesh::Number>
+285     Kuu(Ke), Kuv(Ke), Kuw(Ke),
+286     Kvu(Ke), Kvv(Ke), Kvw(Ke),
+287     Kwu(Ke), Kwv(Ke), Kww(Ke);
+288 
+289     libMesh::DenseSubVector<libMesh::Number>
+290     Fu(Fe),
+291     Fv(Fe),
+292     Fw(Fe);
+293 
+294     std::vector<libMesh::dof\_id\_type> dof\_indices;
+295     std::vector<libMesh::dof\_id\_type> dof\_indices\_u;
+296     std::vector<libMesh::dof\_id\_type> dof\_indices\_v;
+297     std::vector<libMesh::dof\_id\_type> dof\_indices\_w;
+298 
+299     libMesh::MeshBase::const\_element\_iterator       el     = mesh.active\_local\_elements\_begin();
+300     \textcolor{keyword}{const} libMesh::MeshBase::const\_element\_iterator end\_el = mesh.active\_local\_elements\_end();
+301 
+302     perf\_log.pop(\textcolor{stringliteral}{"Preamble"});
+303 
+304     \textcolor{comment}{// For each element}
+305     \textcolor{keywordflow}{for} ( ; el != end\_el; ++el)
+306     \{
+307         \textcolor{comment}{// Get its pointer}
+308         \textcolor{keyword}{const} libMesh::Elem* elem = *el;
+309 
+310         perf\_log.push(\textcolor{stringliteral}{"Define DoF"});
+311         \textcolor{comment}{// The total DoF indices, and those associated to each variable}
+312         dof\_map.dof\_indices (elem, dof\_indices);
+313         dof\_map.dof\_indices (elem, dof\_indices\_u, u\_var);
+314         dof\_map.dof\_indices (elem, dof\_indices\_v, v\_var);
+315         dof\_map.dof\_indices (elem, dof\_indices\_w, w\_var);
+316 
+317         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_dofs   = dof\_indices.size();
+318         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_u\_dofs = dof\_indices\_u.size();
+319         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_v\_dofs = dof\_indices\_v.size();
+320         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_w\_dofs = dof\_indices\_w.size();
+321 
+322         perf\_log.pop(\textcolor{stringliteral}{"Define DoF"});
+323 
+324         perf\_log.push(\textcolor{stringliteral}{"Define physical params"});
+325         \textcolor{comment}{// The DoF and values of the physical system}
+326         physical\_dof\_map.dof\_indices(elem, physical\_dof\_indices\_var, idx\_var);
+327         localIdx = physical\_param\_system.current\_solution(physical\_dof\_indices\_var[0]);
+328         perf\_log.pop(\textcolor{stringliteral}{"Define physical params"});
+329 
+330         \textcolor{comment}{// Restart the FE to the "geometry" of the element}
+331         \textcolor{comment}{// -> Determines quadrature points, shape functions ...}
+332         \textcolor{comment}{// !!! User can change the points to be used (can use other mesh's points}
+333         \textcolor{comment}{//      instead of the quadrature points)}
+334         fe->reinit (elem);
+335 
+336         perf\_log.push(\textcolor{stringliteral}{"Matrix manipulations"});
+337         Ke.resize (n\_dofs, n\_dofs);
+338         Fe.resize (n\_dofs);
+339 
+340         \textcolor{comment}{// Set the positions of the sub-matrices}
+341         Kuu.reposition (u\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_u\_dofs, n\_u\_dofs);
+342         Kuv.reposition (u\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_u\_dofs, n\_v\_dofs);
+343         Kuw.reposition (u\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_u\_dofs, n\_w\_dofs);
+344 
+345         Kvu.reposition (v\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_v\_dofs, n\_u\_dofs);
+346         Kvv.reposition (v\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_v\_dofs, n\_v\_dofs);
+347         Kvw.reposition (v\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_v\_dofs, n\_w\_dofs);
+348 
+349         Kwu.reposition (w\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_w\_dofs, n\_u\_dofs);
+350         Kwv.reposition (w\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_w\_dofs, n\_v\_dofs);
+351         Kww.reposition (w\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_w\_dofs, n\_w\_dofs);
+352 
+353         Fu.reposition (u\_var*n\_u\_dofs, n\_u\_dofs);
+354         Fv.reposition (v\_var*n\_u\_dofs, n\_v\_dofs);
+355         Fw.reposition (w\_var*n\_u\_dofs, n\_w\_dofs);
+356         perf\_log.push(\textcolor{stringliteral}{"Matrix manipulations"});
+357 
+358         perf\_log.push(\textcolor{stringliteral}{"Matrix element calculations"});
+359         \textcolor{comment}{// For each quadrature point determinate the sub-matrices elements}
+360         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} qp=0; qp<qrule.n\_points(); qp++)
+361         \{
+362 
+363             perf\_log.push(\textcolor{stringliteral}{"Rigidity"},\textcolor{stringliteral}{"Matrix element calculations"});
+364             \textcolor{comment}{// Internal tension}
+365             alpha = 1;
+366 
+367             \textcolor{comment}{// Internal tension}
+368             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kuu, qp, 0, 0, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha);
+369             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kuv, qp, 0, 1, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha);
+370             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kuw, qp, 0, 2, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha);
+371 
+372             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kvu, qp, 1, 0, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha);
+373             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kvv, qp, 1, 1, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha);
+374             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kvw, qp, 1, 2, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha);
+375 
+376             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kwu, qp, 2, 0, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha);
+377             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kwv, qp, 2, 1, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha);
+378             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kww, qp, 2, 2, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha);
+379 
+380             perf\_log.pop(\textcolor{stringliteral}{"Rigidity"},\textcolor{stringliteral}{"Matrix element calculations"});
+381             \textcolor{comment}{// Gravity}
+382             \textcolor{comment}{//      if(z\_force)}
+383             \textcolor{comment}{//      \{}
+384                         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} i=0; i<n\_w\_dofs; i++)
+385                           \{
+386                             Fw(i) -= alpha * JxW[qp] * phi[i][qp];
+387                           \}
+388                     \}
+389         \}
+390 
+391         \textcolor{comment}{// Apply constraints}
+392         perf\_log.push(\textcolor{stringliteral}{"Constraints"},\textcolor{stringliteral}{"Matrix element calculations"});
+393         dof\_map.heterogenously\_constrain\_element\_matrix\_and\_vector(Ke, Fe, dof\_indices);
+394         perf\_log.pop(\textcolor{stringliteral}{"Constraints"},\textcolor{stringliteral}{"Matrix element calculations"});
+395 
+396         perf\_log.push(\textcolor{stringliteral}{"Adding elements"});
+397         system.matrix->add\_matrix (Ke, dof\_indices);
+398         system.rhs->add\_vector    (Fe, dof\_indices);
+399         perf\_log.pop(\textcolor{stringliteral}{"Adding elements"});
+400     \}
+\end{DoxyCode}
+\hypertarget{assemble__functions__elasticity__anisotropy__3_d_8cpp_ab1099fbb43de39290ed5cf8d18982c54}{}\index{assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp@{assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp}!assemble\+\_\+elasticity\+\_\+anisotropic\+\_\+with\+\_\+weight@{assemble\+\_\+elasticity\+\_\+anisotropic\+\_\+with\+\_\+weight}}
+\index{assemble\+\_\+elasticity\+\_\+anisotropic\+\_\+with\+\_\+weight@{assemble\+\_\+elasticity\+\_\+anisotropic\+\_\+with\+\_\+weight}!assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp@{assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp}}
+\subsubsection[{assemble\+\_\+elasticity\+\_\+anisotropic\+\_\+with\+\_\+weight(lib\+Mesh\+::\+Equation\+Systems \&es, const std\+::string \&system\+\_\+name, carl\+::weight\+\_\+parameter\+\_\+function \&weight\+\_\+mask, carl\+::anisotropic\+\_\+elasticity\+\_\+tensor\+\_\+cubic\+\_\+sym \&anisotropy\+\_\+obj\+\_\+input)}]{\setlength{\rightskip}{0pt plus 5cm}void assemble\+\_\+elasticity\+\_\+anisotropic\+\_\+with\+\_\+weight (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Equation\+Systems \&}]{es, }
+\item[{const std\+::string \&}]{system\+\_\+name, }
+\item[{{\bf carl\+::weight\+\_\+parameter\+\_\+function} \&}]{weight\+\_\+mask, }
+\item[{carl\+::anisotropic\+\_\+elasticity\+\_\+tensor\+\_\+cubic\+\_\+sym \&}]{anisotropy\+\_\+obj\+\_\+input}
+\end{DoxyParamCaption}
+)}\label{assemble__functions__elasticity__anisotropy__3_d_8cpp_ab1099fbb43de39290ed5cf8d18982c54}
+
+
+Definition at line 38 of file assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+42 \{
+43     libmesh\_assert\_equal\_to (system\_name, \textcolor{stringliteral}{"Elasticity"});
+44 
+45     libMesh::PerfLog perf\_log (\textcolor{stringliteral}{"Matrix Assembly (Heterogeneous elasticity)"},
+      \hyperlink{assemble__functions__elasticity__3_d_8h_ab37296de69e82d9b93c8f6db72aa6a89}{MASTER\_bPerfLog\_assemble\_fem});
+46 
+47     perf\_log.push(\textcolor{stringliteral}{"Preamble"});
+48     \textcolor{comment}{// Set up mesh}
+49     \textcolor{keyword}{const} libMesh::MeshBase& mesh = es.get\_mesh();
+50 
+51     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} dim = mesh.mesh\_dimension();
+52 
+53     \textcolor{comment}{// - Set up physical properties system ------------------------------------}
+54     \textcolor{keywordtype}{int} localIdx;
+55 
+56     libMesh::ExplicitSystem& physical\_param\_system = es.get\_system<libMesh::ExplicitSystem>(\textcolor{stringliteral}{"
+      PhysicalConstants"});
+57     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} idx\_var = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"Index"});
+58 
+59     \textcolor{keyword}{const} libMesh::DofMap& physical\_dof\_map = physical\_param\_system.get\_dof\_map();
+60     std::vector<libMesh::dof\_id\_type> physical\_dof\_indices\_var;
+61 
+62     \textcolor{comment}{// - Set up elasticity system ---------------------------------------------}
+63     libMesh::LinearImplicitSystem& system = es.get\_system<libMesh::LinearImplicitSystem>(\textcolor{stringliteral}{"Elasticity"});
+64 
+65     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_components = 3;
+66     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} u\_var = system.variable\_number (\textcolor{stringliteral}{"u"});
+67     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} v\_var = system.variable\_number (\textcolor{stringliteral}{"v"});
+68     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} w\_var = system.variable\_number (\textcolor{stringliteral}{"w"});
+69 
+70     \textcolor{keyword}{const} libMesh::DofMap& dof\_map = system.get\_dof\_map();
+71     libMesh::FEType fe\_type = dof\_map.variable\_type(u\_var);
+72 
+73     \textcolor{comment}{// Set up pointers to FEBase's of dimension dim and FE type fe\_type}
+74     \textcolor{comment}{// -> 3D elements}
+75     libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe\_type));
+76     libMesh::QGauss qrule (dim, fe\_type.default\_quadrature\_order());
+77     fe->attach\_quadrature\_rule (&qrule);
+78 
+79     \textcolor{comment}{// -> Faces}
+80     libMesh::UniquePtr<libMesh::FEBase> fe\_face (libMesh::FEBase::build(dim, fe\_type));
+81     libMesh::QGauss qface(dim-1, fe\_type.default\_quadrature\_order());
+82     fe\_face->attach\_quadrature\_rule (&qface);
+83 
+84     \textcolor{comment}{// Jacobian}
+85     \textcolor{keyword}{const} std::vector<libMesh::Real>& JxW = fe->get\_JxW();
+86 
+87     \textcolor{comment}{// Shape functions}
+88     \textcolor{keyword}{const} std::vector<std::vector<libMesh::Real> >& phi = fe->get\_phi();
+89 
+90     \textcolor{comment}{// Shape functions derivatives}
+91     \textcolor{keyword}{const} std::vector<std::vector<libMesh::RealGradient> >& dphi = fe->get\_dphi();
+92 
+93     \textcolor{comment}{// Quadrature points}
+94     \textcolor{keyword}{const} std::vector<libMesh::Point>& qp\_points = fe->get\_xyz();
+95 
+96     \textcolor{comment}{// Weights for the Arlequin method}
+97     \textcolor{keywordtype}{double} alpha\_micro = 1;
+98 
+99     libMesh::DenseMatrix<libMesh::Number> Ke;
+100     libMesh::DenseVector<libMesh::Number> Fe;
+101 
+102     libMesh::DenseSubMatrix<libMesh::Number>
+103     Kuu(Ke), Kuv(Ke), Kuw(Ke),
+104     Kvu(Ke), Kvv(Ke), Kvw(Ke),
+105     Kwu(Ke), Kwv(Ke), Kww(Ke);
+106 
+107     libMesh::DenseSubVector<libMesh::Number>
+108     Fu(Fe),
+109     Fv(Fe),
+110     Fw(Fe);
+111 
+112     std::vector<libMesh::dof\_id\_type> dof\_indices;
+113     std::vector<libMesh::dof\_id\_type> dof\_indices\_u;
+114     std::vector<libMesh::dof\_id\_type> dof\_indices\_v;
+115     std::vector<libMesh::dof\_id\_type> dof\_indices\_w;
+116 
+117     libMesh::MeshBase::const\_element\_iterator       el     = mesh.active\_local\_elements\_begin();
+118     \textcolor{keyword}{const} libMesh::MeshBase::const\_element\_iterator end\_el = mesh.active\_local\_elements\_end();
+119 
+120     perf\_log.pop(\textcolor{stringliteral}{"Preamble"});
+121 
+122     \textcolor{comment}{// For each element}
+123     \textcolor{keywordflow}{for} ( ; el != end\_el; ++el)
+124     \{
+125         \textcolor{comment}{// Get its pointer}
+126         \textcolor{keyword}{const} libMesh::Elem* elem = *el;
+127 
+128         perf\_log.push(\textcolor{stringliteral}{"Define DoF"});
+129         \textcolor{comment}{// The total DoF indices, and those associated to each variable}
+130         dof\_map.dof\_indices (elem, dof\_indices);
+131         dof\_map.dof\_indices (elem, dof\_indices\_u, u\_var);
+132         dof\_map.dof\_indices (elem, dof\_indices\_v, v\_var);
+133         dof\_map.dof\_indices (elem, dof\_indices\_w, w\_var);
+134 
+135         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_dofs   = dof\_indices.size();
+136         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_u\_dofs = dof\_indices\_u.size();
+137         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_v\_dofs = dof\_indices\_v.size();
+138         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_w\_dofs = dof\_indices\_w.size();
+139 
+140         perf\_log.pop(\textcolor{stringliteral}{"Define DoF"});
+141 
+142         perf\_log.push(\textcolor{stringliteral}{"Define physical params"});
+143         \textcolor{comment}{// The DoF and values of the physical system}
+144         physical\_dof\_map.dof\_indices(elem, physical\_dof\_indices\_var, idx\_var);
+145         localIdx = physical\_param\_system.current\_solution(physical\_dof\_indices\_var[0]);
+146         perf\_log.pop(\textcolor{stringliteral}{"Define physical params"});
+147 
+148         \textcolor{comment}{// Restart the FE to the "geometry" of the element}
+149         \textcolor{comment}{// -> Determines quadrature points, shape functions ...}
+150         \textcolor{comment}{// !!! User can change the points to be used (can use other mesh's points}
+151         \textcolor{comment}{//      instead of the quadrature points)}
+152         fe->reinit (elem);
+153 
+154         perf\_log.push(\textcolor{stringliteral}{"Matrix manipulations"});
+155         Ke.resize (n\_dofs, n\_dofs);
+156         Fe.resize (n\_dofs);
+157 
+158         \textcolor{comment}{// Set the positions of the sub-matrices}
+159         Kuu.reposition (u\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_u\_dofs, n\_u\_dofs);
+160         Kuv.reposition (u\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_u\_dofs, n\_v\_dofs);
+161         Kuw.reposition (u\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_u\_dofs, n\_w\_dofs);
+162 
+163         Kvu.reposition (v\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_v\_dofs, n\_u\_dofs);
+164         Kvv.reposition (v\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_v\_dofs, n\_v\_dofs);
+165         Kvw.reposition (v\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_v\_dofs, n\_w\_dofs);
+166 
+167         Kwu.reposition (w\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_w\_dofs, n\_u\_dofs);
+168         Kwv.reposition (w\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_w\_dofs, n\_v\_dofs);
+169         Kww.reposition (w\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_w\_dofs, n\_w\_dofs);
+170 
+171         Fu.reposition (u\_var*n\_u\_dofs, n\_u\_dofs);
+172         Fv.reposition (v\_var*n\_u\_dofs, n\_v\_dofs);
+173         Fw.reposition (w\_var*n\_u\_dofs, n\_w\_dofs);
+174         perf\_log.push(\textcolor{stringliteral}{"Matrix manipulations"});
+175 
+176         perf\_log.push(\textcolor{stringliteral}{"Matrix element calculations"});
+177         \textcolor{comment}{// For each quadrature point determinate the sub-matrices elements}
+178         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} qp=0; qp<qrule.n\_points(); qp++)
+179         \{
+180 
+181             perf\_log.push(\textcolor{stringliteral}{"Rigidity"},\textcolor{stringliteral}{"Matrix element calculations"});
+182             \textcolor{comment}{// Internal tension}
+183             alpha\_micro = weight\_mask.\hyperlink{classcarl_1_1weight__parameter__function_a04603ae397eb5c61eaa77f1ecf7f6472}{get\_alpha\_micro}(qp\_points[qp]);
+184 
+185             \textcolor{comment}{// Internal tension}
+186             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kuu, qp, 0, 0, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha\_micro);
+187             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kuv, qp, 0, 1, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha\_micro);
+188             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kuw, qp, 0, 2, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha\_micro);
+189 
+190             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kvu, qp, 1, 0, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha\_micro);
+191             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kvv, qp, 1, 1, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha\_micro);
+192             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kvw, qp, 1, 2, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha\_micro);
+193 
+194             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kwu, qp, 2, 0, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha\_micro);
+195             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kwv, qp, 2, 1, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha\_micro);
+196             \hyperlink{assemble__functions__elasticity__anisotropy__3_d_8h_ab567be4664cf2dde453985834a483a98}{Update\_SubK}(Kww, qp, 2, 2, dphi, n\_components, n\_u\_dofs, JxW, anisotropy\_obj\_input, 
+      localIdx, alpha\_micro);
+197 
+198             perf\_log.pop(\textcolor{stringliteral}{"Rigidity"},\textcolor{stringliteral}{"Matrix element calculations"});
+199             \textcolor{comment}{// Gravity}
+200             \textcolor{comment}{//      if(z\_force)}
+201             \textcolor{comment}{//      \{}
+202                         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} i=0; i<n\_w\_dofs; i++)
+203                           \{
+204                             Fw(i) -= alpha\_micro * JxW[qp] * phi[i][qp];
+205                           \}
+206                     \}
+207         \}
+208 
+209         \textcolor{comment}{// Apply constraints}
+210         perf\_log.push(\textcolor{stringliteral}{"Constraints"},\textcolor{stringliteral}{"Matrix element calculations"});
+211         dof\_map.heterogenously\_constrain\_element\_matrix\_and\_vector(Ke, Fe, dof\_indices);
+212         perf\_log.pop(\textcolor{stringliteral}{"Constraints"},\textcolor{stringliteral}{"Matrix element calculations"});
+213 
+214         perf\_log.push(\textcolor{stringliteral}{"Adding elements"});
+215         system.matrix->add\_matrix (Ke, dof\_indices);
+216         system.rhs->add\_vector    (Fe, dof\_indices);
+217         perf\_log.pop(\textcolor{stringliteral}{"Adding elements"});
+218     \}
+\end{DoxyCode}
+\hypertarget{assemble__functions__elasticity__anisotropy__3_d_8cpp_a08e704d5ed03a4f411be8647d34c1699}{}\index{assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp@{assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp}!Update\+\_\+\+Sub\+K\+\_\+anisotropic@{Update\+\_\+\+Sub\+K\+\_\+anisotropic}}
+\index{Update\+\_\+\+Sub\+K\+\_\+anisotropic@{Update\+\_\+\+Sub\+K\+\_\+anisotropic}!assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp@{assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp}}
+\subsubsection[{Update\+\_\+\+Sub\+K\+\_\+anisotropic(lib\+Mesh\+::\+Dense\+Sub\+Matrix$<$ lib\+Mesh\+::\+Number $>$ \&\+Sub\+K, unsigned int qp, unsigned int C\+\_\+i, unsigned int C\+\_\+k, const std\+::vector$<$ std\+::vector$<$ lib\+Mesh\+::\+Real\+Gradient $>$ $>$ \&dphi, const unsigned int n\+\_\+components, const unsigned int n\+\_\+u\+\_\+dofs, const std\+::vector$<$ lib\+Mesh\+::\+Real $>$ \&\+Jx\+W, carl\+::anisotropic\+\_\+elasticity\+\_\+tensor\+\_\+cubic\+\_\+sym \&anisotropy\+\_\+obj\+\_\+input, int grain\+\_\+idx, double cte)}]{\setlength{\rightskip}{0pt plus 5cm}void Update\+\_\+\+Sub\+K\+\_\+anisotropic (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Dense\+Sub\+Matrix$<$ lib\+Mesh\+::\+Number $>$ \&}]{Sub\+K, }
+\item[{unsigned int}]{qp, }
+\item[{unsigned int}]{C\+\_\+i, }
+\item[{unsigned int}]{C\+\_\+k, }
+\item[{const std\+::vector$<$ std\+::vector$<$ lib\+Mesh\+::\+Real\+Gradient $>$ $>$ \&}]{dphi, }
+\item[{const unsigned int}]{n\+\_\+components, }
+\item[{const unsigned int}]{n\+\_\+u\+\_\+dofs, }
+\item[{const std\+::vector$<$ lib\+Mesh\+::\+Real $>$ \&}]{Jx\+W, }
+\item[{carl\+::anisotropic\+\_\+elasticity\+\_\+tensor\+\_\+cubic\+\_\+sym \&}]{anisotropy\+\_\+obj\+\_\+input, }
+\item[{int}]{grain\+\_\+idx, }
+\item[{double}]{cte}
+\end{DoxyParamCaption}
+)}\label{assemble__functions__elasticity__anisotropy__3_d_8cpp_a08e704d5ed03a4f411be8647d34c1699}
+
+
+Definition at line 10 of file assemble\+\_\+functions\+\_\+elasticity\+\_\+anisotropy\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+22 \{
+23     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii=0; iii<n\_u\_dofs; iii++)
+24     \{
+25         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} jjj=0; jjj<n\_u\_dofs; jjj++)
+26         \{
+27             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} C\_j=0; C\_j<n\_components; C\_j++)
+28             \{
+29                 \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} C\_l=0; C\_l<n\_components; C\_l++)
+30                 \{
+31                     SubK(iii,jjj) += cte * JxW[qp]*(anisotropy\_obj\_input.eval\_elasticity\_tensor(C\_i,C\_j,C\_k
+      ,C\_l,grain\_idx) * dphi[iii][qp](C\_j)*dphi[jjj][qp](C\_l));
+32                 \}
+33             \}
+34         \}
+35     \}
+36 \};
+\end{DoxyCode}

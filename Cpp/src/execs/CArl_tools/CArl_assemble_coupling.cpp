@@ -1,3 +1,34 @@
+ /** \file CArl_assemble_coupling.cpp
+ \brief Implementation of the parallel coupling matrices assembly
+ 
+ Usage: `./CArl_assemble_coupling -i [input file]`
+
+This program uses the intersections previously constructed to build the couplig matrices.
+The input file is parsed by the carl::get_input_params(GetPot& field_parser, coupling_assemble_coupling_input_params& input_params) 
+function, and it contains the following parameters. 
+
+Required parameters:
+ + System and intersection meshes:
+  - `MeshA`, `-mA` or `--meshA` : path to the mesh A.
+  - `MeshB`, `-mB` or `--meshB` : path to the mesh B.
+  - `InterBase`, `-mI` or `--meshI` : common path to the intersection meshes and tables.
+
+ + Coupling parameters:
+   - `CouplingWidth` or `--ce` : width  of the coupling region (same unit as the meshes, \f$e\f$ in the \f$L_2\f$ coupling term).
+   - `CouplingRigidity` or `--ck` : rigidity used for the coupling matrix (in MPa, if mm was used for the meshes, \f$\kappa\f$ in both the \f$L_2\f$ and \f$H_1\f$ terms).
+
+ Optional parameters:
+ + Output:
+   - `OutputFolder` or `--output` : base of the output folder. *Default*: "".
+ + Restriction meshes and tables:
+  - `Mesh_A_Restriction`, `-mAR` or `--meshAR` : path to the restricted mesh A (formed by elements of the mesh A intersecting the coupling region). *Default*: `[InterBase]_A_restriction.msh`.
+  - `Mesh_B_Restriction`, `-mBR` or `--meshBR` : path to the restricted mesh B (formed by elements of the mesh A intersecting the coupling region). *Default*: `[InterBase]_B_restriction.msh`.
+   - `Mesh_A_RestrictionEquivalenceTable` or `--tableRA` : path to the equivalence table between the mesh A and its restriction. *Default*: `[InterBase]_A_restriction_restrict.dat`.
+   - `Mesh_B_RestrictionEquivalenceTable` or `--tableRB` : path to the equivalence table between the mesh B and its restriction. *Default*: `[InterBase]_B_restriction_restrict.dat`.
+ + Mediator mesh:
+   - `MediatorMesh` : choice of the mediator mesh. *Values*: `UseRestricted_A` or `UseRestricted_B`. *Default*: `UseRestricted_A`.
+ */
+
 #include "CArl_assemble_coupling.h"
 
 libMesh::ExplicitSystem& add_explicit_elasticity(	libMesh::EquationSystems& input_systems,

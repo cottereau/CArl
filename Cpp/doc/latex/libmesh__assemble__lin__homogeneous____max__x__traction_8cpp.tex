@@ -1,0 +1,143 @@
+\hypertarget{libmesh__assemble__lin__homogeneous____max__x__traction_8cpp}{}\section{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/libmesh\+\_\+assemble\+\_\+lin\+\_\+homogeneous\+\_\+\+\_\+max\+\_\+x\+\_\+traction.cpp File Reference}
+\label{libmesh__assemble__lin__homogeneous____max__x__traction_8cpp}\index{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/libmesh\+\_\+assemble\+\_\+lin\+\_\+homogeneous\+\_\+\+\_\+max\+\_\+x\+\_\+traction.\+cpp@{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/libmesh\+\_\+assemble\+\_\+lin\+\_\+homogeneous\+\_\+\+\_\+max\+\_\+x\+\_\+traction.\+cpp}}
+{\ttfamily \#include \char`\"{}libmesh\+\_\+assemble\+\_\+lin\+\_\+homogeneous.\+h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{libmesh__assemble__lin__homogeneous____max__x__traction_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{main} (int argc, char $\ast$$\ast$argv)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{libmesh__assemble__lin__homogeneous____max__x__traction_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{}\index{libmesh\+\_\+assemble\+\_\+lin\+\_\+homogeneous\+\_\+\+\_\+max\+\_\+x\+\_\+traction.\+cpp@{libmesh\+\_\+assemble\+\_\+lin\+\_\+homogeneous\+\_\+\+\_\+max\+\_\+x\+\_\+traction.\+cpp}!main@{main}}
+\index{main@{main}!libmesh\+\_\+assemble\+\_\+lin\+\_\+homogeneous\+\_\+\+\_\+max\+\_\+x\+\_\+traction.\+cpp@{libmesh\+\_\+assemble\+\_\+lin\+\_\+homogeneous\+\_\+\+\_\+max\+\_\+x\+\_\+traction.\+cpp}}
+\subsubsection[{main(int argc, char $\ast$$\ast$argv)}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv}
+\end{DoxyParamCaption}
+)}\label{libmesh__assemble__lin__homogeneous____max__x__traction_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}
+
+
+Definition at line 3 of file libmesh\+\_\+assemble\+\_\+lin\+\_\+homogeneous\+\_\+\+\_\+max\+\_\+x\+\_\+traction.\+cpp.
+
+
+\begin{DoxyCode}
+3                                 \{
+4 
+5     \textcolor{comment}{// [USER] Traction force density}
+6     std::vector<double> traction\_density(3,0);
+7     traction\_density[0] = 100.;
+8     
+9     \textcolor{comment}{// --- Initialize libMesh}
+10     libMesh::LibMeshInit init(argc, argv);
+11 
+12     \textcolor{comment}{// Do performance log?}
+13     \textcolor{keyword}{const} \textcolor{keywordtype}{bool} MASTER\_bPerfLog\_carl\_libmesh = \textcolor{keyword}{true};
+14     libMesh::PerfLog perf\_log(\textcolor{stringliteral}{"Main program"}, MASTER\_bPerfLog\_carl\_libmesh);
+15 
+16     \textcolor{comment}{// libMesh's C++ / MPI communicator wrapper}
+17     libMesh::Parallel::Communicator& WorldComm = init.comm();
+18 
+19     \textcolor{comment}{// Number of processors and processor rank.}
+20     \textcolor{keywordtype}{int} rank = WorldComm.rank();
+21     \textcolor{keywordtype}{int} nodes = WorldComm.size();
+22 
+23     \textcolor{comment}{// --- Set up inputs}
+24 
+25     \textcolor{comment}{// Command line parser}
+26     GetPot command\_line(argc, argv);
+27 
+28     \textcolor{comment}{// File parser}
+29     GetPot field\_parser;
+30 
+31     \textcolor{comment}{// If there is an input file, parse it to get the parameters. Else, parse the command line}
+32     std::string input\_filename;
+33     \textcolor{keywordflow}{if} (command\_line.search(2, \textcolor{stringliteral}{"--inputfile"}, \textcolor{stringliteral}{"-i"})) \{
+34         input\_filename = command\_line.next(input\_filename);
+35         field\_parser.parse\_input\_file(input\_filename, \textcolor{stringliteral}{"#"}, \textcolor{stringliteral}{"\(\backslash\)n"}, \textcolor{stringliteral}{" \(\backslash\)t\(\backslash\)n"});
+36     \} \textcolor{keywordflow}{else} \{
+37         field\_parser = command\_line;
+38     \}
+39 
+40     \hyperlink{structlibmesh__assemble__input__params}{libmesh\_assemble\_input\_params} input\_params;
+41     \hyperlink{namespacecarl_a902f88f3c52c6fc9c974bc99832e78a7}{get\_input\_params}(field\_parser, input\_params);
+42 
+43     \textcolor{comment}{// Check libMesh installation dimension}
+44     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} dim = 3;
+45 
+46     libmesh\_example\_requires(dim == LIBMESH\_DIM, \textcolor{stringliteral}{"3D support"});
+47 
+48     \textcolor{comment}{// --- Declare the three meshes to be intersected}
+49 
+50     \textcolor{comment}{// - Parallelized meshes: A, B, mediator and weight}
+51     perf\_log.push(\textcolor{stringliteral}{"Meshes - Parallel"},\textcolor{stringliteral}{"Read files:"});
+52     libMesh::Mesh system\_mesh(WorldComm, dim);
+53     system\_mesh.read(input\_params.\hyperlink{structlibmesh__assemble__input__params_aaacb1a941decf01232ab3c5bd9b3bacf}{mesh\_file});
+54     system\_mesh.prepare\_for\_use();
+55 
+56     libMesh::Mesh mesh\_weight(WorldComm, dim);
+57     mesh\_weight.allow\_renumbering(\textcolor{keyword}{false});
+58     mesh\_weight.read(input\_params.\hyperlink{structlibmesh__assemble__input__params_abac50ee0db80bff6bb89d017d1fdc27b}{mesh\_weight\_file});
+59     mesh\_weight.prepare\_for\_use();
+60 
+61     perf\_log.pop(\textcolor{stringliteral}{"Meshes - Parallel"},\textcolor{stringliteral}{"Read files:"});
+62 
+63     \textcolor{comment}{// --- Generate the equation systems}
+64     perf\_log.push(\textcolor{stringliteral}{"System setup:"});
+65 
+66     \textcolor{comment}{// Set the equation systems object}
+67     libMesh::EquationSystems equation\_systems(system\_mesh);
+68 
+69     \textcolor{comment}{// Add linear elasticity and physical parameters systems}
+70     libMesh::LinearImplicitSystem& elasticity\_system
+71                                         = \hyperlink{_c_arl__assemble__coupling_8cpp_a1fab87d9dc5c891ae8234cec6cf73491}{add\_elasticity}(equation\_systems);
+72 
+73     \textcolor{comment}{// Initialize the equation systems}
+74     equation\_systems.init();
+75 
+76     \textcolor{comment}{// Homogeneous properties for the macro system}
+77     \hyperlink{assemble__functions__elasticity__3_d_8cpp_aea23a05af24215485f869a40649d9323}{set\_homogeneous\_physical\_properties}(equation\_systems, input\_params.
+      \hyperlink{structlibmesh__assemble__input__params_a2aef9210c303764810d978496712e9b3}{physical\_params\_file});
+78 
+79     \textcolor{comment}{// Set the weight function object}
+80     \hyperlink{classweight__parameter__function}{weight\_parameter\_function}  system\_weight(mesh\_weight);
+81     system\_weight.set\_parameters(input\_params.\hyperlink{structlibmesh__assemble__input__params_a9b91599c97b26e5446f26440f74b896f}{weight\_domain\_idx\_file});
+82 
+83     perf\_log.pop(\textcolor{stringliteral}{"System setup:"});
+84 
+85     \textcolor{comment}{// Assemble!}
+86     \hyperlink{assemble__functions__elasticity__3_d_8cpp_a2dd8cb6689b655c3ed988b7a2e07bf28}{assemble\_elasticity\_with\_weight\_and\_traction}(
+      equation\_systems,\textcolor{stringliteral}{"Elasticity"},system\_weight,
+87                             input\_params.\hyperlink{structlibmesh__assemble__input__params_a030b78e020faf6210813844e8f0c2eca}{system\_type},
+88                             \hyperlink{ext__solver__libmesh__enums_8h_aa97ba4cfa58a6195444e6787a97757efa6d01f57e9870b866518c9526535ae170}{boundary\_id\_cube::MAX\_X},
+89                             traction\_density);
+90 \textcolor{comment}{// Print MatLab debugging output? Variable defined at "carl\_headers.h"}
+91 \textcolor{preprocessor}{#ifdef PRINT\_MATLAB\_DEBUG}
+92     elasticity\_system.matrix->print\_matlab(input\_params.\hyperlink{structlibmesh__assemble__input__params_af6d7a41287b40d913e5110b115b0b692}{output\_base} + \textcolor{stringliteral}{"\_sys\_mat.m"});
+93     elasticity\_system.rhs->print\_matlab(input\_params.\hyperlink{structlibmesh__assemble__input__params_af6d7a41287b40d913e5110b115b0b692}{output\_base} + \textcolor{stringliteral}{"\_sys\_rhs\_vec.m"});
+94 \textcolor{preprocessor}{#endif}
+95 
+96     \textcolor{comment}{// Export matrix and vector}
+97     libMesh::PetscMatrix<libMesh::Number> * temp\_mat\_ptr = 
+      libMesh::cast\_ptr<libMesh::PetscMatrix<libMesh::Number> * >(elasticity\_system.matrix);
+98     libMesh::PetscVector<libMesh::Number> * temp\_vec\_ptr = 
+      libMesh::cast\_ptr<libMesh::PetscVector<libMesh::Number> * >(elasticity\_system.rhs);
+99 
+100     \hyperlink{namespacecarl_a431936850bf5712121d8399ddbd76aa8}{carl::write\_PETSC\_matrix}(*temp\_mat\_ptr, input\_params.
+      \hyperlink{structlibmesh__assemble__input__params_af6d7a41287b40d913e5110b115b0b692}{output\_base} + \textcolor{stringliteral}{"\_sys\_mat.petscmat"});
+101     \hyperlink{namespacecarl_a1632084ec1f296b63559648cc9c2047f}{carl::write\_PETSC\_vector}(*temp\_vec\_ptr, input\_params.
+      \hyperlink{structlibmesh__assemble__input__params_af6d7a41287b40d913e5110b115b0b692}{output\_base} + \textcolor{stringliteral}{"\_sys\_rhs\_vec.petscvec"});
+102 
+103     \textcolor{comment}{// If needed, print rigid body vectors}
+104     \textcolor{keywordflow}{if}(input\_params.\hyperlink{structlibmesh__assemble__input__params_ae23881f91f012a17aca3f6d296f97ae9}{bCalculateRBVectors})
+105     \{
+106         MatNullSpace nullsp\_sys;
+107         \hyperlink{rigid__body__nullspace__functions__3_d_8h_ae89c68ca2fb752127c2c39e23668f914}{build\_rigid\_body\_vectors}(elasticity\_system,nullsp\_sys);
+108         \hyperlink{rigid__body__nullspace__functions__3_d_8h_a92d61aec182bca7a41728f3856f7113f}{write\_rigid\_body\_vectors}(nullsp\_sys,input\_params.
+      \hyperlink{structlibmesh__assemble__input__params_af6d7a41287b40d913e5110b115b0b692}{output\_base},WorldComm.rank());
+109         MatNullSpaceDestroy(&nullsp\_sys);
+110     \}
+111     
+112     \textcolor{keywordflow}{return} 0;
+113 \}\end{DoxyCode}

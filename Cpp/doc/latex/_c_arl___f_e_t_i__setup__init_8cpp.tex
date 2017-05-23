@@ -1,0 +1,123 @@
+\hypertarget{_c_arl___f_e_t_i__setup__init_8cpp}{}\section{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/\+C\+Arl\+\_\+\+F\+E\+T\+I/\+C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+setup\+\_\+init.cpp File Reference}
+\label{_c_arl___f_e_t_i__setup__init_8cpp}\index{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/\+C\+Arl\+\_\+\+F\+E\+T\+I/\+C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+setup\+\_\+init.\+cpp@{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/\+C\+Arl\+\_\+\+F\+E\+T\+I/\+C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+setup\+\_\+init.\+cpp}}
+{\ttfamily \#include \char`\"{}C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+setup\+\_\+init.\+h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{_c_arl___f_e_t_i__setup__init_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{main} (int argc, char $\ast$$\ast$argv)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{_c_arl___f_e_t_i__setup__init_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{}\index{C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+setup\+\_\+init.\+cpp@{C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+setup\+\_\+init.\+cpp}!main@{main}}
+\index{main@{main}!C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+setup\+\_\+init.\+cpp@{C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+setup\+\_\+init.\+cpp}}
+\subsubsection[{main(int argc, char $\ast$$\ast$argv)}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv}
+\end{DoxyParamCaption}
+)}\label{_c_arl___f_e_t_i__setup__init_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}
+
+
+Definition at line 3 of file C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+setup\+\_\+init.\+cpp.
+
+
+\begin{DoxyCode}
+3                                 \{
+4 
+5     \textcolor{comment}{// --- Initialize libMesh}
+6     libMesh::LibMeshInit init(argc, argv);
+7 
+8     \textcolor{comment}{// Do performance log?}
+9     libMesh::PerfLog perf\_log(\textcolor{stringliteral}{"Main program"});
+10 
+11     \textcolor{comment}{// libMesh's C++ / MPI communicator wrapper}
+12     libMesh::Parallel::Communicator& WorldComm = init.comm();
+13 
+14     \textcolor{comment}{// Number of processors and processor rank.}
+15     \textcolor{keywordtype}{int} rank = WorldComm.rank();
+16     \textcolor{keywordtype}{int} nodes = WorldComm.size();
+17 
+18     \textcolor{comment}{// --- Set up inputs}
+19 
+20     \textcolor{comment}{// Command line parser}
+21     GetPot command\_line(argc, argv);
+22 
+23     \textcolor{comment}{// File parser}
+24     GetPot field\_parser;
+25 
+26     \textcolor{comment}{// If there is an input file, parse it to get the parameters. Else, parse the command line}
+27     std::string input\_filename;
+28     \textcolor{keywordflow}{if} (command\_line.search(2, \textcolor{stringliteral}{"--inputfile"}, \textcolor{stringliteral}{"-i"})) \{
+29         input\_filename = command\_line.next(input\_filename);
+30         field\_parser.parse\_input\_file(input\_filename, \textcolor{stringliteral}{"#"}, \textcolor{stringliteral}{"\(\backslash\)n"}, \textcolor{stringliteral}{" \(\backslash\)t\(\backslash\)n"});
+31     \} \textcolor{keywordflow}{else} \{
+32         field\_parser = command\_line;
+33     \}
+34 
+35     \hyperlink{structcarl_1_1feti__setup__init__params}{carl::feti\_setup\_init\_params} input\_params;
+36     \hyperlink{namespacecarl_a902f88f3c52c6fc9c974bc99832e78a7}{get\_input\_params}(field\_parser, input\_params);
+37     \hyperlink{classcarl_1_1_solver___files___setup}{carl::Solver\_Files\_Setup} FETI\_files\_setup(WorldComm,input\_params);
+38     
+39     \textcolor{comment}{// --- Crete the files / folders needed}
+40     \textcolor{comment}{// Create the scratch folder}
+41     FETI\_files\_setup.set\_scratch\_folder();
+42 
+43     \textcolor{comment}{// [LIBMESH] Create the external solver input files}
+44     FETI\_files\_setup.generate\_libmesh\_external\_solver\_inputs();
+45 
+46     \textcolor{comment}{// [LIBMESH] Create the external solver scripts}
+47     FETI\_files\_setup.generate\_libmesh\_external\_solver\_scripts();
+48 
+49     \textcolor{comment}{// Create FETI input files}
+50     FETI\_files\_setup.generate\_FETI\_inputs();
+51 
+52     \textcolor{comment}{// Create FETI script files}
+53     FETI\_files\_setup.generate\_FETI\_scripts();
+54 
+55     \textcolor{comment}{// Create FETI lauch script files}
+56     FETI\_files\_setup.generate\_FETI\_launch\_scripts();
+57     
+58     \textcolor{comment}{// --- Calculate phi(0), if needed}
+59     \textcolor{keywordflow}{if}(input\_params.\hyperlink{structcarl_1_1feti__setup__init__params_af4191df4632d21bed2b302c08d113d14}{bUseRigidBodyModes})
+60     \{
+61         \hyperlink{classcarl_1_1_f_e_t_i___operations}{carl::FETI\_Operations} feti\_op(WorldComm,input\_params.
+      \hyperlink{structcarl_1_1feti__setup__init__params_a57e553748427905076bae85d239f9537}{scratch\_folder\_path},input\_params.\hyperlink{structcarl_1_1feti__setup__init__params_a5f710f34f0b3bdc9494c79c024fe2603}{coupling\_folder\_path});
+62 
+63         \textcolor{comment}{// --- Define if the rb modes will be used or not}
+64         feti\_op.using\_rb\_modes(input\_params.\hyperlink{structcarl_1_1feti__setup__init__params_af4191df4632d21bed2b302c08d113d14}{bUseRigidBodyModes});
+65 
+66         \textcolor{comment}{// Read the matrices}
+67         feti\_op.set\_coupling\_matrix\_R\_micro();
+68         feti\_op.set\_coupling\_matrix\_R\_BIG();
+69 
+70         \textcolor{comment}{// Set the null space}
+71         feti\_op.set\_null\_space(input\_params.\hyperlink{structcarl_1_1feti__setup__init__params_aa70293e2d51c3475ebbdda0e338e8bbb}{RB\_vectors\_base},input\_params.
+      \hyperlink{structcarl_1_1feti__setup__init__params_a29d1a28ace280fb7fc2b7194fd9cea4a}{nb\_of\_rb\_vectors});
+72 
+73         \textcolor{comment}{// Calculate the inital solution}
+74         feti\_op.calculate\_null\_space\_phi\_0(input\_params.\hyperlink{structcarl_1_1feti__setup__init__params_a9a2c30eed9e7c5c912e011fa55a776de}{force\_micro\_path});
+75 
+76         \textcolor{comment}{// Export the vectors}
+77         feti\_op.export\_phi();
+78         feti\_op.export\_ext\_solver\_rhs\_Ct\_phi();
+79     \}
+80 
+81     \textcolor{comment}{// --- Launch the "init\_script.sh" script --- ONLY ON THE FIRST PROC!}
+82     \textcolor{keywordflow}{if}(WorldComm.rank() == 0)
+83     \{
+84         std::string init\_script\_command = \textcolor{stringliteral}{". "} + input\_params.
+      \hyperlink{structcarl_1_1feti__setup__init__params_a57e553748427905076bae85d239f9537}{scratch\_folder\_path} + \textcolor{stringliteral}{"/FETI\_init\_script.sh"};
+85         \textcolor{keywordflow}{if}(input\_params.\hyperlink{structcarl_1_1feti__setup__init__params_ad1c1983a2374aa46f19ed79f8196f6d6}{scheduler} == \hyperlink{namespacecarl_a67066fdf35a0c326f5147098c0cf45d1a2bec097bc495ac4aacc355d3283f4b93}{carl::ClusterSchedulerType::LOCAL}
+      )
+86         \{
+87             std::cout << \textcolor{stringliteral}{" !!! LOCAL job 'scheduler: Run the following script manually: "} << std::endl;
+88             std::cout << init\_script\_command << std::endl << std::endl;
+89         \} \textcolor{keywordflow}{else} \{
+90             \hyperlink{namespacecarl_a54249fee021b3d53e1a7ae7208292437}{carl::exec\_command}(init\_script\_command);
+91         \}
+92     \}
+93 
+94     \textcolor{keywordflow}{return} 0;
+95 \}
+\end{DoxyCode}

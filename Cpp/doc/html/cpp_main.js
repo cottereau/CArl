@@ -1,11 +1,13 @@
 var cpp_main =
 [
-    [ "Pre-requisites and installation", "cpp_installation.html", null ],
-    [ "Usage", "cpp_usage.html", [
-      [ "Intersection classes", "cpp_usage.html#inter_classes", null ],
-      [ "Coupling matrix assembly and system definition", "cpp_usage.html#coupling_assemble", null ],
-      [ "Coupled system and external solvers solvers", "cpp_usage.html#coupling_solver", null ],
-      [ "Work to do ...", "cpp_usage.html#todo", null ]
+    [ "Pre-requisites and installation", "cpp_installation.html", [
+      [ "Pre-requisites", "cpp_installation.html#Pre-requisites", null ],
+      [ "installation", "cpp_installation.html#installation", null ]
     ] ],
-    [ "Examples", "cpp_examples.html", null ]
+    [ "Usage and implementation", "cpp_usage.html", [
+      [ "Usage", "cpp_usage.html#sec_cpp_usage", null ],
+      [ "Implementation of the FETI solver", "cpp_usage.html#sec_cpp_implementation", null ],
+      [ "Notes and references", "cpp_usage.html#cpp_usage_refs", null ]
+    ] ],
+    [ "Examples", "cpp_examples.html", "cpp_examples" ]
 ];

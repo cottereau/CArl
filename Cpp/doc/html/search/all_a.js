@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['kernel',['Kernel',['../_c_g_a_l__typedefs_8h.html#a69d52492717758b0992a45a39f7823c0',1,'CGAL_typedefs.h']]],
-  ['kernel_5fto_5fexactkernel',['Kernel_to_ExactKernel',['../_c_g_a_l__typedefs_8h.html#a7fee49db11d7ad002fa79aedabf4d2cc',1,'CGAL_typedefs.h']]],
-  ['kronecker_5fdelta',['kronecker_delta',['../common__functions_8cpp.html#a29df66564112441424244e1412e30706',1,'kronecker_delta(unsigned int i, unsigned int j):&#160;common_functions.cpp'],['../common__functions_8h.html#a29df66564112441424244e1412e30706',1,'kronecker_delta(unsigned int i, unsigned int j):&#160;common_functions.cpp']]]
+  ['join_5ftables',['join_tables',['../classcarl_1_1_stitch___meshes.html#a6bd4cd30b05f59a0f116be684232b58d',1,'carl::Stitch_Meshes']]],
+  ['jump_5flines',['jump_lines',['../namespacecarl.html#a48bf9a2c641710d703991550fc480884',1,'carl']]]
 ];

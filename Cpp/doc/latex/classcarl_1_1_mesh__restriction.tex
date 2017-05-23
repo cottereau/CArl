@@ -1,0 +1,334 @@
+\hypertarget{classcarl_1_1_mesh__restriction}{}\section{carl\+:\+:Mesh\+\_\+restriction Class Reference}
+\label{classcarl_1_1_mesh__restriction}\index{carl\+::\+Mesh\+\_\+restriction@{carl\+::\+Mesh\+\_\+restriction}}
+
+
+Class used to build a restriction of a parent mesh to the coupling region.  
+
+
+
+
+{\ttfamily \#include $<$restrict\+\_\+mesh.\+h$>$}
+
+Inheritance diagram for carl\+:\+:Mesh\+\_\+restriction\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classcarl_1_1_mesh__restriction}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classcarl_1_1_mesh__restriction_a8999a74445ddd927a357725137444286}{Mesh\+\_\+restriction} (lib\+Mesh\+::\+Mesh \&mesh, const lib\+Mesh\+::\+Parallel\+::\+Communicator \&local\+\_\+comm, bool debug\+Output=false)
+\begin{DoxyCompactList}\small\item\em Constructor with a pre-\/defined parent mesh and a local communicator. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh__restriction_adce7d5a94e5e65f5bee4145eb25ebd61}{Build\+Restriction} (const lib\+Mesh\+::\+Replicated\+Mesh \&Coupling\+\_\+mesh)
+\begin{DoxyCompactList}\small\item\em Build the restriction of the parent mesh to the coupling region defined by Coupling\+\_\+mesh. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Replicated\+Mesh \& \hyperlink{classcarl_1_1_mesh__restriction_a1313c9ef12044e000a03b35b379b56bc}{restricted\+\_\+mesh} ()
+\begin{DoxyCompactList}\small\item\em Returns the restricted mesh. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh__restriction_aacd0d990d392ea65c027974d380bbc26}{export\+\_\+restriction\+\_\+mesh} (const std\+::string \&filename\+\_\+base)
+\begin{DoxyCompactList}\small\item\em Export the restricted mesh to a file. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh__restriction_ab2253edf0b64fd412503b021da24f66d}{Build\+Restriction\+From\+Set} (const std\+::unordered\+\_\+set$<$ unsigned int $>$ $\ast$restricted\+\_\+mesh\+\_\+set)
+\begin{DoxyCompactList}\small\item\em Build the restriction of the parent mesh from a given element set. This version is useful if the intersection search was already done. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Class used to build a restriction of a parent mesh to the coupling region. 
+
+This class is derived from the \hyperlink{classcarl_1_1_patch__construction}{carl\+::\+Patch\+\_\+construction} class, and it contains the methods needed to restrict a mesh to the region defined by the coupling mesh. 
+
+Definition at line 31 of file restrict\+\_\+mesh.\+h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classcarl_1_1_mesh__restriction_a8999a74445ddd927a357725137444286}{}\index{carl\+::\+Mesh\+\_\+restriction@{carl\+::\+Mesh\+\_\+restriction}!Mesh\+\_\+restriction@{Mesh\+\_\+restriction}}
+\index{Mesh\+\_\+restriction@{Mesh\+\_\+restriction}!carl\+::\+Mesh\+\_\+restriction@{carl\+::\+Mesh\+\_\+restriction}}
+\subsubsection[{Mesh\+\_\+restriction(lib\+Mesh\+::\+Mesh \&mesh, const lib\+Mesh\+::\+Parallel\+::\+Communicator \&local\+\_\+comm, bool debug\+Output=false)}]{\setlength{\rightskip}{0pt plus 5cm}carl\+::\+Mesh\+\_\+restriction\+::\+Mesh\+\_\+restriction (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Mesh \&}]{mesh, }
+\item[{const lib\+Mesh\+::\+Parallel\+::\+Communicator \&}]{local\+\_\+comm, }
+\item[{bool}]{debug\+Output = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classcarl_1_1_mesh__restriction_a8999a74445ddd927a357725137444286}
+
+
+Constructor with a pre-\/defined parent mesh and a local communicator. 
+
+
+
+Definition at line 37 of file restrict\+\_\+mesh.\+h.
+
+
+\begin{DoxyCode}
+38     : \hyperlink{classcarl_1_1_patch__construction_a78474f4c77674b43140c4aa77a0c255a}{Patch\_construction}(mesh, local\_comm, debugOutput)
+39     \{
+40 
+41     \};
+\end{DoxyCode}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classcarl_1_1_mesh__restriction_adce7d5a94e5e65f5bee4145eb25ebd61}{}\index{carl\+::\+Mesh\+\_\+restriction@{carl\+::\+Mesh\+\_\+restriction}!Build\+Restriction@{Build\+Restriction}}
+\index{Build\+Restriction@{Build\+Restriction}!carl\+::\+Mesh\+\_\+restriction@{carl\+::\+Mesh\+\_\+restriction}}
+\subsubsection[{Build\+Restriction(const lib\+Mesh\+::\+Replicated\+Mesh \&\+Coupling\+\_\+mesh)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+restriction\+::\+Build\+Restriction (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Replicated\+Mesh \&}]{Coupling\+\_\+mesh}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh__restriction_adce7d5a94e5e65f5bee4145eb25ebd61}
+
+
+Build the restriction of the parent mesh to the coupling region defined by Coupling\+\_\+mesh. 
+
+
+
+Definition at line 36 of file restrict\+\_\+mesh.\+cpp.
+
+
+\begin{DoxyCode}
+37 \{
+38     \textcolor{keywordtype}{bool} bDoIntersect = \textcolor{keyword}{false};
+39 
+40     \textcolor{comment}{// Deque containing the indices of the elements to test}
+41     std::deque<int> Restriction\_Test\_Queue;
+42 
+43     \textcolor{comment}{// Unordered set, used to avoid double testing elements}
+44     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} treated\_from\_mesh\_preallocation = \hyperlink{classcarl_1_1_patch__construction_aec2f60b62d5d7b44bfcc4f9ca9de28d2}{m\_Mesh\_parent}.n\_elem();
+45     std::unordered\_set<int> Treated\_From\_Mesh;
+46 
+47     \textcolor{comment}{// Only do the work over a single processor, to avoid communications.}
+48     \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_patch__construction_abb348e12e9fb16cb426e68127ec02c95}{m\_rank} ==0)
+49     \{
+50         Treated\_From\_Mesh.reserve(treated\_from\_mesh\_preallocation);
+51 
+52         std::set<unsigned int> Intersecting\_elems;
+53 
+54         \textcolor{comment}{// Index and pointer to element being tested right now}
+55         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int}    Tested\_idx;
+56 
+57         \textcolor{comment}{// Candidate index}
+58         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int}    Candidate\_idx;
+59 
+60         \hyperlink{classcarl_1_1_patch__construction_af7db498027d46bff8464757e824404fb}{m\_Patch\_Elem\_indexes}.clear();
+61         \hyperlink{classcarl_1_1_patch__construction_a85fb959e6f57d935a8d6fe0d4f0f7f46}{m\_Patch\_Node\_indexes}.clear();
+62         \hyperlink{classcarl_1_1_patch__construction_a47c4343835537781c48813feed01e60e}{m\_Patch\_Elem\_Neighbours}.clear();
+63 
+64         std::set<unsigned int>::iterator it\_set\_start;
+65 
+66         libMesh::Mesh::const\_element\_iterator it\_coupling = Coupling\_mesh.elements\_begin();
+67         libMesh::Mesh::const\_element\_iterator it\_coupling\_end = Coupling\_mesh.elements\_end();
+68 
+69         \textcolor{comment}{// Debug vars}
+70         \textcolor{keywordtype}{int} nbOfTests = 1;
+71         \textcolor{keywordtype}{int} nbOfPositiveTests = 1;
+72 
+73         \textcolor{keywordflow}{for}( ; it\_coupling != it\_coupling\_end; ++it\_coupling)
+74         \{
+75             \textcolor{keyword}{const} libMesh::Elem * Query\_elem = * it\_coupling;
+76 
+77             Treated\_From\_Mesh.clear();
+78 
+79             \textcolor{comment}{// Find elements from the original mesh intersecting the coupling element}
+80             \hyperlink{classcarl_1_1_patch__construction_a59f947d3d18761b1ad1a5913eb59ca83}{m\_Intersection\_Test}.\hyperlink{classcarl_1_1_intersection___tools_a8238069bd83ef1029c6a5b60a188763b}{FindAllIntersection}(Query\_elem,
+      \hyperlink{classcarl_1_1_patch__construction_a382e1ea46006b1ea6445af758e157ceb}{m\_Parent\_Point\_Locator},Intersecting\_elems);
+81 
+82             libMesh::Elem *     First\_Restriction\_elems = NULL;
+83             libMesh::Elem *     elem\_candidate = NULL;
+84             it\_set\_start      = Intersecting\_elems.begin();
+85 
+86             \textcolor{keywordflow}{for}( ; it\_set\_start != Intersecting\_elems.end(); ++it\_set\_start)
+87             \{
+88                 Treated\_From\_Mesh.insert(*it\_set\_start);
+89                 First\_Restriction\_elems = \hyperlink{classcarl_1_1_patch__construction_aec2f60b62d5d7b44bfcc4f9ca9de28d2}{m\_Mesh\_parent}.elem(*it\_set\_start);
+90                 \hyperlink{classcarl_1_1_patch__construction_ae7a46ef950445a82cb0036b49b778fbf}{insert\_patch\_element}(First\_Restriction\_elems);
+91 
+92                 \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < First\_Restriction\_elems->n\_neighbors(); ++iii)
+93                 \{
+94                     elem\_candidate = First\_Restriction\_elems->neighbor(iii);
+95                     \textcolor{keywordflow}{if}(elem\_candidate != NULL && Treated\_From\_Mesh.find(elem\_candidate->id())==
+      Treated\_From\_Mesh.end())
+96                     \{
+97                         Restriction\_Test\_Queue.push\_back(elem\_candidate->id());
+98                         Treated\_From\_Mesh.insert(elem\_candidate->id());
+99                     \}
+100                 \}
+101             \}
+102 
+103             \textcolor{keywordflow}{while}(!Restriction\_Test\_Queue.empty())
+104             \{
+105                 \textcolor{comment}{// Extract element from the list}
+106                 Tested\_idx = Restriction\_Test\_Queue[0];
+107                 Restriction\_Test\_Queue.pop\_front();
+108                 \textcolor{keyword}{const} libMesh::Elem     * Tested\_elem = \hyperlink{classcarl_1_1_patch__construction_aec2f60b62d5d7b44bfcc4f9ca9de28d2}{m\_Mesh\_parent}.elem(Tested\_idx);
+109 
+110                 \textcolor{comment}{// Test it}
+111                 bDoIntersect = \hyperlink{classcarl_1_1_patch__construction_a59f947d3d18761b1ad1a5913eb59ca83}{m\_Intersection\_Test}.
+      \hyperlink{classcarl_1_1_intersection___tools_ae7b16748a45a0579bafecb48ef2fc4ce}{libMesh\_exact\_do\_intersect}(Query\_elem,Tested\_elem);
+112                 ++nbOfTests;
+113 
+114                 \textcolor{comment}{// If it does intersect ...}
+115                 \textcolor{keywordflow}{if}(bDoIntersect)
+116                 \{
+117                     ++nbOfPositiveTests;
+118 
+119                     \textcolor{comment}{// Add it to the output list ...}
+120                     \hyperlink{classcarl_1_1_patch__construction_ae7a46ef950445a82cb0036b49b778fbf}{insert\_patch\_element}(Tested\_elem);
+121 
+122                     \textcolor{comment}{// ... And add its neighbours (if they weren't tested yet)}
+123                     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < Tested\_elem->n\_neighbors(); ++iii)
+124                     \{
+125                         elem\_candidate = Tested\_elem->neighbor(iii);
+126                         \textcolor{keywordflow}{if}(elem\_candidate != NULL)
+127                         \{
+128                             Candidate\_idx = elem\_candidate->id();
+129                             \textcolor{keywordflow}{if}(Treated\_From\_Mesh.find(Candidate\_idx)==Treated\_From\_Mesh.end())
+130                             \{
+131                                 Restriction\_Test\_Queue.push\_back(Candidate\_idx);
+132                                 Treated\_From\_Mesh.insert(Candidate\_idx);
+133                             \}
+134                         \}
+135                     \}
+136                 \}
+137             \}
+138         \}
+139 
+140         this->\hyperlink{classcarl_1_1_patch__construction_ab4e5b3f8e8f2a7c0af44979a8b0a39c4}{build\_patch\_mesh}();
+141 
+142         \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_patch__construction_a93158e5a81432eb8f92860552bff37bc}{m\_bPrintDebug})
+143         \{
+144             std::cout << \textcolor{stringliteral}{"    DEBUG: Restriction search results"} << std::endl;
+145             std::cout << \textcolor{stringliteral}{" -> Nb. of intersections found  : "} << 
+      \hyperlink{classcarl_1_1_patch__construction_af7db498027d46bff8464757e824404fb}{m\_Patch\_Elem\_indexes}.size() << std::endl << std::endl;
+146 
+147             std::cout << \textcolor{stringliteral}{" -> Nb. of mesh elements        : "} << \hyperlink{classcarl_1_1_patch__construction_aec2f60b62d5d7b44bfcc4f9ca9de28d2}{m\_Mesh\_parent}.n\_elem() << 
+      std::endl;
+148             std::cout << \textcolor{stringliteral}{" -> Nb. of Restriction elements : "} << 
+      \hyperlink{classcarl_1_1_patch__construction_af7db498027d46bff8464757e824404fb}{m\_Patch\_Elem\_indexes}.size() << std::endl;
+149             std::cout << \textcolor{stringliteral}{" -> Patch elem %                : "} << 100.*
+      \hyperlink{classcarl_1_1_patch__construction_af7db498027d46bff8464757e824404fb}{m\_Patch\_Elem\_indexes}.size()/\hyperlink{classcarl_1_1_patch__construction_aec2f60b62d5d7b44bfcc4f9ca9de28d2}{m\_Mesh\_parent}.n\_elem() << \textcolor{stringliteral}{" %"} << std::endl <<
+       std::endl;
+150 
+151             std::cout << \textcolor{stringliteral}{" -> Nb. of mesh nodes           : "} << \hyperlink{classcarl_1_1_patch__construction_aec2f60b62d5d7b44bfcc4f9ca9de28d2}{m\_Mesh\_parent}.n\_nodes() << 
+      std::endl;
+152             std::cout << \textcolor{stringliteral}{" -> Nb. of patch nodes          : "} << 
+      \hyperlink{classcarl_1_1_patch__construction_a85fb959e6f57d935a8d6fe0d4f0f7f46}{m\_Patch\_Node\_indexes}.size() << std::endl;
+153             std::cout << \textcolor{stringliteral}{" -> Patch node %                : "} << 100.*
+      \hyperlink{classcarl_1_1_patch__construction_a85fb959e6f57d935a8d6fe0d4f0f7f46}{m\_Patch\_Node\_indexes}.size()/\hyperlink{classcarl_1_1_patch__construction_aec2f60b62d5d7b44bfcc4f9ca9de28d2}{m\_Mesh\_parent}.n\_nodes() << \textcolor{stringliteral}{" %"} << std::endl <
+      < std::endl;
+154 
+155             std::cout << \textcolor{stringliteral}{" -> Nb. of tests                : "} << nbOfTests << std::endl;
+156             std::cout << \textcolor{stringliteral}{" -> Nb. of positive tests       : "} << nbOfPositiveTests << std::endl;
+157             std::cout << \textcolor{stringliteral}{" -> Positive %                  : "} << 100.*nbOfPositiveTests/nbOfTests << \textcolor{stringliteral}{" %"} <
+      < std::endl << std::endl;
+158         \}
+159     \}
+160 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh__restriction_ab2253edf0b64fd412503b021da24f66d}{}\index{carl\+::\+Mesh\+\_\+restriction@{carl\+::\+Mesh\+\_\+restriction}!Build\+Restriction\+From\+Set@{Build\+Restriction\+From\+Set}}
+\index{Build\+Restriction\+From\+Set@{Build\+Restriction\+From\+Set}!carl\+::\+Mesh\+\_\+restriction@{carl\+::\+Mesh\+\_\+restriction}}
+\subsubsection[{Build\+Restriction\+From\+Set(const std\+::unordered\+\_\+set$<$ unsigned int $>$ $\ast$restricted\+\_\+mesh\+\_\+set)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+restriction\+::\+Build\+Restriction\+From\+Set (
+\begin{DoxyParamCaption}
+\item[{const std\+::unordered\+\_\+set$<$ unsigned int $>$ $\ast$}]{restricted\+\_\+mesh\+\_\+set}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh__restriction_ab2253edf0b64fd412503b021da24f66d}
+
+
+Build the restriction of the parent mesh from a given element set. This version is useful if the intersection search was already done. 
+
+
+
+Definition at line 12 of file restrict\+\_\+mesh.\+cpp.
+
+
+\begin{DoxyCode}
+13 \{
+14     \textcolor{comment}{// Intersection and distribution work done already by the stitch algorithm.}
+15 
+16     \textcolor{comment}{// Only do the work over a single processor, to avoid communications.}
+17     \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_patch__construction_abb348e12e9fb16cb426e68127ec02c95}{m\_rank} == 0)
+18     \{
+19         \hyperlink{classcarl_1_1_patch__construction_af7db498027d46bff8464757e824404fb}{m\_Patch\_Elem\_indexes}.clear();
+20         \hyperlink{classcarl_1_1_patch__construction_a85fb959e6f57d935a8d6fe0d4f0f7f46}{m\_Patch\_Node\_indexes}.clear();
+21         \hyperlink{classcarl_1_1_patch__construction_a47c4343835537781c48813feed01e60e}{m\_Patch\_Elem\_Neighbours}.clear();
+22 
+23         std::unordered\_set<unsigned int >::const\_iterator elem\_idx\_it = restricted\_mesh\_set->begin();
+24         std::unordered\_set<unsigned int >::const\_iterator elem\_idx\_it\_end = restricted\_mesh\_set->end();
+25 
+26         \textcolor{keywordflow}{for}( ; elem\_idx\_it != elem\_idx\_it\_end; ++ elem\_idx\_it)
+27         \{
+28             \textcolor{keyword}{const} libMesh::Elem * elem\_to\_add = \hyperlink{classcarl_1_1_patch__construction_aec2f60b62d5d7b44bfcc4f9ca9de28d2}{m\_Mesh\_parent}.elem(*elem\_idx\_it);
+29             \hyperlink{classcarl_1_1_patch__construction_ae7a46ef950445a82cb0036b49b778fbf}{insert\_patch\_element}(elem\_to\_add);
+30         \}
+31 
+32         this->\hyperlink{classcarl_1_1_patch__construction_ab4e5b3f8e8f2a7c0af44979a8b0a39c4}{build\_patch\_mesh}();
+33     \}
+34 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh__restriction_aacd0d990d392ea65c027974d380bbc26}{}\index{carl\+::\+Mesh\+\_\+restriction@{carl\+::\+Mesh\+\_\+restriction}!export\+\_\+restriction\+\_\+mesh@{export\+\_\+restriction\+\_\+mesh}}
+\index{export\+\_\+restriction\+\_\+mesh@{export\+\_\+restriction\+\_\+mesh}!carl\+::\+Mesh\+\_\+restriction@{carl\+::\+Mesh\+\_\+restriction}}
+\subsubsection[{export\+\_\+restriction\+\_\+mesh(const std\+::string \&filename\+\_\+base)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+restriction\+::export\+\_\+restriction\+\_\+mesh (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{filename\+\_\+base}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh__restriction_aacd0d990d392ea65c027974d380bbc26}
+
+
+Export the restricted mesh to a file. 
+
+
+
+Definition at line 162 of file restrict\+\_\+mesh.\+cpp.
+
+
+\begin{DoxyCode}
+163 \{
+164     \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_patch__construction_abb348e12e9fb16cb426e68127ec02c95}{m\_rank} == 0)
+165     \{
+166         std::string filename\_mesh = filename\_base + \textcolor{stringliteral}{".msh"};
+167 
+168         \textcolor{comment}{// Print mesh}
+169         libMesh::GmshIO output\_mesh(\hyperlink{classcarl_1_1_patch__construction_a4dfae5a2c4a983ac31dacec1cdb29d11}{m\_Mesh\_patch});
+170         output\_mesh.binary() = \textcolor{keyword}{true};
+171         output\_mesh.write(filename\_mesh);
+172 
+173         std::string filename\_elements = filename\_base + \textcolor{stringliteral}{"\_restrict.dat"};
+174 
+175         std::ofstream elems\_out(filename\_elements);
+176 
+177         elems\_out << \hyperlink{classcarl_1_1_patch__construction_a801e75fa9573645a57d24b996611fe4d}{m\_elem\_map\_Patch\_to\_Parent}.size() << std::endl;
+178         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < \hyperlink{classcarl_1_1_patch__construction_a801e75fa9573645a57d24b996611fe4d}{m\_elem\_map\_Patch\_to\_Parent}.size(); ++iii)
+179         \{
+180             elems\_out << iii << \textcolor{stringliteral}{" "} << \hyperlink{classcarl_1_1_patch__construction_a801e75fa9573645a57d24b996611fe4d}{m\_elem\_map\_Patch\_to\_Parent}[iii] << 
+      std::endl;
+181         \}
+182 
+183         elems\_out.close();
+184     \}
+185 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh__restriction_a1313c9ef12044e000a03b35b379b56bc}{}\index{carl\+::\+Mesh\+\_\+restriction@{carl\+::\+Mesh\+\_\+restriction}!restricted\+\_\+mesh@{restricted\+\_\+mesh}}
+\index{restricted\+\_\+mesh@{restricted\+\_\+mesh}!carl\+::\+Mesh\+\_\+restriction@{carl\+::\+Mesh\+\_\+restriction}}
+\subsubsection[{restricted\+\_\+mesh()}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Replicated\+Mesh \& carl\+::\+Mesh\+\_\+restriction\+::restricted\+\_\+mesh (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh__restriction_a1313c9ef12044e000a03b35b379b56bc}
+
+
+Returns the restricted mesh. 
+
+
+
+Definition at line 187 of file restrict\+\_\+mesh.\+cpp.
+
+
+\begin{DoxyCode}
+188 \{
+189     \textcolor{keywordflow}{return} \hyperlink{classcarl_1_1_patch__construction_a4dfae5a2c4a983ac31dacec1cdb29d11}{m\_Mesh\_patch};
+190 \}
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/\hyperlink{restrict__mesh_8h}{restrict\+\_\+mesh.\+h}\item 
+/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/common/intersections\+\_\+parallel/\hyperlink{restrict__mesh_8cpp}{restrict\+\_\+mesh.\+cpp}\end{DoxyCompactItemize}

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['matlab_20implementation',['MATLAB implementation',['../matlab_main.html',1,'']]]
+  ['examples',['Examples',['../cpp_examples.html',1,'cpp_main']]]
 ];

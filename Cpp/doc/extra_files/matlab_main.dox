@@ -1,13 +1,13 @@
 /** \file matlab_main.dox
 
-\page matlab_main MATLAB implementation
+\page matlab_main CArl MATLAB
 
 The MATLAB implementation of the CArl software can be found at the directory `MATLAB`. Currently, the software to which it is interfaced includes :
 
 1. a 1D/2D FEM acoustic code,
-1. a Timoschenko beam code, 
-1. an elastic code, and 
-1. Comsol (http://www.comsol.com).
+2. a Timoschenko beam code, 
+3. an elastic code, and 
+4. Comsol (http://www.comsol.com).
 
 # INSTALLATION
 

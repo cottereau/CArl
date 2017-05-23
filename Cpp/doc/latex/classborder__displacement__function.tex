@@ -1,0 +1,135 @@
+\hypertarget{classborder__displacement__function}{}\section{border\+\_\+displacement\+\_\+function Class Reference}
+\label{classborder__displacement__function}\index{border\+\_\+displacement\+\_\+function@{border\+\_\+displacement\+\_\+function}}
+
+
+3\+D border displacement class, derived from lib\+Mesh\+::\+Function\+Base$<$lib\+Mesh\+::\+Number$>$.  
+
+
+
+
+{\ttfamily \#include $<$common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h$>$}
+
+Inheritance diagram for border\+\_\+displacement\+\_\+function\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classborder__displacement__function}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classborder__displacement__function_a96fa6052b759f3348654178cab730362}{border\+\_\+displacement\+\_\+function} (unsigned int u\+\_\+var, unsigned int v\+\_\+var, unsigned int w\+\_\+var, lib\+Mesh\+::\+Real x\+\_\+displ=0, lib\+Mesh\+::\+Real y\+\_\+displ=0, lib\+Mesh\+::\+Real z\+\_\+displ=0)
+\item 
+virtual lib\+Mesh\+::\+Number \hyperlink{classborder__displacement__function_a36164904aab66a842edd7f43cb6b391c}{operator()} (const lib\+Mesh\+::\+Point \&, const lib\+Mesh\+::\+Real=0)
+\item 
+virtual void \hyperlink{classborder__displacement__function_a286bf7b4ca0e09e3804e2b90730454db}{operator()} (const lib\+Mesh\+::\+Point \&p, const lib\+Mesh\+::\+Real, lib\+Mesh\+::\+Dense\+Vector$<$ lib\+Mesh\+::\+Number $>$ \&output)
+\item 
+virtual lib\+Mesh\+::\+Unique\+Ptr$<$ Function\+Base$<$ lib\+Mesh\+::\+Number $>$ $>$ \hyperlink{classborder__displacement__function_ae04386c0af6b4722d226c034351d8b5e}{clone} () const 
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+3\+D border displacement class, derived from lib\+Mesh\+::\+Function\+Base$<$lib\+Mesh\+::\+Number$>$. 
+
+Definition at line 15 of file common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classborder__displacement__function_a96fa6052b759f3348654178cab730362}{}\index{border\+\_\+displacement\+\_\+function@{border\+\_\+displacement\+\_\+function}!border\+\_\+displacement\+\_\+function@{border\+\_\+displacement\+\_\+function}}
+\index{border\+\_\+displacement\+\_\+function@{border\+\_\+displacement\+\_\+function}!border\+\_\+displacement\+\_\+function@{border\+\_\+displacement\+\_\+function}}
+\subsubsection[{border\+\_\+displacement\+\_\+function(unsigned int u\+\_\+var, unsigned int v\+\_\+var, unsigned int w\+\_\+var, lib\+Mesh\+::\+Real x\+\_\+displ=0, lib\+Mesh\+::\+Real y\+\_\+displ=0, lib\+Mesh\+::\+Real z\+\_\+displ=0)}]{\setlength{\rightskip}{0pt plus 5cm}border\+\_\+displacement\+\_\+function\+::border\+\_\+displacement\+\_\+function (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{u\+\_\+var, }
+\item[{unsigned int}]{v\+\_\+var, }
+\item[{unsigned int}]{w\+\_\+var, }
+\item[{lib\+Mesh\+::\+Real}]{x\+\_\+displ = {\ttfamily 0}, }
+\item[{lib\+Mesh\+::\+Real}]{y\+\_\+displ = {\ttfamily 0}, }
+\item[{lib\+Mesh\+::\+Real}]{z\+\_\+displ = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classborder__displacement__function_a96fa6052b759f3348654178cab730362}
+
+
+Definition at line 22 of file common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h.
+
+
+\begin{DoxyCode}
+28                                 : \_u\_var(u\_var),
+29                                   \_v\_var(v\_var),
+30                                   \_w\_var(w\_var),
+31                                   \_x\_displ(x\_displ),
+32                                   \_y\_displ(y\_displ),
+33                                   \_z\_displ(z\_displ)
+34         \{
+35             this->\_initialized = \textcolor{keyword}{true};
+36         \}
+\end{DoxyCode}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classborder__displacement__function_ae04386c0af6b4722d226c034351d8b5e}{}\index{border\+\_\+displacement\+\_\+function@{border\+\_\+displacement\+\_\+function}!clone@{clone}}
+\index{clone@{clone}!border\+\_\+displacement\+\_\+function@{border\+\_\+displacement\+\_\+function}}
+\subsubsection[{clone() const }]{\setlength{\rightskip}{0pt plus 5cm}virtual lib\+Mesh\+::\+Unique\+Ptr$<$Function\+Base$<$lib\+Mesh\+::\+Number$>$ $>$ border\+\_\+displacement\+\_\+function\+::clone (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}\label{classborder__displacement__function_ae04386c0af6b4722d226c034351d8b5e}
+
+
+Definition at line 55 of file common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h.
+
+
+\begin{DoxyCode}
+56         \{
+57             \textcolor{keywordflow}{return} libMesh::UniquePtr<FunctionBase<libMesh::Number> >
+58                 (\textcolor{keyword}{new} \hyperlink{classborder__displacement__function_a96fa6052b759f3348654178cab730362}{border\_displacement\_function}(  \_u\_var, \_v\_var, \_w\_var,
+59                                             \_x\_displ, \_y\_displ, \_z\_displ));
+60         \}
+\end{DoxyCode}
+\hypertarget{classborder__displacement__function_a36164904aab66a842edd7f43cb6b391c}{}\index{border\+\_\+displacement\+\_\+function@{border\+\_\+displacement\+\_\+function}!operator()@{operator()}}
+\index{operator()@{operator()}!border\+\_\+displacement\+\_\+function@{border\+\_\+displacement\+\_\+function}}
+\subsubsection[{operator()(const lib\+Mesh\+::\+Point \&, const lib\+Mesh\+::\+Real=0)}]{\setlength{\rightskip}{0pt plus 5cm}virtual lib\+Mesh\+::\+Number border\+\_\+displacement\+\_\+function\+::operator() (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Point \&}]{, }
+\item[{const lib\+Mesh\+::\+Real}]{ = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}\label{classborder__displacement__function_a36164904aab66a842edd7f43cb6b391c}
+
+
+Definition at line 38 of file common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h.
+
+
+\begin{DoxyCode}
+39         \{
+40             libmesh\_not\_implemented();
+41         \}
+\end{DoxyCode}
+\hypertarget{classborder__displacement__function_a286bf7b4ca0e09e3804e2b90730454db}{}\index{border\+\_\+displacement\+\_\+function@{border\+\_\+displacement\+\_\+function}!operator()@{operator()}}
+\index{operator()@{operator()}!border\+\_\+displacement\+\_\+function@{border\+\_\+displacement\+\_\+function}}
+\subsubsection[{operator()(const lib\+Mesh\+::\+Point \&p, const lib\+Mesh\+::\+Real, lib\+Mesh\+::\+Dense\+Vector$<$ lib\+Mesh\+::\+Number $>$ \&output)}]{\setlength{\rightskip}{0pt plus 5cm}virtual void border\+\_\+displacement\+\_\+function\+::operator() (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Point \&}]{p, }
+\item[{const lib\+Mesh\+::\+Real}]{, }
+\item[{lib\+Mesh\+::\+Dense\+Vector$<$ lib\+Mesh\+::\+Number $>$ \&}]{output}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}\label{classborder__displacement__function_a286bf7b4ca0e09e3804e2b90730454db}
+
+
+Definition at line 43 of file common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h.
+
+
+\begin{DoxyCode}
+46         \{
+47             output.resize(3);
+48             output.zero();
+49 
+50             output(\_u\_var) = \_x\_displ;
+51             output(\_v\_var) = \_y\_displ;
+52             output(\_w\_var) = \_z\_displ;
+53         \}
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/include/\hyperlink{common__assemble__functions__elasticity__3_d_8h}{common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}\end{DoxyCompactItemize}

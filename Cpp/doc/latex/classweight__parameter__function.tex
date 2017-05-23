@@ -1,0 +1,432 @@
+\hypertarget{classweight__parameter__function}{}\section{weight\+\_\+parameter\+\_\+function Class Reference}
+\label{classweight__parameter__function}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+
+
+{\ttfamily \#include $<$weight\+\_\+parameter\+\_\+function.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classweight__parameter__function_ae7dc955ca3080fc45818db02d57798ad}{weight\+\_\+parameter\+\_\+function} (lib\+Mesh\+::\+Mesh \&alpha\+\_\+mesh, double alpha\+\_\+eps, double alpha\+\_\+coupling\+\_\+\+B\+I\+G, int subdomain\+\_\+idx\+\_\+\+B\+I\+G, int subdomain\+\_\+idx\+\_\+micro, int subdomain\+\_\+idx\+\_\+both, int subdomain\+\_\+idx\+\_\+coupling)
+\item 
+\hyperlink{classweight__parameter__function_abf0209e5436906528b2ca90bcf9b025d}{weight\+\_\+parameter\+\_\+function} (lib\+Mesh\+::\+Mesh \&alpha\+\_\+mesh)
+\item 
+\hyperlink{classweight__parameter__function_a810022ef6bc2f4b5ca309f39c0eccce6}{$\sim$weight\+\_\+parameter\+\_\+function} ()
+\item 
+void \hyperlink{classweight__parameter__function_a63d24620e05e1a33a507986bac1a4c57}{set\+\_\+parameters} (double alpha\+\_\+eps, double alpha\+\_\+coupling\+\_\+\+B\+I\+G, int subdomain\+\_\+idx\+\_\+\+B\+I\+G, int subdomain\+\_\+idx\+\_\+micro, int subdomain\+\_\+idx\+\_\+both, int subdomain\+\_\+idx\+\_\+coupling)
+\item 
+void \hyperlink{classweight__parameter__function_ad421ad567700877e3dc27edb12f5c40e}{set\+\_\+parameters} (std\+::string \&filename)
+\item 
+double \hyperlink{classweight__parameter__function_a247727d50e3208790204e57a83c8bdc4}{get\+\_\+alpha} (const lib\+Mesh\+::\+Point \&qpoint, \hyperlink{ext__solver__libmesh__enums_8h_acc44f45992a493fb31c90d260d4ab83f}{Weight\+Function\+System\+Type} system\+\_\+type)
+\item 
+double \hyperlink{classweight__parameter__function_a44bddaa2910fa6dd2728ca476d2dd0bf}{get\+\_\+alpha\+\_\+\+B\+I\+G} (const lib\+Mesh\+::\+Point \&qpoint)
+\item 
+double \hyperlink{classweight__parameter__function_a3396f3bb6ec02247387f7eb9e6f440bc}{get\+\_\+alpha\+\_\+micro} (const lib\+Mesh\+::\+Point \&qpoint)
+\item 
+void \hyperlink{classweight__parameter__function_a99f8d52af0a1fa730b117352e6a5ee2b}{clear} ()
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+lib\+Mesh\+::\+Mesh \& \hyperlink{classweight__parameter__function_a391a5a229d29fd746e352af0ec804495}{m\+\_\+alpha\+\_\+mesh}
+\item 
+std\+::unique\+\_\+ptr$<$ lib\+Mesh\+::\+Point\+Locator\+Base $>$ \hyperlink{classweight__parameter__function_ae37938d69363743baba5797c599e0640}{m\+\_\+locator\+\_\+unique\+\_\+ptr}
+\item 
+double \hyperlink{classweight__parameter__function_a6ad313072643dbac787120791eeeac26}{m\+\_\+alpha\+\_\+eps}
+\item 
+double \hyperlink{classweight__parameter__function_a47850e20883c96b524fc322ea5cbc82e}{m\+\_\+alpha\+\_\+coupling\+\_\+\+B\+I\+G}
+\item 
+double \hyperlink{classweight__parameter__function_a2136698edf313c3d9250027b07cfeb52}{m\+\_\+alpha\+\_\+coupling\+\_\+micro}
+\item 
+int \hyperlink{classweight__parameter__function_a1d22b2e8b9faff31c8fa0ef2161144e5}{m\+\_\+subdomain\+\_\+idx\+\_\+\+B\+I\+G}
+\item 
+int \hyperlink{classweight__parameter__function_a21eb1aebdae4706322cb17982c931eef}{m\+\_\+subdomain\+\_\+idx\+\_\+micro}
+\item 
+int \hyperlink{classweight__parameter__function_a0e5865143597a2ce9a19acaaa37a5bca}{m\+\_\+subdomain\+\_\+idx\+\_\+both}
+\item 
+int \hyperlink{classweight__parameter__function_a516c68be83fc9cdc80c8bf4aecf395a4}{m\+\_\+subdomain\+\_\+idx\+\_\+coupling}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 13 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classweight__parameter__function_ae7dc955ca3080fc45818db02d57798ad}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{weight\+\_\+parameter\+\_\+function(lib\+Mesh\+::\+Mesh \&alpha\+\_\+mesh, double alpha\+\_\+eps, double alpha\+\_\+coupling\+\_\+\+B\+I\+G, int subdomain\+\_\+idx\+\_\+\+B\+I\+G, int subdomain\+\_\+idx\+\_\+micro, int subdomain\+\_\+idx\+\_\+both, int subdomain\+\_\+idx\+\_\+coupling)}]{\setlength{\rightskip}{0pt plus 5cm}weight\+\_\+parameter\+\_\+function\+::weight\+\_\+parameter\+\_\+function (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Mesh \&}]{alpha\+\_\+mesh, }
+\item[{double}]{alpha\+\_\+eps, }
+\item[{double}]{alpha\+\_\+coupling\+\_\+\+B\+I\+G, }
+\item[{int}]{subdomain\+\_\+idx\+\_\+\+B\+I\+G, }
+\item[{int}]{subdomain\+\_\+idx\+\_\+micro, }
+\item[{int}]{subdomain\+\_\+idx\+\_\+both, }
+\item[{int}]{subdomain\+\_\+idx\+\_\+coupling}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classweight__parameter__function_ae7dc955ca3080fc45818db02d57798ad}
+
+
+Definition at line 33 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+
+\begin{DoxyCode}
+35                                                                                                            
+                       :
+36         \hyperlink{classweight__parameter__function_a391a5a229d29fd746e352af0ec804495}{m\_alpha\_mesh}\{ alpha\_mesh \},
+37         \hyperlink{classweight__parameter__function_ae37938d69363743baba5797c599e0640}{m\_locator\_unique\_ptr} \{ alpha\_mesh.sub\_point\_locator() \},
+38         \hyperlink{classweight__parameter__function_a6ad313072643dbac787120791eeeac26}{m\_alpha\_eps} \{ alpha\_eps \},
+39         \hyperlink{classweight__parameter__function_a47850e20883c96b524fc322ea5cbc82e}{m\_alpha\_coupling\_BIG} \{ alpha\_coupling\_BIG \},
+40         \hyperlink{classweight__parameter__function_a2136698edf313c3d9250027b07cfeb52}{m\_alpha\_coupling\_micro} \{ 1. - alpha\_coupling\_BIG \},
+41         \hyperlink{classweight__parameter__function_a1d22b2e8b9faff31c8fa0ef2161144e5}{m\_subdomain\_idx\_BIG} \{ subdomain\_idx\_BIG \},
+42         \hyperlink{classweight__parameter__function_a21eb1aebdae4706322cb17982c931eef}{m\_subdomain\_idx\_micro} \{ subdomain\_idx\_micro \},
+43         \hyperlink{classweight__parameter__function_a0e5865143597a2ce9a19acaaa37a5bca}{m\_subdomain\_idx\_both} \{ subdomain\_idx\_both \},
+44         \hyperlink{classweight__parameter__function_a516c68be83fc9cdc80c8bf4aecf395a4}{m\_subdomain\_idx\_coupling} \{ subdomain\_idx\_coupling \}
+45     \{
+46     \};
+\end{DoxyCode}
+\hypertarget{classweight__parameter__function_abf0209e5436906528b2ca90bcf9b025d}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{weight\+\_\+parameter\+\_\+function(lib\+Mesh\+::\+Mesh \&alpha\+\_\+mesh)}]{\setlength{\rightskip}{0pt plus 5cm}weight\+\_\+parameter\+\_\+function\+::weight\+\_\+parameter\+\_\+function (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Mesh \&}]{alpha\+\_\+mesh}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classweight__parameter__function_abf0209e5436906528b2ca90bcf9b025d}
+
+
+Definition at line 48 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+
+\begin{DoxyCode}
+48                                                           :
+49         \hyperlink{classweight__parameter__function_a391a5a229d29fd746e352af0ec804495}{m\_alpha\_mesh}\{ alpha\_mesh \},
+50         \hyperlink{classweight__parameter__function_ae37938d69363743baba5797c599e0640}{m\_locator\_unique\_ptr} \{ alpha\_mesh.sub\_point\_locator() \},
+51         \hyperlink{classweight__parameter__function_a6ad313072643dbac787120791eeeac26}{m\_alpha\_eps} \{ 10E-2 \},
+52         \hyperlink{classweight__parameter__function_a47850e20883c96b524fc322ea5cbc82e}{m\_alpha\_coupling\_BIG} \{ 0.5 \},
+53         \hyperlink{classweight__parameter__function_a2136698edf313c3d9250027b07cfeb52}{m\_alpha\_coupling\_micro} \{ 0.5 \},
+54         \hyperlink{classweight__parameter__function_a1d22b2e8b9faff31c8fa0ef2161144e5}{m\_subdomain\_idx\_BIG} \{ -1 \},
+55         \hyperlink{classweight__parameter__function_a21eb1aebdae4706322cb17982c931eef}{m\_subdomain\_idx\_micro} \{ -1 \},
+56         \hyperlink{classweight__parameter__function_a0e5865143597a2ce9a19acaaa37a5bca}{m\_subdomain\_idx\_both} \{ -1 \},
+57         \hyperlink{classweight__parameter__function_a516c68be83fc9cdc80c8bf4aecf395a4}{m\_subdomain\_idx\_coupling} \{ -1 \}
+58     \{
+59     \};
+\end{DoxyCode}
+\hypertarget{classweight__parameter__function_a810022ef6bc2f4b5ca309f39c0eccce6}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!````~weight\+\_\+parameter\+\_\+function@{$\sim$weight\+\_\+parameter\+\_\+function}}
+\index{````~weight\+\_\+parameter\+\_\+function@{$\sim$weight\+\_\+parameter\+\_\+function}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{$\sim$weight\+\_\+parameter\+\_\+function()}]{\setlength{\rightskip}{0pt plus 5cm}weight\+\_\+parameter\+\_\+function\+::$\sim$weight\+\_\+parameter\+\_\+function (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classweight__parameter__function_a810022ef6bc2f4b5ca309f39c0eccce6}
+
+
+Definition at line 62 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+
+\begin{DoxyCode}
+63     \{
+64         \hyperlink{classweight__parameter__function_a99f8d52af0a1fa730b117352e6a5ee2b}{clear}();
+65     \}
+\end{DoxyCode}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classweight__parameter__function_a99f8d52af0a1fa730b117352e6a5ee2b}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!clear@{clear}}
+\index{clear@{clear}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{clear()}]{\setlength{\rightskip}{0pt plus 5cm}void weight\+\_\+parameter\+\_\+function\+::clear (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classweight__parameter__function_a99f8d52af0a1fa730b117352e6a5ee2b}
+
+
+Definition at line 207 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+
+\begin{DoxyCode}
+208     \{
+209         \hyperlink{classweight__parameter__function_ae37938d69363743baba5797c599e0640}{m\_locator\_unique\_ptr}.reset(NULL);
+210     \};
+\end{DoxyCode}
+\hypertarget{classweight__parameter__function_a247727d50e3208790204e57a83c8bdc4}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!get\+\_\+alpha@{get\+\_\+alpha}}
+\index{get\+\_\+alpha@{get\+\_\+alpha}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{get\+\_\+alpha(const lib\+Mesh\+::\+Point \&qpoint, Weight\+Function\+System\+Type system\+\_\+type)}]{\setlength{\rightskip}{0pt plus 5cm}double weight\+\_\+parameter\+\_\+function\+::get\+\_\+alpha (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Point \&}]{qpoint, }
+\item[{{\bf Weight\+Function\+System\+Type}}]{system\+\_\+type}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classweight__parameter__function_a247727d50e3208790204e57a83c8bdc4}
+
+
+Definition at line 137 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+
+\begin{DoxyCode}
+138     \{
+139         \textcolor{keywordflow}{switch} (system\_type)
+140         \{
+141             \textcolor{keywordflow}{case} \hyperlink{ext__solver__libmesh__enums_8h_acc44f45992a493fb31c90d260d4ab83fa44fead913cf8397fe4cf15b7c8962a8f}{WeightFunctionSystemType::MICRO} :   
+142                     \textcolor{keywordflow}{return} this->\hyperlink{classweight__parameter__function_a3396f3bb6ec02247387f7eb9e6f440bc}{get\_alpha\_micro}(qpoint);
+143                     \textcolor{keywordflow}{break};
+144             \textcolor{keywordflow}{case} \hyperlink{ext__solver__libmesh__enums_8h_acc44f45992a493fb31c90d260d4ab83fa3d1738a931468da77c233f1126436b81}{WeightFunctionSystemType::MACRO} :   
+145                     \textcolor{keywordflow}{return} this->\hyperlink{classweight__parameter__function_a44bddaa2910fa6dd2728ca476d2dd0bf}{get\_alpha\_BIG}(qpoint);
+146                     \textcolor{keywordflow}{break};
+147             \textcolor{keywordflow}{case} \hyperlink{ext__solver__libmesh__enums_8h_acc44f45992a493fb31c90d260d4ab83fa5e5d71a60495f64ef008c623f40c784e}{WeightFunctionSystemType::NO\_WEIGHT} :   
+148                     \textcolor{keywordflow}{return} 1.;
+149                     \textcolor{keywordflow}{break};
+150         \}
+151         \hyperlink{common__header_8h_a05d65d26b911668ac90085745dca71f6}{homemade\_error\_msg}(\textcolor{stringliteral}{"Why are you here!?"});
+152     \}
+\end{DoxyCode}
+\hypertarget{classweight__parameter__function_a44bddaa2910fa6dd2728ca476d2dd0bf}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!get\+\_\+alpha\+\_\+\+B\+I\+G@{get\+\_\+alpha\+\_\+\+B\+I\+G}}
+\index{get\+\_\+alpha\+\_\+\+B\+I\+G@{get\+\_\+alpha\+\_\+\+B\+I\+G}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{get\+\_\+alpha\+\_\+\+B\+I\+G(const lib\+Mesh\+::\+Point \&qpoint)}]{\setlength{\rightskip}{0pt plus 5cm}double weight\+\_\+parameter\+\_\+function\+::get\+\_\+alpha\+\_\+\+B\+I\+G (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Point \&}]{qpoint}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classweight__parameter__function_a44bddaa2910fa6dd2728ca476d2dd0bf}
+
+
+Definition at line 154 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+
+\begin{DoxyCode}
+155     \{
+156         libMesh::PointLocatorBase& locator = *\hyperlink{classweight__parameter__function_ae37938d69363743baba5797c599e0640}{m\_locator\_unique\_ptr}.get();
+157         \textcolor{keyword}{const} libMesh::Elem* elem = locator(qpoint);
+158         \textcolor{keywordtype}{double} output = 0;
+159 
+160         \textcolor{keywordflow}{if}(elem->subdomain\_id() == \hyperlink{classweight__parameter__function_a1d22b2e8b9faff31c8fa0ef2161144e5}{m\_subdomain\_idx\_BIG})
+161         \{
+162             output = 1;
+163         \}
+164         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(elem->subdomain\_id() == \hyperlink{classweight__parameter__function_a21eb1aebdae4706322cb17982c931eef}{m\_subdomain\_idx\_micro})
+165         \{
+166             output = 0;
+167         \}
+168         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(elem->subdomain\_id() == \hyperlink{classweight__parameter__function_a0e5865143597a2ce9a19acaaa37a5bca}{m\_subdomain\_idx\_both})
+169         \{
+170             output = \hyperlink{classweight__parameter__function_a6ad313072643dbac787120791eeeac26}{m\_alpha\_eps};
+171         \}
+172         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(elem->subdomain\_id() == \hyperlink{classweight__parameter__function_a516c68be83fc9cdc80c8bf4aecf395a4}{m\_subdomain\_idx\_coupling})
+173         \{
+174             output = \hyperlink{classweight__parameter__function_a47850e20883c96b524fc322ea5cbc82e}{m\_alpha\_coupling\_BIG};
+175         \}
+176 
+177         \textcolor{keywordflow}{return} output;
+178     \}
+\end{DoxyCode}
+\hypertarget{classweight__parameter__function_a3396f3bb6ec02247387f7eb9e6f440bc}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!get\+\_\+alpha\+\_\+micro@{get\+\_\+alpha\+\_\+micro}}
+\index{get\+\_\+alpha\+\_\+micro@{get\+\_\+alpha\+\_\+micro}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{get\+\_\+alpha\+\_\+micro(const lib\+Mesh\+::\+Point \&qpoint)}]{\setlength{\rightskip}{0pt plus 5cm}double weight\+\_\+parameter\+\_\+function\+::get\+\_\+alpha\+\_\+micro (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Point \&}]{qpoint}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classweight__parameter__function_a3396f3bb6ec02247387f7eb9e6f440bc}
+
+
+Definition at line 180 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+
+\begin{DoxyCode}
+181     \{
+182         libMesh::PointLocatorBase& locator = *\hyperlink{classweight__parameter__function_ae37938d69363743baba5797c599e0640}{m\_locator\_unique\_ptr}.get();
+183         \textcolor{keyword}{const} libMesh::Elem* elem = locator(qpoint);
+184         \textcolor{keywordtype}{double} output = 0;
+185 
+186         \textcolor{keywordflow}{if}(elem->subdomain\_id() == \hyperlink{classweight__parameter__function_a1d22b2e8b9faff31c8fa0ef2161144e5}{m\_subdomain\_idx\_BIG})
+187         \{
+188             output = 0;
+189         \}
+190         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(elem->subdomain\_id() == \hyperlink{classweight__parameter__function_a21eb1aebdae4706322cb17982c931eef}{m\_subdomain\_idx\_micro})
+191         \{
+192             output = 1;
+193         \}
+194         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(elem->subdomain\_id() == \hyperlink{classweight__parameter__function_a0e5865143597a2ce9a19acaaa37a5bca}{m\_subdomain\_idx\_both})
+195         \{
+196             output = 1 - \hyperlink{classweight__parameter__function_a6ad313072643dbac787120791eeeac26}{m\_alpha\_eps};
+197         \}
+198         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(elem->subdomain\_id() == \hyperlink{classweight__parameter__function_a516c68be83fc9cdc80c8bf4aecf395a4}{m\_subdomain\_idx\_coupling})
+199         \{
+200             output = \hyperlink{classweight__parameter__function_a2136698edf313c3d9250027b07cfeb52}{m\_alpha\_coupling\_micro};
+201         \}
+202 
+203         \textcolor{keywordflow}{return} output;
+204     \}
+\end{DoxyCode}
+\hypertarget{classweight__parameter__function_a63d24620e05e1a33a507986bac1a4c57}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!set\+\_\+parameters@{set\+\_\+parameters}}
+\index{set\+\_\+parameters@{set\+\_\+parameters}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{set\+\_\+parameters(double alpha\+\_\+eps, double alpha\+\_\+coupling\+\_\+\+B\+I\+G, int subdomain\+\_\+idx\+\_\+\+B\+I\+G, int subdomain\+\_\+idx\+\_\+micro, int subdomain\+\_\+idx\+\_\+both, int subdomain\+\_\+idx\+\_\+coupling)}]{\setlength{\rightskip}{0pt plus 5cm}void weight\+\_\+parameter\+\_\+function\+::set\+\_\+parameters (
+\begin{DoxyParamCaption}
+\item[{double}]{alpha\+\_\+eps, }
+\item[{double}]{alpha\+\_\+coupling\+\_\+\+B\+I\+G, }
+\item[{int}]{subdomain\+\_\+idx\+\_\+\+B\+I\+G, }
+\item[{int}]{subdomain\+\_\+idx\+\_\+micro, }
+\item[{int}]{subdomain\+\_\+idx\+\_\+both, }
+\item[{int}]{subdomain\+\_\+idx\+\_\+coupling}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classweight__parameter__function_a63d24620e05e1a33a507986bac1a4c57}
+
+
+Definition at line 67 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+
+\begin{DoxyCode}
+69     \{
+70         \hyperlink{classweight__parameter__function_a6ad313072643dbac787120791eeeac26}{m\_alpha\_eps} = alpha\_eps;
+71 
+72         \hyperlink{classweight__parameter__function_a47850e20883c96b524fc322ea5cbc82e}{m\_alpha\_coupling\_BIG} = alpha\_coupling\_BIG;
+73         \hyperlink{classweight__parameter__function_a2136698edf313c3d9250027b07cfeb52}{m\_alpha\_coupling\_micro} = 1. - alpha\_coupling\_BIG;
+74 
+75         \hyperlink{classweight__parameter__function_a1d22b2e8b9faff31c8fa0ef2161144e5}{m\_subdomain\_idx\_BIG}  = subdomain\_idx\_BIG;
+76         \hyperlink{classweight__parameter__function_a21eb1aebdae4706322cb17982c931eef}{m\_subdomain\_idx\_micro} = subdomain\_idx\_micro;
+77         \hyperlink{classweight__parameter__function_a0e5865143597a2ce9a19acaaa37a5bca}{m\_subdomain\_idx\_both} = subdomain\_idx\_both;
+78         \hyperlink{classweight__parameter__function_a516c68be83fc9cdc80c8bf4aecf395a4}{m\_subdomain\_idx\_coupling} = subdomain\_idx\_coupling;
+79     \};
+\end{DoxyCode}
+\hypertarget{classweight__parameter__function_ad421ad567700877e3dc27edb12f5c40e}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!set\+\_\+parameters@{set\+\_\+parameters}}
+\index{set\+\_\+parameters@{set\+\_\+parameters}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{set\+\_\+parameters(std\+::string \&filename)}]{\setlength{\rightskip}{0pt plus 5cm}void weight\+\_\+parameter\+\_\+function\+::set\+\_\+parameters (
+\begin{DoxyParamCaption}
+\item[{std\+::string \&}]{filename}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classweight__parameter__function_ad421ad567700877e3dc27edb12f5c40e}
+
+
+Definition at line 81 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+
+\begin{DoxyCode}
+82     \{
+83         GetPot field\_parser;
+84         field\_parser.parse\_input\_file(filename, \textcolor{stringliteral}{"#"}, \textcolor{stringliteral}{"\(\backslash\)n"}, \textcolor{stringliteral}{" \(\backslash\)t\(\backslash\)n"});
+85 
+86         \textcolor{keywordflow}{if} (field\_parser.search(1, \textcolor{stringliteral}{"MacroDomainOnlyIdx"})) \{
+87             \hyperlink{classweight__parameter__function_a1d22b2e8b9faff31c8fa0ef2161144e5}{m\_subdomain\_idx\_BIG} = field\_parser.next(
+88                     \hyperlink{classweight__parameter__function_a1d22b2e8b9faff31c8fa0ef2161144e5}{m\_subdomain\_idx\_BIG});
+89         \} \textcolor{keywordflow}{else} \{
+90             \hyperlink{common__header_8h_a05d65d26b911668ac90085745dca71f6}{homemade\_error\_msg}(\textcolor{stringliteral}{"Missing the macro domain only index!"});
+91         \}
+92 
+93         \textcolor{keywordflow}{if} (field\_parser.search(1, \textcolor{stringliteral}{"MicroDomainOnlyIdx"})) \{
+94             \hyperlink{classweight__parameter__function_a21eb1aebdae4706322cb17982c931eef}{m\_subdomain\_idx\_micro} = field\_parser.next(
+95                     \hyperlink{classweight__parameter__function_a21eb1aebdae4706322cb17982c931eef}{m\_subdomain\_idx\_micro});
+96         \} \textcolor{keywordflow}{else} \{
+97             \hyperlink{common__header_8h_a05d65d26b911668ac90085745dca71f6}{homemade\_error\_msg}(\textcolor{stringliteral}{"Missing the micro domain only index!"});
+98         \}
+99 
+100         \textcolor{keywordflow}{if} (field\_parser.search(1, \textcolor{stringliteral}{"CouplingDomainIdx"})) \{
+101             \hyperlink{classweight__parameter__function_a516c68be83fc9cdc80c8bf4aecf395a4}{m\_subdomain\_idx\_coupling} = field\_parser.next(
+102                     \hyperlink{classweight__parameter__function_a516c68be83fc9cdc80c8bf4aecf395a4}{m\_subdomain\_idx\_coupling});
+103         \} \textcolor{keywordflow}{else} \{
+104             \hyperlink{common__header_8h_a05d65d26b911668ac90085745dca71f6}{homemade\_error\_msg}(\textcolor{stringliteral}{"Missing the coupling domain index!"});
+105         \}
+106 
+107         \textcolor{keywordflow}{if} (field\_parser.search(1, \textcolor{stringliteral}{"BothDomainsIdx"})) \{
+108             \hyperlink{classweight__parameter__function_a0e5865143597a2ce9a19acaaa37a5bca}{m\_subdomain\_idx\_both} = field\_parser.next(
+109                     \hyperlink{classweight__parameter__function_a0e5865143597a2ce9a19acaaa37a5bca}{m\_subdomain\_idx\_both});
+110         \} \textcolor{keywordflow}{else} \{
+111             \hyperlink{classweight__parameter__function_a0e5865143597a2ce9a19acaaa37a5bca}{m\_subdomain\_idx\_both} = -1;
+112             std::cout << \textcolor{stringliteral}{" >> Warning: Both system's domain index not defined!"} << std::endl;
+113         \}
+114 
+115         \textcolor{keywordflow}{if} (field\_parser.search(1, \textcolor{stringliteral}{"AlphaCouplingMacro"})) \{
+116             \hyperlink{classweight__parameter__function_a47850e20883c96b524fc322ea5cbc82e}{m\_alpha\_coupling\_BIG} = field\_parser.next(
+117                     \hyperlink{classweight__parameter__function_a47850e20883c96b524fc322ea5cbc82e}{m\_alpha\_coupling\_BIG});
+118             \hyperlink{classweight__parameter__function_a2136698edf313c3d9250027b07cfeb52}{m\_alpha\_coupling\_micro} = 1. - 
+      \hyperlink{classweight__parameter__function_a47850e20883c96b524fc322ea5cbc82e}{m\_alpha\_coupling\_BIG};
+119         \} \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (field\_parser.search(1, \textcolor{stringliteral}{"AlphaCouplingMicro"})) \{
+120             \hyperlink{classweight__parameter__function_a2136698edf313c3d9250027b07cfeb52}{m\_alpha\_coupling\_micro} = field\_parser.next(
+121                     \hyperlink{classweight__parameter__function_a2136698edf313c3d9250027b07cfeb52}{m\_alpha\_coupling\_micro});
+122             \hyperlink{classweight__parameter__function_a47850e20883c96b524fc322ea5cbc82e}{m\_alpha\_coupling\_BIG} = 1. - 
+      \hyperlink{classweight__parameter__function_a2136698edf313c3d9250027b07cfeb52}{m\_alpha\_coupling\_micro};
+123         \} \textcolor{keywordflow}{else} \{
+124             \hyperlink{classweight__parameter__function_a47850e20883c96b524fc322ea5cbc82e}{m\_alpha\_coupling\_BIG} = 0.5;
+125             \hyperlink{classweight__parameter__function_a2136698edf313c3d9250027b07cfeb52}{m\_alpha\_coupling\_micro} = 0.5;
+126             std::cout << \textcolor{stringliteral}{" >> Warning: Coupling weights not defined, using 0.5 for both systems!"} << 
+      std::endl;
+127         \}
+128 
+129         \textcolor{keywordflow}{if} (field\_parser.search(1, \textcolor{stringliteral}{"AlphaEps"})) \{
+130             \hyperlink{classweight__parameter__function_a6ad313072643dbac787120791eeeac26}{m\_alpha\_eps} = field\_parser.next(\hyperlink{classweight__parameter__function_a6ad313072643dbac787120791eeeac26}{m\_alpha\_eps});
+131         \} \textcolor{keywordflow}{else} \{
+132             \hyperlink{classweight__parameter__function_a6ad313072643dbac787120791eeeac26}{m\_alpha\_eps} = 1e-2;
+133             std::cout << \textcolor{stringliteral}{" >> Warning: Alpha epsilon not defined, using 1e-2!"} << std::endl;
+134         \}
+135     \}
+\end{DoxyCode}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classweight__parameter__function_a47850e20883c96b524fc322ea5cbc82e}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!m\+\_\+alpha\+\_\+coupling\+\_\+\+B\+I\+G@{m\+\_\+alpha\+\_\+coupling\+\_\+\+B\+I\+G}}
+\index{m\+\_\+alpha\+\_\+coupling\+\_\+\+B\+I\+G@{m\+\_\+alpha\+\_\+coupling\+\_\+\+B\+I\+G}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{m\+\_\+alpha\+\_\+coupling\+\_\+\+B\+I\+G}]{\setlength{\rightskip}{0pt plus 5cm}double weight\+\_\+parameter\+\_\+function\+::m\+\_\+alpha\+\_\+coupling\+\_\+\+B\+I\+G\hspace{0.3cm}{\ttfamily [protected]}}\label{classweight__parameter__function_a47850e20883c96b524fc322ea5cbc82e}
+
+
+Definition at line 22 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+\hypertarget{classweight__parameter__function_a2136698edf313c3d9250027b07cfeb52}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!m\+\_\+alpha\+\_\+coupling\+\_\+micro@{m\+\_\+alpha\+\_\+coupling\+\_\+micro}}
+\index{m\+\_\+alpha\+\_\+coupling\+\_\+micro@{m\+\_\+alpha\+\_\+coupling\+\_\+micro}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{m\+\_\+alpha\+\_\+coupling\+\_\+micro}]{\setlength{\rightskip}{0pt plus 5cm}double weight\+\_\+parameter\+\_\+function\+::m\+\_\+alpha\+\_\+coupling\+\_\+micro\hspace{0.3cm}{\ttfamily [protected]}}\label{classweight__parameter__function_a2136698edf313c3d9250027b07cfeb52}
+
+
+Definition at line 23 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+\hypertarget{classweight__parameter__function_a6ad313072643dbac787120791eeeac26}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!m\+\_\+alpha\+\_\+eps@{m\+\_\+alpha\+\_\+eps}}
+\index{m\+\_\+alpha\+\_\+eps@{m\+\_\+alpha\+\_\+eps}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{m\+\_\+alpha\+\_\+eps}]{\setlength{\rightskip}{0pt plus 5cm}double weight\+\_\+parameter\+\_\+function\+::m\+\_\+alpha\+\_\+eps\hspace{0.3cm}{\ttfamily [protected]}}\label{classweight__parameter__function_a6ad313072643dbac787120791eeeac26}
+
+
+Definition at line 21 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+\hypertarget{classweight__parameter__function_a391a5a229d29fd746e352af0ec804495}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!m\+\_\+alpha\+\_\+mesh@{m\+\_\+alpha\+\_\+mesh}}
+\index{m\+\_\+alpha\+\_\+mesh@{m\+\_\+alpha\+\_\+mesh}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{m\+\_\+alpha\+\_\+mesh}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Mesh\& weight\+\_\+parameter\+\_\+function\+::m\+\_\+alpha\+\_\+mesh\hspace{0.3cm}{\ttfamily [protected]}}\label{classweight__parameter__function_a391a5a229d29fd746e352af0ec804495}
+
+
+Definition at line 18 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+\hypertarget{classweight__parameter__function_ae37938d69363743baba5797c599e0640}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!m\+\_\+locator\+\_\+unique\+\_\+ptr@{m\+\_\+locator\+\_\+unique\+\_\+ptr}}
+\index{m\+\_\+locator\+\_\+unique\+\_\+ptr@{m\+\_\+locator\+\_\+unique\+\_\+ptr}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{m\+\_\+locator\+\_\+unique\+\_\+ptr}]{\setlength{\rightskip}{0pt plus 5cm}std\+::unique\+\_\+ptr$<$lib\+Mesh\+::\+Point\+Locator\+Base$>$ weight\+\_\+parameter\+\_\+function\+::m\+\_\+locator\+\_\+unique\+\_\+ptr\hspace{0.3cm}{\ttfamily [protected]}}\label{classweight__parameter__function_ae37938d69363743baba5797c599e0640}
+
+
+Definition at line 19 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+\hypertarget{classweight__parameter__function_a1d22b2e8b9faff31c8fa0ef2161144e5}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!m\+\_\+subdomain\+\_\+idx\+\_\+\+B\+I\+G@{m\+\_\+subdomain\+\_\+idx\+\_\+\+B\+I\+G}}
+\index{m\+\_\+subdomain\+\_\+idx\+\_\+\+B\+I\+G@{m\+\_\+subdomain\+\_\+idx\+\_\+\+B\+I\+G}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{m\+\_\+subdomain\+\_\+idx\+\_\+\+B\+I\+G}]{\setlength{\rightskip}{0pt plus 5cm}int weight\+\_\+parameter\+\_\+function\+::m\+\_\+subdomain\+\_\+idx\+\_\+\+B\+I\+G\hspace{0.3cm}{\ttfamily [protected]}}\label{classweight__parameter__function_a1d22b2e8b9faff31c8fa0ef2161144e5}
+
+
+Definition at line 25 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+\hypertarget{classweight__parameter__function_a0e5865143597a2ce9a19acaaa37a5bca}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!m\+\_\+subdomain\+\_\+idx\+\_\+both@{m\+\_\+subdomain\+\_\+idx\+\_\+both}}
+\index{m\+\_\+subdomain\+\_\+idx\+\_\+both@{m\+\_\+subdomain\+\_\+idx\+\_\+both}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{m\+\_\+subdomain\+\_\+idx\+\_\+both}]{\setlength{\rightskip}{0pt plus 5cm}int weight\+\_\+parameter\+\_\+function\+::m\+\_\+subdomain\+\_\+idx\+\_\+both\hspace{0.3cm}{\ttfamily [protected]}}\label{classweight__parameter__function_a0e5865143597a2ce9a19acaaa37a5bca}
+
+
+Definition at line 27 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+\hypertarget{classweight__parameter__function_a516c68be83fc9cdc80c8bf4aecf395a4}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!m\+\_\+subdomain\+\_\+idx\+\_\+coupling@{m\+\_\+subdomain\+\_\+idx\+\_\+coupling}}
+\index{m\+\_\+subdomain\+\_\+idx\+\_\+coupling@{m\+\_\+subdomain\+\_\+idx\+\_\+coupling}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{m\+\_\+subdomain\+\_\+idx\+\_\+coupling}]{\setlength{\rightskip}{0pt plus 5cm}int weight\+\_\+parameter\+\_\+function\+::m\+\_\+subdomain\+\_\+idx\+\_\+coupling\hspace{0.3cm}{\ttfamily [protected]}}\label{classweight__parameter__function_a516c68be83fc9cdc80c8bf4aecf395a4}
+
+
+Definition at line 28 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+\hypertarget{classweight__parameter__function_a21eb1aebdae4706322cb17982c931eef}{}\index{weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}!m\+\_\+subdomain\+\_\+idx\+\_\+micro@{m\+\_\+subdomain\+\_\+idx\+\_\+micro}}
+\index{m\+\_\+subdomain\+\_\+idx\+\_\+micro@{m\+\_\+subdomain\+\_\+idx\+\_\+micro}!weight\+\_\+parameter\+\_\+function@{weight\+\_\+parameter\+\_\+function}}
+\subsubsection[{m\+\_\+subdomain\+\_\+idx\+\_\+micro}]{\setlength{\rightskip}{0pt plus 5cm}int weight\+\_\+parameter\+\_\+function\+::m\+\_\+subdomain\+\_\+idx\+\_\+micro\hspace{0.3cm}{\ttfamily [protected]}}\label{classweight__parameter__function_a21eb1aebdae4706322cb17982c931eef}
+
+
+Definition at line 26 of file weight\+\_\+parameter\+\_\+function.\+h.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/include/\hyperlink{execs_2ext__solver__libmesh_2ext__solver__libmesh__common_2include_2weight__parameter__function_8h}{weight\+\_\+parameter\+\_\+function.\+h}\end{DoxyCompactItemize}

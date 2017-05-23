@@ -5,13 +5,31 @@
  *      Author: Thiago Milanetto Schlittler
  */
 
+ /** \file CArl_build_intersections.cpp
+ \brief Implementation of the parallel intersection search
+ 
+ Usage: `./CArl_build_intersections -i [input file]`
+
+This program finds and constructs all the intersections between the meshes provided by the user. 
+The input file is parsed by the carl::get_input_params(GetPot& field_parser, parallel_intersection_test_params& input_params) 
+function, and it contains the following parameters. 
+
+ Required parameters:
+ - `MeshA`, `-mA` or `--meshA` : path to the mesh A.
+ - `MeshB`, `-mB` or `--meshB` : path to the mesh B.
+ - `MeshC`, `-mC` or `--meshC` : path to the coupling mesh C.
+
+Optional parameters:
+ - `OutputBase`, `-mO` or `--output` : base of the output files (including folders). *Default*: `test_inter`.
+ - `MeshingMethod` or `--meshingMethodType` : intersection meshing method. *Values*: `CGAL` or `LIBMESH_TETGEN`. *Default*: `CGAL`.
+
+Boolean flags:
+ - `StitchInterMeshes` : do not stich together the intersection meshes. 
+ - `VerboseOutput` or `--verbose` : print some extra information, such as the coupling mesh partitioning.
+ */
+
 #include "CArl_build_intersections.h"
 
-/*	\brief Main test for the parallel intersection test.
- *
- *  	This program takes as input a configuration file which is parsed by the carl::get_input_params(GetPot& field_parser,
-		parallel_intersection_test_params& input_params) function.
- */
 int main(int argc, char *argv[])
 {
 	// --- Initialize libMesh
@@ -89,7 +107,8 @@ int main(int argc, char *argv[])
 	// If set to do "verbose" output, print the current partitioning of the intersection search
 	if(input_params.bVerbose)
 	{	
-		std::cout << " -> Nb. coupling elements before repartitioning (intersection partition) : " << test_mesh_C.n_partitions() << " ( ";
+		std::cout << " -> Nb. coupling elements before repartitioning (intersection partition) : "
+		          << test_mesh_C.n_partitions() << " ( ";
 		for(unsigned int iii = 0; iii < nodes; ++iii)
 		{
 			std::cout << test_mesh_C.n_elem_on_proc(iii) << " ";
@@ -106,7 +125,8 @@ int main(int argc, char *argv[])
 	// Print the current partitioning of the intersection search
 	if(input_params.bVerbose)
 	{	
-		std::cout << " -> Nb. coupling elements after repartitioning (intersection partition) : " << test_mesh_C.n_partitions() << " ( ";
+		std::cout << " -> Nb. coupling elements after repartitioning (intersection partition) : " 
+		          << test_mesh_C.n_partitions() << " ( ";
 		for(unsigned int iii = 0; iii < nodes; ++iii)
 		{
 				std::cout << test_mesh_C.n_elem_on_proc(iii) << " ";

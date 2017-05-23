@@ -1,0 +1,48 @@
+\hypertarget{structcarl_1_1_point_hash__3_d}{}\section{carl\+:\+:Point\+Hash\+\_\+3\+D Struct Reference}
+\label{structcarl_1_1_point_hash__3_d}\index{carl\+::\+Point\+Hash\+\_\+3\+D@{carl\+::\+Point\+Hash\+\_\+3\+D}}
+
+
+{\ttfamily \#include $<$common\+\_\+functions.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::size\+\_\+t \hyperlink{structcarl_1_1_point_hash__3_d_afadeca3cd8c39441530cb908033caae9}{operator()} (const std\+::vector$<$ long $>$ \&k) const 
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 51 of file common\+\_\+functions.\+h.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{structcarl_1_1_point_hash__3_d_afadeca3cd8c39441530cb908033caae9}{}\index{carl\+::\+Point\+Hash\+\_\+3\+D@{carl\+::\+Point\+Hash\+\_\+3\+D}!operator()@{operator()}}
+\index{operator()@{operator()}!carl\+::\+Point\+Hash\+\_\+3\+D@{carl\+::\+Point\+Hash\+\_\+3\+D}}
+\subsubsection[{operator()(const std\+::vector$<$ long $>$ \&k) const }]{\setlength{\rightskip}{0pt plus 5cm}std\+::size\+\_\+t carl\+::\+Point\+Hash\+\_\+3\+D\+::operator() (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ long $>$ \&}]{k}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\label{structcarl_1_1_point_hash__3_d_afadeca3cd8c39441530cb908033caae9}
+
+
+Definition at line 52 of file common\+\_\+functions.\+h.
+
+
+\begin{DoxyCode}
+53     \{
+54         \textcolor{keywordtype}{long} prime0 = 73856093;
+55         \textcolor{keywordtype}{long} prime1 = 19349669;
+56         \textcolor{keywordtype}{long} prime2 = 83492791;
+57         \textcolor{keywordtype}{long} primeN = 2038074743;
+58 
+59         \textcolor{keywordflow}{return} ( ( k[0] * prime0 ) ^ ( k[1] * prime1 ) ^ ( k[2] * prime2 ) ) % primeN;
+60     \}
+\end{DoxyCode}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/\hyperlink{common__functions_8h}{common\+\_\+functions.\+h}\end{DoxyCompactItemize}

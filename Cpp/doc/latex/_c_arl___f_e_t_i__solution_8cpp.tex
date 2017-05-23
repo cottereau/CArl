@@ -1,0 +1,118 @@
+\hypertarget{_c_arl___f_e_t_i__solution_8cpp}{}\section{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/\+C\+Arl\+\_\+\+F\+E\+T\+I/\+C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+solution.cpp File Reference}
+\label{_c_arl___f_e_t_i__solution_8cpp}\index{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/\+C\+Arl\+\_\+\+F\+E\+T\+I/\+C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+solution.\+cpp@{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/\+C\+Arl\+\_\+\+F\+E\+T\+I/\+C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+solution.\+cpp}}
+{\ttfamily \#include \char`\"{}C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+solution.\+h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{_c_arl___f_e_t_i__solution_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{main} (int argc, char $\ast$$\ast$argv)
+\begin{DoxyCompactList}\small\item\em Program responsible to calculate the coupled system solution of the F\+E\+T\+I algorithm. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{_c_arl___f_e_t_i__solution_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{}\index{C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+solution.\+cpp@{C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+solution.\+cpp}!main@{main}}
+\index{main@{main}!C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+solution.\+cpp@{C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+solution.\+cpp}}
+\subsubsection[{main(int argc, char $\ast$$\ast$argv)}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv}
+\end{DoxyParamCaption}
+)}\label{_c_arl___f_e_t_i__solution_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}
+
+
+Program responsible to calculate the coupled system solution of the F\+E\+T\+I algorithm. 
+
+This program\textquotesingle{}s input file description can be found at the documentation of the function \hyperlink{namespacecarl_a177d464e2a8ca02ee332afc410ec061d}{carl\+::get\+\_\+input\+\_\+params(\+Get\+Pot\& field\+\_\+parser, feti\+\_\+set\+\_\+sol\+\_\+params\& input\+\_\+params)}.
+
+It will use the following files from the {\ttfamily input\+\_\+params.\+scratch\+\_\+folder\+\_\+path} folder\+:
+\begin{DoxyItemize}
+\item solutions u\+\_\+0,1 and u\+\_\+0,2, from the system K\+\_\+i $\ast$ u\+\_\+0,i = F\+\_\+i. {\itshape Files}\+:
+\begin{DoxyItemize}
+\item {\ttfamily ext\+\_\+solver\+\_\+u0\+\_\+\+A\+\_\+sys\+\_\+sol\+\_\+vec.\+petscvec}
+\item {\ttfamily ext\+\_\+solver\+\_\+u0\+\_\+\+B\+\_\+sys\+\_\+sol\+\_\+vec.\+petscvec}
+\end{DoxyItemize}
+\item solutions x\+\_\+1(kkk) and x\+\_\+2(kkk), from the system K\+\_\+i $\ast$ x\+\_\+i(kkk) = C\+\_\+i$^\wedge$\+T$\ast$phi(kkk). {\itshape Files}\+:
+\begin{DoxyItemize}
+\item {\ttfamily ext\+\_\+solver\+\_\+\+A\+\_\+sys\+\_\+sol\+\_\+vec.\+petscvec}
+\item {\ttfamily ext\+\_\+solver\+\_\+\+B\+\_\+sys\+\_\+sol\+\_\+vec.\+petscvec}
+\end{DoxyItemize}
+\item rigid body mode correction vector. {\itshape Files}\+:
+\begin{DoxyItemize}
+\item \mbox{[}R\+B\mbox{]} {\ttfamily F\+E\+T\+I\+\_\+\+R\+B\+\_\+correction.\+petscvec}
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+The items marked with a \mbox{[}R\+B\mbox{]} are only needed if the rigid body modes projectors are used. In the last two cases, \mbox{[}nb. of vectors\mbox{]} is the number of rigid body mode vectors (given by {\ttfamily input\+\_\+params.\+nb\+\_\+of\+\_\+rb\+\_\+vectors}) and \mbox{[}iii\mbox{]} is an integer going from 0 to {\ttfamily input\+\_\+params.\+nb\+\_\+of\+\_\+rb\+\_\+vectors -\/ 1} (following C++ notation).
+
+This program outputs the solution vectors inside the {\ttfamily input\+\_\+params.\+output\+\_\+base} folder. {\itshape Files}\+:
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{[}input\+\_\+params.\+output\+\_\+base\mbox{]}\+\_\+coupled\+\_\+sol\+\_\+\+A.\+petscvec}
+\item {\ttfamily \mbox{[}input\+\_\+params.\+output\+\_\+base\mbox{]}\+\_\+coupled\+\_\+sol\+\_\+\+B.\+petscvec} 
+\end{DoxyItemize}
+
+Definition at line 27 of file C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+solution.\+cpp.
+
+
+\begin{DoxyCode}
+27                                 \{
+28 
+29     \textcolor{comment}{// --- Initialize libMesh}
+30     libMesh::LibMeshInit init(argc, argv);
+31 
+32     \textcolor{comment}{// Do performance log?}
+33     libMesh::PerfLog perf\_log(\textcolor{stringliteral}{"Main program"});
+34 
+35     \textcolor{comment}{// libMesh's C++ / MPI communicator wrapper}
+36     libMesh::Parallel::Communicator& WorldComm = init.comm();
+37 
+38     \textcolor{comment}{// Number of processors and processor rank.}
+39     \textcolor{keywordtype}{int} rank = WorldComm.rank();
+40     \textcolor{keywordtype}{int} nodes = WorldComm.size();
+41 
+42     \textcolor{comment}{// --- Set up inputs}
+43 
+44     \textcolor{comment}{// Command line parser}
+45     GetPot command\_line(argc, argv);
+46 
+47     \textcolor{comment}{// File parser}
+48     GetPot field\_parser;
+49 
+50     \textcolor{comment}{// If there is an input file, parse it to get the parameters. Else, parse the command line}
+51     std::string input\_filename;
+52     \textcolor{keywordflow}{if} (command\_line.search(2, \textcolor{stringliteral}{"--inputfile"}, \textcolor{stringliteral}{"-i"})) \{
+53         input\_filename = command\_line.next(input\_filename);
+54         field\_parser.parse\_input\_file(input\_filename, \textcolor{stringliteral}{"#"}, \textcolor{stringliteral}{"\(\backslash\)n"}, \textcolor{stringliteral}{" \(\backslash\)t\(\backslash\)n"});
+55     \} \textcolor{keywordflow}{else} \{
+56         field\_parser = command\_line;
+57     \}
+58 
+59     \hyperlink{structcarl_1_1feti__set__sol__params}{carl::feti\_set\_sol\_params} input\_params;
+60     \hyperlink{namespacecarl_a902f88f3c52c6fc9c974bc99832e78a7}{get\_input\_params}(field\_parser, input\_params);
+61 
+62     \textcolor{comment}{// Object containing the FETI operations}
+63     \hyperlink{classcarl_1_1_f_e_t_i___operations}{carl::FETI\_Operations} feti\_op(WorldComm,input\_params.
+      \hyperlink{structcarl_1_1feti__set__sol__params_ab6ddbeabd05fc4250a25c3c7f8efcdb9}{scratch\_folder\_path});
+64 
+65     \textcolor{comment}{// --- Define if the rb modes will be used or not}
+66     feti\_op.using\_rb\_modes(input\_params.\hyperlink{structcarl_1_1feti__set__sol__params_aecd85116814599f3edb193f4dabfaf49}{bUseRigidBodyModes});
+67 
+68     \textcolor{comment}{// Read the decoupled solutions, K\_i * u\_0,i  = F\_i }
+69     feti\_op.read\_decoupled\_solutions();
+70 
+71     \textcolor{comment}{// Read the solutions of K\_i * x\_i(FINAL)  = C\_i^T * phi(FINAL)}
+72     feti\_op.read\_ext\_solver\_output();
+73 
+74     \textcolor{comment}{// Read the rb modes correction, 'RB\_corr(FINAL)'}
+75     \textcolor{keywordflow}{if}(input\_params.\hyperlink{structcarl_1_1feti__set__sol__params_aecd85116814599f3edb193f4dabfaf49}{bUseRigidBodyModes})
+76     \{
+77         feti\_op.read\_rb\_corr();
+78     \}
+79 
+80     \textcolor{comment}{// Calculate the solution}
+81     feti\_op.calculate\_coupled\_solution();
+82 
+83     \textcolor{comment}{// Export it (finallly!)}
+84     feti\_op.export\_coupled\_solution(input\_params.\hyperlink{structcarl_1_1feti__set__sol__params_a7adec03a37edb92e1519066423844ccd}{output\_folder});
+85 
+86     \textcolor{keywordflow}{return} 0;
+87 \}
+\end{DoxyCode}

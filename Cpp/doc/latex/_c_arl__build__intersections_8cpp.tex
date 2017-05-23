@@ -1,0 +1,216 @@
+\hypertarget{_c_arl__build__intersections_8cpp}{}\section{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/\+C\+Arl\+\_\+build\+\_\+intersections/\+C\+Arl\+\_\+build\+\_\+intersections.cpp File Reference}
+\label{_c_arl__build__intersections_8cpp}\index{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/\+C\+Arl\+\_\+build\+\_\+intersections/\+C\+Arl\+\_\+build\+\_\+intersections.\+cpp@{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/\+C\+Arl\+\_\+build\+\_\+intersections/\+C\+Arl\+\_\+build\+\_\+intersections.\+cpp}}
+
+
+Implementation of the parallel intersection search.  
+
+
+{\ttfamily \#include \char`\"{}C\+Arl\+\_\+build\+\_\+intersections.\+h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{_c_arl__build__intersections_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Implementation of the parallel intersection search. 
+
+Usage\+: {\ttfamily ./\+C\+Arl\+\_\+build\+\_\+intersections -\/i \mbox{[}input file\mbox{]}}
+
+This program finds and constructs all the intersections between the meshes provided by the user. The input file is parsed by the carl\+::get\+\_\+input\+\_\+params(\+Get\+Pot\& field\+\_\+parser, parallel\+\_\+intersection\+\_\+test\+\_\+params\& input\+\_\+params) function, and it contains the following parameters.
+
+Required parameters\+:
+\begin{DoxyItemize}
+\item {\ttfamily Mesh\+A}, {\ttfamily -\/m\+A} or {\ttfamily -\/-\/mesh\+A} \+: path to the mesh A.
+\item {\ttfamily Mesh\+B}, {\ttfamily -\/m\+B} or {\ttfamily -\/-\/mesh\+B} \+: path to the mesh B.
+\item {\ttfamily Mesh\+C}, {\ttfamily -\/m\+C} or {\ttfamily -\/-\/mesh\+C} \+: path to the coupling mesh C.
+\end{DoxyItemize}
+
+Optional parameters\+:
+\begin{DoxyItemize}
+\item {\ttfamily Output\+Base}, {\ttfamily -\/m\+O} or {\ttfamily -\/-\/output} \+: base of the output files (including folders). {\itshape Default}\+: {\ttfamily test\+\_\+inter}.
+\item {\ttfamily Meshing\+Method} or {\ttfamily -\/-\/meshing\+Method\+Type} \+: intersection meshing method. {\itshape Values}\+: {\ttfamily C\+G\+A\+L} or {\ttfamily L\+I\+B\+M\+E\+S\+H\+\_\+\+T\+E\+T\+G\+E\+N}. {\itshape Default}\+: {\ttfamily C\+G\+A\+L}.
+\end{DoxyItemize}
+
+Boolean flags\+:
+\begin{DoxyItemize}
+\item {\ttfamily Stitch\+Inter\+Meshes} \+: do not stich together the intersection meshes.
+\item {\ttfamily Verbose\+Output} or {\ttfamily -\/-\/verbose} \+: print some extra information, such as the coupling mesh partitioning. 
+\end{DoxyItemize}
+
+\subsection{Function Documentation}
+\hypertarget{_c_arl__build__intersections_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{}\index{C\+Arl\+\_\+build\+\_\+intersections.\+cpp@{C\+Arl\+\_\+build\+\_\+intersections.\+cpp}!main@{main}}
+\index{main@{main}!C\+Arl\+\_\+build\+\_\+intersections.\+cpp@{C\+Arl\+\_\+build\+\_\+intersections.\+cpp}}
+\subsubsection[{main(int argc, char $\ast$argv[])}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}\label{_c_arl__build__intersections_8cpp_a0ddf1224851353fc92bfbff6f499fa97}
+
+
+Definition at line 33 of file C\+Arl\+\_\+build\+\_\+intersections.\+cpp.
+
+
+\begin{DoxyCode}
+34 \{
+35     \textcolor{comment}{// --- Initialize libMesh}
+36     libMesh::LibMeshInit init(argc, argv);
+37 
+38     \textcolor{comment}{// libMesh's C++ / MPI communicator wrapper}
+39     libMesh::Parallel::Communicator& WorldComm = init.comm();
+40 
+41     \textcolor{comment}{// Number of processors and processor rank.}
+42     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} nodes = WorldComm.size();
+43     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} rank =  WorldComm.rank();
+44 
+45     \textcolor{comment}{// Create local communicator}
+46     libMesh::Parallel::Communicator LocalComm;
+47     WorldComm.split(rank,rank,LocalComm);
+48 
+49     \textcolor{comment}{// Main program performance log}
+50     libMesh::PerfLog perf\_log(\textcolor{stringliteral}{"Main program"});
+51 
+52     \textcolor{comment}{// --- Set up inputs}
+53 
+54     \textcolor{comment}{// Command line parser}
+55     GetPot command\_line(argc, argv);
+56 
+57     \textcolor{comment}{// File parser}
+58     GetPot field\_parser;
+59 
+60     \textcolor{comment}{// If there is an input file, parse it to get the parameters. Else, parse the command line}
+61     std::string input\_filename;
+62     \textcolor{keywordflow}{if} (command\_line.search(2, \textcolor{stringliteral}{"--inputfile"}, \textcolor{stringliteral}{"-i"})) \{
+63         input\_filename = command\_line.next(input\_filename);
+64         field\_parser.parse\_input\_file(input\_filename, \textcolor{stringliteral}{"#"}, \textcolor{stringliteral}{"\(\backslash\)n"}, \textcolor{stringliteral}{" \(\backslash\)t\(\backslash\)n"});
+65     \} \textcolor{keywordflow}{else} \{
+66         field\_parser = command\_line;
+67     \}
+68 
+69     \hyperlink{structcarl_1_1parallel__intersection__params}{carl::parallel\_intersection\_params} input\_params;
+70     \hyperlink{namespacecarl_ab80eec3eb20ff6a403ad01bafa649df2}{carl::get\_intersection\_input\_params}(field\_parser, input\_params);
+71 
+72     \textcolor{comment}{// Declare the three meshes to be intersected}
+73     libMesh::Mesh test\_mesh\_A(WorldComm);
+74     libMesh::Mesh test\_mesh\_B(WorldComm);
+75     libMesh::Mesh test\_mesh\_C(WorldComm);
+76 
+77     \textcolor{comment}{// Declare the LOCAL output mesh}
+78     libMesh::Mesh test\_mesh\_I(LocalComm);
+79 
+80     \textcolor{comment}{// Read the mesh files and prepare for use}
+81     test\_mesh\_A.read(input\_params.\hyperlink{structcarl_1_1parallel__intersection__params_aa984f7e6899406a1d17bdaa22e669e22}{mesh\_A});
+82     test\_mesh\_B.read(input\_params.\hyperlink{structcarl_1_1parallel__intersection__params_a77a1bbaf19e80f8dfd2612c2e86acb45}{mesh\_B});
+83     test\_mesh\_C.read(input\_params.\hyperlink{structcarl_1_1parallel__intersection__params_ad1cf6ec92655114a12be003b05526697}{mesh\_C});
+84 
+85     test\_mesh\_A.prepare\_for\_use();
+86     test\_mesh\_B.prepare\_for\_use();
+87     test\_mesh\_C.prepare\_for\_use();
+88 
+89     \textcolor{comment}{// --- Set up the Intersection\_search object}
+90     \textcolor{comment}{/*}
+91 \textcolor{comment}{     *  This object is the main userinterface with the intersection search algorithms.}
+92 \textcolor{comment}{     */}
+93     perf\_log.push(\textcolor{stringliteral}{"Set up"});
+94     \hyperlink{classcarl_1_1_intersection___search}{carl::Intersection\_Search} search\_coupling\_intersections(
+95             test\_mesh\_A,    \textcolor{comment}{// Input meshes}
+96             test\_mesh\_B,    \textcolor{comment}{//}
+97             test\_mesh\_C,    \textcolor{comment}{//}
+98             
+99             test\_mesh\_I,    \textcolor{comment}{// LOCAL output mesh}
+100             
+101             input\_params.\hyperlink{structcarl_1_1parallel__intersection__params_a74ba855a7e3dc3595531e6204eb57db2}{output\_base},            \textcolor{comment}{// Common output filename path}
+102             input\_params.\hyperlink{structcarl_1_1parallel__intersection__params_ab94c6f1beb1d530141758397f49d6d08}{inter\_meshing\_method}   \textcolor{comment}{// Intersection meshing method}
+103             );
+104     perf\_log.pop(\textcolor{stringliteral}{"Set up"});
+105 
+106 
+107     \textcolor{comment}{// If set to do "verbose" output, print the current partitioning of the intersection search}
+108     \textcolor{keywordflow}{if}(input\_params.\hyperlink{structcarl_1_1parallel__intersection__params_a15197709febaff5f7082264db05d2aa7}{bVerbose})
+109     \{   
+110         std::cout << \textcolor{stringliteral}{" -> Nb. coupling elements before repartitioning (intersection partition) : "}
+111                   << test\_mesh\_C.n\_partitions() << \textcolor{stringliteral}{" ( "};
+112         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < nodes; ++iii)
+113         \{
+114             std::cout << test\_mesh\_C.n\_elem\_on\_proc(iii) << \textcolor{stringliteral}{" "};
+115         \}
+116         std::cout << \textcolor{stringliteral}{")"} << std::endl << std::endl;
+117     \}
+118 
+119     \textcolor{comment}{// Preallocate the intersection data structures (intersection tables, etc ...)}
+120     perf\_log.push(\textcolor{stringliteral}{"Prepare intersection load"});
+121     search\_coupling\_intersections.PreparePreallocationAndLoad(\textcolor{comment}{/* SearchMethod = BRUTE */});
+122     search\_coupling\_intersections.PreallocateAndPartitionCoupling();
+123     perf\_log.push(\textcolor{stringliteral}{"Prepare intersection load"});
+124 
+125     \textcolor{comment}{// Print the current partitioning of the intersection search}
+126     \textcolor{keywordflow}{if}(input\_params.\hyperlink{structcarl_1_1parallel__intersection__params_a15197709febaff5f7082264db05d2aa7}{bVerbose})
+127     \{   
+128         std::cout << \textcolor{stringliteral}{" -> Nb. coupling elements after repartitioning (intersection partition) : "} 
+129                   << test\_mesh\_C.n\_partitions() << \textcolor{stringliteral}{" ( "};
+130         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < nodes; ++iii)
+131         \{
+132                 std::cout << test\_mesh\_C.n\_elem\_on\_proc(iii) << \textcolor{stringliteral}{" "};
+133         \}
+134         std::cout << \textcolor{stringliteral}{")"} << std::endl << std::endl;
+135     \}
+136 
+137     \textcolor{comment}{// --- Do the intersection search!}
+138     perf\_log.push(\textcolor{stringliteral}{"Search intersection"});
+139     search\_coupling\_intersections.BuildIntersections(\textcolor{comment}{/* SearchMethod = BRUTE */});
+140     search\_coupling\_intersections.CalculateGlobalVolume();
+141     perf\_log.pop(\textcolor{stringliteral}{"Search intersection"});
+142 
+143     \textcolor{comment}{// --- Join the intersection tables, stitch the meshes, build the restrictions!}
+144     \textcolor{comment}{// - Declarations}
+145     \textcolor{comment}{// LOCAL stitched mesh}
+146     libMesh::Mesh test\_mesh\_full\_I(LocalComm,3);
+147 
+148     \textcolor{comment}{// Object used to stitch the meshes and to join the local intersection tables into a global one}
+149     \hyperlink{classcarl_1_1_stitch___meshes}{carl::Stitch\_Meshes}  join\_meshes(test\_mesh\_full\_I,input\_params.
+      \hyperlink{structcarl_1_1parallel__intersection__params_a74ba855a7e3dc3595531e6204eb57db2}{output\_base} + \textcolor{stringliteral}{"\_stitched"});
+150     join\_meshes.set\_grid\_constraints(test\_mesh\_A,test\_mesh\_B);
+151 
+152     \textcolor{comment}{// Set filenames}
+153     \textcolor{keywordflow}{if}(rank == 0)
+154     \{
+155         join\_meshes.set\_base\_filenames(input\_params.\hyperlink{structcarl_1_1parallel__intersection__params_a74ba855a7e3dc3595531e6204eb57db2}{output\_base},\textcolor{stringliteral}{".e"},nodes);
+156 
+157         \textcolor{comment}{// Join the intersection tables}
+158         perf\_log.push(\textcolor{stringliteral}{"Join intersection tables"});
+159         join\_meshes.join\_tables();
+160         perf\_log.pop(\textcolor{stringliteral}{"Join intersection tables"});
+161 
+162         \textcolor{comment}{// Stitch the intersection meshes}
+163         \textcolor{keywordflow}{if}(input\_params.\hyperlink{structcarl_1_1parallel__intersection__params_a16529af2562e264bf3c5822d8d653b08}{bStitchInterMeshes})
+164         \{
+165             perf\_log.push(\textcolor{stringliteral}{"Stitch intersection meshes"});
+166             join\_meshes.stitch\_meshes();
+167             perf\_log.pop(\textcolor{stringliteral}{"Stitch intersection meshes"});
+168         \}
+169     \}
+170 
+171     \textcolor{comment}{// Build and save the mesh restrictions}
+172 
+173     \textcolor{comment}{// Get set of elements forming the restricted mesh}
+174     \textcolor{keyword}{const} std::unordered\_set<unsigned int> * restrict\_set\_A\_ptr = join\_meshes.
+      get\_restricted\_set\_pointer\_first();
+175     \textcolor{keyword}{const} std::unordered\_set<unsigned int> * restrict\_set\_B\_ptr = join\_meshes.
+      get\_restricted\_set\_pointer\_second();
+176 
+177     \textcolor{comment}{// Export the meshes and the element equivalence tables}
+178     perf\_log.push(\textcolor{stringliteral}{"Restrict meshes"});
+179     \hyperlink{classcarl_1_1_mesh__restriction}{carl::Mesh\_restriction} restrict\_A(test\_mesh\_A,LocalComm);
+180     restrict\_A.BuildRestrictionFromSet(restrict\_set\_A\_ptr);
+181     restrict\_A.export\_restriction\_mesh(input\_params.\hyperlink{structcarl_1_1parallel__intersection__params_a74ba855a7e3dc3595531e6204eb57db2}{output\_base} + \textcolor{stringliteral}{"\_A\_restriction"});
+182 
+183     \hyperlink{classcarl_1_1_mesh__restriction}{carl::Mesh\_restriction} restrict\_B(test\_mesh\_B,LocalComm);
+184     restrict\_B.BuildRestrictionFromSet(restrict\_set\_B\_ptr);
+185     restrict\_B.export\_restriction\_mesh(input\_params.\hyperlink{structcarl_1_1parallel__intersection__params_a74ba855a7e3dc3595531e6204eb57db2}{output\_base} + \textcolor{stringliteral}{"\_B\_restriction"});
+186     perf\_log.pop(\textcolor{stringliteral}{"Restrict meshes"});
+187 
+188     \textcolor{keywordflow}{return} 0;
+189 \}
+\end{DoxyCode}

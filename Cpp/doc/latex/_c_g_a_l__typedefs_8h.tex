@@ -1,0 +1,656 @@
+\hypertarget{_c_g_a_l__typedefs_8h}{}\section{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/\+C\+G\+A\+L\+\_\+typedefs.h File Reference}
+\label{_c_g_a_l__typedefs_8h}\index{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/\+C\+G\+A\+L\+\_\+typedefs.\+h@{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/\+C\+G\+A\+L\+\_\+typedefs.\+h}}
+{\ttfamily \#include $<$C\+G\+A\+L/\+Exact\+\_\+predicates\+\_\+inexact\+\_\+constructions\+\_\+kernel.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Exact\+\_\+predicates\+\_\+exact\+\_\+constructions\+\_\+kernel.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Cartesian\+\_\+converter.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/intersections.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/result\+\_\+of.\+h$>$}\\*
+{\ttfamily \#include \char`\"{}common\+\_\+header.\+h\char`\"{}}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Polygon\+\_\+2.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Polyhedron\+\_\+3.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Nef\+\_\+polyhedron\+\_\+3.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+I\+O/\+Nef\+\_\+polyhedron\+\_\+iostream\+\_\+3.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Nef\+\_\+3/\+S\+N\+C\+\_\+indexed\+\_\+items.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/convex\+\_\+decomposition\+\_\+3.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/convex\+\_\+hull\+\_\+3.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Convex\+\_\+hull\+\_\+traits\+\_\+3.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Triangulation\+\_\+2.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Delaunay\+\_\+triangulation\+\_\+2.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Triangulation\+\_\+vertex\+\_\+base\+\_\+with\+\_\+info\+\_\+2.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Triangulation\+\_\+face\+\_\+base\+\_\+with\+\_\+info\+\_\+2.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Triangulation\+\_\+3.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Delaunay\+\_\+triangulation\+\_\+3.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Triangulation\+\_\+vertex\+\_\+base\+\_\+with\+\_\+info\+\_\+3.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+Triangulation\+\_\+cell\+\_\+base\+\_\+with\+\_\+info\+\_\+3.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+I\+O/\+Geomview\+\_\+stream.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+I\+O/\+Triangulation\+\_\+geomview\+\_\+ostream\+\_\+2.\+h$>$}\\*
+{\ttfamily \#include $<$C\+G\+A\+L/\+I\+O/\+Triangulation\+\_\+geomview\+\_\+ostream\+\_\+3.\+h$>$}\\*
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_vertex_info__2}{Vertex\+Info\+\_\+2}
+\item 
+struct \hyperlink{struct_vertex_info__3}{Vertex\+Info\+\_\+3}
+\item 
+struct \hyperlink{struct_face_info}{Face\+Info}
+\item 
+struct \hyperlink{struct_cell_info}{Cell\+Info}
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef C\+G\+A\+L\+::\+Exact\+\_\+predicates\+\_\+inexact\+\_\+constructions\+\_\+kernel \hyperlink{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{Kernel}
+\item 
+typedef C\+G\+A\+L\+::\+Exact\+\_\+predicates\+\_\+exact\+\_\+constructions\+\_\+kernel \hyperlink{_c_g_a_l__typedefs_8h_ab014831fee2bac62051dfa390ec66d6f}{Exact\+Kernel}
+\item 
+typedef C\+G\+A\+L\+::\+Cartesian\+\_\+converter$<$ \hyperlink{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{Kernel}, \hyperlink{_c_g_a_l__typedefs_8h_ab014831fee2bac62051dfa390ec66d6f}{Exact\+Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_a7fee49db11d7ad002fa79aedabf4d2cc}{Kernel\+\_\+to\+\_\+\+Exact\+Kernel}
+\item 
+typedef C\+G\+A\+L\+::\+Cartesian\+\_\+converter$<$ \hyperlink{_c_g_a_l__typedefs_8h_ab014831fee2bac62051dfa390ec66d6f}{Exact\+Kernel}, \hyperlink{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_aa71268402de3c241e32cd09e20cbe44c}{Exact\+Kernel\+\_\+to\+\_\+\+Kernel}
+\item 
+typedef \hyperlink{_c_g_a_l__typedefs_8h_ab8a951692a5261d5dd24b550af05e147}{Exact\+Kernel\+::\+Point\+\_\+2} \hyperlink{_c_g_a_l__typedefs_8h_a785007721c85f7cff7c111b016d8caa9}{Exact\+Point\+\_\+2}
+\item 
+typedef \hyperlink{_c_g_a_l__typedefs_8h_adc12f3fd1891d07889bf0140df9ffcc0}{Exact\+Kernel\+::\+Triangle\+\_\+2} \hyperlink{_c_g_a_l__typedefs_8h_affe6de37e76892bb586eddd2c7d17d61}{Exact\+Triangle\+\_\+2}
+\item 
+typedef \hyperlink{_c_g_a_l__typedefs_8h_a90a1b2f3a502f5b6fc4a19c276500e03}{Exact\+Kernel\+::\+Segment\+\_\+2} \hyperlink{_c_g_a_l__typedefs_8h_a7ac6a9260e0ac28e354aff2d53be61e1}{Exact\+Segment\+\_\+2}
+\item 
+typedef \hyperlink{_c_g_a_l__typedefs_8h_a9dc49a828e77bbd58c1f5db13edde547}{Exact\+Kernel\+::\+Point\+\_\+3} \hyperlink{_c_g_a_l__typedefs_8h_a162dbf669b38ca5632e00c9c02e000a5}{Exact\+Point\+\_\+3}
+\item 
+typedef \hyperlink{_c_g_a_l__typedefs_8h_ac40a63442fa83fbf61131d9e6e53d245}{Exact\+Kernel\+::\+Triangle\+\_\+3} \hyperlink{_c_g_a_l__typedefs_8h_acb9586e4ea704b6a4c4502ad0cb03c62}{Exact\+Triangle\+\_\+3}
+\item 
+typedef \hyperlink{_c_g_a_l__typedefs_8h_a61cf4e27bddccffecdfd4c691f5a65bf}{Exact\+Kernel\+::\+Segment\+\_\+3} \hyperlink{_c_g_a_l__typedefs_8h_ad85af2763fd2933e10dcf961574090e7}{Exact\+Segment\+\_\+3}
+\item 
+typedef \hyperlink{_c_g_a_l__typedefs_8h_a9e00699e05c9e7829bb4701dcbe7cdca}{C\+G\+A\+L\+::\+Polygon\+\_\+2}$<$ \hyperlink{_c_g_a_l__typedefs_8h_ab014831fee2bac62051dfa390ec66d6f}{Exact\+Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_a316986ff1461e561536a9b8cd8d13865}{Exact\+Polygon\+\_\+2}
+\item 
+typedef C\+G\+A\+L\+::\+Polyhedron\+\_\+3$<$ \hyperlink{_c_g_a_l__typedefs_8h_ab014831fee2bac62051dfa390ec66d6f}{Exact\+Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_aedf4279eda927d338212e13db24116eb}{Exact\+Polyhedron}
+\item 
+typedef C\+G\+A\+L\+::\+Tetrahedron\+\_\+3$<$ \hyperlink{_c_g_a_l__typedefs_8h_ab014831fee2bac62051dfa390ec66d6f}{Exact\+Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_a02a72c8dcf4a17c7460e7e71301d2d3f}{Exact\+Tetrahedron}
+\item 
+typedef C\+G\+A\+L\+::\+Nef\+\_\+polyhedron\+\_\+3$<$ \hyperlink{_c_g_a_l__typedefs_8h_ab014831fee2bac62051dfa390ec66d6f}{Exact\+Kernel}, C\+G\+A\+L\+::\+S\+N\+C\+\_\+indexed\+\_\+items $>$ \hyperlink{_c_g_a_l__typedefs_8h_ab85d2fceadc71a761aa3a184793f8c5f}{Nef\+\_\+\+Polyhedron}
+\item 
+typedef Nef\+\_\+\+Polyhedron\+::\+Plane\+\_\+3 \hyperlink{_c_g_a_l__typedefs_8h_aa0abd26637f642e3a168dce7c18e0824}{Nef\+Plane\+\_\+3}
+\item 
+typedef C\+G\+A\+L\+::\+Polyhedron\+\_\+3$<$ \hyperlink{_c_g_a_l__typedefs_8h_ab014831fee2bac62051dfa390ec66d6f}{Exact\+Kernel}, C\+G\+A\+L\+::\+Polyhedron\+\_\+items\+\_\+3 $>$ \hyperlink{_c_g_a_l__typedefs_8h_af359da6369c138647f00cd06ef9d6bb3}{Exact\+Polyhedral\+Surface}
+\item 
+typedef Kernel\+::\+Point\+\_\+2 \hyperlink{_c_g_a_l__typedefs_8h_ab8a951692a5261d5dd24b550af05e147}{Point\+\_\+2}
+\item 
+typedef Kernel\+::\+Triangle\+\_\+2 \hyperlink{_c_g_a_l__typedefs_8h_adc12f3fd1891d07889bf0140df9ffcc0}{Triangle\+\_\+2}
+\item 
+typedef Kernel\+::\+Segment\+\_\+2 \hyperlink{_c_g_a_l__typedefs_8h_a90a1b2f3a502f5b6fc4a19c276500e03}{Segment\+\_\+2}
+\item 
+typedef C\+G\+A\+L\+::\+Bbox\+\_\+2 \hyperlink{_c_g_a_l__typedefs_8h_ad8e0bb6e3d210715c730963b897d6906}{Bbox\+\_\+2}
+\item 
+typedef Kernel\+::\+Point\+\_\+3 \hyperlink{_c_g_a_l__typedefs_8h_a9dc49a828e77bbd58c1f5db13edde547}{Point\+\_\+3}
+\item 
+typedef Kernel\+::\+Triangle\+\_\+3 \hyperlink{_c_g_a_l__typedefs_8h_ac40a63442fa83fbf61131d9e6e53d245}{Triangle\+\_\+3}
+\item 
+typedef Kernel\+::\+Segment\+\_\+3 \hyperlink{_c_g_a_l__typedefs_8h_a61cf4e27bddccffecdfd4c691f5a65bf}{Segment\+\_\+3}
+\item 
+typedef C\+G\+A\+L\+::\+Bbox\+\_\+3 \hyperlink{_c_g_a_l__typedefs_8h_addfe23033005db95e2e48130a55c8a6c}{Bbox\+\_\+3}
+\item 
+typedef C\+G\+A\+L\+::\+Polygon\+\_\+2$<$ \hyperlink{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_a9e00699e05c9e7829bb4701dcbe7cdca}{Polygon\+\_\+2}
+\item 
+typedef C\+G\+A\+L\+::\+Polyhedron\+\_\+3$<$ \hyperlink{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_a4831515a803a403d29bd2641b9fb723d}{Polyhedron}
+\item 
+typedef C\+G\+A\+L\+::\+Tetrahedron\+\_\+3$<$ \hyperlink{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_ac5f7e352a894095a1102f63305cf0e39}{Tetrahedron}
+\item 
+typedef C\+G\+A\+L\+::\+Triangulation\+\_\+vertex\+\_\+base\+\_\+with\+\_\+info\+\_\+2$<$ \hyperlink{struct_vertex_info__2}{Vertex\+Info\+\_\+2}, \hyperlink{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_acffae04a395311a4a05f73a7ff26d82c}{Vb\+Info\+\_\+2}
+\item 
+typedef C\+G\+A\+L\+::\+Triangulation\+\_\+face\+\_\+base\+\_\+with\+\_\+info\+\_\+2$<$ \hyperlink{struct_face_info}{Face\+Info}, \hyperlink{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_ae8891d3efd0722e2ec12f212f1a057ed}{Fb\+Info\+\_\+2}
+\item 
+typedef C\+G\+A\+L\+::\+Triangulation\+\_\+data\+\_\+structure\+\_\+2$<$ \hyperlink{_c_g_a_l__typedefs_8h_acffae04a395311a4a05f73a7ff26d82c}{Vb\+Info\+\_\+2}, \hyperlink{_c_g_a_l__typedefs_8h_ae8891d3efd0722e2ec12f212f1a057ed}{Fb\+Info\+\_\+2} $>$ \hyperlink{_c_g_a_l__typedefs_8h_aa6e69c370c4c2a60d1005620c1668fc2}{Tds\+\_\+2}
+\item 
+typedef C\+G\+A\+L\+::\+Delaunay\+\_\+triangulation\+\_\+2$<$ \hyperlink{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{Kernel}, \hyperlink{_c_g_a_l__typedefs_8h_aa6e69c370c4c2a60d1005620c1668fc2}{Tds\+\_\+2} $>$ \hyperlink{_c_g_a_l__typedefs_8h_a92561556ad379eb6623456ea6c12e9a8}{D\+T\+\_\+2}
+\item 
+typedef D\+T\+\_\+2\+::\+Vertex \hyperlink{_c_g_a_l__typedefs_8h_a0531a58de2779273510be3c8f0062986}{Vertex\+\_\+2}
+\item 
+typedef D\+T\+\_\+2\+::\+Edge \hyperlink{_c_g_a_l__typedefs_8h_a8c8d4f3dd2e1f4132ccc04ba08f22ce1}{Edge\+\_\+2}
+\item 
+typedef D\+T\+\_\+2\+::\+Face \hyperlink{_c_g_a_l__typedefs_8h_aac5daed8325f3cb42b8c827f3ec6af01}{Face\+\_\+2}
+\item 
+typedef D\+T\+\_\+2\+::\+Vertex\+\_\+handle \hyperlink{_c_g_a_l__typedefs_8h_a0e31acb524949bfe7ba0b47f619f94a0}{Vertex\+\_\+handle\+\_\+2}
+\item 
+typedef D\+T\+\_\+2\+::\+Face\+\_\+handle \hyperlink{_c_g_a_l__typedefs_8h_a0ae284d812d601c673e6f15be7016727}{Face\+\_\+handle\+\_\+2}
+\item 
+typedef D\+T\+\_\+2\+::\+Face\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_a87b3ceb3ece17d614b457e96fa6f7476}{Face\+\_\+iterator\+\_\+2}
+\item 
+typedef D\+T\+\_\+2\+::\+All\+\_\+vertices\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_a9ed142e83c1b75eeea644db6e5f3a8a9}{All\+\_\+vertices\+\_\+iterator\+\_\+2}
+\item 
+typedef D\+T\+\_\+2\+::\+All\+\_\+faces\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_a563405b7ec25bf58616eb50cc8bedf0e}{All\+\_\+faces\+\_\+iterator\+\_\+2}
+\item 
+typedef D\+T\+\_\+2\+::\+Finite\+\_\+faces\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_aeb6919a52a1ea98331fb12bf04f403b2}{Finite\+\_\+faces\+\_\+iterator\+\_\+2}
+\item 
+typedef D\+T\+\_\+2\+::\+Face\+\_\+circulator \hyperlink{_c_g_a_l__typedefs_8h_a4d14a69e5a7d566f853b2a38b809acb8}{Face\+\_\+circulator\+\_\+2}
+\item 
+typedef D\+T\+\_\+2\+::\+Finite\+\_\+vertices\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_ad3fc2526c69743bdf4eb613b966b5b5e}{Finite\+\_\+vertices\+\_\+iterator\+\_\+2}
+\item 
+typedef C\+G\+A\+L\+::\+Triangulation\+\_\+vertex\+\_\+base\+\_\+with\+\_\+info\+\_\+3$<$ \hyperlink{struct_vertex_info__3}{Vertex\+Info\+\_\+3}, \hyperlink{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_a940683270e2b78ef4e091e2834ced568}{Vb\+Info\+\_\+3}
+\item 
+typedef C\+G\+A\+L\+::\+Triangulation\+\_\+cell\+\_\+base\+\_\+with\+\_\+info\+\_\+3$<$ \hyperlink{struct_cell_info}{Cell\+Info}, \hyperlink{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_a52deb1c1cc41c2daefdc729868d07d85}{Cb\+Info\+\_\+3}
+\item 
+typedef C\+G\+A\+L\+::\+Triangulation\+\_\+data\+\_\+structure\+\_\+3$<$ \hyperlink{_c_g_a_l__typedefs_8h_a940683270e2b78ef4e091e2834ced568}{Vb\+Info\+\_\+3}, \hyperlink{_c_g_a_l__typedefs_8h_a52deb1c1cc41c2daefdc729868d07d85}{Cb\+Info\+\_\+3} $>$ \hyperlink{_c_g_a_l__typedefs_8h_a042c71112dec7e30a7e514d02f04692c}{Tds\+\_\+3}
+\item 
+typedef C\+G\+A\+L\+::\+Delaunay\+\_\+triangulation\+\_\+3$<$ \hyperlink{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{Kernel}, \hyperlink{_c_g_a_l__typedefs_8h_a042c71112dec7e30a7e514d02f04692c}{Tds\+\_\+3} $>$ \hyperlink{_c_g_a_l__typedefs_8h_a36cae79a8ab0b5a4edc662fdb8821ba9}{D\+T\+\_\+3}
+\item 
+typedef C\+G\+A\+L\+::\+Delaunay\+\_\+triangulation\+\_\+3$<$ \hyperlink{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_aad94607aa7f0f52ef6ed10479332cf91}{Delaunay\+Tri\+\_\+3}
+\item 
+typedef C\+G\+A\+L\+::\+Delaunay\+\_\+triangulation\+\_\+3$<$ \hyperlink{_c_g_a_l__typedefs_8h_ab014831fee2bac62051dfa390ec66d6f}{Exact\+Kernel} $>$ \hyperlink{_c_g_a_l__typedefs_8h_a67e89ce79ed684284e18ac62c03e1f71}{Exact\+Delaunay\+Tri\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Vertex \hyperlink{_c_g_a_l__typedefs_8h_aa2871808f850cc84348fd1e0a881a380}{Vertex\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Edge \hyperlink{_c_g_a_l__typedefs_8h_a7cf77f3230d00b1f5a385543effad0ad}{Edge\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Facet \hyperlink{_c_g_a_l__typedefs_8h_ac134fefc99d1d842e86cdf2c51604734}{Facet\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Cell \hyperlink{_c_g_a_l__typedefs_8h_aa8351e751bca02aff9fc30d48112aced}{Cell\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Vertex\+\_\+handle \hyperlink{_c_g_a_l__typedefs_8h_a3b04696a797c3efc6eb818ce4e95b906}{Vertex\+\_\+handle\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Cell\+\_\+handle \hyperlink{_c_g_a_l__typedefs_8h_a66b7a7596ac078458682d8c75394fe02}{Cell\+\_\+handle\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Cell\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_ab84ece8f3e11313627a82282e2f4acf0}{Cell\+\_\+iterator\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+All\+\_\+vertices\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_aaaedd0105a426048e07f27a57b6aaa05}{All\+\_\+vertices\+\_\+iterator\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+All\+\_\+edges\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_adc687b41650227a22cf0e2a76e74e87b}{All\+\_\+edges\+\_\+iterator\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+All\+\_\+facets\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_aeb23dddbd0375a438b86d98879a9c147}{All\+\_\+facets\+\_\+iterator\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+All\+\_\+cells\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_a81ab1f0f3d4bd3bb85ed9629f7b0deba}{All\+\_\+cells\+\_\+iterator\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Finite\+\_\+vertices\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_a133104f0a75ac089a78dc544c612023c}{Finite\+\_\+vertices\+\_\+iterator\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Finite\+\_\+edges\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_a015d511020fb15543e20a84250711787}{Finite\+\_\+edges\+\_\+iterator\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Finite\+\_\+facets\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_a6f273cc15cd4c2e5caf9ffc38a8c2250}{Finite\+\_\+facets\+\_\+iterator\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Finite\+\_\+cells\+\_\+iterator \hyperlink{_c_g_a_l__typedefs_8h_a566d5fb492ed5802eb53bc2f2e0be9d5}{Finite\+\_\+cells\+\_\+iterator\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Facet\+\_\+circulator \hyperlink{_c_g_a_l__typedefs_8h_adb787f17a95ff9039388c35bcb5133dd}{Facet\+\_\+circulator\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Cell\+\_\+circulator \hyperlink{_c_g_a_l__typedefs_8h_ab7d3b100e6230ae5be8cb014b35223d3}{Cell\+\_\+circulator\+\_\+3}
+\item 
+typedef D\+T\+\_\+3\+::\+Locate\+\_\+type \hyperlink{_c_g_a_l__typedefs_8h_af53407eba0cd9a7bcec725cd9f38c5ca}{Locate\+\_\+type\+\_\+3}
+\item 
+typedef C\+G\+A\+L\+::cpp11\+::result\+\_\+of$<$ Kernel\+::\+Intersect\+\_\+2(\hyperlink{_c_g_a_l__typedefs_8h_adc12f3fd1891d07889bf0140df9ffcc0}{Triangle\+\_\+2}, \hyperlink{_c_g_a_l__typedefs_8h_adc12f3fd1891d07889bf0140df9ffcc0}{Triangle\+\_\+2})$>$\+::type \hyperlink{_c_g_a_l__typedefs_8h_a4e4a3802a3fc391ccd9631989eacadcb}{Triangle\+\_\+2\+\_\+\+Intersection\+\_\+\+Variant}
+\item 
+typedef C\+G\+A\+L\+::cpp11\+::result\+\_\+of$<$ Kernel\+::\+Intersect\+\_\+2(\hyperlink{_c_g_a_l__typedefs_8h_ac40a63442fa83fbf61131d9e6e53d245}{Triangle\+\_\+3}, \hyperlink{_c_g_a_l__typedefs_8h_ac40a63442fa83fbf61131d9e6e53d245}{Triangle\+\_\+3})$>$\+::type \hyperlink{_c_g_a_l__typedefs_8h_afd68bcf2c13900a0b26e0de24d8a5ea1}{Triangle\+\_\+3\+\_\+\+Intersection\+\_\+\+Variant}
+\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{_c_g_a_l__typedefs_8h_a81ab1f0f3d4bd3bb85ed9629f7b0deba}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!All\+\_\+cells\+\_\+iterator\+\_\+3@{All\+\_\+cells\+\_\+iterator\+\_\+3}}
+\index{All\+\_\+cells\+\_\+iterator\+\_\+3@{All\+\_\+cells\+\_\+iterator\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{All\+\_\+cells\+\_\+iterator\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+All\+\_\+cells\+\_\+iterator {\bf All\+\_\+cells\+\_\+iterator\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a81ab1f0f3d4bd3bb85ed9629f7b0deba}
+
+
+Definition at line 171 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_adc687b41650227a22cf0e2a76e74e87b}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!All\+\_\+edges\+\_\+iterator\+\_\+3@{All\+\_\+edges\+\_\+iterator\+\_\+3}}
+\index{All\+\_\+edges\+\_\+iterator\+\_\+3@{All\+\_\+edges\+\_\+iterator\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{All\+\_\+edges\+\_\+iterator\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+All\+\_\+edges\+\_\+iterator {\bf All\+\_\+edges\+\_\+iterator\+\_\+3}}\label{_c_g_a_l__typedefs_8h_adc687b41650227a22cf0e2a76e74e87b}
+
+
+Definition at line 169 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a563405b7ec25bf58616eb50cc8bedf0e}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!All\+\_\+faces\+\_\+iterator\+\_\+2@{All\+\_\+faces\+\_\+iterator\+\_\+2}}
+\index{All\+\_\+faces\+\_\+iterator\+\_\+2@{All\+\_\+faces\+\_\+iterator\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{All\+\_\+faces\+\_\+iterator\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+2\+::\+All\+\_\+faces\+\_\+iterator {\bf All\+\_\+faces\+\_\+iterator\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a563405b7ec25bf58616eb50cc8bedf0e}
+
+
+Definition at line 142 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_aeb23dddbd0375a438b86d98879a9c147}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!All\+\_\+facets\+\_\+iterator\+\_\+3@{All\+\_\+facets\+\_\+iterator\+\_\+3}}
+\index{All\+\_\+facets\+\_\+iterator\+\_\+3@{All\+\_\+facets\+\_\+iterator\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{All\+\_\+facets\+\_\+iterator\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+All\+\_\+facets\+\_\+iterator {\bf All\+\_\+facets\+\_\+iterator\+\_\+3}}\label{_c_g_a_l__typedefs_8h_aeb23dddbd0375a438b86d98879a9c147}
+
+
+Definition at line 170 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a9ed142e83c1b75eeea644db6e5f3a8a9}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!All\+\_\+vertices\+\_\+iterator\+\_\+2@{All\+\_\+vertices\+\_\+iterator\+\_\+2}}
+\index{All\+\_\+vertices\+\_\+iterator\+\_\+2@{All\+\_\+vertices\+\_\+iterator\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{All\+\_\+vertices\+\_\+iterator\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+2\+::\+All\+\_\+vertices\+\_\+iterator {\bf All\+\_\+vertices\+\_\+iterator\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a9ed142e83c1b75eeea644db6e5f3a8a9}
+
+
+Definition at line 141 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_aaaedd0105a426048e07f27a57b6aaa05}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!All\+\_\+vertices\+\_\+iterator\+\_\+3@{All\+\_\+vertices\+\_\+iterator\+\_\+3}}
+\index{All\+\_\+vertices\+\_\+iterator\+\_\+3@{All\+\_\+vertices\+\_\+iterator\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{All\+\_\+vertices\+\_\+iterator\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+All\+\_\+vertices\+\_\+iterator {\bf All\+\_\+vertices\+\_\+iterator\+\_\+3}}\label{_c_g_a_l__typedefs_8h_aaaedd0105a426048e07f27a57b6aaa05}
+
+
+Definition at line 168 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_ad8e0bb6e3d210715c730963b897d6906}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Bbox\+\_\+2@{Bbox\+\_\+2}}
+\index{Bbox\+\_\+2@{Bbox\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Bbox\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Bbox\+\_\+2 {\bf Bbox\+\_\+2}}\label{_c_g_a_l__typedefs_8h_ad8e0bb6e3d210715c730963b897d6906}
+
+
+Definition at line 113 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_addfe23033005db95e2e48130a55c8a6c}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Bbox\+\_\+3@{Bbox\+\_\+3}}
+\index{Bbox\+\_\+3@{Bbox\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Bbox\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Bbox\+\_\+3 {\bf Bbox\+\_\+3}}\label{_c_g_a_l__typedefs_8h_addfe23033005db95e2e48130a55c8a6c}
+
+
+Definition at line 118 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a52deb1c1cc41c2daefdc729868d07d85}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Cb\+Info\+\_\+3@{Cb\+Info\+\_\+3}}
+\index{Cb\+Info\+\_\+3@{Cb\+Info\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Cb\+Info\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Triangulation\+\_\+cell\+\_\+base\+\_\+with\+\_\+info\+\_\+3$<${\bf Cell\+Info},{\bf Kernel}$>$ {\bf Cb\+Info\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a52deb1c1cc41c2daefdc729868d07d85}
+
+
+Definition at line 149 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_aa8351e751bca02aff9fc30d48112aced}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Cell\+\_\+3@{Cell\+\_\+3}}
+\index{Cell\+\_\+3@{Cell\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Cell\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Cell {\bf Cell\+\_\+3}}\label{_c_g_a_l__typedefs_8h_aa8351e751bca02aff9fc30d48112aced}
+
+
+Definition at line 161 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_ab7d3b100e6230ae5be8cb014b35223d3}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Cell\+\_\+circulator\+\_\+3@{Cell\+\_\+circulator\+\_\+3}}
+\index{Cell\+\_\+circulator\+\_\+3@{Cell\+\_\+circulator\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Cell\+\_\+circulator\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Cell\+\_\+circulator {\bf Cell\+\_\+circulator\+\_\+3}}\label{_c_g_a_l__typedefs_8h_ab7d3b100e6230ae5be8cb014b35223d3}
+
+
+Definition at line 179 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a66b7a7596ac078458682d8c75394fe02}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Cell\+\_\+handle\+\_\+3@{Cell\+\_\+handle\+\_\+3}}
+\index{Cell\+\_\+handle\+\_\+3@{Cell\+\_\+handle\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Cell\+\_\+handle\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Cell\+\_\+handle {\bf Cell\+\_\+handle\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a66b7a7596ac078458682d8c75394fe02}
+
+
+Definition at line 164 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_ab84ece8f3e11313627a82282e2f4acf0}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Cell\+\_\+iterator\+\_\+3@{Cell\+\_\+iterator\+\_\+3}}
+\index{Cell\+\_\+iterator\+\_\+3@{Cell\+\_\+iterator\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Cell\+\_\+iterator\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Cell\+\_\+iterator {\bf Cell\+\_\+iterator\+\_\+3}}\label{_c_g_a_l__typedefs_8h_ab84ece8f3e11313627a82282e2f4acf0}
+
+
+Definition at line 166 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_aad94607aa7f0f52ef6ed10479332cf91}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Delaunay\+Tri\+\_\+3@{Delaunay\+Tri\+\_\+3}}
+\index{Delaunay\+Tri\+\_\+3@{Delaunay\+Tri\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Delaunay\+Tri\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Delaunay\+\_\+triangulation\+\_\+3$<${\bf Kernel}$>$ {\bf Delaunay\+Tri\+\_\+3}}\label{_c_g_a_l__typedefs_8h_aad94607aa7f0f52ef6ed10479332cf91}
+
+
+Definition at line 154 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a92561556ad379eb6623456ea6c12e9a8}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!D\+T\+\_\+2@{D\+T\+\_\+2}}
+\index{D\+T\+\_\+2@{D\+T\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{D\+T\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Delaunay\+\_\+triangulation\+\_\+2$<${\bf Kernel},{\bf Tds\+\_\+2}$>$ {\bf D\+T\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a92561556ad379eb6623456ea6c12e9a8}
+
+
+Definition at line 129 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a36cae79a8ab0b5a4edc662fdb8821ba9}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!D\+T\+\_\+3@{D\+T\+\_\+3}}
+\index{D\+T\+\_\+3@{D\+T\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{D\+T\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Delaunay\+\_\+triangulation\+\_\+3$<${\bf Kernel},{\bf Tds\+\_\+3}$>$ {\bf D\+T\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a36cae79a8ab0b5a4edc662fdb8821ba9}
+
+
+Definition at line 152 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a8c8d4f3dd2e1f4132ccc04ba08f22ce1}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Edge\+\_\+2@{Edge\+\_\+2}}
+\index{Edge\+\_\+2@{Edge\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Edge\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+2\+::\+Edge {\bf Edge\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a8c8d4f3dd2e1f4132ccc04ba08f22ce1}
+
+
+Definition at line 133 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a7cf77f3230d00b1f5a385543effad0ad}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Edge\+\_\+3@{Edge\+\_\+3}}
+\index{Edge\+\_\+3@{Edge\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Edge\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Edge {\bf Edge\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a7cf77f3230d00b1f5a385543effad0ad}
+
+
+Definition at line 159 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a67e89ce79ed684284e18ac62c03e1f71}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Exact\+Delaunay\+Tri\+\_\+3@{Exact\+Delaunay\+Tri\+\_\+3}}
+\index{Exact\+Delaunay\+Tri\+\_\+3@{Exact\+Delaunay\+Tri\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Exact\+Delaunay\+Tri\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Delaunay\+\_\+triangulation\+\_\+3$<${\bf Exact\+Kernel}$>$ {\bf Exact\+Delaunay\+Tri\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a67e89ce79ed684284e18ac62c03e1f71}
+
+
+Definition at line 155 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_ab014831fee2bac62051dfa390ec66d6f}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Exact\+Kernel@{Exact\+Kernel}}
+\index{Exact\+Kernel@{Exact\+Kernel}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Exact\+Kernel}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Exact\+\_\+predicates\+\_\+exact\+\_\+constructions\+\_\+kernel {\bf Exact\+Kernel}}\label{_c_g_a_l__typedefs_8h_ab014831fee2bac62051dfa390ec66d6f}
+
+
+Definition at line 83 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_aa71268402de3c241e32cd09e20cbe44c}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Exact\+Kernel\+\_\+to\+\_\+\+Kernel@{Exact\+Kernel\+\_\+to\+\_\+\+Kernel}}
+\index{Exact\+Kernel\+\_\+to\+\_\+\+Kernel@{Exact\+Kernel\+\_\+to\+\_\+\+Kernel}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Exact\+Kernel\+\_\+to\+\_\+\+Kernel}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Cartesian\+\_\+converter$<${\bf Exact\+Kernel},{\bf Kernel}$>$ {\bf Exact\+Kernel\+\_\+to\+\_\+\+Kernel}}\label{_c_g_a_l__typedefs_8h_aa71268402de3c241e32cd09e20cbe44c}
+
+
+Definition at line 86 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a785007721c85f7cff7c111b016d8caa9}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Exact\+Point\+\_\+2@{Exact\+Point\+\_\+2}}
+\index{Exact\+Point\+\_\+2@{Exact\+Point\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Exact\+Point\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf Exact\+Kernel\+::\+Point\+\_\+2} {\bf Exact\+Point\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a785007721c85f7cff7c111b016d8caa9}
+
+
+Definition at line 90 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a162dbf669b38ca5632e00c9c02e000a5}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Exact\+Point\+\_\+3@{Exact\+Point\+\_\+3}}
+\index{Exact\+Point\+\_\+3@{Exact\+Point\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Exact\+Point\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf Exact\+Kernel\+::\+Point\+\_\+3} {\bf Exact\+Point\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a162dbf669b38ca5632e00c9c02e000a5}
+
+
+Definition at line 94 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a316986ff1461e561536a9b8cd8d13865}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Exact\+Polygon\+\_\+2@{Exact\+Polygon\+\_\+2}}
+\index{Exact\+Polygon\+\_\+2@{Exact\+Polygon\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Exact\+Polygon\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf C\+G\+A\+L\+::\+Polygon\+\_\+2}$<${\bf Exact\+Kernel}$>$ {\bf Exact\+Polygon\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a316986ff1461e561536a9b8cd8d13865}
+
+
+Definition at line 98 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_af359da6369c138647f00cd06ef9d6bb3}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Exact\+Polyhedral\+Surface@{Exact\+Polyhedral\+Surface}}
+\index{Exact\+Polyhedral\+Surface@{Exact\+Polyhedral\+Surface}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Exact\+Polyhedral\+Surface}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Polyhedron\+\_\+3$<${\bf Exact\+Kernel},C\+G\+A\+L\+::\+Polyhedron\+\_\+items\+\_\+3$>$ {\bf Exact\+Polyhedral\+Surface}}\label{_c_g_a_l__typedefs_8h_af359da6369c138647f00cd06ef9d6bb3}
+
+
+Definition at line 106 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_aedf4279eda927d338212e13db24116eb}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Exact\+Polyhedron@{Exact\+Polyhedron}}
+\index{Exact\+Polyhedron@{Exact\+Polyhedron}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Exact\+Polyhedron}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Polyhedron\+\_\+3$<${\bf Exact\+Kernel}$>$ {\bf Exact\+Polyhedron}}\label{_c_g_a_l__typedefs_8h_aedf4279eda927d338212e13db24116eb}
+
+
+Definition at line 99 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a7ac6a9260e0ac28e354aff2d53be61e1}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Exact\+Segment\+\_\+2@{Exact\+Segment\+\_\+2}}
+\index{Exact\+Segment\+\_\+2@{Exact\+Segment\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Exact\+Segment\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf Exact\+Kernel\+::\+Segment\+\_\+2} {\bf Exact\+Segment\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a7ac6a9260e0ac28e354aff2d53be61e1}
+
+
+Definition at line 92 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_ad85af2763fd2933e10dcf961574090e7}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Exact\+Segment\+\_\+3@{Exact\+Segment\+\_\+3}}
+\index{Exact\+Segment\+\_\+3@{Exact\+Segment\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Exact\+Segment\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf Exact\+Kernel\+::\+Segment\+\_\+3} {\bf Exact\+Segment\+\_\+3}}\label{_c_g_a_l__typedefs_8h_ad85af2763fd2933e10dcf961574090e7}
+
+
+Definition at line 96 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a02a72c8dcf4a17c7460e7e71301d2d3f}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Exact\+Tetrahedron@{Exact\+Tetrahedron}}
+\index{Exact\+Tetrahedron@{Exact\+Tetrahedron}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Exact\+Tetrahedron}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Tetrahedron\+\_\+3$<${\bf Exact\+Kernel}$>$ {\bf Exact\+Tetrahedron}}\label{_c_g_a_l__typedefs_8h_a02a72c8dcf4a17c7460e7e71301d2d3f}
+
+
+Definition at line 100 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_affe6de37e76892bb586eddd2c7d17d61}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Exact\+Triangle\+\_\+2@{Exact\+Triangle\+\_\+2}}
+\index{Exact\+Triangle\+\_\+2@{Exact\+Triangle\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Exact\+Triangle\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf Exact\+Kernel\+::\+Triangle\+\_\+2} {\bf Exact\+Triangle\+\_\+2}}\label{_c_g_a_l__typedefs_8h_affe6de37e76892bb586eddd2c7d17d61}
+
+
+Definition at line 91 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_acb9586e4ea704b6a4c4502ad0cb03c62}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Exact\+Triangle\+\_\+3@{Exact\+Triangle\+\_\+3}}
+\index{Exact\+Triangle\+\_\+3@{Exact\+Triangle\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Exact\+Triangle\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf Exact\+Kernel\+::\+Triangle\+\_\+3} {\bf Exact\+Triangle\+\_\+3}}\label{_c_g_a_l__typedefs_8h_acb9586e4ea704b6a4c4502ad0cb03c62}
+
+
+Definition at line 95 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_aac5daed8325f3cb42b8c827f3ec6af01}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Face\+\_\+2@{Face\+\_\+2}}
+\index{Face\+\_\+2@{Face\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Face\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+2\+::\+Face {\bf Face\+\_\+2}}\label{_c_g_a_l__typedefs_8h_aac5daed8325f3cb42b8c827f3ec6af01}
+
+
+Definition at line 134 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a4d14a69e5a7d566f853b2a38b809acb8}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Face\+\_\+circulator\+\_\+2@{Face\+\_\+circulator\+\_\+2}}
+\index{Face\+\_\+circulator\+\_\+2@{Face\+\_\+circulator\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Face\+\_\+circulator\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+2\+::\+Face\+\_\+circulator {\bf Face\+\_\+circulator\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a4d14a69e5a7d566f853b2a38b809acb8}
+
+
+Definition at line 144 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a0ae284d812d601c673e6f15be7016727}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Face\+\_\+handle\+\_\+2@{Face\+\_\+handle\+\_\+2}}
+\index{Face\+\_\+handle\+\_\+2@{Face\+\_\+handle\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Face\+\_\+handle\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+2\+::\+Face\+\_\+handle {\bf Face\+\_\+handle\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a0ae284d812d601c673e6f15be7016727}
+
+
+Definition at line 137 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a87b3ceb3ece17d614b457e96fa6f7476}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Face\+\_\+iterator\+\_\+2@{Face\+\_\+iterator\+\_\+2}}
+\index{Face\+\_\+iterator\+\_\+2@{Face\+\_\+iterator\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Face\+\_\+iterator\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+2\+::\+Face\+\_\+iterator {\bf Face\+\_\+iterator\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a87b3ceb3ece17d614b457e96fa6f7476}
+
+
+Definition at line 139 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_ac134fefc99d1d842e86cdf2c51604734}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Facet\+\_\+3@{Facet\+\_\+3}}
+\index{Facet\+\_\+3@{Facet\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Facet\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Facet {\bf Facet\+\_\+3}}\label{_c_g_a_l__typedefs_8h_ac134fefc99d1d842e86cdf2c51604734}
+
+
+Definition at line 160 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_adb787f17a95ff9039388c35bcb5133dd}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Facet\+\_\+circulator\+\_\+3@{Facet\+\_\+circulator\+\_\+3}}
+\index{Facet\+\_\+circulator\+\_\+3@{Facet\+\_\+circulator\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Facet\+\_\+circulator\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Facet\+\_\+circulator {\bf Facet\+\_\+circulator\+\_\+3}}\label{_c_g_a_l__typedefs_8h_adb787f17a95ff9039388c35bcb5133dd}
+
+
+Definition at line 178 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_ae8891d3efd0722e2ec12f212f1a057ed}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Fb\+Info\+\_\+2@{Fb\+Info\+\_\+2}}
+\index{Fb\+Info\+\_\+2@{Fb\+Info\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Fb\+Info\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Triangulation\+\_\+face\+\_\+base\+\_\+with\+\_\+info\+\_\+2$<${\bf Face\+Info},{\bf Kernel}$>$ {\bf Fb\+Info\+\_\+2}}\label{_c_g_a_l__typedefs_8h_ae8891d3efd0722e2ec12f212f1a057ed}
+
+
+Definition at line 126 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a566d5fb492ed5802eb53bc2f2e0be9d5}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Finite\+\_\+cells\+\_\+iterator\+\_\+3@{Finite\+\_\+cells\+\_\+iterator\+\_\+3}}
+\index{Finite\+\_\+cells\+\_\+iterator\+\_\+3@{Finite\+\_\+cells\+\_\+iterator\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Finite\+\_\+cells\+\_\+iterator\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Finite\+\_\+cells\+\_\+iterator {\bf Finite\+\_\+cells\+\_\+iterator\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a566d5fb492ed5802eb53bc2f2e0be9d5}
+
+
+Definition at line 176 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a015d511020fb15543e20a84250711787}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Finite\+\_\+edges\+\_\+iterator\+\_\+3@{Finite\+\_\+edges\+\_\+iterator\+\_\+3}}
+\index{Finite\+\_\+edges\+\_\+iterator\+\_\+3@{Finite\+\_\+edges\+\_\+iterator\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Finite\+\_\+edges\+\_\+iterator\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Finite\+\_\+edges\+\_\+iterator {\bf Finite\+\_\+edges\+\_\+iterator\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a015d511020fb15543e20a84250711787}
+
+
+Definition at line 174 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_aeb6919a52a1ea98331fb12bf04f403b2}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Finite\+\_\+faces\+\_\+iterator\+\_\+2@{Finite\+\_\+faces\+\_\+iterator\+\_\+2}}
+\index{Finite\+\_\+faces\+\_\+iterator\+\_\+2@{Finite\+\_\+faces\+\_\+iterator\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Finite\+\_\+faces\+\_\+iterator\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+2\+::\+Finite\+\_\+faces\+\_\+iterator {\bf Finite\+\_\+faces\+\_\+iterator\+\_\+2}}\label{_c_g_a_l__typedefs_8h_aeb6919a52a1ea98331fb12bf04f403b2}
+
+
+Definition at line 143 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a6f273cc15cd4c2e5caf9ffc38a8c2250}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Finite\+\_\+facets\+\_\+iterator\+\_\+3@{Finite\+\_\+facets\+\_\+iterator\+\_\+3}}
+\index{Finite\+\_\+facets\+\_\+iterator\+\_\+3@{Finite\+\_\+facets\+\_\+iterator\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Finite\+\_\+facets\+\_\+iterator\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Finite\+\_\+facets\+\_\+iterator {\bf Finite\+\_\+facets\+\_\+iterator\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a6f273cc15cd4c2e5caf9ffc38a8c2250}
+
+
+Definition at line 175 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_ad3fc2526c69743bdf4eb613b966b5b5e}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Finite\+\_\+vertices\+\_\+iterator\+\_\+2@{Finite\+\_\+vertices\+\_\+iterator\+\_\+2}}
+\index{Finite\+\_\+vertices\+\_\+iterator\+\_\+2@{Finite\+\_\+vertices\+\_\+iterator\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Finite\+\_\+vertices\+\_\+iterator\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+2\+::\+Finite\+\_\+vertices\+\_\+iterator {\bf Finite\+\_\+vertices\+\_\+iterator\+\_\+2}}\label{_c_g_a_l__typedefs_8h_ad3fc2526c69743bdf4eb613b966b5b5e}
+
+
+Definition at line 145 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a133104f0a75ac089a78dc544c612023c}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Finite\+\_\+vertices\+\_\+iterator\+\_\+3@{Finite\+\_\+vertices\+\_\+iterator\+\_\+3}}
+\index{Finite\+\_\+vertices\+\_\+iterator\+\_\+3@{Finite\+\_\+vertices\+\_\+iterator\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Finite\+\_\+vertices\+\_\+iterator\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Finite\+\_\+vertices\+\_\+iterator {\bf Finite\+\_\+vertices\+\_\+iterator\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a133104f0a75ac089a78dc544c612023c}
+
+
+Definition at line 173 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Kernel@{Kernel}}
+\index{Kernel@{Kernel}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Kernel}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Exact\+\_\+predicates\+\_\+inexact\+\_\+constructions\+\_\+kernel {\bf Kernel}}\label{_c_g_a_l__typedefs_8h_a69d52492717758b0992a45a39f7823c0}
+
+
+Definition at line 82 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a7fee49db11d7ad002fa79aedabf4d2cc}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Kernel\+\_\+to\+\_\+\+Exact\+Kernel@{Kernel\+\_\+to\+\_\+\+Exact\+Kernel}}
+\index{Kernel\+\_\+to\+\_\+\+Exact\+Kernel@{Kernel\+\_\+to\+\_\+\+Exact\+Kernel}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Kernel\+\_\+to\+\_\+\+Exact\+Kernel}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Cartesian\+\_\+converter$<${\bf Kernel},{\bf Exact\+Kernel}$>$ {\bf Kernel\+\_\+to\+\_\+\+Exact\+Kernel}}\label{_c_g_a_l__typedefs_8h_a7fee49db11d7ad002fa79aedabf4d2cc}
+
+
+Definition at line 85 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_af53407eba0cd9a7bcec725cd9f38c5ca}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Locate\+\_\+type\+\_\+3@{Locate\+\_\+type\+\_\+3}}
+\index{Locate\+\_\+type\+\_\+3@{Locate\+\_\+type\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Locate\+\_\+type\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Locate\+\_\+type {\bf Locate\+\_\+type\+\_\+3}}\label{_c_g_a_l__typedefs_8h_af53407eba0cd9a7bcec725cd9f38c5ca}
+
+
+Definition at line 180 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_ab85d2fceadc71a761aa3a184793f8c5f}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Nef\+\_\+\+Polyhedron@{Nef\+\_\+\+Polyhedron}}
+\index{Nef\+\_\+\+Polyhedron@{Nef\+\_\+\+Polyhedron}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Nef\+\_\+\+Polyhedron}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Nef\+\_\+polyhedron\+\_\+3$<${\bf Exact\+Kernel}, C\+G\+A\+L\+::\+S\+N\+C\+\_\+indexed\+\_\+items$>$ {\bf Nef\+\_\+\+Polyhedron}}\label{_c_g_a_l__typedefs_8h_ab85d2fceadc71a761aa3a184793f8c5f}
+
+
+Definition at line 102 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_aa0abd26637f642e3a168dce7c18e0824}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Nef\+Plane\+\_\+3@{Nef\+Plane\+\_\+3}}
+\index{Nef\+Plane\+\_\+3@{Nef\+Plane\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Nef\+Plane\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef Nef\+\_\+\+Polyhedron\+::\+Plane\+\_\+3 {\bf Nef\+Plane\+\_\+3}}\label{_c_g_a_l__typedefs_8h_aa0abd26637f642e3a168dce7c18e0824}
+
+
+Definition at line 103 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_ab8a951692a5261d5dd24b550af05e147}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Point\+\_\+2@{Point\+\_\+2}}
+\index{Point\+\_\+2@{Point\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Point\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef Kernel\+::\+Point\+\_\+2 {\bf Point\+\_\+2}}\label{_c_g_a_l__typedefs_8h_ab8a951692a5261d5dd24b550af05e147}
+
+
+Definition at line 110 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a9dc49a828e77bbd58c1f5db13edde547}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Point\+\_\+3@{Point\+\_\+3}}
+\index{Point\+\_\+3@{Point\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Point\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef Kernel\+::\+Point\+\_\+3 {\bf Point\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a9dc49a828e77bbd58c1f5db13edde547}
+
+
+Definition at line 115 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a9e00699e05c9e7829bb4701dcbe7cdca}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Polygon\+\_\+2@{Polygon\+\_\+2}}
+\index{Polygon\+\_\+2@{Polygon\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Polygon\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Polygon\+\_\+2$<${\bf Kernel}$>$ {\bf Polygon\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a9e00699e05c9e7829bb4701dcbe7cdca}
+
+
+Definition at line 120 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a4831515a803a403d29bd2641b9fb723d}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Polyhedron@{Polyhedron}}
+\index{Polyhedron@{Polyhedron}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Polyhedron}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Polyhedron\+\_\+3$<${\bf Kernel}$>$ {\bf Polyhedron}}\label{_c_g_a_l__typedefs_8h_a4831515a803a403d29bd2641b9fb723d}
+
+
+Definition at line 121 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a90a1b2f3a502f5b6fc4a19c276500e03}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Segment\+\_\+2@{Segment\+\_\+2}}
+\index{Segment\+\_\+2@{Segment\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Segment\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef Kernel\+::\+Segment\+\_\+2 {\bf Segment\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a90a1b2f3a502f5b6fc4a19c276500e03}
+
+
+Definition at line 112 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a61cf4e27bddccffecdfd4c691f5a65bf}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Segment\+\_\+3@{Segment\+\_\+3}}
+\index{Segment\+\_\+3@{Segment\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Segment\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef Kernel\+::\+Segment\+\_\+3 {\bf Segment\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a61cf4e27bddccffecdfd4c691f5a65bf}
+
+
+Definition at line 117 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_aa6e69c370c4c2a60d1005620c1668fc2}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Tds\+\_\+2@{Tds\+\_\+2}}
+\index{Tds\+\_\+2@{Tds\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Tds\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Triangulation\+\_\+data\+\_\+structure\+\_\+2$<${\bf Vb\+Info\+\_\+2}, {\bf Fb\+Info\+\_\+2}$>$ {\bf Tds\+\_\+2}}\label{_c_g_a_l__typedefs_8h_aa6e69c370c4c2a60d1005620c1668fc2}
+
+
+Definition at line 128 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a042c71112dec7e30a7e514d02f04692c}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Tds\+\_\+3@{Tds\+\_\+3}}
+\index{Tds\+\_\+3@{Tds\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Tds\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Triangulation\+\_\+data\+\_\+structure\+\_\+3$<${\bf Vb\+Info\+\_\+3},{\bf Cb\+Info\+\_\+3}$>$ {\bf Tds\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a042c71112dec7e30a7e514d02f04692c}
+
+
+Definition at line 151 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_ac5f7e352a894095a1102f63305cf0e39}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Tetrahedron@{Tetrahedron}}
+\index{Tetrahedron@{Tetrahedron}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Tetrahedron}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Tetrahedron\+\_\+3$<${\bf Kernel}$>$ {\bf Tetrahedron}}\label{_c_g_a_l__typedefs_8h_ac5f7e352a894095a1102f63305cf0e39}
+
+
+Definition at line 122 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_adc12f3fd1891d07889bf0140df9ffcc0}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Triangle\+\_\+2@{Triangle\+\_\+2}}
+\index{Triangle\+\_\+2@{Triangle\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Triangle\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef Kernel\+::\+Triangle\+\_\+2 {\bf Triangle\+\_\+2}}\label{_c_g_a_l__typedefs_8h_adc12f3fd1891d07889bf0140df9ffcc0}
+
+
+Definition at line 111 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a4e4a3802a3fc391ccd9631989eacadcb}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Triangle\+\_\+2\+\_\+\+Intersection\+\_\+\+Variant@{Triangle\+\_\+2\+\_\+\+Intersection\+\_\+\+Variant}}
+\index{Triangle\+\_\+2\+\_\+\+Intersection\+\_\+\+Variant@{Triangle\+\_\+2\+\_\+\+Intersection\+\_\+\+Variant}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Triangle\+\_\+2\+\_\+\+Intersection\+\_\+\+Variant}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::cpp11\+::result\+\_\+of$<$Kernel\+::\+Intersect\+\_\+2({\bf Triangle\+\_\+2}, {\bf Triangle\+\_\+2})$>$\+::type {\bf Triangle\+\_\+2\+\_\+\+Intersection\+\_\+\+Variant}}\label{_c_g_a_l__typedefs_8h_a4e4a3802a3fc391ccd9631989eacadcb}
+
+
+Definition at line 184 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_ac40a63442fa83fbf61131d9e6e53d245}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Triangle\+\_\+3@{Triangle\+\_\+3}}
+\index{Triangle\+\_\+3@{Triangle\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Triangle\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef Kernel\+::\+Triangle\+\_\+3 {\bf Triangle\+\_\+3}}\label{_c_g_a_l__typedefs_8h_ac40a63442fa83fbf61131d9e6e53d245}
+
+
+Definition at line 116 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_afd68bcf2c13900a0b26e0de24d8a5ea1}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Triangle\+\_\+3\+\_\+\+Intersection\+\_\+\+Variant@{Triangle\+\_\+3\+\_\+\+Intersection\+\_\+\+Variant}}
+\index{Triangle\+\_\+3\+\_\+\+Intersection\+\_\+\+Variant@{Triangle\+\_\+3\+\_\+\+Intersection\+\_\+\+Variant}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Triangle\+\_\+3\+\_\+\+Intersection\+\_\+\+Variant}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::cpp11\+::result\+\_\+of$<$Kernel\+::\+Intersect\+\_\+2({\bf Triangle\+\_\+3}, {\bf Triangle\+\_\+3})$>$\+::type {\bf Triangle\+\_\+3\+\_\+\+Intersection\+\_\+\+Variant}}\label{_c_g_a_l__typedefs_8h_afd68bcf2c13900a0b26e0de24d8a5ea1}
+
+
+Definition at line 187 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_acffae04a395311a4a05f73a7ff26d82c}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Vb\+Info\+\_\+2@{Vb\+Info\+\_\+2}}
+\index{Vb\+Info\+\_\+2@{Vb\+Info\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Vb\+Info\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Triangulation\+\_\+vertex\+\_\+base\+\_\+with\+\_\+info\+\_\+2$<${\bf Vertex\+Info\+\_\+2},{\bf Kernel}$>$ {\bf Vb\+Info\+\_\+2}}\label{_c_g_a_l__typedefs_8h_acffae04a395311a4a05f73a7ff26d82c}
+
+
+Definition at line 125 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a940683270e2b78ef4e091e2834ced568}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Vb\+Info\+\_\+3@{Vb\+Info\+\_\+3}}
+\index{Vb\+Info\+\_\+3@{Vb\+Info\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Vb\+Info\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef C\+G\+A\+L\+::\+Triangulation\+\_\+vertex\+\_\+base\+\_\+with\+\_\+info\+\_\+3$<${\bf Vertex\+Info\+\_\+3},{\bf Kernel}$>$ {\bf Vb\+Info\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a940683270e2b78ef4e091e2834ced568}
+
+
+Definition at line 148 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a0531a58de2779273510be3c8f0062986}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Vertex\+\_\+2@{Vertex\+\_\+2}}
+\index{Vertex\+\_\+2@{Vertex\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Vertex\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+2\+::\+Vertex {\bf Vertex\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a0531a58de2779273510be3c8f0062986}
+
+
+Definition at line 132 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_aa2871808f850cc84348fd1e0a881a380}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Vertex\+\_\+3@{Vertex\+\_\+3}}
+\index{Vertex\+\_\+3@{Vertex\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Vertex\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Vertex {\bf Vertex\+\_\+3}}\label{_c_g_a_l__typedefs_8h_aa2871808f850cc84348fd1e0a881a380}
+
+
+Definition at line 158 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a0e31acb524949bfe7ba0b47f619f94a0}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Vertex\+\_\+handle\+\_\+2@{Vertex\+\_\+handle\+\_\+2}}
+\index{Vertex\+\_\+handle\+\_\+2@{Vertex\+\_\+handle\+\_\+2}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Vertex\+\_\+handle\+\_\+2}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+2\+::\+Vertex\+\_\+handle {\bf Vertex\+\_\+handle\+\_\+2}}\label{_c_g_a_l__typedefs_8h_a0e31acb524949bfe7ba0b47f619f94a0}
+
+
+Definition at line 136 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+
+\hypertarget{_c_g_a_l__typedefs_8h_a3b04696a797c3efc6eb818ce4e95b906}{}\index{C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}!Vertex\+\_\+handle\+\_\+3@{Vertex\+\_\+handle\+\_\+3}}
+\index{Vertex\+\_\+handle\+\_\+3@{Vertex\+\_\+handle\+\_\+3}!C\+G\+A\+L\+\_\+typedefs.\+h@{C\+G\+A\+L\+\_\+typedefs.\+h}}
+\subsubsection[{Vertex\+\_\+handle\+\_\+3}]{\setlength{\rightskip}{0pt plus 5cm}typedef D\+T\+\_\+3\+::\+Vertex\+\_\+handle {\bf Vertex\+\_\+handle\+\_\+3}}\label{_c_g_a_l__typedefs_8h_a3b04696a797c3efc6eb818ce4e95b906}
+
+
+Definition at line 163 of file C\+G\+A\+L\+\_\+typedefs.\+h.
+

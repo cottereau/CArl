@@ -1,0 +1,87 @@
+\hypertarget{common__header_8h}{}\section{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/common\+\_\+header.h File Reference}
+\label{common__header_8h}\index{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/common\+\_\+header.\+h@{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/common\+\_\+header.\+h}}
+{\ttfamily \#include $<$chrono$>$}\\*
+{\ttfamily \#include $<$boost/random/uniform\+\_\+real\+\_\+distribution.\+hpp$>$}\\*
+{\ttfamily \#include $<$boost/random/lagged\+\_\+fibonacci.\+hpp$>$}\\*
+{\ttfamily \#include $<$fstream$>$}\\*
+{\ttfamily \#include $<$iostream$>$}\\*
+{\ttfamily \#include $<$unordered\+\_\+set$>$}\\*
+{\ttfamily \#include $<$unordered\+\_\+map$>$}\\*
+{\ttfamily \#include $<$deque$>$}\\*
+{\ttfamily \#include $<$vector$>$}\\*
+{\ttfamily \#include $<$iterator$>$}\\*
+{\ttfamily \#include $<$algorithm$>$}\\*
+{\ttfamily \#include $<$tuple$>$}\\*
+{\ttfamily \#include $<$map$>$}\\*
+{\ttfamily \#include $<$string$>$}\\*
+{\ttfamily \#include $<$sstream$>$}\\*
+{\ttfamily \#include $<$math.\+h$>$}\\*
+{\ttfamily \#include $<$unistd.\+h$>$}\\*
+{\ttfamily \#include $<$cstdio$>$}\\*
+{\ttfamily \#include $<$memory$>$}\\*
+{\ttfamily \#include $<$stdexcept$>$}\\*
+{\ttfamily \#include $<$array$>$}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{common__header_8h_a593ccc80b790b2268653fcf6597bf451}{homemade\+\_\+assert\+\_\+msg}(asserted,  msg)
+\item 
+\#define \hyperlink{common__header_8h_a05d65d26b911668ac90085745dca71f6}{homemade\+\_\+error\+\_\+msg}(msg)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+boost\+::random\+::lagged\+\_\+fibonacci607 \hyperlink{common__header_8h_a9c3b2ea31c443a50317ce7adb5507767}{m\+\_\+rng}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{common__header_8h_a593ccc80b790b2268653fcf6597bf451}{}\index{common\+\_\+header.\+h@{common\+\_\+header.\+h}!homemade\+\_\+assert\+\_\+msg@{homemade\+\_\+assert\+\_\+msg}}
+\index{homemade\+\_\+assert\+\_\+msg@{homemade\+\_\+assert\+\_\+msg}!common\+\_\+header.\+h@{common\+\_\+header.\+h}}
+\subsubsection[{homemade\+\_\+assert\+\_\+msg}]{\setlength{\rightskip}{0pt plus 5cm}\#define homemade\+\_\+assert\+\_\+msg(
+\begin{DoxyParamCaption}
+\item[{}]{asserted, }
+\item[{}]{msg}
+\end{DoxyParamCaption}
+)}\label{common__header_8h_a593ccc80b790b2268653fcf6597bf451}
+{\bfseries Value\+:}
+\begin{DoxyCode}
+\textcolor{keywordflow}{do} \(\backslash\)
+\{ \(\backslash\)
+    if (!(asserted)) \(\backslash\)
+    \{ \(\backslash\)
+        std::cerr << \textcolor{stringliteral}{"Assertion `"} #asserted \textcolor{stringliteral}{"` failed in "} << \_\_FILE\_\_ << std::endl\(\backslash\)
+                << \textcolor{stringliteral}{" > line "} << \_\_LINE\_\_ << \textcolor{stringliteral}{": "} <<  msg << std::endl; \(\backslash\)
+        std::exit(EXIT\_FAILURE); \(\backslash\)
+    \} \(\backslash\)
+\} \textcolor{keywordflow}{while}(\textcolor{keyword}{false})
+\end{DoxyCode}
+
+
+Definition at line 63 of file common\+\_\+header.\+h.
+
+\hypertarget{common__header_8h_a05d65d26b911668ac90085745dca71f6}{}\index{common\+\_\+header.\+h@{common\+\_\+header.\+h}!homemade\+\_\+error\+\_\+msg@{homemade\+\_\+error\+\_\+msg}}
+\index{homemade\+\_\+error\+\_\+msg@{homemade\+\_\+error\+\_\+msg}!common\+\_\+header.\+h@{common\+\_\+header.\+h}}
+\subsubsection[{homemade\+\_\+error\+\_\+msg}]{\setlength{\rightskip}{0pt plus 5cm}\#define homemade\+\_\+error\+\_\+msg(
+\begin{DoxyParamCaption}
+\item[{}]{msg}
+\end{DoxyParamCaption}
+)}\label{common__header_8h_a05d65d26b911668ac90085745dca71f6}
+{\bfseries Value\+:}
+\begin{DoxyCode}
+\textcolor{keywordflow}{do} \(\backslash\)
+\{ \(\backslash\)
+    std::cerr << \textcolor{stringliteral}{"Error: "} <<  msg << std::endl; \(\backslash\)
+    std::exit(EXIT\_FAILURE); \(\backslash\)
+\} \textcolor{keywordflow}{while}(\textcolor{keyword}{false})
+\end{DoxyCode}
+
+
+Definition at line 73 of file common\+\_\+header.\+h.
+
+
+
+\subsection{Variable Documentation}
+\hypertarget{common__header_8h_a9c3b2ea31c443a50317ce7adb5507767}{}\index{common\+\_\+header.\+h@{common\+\_\+header.\+h}!m\+\_\+rng@{m\+\_\+rng}}
+\index{m\+\_\+rng@{m\+\_\+rng}!common\+\_\+header.\+h@{common\+\_\+header.\+h}}
+\subsubsection[{m\+\_\+rng}]{\setlength{\rightskip}{0pt plus 5cm}boost\+::random\+::lagged\+\_\+fibonacci607 m\+\_\+rng}\label{common__header_8h_a9c3b2ea31c443a50317ce7adb5507767}

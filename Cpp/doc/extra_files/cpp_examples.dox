@@ -1,4 +1,9 @@
 /** \file cpp_examples.dox
 
 	\page cpp_examples Examples
+
+	This page contains detailed examples of the usage of the C++ CArl implementation:
+
+	- \subpage cpp_exampletraction
+	
  */

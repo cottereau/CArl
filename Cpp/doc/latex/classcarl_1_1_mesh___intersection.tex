@@ -1,0 +1,1276 @@
+\hypertarget{classcarl_1_1_mesh___intersection}{}\section{carl\+:\+:Mesh\+\_\+\+Intersection Class Reference}
+\label{classcarl_1_1_mesh___intersection}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+
+
+Class used to construct the intersection meshes.  
+
+
+
+
+{\ttfamily \#include $<$mesh\+\_\+intersection\+\_\+methods.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classcarl_1_1_mesh___intersection_a1be516661baed2caf09d3bf5091850e6}{Mesh\+\_\+\+Intersection} (lib\+Mesh\+::\+Replicated\+Mesh \&\hyperlink{classcarl_1_1_mesh___intersection_a7135c4c2e57e5ccdfbe5cd3286103460}{mesh}, const lib\+Mesh\+::\+Mesh \&mesh\+\_\+\+A, const lib\+Mesh\+::\+Mesh \&mesh\+\_\+\+B, \hyperlink{namespacecarl_a4f72fd25137b97ac1ca1276ec549e5cf}{Intersection\+Meshing\+Method} Meshing\+Method=Intersection\+Meshing\+Method\+::\+C\+G\+A\+L, int map\+\_\+preallocation=1\+E6, long grid\+\_\+n\+\_\+min=static\+\_\+cast$<$ long $>$(1\+E9), bool debug\+Output=false)
+\item 
+const lib\+Mesh\+::\+Replicated\+Mesh \& \hyperlink{classcarl_1_1_mesh___intersection_a7135c4c2e57e5ccdfbe5cd3286103460}{mesh} ()
+\begin{DoxyCompactList}\small\item\em Returns the address of the intersection mesh. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Point \& \hyperlink{classcarl_1_1_mesh___intersection_a84e2ce5be9a9eeb53671ee6d8a8622ef}{min\+\_\+point} ()
+\begin{DoxyCompactList}\small\item\em Returns the minimal point of the discrete grid. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Point \& \hyperlink{classcarl_1_1_mesh___intersection_a9ea043113a1437906da1319e50632d69}{max\+\_\+point} ()
+\begin{DoxyCompactList}\small\item\em Returns the maximum point of the discrete grid. \end{DoxyCompactList}\item 
+double \hyperlink{classcarl_1_1_mesh___intersection_ace09b471c9d37dd0b41f0533907e78b7}{eps} ()
+\begin{DoxyCompactList}\small\item\em Returns the discrete grid step. \end{DoxyCompactList}\item 
+double \hyperlink{classcarl_1_1_mesh___intersection_acfc4b6aae06fa27ea0cebcf7e112381a}{min\+\_\+vol} ()
+\begin{DoxyCompactList}\small\item\em Returns the minimal polyhedron volume. \end{DoxyCompactList}\item 
+std\+::vector$<$ long $>$ \& \hyperlink{classcarl_1_1_mesh___intersection_a6a238cd3b0cd60d9bb7a19ad3165bd54}{grid\+\_\+sizes} ()
+\begin{DoxyCompactList}\small\item\em Returns the discrete grid sizes. \end{DoxyCompactList}\item 
+long \hyperlink{classcarl_1_1_mesh___intersection_a6608de84c7eafe85c8685692abe2ca2e}{grid\+\_\+min\+\_\+size} ()
+\begin{DoxyCompactList}\small\item\em Returns the minimum discrete grid size. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh___intersection_a195605fd295d5afc638129309103f576}{initialize} ()
+\begin{DoxyCompactList}\small\item\em Initialize the data structures. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh___intersection_aee962f4dc634b4187cb759d6bf022d40}{preallocate\+\_\+grid} (int map\+\_\+preallocation)
+\begin{DoxyCompactList}\small\item\em Preallocate the discrete points grid. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh___intersection_ace934a9b46e71e7071566b448474a5aa}{set\+\_\+grid\+\_\+constraints} (const lib\+Mesh\+::\+Mesh \&mesh\+\_\+\+A, const lib\+Mesh\+::\+Mesh \&mesh\+\_\+\+B, double vol\+\_\+tol=-\/1)
+\begin{DoxyCompactList}\small\item\em Set the boundaries of the discrete points grid, taking into account the geometry of meshes mesh\+\_\+\+A and mesh\+\_\+\+B. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh___intersection_aa8a75085ca6f75f96ad47e36b6dd8509}{triangulate\+\_\+intersection} (const std\+::set$<$ lib\+Mesh\+::\+Point $>$ \&input\+\_\+points)
+\begin{DoxyCompactList}\small\item\em Triangulate an intersection defined by a set of lib\+Mesh\+::\+Points, using either C\+G\+A\+L or Tetgen. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh___intersection_a154a8076123b209a1bddc210c913006f}{increase\+\_\+intersection\+\_\+mesh} (const std\+::set$<$ lib\+Mesh\+::\+Point $>$ \&input\+\_\+points, unsigned int elem\+\_\+idx\+\_\+\+A, unsigned int elem\+\_\+idx\+\_\+\+B, unsigned int elem\+\_\+idx\+\_\+\+C)
+\begin{DoxyCompactList}\small\item\em Increase the intersection mesh with the current polyhedron mesh and update its data structures. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh___intersection_a40d4cca8c4ec73a2576322db063bbefb}{export\+\_\+intersection\+\_\+data} (const std\+::string \&filename\+\_\+base, const std\+::string \&mesh\+\_\+format=std\+::string(\char`\"{}.e\char`\"{}))
+\begin{DoxyCompactList}\small\item\em Export both the intersection mesh its data structures. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh___intersection_a5078651b6ae4cfdf97e43dfa172094b6}{prepare\+\_\+for\+\_\+use} ()
+\begin{DoxyCompactList}\small\item\em Prepare the intersection mesh for use. \end{DoxyCompactList}\item 
+double \hyperlink{classcarl_1_1_mesh___intersection_a67f126ec639724230b32916b59af4933}{get\+\_\+total\+\_\+volume} ()
+\begin{DoxyCompactList}\small\item\em Calculate the intersection mesh\textquotesingle{}s total volume. \end{DoxyCompactList}\item 
+double \hyperlink{classcarl_1_1_mesh___intersection_aed1744e821dbfa900d035c44036d0fdf}{get\+\_\+intersection\+\_\+volume} (std\+::set$<$ lib\+Mesh\+::\+Point $>$ \&input\+\_\+points)
+\begin{DoxyCompactList}\small\item\em Calculate the volume of an polyhedron defined by the point set. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh___intersection_a9295162aa24e62dae37d3dd12c46f0d1}{convert\+\_\+to\+\_\+discrete} (const lib\+Mesh\+::\+Point \&i\+Point, std\+::vector$<$ long $>$ \&o\+Point)
+\begin{DoxyCompactList}\small\item\em Convert a real valued point to a discrete point. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classcarl_1_1_mesh___intersection_ac65bb5960ece66fc75c5fb0e28459e59}{Mesh\+\_\+\+Intersection} ()
+\begin{DoxyCompactList}\small\item\em (Protected) default constructor \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh___intersection_a040f460bc10dd0fd1d7fb27d25e733ac}{update\+\_\+intersection\+\_\+mesh} ()
+\begin{DoxyCompactList}\small\item\em Update the intersection mesh with the current polyhedron mesh data. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh___intersection_aabfd4b640763d00e1a7786d4724732af}{update\+\_\+intersection\+\_\+pairs} (unsigned int elem\+\_\+idx\+\_\+\+A, unsigned int elem\+\_\+idx\+\_\+\+B, unsigned int inter\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Update the intersection pair map with a new pair associated to the intersection no. inter\+\_\+id. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_mesh___intersection_a86537a2c060ef77c8f9d20f8c5bd6c40}{update\+\_\+intersection\+\_\+element\+\_\+range} (unsigned int range\+\_\+start, unsigned int range\+\_\+end, unsigned int inter\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Update the intersection element range map with a new range associated to the intersection no. inter\+\_\+id. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const lib\+Mesh\+::\+Parallel\+::\+Communicator \& \hyperlink{classcarl_1_1_mesh___intersection_a418cf274a01b6aea560249a468574124}{m\+\_\+comm}
+\begin{DoxyCompactList}\small\item\em Intersection mesh communicator. \end{DoxyCompactList}\item 
+const unsigned int \hyperlink{classcarl_1_1_mesh___intersection_abd9e70d02d26302a6cc97fc4ec4990dc}{m\+\_\+nodes}
+\begin{DoxyCompactList}\small\item\em Intersection mesh number of processors ({\bfseries useless!}). \end{DoxyCompactList}\item 
+const unsigned int \hyperlink{classcarl_1_1_mesh___intersection_ab2543dd7c6f2d62561e4b75782621f43}{m\+\_\+rank}
+\begin{DoxyCompactList}\small\item\em Intersection mesh processor rank ({\bfseries useless!}). \end{DoxyCompactList}\item 
+const lib\+Mesh\+::\+Parallel\+::\+Communicator \& \hyperlink{classcarl_1_1_mesh___intersection_abe420c1736bc43ea710f2f92073e91b9}{m\+\_\+global\+\_\+comm}
+\begin{DoxyCompactList}\small\item\em Full system communicator. \end{DoxyCompactList}\item 
+const unsigned int \hyperlink{classcarl_1_1_mesh___intersection_ad033bd5e13ceafadbfee32998f56f5a4}{m\+\_\+global\+\_\+nodes}
+\begin{DoxyCompactList}\small\item\em Full system number of processors. \end{DoxyCompactList}\item 
+const unsigned int \hyperlink{classcarl_1_1_mesh___intersection_a9f045e850a4b8ecbcc2e044a2c987009}{m\+\_\+global\+\_\+rank}
+\begin{DoxyCompactList}\small\item\em Full system processor rank. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Replicated\+Mesh \& \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\+\_\+lib\+Mesh\+\_\+\+Mesh}
+\begin{DoxyCompactList}\small\item\em Address of the intersection mesh. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Mesh \hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\+\_\+lib\+Mesh\+\_\+\+Polyhedron\+Mesh}
+\begin{DoxyCompactList}\small\item\em lib\+Mesh Mesh containing the tetrahedrization of an intersection polyhedron (the polyhedron mesh). \end{DoxyCompactList}\item 
+\hyperlink{_c_g_a_l__typedefs_8h_a36cae79a8ab0b5a4edc662fdb8821ba9}{D\+T\+\_\+3} \hyperlink{classcarl_1_1_mesh___intersection_a256506b058cda4c9b767d14277b9650c}{m\+\_\+\+C\+G\+A\+L\+\_\+\+Polyhedron\+Mesh}
+\begin{DoxyCompactList}\small\item\em Auxiliary C\+G\+A\+L mesh, used if C\+G\+A\+L is chosen for the tetrahedrization. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Tet\+Gen\+Mesh\+Interface \hyperlink{classcarl_1_1_mesh___intersection_a670d0e1f635a8fd820fb659c4c073c0e}{m\+\_\+\+Tet\+Gen\+Interface}
+\begin{DoxyCompactList}\small\item\em Tet\+Gen interface. \end{DoxyCompactList}\item 
+\hyperlink{_c_g_a_l__typedefs_8h_a7fee49db11d7ad002fa79aedabf4d2cc}{Kernel\+\_\+to\+\_\+\+Exact\+Kernel} \hyperlink{classcarl_1_1_mesh___intersection_a9b682296131536eb588bcee3d7f253b1}{Convert\+Inexact\+To\+Exact}
+\begin{DoxyCompactList}\small\item\em Convert inexact C\+G\+A\+L constructs to exact constructs. \end{DoxyCompactList}\item 
+\hyperlink{_c_g_a_l__typedefs_8h_aa71268402de3c241e32cd09e20cbe44c}{Exact\+Kernel\+\_\+to\+\_\+\+Kernel} \hyperlink{classcarl_1_1_mesh___intersection_ac80b6a1094d5268d646150d1f5e61560}{Convert\+Exact\+To\+Inexact}
+\begin{DoxyCompactList}\small\item\em Convert exact C\+G\+A\+L constructs to inexact constructs. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classcarl_1_1_mesh___intersection_a60ae2905b3c3debe5194811e176826ce}{m\+\_\+nb\+\_\+of\+\_\+intersections}
+\item 
+std\+::unordered\+\_\+map$<$ unsigned int, std\+::pair$<$ unsigned int, unsigned int $>$ $>$ \hyperlink{classcarl_1_1_mesh___intersection_a06a4d0d633bf58594fee6e35ebbc1b97}{m\+\_\+intersection\+\_\+pairs}
+\begin{DoxyCompactList}\small\item\em Unordered map containing the element pair associated to each intersection (key). \end{DoxyCompactList}\item 
+std\+::unordered\+\_\+map$<$ unsigned int, unsigned int $>$ \hyperlink{classcarl_1_1_mesh___intersection_ab0d6f92956f02022cfdfb2e3b84e1676}{m\+\_\+intersection\+\_\+couplings}
+\begin{DoxyCompactList}\small\item\em Unordered map associating each intersection (key) to a coupling element ({\bfseries useless!}) \end{DoxyCompactList}\item 
+std\+::unordered\+\_\+map$<$ unsigned int, std\+::pair$<$ unsigned int, unsigned int $>$ $>$ \hyperlink{classcarl_1_1_mesh___intersection_adcbc0fb898aa287c2ff2a13693daf572}{m\+\_\+intersection\+\_\+element\+\_\+range}
+\begin{DoxyCompactList}\small\item\em Unordered map associating each intersection (key) to a range of elements in the intersection mesh. \end{DoxyCompactList}\item 
+double \hyperlink{classcarl_1_1_mesh___intersection_a2b2a46afcfa01b2763315f439bd0a4d6}{m\+\_\+eps}
+\begin{DoxyCompactList}\small\item\em Precision of the discrete point grid. \end{DoxyCompactList}\item 
+double \hyperlink{classcarl_1_1_mesh___intersection_ad282e724c75087a90026854992ec0809}{m\+\_\+vol\+\_\+tol}
+\begin{DoxyCompactList}\small\item\em Minimal volume for the intersection polyhedrons. \end{DoxyCompactList}\item 
+std\+::vector$<$ long $>$ \hyperlink{classcarl_1_1_mesh___intersection_a74b7064e400e0dbf8c62eb7efef1b784}{m\+\_\+\+Grid\+N}
+\begin{DoxyCompactList}\small\item\em Dimensions of the discrete point grid. \end{DoxyCompactList}\item 
+std\+::vector$<$ long $>$ \hyperlink{classcarl_1_1_mesh___intersection_aa84e7b362c2187f100591e5e3fef33e5}{m\+\_\+dummy\+\_\+discrete\+\_\+point}
+\item 
+lib\+Mesh\+::\+Point \hyperlink{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{m\+\_\+\+Grid\+\_\+\+Min\+Point}
+\begin{DoxyCompactList}\small\item\em Minimal point of the discrete grid. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Point \hyperlink{classcarl_1_1_mesh___intersection_a98f86004df38485ed880b054b94f5c7d}{m\+\_\+\+Grid\+\_\+\+Max\+Point}
+\begin{DoxyCompactList}\small\item\em Maximum point of the discrete grid. \end{DoxyCompactList}\item 
+std\+::unordered\+\_\+map$<$ std\+::vector$<$ long $>$, unsigned int, \hyperlink{structcarl_1_1_point_hash__3_d}{Point\+Hash\+\_\+3\+D}, \hyperlink{structcarl_1_1_point_hash__3_d___equal}{Point\+Hash\+\_\+3\+D\+\_\+\+Equal} $>$ \hyperlink{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{m\+\_\+discrete\+\_\+vertices}
+\begin{DoxyCompactList}\small\item\em Unordered map (or hash) for the discrete points (key). \end{DoxyCompactList}\item 
+long \hyperlink{classcarl_1_1_mesh___intersection_af5d973b0c2505d89bf1c9f7b29585b80}{m\+\_\+\+Grid\+N\+\_\+min}
+\begin{DoxyCompactList}\small\item\em Minimal number of integers over each dimension of the discrete grid. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classcarl_1_1_mesh___intersection_acd2052a59c0bc759f86b3e4810093a54}{m\+\_\+nb\+\_\+of\+\_\+elements}
+\begin{DoxyCompactList}\small\item\em Number of elements of the intersection mesh. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classcarl_1_1_mesh___intersection_ac2765c9bdf5f15878a1cff52db5551aa}{m\+\_\+nb\+\_\+of\+\_\+vertices}
+\begin{DoxyCompactList}\small\item\em Number of vertices of the intersection mesh. \end{DoxyCompactList}\item 
+std\+::vector$<$ unsigned int $>$ \hyperlink{classcarl_1_1_mesh___intersection_aac5e4b495b7d8aa532ce28ca2d495c69}{m\+\_\+intersection\+\_\+point\+\_\+indexes}
+\begin{DoxyCompactList}\small\item\em ({\bfseries Unused!}) \end{DoxyCompactList}\item 
+unsigned int \hyperlink{classcarl_1_1_mesh___intersection_a64c49bef515c3b09edf6745d079056a2}{m\+\_\+nb\+\_\+of\+\_\+points}
+\begin{DoxyCompactList}\small\item\em ({\bfseries Unused!}) \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_mesh___intersection_ae858bc08b5286b0562eaf94372944bcd}{m\+\_\+b\+Mesh\+Finalized}
+\begin{DoxyCompactList}\small\item\em Boolean controlling if the intersection mesh was finished or not. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_mesh___intersection_a086fd53554e5ecfad25b7b15012d71e4}{m\+\_\+b\+Print\+Debug}
+\begin{DoxyCompactList}\small\item\em Print debug information? {\itshape Default\+:} false. \end{DoxyCompactList}\item 
+\hyperlink{namespacecarl_a4f72fd25137b97ac1ca1276ec549e5cf}{Intersection\+Meshing\+Method} \hyperlink{classcarl_1_1_mesh___intersection_aa42a12f25859de7ce08655a1ada87e50}{m\+\_\+\+Meshing\+Method}
+\begin{DoxyCompactList}\small\item\em Choice of meshing algorithm. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class used to construct the intersection meshes. 
+
+It contains methods to tetrahedrize polyhedrons (using either C\+G\+A\+L or Tetgen) and to increase the intersection mesh. To avoid rounding error problems during the mesh constructions, each vertex point is associated to a discrete point inside a grid. This grid is constructed taking into account the dimensions of the meshes for which we want to find the intersections. 
+
+Definition at line 32 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classcarl_1_1_mesh___intersection_ac65bb5960ece66fc75c5fb0e28459e59}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!Mesh\+\_\+\+Intersection@{Mesh\+\_\+\+Intersection}}
+\index{Mesh\+\_\+\+Intersection@{Mesh\+\_\+\+Intersection}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{Mesh\+\_\+\+Intersection()}]{\setlength{\rightskip}{0pt plus 5cm}carl\+::\+Mesh\+\_\+\+Intersection\+::\+Mesh\+\_\+\+Intersection (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_ac65bb5960ece66fc75c5fb0e28459e59}
+
+
+(Protected) default constructor 
+
+\hypertarget{classcarl_1_1_mesh___intersection_a1be516661baed2caf09d3bf5091850e6}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!Mesh\+\_\+\+Intersection@{Mesh\+\_\+\+Intersection}}
+\index{Mesh\+\_\+\+Intersection@{Mesh\+\_\+\+Intersection}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{Mesh\+\_\+\+Intersection(lib\+Mesh\+::\+Replicated\+Mesh \&mesh, const lib\+Mesh\+::\+Mesh \&mesh\+\_\+\+A, const lib\+Mesh\+::\+Mesh \&mesh\+\_\+\+B, Intersection\+Meshing\+Method Meshing\+Method=\+Intersection\+Meshing\+Method\+::\+C\+G\+A\+L, int map\+\_\+preallocation=1\+E6, long grid\+\_\+n\+\_\+min=static\+\_\+cast$<$ long $>$(1\+E9), bool debug\+Output=false)}]{\setlength{\rightskip}{0pt plus 5cm}carl\+::\+Mesh\+\_\+\+Intersection\+::\+Mesh\+\_\+\+Intersection (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Replicated\+Mesh \&}]{mesh, }
+\item[{const lib\+Mesh\+::\+Mesh \&}]{mesh\+\_\+\+A, }
+\item[{const lib\+Mesh\+::\+Mesh \&}]{mesh\+\_\+\+B, }
+\item[{{\bf Intersection\+Meshing\+Method}}]{Meshing\+Method = {\ttfamily IntersectionMeshingMethod\+:\+:CGAL}, }
+\item[{int}]{map\+\_\+preallocation = {\ttfamily 1E6}, }
+\item[{long}]{grid\+\_\+n\+\_\+min = {\ttfamily static\+\_\+cast$<$long$>$(1E9)}, }
+\item[{bool}]{debug\+Output = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classcarl_1_1_mesh___intersection_a1be516661baed2caf09d3bf5091850e6}
+
+
+Definition at line 140 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+
+\begin{DoxyCode}
+142                                                                                                            
+                    :
+143         \hyperlink{classcarl_1_1_mesh___intersection_a418cf274a01b6aea560249a468574124}{m\_comm} \{ \hyperlink{classcarl_1_1_mesh___intersection_a7135c4c2e57e5ccdfbe5cd3286103460}{mesh}.comm() \},
+144         \hyperlink{classcarl_1_1_mesh___intersection_abd9e70d02d26302a6cc97fc4ec4990dc}{m\_nodes} \{ \hyperlink{classcarl_1_1_mesh___intersection_a418cf274a01b6aea560249a468574124}{m\_comm}.size() \},
+145         \hyperlink{classcarl_1_1_mesh___intersection_ab2543dd7c6f2d62561e4b75782621f43}{m\_rank} \{ \hyperlink{classcarl_1_1_mesh___intersection_a418cf274a01b6aea560249a468574124}{m\_comm}.rank() \},
+146         \hyperlink{classcarl_1_1_mesh___intersection_abe420c1736bc43ea710f2f92073e91b9}{m\_global\_comm} \{ mesh\_A.comm() \},
+147         \hyperlink{classcarl_1_1_mesh___intersection_ad033bd5e13ceafadbfee32998f56f5a4}{m\_global\_nodes} \{ \hyperlink{classcarl_1_1_mesh___intersection_abe420c1736bc43ea710f2f92073e91b9}{m\_global\_comm}.size() \},
+148         \hyperlink{classcarl_1_1_mesh___intersection_a9f045e850a4b8ecbcc2e044a2c987009}{m\_global\_rank} \{ \hyperlink{classcarl_1_1_mesh___intersection_abe420c1736bc43ea710f2f92073e91b9}{m\_global\_comm}.rank() \},
+149         \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh} \{ \hyperlink{classcarl_1_1_mesh___intersection_a7135c4c2e57e5ccdfbe5cd3286103460}{mesh} \},
+150         \hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\_libMesh\_PolyhedronMesh} \{ libMesh::Mesh(\hyperlink{classcarl_1_1_mesh___intersection_a418cf274a01b6aea560249a468574124}{m\_comm}) \},
+151         \hyperlink{classcarl_1_1_mesh___intersection_a670d0e1f635a8fd820fb659c4c073c0e}{m\_TetGenInterface} \{ libMesh::TetGenMeshInterface(
+      \hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\_libMesh\_PolyhedronMesh}) \},
+152         \hyperlink{classcarl_1_1_mesh___intersection_a60ae2905b3c3debe5194811e176826ce}{m\_nb\_of\_intersections} \{ 0 \},
+153         \hyperlink{classcarl_1_1_mesh___intersection_a2b2a46afcfa01b2763315f439bd0a4d6}{m\_eps} \{ -1 \},
+154         \hyperlink{classcarl_1_1_mesh___intersection_a74b7064e400e0dbf8c62eb7efef1b784}{m\_GridN} \{ std::vector<long >(3,-1) \},
+155         \hyperlink{classcarl_1_1_mesh___intersection_aa84e7b362c2187f100591e5e3fef33e5}{m\_dummy\_discrete\_point} \{ std::vector<long >(3,-1) \},
+156         \hyperlink{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{m\_Grid\_MinPoint} \{ libMesh::Point(0,0,0) \},
+157         \hyperlink{classcarl_1_1_mesh___intersection_a98f86004df38485ed880b054b94f5c7d}{m\_Grid\_MaxPoint} \{ libMesh::Point(1,1,1) \},
+158         \hyperlink{classcarl_1_1_mesh___intersection_af5d973b0c2505d89bf1c9f7b29585b80}{m\_GridN\_min} \{ grid\_n\_min \},
+159         \hyperlink{classcarl_1_1_mesh___intersection_acd2052a59c0bc759f86b3e4810093a54}{m\_nb\_of\_elements} \{ 0 \},
+160         \hyperlink{classcarl_1_1_mesh___intersection_ac2765c9bdf5f15878a1cff52db5551aa}{m\_nb\_of\_vertices} \{ 0 \},
+161         \hyperlink{classcarl_1_1_mesh___intersection_a64c49bef515c3b09edf6745d079056a2}{m\_nb\_of\_points} \{ 0 \},
+162         \hyperlink{classcarl_1_1_mesh___intersection_ae858bc08b5286b0562eaf94372944bcd}{m\_bMeshFinalized} \{ \textcolor{keyword}{false} \},
+163         \hyperlink{classcarl_1_1_mesh___intersection_a086fd53554e5ecfad25b7b15012d71e4}{m\_bPrintDebug} \{ debugOutput \},
+164         \hyperlink{classcarl_1_1_mesh___intersection_aa42a12f25859de7ce08655a1ada87e50}{m\_MeshingMethod} \{ MeshingMethod \}
+165     \{
+166         \hyperlink{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{m\_discrete\_vertices}.reserve(map\_preallocation);
+167         \hyperlink{classcarl_1_1_mesh___intersection_aac5e4b495b7d8aa532ce28ca2d495c69}{m\_intersection\_point\_indexes}.resize(24);
+168 
+169         \hyperlink{classcarl_1_1_mesh___intersection_ace934a9b46e71e7071566b448474a5aa}{set\_grid\_constraints}(mesh\_A,mesh\_B);
+170 
+171         \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh}.reserve\_nodes(map\_preallocation);
+172         \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh}.reserve\_elem(10*map\_preallocation);
+173 
+174         \hyperlink{classcarl_1_1_mesh___intersection_a06a4d0d633bf58594fee6e35ebbc1b97}{m\_intersection\_pairs}.reserve(map\_preallocation);
+175         \hyperlink{classcarl_1_1_mesh___intersection_ab0d6f92956f02022cfdfb2e3b84e1676}{m\_intersection\_couplings}.reserve(map\_preallocation);
+176         \hyperlink{classcarl_1_1_mesh___intersection_adcbc0fb898aa287c2ff2a13693daf572}{m\_intersection\_element\_range}.reserve(map\_preallocation);
+177 
+178         \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh}.allow\_renumbering(\textcolor{keyword}{false});
+179 
+180         \textcolor{keywordflow}{switch}(\hyperlink{classcarl_1_1_mesh___intersection_aa42a12f25859de7ce08655a1ada87e50}{m\_MeshingMethod})
+181         \{
+182         \textcolor{keywordflow}{case} \hyperlink{namespacecarl_a4f72fd25137b97ac1ca1276ec549e5cfa0a91b3dbac7fab7e5efa6f804aab8f58}{IntersectionMeshingMethod::LIBMESH\_TETGEN} :
+183             std::cout << \textcolor{stringliteral}{" -> Using TetGen to generate mesh"} << std::endl;
+184             \textcolor{keywordflow}{break};
+185         \textcolor{keywordflow}{case} \hyperlink{namespacecarl_a4f72fd25137b97ac1ca1276ec549e5cfa509162a828acac7eaad1fc369696a3b1}{IntersectionMeshingMethod::CGAL} :
+186             std::cout << \textcolor{stringliteral}{" -> Using CGAL to generate mesh"} << std::endl;
+187             \textcolor{keywordflow}{break};
+188         \}
+189     \};
+\end{DoxyCode}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classcarl_1_1_mesh___intersection_a9295162aa24e62dae37d3dd12c46f0d1}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!convert\+\_\+to\+\_\+discrete@{convert\+\_\+to\+\_\+discrete}}
+\index{convert\+\_\+to\+\_\+discrete@{convert\+\_\+to\+\_\+discrete}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{convert\+\_\+to\+\_\+discrete(const lib\+Mesh\+::\+Point \&i\+Point, std\+::vector$<$ long $>$ \&o\+Point)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+\+Intersection\+::convert\+\_\+to\+\_\+discrete (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Point \&}]{i\+Point, }
+\item[{std\+::vector$<$ long $>$ \&}]{o\+Point}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_a9295162aa24e62dae37d3dd12c46f0d1}
+
+
+Convert a real valued point to a discrete point. 
+
+
+
+Definition at line 352 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+353 \{
+354     oPoint[0] = lround( (iPoint(0) -  \hyperlink{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{m\_Grid\_MinPoint}(0) )/\hyperlink{classcarl_1_1_mesh___intersection_a2b2a46afcfa01b2763315f439bd0a4d6}{m\_eps});
+355     oPoint[1] = lround( (iPoint(1) -  \hyperlink{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{m\_Grid\_MinPoint}(1) )/\hyperlink{classcarl_1_1_mesh___intersection_a2b2a46afcfa01b2763315f439bd0a4d6}{m\_eps});
+356     oPoint[2] = lround( (iPoint(2) -  \hyperlink{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{m\_Grid\_MinPoint}(2) )/\hyperlink{classcarl_1_1_mesh___intersection_a2b2a46afcfa01b2763315f439bd0a4d6}{m\_eps});
+357 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_ace09b471c9d37dd0b41f0533907e78b7}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!eps@{eps}}
+\index{eps@{eps}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{eps()}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::\+Mesh\+\_\+\+Intersection\+::eps (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_ace09b471c9d37dd0b41f0533907e78b7}
+
+
+Returns the discrete grid step. 
+
+
+
+Definition at line 130 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+131 \{
+132     \textcolor{keywordflow}{return} \hyperlink{classcarl_1_1_mesh___intersection_a2b2a46afcfa01b2763315f439bd0a4d6}{m\_eps};
+133 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_a40d4cca8c4ec73a2576322db063bbefb}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!export\+\_\+intersection\+\_\+data@{export\+\_\+intersection\+\_\+data}}
+\index{export\+\_\+intersection\+\_\+data@{export\+\_\+intersection\+\_\+data}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{export\+\_\+intersection\+\_\+data(const std\+::string \&filename\+\_\+base, const std\+::string \&mesh\+\_\+format=std\+::string("".\+e""))}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+\+Intersection\+::export\+\_\+intersection\+\_\+data (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{filename\+\_\+base, }
+\item[{const std\+::string \&}]{mesh\+\_\+format = {\ttfamily std\+:\+:string(\char`\"{}.e\char`\"{})}}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_a40d4cca8c4ec73a2576322db063bbefb}
+
+
+Export both the intersection mesh its data structures. 
+
+
+
+Definition at line 262 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+263 \{
+264     \hyperlink{common__header_8h_a593ccc80b790b2268653fcf6597bf451}{homemade\_assert\_msg}(\hyperlink{classcarl_1_1_mesh___intersection_ae858bc08b5286b0562eaf94372944bcd}{m\_bMeshFinalized}, \textcolor{stringliteral}{"Mesh not prepared for use
+       yet!\(\backslash\)n"});
+265 
+266     \textcolor{comment}{// Set the filenames depending on the processor rank}
+267     std::string mesh\_file\_out = filename\_base + mesh\_format;
+268     std::string table\_file\_out = filename\_base + \textcolor{stringliteral}{"\_inter\_table\_Full.dat"};
+269 
+270     \textcolor{comment}{// Print the mesh}
+271     libMesh::NameBasedIO output\_mesh(\hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh});
+272     output\_mesh.write(mesh\_file\_out);
+273 
+274     \textcolor{comment}{// Print the intersection table}
+275     std::ofstream table\_out(table\_file\_out);
+276     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} nb\_of\_inter\_elements = 0;
+277     table\_out << \hyperlink{classcarl_1_1_mesh___intersection_a60ae2905b3c3debe5194811e176826ce}{m\_nb\_of\_intersections} << \textcolor{stringliteral}{" "} << 
+      \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh}.n\_elem() << \textcolor{stringliteral}{" "} << \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh}.n\_nodes() << std::endl;
+278 
+279     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < \hyperlink{classcarl_1_1_mesh___intersection_a60ae2905b3c3debe5194811e176826ce}{m\_nb\_of\_intersections}; ++iii)
+280     \{
+281         nb\_of\_inter\_elements = \hyperlink{classcarl_1_1_mesh___intersection_adcbc0fb898aa287c2ff2a13693daf572}{m\_intersection\_element\_range}[iii].second
+282                              - \hyperlink{classcarl_1_1_mesh___intersection_adcbc0fb898aa287c2ff2a13693daf572}{m\_intersection\_element\_range}[iii].first;
+283         table\_out << iii << \textcolor{stringliteral}{" "} << \hyperlink{classcarl_1_1_mesh___intersection_a06a4d0d633bf58594fee6e35ebbc1b97}{m\_intersection\_pairs}[iii].first << \textcolor{stringliteral}{" "}
+284                                 << \hyperlink{classcarl_1_1_mesh___intersection_a06a4d0d633bf58594fee6e35ebbc1b97}{m\_intersection\_pairs}[iii].second << \textcolor{stringliteral}{" "}
+285                                 << nb\_of\_inter\_elements;
+286         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} jjj = 0; jjj < nb\_of\_inter\_elements; ++jjj)
+287         \{
+288             table\_out << \textcolor{stringliteral}{" "} << \hyperlink{classcarl_1_1_mesh___intersection_adcbc0fb898aa287c2ff2a13693daf572}{m\_intersection\_element\_range}[iii].first + jjj;
+289         \}
+290         table\_out << std::endl;
+291     \}
+292     table\_out.close();
+293 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_aed1744e821dbfa900d035c44036d0fdf}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!get\+\_\+intersection\+\_\+volume@{get\+\_\+intersection\+\_\+volume}}
+\index{get\+\_\+intersection\+\_\+volume@{get\+\_\+intersection\+\_\+volume}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{get\+\_\+intersection\+\_\+volume(std\+::set$<$ lib\+Mesh\+::\+Point $>$ \&input\+\_\+points)}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::\+Mesh\+\_\+\+Intersection\+::get\+\_\+intersection\+\_\+volume (
+\begin{DoxyParamCaption}
+\item[{std\+::set$<$ lib\+Mesh\+::\+Point $>$ \&}]{input\+\_\+points}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_aed1744e821dbfa900d035c44036d0fdf}
+
+
+Calculate the volume of an polyhedron defined by the point set. 
+
+
+
+Definition at line 335 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+336 \{
+337     \textcolor{keywordtype}{double} volume = 0;
+338 
+339     \hyperlink{classcarl_1_1_mesh___intersection_aa8a75085ca6f75f96ad47e36b6dd8509}{triangulate\_intersection}(input\_points);
+340 
+341     \textcolor{keywordflow}{for}(libMesh::ReplicatedMesh::element\_iterator it\_elem = 
+      \hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\_libMesh\_PolyhedronMesh}.elements\_begin();
+342             it\_elem != \hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\_libMesh\_PolyhedronMesh}.elements\_end();
+343             ++it\_elem)
+344     \{
+345         \textcolor{keyword}{const} libMesh::Elem * elem = * it\_elem;
+346         volume += elem->volume();
+347     \}
+348 
+349     \textcolor{keywordflow}{return} volume;
+350 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_a67f126ec639724230b32916b59af4933}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!get\+\_\+total\+\_\+volume@{get\+\_\+total\+\_\+volume}}
+\index{get\+\_\+total\+\_\+volume@{get\+\_\+total\+\_\+volume}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{get\+\_\+total\+\_\+volume()}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::\+Mesh\+\_\+\+Intersection\+::get\+\_\+total\+\_\+volume (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_a67f126ec639724230b32916b59af4933}
+
+
+Calculate the intersection mesh\textquotesingle{}s total volume. 
+
+
+
+Definition at line 318 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+319 \{
+320     \textcolor{keywordtype}{double} volume = 0;
+321 
+322     \hyperlink{common__header_8h_a593ccc80b790b2268653fcf6597bf451}{homemade\_assert\_msg}(\hyperlink{classcarl_1_1_mesh___intersection_ae858bc08b5286b0562eaf94372944bcd}{m\_bMeshFinalized},\textcolor{stringliteral}{"Intersection mesh was not
+       prepared for use!\(\backslash\)n"});
+323 
+324     \textcolor{keywordflow}{for}(libMesh::ReplicatedMesh::element\_iterator it\_elem = \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh}.elements\_begin();
+325             it\_elem != \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh}.elements\_end();
+326             ++it\_elem)
+327     \{
+328         \textcolor{keyword}{const} libMesh::Elem * elem = * it\_elem;
+329         volume += elem->volume();
+330     \}
+331 
+332     \textcolor{keywordflow}{return} volume;
+333 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_a6608de84c7eafe85c8685692abe2ca2e}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!grid\+\_\+min\+\_\+size@{grid\+\_\+min\+\_\+size}}
+\index{grid\+\_\+min\+\_\+size@{grid\+\_\+min\+\_\+size}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{grid\+\_\+min\+\_\+size()}]{\setlength{\rightskip}{0pt plus 5cm}long carl\+::\+Mesh\+\_\+\+Intersection\+::grid\+\_\+min\+\_\+size (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_a6608de84c7eafe85c8685692abe2ca2e}
+
+
+Returns the minimum discrete grid size. 
+
+
+
+Definition at line 145 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+146 \{
+147     \textcolor{keywordflow}{return} \hyperlink{classcarl_1_1_mesh___intersection_af5d973b0c2505d89bf1c9f7b29585b80}{m\_GridN\_min};
+148 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_a6a238cd3b0cd60d9bb7a19ad3165bd54}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!grid\+\_\+sizes@{grid\+\_\+sizes}}
+\index{grid\+\_\+sizes@{grid\+\_\+sizes}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{grid\+\_\+sizes()}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$ long $>$ \& carl\+::\+Mesh\+\_\+\+Intersection\+::grid\+\_\+sizes (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_a6a238cd3b0cd60d9bb7a19ad3165bd54}
+
+
+Returns the discrete grid sizes. 
+
+
+
+Definition at line 140 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+141 \{
+142     \textcolor{keywordflow}{return} \hyperlink{classcarl_1_1_mesh___intersection_a74b7064e400e0dbf8c62eb7efef1b784}{m\_GridN};
+143 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_a154a8076123b209a1bddc210c913006f}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!increase\+\_\+intersection\+\_\+mesh@{increase\+\_\+intersection\+\_\+mesh}}
+\index{increase\+\_\+intersection\+\_\+mesh@{increase\+\_\+intersection\+\_\+mesh}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{increase\+\_\+intersection\+\_\+mesh(const std\+::set$<$ lib\+Mesh\+::\+Point $>$ \&input\+\_\+points, unsigned int elem\+\_\+idx\+\_\+\+A, unsigned int elem\+\_\+idx\+\_\+\+B, unsigned int elem\+\_\+idx\+\_\+\+C)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+\+Intersection\+::increase\+\_\+intersection\+\_\+mesh (
+\begin{DoxyParamCaption}
+\item[{const std\+::set$<$ lib\+Mesh\+::\+Point $>$ \&}]{input\+\_\+points, }
+\item[{unsigned int}]{elem\+\_\+idx\+\_\+\+A, }
+\item[{unsigned int}]{elem\+\_\+idx\+\_\+\+B, }
+\item[{unsigned int}]{elem\+\_\+idx\+\_\+\+C}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_a154a8076123b209a1bddc210c913006f}
+
+
+Increase the intersection mesh with the current polyhedron mesh and update its data structures. 
+
+
+
+Definition at line 236 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+240 \{
+241     \hyperlink{classcarl_1_1_mesh___intersection_ae858bc08b5286b0562eaf94372944bcd}{m\_bMeshFinalized} = \textcolor{keyword}{false};
+242     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} intersection\_range\_start = \hyperlink{classcarl_1_1_mesh___intersection_acd2052a59c0bc759f86b3e4810093a54}{m\_nb\_of\_elements};
+243 
+244     \textcolor{comment}{//  First, triangulate the point set!}
+245     \hyperlink{classcarl_1_1_mesh___intersection_aa8a75085ca6f75f96ad47e36b6dd8509}{triangulate\_intersection}(input\_points);
+246 
+247     \textcolor{comment}{//  Second, add the points to the grid-to-mesh map and update the intersection mesh,}
+248     \textcolor{comment}{// taking into account if the associated elements are big enough.}
+249     \hyperlink{classcarl_1_1_mesh___intersection_a040f460bc10dd0fd1d7fb27d25e733ac}{update\_intersection\_mesh}();
+250 
+251     \textcolor{comment}{//  Third, update the intersection pairs, if needed}
+252     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} intersection\_range\_end = \hyperlink{classcarl_1_1_mesh___intersection_acd2052a59c0bc759f86b3e4810093a54}{m\_nb\_of\_elements};
+253     \textcolor{keywordflow}{if}(intersection\_range\_end != intersection\_range\_start)
+254     \{
+255         \hyperlink{classcarl_1_1_mesh___intersection_aabfd4b640763d00e1a7786d4724732af}{update\_intersection\_pairs}(elem\_idx\_A, elem\_idx\_B,
+      \hyperlink{classcarl_1_1_mesh___intersection_a60ae2905b3c3debe5194811e176826ce}{m\_nb\_of\_intersections});
+256         \hyperlink{classcarl_1_1_mesh___intersection_ab0d6f92956f02022cfdfb2e3b84e1676}{m\_intersection\_couplings}[\hyperlink{classcarl_1_1_mesh___intersection_a60ae2905b3c3debe5194811e176826ce}{m\_nb\_of\_intersections}] = 
+      elem\_idx\_C;
+257         \hyperlink{classcarl_1_1_mesh___intersection_a86537a2c060ef77c8f9d20f8c5bd6c40}{update\_intersection\_element\_range}(intersection\_range\_start,
+      intersection\_range\_end,\hyperlink{classcarl_1_1_mesh___intersection_a60ae2905b3c3debe5194811e176826ce}{m\_nb\_of\_intersections});
+258         ++\hyperlink{classcarl_1_1_mesh___intersection_a60ae2905b3c3debe5194811e176826ce}{m\_nb\_of\_intersections};
+259     \}
+260 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_a195605fd295d5afc638129309103f576}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!initialize@{initialize}}
+\index{initialize@{initialize}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{initialize()}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+\+Intersection\+::initialize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_a195605fd295d5afc638129309103f576}
+
+
+Initialize the data structures. 
+
+
+
+Definition at line 150 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+151 \{
+152     \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh}.clear();
+153     \hyperlink{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{m\_discrete\_vertices}.clear();
+154     \hyperlink{classcarl_1_1_mesh___intersection_ae858bc08b5286b0562eaf94372944bcd}{m\_bMeshFinalized} = \textcolor{keyword}{false};
+155     \hyperlink{classcarl_1_1_mesh___intersection_a06a4d0d633bf58594fee6e35ebbc1b97}{m\_intersection\_pairs}.clear();
+156     \hyperlink{classcarl_1_1_mesh___intersection_ab0d6f92956f02022cfdfb2e3b84e1676}{m\_intersection\_couplings}.clear();
+157     \hyperlink{classcarl_1_1_mesh___intersection_adcbc0fb898aa287c2ff2a13693daf572}{m\_intersection\_element\_range}.clear();
+158     \hyperlink{classcarl_1_1_mesh___intersection_a60ae2905b3c3debe5194811e176826ce}{m\_nb\_of\_intersections} = 0;
+159     \hyperlink{classcarl_1_1_mesh___intersection_acd2052a59c0bc759f86b3e4810093a54}{m\_nb\_of\_elements} = 0 ;
+160     \hyperlink{classcarl_1_1_mesh___intersection_ac2765c9bdf5f15878a1cff52db5551aa}{m\_nb\_of\_vertices} = 0 ;
+161     \hyperlink{classcarl_1_1_mesh___intersection_a64c49bef515c3b09edf6745d079056a2}{m\_nb\_of\_points} = 0 ;
+162 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_a9ea043113a1437906da1319e50632d69}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!max\+\_\+point@{max\+\_\+point}}
+\index{max\+\_\+point@{max\+\_\+point}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{max\+\_\+point()}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Point \& carl\+::\+Mesh\+\_\+\+Intersection\+::max\+\_\+point (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_a9ea043113a1437906da1319e50632d69}
+
+
+Returns the maximum point of the discrete grid. 
+
+
+
+Definition at line 125 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+126 \{
+127     \textcolor{keywordflow}{return} \hyperlink{classcarl_1_1_mesh___intersection_a98f86004df38485ed880b054b94f5c7d}{m\_Grid\_MaxPoint};
+128 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_a7135c4c2e57e5ccdfbe5cd3286103460}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!mesh@{mesh}}
+\index{mesh@{mesh}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{mesh()}]{\setlength{\rightskip}{0pt plus 5cm}const lib\+Mesh\+::\+Replicated\+Mesh \& carl\+::\+Mesh\+\_\+\+Intersection\+::mesh (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_a7135c4c2e57e5ccdfbe5cd3286103460}
+
+
+Returns the address of the intersection mesh. 
+
+
+
+Definition at line 115 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+116 \{
+117     \textcolor{keywordflow}{return} \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh};
+118 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_a84e2ce5be9a9eeb53671ee6d8a8622ef}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!min\+\_\+point@{min\+\_\+point}}
+\index{min\+\_\+point@{min\+\_\+point}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{min\+\_\+point()}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Point \& carl\+::\+Mesh\+\_\+\+Intersection\+::min\+\_\+point (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_a84e2ce5be9a9eeb53671ee6d8a8622ef}
+
+
+Returns the minimal point of the discrete grid. 
+
+
+
+Definition at line 120 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+121 \{
+122     \textcolor{keywordflow}{return} \hyperlink{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{m\_Grid\_MinPoint};
+123 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_acfc4b6aae06fa27ea0cebcf7e112381a}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!min\+\_\+vol@{min\+\_\+vol}}
+\index{min\+\_\+vol@{min\+\_\+vol}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{min\+\_\+vol()}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::\+Mesh\+\_\+\+Intersection\+::min\+\_\+vol (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_acfc4b6aae06fa27ea0cebcf7e112381a}
+
+
+Returns the minimal polyhedron volume. 
+
+
+
+Definition at line 135 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+136 \{
+137     \textcolor{keywordflow}{return} \hyperlink{classcarl_1_1_mesh___intersection_ad282e724c75087a90026854992ec0809}{m\_vol\_tol};
+138 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_aee962f4dc634b4187cb759d6bf022d40}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!preallocate\+\_\+grid@{preallocate\+\_\+grid}}
+\index{preallocate\+\_\+grid@{preallocate\+\_\+grid}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{preallocate\+\_\+grid(int map\+\_\+preallocation)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+\+Intersection\+::preallocate\+\_\+grid (
+\begin{DoxyParamCaption}
+\item[{int}]{map\+\_\+preallocation}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_aee962f4dc634b4187cb759d6bf022d40}
+
+
+Preallocate the discrete points grid. 
+
+
+
+Definition at line 164 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+165 \{
+166 \textcolor{comment}{//  m\_Grid\_to\_mesh\_vertex\_idx.reserve(map\_preallocation);}
+167     \hyperlink{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{m\_discrete\_vertices}.reserve(map\_preallocation);
+168 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_a5078651b6ae4cfdf97e43dfa172094b6}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!prepare\+\_\+for\+\_\+use@{prepare\+\_\+for\+\_\+use}}
+\index{prepare\+\_\+for\+\_\+use@{prepare\+\_\+for\+\_\+use}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{prepare\+\_\+for\+\_\+use()}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+\+Intersection\+::prepare\+\_\+for\+\_\+use (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_a5078651b6ae4cfdf97e43dfa172094b6}
+
+
+Prepare the intersection mesh for use. 
+
+
+
+Definition at line 295 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+296 \{
+297     \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_mesh___intersection_a086fd53554e5ecfad25b7b15012d71e4}{m\_bPrintDebug})
+298     \{
+299         \textcolor{comment}{// Print information about the number of collisions}
+300         \textcolor{keywordtype}{size\_t} collisions = 0;
+301         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} bucket = 0; bucket != \hyperlink{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{m\_discrete\_vertices}.bucket\_count(); ++bucket)
+302         \{
+303             \textcolor{keywordflow}{if} (\hyperlink{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{m\_discrete\_vertices}.bucket\_size(bucket) > 1)
+304             \{
+305                 collisions += \hyperlink{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{m\_discrete\_vertices}.bucket\_size(bucket) - 1;
+306             \}
+307         \}
+308 
+309         std::cout   << \textcolor{stringliteral}{"    DEBUG: discrete grid hash collisions"} << std::endl;
+310         std::cout   << \textcolor{stringliteral}{" -> Nb. of collisions / size : "} << collisions << \textcolor{stringliteral}{" / "} << 
+      \hyperlink{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{m\_discrete\_vertices}.size()
+311                     << \textcolor{stringliteral}{" ("} << 100.*collisions/\hyperlink{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{m\_discrete\_vertices}.size() << \textcolor{stringliteral}{"%)"} << 
+      std::endl << std::endl;
+312     \}
+313 
+314     \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh}.prepare\_for\_use();
+315     \hyperlink{classcarl_1_1_mesh___intersection_ae858bc08b5286b0562eaf94372944bcd}{m\_bMeshFinalized} = \textcolor{keyword}{true};
+316 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_ace934a9b46e71e7071566b448474a5aa}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!set\+\_\+grid\+\_\+constraints@{set\+\_\+grid\+\_\+constraints}}
+\index{set\+\_\+grid\+\_\+constraints@{set\+\_\+grid\+\_\+constraints}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{set\+\_\+grid\+\_\+constraints(const lib\+Mesh\+::\+Mesh \&mesh\+\_\+\+A, const lib\+Mesh\+::\+Mesh \&mesh\+\_\+\+B, double vol\+\_\+tol=-\/1)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+\+Intersection\+::set\+\_\+grid\+\_\+constraints (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Mesh \&}]{mesh\+\_\+\+A, }
+\item[{const lib\+Mesh\+::\+Mesh \&}]{mesh\+\_\+\+B, }
+\item[{double}]{vol\+\_\+tol = {\ttfamily -\/1}}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_ace934a9b46e71e7071566b448474a5aa}
+
+
+Set the boundaries of the discrete points grid, taking into account the geometry of meshes mesh\+\_\+\+A and mesh\+\_\+\+B. 
+
+
+
+Definition at line 170 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+171 \{
+172     libMesh::MeshTools::BoundingBox bbox\_A = libMesh::MeshTools::bounding\_box(mesh\_A);
+173     libMesh::MeshTools::BoundingBox bbox\_B = libMesh::MeshTools::bounding\_box(mesh\_B);
+174 
+175     \textcolor{comment}{// Just to be sure, test if the bboxes intersect!}
+176     \hyperlink{common__header_8h_a593ccc80b790b2268653fcf6597bf451}{homemade\_assert\_msg}(bbox\_A.intersect(bbox\_B),\textcolor{stringliteral}{"Meshes' bounding boxes do not
+       intersect!\(\backslash\)n"});
+177 
+178     \textcolor{comment}{// Set the (future) intersection bbox corners}
+179     std::vector<double> eps\_candidates(3,0);
+180     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < 3; ++iii)
+181     \{
+182         \hyperlink{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{m\_Grid\_MinPoint}(iii) = std::max(bbox\_A.min()(iii),bbox\_B.min()(iii));
+183         \hyperlink{classcarl_1_1_mesh___intersection_a98f86004df38485ed880b054b94f5c7d}{m\_Grid\_MaxPoint}(iii) = std::min(bbox\_A.max()(iii),bbox\_B.max()(iii));
+184         eps\_candidates[iii] = (\hyperlink{classcarl_1_1_mesh___intersection_a98f86004df38485ed880b054b94f5c7d}{m\_Grid\_MaxPoint}(iii) - 
+      \hyperlink{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{m\_Grid\_MinPoint}(iii))/\hyperlink{classcarl_1_1_mesh___intersection_af5d973b0c2505d89bf1c9f7b29585b80}{m\_GridN\_min};
+185     \}
+186 
+187     \hyperlink{classcarl_1_1_mesh___intersection_a2b2a46afcfa01b2763315f439bd0a4d6}{m\_eps} = *std::min\_element(eps\_candidates.begin(),eps\_candidates.end());
+188 
+189     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < 3; ++iii)
+190     \{
+191         \hyperlink{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{m\_Grid\_MinPoint}(iii) -= 2*\hyperlink{classcarl_1_1_mesh___intersection_a2b2a46afcfa01b2763315f439bd0a4d6}{m\_eps};
+192         \hyperlink{classcarl_1_1_mesh___intersection_a98f86004df38485ed880b054b94f5c7d}{m\_Grid\_MaxPoint}(iii) += 2*\hyperlink{classcarl_1_1_mesh___intersection_a2b2a46afcfa01b2763315f439bd0a4d6}{m\_eps};
+193     \}
+194 
+195     \textcolor{keywordflow}{if}( vol\_tol < 0 )
+196     \{
+197         \textcolor{comment}{// Grossily estimate the volume of A's and B's elements using the bbox}
+198         \textcolor{keywordtype}{double} grid\_volume    =     (\hyperlink{classcarl_1_1_mesh___intersection_a98f86004df38485ed880b054b94f5c7d}{m\_Grid\_MaxPoint}(0) - 
+      \hyperlink{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{m\_Grid\_MinPoint}(0)) *
+199                                     (\hyperlink{classcarl_1_1_mesh___intersection_a98f86004df38485ed880b054b94f5c7d}{m\_Grid\_MaxPoint}(1) - 
+      \hyperlink{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{m\_Grid\_MinPoint}(1)) *
+200                                     (\hyperlink{classcarl_1_1_mesh___intersection_a98f86004df38485ed880b054b94f5c7d}{m\_Grid\_MaxPoint}(2) - 
+      \hyperlink{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{m\_Grid\_MinPoint}(2));
+201 
+202 
+203         \textcolor{keywordtype}{double} fraction\_vol\_A =     (bbox\_A.max()(0) - bbox\_A.min()(0)) *
+204                                     (bbox\_A.max()(1) - bbox\_A.min()(1)) *
+205                                     (bbox\_A.max()(2) - bbox\_A.min()(2)) /
+206                                     grid\_volume;
+207 
+208         \textcolor{keywordtype}{double} fraction\_vol\_B =     (bbox\_B.max()(0) - bbox\_B.min()(0)) *
+209                                     (bbox\_B.max()(1) - bbox\_B.min()(1)) *
+210                                     (bbox\_B.max()(2) - bbox\_B.min()(2)) /
+211                                     grid\_volume;
+212 
+213         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} est\_elem =   std::max(fraction\_vol\_A * mesh\_A.n\_elem(),fraction\_vol\_B * mesh\_B.n\_elem(
+      ));
+214 
+215         \hyperlink{classcarl_1_1_mesh___intersection_ad282e724c75087a90026854992ec0809}{m\_vol\_tol} = 1E-6 * grid\_volume / est\_elem;
+216     \}
+217     \textcolor{keywordflow}{else}
+218     \{
+219         \hyperlink{classcarl_1_1_mesh___intersection_ad282e724c75087a90026854992ec0809}{m\_vol\_tol} = vol\_tol;
+220     \}
+221 
+222     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < 3; ++iii)
+223     \{
+224         \hyperlink{classcarl_1_1_mesh___intersection_a74b7064e400e0dbf8c62eb7efef1b784}{m\_GridN}[iii] = (\hyperlink{classcarl_1_1_mesh___intersection_a98f86004df38485ed880b054b94f5c7d}{m\_Grid\_MaxPoint}(iii) - 
+      \hyperlink{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{m\_Grid\_MinPoint}(iii)) / \hyperlink{classcarl_1_1_mesh___intersection_a2b2a46afcfa01b2763315f439bd0a4d6}{m\_eps} + 1;
+225     \}
+226 
+227     \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_mesh___intersection_a086fd53554e5ecfad25b7b15012d71e4}{m\_bPrintDebug})
+228     \{
+229         std::cout << \textcolor{stringliteral}{"    DEBUG: discrete grid"} << std::endl;
+230         std::cout << \textcolor{stringliteral}{" -> eps             : "} << \hyperlink{classcarl_1_1_mesh___intersection_a2b2a46afcfa01b2763315f439bd0a4d6}{m\_eps} << std::endl;
+231         std::cout << \textcolor{stringliteral}{" -> volume          : "} << \hyperlink{classcarl_1_1_mesh___intersection_ad282e724c75087a90026854992ec0809}{m\_vol\_tol} << std::endl;
+232         std::cout << \textcolor{stringliteral}{" -> Grid dimensions : "} << \hyperlink{classcarl_1_1_mesh___intersection_a74b7064e400e0dbf8c62eb7efef1b784}{m\_GridN}[0] << \textcolor{stringliteral}{" "} << 
+      \hyperlink{classcarl_1_1_mesh___intersection_a74b7064e400e0dbf8c62eb7efef1b784}{m\_GridN}[1] << \textcolor{stringliteral}{" "} << \hyperlink{classcarl_1_1_mesh___intersection_a74b7064e400e0dbf8c62eb7efef1b784}{m\_GridN}[2] << \textcolor{stringliteral}{" "} << std::endl  << std::endl;
+233     \}
+234 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_aa8a75085ca6f75f96ad47e36b6dd8509}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!triangulate\+\_\+intersection@{triangulate\+\_\+intersection}}
+\index{triangulate\+\_\+intersection@{triangulate\+\_\+intersection}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{triangulate\+\_\+intersection(const std\+::set$<$ lib\+Mesh\+::\+Point $>$ \&input\+\_\+points)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+\+Intersection\+::triangulate\+\_\+intersection (
+\begin{DoxyParamCaption}
+\item[{const std\+::set$<$ lib\+Mesh\+::\+Point $>$ \&}]{input\+\_\+points}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_mesh___intersection_aa8a75085ca6f75f96ad47e36b6dd8509}
+
+
+Triangulate an intersection defined by a set of lib\+Mesh\+::\+Points, using either C\+G\+A\+L or Tetgen. 
+
+
+
+Definition at line 6 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+7 \{
+8     \hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\_libMesh\_PolyhedronMesh}.clear();
+9 
+10     \textcolor{keywordflow}{for}(std::set<libMesh::Point>::const\_iterator it\_set = input\_points.begin();
+11             it\_set != input\_points.end();
+12             ++it\_set)
+13     \{
+14         libMesh::Point dummy = *it\_set;
+15         \hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\_libMesh\_PolyhedronMesh}.add\_point(*it\_set);
+16     \}
+17 
+18     \textcolor{keywordflow}{switch} (\hyperlink{classcarl_1_1_mesh___intersection_aa42a12f25859de7ce08655a1ada87e50}{m\_MeshingMethod})
+19     \{
+20     \textcolor{keywordflow}{case} \hyperlink{namespacecarl_a4f72fd25137b97ac1ca1276ec549e5cfa0a91b3dbac7fab7e5efa6f804aab8f58}{IntersectionMeshingMethod::LIBMESH\_TETGEN}:
+21     \{
+22         libMesh::TetGenMeshInterface            temp\_tetgen\_interface(
+      \hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\_libMesh\_PolyhedronMesh});
+23         temp\_tetgen\_interface.triangulate\_pointset();
+24         \textcolor{keywordflow}{break};
+25     \}
+26     \textcolor{keywordflow}{case} \hyperlink{namespacecarl_a4f72fd25137b97ac1ca1276ec549e5cfa509162a828acac7eaad1fc369696a3b1}{IntersectionMeshingMethod::CGAL}:
+27     \{
+28         \textcolor{comment}{// Clear CGAL's mesh}
+29         \hyperlink{classcarl_1_1_mesh___intersection_a256506b058cda4c9b767d14277b9650c}{m\_CGAL\_PolyhedronMesh}.clear();
+30 
+31         \textcolor{comment}{// This is a superfluous extra point conversion:}
+32         \textcolor{comment}{// (CGAL Exact -> CGAL Inexact -> LibMesh -> CGAL Inexact)}
+33         \textcolor{comment}{// But changing this would need a re-structuring of the code (TODO !)}
+34         \hyperlink{_c_g_a_l__typedefs_8h_a9dc49a828e77bbd58c1f5db13edde547}{Point\_3} dummy\_CGAL\_point;
+35         \textcolor{keyword}{const} libMesh::Point * dummy\_libMesh\_point;
+36         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} iii = 0; iii < input\_points.size(); ++iii)
+37         \{
+38             dummy\_libMesh\_point = &\hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\_libMesh\_PolyhedronMesh}.point(iii);
+39             dummy\_CGAL\_point = \hyperlink{_c_g_a_l__typedefs_8h_a9dc49a828e77bbd58c1f5db13edde547}{Point\_3}( (*dummy\_libMesh\_point)(0),(*dummy\_libMesh\_point)(1),(*
+      dummy\_libMesh\_point)(2));
+40 
+41             \textcolor{comment}{// Insert vertex and save the corresponding}
+42             \hyperlink{_c_g_a_l__typedefs_8h_a3b04696a797c3efc6eb818ce4e95b906}{Vertex\_handle\_3} dummy\_vertex\_handle = 
+      \hyperlink{classcarl_1_1_mesh___intersection_a256506b058cda4c9b767d14277b9650c}{m\_CGAL\_PolyhedronMesh}.insert(dummy\_CGAL\_point);
+43             dummy\_vertex\_handle->info().ExtIndex = iii;
+44         \}
+45 
+46         \textcolor{comment}{// At this point, CGAL generated the mesh, now we have to convert it to libMesh}
+47         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} dummy\_vertex\_idx = 0;
+48         \textcolor{keywordflow}{for}(    \hyperlink{_c_g_a_l__typedefs_8h_a566d5fb492ed5802eb53bc2f2e0be9d5}{Finite\_cells\_iterator\_3} cell\_it = 
+      \hyperlink{classcarl_1_1_mesh___intersection_a256506b058cda4c9b767d14277b9650c}{m\_CGAL\_PolyhedronMesh}.finite\_cells\_begin();
+49                 cell\_it != \hyperlink{classcarl_1_1_mesh___intersection_a256506b058cda4c9b767d14277b9650c}{m\_CGAL\_PolyhedronMesh}.finite\_cells\_end();
+50                 ++cell\_it)
+51         \{
+52             libMesh::Elem * elem\_pointer =  \hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\_libMesh\_PolyhedronMesh}.add\_elem(\textcolor{keyword}{new} 
+      libMesh::Tet4);
+53             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} iii = 0; iii < 4; ++iii)
+54             \{
+55                 dummy\_vertex\_idx = cell\_it->vertex(iii)->info().ExtIndex;
+56                 elem\_pointer->set\_node(iii) = &(\hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\_libMesh\_PolyhedronMesh}.node(
+      dummy\_vertex\_idx));
+57             \}
+58         \}
+59         \hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\_libMesh\_PolyhedronMesh}.prepare\_for\_use();
+60 
+61         \textcolor{keywordflow}{break};
+62     \}
+63     \}
+64 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_a86537a2c060ef77c8f9d20f8c5bd6c40}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!update\+\_\+intersection\+\_\+element\+\_\+range@{update\+\_\+intersection\+\_\+element\+\_\+range}}
+\index{update\+\_\+intersection\+\_\+element\+\_\+range@{update\+\_\+intersection\+\_\+element\+\_\+range}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{update\+\_\+intersection\+\_\+element\+\_\+range(unsigned int range\+\_\+start, unsigned int range\+\_\+end, unsigned int inter\+\_\+id)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+\+Intersection\+::update\+\_\+intersection\+\_\+element\+\_\+range (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{range\+\_\+start, }
+\item[{unsigned int}]{range\+\_\+end, }
+\item[{unsigned int}]{inter\+\_\+id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a86537a2c060ef77c8f9d20f8c5bd6c40}
+
+
+Update the intersection element range map with a new range associated to the intersection no. inter\+\_\+id. 
+
+
+
+Definition at line 110 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+111 \{
+112     \hyperlink{classcarl_1_1_mesh___intersection_adcbc0fb898aa287c2ff2a13693daf572}{m\_intersection\_element\_range}[inter\_id] = std::make\_pair(range\_start, 
+      range\_end);
+113 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_a040f460bc10dd0fd1d7fb27d25e733ac}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!update\+\_\+intersection\+\_\+mesh@{update\+\_\+intersection\+\_\+mesh}}
+\index{update\+\_\+intersection\+\_\+mesh@{update\+\_\+intersection\+\_\+mesh}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{update\+\_\+intersection\+\_\+mesh()}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+\+Intersection\+::update\+\_\+intersection\+\_\+mesh (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a040f460bc10dd0fd1d7fb27d25e733ac}
+
+
+Update the intersection mesh with the current polyhedron mesh data. 
+
+
+
+Definition at line 66 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+67 \{
+68     \textcolor{comment}{// Test which elements must be added, and insert their vertices}
+69     libMesh::ReplicatedMesh::element\_iterator   it\_poly\_mesh = 
+      \hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\_libMesh\_PolyhedronMesh}.elements\_begin();
+70 
+71     \textcolor{keywordflow}{for}(    ; it\_poly\_mesh != \hyperlink{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{m\_libMesh\_PolyhedronMesh}.elements\_end();
+72             ++it\_poly\_mesh)
+73     \{
+74         libMesh::Elem * poly\_elem = * it\_poly\_mesh;
+75 
+76         \textcolor{keywordflow}{if}(std::abs(poly\_elem->volume()) > \hyperlink{classcarl_1_1_mesh___intersection_ad282e724c75087a90026854992ec0809}{m\_vol\_tol})
+77         \{
+78             \textcolor{comment}{// Add a new element!}
+79             libMesh::Elem * mesh\_elem = \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh}.add\_elem(\textcolor{keyword}{new} libMesh::Tet4);
+80             
+81             \textcolor{comment}{// -> First, add the nodes}
+82             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < 4; ++iii)
+83             \{
+84                 \hyperlink{classcarl_1_1_mesh___intersection_a9295162aa24e62dae37d3dd12c46f0d1}{convert\_to\_discrete}(poly\_elem->point(iii),
+      \hyperlink{classcarl_1_1_mesh___intersection_aa84e7b362c2187f100591e5e3fef33e5}{m\_dummy\_discrete\_point});
+85 
+86                 \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{m\_discrete\_vertices}.find(
+      \hyperlink{classcarl_1_1_mesh___intersection_aa84e7b362c2187f100591e5e3fef33e5}{m\_dummy\_discrete\_point}) == \hyperlink{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{m\_discrete\_vertices}.end())
+87                 \{
+88                     \textcolor{comment}{// New vertex! Add it to the mesh}
+89 
+90                     \hyperlink{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{m\_discrete\_vertices}[
+      \hyperlink{classcarl_1_1_mesh___intersection_aa84e7b362c2187f100591e5e3fef33e5}{m\_dummy\_discrete\_point}] = \hyperlink{classcarl_1_1_mesh___intersection_ac2765c9bdf5f15878a1cff52db5551aa}{m\_nb\_of\_vertices};
+91                     \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh}.add\_point(poly\_elem->point(iii),
+      \hyperlink{classcarl_1_1_mesh___intersection_ac2765c9bdf5f15878a1cff52db5551aa}{m\_nb\_of\_vertices});
+92                     mesh\_elem->set\_node(iii) = \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh}.node\_ptr(
+      \hyperlink{classcarl_1_1_mesh___intersection_ac2765c9bdf5f15878a1cff52db5551aa}{m\_nb\_of\_vertices});
+93                     ++\hyperlink{classcarl_1_1_mesh___intersection_ac2765c9bdf5f15878a1cff52db5551aa}{m\_nb\_of\_vertices};
+94                 \}
+95 
+96                 \textcolor{comment}{// Associate vertex to the new element}
+97                 mesh\_elem->set\_node(iii) = \hyperlink{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{m\_libMesh\_Mesh}.node\_ptr(
+      \hyperlink{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{m\_discrete\_vertices}[\hyperlink{classcarl_1_1_mesh___intersection_aa84e7b362c2187f100591e5e3fef33e5}{m\_dummy\_discrete\_point}]);
+98             \}
+99             \textcolor{comment}{// Increase the number of elements}
+100             ++\hyperlink{classcarl_1_1_mesh___intersection_acd2052a59c0bc759f86b3e4810093a54}{m\_nb\_of\_elements};
+101         \}
+102     \}
+103 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_mesh___intersection_aabfd4b640763d00e1a7786d4724732af}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!update\+\_\+intersection\+\_\+pairs@{update\+\_\+intersection\+\_\+pairs}}
+\index{update\+\_\+intersection\+\_\+pairs@{update\+\_\+intersection\+\_\+pairs}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{update\+\_\+intersection\+\_\+pairs(unsigned int elem\+\_\+idx\+\_\+\+A, unsigned int elem\+\_\+idx\+\_\+\+B, unsigned int inter\+\_\+id)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Mesh\+\_\+\+Intersection\+::update\+\_\+intersection\+\_\+pairs (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{elem\+\_\+idx\+\_\+\+A, }
+\item[{unsigned int}]{elem\+\_\+idx\+\_\+\+B, }
+\item[{unsigned int}]{inter\+\_\+id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_aabfd4b640763d00e1a7786d4724732af}
+
+
+Update the intersection pair map with a new pair associated to the intersection no. inter\+\_\+id. 
+
+
+
+Definition at line 105 of file mesh\+\_\+intersection\+\_\+methods.\+cpp.
+
+
+\begin{DoxyCode}
+106 \{
+107     \hyperlink{classcarl_1_1_mesh___intersection_a06a4d0d633bf58594fee6e35ebbc1b97}{m\_intersection\_pairs}[inter\_id] = std::make\_pair(elem\_idx\_A, elem\_idx\_B);
+108 \}
+\end{DoxyCode}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classcarl_1_1_mesh___intersection_ac80b6a1094d5268d646150d1f5e61560}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!Convert\+Exact\+To\+Inexact@{Convert\+Exact\+To\+Inexact}}
+\index{Convert\+Exact\+To\+Inexact@{Convert\+Exact\+To\+Inexact}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{Convert\+Exact\+To\+Inexact}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Exact\+Kernel\+\_\+to\+\_\+\+Kernel} carl\+::\+Mesh\+\_\+\+Intersection\+::\+Convert\+Exact\+To\+Inexact\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_ac80b6a1094d5268d646150d1f5e61560}
+
+
+Convert exact C\+G\+A\+L constructs to inexact constructs. 
+
+
+
+Definition at line 60 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a9b682296131536eb588bcee3d7f253b1}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!Convert\+Inexact\+To\+Exact@{Convert\+Inexact\+To\+Exact}}
+\index{Convert\+Inexact\+To\+Exact@{Convert\+Inexact\+To\+Exact}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{Convert\+Inexact\+To\+Exact}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Kernel\+\_\+to\+\_\+\+Exact\+Kernel} carl\+::\+Mesh\+\_\+\+Intersection\+::\+Convert\+Inexact\+To\+Exact\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a9b682296131536eb588bcee3d7f253b1}
+
+
+Convert inexact C\+G\+A\+L constructs to exact constructs. 
+
+
+
+Definition at line 59 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_ae858bc08b5286b0562eaf94372944bcd}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+b\+Mesh\+Finalized@{m\+\_\+b\+Mesh\+Finalized}}
+\index{m\+\_\+b\+Mesh\+Finalized@{m\+\_\+b\+Mesh\+Finalized}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+b\+Mesh\+Finalized}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+b\+Mesh\+Finalized\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_ae858bc08b5286b0562eaf94372944bcd}
+
+
+Boolean controlling if the intersection mesh was finished or not. 
+
+
+
+Definition at line 113 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a086fd53554e5ecfad25b7b15012d71e4}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+b\+Print\+Debug@{m\+\_\+b\+Print\+Debug}}
+\index{m\+\_\+b\+Print\+Debug@{m\+\_\+b\+Print\+Debug}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+b\+Print\+Debug}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+b\+Print\+Debug\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a086fd53554e5ecfad25b7b15012d71e4}
+
+
+Print debug information? {\itshape Default\+:} false. 
+
+
+
+Definition at line 116 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a256506b058cda4c9b767d14277b9650c}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+\+C\+G\+A\+L\+\_\+\+Polyhedron\+Mesh@{m\+\_\+\+C\+G\+A\+L\+\_\+\+Polyhedron\+Mesh}}
+\index{m\+\_\+\+C\+G\+A\+L\+\_\+\+Polyhedron\+Mesh@{m\+\_\+\+C\+G\+A\+L\+\_\+\+Polyhedron\+Mesh}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+\+C\+G\+A\+L\+\_\+\+Polyhedron\+Mesh}]{\setlength{\rightskip}{0pt plus 5cm}{\bf D\+T\+\_\+3} carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+\+C\+G\+A\+L\+\_\+\+Polyhedron\+Mesh\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a256506b058cda4c9b767d14277b9650c}
+
+
+Auxiliary C\+G\+A\+L mesh, used if C\+G\+A\+L is chosen for the tetrahedrization. 
+
+
+
+Definition at line 53 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a418cf274a01b6aea560249a468574124}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+comm@{m\+\_\+comm}}
+\index{m\+\_\+comm@{m\+\_\+comm}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+comm}]{\setlength{\rightskip}{0pt plus 5cm}const lib\+Mesh\+::\+Parallel\+::\+Communicator\& carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+comm\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a418cf274a01b6aea560249a468574124}
+
+
+Intersection mesh communicator. 
+
+
+
+Definition at line 39 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+discrete\+\_\+vertices@{m\+\_\+discrete\+\_\+vertices}}
+\index{m\+\_\+discrete\+\_\+vertices@{m\+\_\+discrete\+\_\+vertices}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+discrete\+\_\+vertices}]{\setlength{\rightskip}{0pt plus 5cm}std\+::unordered\+\_\+map$<$std\+::vector$<$long$>$, unsigned int, {\bf Point\+Hash\+\_\+3\+D}, {\bf Point\+Hash\+\_\+3\+D\+\_\+\+Equal} $>$ carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+discrete\+\_\+vertices\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a5c5abcce2f778e50c5c8a5265692c96f}
+
+
+Unordered map (or hash) for the discrete points (key). 
+
+
+
+Definition at line 95 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_aa84e7b362c2187f100591e5e3fef33e5}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+dummy\+\_\+discrete\+\_\+point@{m\+\_\+dummy\+\_\+discrete\+\_\+point}}
+\index{m\+\_\+dummy\+\_\+discrete\+\_\+point@{m\+\_\+dummy\+\_\+discrete\+\_\+point}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+dummy\+\_\+discrete\+\_\+point}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$long $>$ carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+dummy\+\_\+discrete\+\_\+point\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_aa84e7b362c2187f100591e5e3fef33e5}
+
+
+Definition at line 85 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a2b2a46afcfa01b2763315f439bd0a4d6}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+eps@{m\+\_\+eps}}
+\index{m\+\_\+eps@{m\+\_\+eps}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+eps}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+eps\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a2b2a46afcfa01b2763315f439bd0a4d6}
+
+
+Precision of the discrete point grid. 
+
+
+
+Definition at line 77 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_abe420c1736bc43ea710f2f92073e91b9}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+global\+\_\+comm@{m\+\_\+global\+\_\+comm}}
+\index{m\+\_\+global\+\_\+comm@{m\+\_\+global\+\_\+comm}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+global\+\_\+comm}]{\setlength{\rightskip}{0pt plus 5cm}const lib\+Mesh\+::\+Parallel\+::\+Communicator\& carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+global\+\_\+comm\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_abe420c1736bc43ea710f2f92073e91b9}
+
+
+Full system communicator. 
+
+
+
+Definition at line 43 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_ad033bd5e13ceafadbfee32998f56f5a4}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+global\+\_\+nodes@{m\+\_\+global\+\_\+nodes}}
+\index{m\+\_\+global\+\_\+nodes@{m\+\_\+global\+\_\+nodes}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+global\+\_\+nodes}]{\setlength{\rightskip}{0pt plus 5cm}const unsigned int carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+global\+\_\+nodes\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_ad033bd5e13ceafadbfee32998f56f5a4}
+
+
+Full system number of processors. 
+
+
+
+Definition at line 44 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a9f045e850a4b8ecbcc2e044a2c987009}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+global\+\_\+rank@{m\+\_\+global\+\_\+rank}}
+\index{m\+\_\+global\+\_\+rank@{m\+\_\+global\+\_\+rank}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+global\+\_\+rank}]{\setlength{\rightskip}{0pt plus 5cm}const unsigned int carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+global\+\_\+rank\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a9f045e850a4b8ecbcc2e044a2c987009}
+
+
+Full system processor rank. 
+
+
+
+Definition at line 45 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a98f86004df38485ed880b054b94f5c7d}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+\+Grid\+\_\+\+Max\+Point@{m\+\_\+\+Grid\+\_\+\+Max\+Point}}
+\index{m\+\_\+\+Grid\+\_\+\+Max\+Point@{m\+\_\+\+Grid\+\_\+\+Max\+Point}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+\+Grid\+\_\+\+Max\+Point}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Point carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+\+Grid\+\_\+\+Max\+Point\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a98f86004df38485ed880b054b94f5c7d}
+
+
+Maximum point of the discrete grid. 
+
+
+
+Definition at line 91 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+\+Grid\+\_\+\+Min\+Point@{m\+\_\+\+Grid\+\_\+\+Min\+Point}}
+\index{m\+\_\+\+Grid\+\_\+\+Min\+Point@{m\+\_\+\+Grid\+\_\+\+Min\+Point}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+\+Grid\+\_\+\+Min\+Point}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Point carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+\+Grid\+\_\+\+Min\+Point\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a415abd921fae83d405751d1dcc0957db}
+
+
+Minimal point of the discrete grid. 
+
+
+
+Definition at line 88 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a74b7064e400e0dbf8c62eb7efef1b784}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+\+Grid\+N@{m\+\_\+\+Grid\+N}}
+\index{m\+\_\+\+Grid\+N@{m\+\_\+\+Grid\+N}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+\+Grid\+N}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$long $>$ carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+\+Grid\+N\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a74b7064e400e0dbf8c62eb7efef1b784}
+
+
+Dimensions of the discrete point grid. 
+
+
+
+Definition at line 83 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_af5d973b0c2505d89bf1c9f7b29585b80}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+\+Grid\+N\+\_\+min@{m\+\_\+\+Grid\+N\+\_\+min}}
+\index{m\+\_\+\+Grid\+N\+\_\+min@{m\+\_\+\+Grid\+N\+\_\+min}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+\+Grid\+N\+\_\+min}]{\setlength{\rightskip}{0pt plus 5cm}long carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+\+Grid\+N\+\_\+min\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_af5d973b0c2505d89bf1c9f7b29585b80}
+
+
+Minimal number of integers over each dimension of the discrete grid. 
+
+
+
+Definition at line 98 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_ab0d6f92956f02022cfdfb2e3b84e1676}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+intersection\+\_\+couplings@{m\+\_\+intersection\+\_\+couplings}}
+\index{m\+\_\+intersection\+\_\+couplings@{m\+\_\+intersection\+\_\+couplings}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+intersection\+\_\+couplings}]{\setlength{\rightskip}{0pt plus 5cm}std\+::unordered\+\_\+map$<$unsigned int, unsigned int$>$ carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+intersection\+\_\+couplings\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_ab0d6f92956f02022cfdfb2e3b84e1676}
+
+
+Unordered map associating each intersection (key) to a coupling element ({\bfseries useless!}) 
+
+
+
+Definition at line 68 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_adcbc0fb898aa287c2ff2a13693daf572}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+intersection\+\_\+element\+\_\+range@{m\+\_\+intersection\+\_\+element\+\_\+range}}
+\index{m\+\_\+intersection\+\_\+element\+\_\+range@{m\+\_\+intersection\+\_\+element\+\_\+range}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+intersection\+\_\+element\+\_\+range}]{\setlength{\rightskip}{0pt plus 5cm}std\+::unordered\+\_\+map$<$unsigned int, std\+::pair$<$unsigned int, unsigned int$>$ $>$ carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+intersection\+\_\+element\+\_\+range\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_adcbc0fb898aa287c2ff2a13693daf572}
+
+
+Unordered map associating each intersection (key) to a range of elements in the intersection mesh. 
+
+
+
+Definition at line 71 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a06a4d0d633bf58594fee6e35ebbc1b97}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+intersection\+\_\+pairs@{m\+\_\+intersection\+\_\+pairs}}
+\index{m\+\_\+intersection\+\_\+pairs@{m\+\_\+intersection\+\_\+pairs}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+intersection\+\_\+pairs}]{\setlength{\rightskip}{0pt plus 5cm}std\+::unordered\+\_\+map$<$unsigned int, std\+::pair$<$unsigned int, unsigned int$>$ $>$ carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+intersection\+\_\+pairs\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a06a4d0d633bf58594fee6e35ebbc1b97}
+
+
+Unordered map containing the element pair associated to each intersection (key). 
+
+
+
+Definition at line 65 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_aac5e4b495b7d8aa532ce28ca2d495c69}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+intersection\+\_\+point\+\_\+indexes@{m\+\_\+intersection\+\_\+point\+\_\+indexes}}
+\index{m\+\_\+intersection\+\_\+point\+\_\+indexes@{m\+\_\+intersection\+\_\+point\+\_\+indexes}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+intersection\+\_\+point\+\_\+indexes}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$unsigned int$>$ carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+intersection\+\_\+point\+\_\+indexes\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_aac5e4b495b7d8aa532ce28ca2d495c69}
+
+
+({\bfseries Unused!}) 
+
+
+
+Definition at line 107 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+lib\+Mesh\+\_\+\+Mesh@{m\+\_\+lib\+Mesh\+\_\+\+Mesh}}
+\index{m\+\_\+lib\+Mesh\+\_\+\+Mesh@{m\+\_\+lib\+Mesh\+\_\+\+Mesh}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+lib\+Mesh\+\_\+\+Mesh}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Replicated\+Mesh\& carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+lib\+Mesh\+\_\+\+Mesh\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_aeea7835637a936ca4f272e48cea18fa2}
+
+
+Address of the intersection mesh. 
+
+
+
+Definition at line 47 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+lib\+Mesh\+\_\+\+Polyhedron\+Mesh@{m\+\_\+lib\+Mesh\+\_\+\+Polyhedron\+Mesh}}
+\index{m\+\_\+lib\+Mesh\+\_\+\+Polyhedron\+Mesh@{m\+\_\+lib\+Mesh\+\_\+\+Polyhedron\+Mesh}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+lib\+Mesh\+\_\+\+Polyhedron\+Mesh}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Mesh carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+lib\+Mesh\+\_\+\+Polyhedron\+Mesh\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a4377fd67cf7c486ba4263fe11b99a3cf}
+
+
+lib\+Mesh Mesh containing the tetrahedrization of an intersection polyhedron (the polyhedron mesh). 
+
+
+
+Definition at line 50 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_aa42a12f25859de7ce08655a1ada87e50}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+\+Meshing\+Method@{m\+\_\+\+Meshing\+Method}}
+\index{m\+\_\+\+Meshing\+Method@{m\+\_\+\+Meshing\+Method}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+\+Meshing\+Method}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Intersection\+Meshing\+Method} carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+\+Meshing\+Method\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_aa42a12f25859de7ce08655a1ada87e50}
+
+
+Choice of meshing algorithm. 
+
+Can be either Intersection\+Meshing\+Method\+::\+L\+I\+B\+M\+E\+S\+H\+\_\+\+T\+E\+T\+G\+E\+N or Intersection\+Meshing\+Method\+:\+: C\+G\+A\+L. {\itshape Default\+:} Intersection\+Meshing\+Method\+:\+: C\+G\+A\+L. 
+
+Definition at line 122 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_acd2052a59c0bc759f86b3e4810093a54}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+nb\+\_\+of\+\_\+elements@{m\+\_\+nb\+\_\+of\+\_\+elements}}
+\index{m\+\_\+nb\+\_\+of\+\_\+elements@{m\+\_\+nb\+\_\+of\+\_\+elements}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+nb\+\_\+of\+\_\+elements}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+nb\+\_\+of\+\_\+elements\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_acd2052a59c0bc759f86b3e4810093a54}
+
+
+Number of elements of the intersection mesh. 
+
+
+
+Definition at line 101 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a60ae2905b3c3debe5194811e176826ce}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+nb\+\_\+of\+\_\+intersections@{m\+\_\+nb\+\_\+of\+\_\+intersections}}
+\index{m\+\_\+nb\+\_\+of\+\_\+intersections@{m\+\_\+nb\+\_\+of\+\_\+intersections}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+nb\+\_\+of\+\_\+intersections}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+nb\+\_\+of\+\_\+intersections\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a60ae2905b3c3debe5194811e176826ce}
+
+
+Definition at line 62 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a64c49bef515c3b09edf6745d079056a2}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+nb\+\_\+of\+\_\+points@{m\+\_\+nb\+\_\+of\+\_\+points}}
+\index{m\+\_\+nb\+\_\+of\+\_\+points@{m\+\_\+nb\+\_\+of\+\_\+points}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+nb\+\_\+of\+\_\+points}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+nb\+\_\+of\+\_\+points\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a64c49bef515c3b09edf6745d079056a2}
+
+
+({\bfseries Unused!}) 
+
+
+
+Definition at line 110 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_ac2765c9bdf5f15878a1cff52db5551aa}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+nb\+\_\+of\+\_\+vertices@{m\+\_\+nb\+\_\+of\+\_\+vertices}}
+\index{m\+\_\+nb\+\_\+of\+\_\+vertices@{m\+\_\+nb\+\_\+of\+\_\+vertices}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+nb\+\_\+of\+\_\+vertices}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+nb\+\_\+of\+\_\+vertices\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_ac2765c9bdf5f15878a1cff52db5551aa}
+
+
+Number of vertices of the intersection mesh. 
+
+
+
+Definition at line 104 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_abd9e70d02d26302a6cc97fc4ec4990dc}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+nodes@{m\+\_\+nodes}}
+\index{m\+\_\+nodes@{m\+\_\+nodes}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+nodes}]{\setlength{\rightskip}{0pt plus 5cm}const unsigned int carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+nodes\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_abd9e70d02d26302a6cc97fc4ec4990dc}
+
+
+Intersection mesh number of processors ({\bfseries useless!}). 
+
+
+
+Definition at line 40 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_ab2543dd7c6f2d62561e4b75782621f43}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+rank@{m\+\_\+rank}}
+\index{m\+\_\+rank@{m\+\_\+rank}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+rank}]{\setlength{\rightskip}{0pt plus 5cm}const unsigned int carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+rank\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_ab2543dd7c6f2d62561e4b75782621f43}
+
+
+Intersection mesh processor rank ({\bfseries useless!}). 
+
+
+
+Definition at line 41 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_a670d0e1f635a8fd820fb659c4c073c0e}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+\+Tet\+Gen\+Interface@{m\+\_\+\+Tet\+Gen\+Interface}}
+\index{m\+\_\+\+Tet\+Gen\+Interface@{m\+\_\+\+Tet\+Gen\+Interface}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+\+Tet\+Gen\+Interface}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Tet\+Gen\+Mesh\+Interface carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+\+Tet\+Gen\+Interface\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_a670d0e1f635a8fd820fb659c4c073c0e}
+
+
+Tet\+Gen interface. 
+
+
+
+Definition at line 56 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+\hypertarget{classcarl_1_1_mesh___intersection_ad282e724c75087a90026854992ec0809}{}\index{carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}!m\+\_\+vol\+\_\+tol@{m\+\_\+vol\+\_\+tol}}
+\index{m\+\_\+vol\+\_\+tol@{m\+\_\+vol\+\_\+tol}!carl\+::\+Mesh\+\_\+\+Intersection@{carl\+::\+Mesh\+\_\+\+Intersection}}
+\subsubsection[{m\+\_\+vol\+\_\+tol}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::\+Mesh\+\_\+\+Intersection\+::m\+\_\+vol\+\_\+tol\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_mesh___intersection_ad282e724c75087a90026854992ec0809}
+
+
+Minimal volume for the intersection polyhedrons. 
+
+
+
+Definition at line 80 of file mesh\+\_\+intersection\+\_\+methods.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/\hyperlink{mesh__intersection__methods_8h}{mesh\+\_\+intersection\+\_\+methods.\+h}\item 
+/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/common/intersections\+\_\+parallel/\hyperlink{mesh__intersection__methods_8cpp}{mesh\+\_\+intersection\+\_\+methods.\+cpp}\end{DoxyCompactItemize}

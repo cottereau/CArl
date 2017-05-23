@@ -23,6 +23,7 @@
   $(document).ready(function() { init_search(); });
 </script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen_html_style.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -161,7 +162,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class used to build a restriction of a parent mesh to the coupling region.  <a href="classcarl_1_1_mesh__restriction.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcarl_1_1parallel__intersection__params.html">parallel_intersection_params</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure containing the parameters for the parallel intersection search test program (source: <a class="el" href="_c_arl__build__intersections_8cpp.html">CArl_build_intersections.cpp</a>)  <a href="structcarl_1_1parallel__intersection__params.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure containing the parameters for the parallel intersection search test program (source: <a class="el" href="_c_arl__build__intersections_8cpp.html" title="Implementation of the parallel intersection search. ">CArl_build_intersections.cpp</a>)  <a href="structcarl_1_1parallel__intersection__params.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1_patch__construction.html">Patch_construction</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class used to build a mesh patch from a parent mesh and an coupling mesh element.  <a href="classcarl_1_1_patch__construction.html#details">More...</a><br /></td></tr>
@@ -239,7 +240,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:aebc298614cba13aa318064e3ad08bc10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parser function for the coupling matrix multiplication operation.  <a href="#aebc298614cba13aa318064e3ad08bc10">More...</a><br /></td></tr>
 <tr class="separator:aebc298614cba13aa318064e3ad08bc10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab80eec3eb20ff6a403ad01bafa649df2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecarl.html#ab80eec3eb20ff6a403ad01bafa649df2">get_intersection_input_params</a> (GetPot &amp;field_parser, <a class="el" href="structcarl_1_1parallel__intersection__params.html">parallel_intersection_params</a> &amp;input_params)</td></tr>
-<tr class="memdesc:ab80eec3eb20ff6a403ad01bafa649df2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parser function for the parallel intersection search program (source: <a class="el" href="_c_arl__build__intersections_8cpp.html">CArl_build_intersections.cpp</a>)  <a href="#ab80eec3eb20ff6a403ad01bafa649df2">More...</a><br /></td></tr>
+<tr class="memdesc:ab80eec3eb20ff6a403ad01bafa649df2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parser function for the parallel intersection search program (source: <a class="el" href="_c_arl__build__intersections_8cpp.html" title="Implementation of the parallel intersection search. ">CArl_build_intersections.cpp</a>)  <a href="#ab80eec3eb20ff6a403ad01bafa649df2">More...</a><br /></td></tr>
 <tr class="separator:ab80eec3eb20ff6a403ad01bafa649df2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b7d0a416cdffe9589a3912c1f4ef20b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacecarl.html#a2b7d0a416cdffe9589a3912c1f4ef20b">get_input_params</a> (GetPot &amp;field_parser, <a class="el" href="structcarl_1_1libmesh__solve__linear__system__input__params.html">libmesh_solve_linear_system_input_params</a> &amp;input_params)</td></tr>
 <tr class="memdesc:a2b7d0a416cdffe9589a3912c1f4ef20b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parser function for the coupled solver test programs.  <a href="#a2b7d0a416cdffe9589a3912c1f4ef20b">More...</a><br /></td></tr>
@@ -1463,8 +1464,8 @@ Functions</h2></td></tr>
 </ul>
 </li>
 <li>Coupling parameters:<ul>
-<li><code>CouplingWidth</code> or <code>--ce</code> : width of the coupling region (same unit as the meshes, <img class="formulaInl" alt="$e$" src="form_4.png"/> in the <img class="formulaInl" alt="$L_2$" src="form_5.png"/> coupling term).</li>
-<li><code>CouplingRigidity</code> or <code>--ck</code> : rigidity used for the coupling matrix (in MPa, if mm was used for the meshes, <img class="formulaInl" alt="$\kappa$" src="form_6.png"/> in both the <img class="formulaInl" alt="$L_2$" src="form_5.png"/> and <img class="formulaInl" alt="$H_1$" src="form_7.png"/> terms).</li>
+<li><code>CouplingWidth</code> or <code>--ce</code> : width of the coupling region (same unit as the meshes, <img class="formulaInl" alt="$e$" src="form_0.png"/> in the <img class="formulaInl" alt="$L_2$" src="form_1.png"/> coupling term).</li>
+<li><code>CouplingRigidity</code> or <code>--ck</code> : rigidity used for the coupling matrix (in MPa, if mm was used for the meshes, <img class="formulaInl" alt="$\kappa$" src="form_2.png"/> in both the <img class="formulaInl" alt="$L_2$" src="form_1.png"/> and <img class="formulaInl" alt="$H_1$" src="form_3.png"/> terms).</li>
 </ul>
 </li>
 </ul>
@@ -2442,7 +2443,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Parser function for the parallel intersection search program (source: <a class="el" href="_c_arl__build__intersections_8cpp.html">CArl_build_intersections.cpp</a>) </p>
+<p>Parser function for the parallel intersection search program (source: <a class="el" href="_c_arl__build__intersections_8cpp.html" title="Implementation of the parallel intersection search. ">CArl_build_intersections.cpp</a>) </p>
 <p>Required parameters:</p><ul>
 <li><code>MeshA</code>, <code>-mA</code> or <code>--meshA</code> : path to the mesh A.</li>
 <li><code>MeshB</code>, <code>-mB</code> or <code>--meshB</code> : path to the mesh B.</li>

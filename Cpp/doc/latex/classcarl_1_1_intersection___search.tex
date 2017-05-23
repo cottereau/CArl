@@ -1,0 +1,1845 @@
+\hypertarget{classcarl_1_1_intersection___search}{}\section{carl\+:\+:Intersection\+\_\+\+Search Class Reference}
+\label{classcarl_1_1_intersection___search}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+
+
+Class containing the structure needed to find all the intersections between two meshes, inside the coupling region mesh.  
+
+
+
+
+{\ttfamily \#include $<$intersection\+\_\+search.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classcarl_1_1_intersection___search_a84339f042e025cf5603b8ef1cb9ecba5}{Intersection\+\_\+\+Search} (lib\+Mesh\+::\+Mesh \&\hyperlink{classcarl_1_1_intersection___search_aaea90014de60041ab930ad10afe8b694}{mesh\+\_\+\+A}, lib\+Mesh\+::\+Mesh \&\hyperlink{classcarl_1_1_intersection___search_a211e0e64653fd099eaacac0ee3824a7d}{mesh\+\_\+\+B}, lib\+Mesh\+::\+Mesh \&\hyperlink{classcarl_1_1_intersection___search_ae4d3f5cd22b551d7f33a8d807649ac4c}{mesh\+\_\+\+Coupling}, lib\+Mesh\+::\+Mesh \&mesh\+\_\+\+I, const std\+::string \&output\+\_\+base=std\+::string(\char`\"{}test\char`\"{}), Intersection\+Meshing\+Method Meshing\+Method=Intersection\+Meshing\+Method\+::\+C\+G\+A\+L, double Min\+\_\+\+Inter\+\_\+\+Volume=1\+E-\/15, bool b\+Do\+Perf\+\_\+log=true, bool b\+Debug\+Output=false)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Mesh \& \hyperlink{classcarl_1_1_intersection___search_aaea90014de60041ab930ad10afe8b694}{mesh\+\_\+\+A} ()
+\begin{DoxyCompactList}\small\item\em Reference to the mesh A. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Mesh \& \hyperlink{classcarl_1_1_intersection___search_a211e0e64653fd099eaacac0ee3824a7d}{mesh\+\_\+\+B} ()
+\begin{DoxyCompactList}\small\item\em Reference to the mesh B. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Mesh \& \hyperlink{classcarl_1_1_intersection___search_ae4d3f5cd22b551d7f33a8d807649ac4c}{mesh\+\_\+\+Coupling} ()
+\begin{DoxyCompactList}\small\item\em Reference to the coupling mesh. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_aa2312fdcb8d8203f9d07b2b638c62798}{Prepare\+Preallocation\+And\+Load} (\hyperlink{namespacecarl_a2c9d0282cb533624e034ccc1d7b629c7}{Search\+Method} search\+\_\+type=\hyperlink{namespacecarl_a2c9d0282cb533624e034ccc1d7b629c7a795a195e14566a465c90e47e4f389447}{B\+R\+U\+T\+E})
+\begin{DoxyCompactList}\small\item\em Do a preliminary search, to optimize the intersection search and construction. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_a7928e94f8406b75be9887427fd0da9bc}{Preallocate\+And\+Partition\+Coupling} ()
+\begin{DoxyCompactList}\small\item\em Preallocate \hyperlink{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{Intersection\+\_\+\+Search\+::m\+\_\+\+Intersection\+\_\+\+Pairs\+\_\+multimap} and repartition the coupling mesh. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_aa84f57dd84826955813efe60c87d199d}{Build\+Intersections} (\hyperlink{namespacecarl_a2c9d0282cb533624e034ccc1d7b629c7}{Search\+Method} search\+\_\+type=\hyperlink{namespacecarl_a2c9d0282cb533624e034ccc1d7b629c7a795a195e14566a465c90e47e4f389447}{B\+R\+U\+T\+E})
+\begin{DoxyCompactList}\small\item\em Find and build all the intersections. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_ada98ea0155e0d69ed41d82c2a5deb2c5}{Set\+Scaling\+Files} (const std\+::string \&timing\+\_\+data\+\_\+file\+\_\+base)
+\begin{DoxyCompactList}\small\item\em Set up timing output file. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_a0b3d08e62e3585c6ce90f7849763f9d0}{Skip\+Intersection\+Construction} (bool b\+Skip\+Intersection\+Construction)
+\begin{DoxyCompactList}\small\item\em Set the \char`\"{}\+Skip intersection construction\char`\"{} flag. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_aab5906eb9b33464dcc60d5f66f06b9dc}{Skip\+Intersection\+Partitioning} (bool b\+Skip\+Intersection\+Partitioning)
+\begin{DoxyCompactList}\small\item\em Set the \char`\"{}\+Skip the coupling mesh repartition\char`\"{} flag. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_afd7f0a6be00190708c9deb484617d24a}{Calculate\+Global\+Volume} ()
+\begin{DoxyCompactList}\small\item\em Calculate the total intersection volume over all the processors. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classcarl_1_1_intersection___search_a00e012de151310737c771ee7b15c9b2c}{Build\+Coupled\+Patches} (const lib\+Mesh\+::\+Elem $\ast$Query\+\_\+elem, int patch\+\_\+counter=0)
+\begin{DoxyCompactList}\small\item\em Build both patches associated a given query element from the coupling region mesh. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_ad91e556edabe62c1b0b5d30e3fc3bcef}{Find\+Patch\+Intersections\+\_\+\+Brute} (const lib\+Mesh\+::\+Elem $\ast$Query\+\_\+elem)
+\begin{DoxyCompactList}\small\item\em Find all the intersections between the patches associated to the Query\+\_\+elem, using a brute force method. All elements from a patch are tested against all the elements from the other patch. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_ad3ea665115367f2a90183e581d9d2d70}{Find\+Patch\+Intersections\+\_\+\+Front} (const lib\+Mesh\+::\+Elem $\ast$Query\+\_\+elem)
+\begin{DoxyCompactList}\small\item\em Find all the intersections between the patches associated to the Query\+\_\+elem, using an advancing front method. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_a356354c6a37455be8d0626ae9b874614}{Find\+First\+Pair} (\hyperlink{classcarl_1_1_patch__construction}{Patch\+\_\+construction} $\ast$Patch\+\_\+guide, \hyperlink{classcarl_1_1_patch__construction}{Patch\+\_\+construction} $\ast$Patch\+\_\+probed, std\+::pair$<$ unsigned int, unsigned int $>$ \&First\+\_\+intersection)
+\begin{DoxyCompactList}\small\item\em Find the first intersecting pair from a patch. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_a7b67f7bd29530492dbd0b0eeca67645b}{Brute\+Force\+\_\+\+Find\+First\+Pair} (\hyperlink{classcarl_1_1_patch__construction}{Patch\+\_\+construction} $\ast$Patch\+\_\+guide, \hyperlink{classcarl_1_1_patch__construction}{Patch\+\_\+construction} $\ast$Patch\+\_\+probed, std\+::pair$<$ unsigned int, unsigned int $>$ \&First\+\_\+intersection)
+\begin{DoxyCompactList}\small\item\em Find the first intersecting pair from a patch, doing a full scan of the patches. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_a93a7dab3db1129a770d8a7b28322f9aa}{Find\+And\+Build\+Intersections\+\_\+\+Brute} ()
+\begin{DoxyCompactList}\small\item\em Find and build all the intersections, using the brute force method. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_af8aa21969e1f71ed50877aa6b6eb147d}{Find\+Intersections\+\_\+\+Brute} ()
+\begin{DoxyCompactList}\small\item\em Find all the intersections, using the brute force method. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_ad6fd579f71c4e9bebea6bc07d4de8dd5}{Find\+And\+Build\+Intersections\+\_\+\+Front} ()
+\begin{DoxyCompactList}\small\item\em Find and build all the intersections, using the advancing front method. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_a69d44884067e5bb1e63711c66c9c6d89}{Find\+Intersections\+\_\+\+Front} ()
+\begin{DoxyCompactList}\small\item\em Find all the intersections, using the advancing front method. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_a86eef059aabd920fbea11362abfc307f}{Calculate\+Intersection\+Volume} (const lib\+Mesh\+::\+Elem $\ast$Query\+\_\+elem)
+\begin{DoxyCompactList}\small\item\em Calculate the volume of the intersections associated to Query\+\_\+elem without updating the intersection mesh. {\bfseries Currently unused} \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___search_a2a8731986e5f6963da7bada4c5eb9031}{Update\+Coupling\+Intersection} (const lib\+Mesh\+::\+Elem $\ast$Query\+\_\+elem)
+\begin{DoxyCompactList}\small\item\em Build the intersections associated to the Query\+\_\+elem and update the intersection mesh. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+lib\+Mesh\+::\+Mesh \& \hyperlink{classcarl_1_1_intersection___search_a903b7b3a369ed2c1e80d6a20ba41d350}{m\+\_\+\+Mesh\+\_\+\+A}
+\item 
+lib\+Mesh\+::\+Mesh \& \hyperlink{classcarl_1_1_intersection___search_a178cd617f59285fb858fddd78dec79d6}{m\+\_\+\+Mesh\+\_\+\+B}
+\item 
+lib\+Mesh\+::\+Mesh \& \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\+\_\+\+Mesh\+\_\+\+Coupling}
+\begin{DoxyCompactList}\small\item\em Mesh representing the coupling region. \end{DoxyCompactList}\item 
+const lib\+Mesh\+::\+Parallel\+::\+Communicator \& \hyperlink{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{m\+\_\+comm}
+\begin{DoxyCompactList}\small\item\em Global communicator. \end{DoxyCompactList}\item 
+const unsigned int \hyperlink{classcarl_1_1_intersection___search_adcfd59960cfd05bc63e9bcf5a350a8ae}{m\+\_\+nodes}
+\begin{DoxyCompactList}\small\item\em Number of M\+P\+I processors. \end{DoxyCompactList}\item 
+const unsigned int \hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\+\_\+rank}
+\begin{DoxyCompactList}\small\item\em This processor\textquotesingle{}s rank (or I\+D in the communicator) \end{DoxyCompactList}\item 
+const lib\+Mesh\+::\+Parallel\+::\+Communicator \& \hyperlink{classcarl_1_1_intersection___search_a15b8deaf751e8d0fb91d8e7eed9aefb6}{m\+\_\+local\+\_\+comm}
+\begin{DoxyCompactList}\small\item\em Local communicator, used for mesh patches. \end{DoxyCompactList}\item 
+\hyperlink{classcarl_1_1_patch__construction}{Patch\+\_\+construction} \hyperlink{classcarl_1_1_intersection___search_a3bc66e4e9a0b41d9b20093d4f6ca7611}{m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+A}
+\begin{DoxyCompactList}\small\item\em \hyperlink{classcarl_1_1_patch__construction}{Patch\+\_\+construction} object for mesh A. \end{DoxyCompactList}\item 
+\hyperlink{classcarl_1_1_patch__construction}{Patch\+\_\+construction} \hyperlink{classcarl_1_1_intersection___search_a2e2b5a2784eeca7b558b6b93ae71a2e8}{m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+B}
+\begin{DoxyCompactList}\small\item\em \hyperlink{classcarl_1_1_patch__construction}{Patch\+\_\+construction} object for mesh B. \end{DoxyCompactList}\item 
+\hyperlink{namespacecarl_a4f72fd25137b97ac1ca1276ec549e5cf}{Intersection\+Meshing\+Method} \hyperlink{classcarl_1_1_intersection___search_afc8983d95c970eaa61c6f4ae50a22f4b}{m\+\_\+\+Meshing\+Method}
+\begin{DoxyCompactList}\small\item\em Flag defining the intersection meshing algorithm. \end{DoxyCompactList}\item 
+\hyperlink{classcarl_1_1_mesh___intersection}{Mesh\+\_\+\+Intersection} \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\+\_\+\+Mesh\+\_\+\+Intersection}
+\begin{DoxyCompactList}\small\item\em Object containing the intersection mesh. \end{DoxyCompactList}\item 
+std\+::unordered\+\_\+multimap$<$ unsigned int, unsigned int $>$ \hyperlink{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{m\+\_\+\+Intersection\+\_\+\+Pairs\+\_\+multimap}
+\begin{DoxyCompactList}\small\item\em Multimap containing the intersection pairs. \end{DoxyCompactList}\item 
+\hyperlink{classcarl_1_1_intersection___tools}{Intersection\+\_\+\+Tools} \hyperlink{classcarl_1_1_intersection___search_afeedb5ff9144638151b7f956cf113fc4}{m\+\_\+\+Intersection\+\_\+test}
+\begin{DoxyCompactList}\small\item\em Intersection operations for the main intersection tests. \end{DoxyCompactList}\item 
+\hyperlink{classcarl_1_1_intersection___tools}{Intersection\+\_\+\+Tools} \hyperlink{classcarl_1_1_intersection___search_a7abbfa5dc5892d9179b93563320d533b}{m\+\_\+\+Intersection\+\_\+test\+\_\+neighbors}
+\begin{DoxyCompactList}\small\item\em Intersection operations for the neighbor intersection tests. ({\bfseries why do we need both?}) \end{DoxyCompactList}\item 
+std\+::vector$<$ unsigned int $>$ \hyperlink{classcarl_1_1_intersection___search_af54d17052502ee0d11ec33b915e2074e}{m\+\_\+\+Nb\+\_\+\+Of\+\_\+\+Intersections\+\_\+\+Elem\+\_\+\+C}
+\begin{DoxyCompactList}\small\item\em Vector containing the number of intersections found inside each of the coupling mesh elements. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Error\+Vector \hyperlink{classcarl_1_1_intersection___search_a1d44cfde49ae719c406da8bd5c463992}{m\+\_\+coupling\+\_\+weights}
+\begin{DoxyCompactList}\small\item\em lib\+Mesh\+::\+Error\+Vector used to repartition the coupling mesh. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___search_a8f20721814d9dcfab34a0b6c85b88f3c}{m\+\_\+b\+Save\+Inter\+Data}
+\begin{DoxyCompactList}\small\item\em Boolean flag determining if we should save the intersection data or not. {\itshape Default\+:} true. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___search_ab3d9729d5029e30fff786305c8aa3a01}{m\+\_\+b\+Did\+Preliminary\+Search}
+\begin{DoxyCompactList}\small\item\em Boolean flag determining if we did a preliminary intersection search, used for the coupling mesh repartition and memory preallocations. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___search_ac3eae683cb64b5bd8b7c0430d6e7496f}{m\+\_\+b\+Have\+Prealloc\+Data}
+\begin{DoxyCompactList}\small\item\em Boolean flag determining if we have the data for a proper preallocation of m\+\_\+\+Intersection\+\_\+\+Pairs\+\_\+multimap. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___search_aff13141f4d631c406fb12b78950f0e1e}{m\+\_\+b\+Intersections\+Built}
+\begin{DoxyCompactList}\small\item\em Boolean flag indicating if the intersections were built. ({\bfseries A bit useless right now ...}) \end{DoxyCompactList}\item 
+double \hyperlink{classcarl_1_1_intersection___search_af297d8e504705dbd69d80ca045b947ac}{m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume}
+\begin{DoxyCompactList}\small\item\em Volume cutoff for the intersection polyhedrons. {\itshape Default\+:} 1\+E-\/15. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{m\+\_\+b\+Skip\+Intersection\+Construction}
+\begin{DoxyCompactList}\small\item\em Boolean indicating if we should skip the intersection construction. {\itshape Default\+:} false. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___search_aab4276c3ba5b247b46300de675a10cb4}{m\+\_\+b\+Skip\+Intersection\+Partitioning}
+\begin{DoxyCompactList}\small\item\em Boolean indicating if we should skip the intersection repartitioning. {\itshape Default\+:} false. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classcarl_1_1_intersection___search_a5f8d2ac04fc72c209ec92958552e41f5}{m\+\_\+\+Output\+\_\+filename\+\_\+base}
+\begin{DoxyCompactList}\small\item\em Output filenames base. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___search_a0b83cc0d7b90bae06f01a53555c0fc97}{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+search}
+\begin{DoxyCompactList}\small\item\em Do performance log? {\itshape Default\+:} true. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Perf\+Log \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\+\_\+perf\+\_\+log}
+\begin{DoxyCompactList}\small\item\em lib\+Mesh\+::\+Perf\+Log object. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{m\+\_\+b\+Print\+Debug}
+\begin{DoxyCompactList}\small\item\em Print debug data. {\itshape Default\+:} false. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___search_a01537442f23786cbe1766ac340858020}{m\+\_\+b\+Print\+Timing\+Data}
+\begin{DoxyCompactList}\small\item\em Print timing data. {\itshape Default\+:} false. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___search_a32e74e1f2aaaf5630b57091d01e5932b}{m\+\_\+b\+Print\+Intersections\+Per\+Part\+Data}
+\begin{DoxyCompactList}\small\item\em Print intersections per partition. {\itshape Default\+:} false. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classcarl_1_1_intersection___search_aea1aa01a86b5cdb7bea5ac9e7f73105f}{m\+\_\+timing\+\_\+data\+\_\+file\+\_\+base}
+\begin{DoxyCompactList}\small\item\em Output filenames base for the timing data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class containing the structure needed to find all the intersections between two meshes, inside the coupling region mesh. 
+
+Definition at line 28 of file intersection\+\_\+search.\+h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classcarl_1_1_intersection___search_a84339f042e025cf5603b8ef1cb9ecba5}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Intersection\+\_\+\+Search@{Intersection\+\_\+\+Search}}
+\index{Intersection\+\_\+\+Search@{Intersection\+\_\+\+Search}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Intersection\+\_\+\+Search(lib\+Mesh\+::\+Mesh \&mesh\+\_\+\+A, lib\+Mesh\+::\+Mesh \&mesh\+\_\+\+B, lib\+Mesh\+::\+Mesh \&mesh\+\_\+\+Coupling, lib\+Mesh\+::\+Mesh \&mesh\+\_\+\+I, const std\+::string \&output\+\_\+base=std\+::string(""test""), Intersection\+Meshing\+Method Meshing\+Method=\+Intersection\+Meshing\+Method\+::\+C\+G\+A\+L, double Min\+\_\+\+Inter\+\_\+\+Volume=1\+E-\/15, bool b\+Do\+Perf\+\_\+log=true, bool b\+Debug\+Output=false)}]{\setlength{\rightskip}{0pt plus 5cm}carl\+::\+Intersection\+\_\+\+Search\+::\+Intersection\+\_\+\+Search (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Mesh \&}]{mesh\+\_\+\+A, }
+\item[{lib\+Mesh\+::\+Mesh \&}]{mesh\+\_\+\+B, }
+\item[{lib\+Mesh\+::\+Mesh \&}]{mesh\+\_\+\+Coupling, }
+\item[{lib\+Mesh\+::\+Mesh \&}]{mesh\+\_\+\+I, }
+\item[{const std\+::string \&}]{output\+\_\+base = {\ttfamily std\+:\+:string(\char`\"{}test\char`\"{})}, }
+\item[{{\bf Intersection\+Meshing\+Method}}]{Meshing\+Method = {\ttfamily IntersectionMeshingMethod\+:\+:CGAL}, }
+\item[{double}]{Min\+\_\+\+Inter\+\_\+\+Volume = {\ttfamily 1E-\/15}, }
+\item[{bool}]{b\+Do\+Perf\+\_\+log = {\ttfamily true}, }
+\item[{bool}]{b\+Debug\+Output = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classcarl_1_1_intersection___search_a84339f042e025cf5603b8ef1cb9ecba5}
+
+
+Constructor. 
+
+
+
+Definition at line 179 of file intersection\+\_\+search.\+h.
+
+
+\begin{DoxyCode}
+187                                                     :
+188         \hyperlink{classcarl_1_1_intersection___search_a903b7b3a369ed2c1e80d6a20ba41d350}{m\_Mesh\_A} \{ \hyperlink{classcarl_1_1_intersection___search_aaea90014de60041ab930ad10afe8b694}{mesh\_A} \},
+189         \hyperlink{classcarl_1_1_intersection___search_a178cd617f59285fb858fddd78dec79d6}{m\_Mesh\_B} \{ \hyperlink{classcarl_1_1_intersection___search_a211e0e64653fd099eaacac0ee3824a7d}{mesh\_B} \},
+190         \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling} \{ \hyperlink{classcarl_1_1_intersection___search_ae4d3f5cd22b551d7f33a8d807649ac4c}{mesh\_Coupling} \},
+191         \hyperlink{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{m\_comm} \{ \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.comm() \},
+192         \hyperlink{classcarl_1_1_intersection___search_adcfd59960cfd05bc63e9bcf5a350a8ae}{m\_nodes} \{ \hyperlink{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{m\_comm}.size() \},
+193         \hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank} \{ \hyperlink{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{m\_comm}.rank() \},
+194         \hyperlink{classcarl_1_1_intersection___search_a15b8deaf751e8d0fb91d8e7eed9aefb6}{m\_local\_comm} \{ mesh\_I.comm() \},
+195         \hyperlink{classcarl_1_1_intersection___search_a3bc66e4e9a0b41d9b20093d4f6ca7611}{m\_Patch\_Constructor\_A} \{ Patch\_construction(\hyperlink{classcarl_1_1_intersection___search_a903b7b3a369ed2c1e80d6a20ba41d350}{m\_Mesh\_A},
+      \hyperlink{classcarl_1_1_intersection___search_a15b8deaf751e8d0fb91d8e7eed9aefb6}{m\_local\_comm})\},
+196         \hyperlink{classcarl_1_1_intersection___search_a2e2b5a2784eeca7b558b6b93ae71a2e8}{m\_Patch\_Constructor\_B} \{ Patch\_construction(\hyperlink{classcarl_1_1_intersection___search_a178cd617f59285fb858fddd78dec79d6}{m\_Mesh\_B},
+      \hyperlink{classcarl_1_1_intersection___search_a15b8deaf751e8d0fb91d8e7eed9aefb6}{m\_local\_comm})\},
+197         \hyperlink{classcarl_1_1_intersection___search_afc8983d95c970eaa61c6f4ae50a22f4b}{m\_MeshingMethod} \{ MeshingMethod \},
+198         \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection} \{ Mesh\_Intersection(mesh\_I,
+      \hyperlink{classcarl_1_1_intersection___search_a903b7b3a369ed2c1e80d6a20ba41d350}{m\_Mesh\_A},\hyperlink{classcarl_1_1_intersection___search_a178cd617f59285fb858fddd78dec79d6}{m\_Mesh\_B},\hyperlink{classcarl_1_1_intersection___search_afc8983d95c970eaa61c6f4ae50a22f4b}{m\_MeshingMethod})\},
+199         \hyperlink{classcarl_1_1_intersection___search_a8f20721814d9dcfab34a0b6c85b88f3c}{m\_bSaveInterData} \{ \textcolor{keyword}{true} \},
+200         \hyperlink{classcarl_1_1_intersection___search_ab3d9729d5029e30fff786305c8aa3a01}{m\_bDidPreliminarySearch} \{ \textcolor{keyword}{false} \},
+201         \hyperlink{classcarl_1_1_intersection___search_ac3eae683cb64b5bd8b7c0430d6e7496f}{m\_bHavePreallocData} \{ \textcolor{keyword}{false} \},
+202         \hyperlink{classcarl_1_1_intersection___search_aff13141f4d631c406fb12b78950f0e1e}{m\_bIntersectionsBuilt} \{ \textcolor{keyword}{false} \},
+203         \hyperlink{classcarl_1_1_intersection___search_af297d8e504705dbd69d80ca045b947ac}{m\_Min\_Inter\_Volume} \{ Min\_Inter\_Volume \},
+204         \hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{m\_bSkipIntersectionConstruction} \{ \textcolor{keyword}{false} \},
+205         \hyperlink{classcarl_1_1_intersection___search_aab4276c3ba5b247b46300de675a10cb4}{m\_bSkipIntersectionPartitioning} \{ \textcolor{keyword}{false} \},
+206         \hyperlink{classcarl_1_1_intersection___search_a5f8d2ac04fc72c209ec92958552e41f5}{m\_Output\_filename\_base} \{ output\_base + \textcolor{stringliteral}{"\_r\_"} + std::to\_string(
+      \hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank}) + \textcolor{stringliteral}{"\_n\_"} + std::to\_string(\hyperlink{classcarl_1_1_intersection___search_adcfd59960cfd05bc63e9bcf5a350a8ae}{m\_nodes})\},
+207         \hyperlink{classcarl_1_1_intersection___search_a0b83cc0d7b90bae06f01a53555c0fc97}{MASTER\_bPerfLog\_intersection\_search} \{bDoPerf\_log\},
+208         \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log} \{ libMesh::PerfLog(\textcolor{stringliteral}{"Intersection search"}, 
+      \hyperlink{classcarl_1_1_intersection___search_a0b83cc0d7b90bae06f01a53555c0fc97}{MASTER\_bPerfLog\_intersection\_search}) \},
+209         \hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{m\_bPrintDebug} \{ bDebugOutput \},
+210         \hyperlink{classcarl_1_1_intersection___search_a01537442f23786cbe1766ac340858020}{m\_bPrintTimingData} \{ \textcolor{keyword}{false} \},
+211         \hyperlink{classcarl_1_1_intersection___search_a32e74e1f2aaaf5630b57091d01e5932b}{m\_bPrintIntersectionsPerPartData} \{ \textcolor{keyword}{false} \}
+212     \{
+213         \textcolor{comment}{// Reserve space for the intersection multimap}
+214         \hyperlink{classcarl_1_1_intersection___search_af54d17052502ee0d11ec33b915e2074e}{m\_Nb\_Of\_Intersections\_Elem\_C}.resize(
+      \hyperlink{classcarl_1_1_intersection___search_ae4d3f5cd22b551d7f33a8d807649ac4c}{mesh\_Coupling}.n\_elem(),0);
+215     \};
+\end{DoxyCode}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classcarl_1_1_intersection___search_a7b67f7bd29530492dbd0b0eeca67645b}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Brute\+Force\+\_\+\+Find\+First\+Pair@{Brute\+Force\+\_\+\+Find\+First\+Pair}}
+\index{Brute\+Force\+\_\+\+Find\+First\+Pair@{Brute\+Force\+\_\+\+Find\+First\+Pair}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Brute\+Force\+\_\+\+Find\+First\+Pair(\+Patch\+\_\+construction $\ast$\+Patch\+\_\+guide, Patch\+\_\+construction $\ast$\+Patch\+\_\+probed, std\+::pair$<$ unsigned int, unsigned int $>$ \&\+First\+\_\+intersection)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Brute\+Force\+\_\+\+Find\+First\+Pair (
+\begin{DoxyParamCaption}
+\item[{{\bf Patch\+\_\+construction} $\ast$}]{Patch\+\_\+guide, }
+\item[{{\bf Patch\+\_\+construction} $\ast$}]{Patch\+\_\+probed, }
+\item[{std\+::pair$<$ unsigned int, unsigned int $>$ \&}]{First\+\_\+intersection}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a7b67f7bd29530492dbd0b0eeca67645b}
+
+
+Find the first intersecting pair from a patch, doing a full scan of the patches. 
+
+This is, essentially, a brute force algorithm set to stop after the first positive test). 
+
+Definition at line 197 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+200     \{
+201         \textcolor{keywordtype}{bool} bFoundFirstInter = \textcolor{keyword}{false};
+202         std::unordered\_set<unsigned int> & Patch\_Set\_Guide = Patch\_guide->elem\_indexes();
+203         std::unordered\_set<unsigned int> & Patch\_Set\_Probed = Patch\_probed->elem\_indexes();
+204 
+205         libMesh::ReplicatedMesh&        Mesh\_patch\_guide    = Patch\_guide->patch\_mesh();
+206         libMesh::ReplicatedMesh&        Mesh\_patch\_probed   = Patch\_probed->patch\_mesh();
+207 
+208         std::unordered\_set<unsigned int>::iterator it\_patch\_Guide;
+209         std::unordered\_set<unsigned int>::iterator it\_patch\_Probed;
+210 
+211         \textcolor{keywordflow}{for}(    it\_patch\_Guide =  Patch\_Set\_Guide.begin();
+212                 it\_patch\_Guide != Patch\_Set\_Guide.end();
+213                 ++it\_patch\_Guide)
+214         \{
+215             \textcolor{keyword}{const} libMesh::Elem * elem\_Guide = Mesh\_patch\_guide.elem(*it\_patch\_Guide);
+216 
+217             \textcolor{keywordflow}{for}(    it\_patch\_Probed =  Patch\_Set\_Probed.begin();
+218                     it\_patch\_Probed != Patch\_Set\_Probed.end();
+219                     ++it\_patch\_Probed)
+220             \{
+221                 \textcolor{keyword}{const} libMesh::Elem * elem\_Probed = Mesh\_patch\_probed.elem(*it\_patch\_Probed);
+222 
+223                 bFoundFirstInter = \hyperlink{classcarl_1_1_intersection___search_afeedb5ff9144638151b7f956cf113fc4}{m\_Intersection\_test}.
+      \hyperlink{classcarl_1_1_intersection___tools_a98929a97acb94aa77fc8952d80993d88}{libMesh\_exact\_do\_intersect\_inside\_coupling}(elem\_Guide,elem\_Probed
+      );
+224 
+225                 \textcolor{keywordflow}{if}(bFoundFirstInter)
+226                 \{
+227                     First\_intersection.first = *it\_patch\_Guide;
+228                     First\_intersection.second = *it\_patch\_Probed;
+229                     \textcolor{keywordflow}{return};
+230                 \}
+231             \}
+232         \}
+233 
+234         \hyperlink{common__header_8h_a593ccc80b790b2268653fcf6597bf451}{homemade\_assert\_msg}(bFoundFirstInter,\textcolor{stringliteral}{"Could't find a first intersecting pair.
+       Are you sure that the patches do intersect?\(\backslash\)n"});
+235     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_a00e012de151310737c771ee7b15c9b2c}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Build\+Coupled\+Patches@{Build\+Coupled\+Patches}}
+\index{Build\+Coupled\+Patches@{Build\+Coupled\+Patches}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Build\+Coupled\+Patches(const lib\+Mesh\+::\+Elem $\ast$\+Query\+\_\+elem, int patch\+\_\+counter=0)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Build\+Coupled\+Patches (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{Query\+\_\+elem, }
+\item[{int}]{patch\+\_\+counter = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a00e012de151310737c771ee7b15c9b2c}
+
+
+Build both patches associated a given query element from the coupling region mesh. 
+
+Calls the method \hyperlink{classcarl_1_1_patch__construction_aebb82c6e34f4cf38cf3e4ef2ac32b664}{Patch\+\_\+construction\+::\+Build\+Patch} for both patches, and export the patch meshes if \hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{Intersection\+\_\+\+Search\+::m\+\_\+b\+Print\+Debug} == true. 
+
+Definition at line 30 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+31     \{
+32         \textcolor{comment}{// Unbreakable Patches!}
+33         \hyperlink{classcarl_1_1_intersection___search_a3bc66e4e9a0b41d9b20093d4f6ca7611}{m\_Patch\_Constructor\_A}.\hyperlink{classcarl_1_1_patch__construction_aebb82c6e34f4cf38cf3e4ef2ac32b664}{BuildPatch}(Query\_elem);
+34 
+35         \textcolor{comment}{// Trusty Patches!}
+36         \hyperlink{classcarl_1_1_intersection___search_a2e2b5a2784eeca7b558b6b93ae71a2e8}{m\_Patch\_Constructor\_B}.\hyperlink{classcarl_1_1_patch__construction_aebb82c6e34f4cf38cf3e4ef2ac32b664}{BuildPatch}(Query\_elem);
+37 
+38         \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{m\_bPrintDebug})
+39         \{
+40             std::string filename = \textcolor{stringliteral}{"meshes/3D/tests/output/patch\_mesh\_A\_"} + std::to\_string(patch\_counter) +
+       \textcolor{stringliteral}{"\_"} + std::to\_string(\hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank});
+41             \hyperlink{classcarl_1_1_intersection___search_a3bc66e4e9a0b41d9b20093d4f6ca7611}{m\_Patch\_Constructor\_A}.\hyperlink{classcarl_1_1_patch__construction_a17cadf2879f8a7b2ef7a59dadd9d5b72}{export\_patch\_mesh}(filename);
+42             filename = \textcolor{stringliteral}{"meshes/3D/tests/output/patch\_mesh\_B\_"} + std::to\_string(patch\_counter) + \textcolor{stringliteral}{"\_"} + 
+      std::to\_string(\hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank});
+43             \hyperlink{classcarl_1_1_intersection___search_a2e2b5a2784eeca7b558b6b93ae71a2e8}{m\_Patch\_Constructor\_B}.\hyperlink{classcarl_1_1_patch__construction_a17cadf2879f8a7b2ef7a59dadd9d5b72}{export\_patch\_mesh}(filename);
+44         \}
+45     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_aa84f57dd84826955813efe60c87d199d}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Build\+Intersections@{Build\+Intersections}}
+\index{Build\+Intersections@{Build\+Intersections}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Build\+Intersections(\+Search\+Method search\+\_\+type=\+B\+R\+U\+T\+E)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Build\+Intersections (
+\begin{DoxyParamCaption}
+\item[{{\bf Search\+Method}}]{search\+\_\+type = {\ttfamily {\bf B\+R\+U\+T\+E}}}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___search_aa84f57dd84826955813efe60c87d199d}
+
+
+Find and build all the intersections. 
+
+
+
+Definition at line 750 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+751     \{
+752         \textcolor{keywordflow}{if}(!\hyperlink{classcarl_1_1_intersection___search_ac3eae683cb64b5bd8b7c0430d6e7496f}{m\_bHavePreallocData})
+753         \{
+754             \textcolor{comment}{// Must do an preeeety expensive preallocation. Ouch ...}
+755             \hyperlink{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{m\_Intersection\_Pairs\_multimap}.reserve(
+      \hyperlink{classcarl_1_1_intersection___search_a903b7b3a369ed2c1e80d6a20ba41d350}{m\_Mesh\_A}.n\_elem()*\hyperlink{classcarl_1_1_intersection___search_a178cd617f59285fb858fddd78dec79d6}{m\_Mesh\_B}.n\_elem());
+756         \}
+757 
+758         \hyperlink{classcarl_1_1_intersection___search_a8f20721814d9dcfab34a0b6c85b88f3c}{m\_bSaveInterData} = \textcolor{keyword}{true};
+759         \hyperlink{classcarl_1_1_intersection___search_aff13141f4d631c406fb12b78950f0e1e}{m\_bIntersectionsBuilt} = \textcolor{keyword}{false};
+760 
+761         \textcolor{keywordflow}{switch} (search\_type)
+762         \{
+763             \textcolor{keywordflow}{case} \hyperlink{namespacecarl_a2c9d0282cb533624e034ccc1d7b629c7a795a195e14566a465c90e47e4f389447}{SearchMethod::BRUTE} :   
+      \hyperlink{classcarl_1_1_intersection___search_a93a7dab3db1129a770d8a7b28322f9aa}{FindAndBuildIntersections\_Brute}();
+764                             \textcolor{keywordflow}{break};
+765 
+766             \textcolor{keywordflow}{case} \hyperlink{namespacecarl_a2c9d0282cb533624e034ccc1d7b629c7af5458c8a9b1cd8aa10c970b4d4853bbb}{SearchMethod::FRONT} :   
+      \hyperlink{classcarl_1_1_intersection___search_ad6fd579f71c4e9bebea6bc07d4de8dd5}{FindAndBuildIntersections\_Front}();
+767                             \textcolor{keywordflow}{break};
+768 
+769             \textcolor{keywordflow}{case} \hyperlink{namespacecarl_a2c9d0282cb533624e034ccc1d7b629c7a627ddde9718f452847bda05968663a7c}{SearchMethod::BOTH} :     
+      \hyperlink{classcarl_1_1_intersection___search_a93a7dab3db1129a770d8a7b28322f9aa}{FindAndBuildIntersections\_Brute}();
+770                             \hyperlink{classcarl_1_1_intersection___search_ad6fd579f71c4e9bebea6bc07d4de8dd5}{FindAndBuildIntersections\_Front}();
+771                             \textcolor{keywordflow}{break};
+772         \}
+773 
+774         \textcolor{keywordflow}{if}(!\hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{m\_bSkipIntersectionConstruction})
+775         \{
+776             \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.\hyperlink{classcarl_1_1_mesh___intersection_a40d4cca8c4ec73a2576322db063bbefb}{export\_intersection\_data}(
+      \hyperlink{classcarl_1_1_intersection___search_a5f8d2ac04fc72c209ec92958552e41f5}{m\_Output\_filename\_base});
+777             \hyperlink{classcarl_1_1_intersection___search_aff13141f4d631c406fb12b78950f0e1e}{m\_bIntersectionsBuilt} = \textcolor{keyword}{true};
+778         \}
+779     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_afd7f0a6be00190708c9deb484617d24a}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Calculate\+Global\+Volume@{Calculate\+Global\+Volume}}
+\index{Calculate\+Global\+Volume@{Calculate\+Global\+Volume}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Calculate\+Global\+Volume()}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Calculate\+Global\+Volume (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___search_afd7f0a6be00190708c9deb484617d24a}
+
+
+Calculate the total intersection volume over all the processors. 
+
+
+
+Definition at line 784 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+785     \{
+786         \textcolor{comment}{// Use a barrier to guarantee that all procs are in the same position}
+787         \hyperlink{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{m\_comm}.barrier();
+788 
+789         \textcolor{comment}{// Calculate the volume of the intersection on each processor}
+790         \textcolor{keywordtype}{double} global\_volume = \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.
+      \hyperlink{classcarl_1_1_mesh___intersection_a67f126ec639724230b32916b59af4933}{get\_total\_volume}();
+791 
+792         \textcolor{comment}{// Add it!}
+793         \hyperlink{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{m\_comm}.sum(global\_volume);
+794 
+795         \textcolor{comment}{// Calculate the volume of the coupling region on each processor}
+796         libMesh::Mesh::const\_element\_iterator it\_coupl = \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.
+      local\_elements\_begin();
+797         libMesh::Mesh::const\_element\_iterator it\_coupl\_end = \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.
+      local\_elements\_end();
+798         \textcolor{keywordtype}{double} real\_volume = 0;
+799 
+800         \textcolor{keywordflow}{for}( ; it\_coupl != it\_coupl\_end; ++it\_coupl)
+801         \{
+802             \textcolor{keyword}{const} libMesh::Elem * Query\_elem = * it\_coupl;
+803             real\_volume += Query\_elem->volume();
+804         \}
+805 
+806         \textcolor{comment}{// Add it!}
+807         \hyperlink{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{m\_comm}.sum(real\_volume);
+808 
+809         std::cout << \textcolor{stringliteral}{"    TOTAL volume, proc. "} << \hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank} << std::endl;
+810         std::cout << \textcolor{stringliteral}{" -> Intersection volume / real    : "} << global\_volume << \textcolor{stringliteral}{" / "} << real\_volume << 
+      std::endl << std::endl;
+811 
+812     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_a86eef059aabd920fbea11362abfc307f}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Calculate\+Intersection\+Volume@{Calculate\+Intersection\+Volume}}
+\index{Calculate\+Intersection\+Volume@{Calculate\+Intersection\+Volume}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Calculate\+Intersection\+Volume(const lib\+Mesh\+::\+Elem $\ast$\+Query\+\_\+elem)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Calculate\+Intersection\+Volume (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{Query\+\_\+elem}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a86eef059aabd920fbea11362abfc307f}
+
+
+Calculate the volume of the intersections associated to Query\+\_\+elem without updating the intersection mesh. {\bfseries Currently unused} 
+
+
+
+Definition at line 817 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+818     \{
+819         std::unordered\_set<unsigned int> & Patch\_Set\_A = \hyperlink{classcarl_1_1_intersection___search_a3bc66e4e9a0b41d9b20093d4f6ca7611}{m\_Patch\_Constructor\_A}.
+      \hyperlink{classcarl_1_1_patch__construction_ad92eca042b223e8be1cb3984a3dc8cba}{elem\_indexes}();
+820 
+821         std::unordered\_set<unsigned int>::iterator it\_patch\_A;
+822 
+823         \textcolor{keywordtype}{bool} bDoIntersect = \textcolor{keyword}{true};
+824         \textcolor{keywordtype}{bool} bCreateNewNefForA = \textcolor{keyword}{true};
+825 
+826         \hyperlink{classcarl_1_1_intersection___search_afeedb5ff9144638151b7f956cf113fc4}{m\_Intersection\_test}.
+      \hyperlink{classcarl_1_1_intersection___tools_acf2d17e703441bc9e3ed05d98f51ba85}{libmesh\_set\_coupling\_nef\_polyhedron}(Query\_elem);
+827 
+828         std::set<libMesh::Point> points\_out;
+829         \textcolor{keywordtype}{double} total\_volume = 0;
+830 
+831         \textcolor{comment}{// Debug vars}
+832         \textcolor{keywordtype}{int} nbOfTests = 0;
+833         \textcolor{keywordtype}{int} nbOfPositiveTests = 0;
+834         \textcolor{keywordflow}{for}(    it\_patch\_A =  Patch\_Set\_A.begin();
+835                 it\_patch\_A != Patch\_Set\_A.end();
+836                 ++it\_patch\_A)
+837         \{
+838             \textcolor{keyword}{auto} iterator\_pair = \hyperlink{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{m\_Intersection\_Pairs\_multimap}.equal\_range(*
+      it\_patch\_A);
+839 
+840             \textcolor{keyword}{const} libMesh::Elem * elem\_A = \hyperlink{classcarl_1_1_intersection___search_a903b7b3a369ed2c1e80d6a20ba41d350}{m\_Mesh\_A}.elem(*it\_patch\_A);
+841             bCreateNewNefForA = \textcolor{keyword}{true};
+842 
+843             \textcolor{keywordflow}{for}(\textcolor{keyword}{auto} it\_patch\_B = iterator\_pair.first ;
+844                      it\_patch\_B != iterator\_pair.second ;
+845                      ++it\_patch\_B )
+846             \{
+847                 \textcolor{keyword}{const} libMesh::Elem * elem\_B = \hyperlink{classcarl_1_1_intersection___search_a178cd617f59285fb858fddd78dec79d6}{m\_Mesh\_B}.elem(it\_patch\_B->second);
+848                 points\_out.clear();
+849 
+850                 \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Build intersection polyhedron"},\textcolor{stringliteral}{"Build intersections"});
+851                 bDoIntersect = \hyperlink{classcarl_1_1_intersection___search_afeedb5ff9144638151b7f956cf113fc4}{m\_Intersection\_test}.
+      \hyperlink{classcarl_1_1_intersection___tools_ad5aaf7b9475dcfb6a51ea1c20d22aacd}{libMesh\_exact\_intersection\_inside\_coupling}(elem\_A,elem\_B,
+      points\_out,bCreateNewNefForA,\textcolor{keyword}{true},\textcolor{keyword}{false});
+852                 \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Build intersection polyhedron"},\textcolor{stringliteral}{"Build intersections"});
+853                 ++nbOfTests;
+854 
+855                 \textcolor{keywordflow}{if}(bDoIntersect)
+856                 \{
+857                     bCreateNewNefForA = \textcolor{keyword}{false};
+858                     \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Calculate volume"},\textcolor{stringliteral}{"Build intersections"});
+859                     total\_volume += \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.
+      \hyperlink{classcarl_1_1_mesh___intersection_aed1744e821dbfa900d035c44036d0fdf}{get\_intersection\_volume}(points\_out);
+860                     \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Calculate volume"},\textcolor{stringliteral}{"Build intersections"});
+861                     ++nbOfPositiveTests;
+862                 \}
+863             \}
+864         \}
+865 
+866         \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{m\_bPrintDebug})
+867         \{
+868             std::cout << \textcolor{stringliteral}{"    DEBUG: calculate the volume"} << std::endl;
+869             std::cout << \textcolor{stringliteral}{" -> Intersection volume / real    : "} << total\_volume << \textcolor{stringliteral}{" / "} << Query\_elem->
+      volume() << std::endl << std::endl;
+870             std::cout << \textcolor{stringliteral}{" -> Positives / tests             : "} << nbOfPositiveTests << \textcolor{stringliteral}{" / "} << nbOfTests
+871                       << \textcolor{stringliteral}{" ("} << 100.*nbOfPositiveTests/nbOfTests << \textcolor{stringliteral}{"%)"} << std::endl  << std::endl;
+872         \}
+873     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_a93a7dab3db1129a770d8a7b28322f9aa}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Find\+And\+Build\+Intersections\+\_\+\+Brute@{Find\+And\+Build\+Intersections\+\_\+\+Brute}}
+\index{Find\+And\+Build\+Intersections\+\_\+\+Brute@{Find\+And\+Build\+Intersections\+\_\+\+Brute}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Find\+And\+Build\+Intersections\+\_\+\+Brute()}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Find\+And\+Build\+Intersections\+\_\+\+Brute (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a93a7dab3db1129a770d8a7b28322f9aa}
+
+
+Find and build all the intersections, using the brute force method. 
+
+Skips build step if \hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{Intersection\+\_\+\+Search\+::m\+\_\+b\+Skip\+Intersection\+Construction} == true. 
+
+Definition at line 438 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+439     \{
+440         \textcolor{comment}{// Prepare iterators}
+441         libMesh::Mesh::const\_element\_iterator it\_coupl = \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.
+      local\_elements\_begin();
+442         libMesh::Mesh::const\_element\_iterator it\_coupl\_end = \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.
+      local\_elements\_end();
+443 
+444         \textcolor{keywordtype}{int} patch\_counter = 0;
+445         \textcolor{keywordtype}{double} real\_volume = 0;
+446 
+447         \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.\hyperlink{classcarl_1_1_mesh___intersection_a195605fd295d5afc638129309103f576}{initialize}();
+448 
+449         \textcolor{keywordflow}{for}( ; it\_coupl != it\_coupl\_end; ++it\_coupl)
+450         \{
+451             \textcolor{keyword}{const} libMesh::Elem * Query\_elem = * it\_coupl;
+452 
+453             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Build patches"},\textcolor{stringliteral}{"Brute force"});
+454             \hyperlink{classcarl_1_1_intersection___search_a00e012de151310737c771ee7b15c9b2c}{BuildCoupledPatches}(Query\_elem,patch\_counter);
+455             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Build patches"},\textcolor{stringliteral}{"Brute force"});
+456 
+457             ++patch\_counter;
+458 
+459             \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{m\_bPrintDebug})
+460             \{
+461                 real\_volume += Query\_elem->volume();
+462             \}
+463 
+464             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Find intersections"},\textcolor{stringliteral}{"Brute force"});
+465             \hyperlink{classcarl_1_1_intersection___search_ad91e556edabe62c1b0b5d30e3fc3bcef}{FindPatchIntersections\_Brute}(Query\_elem);
+466             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Find intersections"},\textcolor{stringliteral}{"Brute force"});
+467             \textcolor{keywordflow}{if}(!\hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{m\_bSkipIntersectionConstruction})
+468             \{
+469                 \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Build intersections"},\textcolor{stringliteral}{"Brute force"});
+470                 \hyperlink{classcarl_1_1_intersection___search_a2a8731986e5f6963da7bada4c5eb9031}{UpdateCouplingIntersection}(Query\_elem);
+471                 \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Build intersections"},\textcolor{stringliteral}{"Brute force"});
+472             \}
+473         \};
+474 
+475         \textcolor{keywordflow}{if}(!\hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{m\_bSkipIntersectionConstruction})
+476         \{
+477             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Prepare mesh"},\textcolor{stringliteral}{"Brute force"});
+478             \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.\hyperlink{classcarl_1_1_mesh___intersection_a5078651b6ae4cfdf97e43dfa172094b6}{prepare\_for\_use}();
+479             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Prepare mesh"},\textcolor{stringliteral}{"Brute force"});
+480         \}
+481 
+482         \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_a01537442f23786cbe1766ac340858020}{m\_bPrintTimingData})
+483         \{
+484             std::vector<double> timing\_find\_intersections(\hyperlink{classcarl_1_1_intersection___search_adcfd59960cfd05bc63e9bcf5a350a8ae}{m\_nodes},0);
+485             std::vector<double> timing\_build\_intersections(\hyperlink{classcarl_1_1_intersection___search_adcfd59960cfd05bc63e9bcf5a350a8ae}{m\_nodes},0);
+486 
+487             libMesh::PerfData performance\_data = \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.get\_perf\_data(\textcolor{stringliteral}{"Find intersections"},\textcolor{stringliteral}{"
+      Brute force"});
+488             timing\_find\_intersections[\hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank}] = performance\_data.tot\_time\_incl\_sub;
+489             performance\_data = \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.get\_perf\_data(\textcolor{stringliteral}{"Build intersections"},\textcolor{stringliteral}{"Brute force"});
+490             timing\_build\_intersections[\hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank}] = performance\_data.tot\_time\_incl\_sub;
+491 
+492             \hyperlink{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{m\_comm}.sum(timing\_find\_intersections);
+493             \hyperlink{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{m\_comm}.sum(timing\_build\_intersections);
+494 
+495             \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank} == 0)
+496             \{
+497                 \hyperlink{namespacecarl_a87ce5fcb102a26f69dbef740667eb08b}{print\_stats\_to\_file}(timing\_find\_intersections,
+      \hyperlink{classcarl_1_1_intersection___search_aea1aa01a86b5cdb7bea5ac9e7f73105f}{m\_timing\_data\_file\_base} + \textcolor{stringliteral}{"\_search\_brute.dat"});
+498                 \textcolor{keywordflow}{if}(!\hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{m\_bSkipIntersectionConstruction})
+499                 \{
+500                     \hyperlink{namespacecarl_a87ce5fcb102a26f69dbef740667eb08b}{print\_stats\_to\_file}(timing\_build\_intersections,
+      \hyperlink{classcarl_1_1_intersection___search_aea1aa01a86b5cdb7bea5ac9e7f73105f}{m\_timing\_data\_file\_base} + \textcolor{stringliteral}{"\_build\_brute.dat"});
+501                 \}
+502             \}
+503         \}
+504 
+505         \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{m\_bPrintDebug} && !\hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{m\_bSkipIntersectionConstruction})
+506         \{
+507             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Calculate volume"},\textcolor{stringliteral}{"Brute force"});
+508             \textcolor{keywordtype}{double} total\_volume = \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.
+      \hyperlink{classcarl_1_1_mesh___intersection_a67f126ec639724230b32916b59af4933}{get\_total\_volume}();
+509             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Calculate volume"},\textcolor{stringliteral}{"Brute force"});
+510 
+511             std::cout << \textcolor{stringliteral}{"    DEBUG volume on proc. "} << \hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank} << \textcolor{stringliteral}{"(BRUTE)"} << std::endl;
+512             std::cout << \textcolor{stringliteral}{" -> Mesh elems, nodes             : "} << 
+      \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.\hyperlink{classcarl_1_1_mesh___intersection_a7135c4c2e57e5ccdfbe5cd3286103460}{mesh}().n\_elem() << \textcolor{stringliteral}{" , "} << 
+      \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.\hyperlink{classcarl_1_1_mesh___intersection_a7135c4c2e57e5ccdfbe5cd3286103460}{mesh}().n\_nodes() << std::endl;
+513             std::cout << \textcolor{stringliteral}{" -> Intersection volume / real    : "} << total\_volume << \textcolor{stringliteral}{" / "} << real\_volume << 
+      std::endl << std::endl;
+514         \}
+515     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_ad6fd579f71c4e9bebea6bc07d4de8dd5}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Find\+And\+Build\+Intersections\+\_\+\+Front@{Find\+And\+Build\+Intersections\+\_\+\+Front}}
+\index{Find\+And\+Build\+Intersections\+\_\+\+Front@{Find\+And\+Build\+Intersections\+\_\+\+Front}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Find\+And\+Build\+Intersections\+\_\+\+Front()}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Find\+And\+Build\+Intersections\+\_\+\+Front (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_ad6fd579f71c4e9bebea6bc07d4de8dd5}
+
+
+Find and build all the intersections, using the advancing front method. 
+
+Skips build step if \hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{Intersection\+\_\+\+Search\+::m\+\_\+b\+Skip\+Intersection\+Construction} == true. 
+
+Definition at line 545 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+546     \{
+547         \textcolor{comment}{// Prepare iterators}
+548         libMesh::Mesh::const\_element\_iterator it\_coupl = \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.
+      local\_elements\_begin();
+549         libMesh::Mesh::const\_element\_iterator it\_coupl\_end = \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.
+      local\_elements\_end();
+550 
+551         \textcolor{keywordtype}{int} patch\_counter = 0;
+552         \textcolor{keywordtype}{double} real\_volume = 0;
+553 
+554         \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.\hyperlink{classcarl_1_1_mesh___intersection_a195605fd295d5afc638129309103f576}{initialize}();
+555 
+556         \textcolor{keywordflow}{for}( ; it\_coupl != it\_coupl\_end; ++it\_coupl)
+557         \{
+558             \textcolor{keyword}{const} libMesh::Elem * Query\_elem = * it\_coupl;
+559 
+560             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Build patches"},\textcolor{stringliteral}{"Advancing front"});
+561             \hyperlink{classcarl_1_1_intersection___search_a00e012de151310737c771ee7b15c9b2c}{BuildCoupledPatches}(Query\_elem,patch\_counter);
+562             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Build patches"},\textcolor{stringliteral}{"Advancing front"});
+563 
+564             ++patch\_counter;
+565 
+566             \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{m\_bPrintDebug})
+567             \{
+568                 real\_volume += Query\_elem->volume();
+569             \}
+570             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Find intersections"},\textcolor{stringliteral}{"Advancing front"});
+571             \hyperlink{classcarl_1_1_intersection___search_ad3ea665115367f2a90183e581d9d2d70}{FindPatchIntersections\_Front}(Query\_elem);
+572             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Find intersections"},\textcolor{stringliteral}{"Advancing front"});
+573             \textcolor{keywordflow}{if}(!\hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{m\_bSkipIntersectionConstruction})
+574             \{
+575                 \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Build intersections"},\textcolor{stringliteral}{"Advancing front"});
+576                 \hyperlink{classcarl_1_1_intersection___search_a2a8731986e5f6963da7bada4c5eb9031}{UpdateCouplingIntersection}(Query\_elem);
+577                 \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Build intersections"},\textcolor{stringliteral}{"Advancing front"});
+578             \}
+579         \};
+580 
+581         \textcolor{keywordflow}{if}(!\hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{m\_bSkipIntersectionConstruction})
+582         \{
+583             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Prepare mesh"},\textcolor{stringliteral}{"Advancing front"});
+584             \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.\hyperlink{classcarl_1_1_mesh___intersection_a5078651b6ae4cfdf97e43dfa172094b6}{prepare\_for\_use}();
+585             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Prepare mesh"},\textcolor{stringliteral}{"Advancing front"});
+586         \}
+587 
+588         \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_a01537442f23786cbe1766ac340858020}{m\_bPrintTimingData})
+589         \{
+590             std::vector<double> timing\_find\_intersections(\hyperlink{classcarl_1_1_intersection___search_adcfd59960cfd05bc63e9bcf5a350a8ae}{m\_nodes},0);
+591             std::vector<double> timing\_build\_intersections(\hyperlink{classcarl_1_1_intersection___search_adcfd59960cfd05bc63e9bcf5a350a8ae}{m\_nodes},0);
+592 
+593             libMesh::PerfData performance\_data = \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.get\_perf\_data(\textcolor{stringliteral}{"Find intersections"},\textcolor{stringliteral}{"
+      Advancing front"});
+594             timing\_find\_intersections[\hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank}] = performance\_data.tot\_time\_incl\_sub;
+595             performance\_data = \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.get\_perf\_data(\textcolor{stringliteral}{"Build intersections"},\textcolor{stringliteral}{"Advancing front"});
+596             timing\_build\_intersections[\hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank}] = performance\_data.tot\_time\_incl\_sub;
+597 
+598             \hyperlink{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{m\_comm}.sum(timing\_find\_intersections);
+599             \hyperlink{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{m\_comm}.sum(timing\_build\_intersections);
+600 
+601             \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank} == 0)
+602             \{
+603                 \hyperlink{namespacecarl_a87ce5fcb102a26f69dbef740667eb08b}{print\_stats\_to\_file}(timing\_find\_intersections,
+      \hyperlink{classcarl_1_1_intersection___search_aea1aa01a86b5cdb7bea5ac9e7f73105f}{m\_timing\_data\_file\_base} + \textcolor{stringliteral}{"\_search\_advancing.dat"});
+604                 \textcolor{keywordflow}{if}(!\hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{m\_bSkipIntersectionConstruction})
+605                 \{
+606                     \hyperlink{namespacecarl_a87ce5fcb102a26f69dbef740667eb08b}{print\_stats\_to\_file}(timing\_build\_intersections,
+      \hyperlink{classcarl_1_1_intersection___search_aea1aa01a86b5cdb7bea5ac9e7f73105f}{m\_timing\_data\_file\_base} + \textcolor{stringliteral}{"\_build\_advancing.dat"});
+607                 \}
+608             \}
+609         \}
+610 
+611         \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{m\_bPrintDebug} && !\hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{m\_bSkipIntersectionConstruction})
+612         \{
+613             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Calculate volume"},\textcolor{stringliteral}{"Advancing front"});
+614             \textcolor{keywordtype}{double} total\_volume = \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.
+      \hyperlink{classcarl_1_1_mesh___intersection_a67f126ec639724230b32916b59af4933}{get\_total\_volume}();
+615             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Calculate volume"},\textcolor{stringliteral}{"Advancing front"});
+616 
+617             std::cout << \textcolor{stringliteral}{"    DEBUG volume on proc. "} << \hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank} << \textcolor{stringliteral}{"(FRONT)"} << std::endl;
+618             std::cout << \textcolor{stringliteral}{" -> Mesh elems, nodes             : "} << 
+      \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.\hyperlink{classcarl_1_1_mesh___intersection_a7135c4c2e57e5ccdfbe5cd3286103460}{mesh}().n\_elem() << \textcolor{stringliteral}{" , "} << 
+      \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.\hyperlink{classcarl_1_1_mesh___intersection_a7135c4c2e57e5ccdfbe5cd3286103460}{mesh}().n\_nodes() << std::endl;
+619             std::cout << \textcolor{stringliteral}{" -> Intersection volume / real    : "} << total\_volume << \textcolor{stringliteral}{" / "} << real\_volume << 
+      std::endl << std::endl;
+620         \}
+621     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_a356354c6a37455be8d0626ae9b874614}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Find\+First\+Pair@{Find\+First\+Pair}}
+\index{Find\+First\+Pair@{Find\+First\+Pair}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Find\+First\+Pair(\+Patch\+\_\+construction $\ast$\+Patch\+\_\+guide, Patch\+\_\+construction $\ast$\+Patch\+\_\+probed, std\+::pair$<$ unsigned int, unsigned int $>$ \&\+First\+\_\+intersection)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Find\+First\+Pair (
+\begin{DoxyParamCaption}
+\item[{{\bf Patch\+\_\+construction} $\ast$}]{Patch\+\_\+guide, }
+\item[{{\bf Patch\+\_\+construction} $\ast$}]{Patch\+\_\+probed, }
+\item[{std\+::pair$<$ unsigned int, unsigned int $>$ \&}]{First\+\_\+intersection}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a356354c6a37455be8d0626ae9b874614}
+
+
+Find the first intersecting pair from a patch. 
+
+Do so by \+:
+\begin{DoxyEnumerate}
+\item locating the elements from the guide patch that contain the vertices of an element from the probed patch.
+\item for each one of these guide elements, find the one that intersects the probed element inside the coupling.
+\item if this fails, use a brute force search method (call \hyperlink{classcarl_1_1_intersection___search_a7b67f7bd29530492dbd0b0eeca67645b}{Intersection\+\_\+\+Search\+::\+Brute\+Force\+\_\+\+Find\+First\+Pair}). 
+\end{DoxyEnumerate}
+
+Definition at line 126 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+129     \{
+130         \textcolor{comment}{// Set up some references for a simpler code}
+131         libMesh::ReplicatedMesh&    Mesh\_patch\_guide    = Patch\_guide->patch\_mesh();
+132         libMesh::ReplicatedMesh&        Mesh\_patch\_probed   = Patch\_probed->patch\_mesh();
+133 
+134         \textcolor{comment}{// Set up locator for the first intersecting pair}
+135         std::unique\_ptr<libMesh::PointLocatorBase> Patch\_guide\_Locator = Mesh\_patch\_guide.sub\_point\_locator
+      ();
+136 
+137         \textcolor{comment}{// Instruction needed to avoid the code from crashing if a query is}
+138         \textcolor{comment}{// outside the mesh}
+139         Patch\_guide\_Locator->enable\_out\_of\_mesh\_mode();
+140 
+141         \textcolor{comment}{// Find the first pair}
+142         libMesh::Elem * Patch\_probed\_first\_elem = NULL;
+143         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} Patch\_probed\_first\_elem\_id = 0;
+144 
+145         \textcolor{comment}{// Set of intersecting terms:}
+146         std::set<unsigned int> Intersecting\_guide\_elems;
+147         \textcolor{keywordtype}{bool} bFoundIntersection = \textcolor{keyword}{false};
+148         \textcolor{keywordflow}{for}(libMesh::ReplicatedMesh::element\_iterator element\_probed\_it = Mesh\_patch\_probed.elements\_begin(
+      );
+149                  element\_probed\_it != Mesh\_patch\_probed.elements\_end();
+150                  ++element\_probed\_it)
+151         \{
+152             Patch\_probed\_first\_elem = * element\_probed\_it;
+153             Patch\_probed\_first\_elem\_id = Patch\_probed->convert\_patch\_to\_parent\_elem\_id(
+      Patch\_probed\_first\_elem->id());
+154             bFoundIntersection = \hyperlink{classcarl_1_1_intersection___search_afeedb5ff9144638151b7f956cf113fc4}{m\_Intersection\_test}.
+      \hyperlink{classcarl_1_1_intersection___tools_a8238069bd83ef1029c6a5b60a188763b}{FindAllIntersection}(Patch\_probed\_first\_elem,Patch\_guide\_Locator,Intersecting\_guide\_elems
+      );
+155             \textcolor{keywordflow}{if}(bFoundIntersection)
+156             \{
+157                 \textcolor{keywordflow}{break};
+158             \}
+159         \}
+160 
+161         \textcolor{comment}{// Search for one intersecting term inside the guide patch}
+162         libMesh::Elem * Patch\_guide\_first\_elem = NULL;
+163         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} Patch\_guide\_first\_elem\_id;
+164         \textcolor{keywordtype}{bool} bFoundFirstInter = \textcolor{keyword}{false};
+165 
+166         \textcolor{keywordflow}{for}(std::set<unsigned int>::iterator it\_inter = Intersecting\_guide\_elems.begin();
+167                 it\_inter != Intersecting\_guide\_elems.end();
+168                 ++it\_inter)
+169         \{
+170             Patch\_guide\_first\_elem = Mesh\_patch\_guide.elem(*it\_inter);
+171             Patch\_guide\_first\_elem\_id = Patch\_guide->convert\_patch\_to\_parent\_elem\_id(*it\_inter);
+172 
+173             \textcolor{comment}{// Must test if the intersection is inside the coupling region}
+174             bFoundFirstInter = \hyperlink{classcarl_1_1_intersection___search_a7abbfa5dc5892d9179b93563320d533b}{m\_Intersection\_test\_neighbors}.
+      \hyperlink{classcarl_1_1_intersection___tools_a98929a97acb94aa77fc8952d80993d88}{libMesh\_exact\_do\_intersect\_inside\_coupling}(
+      Patch\_probed\_first\_elem,Patch\_guide\_first\_elem);
+175 
+176             \textcolor{keywordflow}{if}(bFoundFirstInter)
+177             \{
+178                 First\_intersection.first = Patch\_guide\_first\_elem\_id;
+179                 First\_intersection.second = Patch\_probed\_first\_elem\_id;
+180                 \textcolor{keywordflow}{break};
+181             \}
+182         \}
+183 
+184         \textcolor{keywordflow}{if}(!bFoundFirstInter)
+185         \{
+186             \textcolor{comment}{// Couldn't find the first intersection using a point search ...}
+187             \textcolor{comment}{// Will have to do the things the hard way ...}
+188             \hyperlink{classcarl_1_1_intersection___search_a7b67f7bd29530492dbd0b0eeca67645b}{BruteForce\_FindFirstPair}(Patch\_guide,Patch\_probed,First\_intersection);
+189         \}
+190     \};
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_af8aa21969e1f71ed50877aa6b6eb147d}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Find\+Intersections\+\_\+\+Brute@{Find\+Intersections\+\_\+\+Brute}}
+\index{Find\+Intersections\+\_\+\+Brute@{Find\+Intersections\+\_\+\+Brute}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Find\+Intersections\+\_\+\+Brute()}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Find\+Intersections\+\_\+\+Brute (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_af8aa21969e1f71ed50877aa6b6eb147d}
+
+
+Find all the intersections, using the brute force method. 
+
+Skips saving intersecting element pairs if \hyperlink{classcarl_1_1_intersection___search_a8f20721814d9dcfab34a0b6c85b88f3c}{Intersection\+\_\+\+Search\+::m\+\_\+b\+Save\+Inter\+Data} == true. 
+
+Definition at line 517 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+518     \{
+519         \textcolor{comment}{// Prepare iterators}
+520         libMesh::Mesh::const\_element\_iterator it\_coupl = \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.
+      local\_elements\_begin();
+521         libMesh::Mesh::const\_element\_iterator it\_coupl\_end = \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.
+      local\_elements\_end();
+522 
+523         \textcolor{keywordtype}{int} patch\_counter = 0;
+524 
+525         \textcolor{keywordflow}{for}( ; it\_coupl != it\_coupl\_end; ++it\_coupl)
+526         \{
+527             \textcolor{keyword}{const} libMesh::Elem * Query\_elem = * it\_coupl;
+528 
+529             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Build patches"},\textcolor{stringliteral}{"Brute force (preamble run)"});
+530             \hyperlink{classcarl_1_1_intersection___search_a00e012de151310737c771ee7b15c9b2c}{BuildCoupledPatches}(Query\_elem,patch\_counter);
+531             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Build patches"},\textcolor{stringliteral}{"Brute force (preamble run)"});
+532 
+533             ++patch\_counter;
+534 
+535             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Find intersections"},\textcolor{stringliteral}{"Brute force (preamble run)"});
+536             \hyperlink{classcarl_1_1_intersection___search_ad91e556edabe62c1b0b5d30e3fc3bcef}{FindPatchIntersections\_Brute}(Query\_elem);
+537             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Find intersections"},\textcolor{stringliteral}{"Brute force (preamble run)"});
+538         \};
+539     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_a69d44884067e5bb1e63711c66c9c6d89}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Find\+Intersections\+\_\+\+Front@{Find\+Intersections\+\_\+\+Front}}
+\index{Find\+Intersections\+\_\+\+Front@{Find\+Intersections\+\_\+\+Front}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Find\+Intersections\+\_\+\+Front()}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Find\+Intersections\+\_\+\+Front (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a69d44884067e5bb1e63711c66c9c6d89}
+
+
+Find all the intersections, using the advancing front method. 
+
+Skips saving intersecting element pairs if \hyperlink{classcarl_1_1_intersection___search_a8f20721814d9dcfab34a0b6c85b88f3c}{Intersection\+\_\+\+Search\+::m\+\_\+b\+Save\+Inter\+Data} == true. 
+
+Definition at line 623 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+624     \{
+625         \textcolor{comment}{// Prepare iterators}
+626         libMesh::Mesh::const\_element\_iterator it\_coupl = \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.
+      local\_elements\_begin();
+627         libMesh::Mesh::const\_element\_iterator it\_coupl\_end = \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.
+      local\_elements\_end();
+628 
+629         \textcolor{keywordtype}{int} patch\_counter = 0;
+630 
+631         \textcolor{keywordflow}{for}( ; it\_coupl != it\_coupl\_end; ++it\_coupl)
+632         \{
+633             \textcolor{keyword}{const} libMesh::Elem * Query\_elem = * it\_coupl;
+634 
+635             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Build patches (preamble)"},\textcolor{stringliteral}{"Advancing front (preamble run)"});
+636             \hyperlink{classcarl_1_1_intersection___search_a00e012de151310737c771ee7b15c9b2c}{BuildCoupledPatches}(Query\_elem,patch\_counter);
+637             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Build patches"},\textcolor{stringliteral}{"Advancing front (preamble run)"});
+638 
+639             ++patch\_counter;
+640 
+641             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Find intersections"},\textcolor{stringliteral}{"Advancing front (preamble run)"});
+642             \hyperlink{classcarl_1_1_intersection___search_ad3ea665115367f2a90183e581d9d2d70}{FindPatchIntersections\_Front}(Query\_elem);
+643             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Find intersections"},\textcolor{stringliteral}{"Advancing front (preamble run)"});
+644         \};
+645     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_ad91e556edabe62c1b0b5d30e3fc3bcef}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Find\+Patch\+Intersections\+\_\+\+Brute@{Find\+Patch\+Intersections\+\_\+\+Brute}}
+\index{Find\+Patch\+Intersections\+\_\+\+Brute@{Find\+Patch\+Intersections\+\_\+\+Brute}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Find\+Patch\+Intersections\+\_\+\+Brute(const lib\+Mesh\+::\+Elem $\ast$\+Query\+\_\+elem)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Find\+Patch\+Intersections\+\_\+\+Brute (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{Query\+\_\+elem}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_ad91e556edabe62c1b0b5d30e3fc3bcef}
+
+
+Find all the intersections between the patches associated to the Query\+\_\+elem, using a brute force method. All elements from a patch are tested against all the elements from the other patch. 
+
+
+
+Definition at line 52 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+53     \{
+54         \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Preamble"},\textcolor{stringliteral}{"Brute force algorithm"});
+55 
+56         \textcolor{comment}{// Code for the brute force intersection tests}
+57         \hyperlink{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{m\_Intersection\_Pairs\_multimap}.clear();
+58 
+59         \textcolor{comment}{// Intersection\_Tools}
+60         \hyperlink{classcarl_1_1_intersection___search_afeedb5ff9144638151b7f956cf113fc4}{m\_Intersection\_test}.
+      \hyperlink{classcarl_1_1_intersection___tools_acf2d17e703441bc9e3ed05d98f51ba85}{libmesh\_set\_coupling\_nef\_polyhedron}(Query\_elem);
+61 
+62         \textcolor{comment}{// Boolean: do they intersect?}
+63         \textcolor{keywordtype}{bool} bDoIntersect = \textcolor{keyword}{false};
+64 
+65         std::unordered\_set<unsigned int> & Patch\_Set\_A = \hyperlink{classcarl_1_1_intersection___search_a3bc66e4e9a0b41d9b20093d4f6ca7611}{m\_Patch\_Constructor\_A}.
+      \hyperlink{classcarl_1_1_patch__construction_ad92eca042b223e8be1cb3984a3dc8cba}{elem\_indexes}();
+66         std::unordered\_set<unsigned int> & Patch\_Set\_B = \hyperlink{classcarl_1_1_intersection___search_a2e2b5a2784eeca7b558b6b93ae71a2e8}{m\_Patch\_Constructor\_B}.
+      \hyperlink{classcarl_1_1_patch__construction_ad92eca042b223e8be1cb3984a3dc8cba}{elem\_indexes}();
+67 
+68         std::unordered\_set<unsigned int>::iterator it\_patch\_A;
+69         std::unordered\_set<unsigned int>::iterator it\_patch\_B;
+70 
+71         \textcolor{comment}{// Debug vars}
+72         \textcolor{keywordtype}{int} nbOfTests = 0;
+73         \textcolor{keywordtype}{int} nbOfPositiveTests = 0;
+74 
+75         \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Preamble"},\textcolor{stringliteral}{"Brute force algorithm"});
+76 
+77         \textcolor{keywordflow}{for}(    it\_patch\_A =  Patch\_Set\_A.begin();
+78                 it\_patch\_A != Patch\_Set\_A.end();
+79                 ++it\_patch\_A)
+80         \{
+81             \textcolor{keyword}{const} libMesh::Elem * elem\_A = \hyperlink{classcarl_1_1_intersection___search_a903b7b3a369ed2c1e80d6a20ba41d350}{m\_Mesh\_A}.elem(*it\_patch\_A);
+82 
+83             \textcolor{keywordflow}{for}(    it\_patch\_B =  Patch\_Set\_B.begin();
+84                     it\_patch\_B != Patch\_Set\_B.end();
+85                     ++it\_patch\_B)
+86             \{
+87                 \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Find intersection"},\textcolor{stringliteral}{"Brute force algorithm"});
+88                 ++nbOfTests;
+89                 \textcolor{keyword}{const} libMesh::Elem * elem\_B = \hyperlink{classcarl_1_1_intersection___search_a178cd617f59285fb858fddd78dec79d6}{m\_Mesh\_B}.elem(*it\_patch\_B);
+90 
+91                 bDoIntersect = \hyperlink{classcarl_1_1_intersection___search_afeedb5ff9144638151b7f956cf113fc4}{m\_Intersection\_test}.
+      \hyperlink{classcarl_1_1_intersection___tools_ae7b16748a45a0579bafecb48ef2fc4ce}{libMesh\_exact\_do\_intersect}(elem\_A,elem\_B);
+92                 \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Find intersection"},\textcolor{stringliteral}{"Brute force algorithm"});
+93 
+94                 \textcolor{keywordflow}{if}(bDoIntersect)
+95                 \{
+96                     \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_a8f20721814d9dcfab34a0b6c85b88f3c}{m\_bSaveInterData})
+97                     \{
+98                         \hyperlink{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{m\_Intersection\_Pairs\_multimap}.insert(
+      std::pair<unsigned int, unsigned int>(*it\_patch\_A,*it\_patch\_B));
+99                     \}
+100                     ++nbOfPositiveTests;
+101                 \}
+102             \}
+103         \}
+104 
+105         \textcolor{comment}{// Partitioning vars}
+106         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} query\_idx = Query\_elem->id();
+107         \hyperlink{classcarl_1_1_intersection___search_af54d17052502ee0d11ec33b915e2074e}{m\_Nb\_Of\_Intersections\_Elem\_C}[query\_idx] = nbOfPositiveTests;
+108 
+109         \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{m\_bPrintDebug})
+110         \{
+111             std::cout << \textcolor{stringliteral}{"    DEBUG: brute force search results"} << std::endl;
+112             std::cout << \textcolor{stringliteral}{" -> Positives / tests             : "} << nbOfPositiveTests << \textcolor{stringliteral}{" / "} << nbOfTests
+113                       << \textcolor{stringliteral}{" ("} << 100.*nbOfPositiveTests/nbOfTests << \textcolor{stringliteral}{"%)"} << std::endl  << std::endl;
+114         \}
+115     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_ad3ea665115367f2a90183e581d9d2d70}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Find\+Patch\+Intersections\+\_\+\+Front@{Find\+Patch\+Intersections\+\_\+\+Front}}
+\index{Find\+Patch\+Intersections\+\_\+\+Front@{Find\+Patch\+Intersections\+\_\+\+Front}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Find\+Patch\+Intersections\+\_\+\+Front(const lib\+Mesh\+::\+Elem $\ast$\+Query\+\_\+elem)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Find\+Patch\+Intersections\+\_\+\+Front (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{Query\+\_\+elem}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_ad3ea665115367f2a90183e581d9d2d70}
+
+
+Find all the intersections between the patches associated to the Query\+\_\+elem, using an advancing front method. 
+
+
+
+Definition at line 241 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+242     \{
+243         \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Preamble"},\textcolor{stringliteral}{"Advancing front algorithm"});
+244         \textcolor{comment}{// Code for the front intersection tests}
+245         \hyperlink{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{m\_Intersection\_Pairs\_multimap}.clear();
+246 
+247         \textcolor{comment}{// Intersection\_Tools}
+248         \hyperlink{classcarl_1_1_intersection___search_afeedb5ff9144638151b7f956cf113fc4}{m\_Intersection\_test}.
+      \hyperlink{classcarl_1_1_intersection___tools_acf2d17e703441bc9e3ed05d98f51ba85}{libmesh\_set\_coupling\_nef\_polyhedron}(Query\_elem);
+249         \hyperlink{classcarl_1_1_intersection___search_a7abbfa5dc5892d9179b93563320d533b}{m\_Intersection\_test\_neighbors}.
+      \hyperlink{classcarl_1_1_intersection___tools_acf2d17e703441bc9e3ed05d98f51ba85}{libmesh\_set\_coupling\_nef\_polyhedron}(Query\_elem);
+250 
+251         \textcolor{comment}{// --- Set up variables needed by Gander's algorithm}
+252 
+253         \textcolor{comment}{// First, determinate which patch will be the guide, and which will be}
+254         \textcolor{comment}{// the probed}
+255         Patch\_construction * Patch\_guide  = &\hyperlink{classcarl_1_1_intersection___search_a3bc66e4e9a0b41d9b20093d4f6ca7611}{m\_Patch\_Constructor\_A};
+256         Patch\_construction * Patch\_probed = &\hyperlink{classcarl_1_1_intersection___search_a2e2b5a2784eeca7b558b6b93ae71a2e8}{m\_Patch\_Constructor\_B};
+257 
+258         \textcolor{comment}{// Exchange them if the guide is smaller}
+259         \textcolor{keywordtype}{bool} bGuidedByB = Patch\_guide->\hyperlink{classcarl_1_1_patch__construction_ab9183c2cdf61de07aa77b91775286733}{size}() > Patch\_probed->size();
+260         \textcolor{keywordflow}{if}(bGuidedByB)
+261         \{
+262             \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{m\_bPrintDebug})
+263             \{
+264                 std::cout << \textcolor{stringliteral}{"    DEBUG:     Probe: A     |     Guide: B"} << std::endl;
+265             \}
+266             Patch\_guide  = &\hyperlink{classcarl_1_1_intersection___search_a2e2b5a2784eeca7b558b6b93ae71a2e8}{m\_Patch\_Constructor\_B};
+267             Patch\_probed = &\hyperlink{classcarl_1_1_intersection___search_a3bc66e4e9a0b41d9b20093d4f6ca7611}{m\_Patch\_Constructor\_A};
+268         \}
+269         \textcolor{keywordflow}{else}
+270         \{
+271             \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{m\_bPrintDebug})
+272             \{
+273                 std::cout << \textcolor{stringliteral}{"    DEBUG:     Probe: B     |     Guide: A"} << std::endl;
+274             \}
+275         \}
+276 
+277         \textcolor{comment}{// Ids of the working elements}
+278         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} Guide\_working\_elem\_id;
+279         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} Probed\_working\_elem\_id;
+280 
+281         \textcolor{comment}{// Find the first pair, (guide, probed)}
+282         std::pair<unsigned int,unsigned int> First\_intersection;
+283         \hyperlink{classcarl_1_1_intersection___search_a7b67f7bd29530492dbd0b0eeca67645b}{BruteForce\_FindFirstPair}(Patch\_guide,Patch\_probed,First\_intersection);
+284 
+285         \textcolor{comment}{// Index and iterators guide neighbor elements to be tested}
+286         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} guide\_neighbor\_index = 0;
+287         std::unordered\_set<unsigned int>::iterator it\_neigh, it\_neigh\_end;
+288 
+289         \textcolor{comment}{// Boolean saying if two elements intersect (exactly)}
+290         \textcolor{keywordtype}{bool} bDoIntersect = \textcolor{keyword}{false};
+291 
+292         \textcolor{comment}{// Boolean saying if a neighbor element intersects (exactly)}
+293         \textcolor{keywordtype}{bool} bDoNeighborIntersect = \textcolor{keyword}{false};
+294 
+295         \textcolor{comment}{// Boolean used to short-circuit the neighbor search test if all}
+296         \textcolor{comment}{// the concerned elements already have neighbours.}
+297         \textcolor{keywordtype}{bool} bDoTestGuideNeighbours = \textcolor{keyword}{true};
+298 
+299         \textcolor{comment}{// --- Preamble - initializations}
+300         \textcolor{comment}{// Insert the first elements in the queues}
+301         Patch\_guide->FrontSearch\_initialize();
+302         Patch\_probed->FrontSearch\_initialize();
+303 
+304         Patch\_guide->intersection\_queue\_push\_back(First\_intersection.first);
+305         Patch\_probed->intersection\_queue\_push\_back(First\_intersection.second);
+306         Patch\_guide->set\_elem\_as\_inside\_queue(First\_intersection.first);
+307 
+308         \textcolor{comment}{// Debug vars}
+309         \textcolor{keywordtype}{int} nbOfGuideElemsTested = 0;
+310         \textcolor{keywordtype}{int} nbOfTests = 0;
+311         \textcolor{keywordtype}{int} nbOfPositiveTests = 0;
+312 
+313         \textcolor{keywordtype}{bool} bCreateNewNefForGuideNeigh = \textcolor{keyword}{true};
+314 
+315         \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Preamble"},\textcolor{stringliteral}{"Advancing front algorithm"});
+316 
+317         \textcolor{keywordflow}{while}(!Patch\_guide->intersection\_queue\_empty())
+318         \{
+319             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Set up new guide element"},\textcolor{stringliteral}{"Advancing front algorithm"});
+320 
+321             \textcolor{comment}{// Pop out the first element from the guide intersection queue}
+322             Guide\_working\_elem\_id = Patch\_guide->intersection\_queue\_extract\_front\_elem();
+323             Patch\_guide->set\_elem\_as\_treated(Guide\_working\_elem\_id);
+324 
+325             \textcolor{comment}{// Get its pointer}
+326             \textcolor{keyword}{const} libMesh::Elem * elem\_guide = Patch\_guide->current\_elem\_pointer();
+327 
+328             ++nbOfGuideElemsTested;
+329 
+330             \textcolor{comment}{// Set up the neighbor test short-circuits}
+331             bDoTestGuideNeighbours = Patch\_guide->set\_neighbors\_to\_search\_next\_pairs();
+332 
+333             \textcolor{comment}{// Clear and initialize the probed patch lists}
+334             Patch\_probed->FrontSearch\_reset();
+335 
+336             \textcolor{comment}{// Pop out the first element from the probed intersection queue, and}
+337             \textcolor{comment}{// insert it inside the test queue}
+338             Patch\_probed->FrontSearch\_prepare\_for\_probed\_test();
+339 
+340             \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Set up new guide element"},\textcolor{stringliteral}{"Advancing front algorithm"});
+341 
+342             \textcolor{keywordflow}{while}(!Patch\_probed->test\_queue\_empty())
+343             \{
+344                 \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Find intersection"},\textcolor{stringliteral}{"Advancing front algorithm"});
+345                 \textcolor{comment}{// Pop out the first elem to be tested}
+346                 Probed\_working\_elem\_id = Patch\_probed->test\_queue\_extract\_front\_elem();
+347                 Patch\_probed->set\_elem\_as\_treated(Probed\_working\_elem\_id);
+348 
+349                 \textcolor{keyword}{const} libMesh::Elem * elem\_probed = Patch\_probed->current\_elem\_pointer();
+350 
+351                 \textcolor{comment}{// Test the intersection}
+352                 bDoIntersect = \hyperlink{classcarl_1_1_intersection___search_afeedb5ff9144638151b7f956cf113fc4}{m\_Intersection\_test}.
+      \hyperlink{classcarl_1_1_intersection___tools_ae7b16748a45a0579bafecb48ef2fc4ce}{libMesh\_exact\_do\_intersect}(elem\_guide,elem\_probed);
+353                 ++nbOfTests;
+354                 \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Find intersection"},\textcolor{stringliteral}{"Advancing front algorithm"});
+355 
+356                 \textcolor{comment}{// If they do intersect, we have to ...}
+357                 \textcolor{keywordflow}{if}(bDoIntersect)
+358                 \{
+359                     \textcolor{comment}{// 1) add elements to intersection multimap, watching out}
+360                     \textcolor{comment}{//    for the element order}
+361                     \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_a8f20721814d9dcfab34a0b6c85b88f3c}{m\_bSaveInterData})
+362                     \{
+363                         \textcolor{keywordflow}{if}(bGuidedByB)
+364                         \{
+365                             \hyperlink{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{m\_Intersection\_Pairs\_multimap}.insert(
+      std::pair<unsigned int, unsigned int>(Probed\_working\_elem\_id,Guide\_working\_elem\_id));
+366                         \}
+367                         \textcolor{keywordflow}{else}
+368                         \{
+369                             \hyperlink{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{m\_Intersection\_Pairs\_multimap}.insert(
+      std::pair<unsigned int, unsigned int>(Guide\_working\_elem\_id,Probed\_working\_elem\_id));
+370                         \}
+371                     \}
+372                     ++nbOfPositiveTests;
+373 
+374                     \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Update test queue"},\textcolor{stringliteral}{"Advancing front algorithm"});
+375                     \textcolor{comment}{// 2) add elem\_probed's neighbors, if not treated yet}
+376                     Patch\_probed->add\_neighbors\_to\_test\_list();
+377                     \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Update test queue"},\textcolor{stringliteral}{"Advancing front algorithm"});
+378 
+379                     \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Update intersection queue"},\textcolor{stringliteral}{"Advancing front algorithm"});
+380                     \textcolor{comment}{// 3) determinate if any of the guide neighbors are good}
+381                     \textcolor{comment}{//    candidates with the probed element.}
+382                     \textcolor{keywordflow}{if}(bDoTestGuideNeighbours)
+383                     \{
+384                         it\_neigh = Patch\_guide->neighbors\_to\_search\_next\_pair().begin();
+385                         it\_neigh\_end = Patch\_guide->neighbors\_to\_search\_next\_pair().end();
+386 
+387                         bCreateNewNefForGuideNeigh = \textcolor{keyword}{true};
+388 
+389                         \textcolor{keywordflow}{for}( ; it\_neigh != it\_neigh\_end; ++it\_neigh )
+390                         \{
+391                             \textcolor{comment}{// This element doesn't have an intersecting pair}
+392                             \textcolor{comment}{// yet. Test it, but only save it if it is inside}
+393                             \textcolor{comment}{// the coupling region}
+394                             guide\_neighbor\_index = *it\_neigh;
+395                             \textcolor{keyword}{const} libMesh::Elem * elem\_neigh = Patch\_guide->elem(guide\_neighbor\_index);
+396                             bDoNeighborIntersect = \hyperlink{classcarl_1_1_intersection___search_a7abbfa5dc5892d9179b93563320d533b}{m\_Intersection\_test\_neighbors}
+      .\hyperlink{classcarl_1_1_intersection___tools_a98929a97acb94aa77fc8952d80993d88}{libMesh\_exact\_do\_intersect\_inside\_coupling}(elem\_probed,elem\_neigh
+      ,bCreateNewNefForGuideNeigh);
+397 
+398                             \textcolor{keywordflow}{if}(bDoNeighborIntersect)
+399                             \{
+400                                 bCreateNewNefForGuideNeigh = \textcolor{keyword}{false};
+401                             \}
+402 
+403                             \textcolor{keywordflow}{if}(bDoNeighborIntersect)
+404                             \{
+405                                 \textcolor{comment}{// Now it has an intersecting pair!}
+406                                 Patch\_guide->intersection\_queue\_push\_back(guide\_neighbor\_index);
+407                                 Patch\_probed->intersection\_queue\_push\_back(Probed\_working\_elem\_id);
+408 
+409                                 \textcolor{comment}{// Set the guide elements as "already inside the queue"}
+410                                 Patch\_guide->set\_elem\_as\_inside\_queue(guide\_neighbor\_index);
+411                             \}
+412                         \}
+413 
+414                         bDoTestGuideNeighbours = Patch\_guide->set\_neighbors\_to\_search\_next\_pairs();
+415                     \}
+416                     \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Update intersection queue"},\textcolor{stringliteral}{"Advancing front algorithm"});
+417                 \}
+418             \}
+419         \}
+420 
+421         \textcolor{comment}{// Partitioning vars}
+422         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} query\_idx = Query\_elem->id();
+423         \hyperlink{classcarl_1_1_intersection___search_af54d17052502ee0d11ec33b915e2074e}{m\_Nb\_Of\_Intersections\_Elem\_C}[query\_idx] = nbOfPositiveTests;
+424 
+425         \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{m\_bPrintDebug})
+426         \{
+427             std::cout << \textcolor{stringliteral}{"    DEBUG: advancing front search results"} << std::endl;
+428             std::cout << \textcolor{stringliteral}{" -> Guide elements tested / all   : "} << nbOfGuideElemsTested << \textcolor{stringliteral}{" / "} << 
+      Patch\_guide->size() << std::endl;
+429             std::cout << \textcolor{stringliteral}{" -> Positives / tests             : "} << nbOfPositiveTests << \textcolor{stringliteral}{" / "} << nbOfTests
+430                       << \textcolor{stringliteral}{" ("} << 100.*nbOfPositiveTests/nbOfTests << \textcolor{stringliteral}{"%)"} << std::endl  << std::endl;
+431         \}
+432     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_aaea90014de60041ab930ad10afe8b694}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!mesh\+\_\+\+A@{mesh\+\_\+\+A}}
+\index{mesh\+\_\+\+A@{mesh\+\_\+\+A}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{mesh\+\_\+\+A()}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Mesh \& carl\+::\+Intersection\+\_\+\+Search\+::mesh\+\_\+\+A (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___search_aaea90014de60041ab930ad10afe8b694}
+
+
+Reference to the mesh A. 
+
+
+
+Definition at line 12 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+13     \{
+14         \textcolor{keywordflow}{return} \hyperlink{classcarl_1_1_intersection___search_a903b7b3a369ed2c1e80d6a20ba41d350}{m\_Mesh\_A};
+15     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_a211e0e64653fd099eaacac0ee3824a7d}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!mesh\+\_\+\+B@{mesh\+\_\+\+B}}
+\index{mesh\+\_\+\+B@{mesh\+\_\+\+B}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{mesh\+\_\+\+B()}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Mesh \& carl\+::\+Intersection\+\_\+\+Search\+::mesh\+\_\+\+B (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___search_a211e0e64653fd099eaacac0ee3824a7d}
+
+
+Reference to the mesh B. 
+
+
+
+Definition at line 17 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+18     \{
+19         \textcolor{keywordflow}{return} \hyperlink{classcarl_1_1_intersection___search_a178cd617f59285fb858fddd78dec79d6}{m\_Mesh\_B};
+20     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_ae4d3f5cd22b551d7f33a8d807649ac4c}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!mesh\+\_\+\+Coupling@{mesh\+\_\+\+Coupling}}
+\index{mesh\+\_\+\+Coupling@{mesh\+\_\+\+Coupling}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{mesh\+\_\+\+Coupling()}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Mesh \& carl\+::\+Intersection\+\_\+\+Search\+::mesh\+\_\+\+Coupling (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___search_ae4d3f5cd22b551d7f33a8d807649ac4c}
+
+
+Reference to the coupling mesh. 
+
+
+
+Definition at line 22 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+23     \{
+24         \textcolor{keywordflow}{return} \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling};
+25     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_a7928e94f8406b75be9887427fd0da9bc}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Preallocate\+And\+Partition\+Coupling@{Preallocate\+And\+Partition\+Coupling}}
+\index{Preallocate\+And\+Partition\+Coupling@{Preallocate\+And\+Partition\+Coupling}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Preallocate\+And\+Partition\+Coupling()}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Preallocate\+And\+Partition\+Coupling (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___search_a7928e94f8406b75be9887427fd0da9bc}
+
+
+Preallocate \hyperlink{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{Intersection\+\_\+\+Search\+::m\+\_\+\+Intersection\+\_\+\+Pairs\+\_\+multimap} and repartition the coupling mesh. 
+
+
+
+Definition at line 673 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+674     \{
+675         \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_ab3d9729d5029e30fff786305c8aa3a01}{m\_bDidPreliminarySearch})
+676         \{
+677             \textcolor{comment}{// Redo the partitioning}
+678             \hyperlink{classcarl_1_1_intersection___search_a1d44cfde49ae719c406da8bd5c463992}{m\_coupling\_weights}.resize(
+      \hyperlink{classcarl_1_1_intersection___search_af54d17052502ee0d11ec33b915e2074e}{m\_Nb\_Of\_Intersections\_Elem\_C}.size());
+679 
+680             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < \hyperlink{classcarl_1_1_intersection___search_af54d17052502ee0d11ec33b915e2074e}{m\_Nb\_Of\_Intersections\_Elem\_C}.size()
+      ; ++iii)
+681             \{
+682                 \hyperlink{classcarl_1_1_intersection___search_a1d44cfde49ae719c406da8bd5c463992}{m\_coupling\_weights}[iii] = 
+      \hyperlink{classcarl_1_1_intersection___search_af54d17052502ee0d11ec33b915e2074e}{m\_Nb\_Of\_Intersections\_Elem\_C}[iii];
+683             \}
+684 
+685             \textcolor{keywordflow}{if}(!\hyperlink{classcarl_1_1_intersection___search_aab4276c3ba5b247b46300de675a10cb4}{m\_bSkipIntersectionPartitioning})
+686             \{
+687                 libMesh::Partitioner * dummy\_partitioner = \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.partitioner().get
+      ();
+688                 dummy\_partitioner->attach\_weights(&\hyperlink{classcarl_1_1_intersection___search_a1d44cfde49ae719c406da8bd5c463992}{m\_coupling\_weights});
+689                 \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.partition(\hyperlink{classcarl_1_1_intersection___search_adcfd59960cfd05bc63e9bcf5a350a8ae}{m\_nodes});
+690             \}
+691 
+692             \textcolor{comment}{// Allocate the intersection maps ...}
+693             std::vector<unsigned int> nb\_of\_inters\_per\_rank(\hyperlink{classcarl_1_1_intersection___search_adcfd59960cfd05bc63e9bcf5a350a8ae}{m\_nodes},0);
+694             \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} dummy\_nb\_of\_inters = 0;
+695             libMesh::Mesh::const\_element\_iterator it\_local = \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.
+      local\_elements\_begin();
+696             libMesh::Mesh::const\_element\_iterator it\_local\_end = \hyperlink{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{m\_Mesh\_Coupling}.
+      local\_elements\_end();
+697             \textcolor{keywordflow}{for}( ; it\_local != it\_local\_end; ++ it\_local)
+698             \{
+699                 \textcolor{keyword}{const} libMesh::Elem * dummy\_elem = * it\_local;
+700                 nb\_of\_inters\_per\_rank[\hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank}] += \hyperlink{classcarl_1_1_intersection___search_a1d44cfde49ae719c406da8bd5c463992}{m\_coupling\_weights}[dummy\_elem->id(
+      )];
+701             \}
+702             \hyperlink{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{m\_comm}.sum(nb\_of\_inters\_per\_rank);
+703             \hyperlink{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{m\_Intersection\_Pairs\_multimap}.reserve(2*dummy\_nb\_of\_inters);
+704 
+705             \textcolor{comment}{// ... and the intersection grid}
+706             \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.\hyperlink{classcarl_1_1_mesh___intersection_aee962f4dc634b4187cb759d6bf022d40}{preallocate\_grid}(192*dummy\_nb\_of\_inters)
+      ;
+707             \hyperlink{classcarl_1_1_intersection___search_ac3eae683cb64b5bd8b7c0430d6e7496f}{m\_bHavePreallocData} = \textcolor{keyword}{true};
+708 
+709             \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_a32e74e1f2aaaf5630b57091d01e5932b}{m\_bPrintIntersectionsPerPartData})
+710             \{
+711                 \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{m\_rank} == 0)
+712                 \{
+713                     std::string intersection\_statistics\_filename;
+714                     \textcolor{keywordflow}{if}(!\hyperlink{classcarl_1_1_intersection___search_aab4276c3ba5b247b46300de675a10cb4}{m\_bSkipIntersectionPartitioning})
+715                     \{
+716                         intersection\_statistics\_filename = 
+      \hyperlink{classcarl_1_1_intersection___search_aea1aa01a86b5cdb7bea5ac9e7f73105f}{m\_timing\_data\_file\_base} + \textcolor{stringliteral}{"\_inters\_per\_partition\_\_new\_partitioning.dat"};
+717                     \}
+718                     \textcolor{keywordflow}{else}
+719                     \{
+720                         intersection\_statistics\_filename = 
+      \hyperlink{classcarl_1_1_intersection___search_aea1aa01a86b5cdb7bea5ac9e7f73105f}{m\_timing\_data\_file\_base} + \textcolor{stringliteral}{"\_inters\_per\_partition\_\_original.dat"};
+721                     \}
+722 
+723                     libMesh::StatisticsVector<int> intersection\_statistics(
+      \hyperlink{classcarl_1_1_intersection___search_adcfd59960cfd05bc63e9bcf5a350a8ae}{m\_nodes},0);
+724                     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < \hyperlink{classcarl_1_1_intersection___search_adcfd59960cfd05bc63e9bcf5a350a8ae}{m\_nodes}; ++iii)
+725                     \{
+726                         intersection\_statistics[iii] = nb\_of\_inters\_per\_rank[iii];
+727                     \}
+728 
+729                     std::ofstream inter\_statistics\_output(intersection\_statistics\_filename,
+      std::ofstream::app);
+730 
+731                     inter\_statistics\_output     << intersection\_statistics.minimum() << \textcolor{stringliteral}{" "}
+732                                     << intersection\_statistics.maximum() << \textcolor{stringliteral}{" "}
+733                                     << intersection\_statistics.mean() << \textcolor{stringliteral}{" "}
+734                                     << intersection\_statistics.median() << \textcolor{stringliteral}{" "}
+735                                     << intersection\_statistics.stddev() << std::endl;
+736 
+737                     inter\_statistics\_output.close();
+738                 \}
+739 
+740             \}
+741         \}
+742     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_aa2312fdcb8d8203f9d07b2b638c62798}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Prepare\+Preallocation\+And\+Load@{Prepare\+Preallocation\+And\+Load}}
+\index{Prepare\+Preallocation\+And\+Load@{Prepare\+Preallocation\+And\+Load}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Prepare\+Preallocation\+And\+Load(\+Search\+Method search\+\_\+type=\+B\+R\+U\+T\+E)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Prepare\+Preallocation\+And\+Load (
+\begin{DoxyParamCaption}
+\item[{{\bf Search\+Method}}]{search\+\_\+type = {\ttfamily {\bf B\+R\+U\+T\+E}}}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___search_aa2312fdcb8d8203f9d07b2b638c62798}
+
+
+Do a preliminary search, to optimize the intersection search and construction. 
+
+This method finds all the intersecting element pairs, only saving their number for each element of the coupling mesh. This information is used to repartition the coupling mesh and to preallocate the \hyperlink{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{Intersection\+\_\+\+Search\+::m\+\_\+\+Intersection\+\_\+\+Pairs\+\_\+multimap}. 
+
+Definition at line 652 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+653     \{
+654         \hyperlink{classcarl_1_1_intersection___search_a8f20721814d9dcfab34a0b6c85b88f3c}{m\_bSaveInterData} = \textcolor{keyword}{false};
+655         \textcolor{keywordflow}{switch} (search\_type)
+656         \{
+657             \textcolor{keywordflow}{case} \hyperlink{namespacecarl_a2c9d0282cb533624e034ccc1d7b629c7a795a195e14566a465c90e47e4f389447}{SearchMethod::BRUTE} :   
+      \hyperlink{classcarl_1_1_intersection___search_af8aa21969e1f71ed50877aa6b6eb147d}{FindIntersections\_Brute}();
+658                             \textcolor{keywordflow}{break};
+659 
+660             \textcolor{keywordflow}{case} \hyperlink{namespacecarl_a2c9d0282cb533624e034ccc1d7b629c7af5458c8a9b1cd8aa10c970b4d4853bbb}{SearchMethod::FRONT} :   
+      \hyperlink{classcarl_1_1_intersection___search_a69d44884067e5bb1e63711c66c9c6d89}{FindIntersections\_Front}();
+661                             \textcolor{keywordflow}{break};
+662 
+663             \textcolor{keywordflow}{case} \hyperlink{namespacecarl_a2c9d0282cb533624e034ccc1d7b629c7a627ddde9718f452847bda05968663a7c}{SearchMethod::BOTH} :     
+      \hyperlink{classcarl_1_1_intersection___search_af8aa21969e1f71ed50877aa6b6eb147d}{FindIntersections\_Brute}();
+664                             \hyperlink{classcarl_1_1_intersection___search_a69d44884067e5bb1e63711c66c9c6d89}{FindIntersections\_Front}();
+665                             \textcolor{keywordflow}{break};
+666         \}
+667 
+668         \hyperlink{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{m\_comm}.sum(\hyperlink{classcarl_1_1_intersection___search_af54d17052502ee0d11ec33b915e2074e}{m\_Nb\_Of\_Intersections\_Elem\_C});
+669 
+670         \hyperlink{classcarl_1_1_intersection___search_ab3d9729d5029e30fff786305c8aa3a01}{m\_bDidPreliminarySearch} = \textcolor{keyword}{true};
+671     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_ada98ea0155e0d69ed41d82c2a5deb2c5}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Set\+Scaling\+Files@{Set\+Scaling\+Files}}
+\index{Set\+Scaling\+Files@{Set\+Scaling\+Files}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Set\+Scaling\+Files(const std\+::string \&timing\+\_\+data\+\_\+file\+\_\+base)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Set\+Scaling\+Files (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{timing\+\_\+data\+\_\+file\+\_\+base}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___search_ada98ea0155e0d69ed41d82c2a5deb2c5}
+
+
+Set up timing output file. 
+
+
+
+Definition at line 938 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+939     \{
+940         \hyperlink{classcarl_1_1_intersection___search_a01537442f23786cbe1766ac340858020}{m\_bPrintTimingData} = \textcolor{keyword}{true};
+941         \hyperlink{classcarl_1_1_intersection___search_a32e74e1f2aaaf5630b57091d01e5932b}{m\_bPrintIntersectionsPerPartData} = \textcolor{keyword}{true};
+942         \hyperlink{classcarl_1_1_intersection___search_aea1aa01a86b5cdb7bea5ac9e7f73105f}{m\_timing\_data\_file\_base} = timing\_data\_file\_base;
+943     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_a0b3d08e62e3585c6ce90f7849763f9d0}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Skip\+Intersection\+Construction@{Skip\+Intersection\+Construction}}
+\index{Skip\+Intersection\+Construction@{Skip\+Intersection\+Construction}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Skip\+Intersection\+Construction(bool b\+Skip\+Intersection\+Construction)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Skip\+Intersection\+Construction (
+\begin{DoxyParamCaption}
+\item[{bool}]{b\+Skip\+Intersection\+Construction}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classcarl_1_1_intersection___search_a0b3d08e62e3585c6ce90f7849763f9d0}
+
+
+Set the \char`\"{}\+Skip intersection construction\char`\"{} flag. 
+
+
+
+Definition at line 245 of file intersection\+\_\+search.\+h.
+
+
+\begin{DoxyCode}
+246     \{
+247         \hyperlink{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{m\_bSkipIntersectionConstruction} = bSkipIntersectionConstruction;
+248     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_aab5906eb9b33464dcc60d5f66f06b9dc}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Skip\+Intersection\+Partitioning@{Skip\+Intersection\+Partitioning}}
+\index{Skip\+Intersection\+Partitioning@{Skip\+Intersection\+Partitioning}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Skip\+Intersection\+Partitioning(bool b\+Skip\+Intersection\+Partitioning)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Skip\+Intersection\+Partitioning (
+\begin{DoxyParamCaption}
+\item[{bool}]{b\+Skip\+Intersection\+Partitioning}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classcarl_1_1_intersection___search_aab5906eb9b33464dcc60d5f66f06b9dc}
+
+
+Set the \char`\"{}\+Skip the coupling mesh repartition\char`\"{} flag. 
+
+
+
+Definition at line 251 of file intersection\+\_\+search.\+h.
+
+
+\begin{DoxyCode}
+252     \{
+253         \hyperlink{classcarl_1_1_intersection___search_aab4276c3ba5b247b46300de675a10cb4}{m\_bSkipIntersectionPartitioning} = bSkipIntersectionPartitioning;
+254     \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___search_a2a8731986e5f6963da7bada4c5eb9031}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!Update\+Coupling\+Intersection@{Update\+Coupling\+Intersection}}
+\index{Update\+Coupling\+Intersection@{Update\+Coupling\+Intersection}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{Update\+Coupling\+Intersection(const lib\+Mesh\+::\+Elem $\ast$\+Query\+\_\+elem)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Search\+::\+Update\+Coupling\+Intersection (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{Query\+\_\+elem}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a2a8731986e5f6963da7bada4c5eb9031}
+
+
+Build the intersections associated to the Query\+\_\+elem and update the intersection mesh. 
+
+
+
+Definition at line 878 of file intersection\+\_\+search.\+cpp.
+
+
+\begin{DoxyCode}
+879     \{
+880         \textcolor{comment}{// Preamble}
+881         std::unordered\_set<unsigned int> & Patch\_Set\_A = \hyperlink{classcarl_1_1_intersection___search_a3bc66e4e9a0b41d9b20093d4f6ca7611}{m\_Patch\_Constructor\_A}.
+      \hyperlink{classcarl_1_1_patch__construction_ad92eca042b223e8be1cb3984a3dc8cba}{elem\_indexes}();
+882         std::unordered\_set<unsigned int>::iterator it\_patch\_A;
+883 
+884         \textcolor{keywordtype}{bool} bDoIntersect = \textcolor{keyword}{true};
+885         \textcolor{keywordtype}{bool} bCreateNewNefForA = \textcolor{keyword}{true};
+886         \hyperlink{classcarl_1_1_intersection___search_afeedb5ff9144638151b7f956cf113fc4}{m\_Intersection\_test}.
+      \hyperlink{classcarl_1_1_intersection___tools_acf2d17e703441bc9e3ed05d98f51ba85}{libmesh\_set\_coupling\_nef\_polyhedron}(Query\_elem);
+887 
+888         std::set<libMesh::Point> points\_out;
+889 
+890         \textcolor{comment}{// Debug vars}
+891         \textcolor{keywordtype}{int} nbOfTests = 0;
+892         \textcolor{keywordtype}{int} nbOfPositiveTests = 0;
+893 
+894         \textcolor{comment}{// For each element inside patch A ...}
+895         \textcolor{keywordflow}{for}(    it\_patch\_A =  Patch\_Set\_A.begin();
+896                 it\_patch\_A != Patch\_Set\_A.end();
+897                 ++it\_patch\_A)
+898         \{
+899             \textcolor{keyword}{auto} iterator\_pair = \hyperlink{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{m\_Intersection\_Pairs\_multimap}.equal\_range(*
+      it\_patch\_A);
+900 
+901             \textcolor{keyword}{const} libMesh::Elem * elem\_A = \hyperlink{classcarl_1_1_intersection___search_a903b7b3a369ed2c1e80d6a20ba41d350}{m\_Mesh\_A}.elem(*it\_patch\_A);
+902             bCreateNewNefForA = \textcolor{keyword}{true};
+903 
+904             \textcolor{comment}{// ... get the intersections with patch B ...}
+905             \textcolor{keywordflow}{for}(\textcolor{keyword}{auto} it\_patch\_B = iterator\_pair.first ;
+906                      it\_patch\_B != iterator\_pair.second ;
+907                      ++it\_patch\_B )
+908             \{
+909                 \textcolor{keyword}{const} libMesh::Elem * elem\_B = \hyperlink{classcarl_1_1_intersection___search_a178cd617f59285fb858fddd78dec79d6}{m\_Mesh\_B}.elem(it\_patch\_B->second);
+910                 points\_out.clear();
+911 
+912                 \textcolor{comment}{// ... test if they intersect inside the coupling region ...}
+913                 \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Build intersection polyhedron"},\textcolor{stringliteral}{"Build intersections"});
+914                 bDoIntersect = \hyperlink{classcarl_1_1_intersection___search_afeedb5ff9144638151b7f956cf113fc4}{m\_Intersection\_test}.
+      \hyperlink{classcarl_1_1_intersection___tools_ad5aaf7b9475dcfb6a51ea1c20d22aacd}{libMesh\_exact\_intersection\_inside\_coupling}(elem\_A,elem\_B,
+      points\_out,bCreateNewNefForA,\textcolor{keyword}{true},\textcolor{keyword}{false});
+915                 \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Build intersection polyhedron"},\textcolor{stringliteral}{"Build intersections"});
+916                 ++nbOfTests;
+917                 
+918                 \textcolor{keywordflow}{if}(bDoIntersect)
+919                 \{
+920                     \textcolor{comment}{// ... and, if they do, update the intersection mesh!}
+921                     bCreateNewNefForA = \textcolor{keyword}{false};
+922                     \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.push(\textcolor{stringliteral}{"Update intersection"},\textcolor{stringliteral}{"Build intersections"});
+923                     \hyperlink{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{m\_Mesh\_Intersection}.
+      \hyperlink{classcarl_1_1_mesh___intersection_a154a8076123b209a1bddc210c913006f}{increase\_intersection\_mesh}(points\_out,*it\_patch\_A,it\_patch\_B->second,Query\_elem->
+      id());
+924                     \hyperlink{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Update intersection"},\textcolor{stringliteral}{"Build intersections"});
+925                     ++nbOfPositiveTests;
+926                 \}
+927             \}
+928         \}
+929 
+930         \textcolor{keywordflow}{if}(\hyperlink{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{m\_bPrintDebug})
+931         \{
+932             std::cout << \textcolor{stringliteral}{"    DEBUG: update intersection mesh"} << std::endl;
+933             std::cout << \textcolor{stringliteral}{" -> Positives / tests             : "} << nbOfPositiveTests << \textcolor{stringliteral}{" / "} << nbOfTests
+934                       << \textcolor{stringliteral}{" ("} << 100.*nbOfPositiveTests/nbOfTests << \textcolor{stringliteral}{"%)"} << std::endl  << std::endl;
+935         \}
+936     \}
+\end{DoxyCode}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classcarl_1_1_intersection___search_ab3d9729d5029e30fff786305c8aa3a01}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+b\+Did\+Preliminary\+Search@{m\+\_\+b\+Did\+Preliminary\+Search}}
+\index{m\+\_\+b\+Did\+Preliminary\+Search@{m\+\_\+b\+Did\+Preliminary\+Search}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+b\+Did\+Preliminary\+Search}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+b\+Did\+Preliminary\+Search\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_ab3d9729d5029e30fff786305c8aa3a01}
+
+
+Boolean flag determining if we did a preliminary intersection search, used for the coupling mesh repartition and memory preallocations. 
+
+
+
+Definition at line 79 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_ac3eae683cb64b5bd8b7c0430d6e7496f}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+b\+Have\+Prealloc\+Data@{m\+\_\+b\+Have\+Prealloc\+Data}}
+\index{m\+\_\+b\+Have\+Prealloc\+Data@{m\+\_\+b\+Have\+Prealloc\+Data}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+b\+Have\+Prealloc\+Data}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+b\+Have\+Prealloc\+Data\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_ac3eae683cb64b5bd8b7c0430d6e7496f}
+
+
+Boolean flag determining if we have the data for a proper preallocation of m\+\_\+\+Intersection\+\_\+\+Pairs\+\_\+multimap. 
+
+
+
+Definition at line 82 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_aff13141f4d631c406fb12b78950f0e1e}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+b\+Intersections\+Built@{m\+\_\+b\+Intersections\+Built}}
+\index{m\+\_\+b\+Intersections\+Built@{m\+\_\+b\+Intersections\+Built}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+b\+Intersections\+Built}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+b\+Intersections\+Built\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_aff13141f4d631c406fb12b78950f0e1e}
+
+
+Boolean flag indicating if the intersections were built. ({\bfseries A bit useless right now ...}) 
+
+
+
+Definition at line 85 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+b\+Print\+Debug@{m\+\_\+b\+Print\+Debug}}
+\index{m\+\_\+b\+Print\+Debug@{m\+\_\+b\+Print\+Debug}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+b\+Print\+Debug}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+b\+Print\+Debug\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_af69485e014f8178ec6c6dcbd95bf9dc9}
+
+
+Print debug data. {\itshape Default\+:} false. 
+
+
+
+Definition at line 100 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a32e74e1f2aaaf5630b57091d01e5932b}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+b\+Print\+Intersections\+Per\+Part\+Data@{m\+\_\+b\+Print\+Intersections\+Per\+Part\+Data}}
+\index{m\+\_\+b\+Print\+Intersections\+Per\+Part\+Data@{m\+\_\+b\+Print\+Intersections\+Per\+Part\+Data}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+b\+Print\+Intersections\+Per\+Part\+Data}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+b\+Print\+Intersections\+Per\+Part\+Data\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a32e74e1f2aaaf5630b57091d01e5932b}
+
+
+Print intersections per partition. {\itshape Default\+:} false. 
+
+
+
+Definition at line 102 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a01537442f23786cbe1766ac340858020}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+b\+Print\+Timing\+Data@{m\+\_\+b\+Print\+Timing\+Data}}
+\index{m\+\_\+b\+Print\+Timing\+Data@{m\+\_\+b\+Print\+Timing\+Data}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+b\+Print\+Timing\+Data}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+b\+Print\+Timing\+Data\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a01537442f23786cbe1766ac340858020}
+
+
+Print timing data. {\itshape Default\+:} false. 
+
+
+
+Definition at line 101 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a8f20721814d9dcfab34a0b6c85b88f3c}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+b\+Save\+Inter\+Data@{m\+\_\+b\+Save\+Inter\+Data}}
+\index{m\+\_\+b\+Save\+Inter\+Data@{m\+\_\+b\+Save\+Inter\+Data}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+b\+Save\+Inter\+Data}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+b\+Save\+Inter\+Data\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a8f20721814d9dcfab34a0b6c85b88f3c}
+
+
+Boolean flag determining if we should save the intersection data or not. {\itshape Default\+:} true. 
+
+
+
+Definition at line 76 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+b\+Skip\+Intersection\+Construction@{m\+\_\+b\+Skip\+Intersection\+Construction}}
+\index{m\+\_\+b\+Skip\+Intersection\+Construction@{m\+\_\+b\+Skip\+Intersection\+Construction}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+b\+Skip\+Intersection\+Construction}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+b\+Skip\+Intersection\+Construction\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_aef626956ac007f4c737aba3f2f69f2de}
+
+
+Boolean indicating if we should skip the intersection construction. {\itshape Default\+:} false. 
+
+
+
+Definition at line 91 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_aab4276c3ba5b247b46300de675a10cb4}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+b\+Skip\+Intersection\+Partitioning@{m\+\_\+b\+Skip\+Intersection\+Partitioning}}
+\index{m\+\_\+b\+Skip\+Intersection\+Partitioning@{m\+\_\+b\+Skip\+Intersection\+Partitioning}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+b\+Skip\+Intersection\+Partitioning}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+b\+Skip\+Intersection\+Partitioning\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_aab4276c3ba5b247b46300de675a10cb4}
+
+
+Boolean indicating if we should skip the intersection repartitioning. {\itshape Default\+:} false. 
+
+
+
+Definition at line 94 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+comm@{m\+\_\+comm}}
+\index{m\+\_\+comm@{m\+\_\+comm}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+comm}]{\setlength{\rightskip}{0pt plus 5cm}const lib\+Mesh\+::\+Parallel\+::\+Communicator\& carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+comm\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a69fe381ecd45f4cdcb4810294aa88eaa}
+
+
+Global communicator. 
+
+
+
+Definition at line 38 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a1d44cfde49ae719c406da8bd5c463992}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+coupling\+\_\+weights@{m\+\_\+coupling\+\_\+weights}}
+\index{m\+\_\+coupling\+\_\+weights@{m\+\_\+coupling\+\_\+weights}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+coupling\+\_\+weights}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Error\+Vector carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+coupling\+\_\+weights\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a1d44cfde49ae719c406da8bd5c463992}
+
+
+lib\+Mesh\+::\+Error\+Vector used to repartition the coupling mesh. 
+
+
+
+Definition at line 73 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+\+Intersection\+\_\+\+Pairs\+\_\+multimap@{m\+\_\+\+Intersection\+\_\+\+Pairs\+\_\+multimap}}
+\index{m\+\_\+\+Intersection\+\_\+\+Pairs\+\_\+multimap@{m\+\_\+\+Intersection\+\_\+\+Pairs\+\_\+multimap}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+\+Intersection\+\_\+\+Pairs\+\_\+multimap}]{\setlength{\rightskip}{0pt plus 5cm}std\+::unordered\+\_\+multimap$<$unsigned int,unsigned int$>$ carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+\+Intersection\+\_\+\+Pairs\+\_\+multimap\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a21bb47bfa3021d18b718919ad4a245d7}
+
+
+Multimap containing the intersection pairs. 
+
+The element indexes of the mesh A are used as the keys of the multimap 
+
+Definition at line 61 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_afeedb5ff9144638151b7f956cf113fc4}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+\+Intersection\+\_\+test@{m\+\_\+\+Intersection\+\_\+test}}
+\index{m\+\_\+\+Intersection\+\_\+test@{m\+\_\+\+Intersection\+\_\+test}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+\+Intersection\+\_\+test}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Intersection\+\_\+\+Tools} carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+\+Intersection\+\_\+test\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_afeedb5ff9144638151b7f956cf113fc4}
+
+
+Intersection operations for the main intersection tests. 
+
+
+
+Definition at line 64 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a7abbfa5dc5892d9179b93563320d533b}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+\+Intersection\+\_\+test\+\_\+neighbors@{m\+\_\+\+Intersection\+\_\+test\+\_\+neighbors}}
+\index{m\+\_\+\+Intersection\+\_\+test\+\_\+neighbors@{m\+\_\+\+Intersection\+\_\+test\+\_\+neighbors}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+\+Intersection\+\_\+test\+\_\+neighbors}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Intersection\+\_\+\+Tools} carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+\+Intersection\+\_\+test\+\_\+neighbors\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a7abbfa5dc5892d9179b93563320d533b}
+
+
+Intersection operations for the neighbor intersection tests. ({\bfseries why do we need both?}) 
+
+
+
+Definition at line 67 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a15b8deaf751e8d0fb91d8e7eed9aefb6}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+local\+\_\+comm@{m\+\_\+local\+\_\+comm}}
+\index{m\+\_\+local\+\_\+comm@{m\+\_\+local\+\_\+comm}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+local\+\_\+comm}]{\setlength{\rightskip}{0pt plus 5cm}const lib\+Mesh\+::\+Parallel\+::\+Communicator\& carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+local\+\_\+comm\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a15b8deaf751e8d0fb91d8e7eed9aefb6}
+
+
+Local communicator, used for mesh patches. 
+
+
+
+Definition at line 41 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a903b7b3a369ed2c1e80d6a20ba41d350}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+\+Mesh\+\_\+\+A@{m\+\_\+\+Mesh\+\_\+\+A}}
+\index{m\+\_\+\+Mesh\+\_\+\+A@{m\+\_\+\+Mesh\+\_\+\+A}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+\+Mesh\+\_\+\+A}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Mesh\& carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+\+Mesh\+\_\+\+A\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a903b7b3a369ed2c1e80d6a20ba41d350}
+
+
+Definition at line 33 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a178cd617f59285fb858fddd78dec79d6}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+\+Mesh\+\_\+\+B@{m\+\_\+\+Mesh\+\_\+\+B}}
+\index{m\+\_\+\+Mesh\+\_\+\+B@{m\+\_\+\+Mesh\+\_\+\+B}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+\+Mesh\+\_\+\+B}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Mesh\& carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+\+Mesh\+\_\+\+B\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a178cd617f59285fb858fddd78dec79d6}
+
+
+Definition at line 34 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+\+Mesh\+\_\+\+Coupling@{m\+\_\+\+Mesh\+\_\+\+Coupling}}
+\index{m\+\_\+\+Mesh\+\_\+\+Coupling@{m\+\_\+\+Mesh\+\_\+\+Coupling}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+\+Mesh\+\_\+\+Coupling}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Mesh\& carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+\+Mesh\+\_\+\+Coupling\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_adb13a40afa6c1f8db7bb33f68c5b42d2}
+
+
+Mesh representing the coupling region. 
+
+
+
+Definition at line 35 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+\+Mesh\+\_\+\+Intersection@{m\+\_\+\+Mesh\+\_\+\+Intersection}}
+\index{m\+\_\+\+Mesh\+\_\+\+Intersection@{m\+\_\+\+Mesh\+\_\+\+Intersection}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+\+Mesh\+\_\+\+Intersection}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Mesh\+\_\+\+Intersection} carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+\+Mesh\+\_\+\+Intersection\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a4946b764d66e3f26f323c5d043551c66}
+
+
+Object containing the intersection mesh. 
+
+
+
+Definition at line 55 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_afc8983d95c970eaa61c6f4ae50a22f4b}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+\+Meshing\+Method@{m\+\_\+\+Meshing\+Method}}
+\index{m\+\_\+\+Meshing\+Method@{m\+\_\+\+Meshing\+Method}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+\+Meshing\+Method}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Intersection\+Meshing\+Method} carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+\+Meshing\+Method\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_afc8983d95c970eaa61c6f4ae50a22f4b}
+
+
+Flag defining the intersection meshing algorithm. 
+
+Can be either \hyperlink{namespacecarl_a4f72fd25137b97ac1ca1276ec549e5cfa0a91b3dbac7fab7e5efa6f804aab8f58}{carl\+::\+L\+I\+B\+M\+E\+S\+H\+\_\+\+T\+E\+T\+G\+E\+N} (use Lib\+Mesh\textquotesingle{}s tetgen module, problematic with Intel compilers) or \hyperlink{namespacecarl_a4f72fd25137b97ac1ca1276ec549e5cfa509162a828acac7eaad1fc369696a3b1}{carl\+::\+C\+G\+A\+L} (use C\+G\+A\+L\textquotesingle{}s Triangulation\+\_\+3). {\itshape Default\+:} \hyperlink{namespacecarl_a4f72fd25137b97ac1ca1276ec549e5cfa509162a828acac7eaad1fc369696a3b1}{carl\+::\+C\+G\+A\+L}. 
+
+Definition at line 52 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_af297d8e504705dbd69d80ca045b947ac}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume@{m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume}}
+\index{m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume@{m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_af297d8e504705dbd69d80ca045b947ac}
+
+
+Volume cutoff for the intersection polyhedrons. {\itshape Default\+:} 1\+E-\/15. 
+
+
+
+Definition at line 88 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_af54d17052502ee0d11ec33b915e2074e}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+\+Nb\+\_\+\+Of\+\_\+\+Intersections\+\_\+\+Elem\+\_\+\+C@{m\+\_\+\+Nb\+\_\+\+Of\+\_\+\+Intersections\+\_\+\+Elem\+\_\+\+C}}
+\index{m\+\_\+\+Nb\+\_\+\+Of\+\_\+\+Intersections\+\_\+\+Elem\+\_\+\+C@{m\+\_\+\+Nb\+\_\+\+Of\+\_\+\+Intersections\+\_\+\+Elem\+\_\+\+C}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+\+Nb\+\_\+\+Of\+\_\+\+Intersections\+\_\+\+Elem\+\_\+\+C}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$unsigned int$>$ carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+\+Nb\+\_\+\+Of\+\_\+\+Intersections\+\_\+\+Elem\+\_\+\+C\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_af54d17052502ee0d11ec33b915e2074e}
+
+
+Vector containing the number of intersections found inside each of the coupling mesh elements. 
+
+
+
+Definition at line 70 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_adcfd59960cfd05bc63e9bcf5a350a8ae}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+nodes@{m\+\_\+nodes}}
+\index{m\+\_\+nodes@{m\+\_\+nodes}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+nodes}]{\setlength{\rightskip}{0pt plus 5cm}const unsigned int carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+nodes\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_adcfd59960cfd05bc63e9bcf5a350a8ae}
+
+
+Number of M\+P\+I processors. 
+
+
+
+Definition at line 39 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a5f8d2ac04fc72c209ec92958552e41f5}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+\+Output\+\_\+filename\+\_\+base@{m\+\_\+\+Output\+\_\+filename\+\_\+base}}
+\index{m\+\_\+\+Output\+\_\+filename\+\_\+base@{m\+\_\+\+Output\+\_\+filename\+\_\+base}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+\+Output\+\_\+filename\+\_\+base}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+\+Output\+\_\+filename\+\_\+base\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a5f8d2ac04fc72c209ec92958552e41f5}
+
+
+Output filenames base. 
+
+
+
+Definition at line 96 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a3bc66e4e9a0b41d9b20093d4f6ca7611}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+A@{m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+A}}
+\index{m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+A@{m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+A}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+A}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Patch\+\_\+construction} carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+A\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a3bc66e4e9a0b41d9b20093d4f6ca7611}
+
+
+\hyperlink{classcarl_1_1_patch__construction}{Patch\+\_\+construction} object for mesh A. 
+
+
+
+Definition at line 44 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a2e2b5a2784eeca7b558b6b93ae71a2e8}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+B@{m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+B}}
+\index{m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+B@{m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+B}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+B}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Patch\+\_\+construction} carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+\+Patch\+\_\+\+Constructor\+\_\+\+B\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a2e2b5a2784eeca7b558b6b93ae71a2e8}
+
+
+\hyperlink{classcarl_1_1_patch__construction}{Patch\+\_\+construction} object for mesh B. 
+
+
+
+Definition at line 45 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+perf\+\_\+log@{m\+\_\+perf\+\_\+log}}
+\index{m\+\_\+perf\+\_\+log@{m\+\_\+perf\+\_\+log}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+perf\+\_\+log}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Perf\+Log carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+perf\+\_\+log\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_aebe6210287a36909206b1a59f9cd17e0}
+
+
+lib\+Mesh\+::\+Perf\+Log object. 
+
+
+
+Definition at line 99 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+rank@{m\+\_\+rank}}
+\index{m\+\_\+rank@{m\+\_\+rank}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+rank}]{\setlength{\rightskip}{0pt plus 5cm}const unsigned int carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+rank\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a82564dfb7815673fcb9d9e3eb2d03b97}
+
+
+This processor\textquotesingle{}s rank (or I\+D in the communicator) 
+
+
+
+Definition at line 40 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_aea1aa01a86b5cdb7bea5ac9e7f73105f}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!m\+\_\+timing\+\_\+data\+\_\+file\+\_\+base@{m\+\_\+timing\+\_\+data\+\_\+file\+\_\+base}}
+\index{m\+\_\+timing\+\_\+data\+\_\+file\+\_\+base@{m\+\_\+timing\+\_\+data\+\_\+file\+\_\+base}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{m\+\_\+timing\+\_\+data\+\_\+file\+\_\+base}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::\+Intersection\+\_\+\+Search\+::m\+\_\+timing\+\_\+data\+\_\+file\+\_\+base\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_aea1aa01a86b5cdb7bea5ac9e7f73105f}
+
+
+Output filenames base for the timing data. 
+
+
+
+Definition at line 103 of file intersection\+\_\+search.\+h.
+
+\hypertarget{classcarl_1_1_intersection___search_a0b83cc0d7b90bae06f01a53555c0fc97}{}\index{carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}!M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+search@{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+search}}
+\index{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+search@{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+search}!carl\+::\+Intersection\+\_\+\+Search@{carl\+::\+Intersection\+\_\+\+Search}}
+\subsubsection[{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+search}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Search\+::\+M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+search\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___search_a0b83cc0d7b90bae06f01a53555c0fc97}
+
+
+Do performance log? {\itshape Default\+:} true. 
+
+
+
+Definition at line 98 of file intersection\+\_\+search.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/\hyperlink{intersection__search_8h}{intersection\+\_\+search.\+h}\item 
+/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/common/intersections\+\_\+parallel/\hyperlink{intersection__search_8cpp}{intersection\+\_\+search.\+cpp}\end{DoxyCompactItemize}

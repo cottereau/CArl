@@ -1,0 +1,1294 @@
+\hypertarget{classcarl_1_1_intersection___tools}{}\section{carl\+:\+:Intersection\+\_\+\+Tools Class Reference}
+\label{classcarl_1_1_intersection___tools}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+
+
+Class with a series of methods to find the intersections between lib\+Mesh\textquotesingle{}s elements, using C\+G\+A\+L internally.  
+
+
+
+
+{\ttfamily \#include $<$intersection\+\_\+tools.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classcarl_1_1_intersection___tools_aaa38c1df73695938d2fb032dfe305ef2}{Intersection\+\_\+\+Tools} (const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+C, double Min\+\_\+\+Inter\+\_\+\+Volume=1\+E-\/21, bool b\+Do\+Perf\+\_\+log=false)
+\begin{DoxyCompactList}\small\item\em Constructor with a pre-\/defined coupling element. It preallocates most objects and build the decomposition mappings. \end{DoxyCompactList}\item 
+\hyperlink{classcarl_1_1_intersection___tools_a44115a8f785906bc1bed089fe92e526a}{Intersection\+\_\+\+Tools} (double Min\+\_\+\+Inter\+\_\+\+Volume=1\+E-\/21, bool b\+Do\+Perf\+\_\+log=false)
+\begin{DoxyCompactList}\small\item\em Constructor preallocating most objects and building the decomposition mappings. \end{DoxyCompactList}\item 
+const lib\+Mesh\+::\+Elem $\ast$ \hyperlink{classcarl_1_1_intersection___tools_a2e1ed1a0e6f1044108bf4ac77a25e8e0}{Find\+First\+Intersection} (const lib\+Mesh\+::\+Elem $\ast$Query\+\_\+elem, std\+::unique\+\_\+ptr$<$ lib\+Mesh\+::\+Point\+Locator\+Base $>$ \&point\+\_\+locator, bool b\+Guarantee\+Query\+Is\+In\+Mesh=false)
+\begin{DoxyCompactList}\small\item\em Find an element from a mesh intersecting Query\+\_\+elem, using the mesh\textquotesingle{}s lib\+Mesh\+::\+Point\+Locator\+Base. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___tools_a8238069bd83ef1029c6a5b60a188763b}{Find\+All\+Intersection} (const lib\+Mesh\+::\+Elem $\ast$Query\+\_\+elem, std\+::unique\+\_\+ptr$<$ lib\+Mesh\+::\+Point\+Locator\+Base $>$ \&point\+\_\+locator, std\+::set$<$ unsigned int $>$ \&Intersecting\+\_\+elems)
+\begin{DoxyCompactList}\small\item\em Find all elements from the mesh intersecting Query\+\_\+elem, using the mesh\textquotesingle{}s lib\+Mesh\+::\+Point\+Locator\+Base. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___tools_ae7b16748a45a0579bafecb48ef2fc4ce}{lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect} (const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+A, const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+B)
+\begin{DoxyCompactList}\small\item\em Determinate if two elements intersect. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___tools_ad57f9ae9fd2cce1ff7fc2430bf6c6b71}{lib\+Mesh\+\_\+exact\+\_\+intersection} (const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+A, const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+B, std\+::set$<$ \hyperlink{_c_g_a_l__typedefs_8h_a9dc49a828e77bbd58c1f5db13edde547}{Point\+\_\+3} $>$ \&points\+\_\+out, bool b\+Create\+New\+Nef\+For\+A=true, bool b\+Convert\+Points=true, bool b\+Test\+Needed=true)
+\begin{DoxyCompactList}\small\item\em Build the intersection between two elements. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___tools_a98929a97acb94aa77fc8952d80993d88}{lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect\+\_\+inside\+\_\+coupling} (const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+A, const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+B, bool b\+Create\+New\+Nef\+For\+A=true)
+\begin{DoxyCompactList}\small\item\em Determinate if two elements intersect inside the coupling region. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___tools_ad5aaf7b9475dcfb6a51ea1c20d22aacd}{lib\+Mesh\+\_\+exact\+\_\+intersection\+\_\+inside\+\_\+coupling} (const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+A, const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+B, std\+::set$<$ lib\+Mesh\+::\+Point $>$ \&points\+\_\+out, bool b\+Create\+New\+Nef\+For\+A=true, bool b\+Convert\+Points=true, bool b\+Test\+Needed=false)
+\begin{DoxyCompactList}\small\item\em Build the intersection between two elements intersect inside the coupling region. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___tools_acf2d17e703441bc9e3ed05d98f51ba85}{libmesh\+\_\+set\+\_\+coupling\+\_\+nef\+\_\+polyhedron} (const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+C)
+\begin{DoxyCompactList}\small\item\em Set the Nef polyhedron for the coupling mesh element. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___tools_a1d6303ff6ffc19b6df42626e29a507ce}{convert\+\_\+elem\+\_\+to\+\_\+exact\+\_\+points} (const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+input, std\+::vector$<$ \hyperlink{_c_g_a_l__typedefs_8h_a162dbf669b38ca5632e00c9c02e000a5}{Exact\+Point\+\_\+3} $>$ \&points\+\_\+output)
+\begin{DoxyCompactList}\small\item\em Convert an lib\+Mesh element to a list of C\+G\+A\+L exact points. \end{DoxyCompactList}\item 
+void \hyperlink{classcarl_1_1_intersection___tools_af689c53cf00359c518234d8d070c4e53}{convert\+\_\+exact\+\_\+points\+\_\+to\+\_\+\+Nef} (std\+::vector$<$ \hyperlink{_c_g_a_l__typedefs_8h_a162dbf669b38ca5632e00c9c02e000a5}{Exact\+Point\+\_\+3} $>$\+::const\+\_\+iterator it\+\_\+begin, std\+::vector$<$ \hyperlink{_c_g_a_l__typedefs_8h_a162dbf669b38ca5632e00c9c02e000a5}{Exact\+Point\+\_\+3} $>$\+::const\+\_\+iterator it\+\_\+end, \hyperlink{_c_g_a_l__typedefs_8h_ab85d2fceadc71a761aa3a184793f8c5f}{Nef\+\_\+\+Polyhedron} \&nef\+\_\+out)
+\begin{DoxyCompactList}\small\item\em Convert an C\+G\+A\+L exact point set to a C\+G\+A\+L Nef polyhedron. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classcarl_1_1_intersection___tools_ac2eb9f8074d4dc2511b3f36d3cfd5f3b}{set\+\_\+element\+\_\+indexes} ()
+\begin{DoxyCompactList}\small\item\em Build the tetrahedron and triangle decomposition mappings. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___tools_a355a95eefdfdd30b4a332fdd99a11150}{elements\+\_\+do\+\_\+intersect} (std\+::vector$<$ \hyperlink{_c_g_a_l__typedefs_8h_a162dbf669b38ca5632e00c9c02e000a5}{Exact\+Point\+\_\+3} $>$ \&elem\+\_\+\+C\+\_\+points, std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \&elem\+\_\+\+C\+\_\+tetras, std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \&elem\+\_\+\+C\+\_\+triangles, std\+::vector$<$ \hyperlink{_c_g_a_l__typedefs_8h_a162dbf669b38ca5632e00c9c02e000a5}{Exact\+Point\+\_\+3} $>$ \&elem\+\_\+\+D\+\_\+points, std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \&elem\+\_\+\+D\+\_\+tetras, std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \&elem\+\_\+\+D\+\_\+triangles)
+\begin{DoxyCompactList}\small\item\em Determinate if two elements intersect, using their points and decompositions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{_c_g_a_l__typedefs_8h_ab85d2fceadc71a761aa3a184793f8c5f}{Nef\+\_\+\+Polyhedron} \hyperlink{classcarl_1_1_intersection___tools_a66a33158af0779366d4109e96a10ddc4}{m\+\_\+nef\+\_\+\+A}
+\begin{DoxyCompactList}\small\item\em Nef polyhedrons for the elements. \end{DoxyCompactList}\item 
+\hyperlink{_c_g_a_l__typedefs_8h_ab85d2fceadc71a761aa3a184793f8c5f}{Nef\+\_\+\+Polyhedron} \hyperlink{classcarl_1_1_intersection___tools_a0b134a30452c8a767fc4265c7c0296a9}{m\+\_\+nef\+\_\+\+B}
+\item 
+\hyperlink{_c_g_a_l__typedefs_8h_ab85d2fceadc71a761aa3a184793f8c5f}{Nef\+\_\+\+Polyhedron} \hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\+\_\+nef\+\_\+\+I}
+\item 
+\hyperlink{_c_g_a_l__typedefs_8h_ab85d2fceadc71a761aa3a184793f8c5f}{Nef\+\_\+\+Polyhedron} \hyperlink{classcarl_1_1_intersection___tools_adf2892a8902442fbfebb913e9a4fb8ac}{m\+\_\+nef\+\_\+\+C}
+\item 
+\hyperlink{_c_g_a_l__typedefs_8h_ab85d2fceadc71a761aa3a184793f8c5f}{Nef\+\_\+\+Polyhedron} \hyperlink{classcarl_1_1_intersection___tools_a8333f16787459e65c4fe913dad50b5c6}{m\+\_\+nef\+\_\+\+I\+\_\+\+A\+C}
+\begin{DoxyCompactList}\small\item\em Nef polyhedron used to save the intersection between m\+\_\+nef\+\_\+\+A and m\+\_\+nef\+\_\+\+C, reducing the number of intersection operations. \end{DoxyCompactList}\item 
+std\+::vector$<$ \hyperlink{_c_g_a_l__typedefs_8h_a162dbf669b38ca5632e00c9c02e000a5}{Exact\+Point\+\_\+3} $>$ \hyperlink{classcarl_1_1_intersection___tools_ad636117b292272044b252be62124eb0a}{m\+\_\+exact\+\_\+points\+\_\+\+A}
+\begin{DoxyCompactList}\small\item\em C\+G\+A\+L Exact point vectors. \end{DoxyCompactList}\item 
+std\+::vector$<$ \hyperlink{_c_g_a_l__typedefs_8h_a162dbf669b38ca5632e00c9c02e000a5}{Exact\+Point\+\_\+3} $>$ \hyperlink{classcarl_1_1_intersection___tools_a2c3b6211dd1f9b0aa5f2ac8ffc383182}{m\+\_\+exact\+\_\+points\+\_\+\+B}
+\item 
+std\+::vector$<$ \hyperlink{_c_g_a_l__typedefs_8h_a162dbf669b38ca5632e00c9c02e000a5}{Exact\+Point\+\_\+3} $>$ \hyperlink{classcarl_1_1_intersection___tools_a473d6a254b10623659a1d8f81bbe695f}{m\+\_\+exact\+\_\+points\+\_\+\+C}
+\item 
+\hyperlink{_c_g_a_l__typedefs_8h_aedf4279eda927d338212e13db24116eb}{Exact\+Polyhedron} \hyperlink{classcarl_1_1_intersection___tools_a1bc3cab10caf53e5de762c4dea2ef1ba}{m\+\_\+dummy\+Poly}
+\begin{DoxyCompactList}\small\item\em Intersection polyhedron. \end{DoxyCompactList}\item 
+C\+G\+A\+L\+::\+Convex\+\_\+hull\+\_\+traits\+\_\+3$<$ \hyperlink{_c_g_a_l__typedefs_8h_ab014831fee2bac62051dfa390ec66d6f}{Exact\+Kernel} $>$ \hyperlink{classcarl_1_1_intersection___tools_a0a3b4e978977cd29ebac810dc0a2baf6}{Exact\+Hull\+Traits}
+\begin{DoxyCompactList}\small\item\em C\+G\+A\+L Exact\+Kernel\textquotesingle{}s convex hull traits. \end{DoxyCompactList}\item 
+\hyperlink{_c_g_a_l__typedefs_8h_a7fee49db11d7ad002fa79aedabf4d2cc}{Kernel\+\_\+to\+\_\+\+Exact\+Kernel} \hyperlink{classcarl_1_1_intersection___tools_a89118c79160362561c0cf7f1743568a6}{Convert\+Inexact\+To\+Exact}
+\begin{DoxyCompactList}\small\item\em Convert inexact C\+G\+A\+L constructs to exact constructs. \end{DoxyCompactList}\item 
+\hyperlink{_c_g_a_l__typedefs_8h_aa71268402de3c241e32cd09e20cbe44c}{Exact\+Kernel\+\_\+to\+\_\+\+Kernel} \hyperlink{classcarl_1_1_intersection___tools_a8cd632ee9314f5981c620af325245413}{Convert\+Exact\+To\+Inexact}
+\begin{DoxyCompactList}\small\item\em Convert exact C\+G\+A\+L constructs to inexact constructs. \end{DoxyCompactList}\item 
+\hyperlink{_c_g_a_l__typedefs_8h_a02a72c8dcf4a17c7460e7e71301d2d3f}{Exact\+Tetrahedron} \hyperlink{classcarl_1_1_intersection___tools_a69657597ebb9655f8797b289939835a3}{m\+\_\+test\+\_\+tetra}
+\item 
+\hyperlink{_c_g_a_l__typedefs_8h_acb9586e4ea704b6a4c4502ad0cb03c62}{Exact\+Triangle\+\_\+3} \hyperlink{classcarl_1_1_intersection___tools_a4331121a50baaa93e499f6cfb446c1b0}{m\+\_\+test\+\_\+triangle}
+\item 
+double \hyperlink{classcarl_1_1_intersection___tools_a931ecd3fd3103656ede9c84a2eed10d2}{m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume}
+\begin{DoxyCompactList}\small\item\em Minimal volume cutoff for the intersections. \end{DoxyCompactList}\item 
+bool \hyperlink{classcarl_1_1_intersection___tools_a651c43f074c2955bd58ef0d519c6ef73}{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+tools}
+\begin{DoxyCompactList}\small\item\em Do performance log? {\itshape Default\+:} false. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Perf\+Log \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\+\_\+perf\+\_\+log}
+\begin{DoxyCompactList}\small\item\em lib\+Mesh\+::\+Perf\+Log object. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \hyperlink{classcarl_1_1_intersection___tools_a6e9a49f3b382810c884ba46b791bfcb8}{m\+\_\+\+T\+E\+T\+\_\+tetrahedrons}
+\begin{DoxyCompactList}\small\item\em Vertex indices for a T\+E\+T$\ast$ element tetrahedron. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \hyperlink{classcarl_1_1_intersection___tools_a54e026b256ab6894b1f77950a425b1eb}{m\+\_\+\+T\+E\+T\+\_\+triangles}
+\begin{DoxyCompactList}\small\item\em Vertex indices for a T\+E\+T$\ast$ element surface triangles. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \hyperlink{classcarl_1_1_intersection___tools_a153baf989b64fb7033e42ba2342e0fc5}{m\+\_\+\+T\+E\+T\+\_\+edges}
+\begin{DoxyCompactList}\small\item\em Vertex indices for a T\+E\+T$\ast$ element edges ({\bfseries not used!}) \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \hyperlink{classcarl_1_1_intersection___tools_af74ec1bcb1a896df19642d340dd2762c}{m\+\_\+\+H\+E\+X\+\_\+tetrahedrons}
+\begin{DoxyCompactList}\small\item\em Vertex indices for a H\+E\+X$\ast$ element tetrahedron decomposition. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\+\_\+\+H\+E\+X\+\_\+triangles}
+\begin{DoxyCompactList}\small\item\em Vertex indices for a H\+E\+X$\ast$ element surface triangles decomposition. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\+\_\+\+H\+E\+X\+\_\+edges}
+\begin{DoxyCompactList}\small\item\em Vertex indices for a H\+E\+X$\ast$ element edges ({\bfseries not used!}) \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ $\ast$ \hyperlink{classcarl_1_1_intersection___tools_a2f6b6fff82b9a02400d3aeb3db1f4c82}{m\+\_\+elem\+\_\+\+C\+\_\+tetrahedrons}
+\begin{DoxyCompactList}\small\item\em Pointer for the appropriate tetrahedron vertex index list ({\bfseries useless!}) \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ $\ast$ \hyperlink{classcarl_1_1_intersection___tools_a89a78135b49b49c32bec8be4016782b3}{m\+\_\+elem\+\_\+\+C\+\_\+triangles}
+\begin{DoxyCompactList}\small\item\em Pointer for the appropriate triangle vertex index list ({\bfseries useless!}) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class with a series of methods to find the intersections between lib\+Mesh\textquotesingle{}s elements, using C\+G\+A\+L internally. 
+
+Definition at line 25 of file intersection\+\_\+tools.\+h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classcarl_1_1_intersection___tools_aaa38c1df73695938d2fb032dfe305ef2}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!Intersection\+\_\+\+Tools@{Intersection\+\_\+\+Tools}}
+\index{Intersection\+\_\+\+Tools@{Intersection\+\_\+\+Tools}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{Intersection\+\_\+\+Tools(const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+C, double Min\+\_\+\+Inter\+\_\+\+Volume=1\+E-\/21, bool b\+Do\+Perf\+\_\+log=false)}]{\setlength{\rightskip}{0pt plus 5cm}carl\+::\+Intersection\+\_\+\+Tools\+::\+Intersection\+\_\+\+Tools (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{elem\+\_\+\+C, }
+\item[{double}]{Min\+\_\+\+Inter\+\_\+\+Volume = {\ttfamily 1E-\/21}, }
+\item[{bool}]{b\+Do\+Perf\+\_\+log = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classcarl_1_1_intersection___tools_aaa38c1df73695938d2fb032dfe305ef2}
+
+
+Constructor with a pre-\/defined coupling element. It preallocates most objects and build the decomposition mappings. 
+
+
+
+Definition at line 114 of file intersection\+\_\+tools.\+h.
+
+
+\begin{DoxyCode}
+114                                                                                                            
+         :
+115         \hyperlink{classcarl_1_1_intersection___tools_a931ecd3fd3103656ede9c84a2eed10d2}{m\_Min\_Inter\_Volume} \{ Min\_Inter\_Volume \},
+116         \hyperlink{classcarl_1_1_intersection___tools_a651c43f074c2955bd58ef0d519c6ef73}{MASTER\_bPerfLog\_intersection\_tools} \{bDoPerf\_log\},
+117         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log} \{ libMesh::PerfLog(\textcolor{stringliteral}{"Intersection tools"}, 
+      \hyperlink{classcarl_1_1_intersection___tools_a651c43f074c2955bd58ef0d519c6ef73}{MASTER\_bPerfLog\_intersection\_tools}) \}
+118     \{
+119         \hyperlink{classcarl_1_1_intersection___tools_ad636117b292272044b252be62124eb0a}{m\_exact\_points\_A}.resize(8);
+120         \hyperlink{classcarl_1_1_intersection___tools_a2c3b6211dd1f9b0aa5f2ac8ffc383182}{m\_exact\_points\_B}.resize(8);
+121         \hyperlink{classcarl_1_1_intersection___tools_a473d6a254b10623659a1d8f81bbe695f}{m\_exact\_points\_C}.resize(8);
+122 
+123         \hyperlink{classcarl_1_1_intersection___tools_a1bc3cab10caf53e5de762c4dea2ef1ba}{m\_dummyPoly}.reserve(8,18,12);
+124 
+125         this->\hyperlink{classcarl_1_1_intersection___tools_acf2d17e703441bc9e3ed05d98f51ba85}{libmesh\_set\_coupling\_nef\_polyhedron}(elem\_C);
+126 
+127         this->\hyperlink{classcarl_1_1_intersection___tools_ac2eb9f8074d4dc2511b3f36d3cfd5f3b}{set\_element\_indexes}();
+128 
+129         \hyperlink{classcarl_1_1_intersection___tools_a2f6b6fff82b9a02400d3aeb3db1f4c82}{m\_elem\_C\_tetrahedrons} = NULL;
+130         \hyperlink{classcarl_1_1_intersection___tools_a89a78135b49b49c32bec8be4016782b3}{m\_elem\_C\_triangles} = NULL;
+131     \};
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___tools_a44115a8f785906bc1bed089fe92e526a}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!Intersection\+\_\+\+Tools@{Intersection\+\_\+\+Tools}}
+\index{Intersection\+\_\+\+Tools@{Intersection\+\_\+\+Tools}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{Intersection\+\_\+\+Tools(double Min\+\_\+\+Inter\+\_\+\+Volume=1\+E-\/21, bool b\+Do\+Perf\+\_\+log=false)}]{\setlength{\rightskip}{0pt plus 5cm}carl\+::\+Intersection\+\_\+\+Tools\+::\+Intersection\+\_\+\+Tools (
+\begin{DoxyParamCaption}
+\item[{double}]{Min\+\_\+\+Inter\+\_\+\+Volume = {\ttfamily 1E-\/21}, }
+\item[{bool}]{b\+Do\+Perf\+\_\+log = {\ttfamily false}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\label{classcarl_1_1_intersection___tools_a44115a8f785906bc1bed089fe92e526a}
+
+
+Constructor preallocating most objects and building the decomposition mappings. 
+
+
+
+Definition at line 135 of file intersection\+\_\+tools.\+h.
+
+
+\begin{DoxyCode}
+135                                                                                   :
+136         \hyperlink{classcarl_1_1_intersection___tools_a931ecd3fd3103656ede9c84a2eed10d2}{m\_Min\_Inter\_Volume} \{ Min\_Inter\_Volume \},
+137         \hyperlink{classcarl_1_1_intersection___tools_a651c43f074c2955bd58ef0d519c6ef73}{MASTER\_bPerfLog\_intersection\_tools} \{bDoPerf\_log\},
+138         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log} \{ libMesh::PerfLog(\textcolor{stringliteral}{"Intersection tools"}, 
+      \hyperlink{classcarl_1_1_intersection___tools_a651c43f074c2955bd58ef0d519c6ef73}{MASTER\_bPerfLog\_intersection\_tools}) \}
+139     \{
+140         \hyperlink{classcarl_1_1_intersection___tools_ad636117b292272044b252be62124eb0a}{m\_exact\_points\_A}.resize(8);
+141         \hyperlink{classcarl_1_1_intersection___tools_a2c3b6211dd1f9b0aa5f2ac8ffc383182}{m\_exact\_points\_B}.resize(8);
+142         \hyperlink{classcarl_1_1_intersection___tools_a473d6a254b10623659a1d8f81bbe695f}{m\_exact\_points\_C}.resize(8);
+143 
+144         \hyperlink{classcarl_1_1_intersection___tools_a1bc3cab10caf53e5de762c4dea2ef1ba}{m\_dummyPoly}.reserve(8,18,12);
+145 
+146         \hyperlink{classcarl_1_1_intersection___tools_adf2892a8902442fbfebb913e9a4fb8ac}{m\_nef\_C}.clear(Nef\_Polyhedron::EMPTY);
+147 
+148         this->\hyperlink{classcarl_1_1_intersection___tools_ac2eb9f8074d4dc2511b3f36d3cfd5f3b}{set\_element\_indexes}();
+149 
+150         \hyperlink{classcarl_1_1_intersection___tools_a2f6b6fff82b9a02400d3aeb3db1f4c82}{m\_elem\_C\_tetrahedrons} = NULL;
+151         \hyperlink{classcarl_1_1_intersection___tools_a89a78135b49b49c32bec8be4016782b3}{m\_elem\_C\_triangles} = NULL;
+152     \};
+\end{DoxyCode}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classcarl_1_1_intersection___tools_a1d6303ff6ffc19b6df42626e29a507ce}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!convert\+\_\+elem\+\_\+to\+\_\+exact\+\_\+points@{convert\+\_\+elem\+\_\+to\+\_\+exact\+\_\+points}}
+\index{convert\+\_\+elem\+\_\+to\+\_\+exact\+\_\+points@{convert\+\_\+elem\+\_\+to\+\_\+exact\+\_\+points}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{convert\+\_\+elem\+\_\+to\+\_\+exact\+\_\+points(const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+input, std\+::vector$<$ Exact\+Point\+\_\+3 $>$ \&points\+\_\+output)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Tools\+::convert\+\_\+elem\+\_\+to\+\_\+exact\+\_\+points (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{elem\+\_\+input, }
+\item[{std\+::vector$<$ {\bf Exact\+Point\+\_\+3} $>$ \&}]{points\+\_\+output}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___tools_a1d6303ff6ffc19b6df42626e29a507ce}
+
+
+Convert an lib\+Mesh element to a list of C\+G\+A\+L exact points. 
+
+
+
+Definition at line 636 of file intersection\+\_\+tools.\+cpp.
+
+
+\begin{DoxyCode}
+638 \{
+639     libMesh::Point dummyPoint;
+640     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < elem\_input->n\_nodes(); ++iii)
+641     \{
+642         dummyPoint = elem\_input->point(iii);
+643         points\_output[iii] = \hyperlink{_c_g_a_l__typedefs_8h_a162dbf669b38ca5632e00c9c02e000a5}{ExactPoint\_3}(  dummyPoint(0),
+644                                             dummyPoint(1),
+645                                             dummyPoint(2));
+646     \}
+647 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___tools_af689c53cf00359c518234d8d070c4e53}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!convert\+\_\+exact\+\_\+points\+\_\+to\+\_\+\+Nef@{convert\+\_\+exact\+\_\+points\+\_\+to\+\_\+\+Nef}}
+\index{convert\+\_\+exact\+\_\+points\+\_\+to\+\_\+\+Nef@{convert\+\_\+exact\+\_\+points\+\_\+to\+\_\+\+Nef}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{convert\+\_\+exact\+\_\+points\+\_\+to\+\_\+\+Nef(std\+::vector$<$ Exact\+Point\+\_\+3 $>$\+::const\+\_\+iterator it\+\_\+begin, std\+::vector$<$ Exact\+Point\+\_\+3 $>$\+::const\+\_\+iterator it\+\_\+end, Nef\+\_\+\+Polyhedron \&nef\+\_\+out)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Tools\+::convert\+\_\+exact\+\_\+points\+\_\+to\+\_\+\+Nef (
+\begin{DoxyParamCaption}
+\item[{std\+::vector$<$ {\bf Exact\+Point\+\_\+3} $>$\+::const\+\_\+iterator}]{it\+\_\+begin, }
+\item[{std\+::vector$<$ {\bf Exact\+Point\+\_\+3} $>$\+::const\+\_\+iterator}]{it\+\_\+end, }
+\item[{{\bf Nef\+\_\+\+Polyhedron} \&}]{nef\+\_\+out}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___tools_af689c53cf00359c518234d8d070c4e53}
+
+
+Convert an C\+G\+A\+L exact point set to a C\+G\+A\+L Nef polyhedron. 
+
+
+
+Definition at line 649 of file intersection\+\_\+tools.\+cpp.
+
+
+\begin{DoxyCode}
+652 \{
+653     CGAL::convex\_hull\_3(it\_begin,it\_end,\hyperlink{classcarl_1_1_intersection___tools_a1bc3cab10caf53e5de762c4dea2ef1ba}{m\_dummyPoly},\hyperlink{classcarl_1_1_intersection___tools_a0a3b4e978977cd29ebac810dc0a2baf6}{ExactHullTraits});
+654     nef\_out = \hyperlink{_c_g_a_l__typedefs_8h_ab85d2fceadc71a761aa3a184793f8c5f}{Nef\_Polyhedron}(\hyperlink{classcarl_1_1_intersection___tools_a1bc3cab10caf53e5de762c4dea2ef1ba}{m\_dummyPoly});
+655 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___tools_a355a95eefdfdd30b4a332fdd99a11150}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!elements\+\_\+do\+\_\+intersect@{elements\+\_\+do\+\_\+intersect}}
+\index{elements\+\_\+do\+\_\+intersect@{elements\+\_\+do\+\_\+intersect}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{elements\+\_\+do\+\_\+intersect(std\+::vector$<$ Exact\+Point\+\_\+3 $>$ \&elem\+\_\+\+C\+\_\+points, std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \&elem\+\_\+\+C\+\_\+tetras, std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \&elem\+\_\+\+C\+\_\+triangles, std\+::vector$<$ Exact\+Point\+\_\+3 $>$ \&elem\+\_\+\+D\+\_\+points, std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \&elem\+\_\+\+D\+\_\+tetras, std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \&elem\+\_\+\+D\+\_\+triangles)}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Tools\+::elements\+\_\+do\+\_\+intersect (
+\begin{DoxyParamCaption}
+\item[{std\+::vector$<$ {\bf Exact\+Point\+\_\+3} $>$ \&}]{elem\+\_\+\+C\+\_\+points, }
+\item[{std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \&}]{elem\+\_\+\+C\+\_\+tetras, }
+\item[{std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \&}]{elem\+\_\+\+C\+\_\+triangles, }
+\item[{std\+::vector$<$ {\bf Exact\+Point\+\_\+3} $>$ \&}]{elem\+\_\+\+D\+\_\+points, }
+\item[{std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \&}]{elem\+\_\+\+D\+\_\+tetras, }
+\item[{std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \&}]{elem\+\_\+\+D\+\_\+triangles}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a355a95eefdfdd30b4a332fdd99a11150}
+
+
+Determinate if two elements intersect, using their points and decompositions. 
+
+C\+G\+A\+L\textquotesingle{}s \char`\"{}do\+\_\+intersect\char`\"{} methods are not compatible with generic polyhedrons -\/ at most, we can determinate if a triangle intersects a tetrahedron. To determinate if two elements A and B intersect, we must then decompose them into these geometrical objects, and test the intersections pairwise. This method takes the elements\textquotesingle{} points and decompositions into tetrahedrons and triangles and test each tetrahedron / triangle pair for intersections. 
+
+Definition at line 84 of file intersection\+\_\+tools.\+cpp.
+
+
+\begin{DoxyCode}
+91 \{
+92     \textcolor{keywordtype}{bool} bElemIntersect = \textcolor{keyword}{false};
+93 
+94     \textcolor{comment}{// Test intersections between C's tetrahedrons and D's triangles}
+95     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} jjj = 0; jjj < elem\_D\_triangles.size(); ++jjj)
+96     \{
+97         std::vector<unsigned int> & work\_triangle = elem\_D\_triangles[jjj];
+98         \hyperlink{classcarl_1_1_intersection___tools_a4331121a50baaa93e499f6cfb446c1b0}{m\_test\_triangle} = \hyperlink{_c_g_a_l__typedefs_8h_acb9586e4ea704b6a4c4502ad0cb03c62}{ExactTriangle\_3}(elem\_D\_points[work\_triangle[0]],
+99                 elem\_D\_points[work\_triangle[1]],
+100                 elem\_D\_points[work\_triangle[2]]);
+101 
+102         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < elem\_C\_tetras.size(); ++iii)
+103         \{
+104             std::vector<unsigned int> & work\_tetra = elem\_C\_tetras[iii];
+105             \hyperlink{classcarl_1_1_intersection___tools_a69657597ebb9655f8797b289939835a3}{m\_test\_tetra} = \hyperlink{_c_g_a_l__typedefs_8h_a02a72c8dcf4a17c7460e7e71301d2d3f}{ExactTetrahedron}(    elem\_C\_points[work\_tetra[0]],
+106                     elem\_C\_points[work\_tetra[1]],
+107                     elem\_C\_points[work\_tetra[2]],
+108                     elem\_C\_points[work\_tetra[3]]);
+109 
+110             bElemIntersect = CGAL::do\_intersect(\hyperlink{classcarl_1_1_intersection___tools_a4331121a50baaa93e499f6cfb446c1b0}{m\_test\_triangle},
+      \hyperlink{classcarl_1_1_intersection___tools_a69657597ebb9655f8797b289939835a3}{m\_test\_tetra});
+111 
+112             \textcolor{keywordflow}{if}(bElemIntersect)
+113             \{
+114                 \textcolor{comment}{// Found intersection!}
+115                 \textcolor{keywordflow}{break};
+116             \}
+117         \}
+118 
+119         \textcolor{keywordflow}{if}(bElemIntersect)
+120         \{
+121             \textcolor{comment}{// Found intersection!}
+122             \textcolor{keywordflow}{break};
+123         \}
+124     \}
+125 
+126     \textcolor{keywordflow}{if}(!bElemIntersect)
+127     \{
+128         \textcolor{comment}{// Test intersections between D's tetrahedrons and C's triangles}
+129         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} jjj = 0; jjj < elem\_C\_triangles.size(); ++jjj)
+130         \{
+131             std::vector<unsigned int> & work\_triangle = elem\_C\_triangles[jjj];
+132             \hyperlink{classcarl_1_1_intersection___tools_a4331121a50baaa93e499f6cfb446c1b0}{m\_test\_triangle} = \hyperlink{_c_g_a_l__typedefs_8h_acb9586e4ea704b6a4c4502ad0cb03c62}{ExactTriangle\_3}(elem\_C\_points[work\_triangle[0]]
+      ,
+133                     elem\_C\_points[work\_triangle[1]],
+134                     elem\_C\_points[work\_triangle[2]]);
+135 
+136             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < elem\_D\_tetras.size(); ++iii)
+137             \{
+138                 std::vector<unsigned int> & work\_tetra = elem\_D\_tetras.at(iii);
+139                 \hyperlink{classcarl_1_1_intersection___tools_a69657597ebb9655f8797b289939835a3}{m\_test\_tetra} = \hyperlink{_c_g_a_l__typedefs_8h_a02a72c8dcf4a17c7460e7e71301d2d3f}{ExactTetrahedron}(    elem\_D\_points[work\_tetra[0]
+      ],
+140                         elem\_D\_points[work\_tetra[1]],
+141                         elem\_D\_points[work\_tetra[2]],
+142                         elem\_D\_points[work\_tetra[3]]);
+143 
+144                 bElemIntersect = CGAL::do\_intersect(\hyperlink{classcarl_1_1_intersection___tools_a4331121a50baaa93e499f6cfb446c1b0}{m\_test\_triangle},
+      \hyperlink{classcarl_1_1_intersection___tools_a69657597ebb9655f8797b289939835a3}{m\_test\_tetra});
+145 
+146                 \textcolor{keywordflow}{if}(bElemIntersect)
+147                 \{
+148                     \textcolor{comment}{// Found intersection!}
+149                     \textcolor{keywordflow}{break};
+150                 \}
+151             \}
+152 
+153             \textcolor{keywordflow}{if}(bElemIntersect)
+154             \{
+155                 \textcolor{comment}{// Found intersection!}
+156                 \textcolor{keywordflow}{break};
+157             \}
+158         \}
+159     \}
+160     \textcolor{keywordflow}{return} bElemIntersect;
+161 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___tools_a8238069bd83ef1029c6a5b60a188763b}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!Find\+All\+Intersection@{Find\+All\+Intersection}}
+\index{Find\+All\+Intersection@{Find\+All\+Intersection}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{Find\+All\+Intersection(const lib\+Mesh\+::\+Elem $\ast$\+Query\+\_\+elem, std\+::unique\+\_\+ptr$<$ lib\+Mesh\+::\+Point\+Locator\+Base $>$ \&point\+\_\+locator, std\+::set$<$ unsigned int $>$ \&\+Intersecting\+\_\+elems)}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Tools\+::\+Find\+All\+Intersection (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{Query\+\_\+elem, }
+\item[{std\+::unique\+\_\+ptr$<$ lib\+Mesh\+::\+Point\+Locator\+Base $>$ \&}]{point\+\_\+locator, }
+\item[{std\+::set$<$ unsigned int $>$ \&}]{Intersecting\+\_\+elems}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___tools_a8238069bd83ef1029c6a5b60a188763b}
+
+
+Find all elements from the mesh intersecting Query\+\_\+elem, using the mesh\textquotesingle{}s lib\+Mesh\+::\+Point\+Locator\+Base. 
+
+
+
+Definition at line 200 of file intersection\+\_\+tools.\+cpp.
+
+
+\begin{DoxyCode}
+204 \{
+205     libMesh::PointLocatorBase& locator = *point\_locator.get();
+206 
+207     \textcolor{comment}{// Clear output}
+208     Intersecting\_elems.clear();
+209 
+210     \textcolor{comment}{// Search each vertex}
+211     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} elem\_nb\_nodes = Query\_elem->n\_nodes();
+212     libMesh::Point dummyPoint;
+213 
+214     \textcolor{keywordtype}{int} nbOfInters = 0;
+215 
+216     \textcolor{comment}{// Just to be sure, check if one of the points intersect the mesh}
+217     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < elem\_nb\_nodes; ++iii)
+218     \{
+219         dummyPoint = Query\_elem->point(iii);
+220         \textcolor{keyword}{const} libMesh::Elem * Patch\_elem = locator(Query\_elem->point(iii));
+221 
+222         \textcolor{keywordflow}{if}(Patch\_elem != NULL)
+223         \{
+224             Intersecting\_elems.insert(Patch\_elem->id());
+225             ++nbOfInters;
+226         \}
+227     \}
+228 
+229     \textcolor{keywordflow}{return} nbOfInters != 0;
+230 \};
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___tools_a2e1ed1a0e6f1044108bf4ac77a25e8e0}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!Find\+First\+Intersection@{Find\+First\+Intersection}}
+\index{Find\+First\+Intersection@{Find\+First\+Intersection}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{Find\+First\+Intersection(const lib\+Mesh\+::\+Elem $\ast$\+Query\+\_\+elem, std\+::unique\+\_\+ptr$<$ lib\+Mesh\+::\+Point\+Locator\+Base $>$ \&point\+\_\+locator, bool b\+Guarantee\+Query\+Is\+In\+Mesh=false)}]{\setlength{\rightskip}{0pt plus 5cm}const lib\+Mesh\+::\+Elem $\ast$ carl\+::\+Intersection\+\_\+\+Tools\+::\+Find\+First\+Intersection (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{Query\+\_\+elem, }
+\item[{std\+::unique\+\_\+ptr$<$ lib\+Mesh\+::\+Point\+Locator\+Base $>$ \&}]{point\+\_\+locator, }
+\item[{bool}]{b\+Guarantee\+Query\+Is\+In\+Mesh = {\ttfamily false}}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___tools_a2e1ed1a0e6f1044108bf4ac77a25e8e0}
+
+
+Find an element from a mesh intersecting Query\+\_\+elem, using the mesh\textquotesingle{}s lib\+Mesh\+::\+Point\+Locator\+Base. 
+
+By default, a test is done to be sure that the query element does indeed intersect the tested mesh. The test can be bypassed using the flag b\+Guarantee\+Query\+Is\+In\+Mesh. 
+
+Definition at line 163 of file intersection\+\_\+tools.\+cpp.
+
+
+\begin{DoxyCode}
+167 \{
+168     libMesh::PointLocatorBase& locator = *point\_locator.get();
+169     \textcolor{keywordflow}{if}(!bGuaranteeQueryIsInMesh)
+170     \{
+171         \textcolor{comment}{// Then we are sure that the query element is inside the mesh, only}
+172         \textcolor{comment}{// one search needed}
+173     \}
+174     \textcolor{keywordflow}{else}
+175     \{
+176         \textcolor{comment}{// Better check all the vertices ...}
+177         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} elem\_nb\_nodes = Query\_elem->n\_nodes();
+178         libMesh::Point dummyPoint;
+179         \textcolor{keywordtype}{bool} bInsideTheMesh = \textcolor{keyword}{true};
+180 
+181         \textcolor{comment}{// Just to be sure, check if one of the points intersect the mesh}
+182         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii = 0; iii < elem\_nb\_nodes; ++iii)
+183         \{
+184             dummyPoint = Query\_elem->point(iii);
+185             \textcolor{keyword}{const} libMesh::Elem * Patch\_elem = locator(Query\_elem->point(iii));
+186 
+187             \textcolor{keywordflow}{if}(Patch\_elem == NULL)
+188             \{
+189                 bInsideTheMesh = \textcolor{keyword}{false};
+190                 \textcolor{keywordflow}{break};
+191             \}
+192         \}
+193 
+194         \hyperlink{common__header_8h_a593ccc80b790b2268653fcf6597bf451}{homemade\_assert\_msg}(bInsideTheMesh, \textcolor{stringliteral}{"Query element is not fully inside tested
+       mesh!\(\backslash\)n"});
+195     \}
+196 
+197     \textcolor{keywordflow}{return} locator(Query\_elem->point(0));
+198 \};
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___tools_ae7b16748a45a0579bafecb48ef2fc4ce}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect@{lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect}}
+\index{lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect@{lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect(const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+A, const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+B)}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Tools\+::lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{elem\+\_\+\+A, }
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{elem\+\_\+\+B}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___tools_ae7b16748a45a0579bafecb48ef2fc4ce}
+
+
+Determinate if two elements intersect. 
+
+Serves as a frontend for the private \hyperlink{classcarl_1_1_intersection___tools_a355a95eefdfdd30b4a332fdd99a11150}{Intersection\+\_\+\+Tools\+::elements\+\_\+do\+\_\+intersect} method. 
+
+Definition at line 232 of file intersection\+\_\+tools.\+cpp.
+
+
+\begin{DoxyCode}
+235 \{
+236     \textcolor{comment}{// The booleans}
+237     \textcolor{keywordtype}{bool} bBboxIntersect = \textcolor{keyword}{false};
+238     \textcolor{keywordtype}{bool} bElemIntersect = \textcolor{keyword}{false};
+239 
+240     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_nodes\_A = elem\_A->n\_nodes();
+241     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_nodes\_B = elem\_B->n\_nodes();
+242 
+243     \textcolor{comment}{// First, convert both elements to CGAL exact point vectors}
+244     \hyperlink{classcarl_1_1_intersection___tools_a1d6303ff6ffc19b6df42626e29a507ce}{convert\_elem\_to\_exact\_points}(elem\_A,
+      \hyperlink{classcarl_1_1_intersection___tools_ad636117b292272044b252be62124eb0a}{m\_exact\_points\_A});
+245     \hyperlink{classcarl_1_1_intersection___tools_a1d6303ff6ffc19b6df42626e29a507ce}{convert\_elem\_to\_exact\_points}(elem\_B,
+      \hyperlink{classcarl_1_1_intersection___tools_a2c3b6211dd1f9b0aa5f2ac8ffc383182}{m\_exact\_points\_B});
+246 
+247     \textcolor{comment}{// Fast check: bounding boxes}
+248     std::vector<ExactPoint\_3>::const\_iterator exact\_points\_A\_begin = 
+      \hyperlink{classcarl_1_1_intersection___tools_ad636117b292272044b252be62124eb0a}{m\_exact\_points\_A}.begin();
+249     std::vector<ExactPoint\_3>::const\_iterator exact\_points\_B\_begin = 
+      \hyperlink{classcarl_1_1_intersection___tools_a2c3b6211dd1f9b0aa5f2ac8ffc383182}{m\_exact\_points\_B}.begin();
+250 
+251     \hyperlink{_c_g_a_l__typedefs_8h_addfe23033005db95e2e48130a55c8a6c}{Bbox\_3} exact\_bbox\_A = CGAL::bbox\_3(exact\_points\_A\_begin,exact\_points\_A\_begin + n\_nodes\_A);
+252     \hyperlink{_c_g_a_l__typedefs_8h_addfe23033005db95e2e48130a55c8a6c}{Bbox\_3} exact\_bbox\_B = CGAL::bbox\_3(exact\_points\_B\_begin,exact\_points\_B\_begin + n\_nodes\_B);
+253 
+254     bBboxIntersect = CGAL::do\_intersect(exact\_bbox\_A,exact\_bbox\_B);
+255 
+256     \textcolor{keywordflow}{if}(bBboxIntersect)
+257     \{
+258         \textcolor{comment}{// Bbox intersect, test intersection between tetrahedrons and triangles}
+259 
+260         \textcolor{comment}{// Pointers that will depend on the element type;}
+261         std::vector<std::vector<unsigned int> > * elem\_A\_tetras    = NULL;
+262         std::vector<std::vector<unsigned int> > * elem\_A\_triangles = NULL;
+263 
+264         std::vector<std::vector<unsigned int> > * elem\_B\_tetras    = NULL;
+265         std::vector<std::vector<unsigned int> > * elem\_B\_triangles = NULL;
+266 
+267         \textcolor{keywordflow}{if}(elem\_A->type() == libMesh::TET4)
+268         \{
+269             \textcolor{comment}{// Use tetrahedron geometry}
+270             elem\_A\_tetras = &\hyperlink{classcarl_1_1_intersection___tools_a6e9a49f3b382810c884ba46b791bfcb8}{m\_TET\_tetrahedrons};
+271             elem\_A\_triangles = &\hyperlink{classcarl_1_1_intersection___tools_a54e026b256ab6894b1f77950a425b1eb}{m\_TET\_triangles};
+272         \}
+273         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(elem\_A->type() == libMesh::HEX8)
+274         \{
+275             \textcolor{comment}{// Use hexaedron geometry}
+276             elem\_A\_tetras = &\hyperlink{classcarl_1_1_intersection___tools_af74ec1bcb1a896df19642d340dd2762c}{m\_HEX\_tetrahedrons};
+277             elem\_A\_triangles = &\hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles};
+278         \}
+279         \textcolor{keywordflow}{else}
+280         \{
+281             \hyperlink{common__header_8h_a05d65d26b911668ac90085745dca71f6}{homemade\_error\_msg}(\textcolor{stringliteral}{"Unsupported element type! Must be either TET4 or HEX8"});
+282         \}
+283 
+284         \textcolor{keywordflow}{if}(elem\_B->type() == libMesh::TET4)
+285         \{
+286             \textcolor{comment}{// Use tetrahedron geometry}
+287             elem\_B\_tetras = &\hyperlink{classcarl_1_1_intersection___tools_a6e9a49f3b382810c884ba46b791bfcb8}{m\_TET\_tetrahedrons};
+288             elem\_B\_triangles = &\hyperlink{classcarl_1_1_intersection___tools_a54e026b256ab6894b1f77950a425b1eb}{m\_TET\_triangles};
+289         \}
+290         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(elem\_B->type() == libMesh::HEX8)
+291         \{
+292             \textcolor{comment}{// Use hexaedron geometry}
+293             elem\_B\_tetras = &\hyperlink{classcarl_1_1_intersection___tools_af74ec1bcb1a896df19642d340dd2762c}{m\_HEX\_tetrahedrons};
+294             elem\_B\_triangles = &\hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles};
+295         \}
+296         \textcolor{keywordflow}{else}
+297         \{
+298             \hyperlink{common__header_8h_a05d65d26b911668ac90085745dca71f6}{homemade\_error\_msg}(\textcolor{stringliteral}{"Unsupported element type! Must be either TET4 or HEX8"});
+299         \}
+300 
+301         bElemIntersect = this->\hyperlink{classcarl_1_1_intersection___tools_a355a95eefdfdd30b4a332fdd99a11150}{elements\_do\_intersect}(
+      \hyperlink{classcarl_1_1_intersection___tools_ad636117b292272044b252be62124eb0a}{m\_exact\_points\_A}, *elem\_A\_tetras, *elem\_A\_triangles,
+302                 \hyperlink{classcarl_1_1_intersection___tools_a2c3b6211dd1f9b0aa5f2ac8ffc383182}{m\_exact\_points\_B}, *elem\_B\_tetras, *elem\_B\_triangles);
+303     \}
+304     \textcolor{keywordflow}{else}
+305     \{
+306         bElemIntersect = \textcolor{keyword}{false};
+307     \}
+308 
+309     \textcolor{keywordflow}{return} bElemIntersect;
+310 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___tools_a98929a97acb94aa77fc8952d80993d88}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect\+\_\+inside\+\_\+coupling@{lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect\+\_\+inside\+\_\+coupling}}
+\index{lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect\+\_\+inside\+\_\+coupling@{lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect\+\_\+inside\+\_\+coupling}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect\+\_\+inside\+\_\+coupling(const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+A, const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+B, bool b\+Create\+New\+Nef\+For\+A=true)}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Tools\+::lib\+Mesh\+\_\+exact\+\_\+do\+\_\+intersect\+\_\+inside\+\_\+coupling (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{elem\+\_\+\+A, }
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{elem\+\_\+\+B, }
+\item[{bool}]{b\+Create\+New\+Nef\+For\+A = {\ttfamily true}}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___tools_a98929a97acb94aa77fc8952d80993d88}
+
+
+Determinate if two elements intersect inside the coupling region. 
+
+This method uses C\+G\+A\+L\textquotesingle{}s Nef polyhedrons. The boolean flag \char`\"{}b\+Create\+New\+Nef\+For\+A\char`\"{} is used to avoid re-\/building the elem\+\_\+\+A\textquotesingle{}s Nef polyhedron. 
+
+Definition at line 397 of file intersection\+\_\+tools.\+cpp.
+
+
+\begin{DoxyCode}
+400 \{
+401     \textcolor{keywordtype}{bool} bElemIntersect = \textcolor{keyword}{true};
+402 
+403     \textcolor{comment}{// Assert if C was built}
+404     \hyperlink{common__header_8h_a593ccc80b790b2268653fcf6597bf451}{homemade\_assert\_msg}(!\hyperlink{classcarl_1_1_intersection___tools_adf2892a8902442fbfebb913e9a4fb8ac}{m\_nef\_C}.is\_empty(), \textcolor{stringliteral}{"Coupling restriction element was
+       not set yet!\(\backslash\)n"});
+405 
+406     \textcolor{comment}{// Test the intersection beforehand. This also generates the exact}
+407     \textcolor{comment}{// points needed.}
+408     bElemIntersect = \hyperlink{classcarl_1_1_intersection___tools_ae7b16748a45a0579bafecb48ef2fc4ce}{libMesh\_exact\_do\_intersect}(elem\_A,elem\_B);
+409 
+410     \textcolor{keywordflow}{if}(bElemIntersect)
+411     \{
+412         \textcolor{comment}{// Generate the Nef polyhedrons}
+413         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_nodes\_A = elem\_A->n\_nodes();
+414         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_nodes\_B = elem\_B->n\_nodes();
+415 
+416         std::vector<ExactPoint\_3>::const\_iterator exact\_points\_A\_begin = 
+      \hyperlink{classcarl_1_1_intersection___tools_ad636117b292272044b252be62124eb0a}{m\_exact\_points\_A}.begin();
+417         std::vector<ExactPoint\_3>::const\_iterator exact\_points\_B\_begin = 
+      \hyperlink{classcarl_1_1_intersection___tools_a2c3b6211dd1f9b0aa5f2ac8ffc383182}{m\_exact\_points\_B}.begin();
+418 
+419         \textcolor{keywordflow}{if}(bCreateNewNefForA)
+420         \{
+421             \textcolor{comment}{// A was updated, must also update A*C}
+422             \hyperlink{classcarl_1_1_intersection___tools_af689c53cf00359c518234d8d070c4e53}{convert\_exact\_points\_to\_Nef}( exact\_points\_A\_begin,
+423                                             exact\_points\_A\_begin + n\_nodes\_A,
+424                                             \hyperlink{classcarl_1_1_intersection___tools_a66a33158af0779366d4109e96a10ddc4}{m\_nef\_A});
+425             \hyperlink{classcarl_1_1_intersection___tools_a8333f16787459e65c4fe913dad50b5c6}{m\_nef\_I\_AC} = \hyperlink{classcarl_1_1_intersection___tools_a66a33158af0779366d4109e96a10ddc4}{m\_nef\_A}*\hyperlink{classcarl_1_1_intersection___tools_adf2892a8902442fbfebb913e9a4fb8ac}{m\_nef\_C};
+426         \}
+427         \textcolor{keywordflow}{else}
+428         \{
+429             \hyperlink{common__header_8h_a593ccc80b790b2268653fcf6597bf451}{homemade\_assert\_msg}(!\hyperlink{classcarl_1_1_intersection___tools_a8333f16787459e65c4fe913dad50b5c6}{m\_nef\_I\_AC}.is\_empty(), \textcolor{stringliteral}{"Intersection base is
+       empty!\(\backslash\)n"});
+430         \}
+431         \hyperlink{classcarl_1_1_intersection___tools_af689c53cf00359c518234d8d070c4e53}{convert\_exact\_points\_to\_Nef}( exact\_points\_B\_begin,
+432                                         exact\_points\_B\_begin + n\_nodes\_B,
+433                                         \hyperlink{classcarl_1_1_intersection___tools_a0b134a30452c8a767fc4265c7c0296a9}{m\_nef\_B});
+434 
+435         \textcolor{comment}{// Intersect them}
+436         \hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I} = \hyperlink{classcarl_1_1_intersection___tools_a8333f16787459e65c4fe913dad50b5c6}{m\_nef\_I\_AC}*\hyperlink{classcarl_1_1_intersection___tools_a0b134a30452c8a767fc4265c7c0296a9}{m\_nef\_B};
+437 
+438         \textcolor{keywordflow}{if}(!\hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I}.is\_empty() && \hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I}.number\_of\_volumes() > 1)
+439         \{
+440             \textcolor{comment}{// Intersection exists!}
+441             bElemIntersect = \textcolor{keyword}{true};
+442         \}
+443         \textcolor{keywordflow}{else}
+444         \{
+445             bElemIntersect = \textcolor{keyword}{false};
+446         \}
+447     \}
+448 
+449     \textcolor{keywordflow}{return} bElemIntersect;
+450 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___tools_ad57f9ae9fd2cce1ff7fc2430bf6c6b71}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!lib\+Mesh\+\_\+exact\+\_\+intersection@{lib\+Mesh\+\_\+exact\+\_\+intersection}}
+\index{lib\+Mesh\+\_\+exact\+\_\+intersection@{lib\+Mesh\+\_\+exact\+\_\+intersection}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{lib\+Mesh\+\_\+exact\+\_\+intersection(const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+A, const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+B, std\+::set$<$ Point\+\_\+3 $>$ \&points\+\_\+out, bool b\+Create\+New\+Nef\+For\+A=true, bool b\+Convert\+Points=true, bool b\+Test\+Needed=true)}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Tools\+::lib\+Mesh\+\_\+exact\+\_\+intersection (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{elem\+\_\+\+A, }
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{elem\+\_\+\+B, }
+\item[{std\+::set$<$ {\bf Point\+\_\+3} $>$ \&}]{points\+\_\+out, }
+\item[{bool}]{b\+Create\+New\+Nef\+For\+A = {\ttfamily true}, }
+\item[{bool}]{b\+Convert\+Points = {\ttfamily true}, }
+\item[{bool}]{b\+Test\+Needed = {\ttfamily true}}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___tools_ad57f9ae9fd2cce1ff7fc2430bf6c6b71}
+
+
+Build the intersection between two elements. 
+
+
+
+Definition at line 312 of file intersection\+\_\+tools.\+cpp.
+
+
+\begin{DoxyCode}
+318 \{
+319     \textcolor{keywordtype}{bool} bElemIntersect = \textcolor{keyword}{true};
+320 
+321     \textcolor{keywordflow}{if}(bTestNeeded)
+322     \{
+323         \textcolor{comment}{// Test the intersection beforehand}
+324         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.push(\textcolor{stringliteral}{"Test intersection"},\textcolor{stringliteral}{"Exact intersection construction"});
+325         bElemIntersect = \hyperlink{classcarl_1_1_intersection___tools_ae7b16748a45a0579bafecb48ef2fc4ce}{libMesh\_exact\_do\_intersect}(elem\_A,elem\_B);
+326         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Test intersection"},\textcolor{stringliteral}{"Exact intersection construction"});
+327     \}
+328     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(bConvertPoints)
+329     \{
+330         \textcolor{comment}{// Test already made somewhere else, but we need to set up the exact}
+331         \textcolor{comment}{// points.}
+332         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.push(\textcolor{stringliteral}{"Point conversion to exact"},\textcolor{stringliteral}{"Exact intersection construction"});
+333         \textcolor{keywordflow}{if}(bCreateNewNefForA)
+334         \{
+335             \hyperlink{classcarl_1_1_intersection___tools_a1d6303ff6ffc19b6df42626e29a507ce}{convert\_elem\_to\_exact\_points}(elem\_A,
+      \hyperlink{classcarl_1_1_intersection___tools_ad636117b292272044b252be62124eb0a}{m\_exact\_points\_A});
+336         \}
+337         \hyperlink{classcarl_1_1_intersection___tools_a1d6303ff6ffc19b6df42626e29a507ce}{convert\_elem\_to\_exact\_points}(elem\_B,
+      \hyperlink{classcarl_1_1_intersection___tools_a2c3b6211dd1f9b0aa5f2ac8ffc383182}{m\_exact\_points\_B});
+338         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Point conversion to exact"},\textcolor{stringliteral}{"Exact intersection construction"});
+339     \}
+340 
+341     \textcolor{keywordflow}{if}(bElemIntersect)
+342     \{
+343         \textcolor{comment}{// Generate the Nef polyhedrons}
+344         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_nodes\_A = elem\_A->n\_nodes();
+345         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_nodes\_B = elem\_B->n\_nodes();
+346 
+347         std::vector<ExactPoint\_3>::const\_iterator exact\_points\_A\_begin = 
+      \hyperlink{classcarl_1_1_intersection___tools_ad636117b292272044b252be62124eb0a}{m\_exact\_points\_A}.begin();
+348         std::vector<ExactPoint\_3>::const\_iterator exact\_points\_B\_begin = 
+      \hyperlink{classcarl_1_1_intersection___tools_a2c3b6211dd1f9b0aa5f2ac8ffc383182}{m\_exact\_points\_B}.begin();
+349 
+350         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.push(\textcolor{stringliteral}{"Nef polyhedron construction"},\textcolor{stringliteral}{"Exact intersection construction"});
+351         \textcolor{keywordflow}{if}(bCreateNewNefForA)
+352         \{
+353             \hyperlink{classcarl_1_1_intersection___tools_af689c53cf00359c518234d8d070c4e53}{convert\_exact\_points\_to\_Nef}( exact\_points\_A\_begin,
+354                                             exact\_points\_A\_begin + n\_nodes\_A,
+355                                             \hyperlink{classcarl_1_1_intersection___tools_a66a33158af0779366d4109e96a10ddc4}{m\_nef\_A});
+356         \}
+357         \textcolor{keywordflow}{else}
+358         \{
+359             \hyperlink{common__header_8h_a593ccc80b790b2268653fcf6597bf451}{homemade\_assert\_msg}(!\hyperlink{classcarl_1_1_intersection___tools_a66a33158af0779366d4109e96a10ddc4}{m\_nef\_A}.is\_empty(), \textcolor{stringliteral}{"Intersection base is empty!
+      \(\backslash\)n"});
+360         \}
+361 
+362         \hyperlink{classcarl_1_1_intersection___tools_af689c53cf00359c518234d8d070c4e53}{convert\_exact\_points\_to\_Nef}( exact\_points\_B\_begin,
+363                                         exact\_points\_B\_begin + n\_nodes\_B,
+364                                         \hyperlink{classcarl_1_1_intersection___tools_a0b134a30452c8a767fc4265c7c0296a9}{m\_nef\_B});
+365 
+366         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Nef polyhedron construction"},\textcolor{stringliteral}{"Exact intersection construction"});
+367 
+368         \textcolor{comment}{// Intersect them}
+369         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.push(\textcolor{stringliteral}{"Nef polyhedron intersection"},\textcolor{stringliteral}{"Exact intersection construction"});
+370         \hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I} = \hyperlink{classcarl_1_1_intersection___tools_a66a33158af0779366d4109e96a10ddc4}{m\_nef\_A}*\hyperlink{classcarl_1_1_intersection___tools_a0b134a30452c8a767fc4265c7c0296a9}{m\_nef\_B};
+371         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Nef polyhedron intersection"},\textcolor{stringliteral}{"Exact intersection construction"});
+372 
+373         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.push(\textcolor{stringliteral}{"Point set output"},\textcolor{stringliteral}{"Exact intersection construction"});
+374         \textcolor{keywordflow}{if}(!\hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I}.is\_empty())
+375         \{
+376             \textcolor{comment}{// Intersection exists! Create output}
+377             bElemIntersect = \textcolor{keyword}{true};
+378 
+379             points\_out.clear();
+380             \textcolor{keywordflow}{for}(Nef\_Polyhedron::Vertex\_const\_iterator it\_vertex = \hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I}.vertices\_begin();
+381                     it\_vertex != \hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I}.vertices\_end();
+382                     ++it\_vertex)
+383             \{
+384                 points\_out.insert(\hyperlink{classcarl_1_1_intersection___tools_a8cd632ee9314f5981c620af325245413}{ConvertExactToInexact}(it\_vertex->point()));
+385             \}
+386         \}
+387         \textcolor{keywordflow}{else}
+388         \{
+389             bElemIntersect = \textcolor{keyword}{false};
+390         \}
+391         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Point set output"},\textcolor{stringliteral}{"Exact intersection construction"});
+392     \}
+393 
+394     \textcolor{keywordflow}{return} bElemIntersect;
+395 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___tools_ad5aaf7b9475dcfb6a51ea1c20d22aacd}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!lib\+Mesh\+\_\+exact\+\_\+intersection\+\_\+inside\+\_\+coupling@{lib\+Mesh\+\_\+exact\+\_\+intersection\+\_\+inside\+\_\+coupling}}
+\index{lib\+Mesh\+\_\+exact\+\_\+intersection\+\_\+inside\+\_\+coupling@{lib\+Mesh\+\_\+exact\+\_\+intersection\+\_\+inside\+\_\+coupling}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{lib\+Mesh\+\_\+exact\+\_\+intersection\+\_\+inside\+\_\+coupling(const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+A, const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+B, std\+::set$<$ lib\+Mesh\+::\+Point $>$ \&points\+\_\+out, bool b\+Create\+New\+Nef\+For\+A=true, bool b\+Convert\+Points=true, bool b\+Test\+Needed=false)}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Tools\+::lib\+Mesh\+\_\+exact\+\_\+intersection\+\_\+inside\+\_\+coupling (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{elem\+\_\+\+A, }
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{elem\+\_\+\+B, }
+\item[{std\+::set$<$ lib\+Mesh\+::\+Point $>$ \&}]{points\+\_\+out, }
+\item[{bool}]{b\+Create\+New\+Nef\+For\+A = {\ttfamily true}, }
+\item[{bool}]{b\+Convert\+Points = {\ttfamily true}, }
+\item[{bool}]{b\+Test\+Needed = {\ttfamily false}}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___tools_ad5aaf7b9475dcfb6a51ea1c20d22aacd}
+
+
+Build the intersection between two elements intersect inside the coupling region. 
+
+This method uses C\+G\+A\+L\textquotesingle{}s Nef polyhedrons. The boolean flag \char`\"{}b\+Create\+New\+Nef\+For\+A\char`\"{} is used to avoid re-\/building the elem\+\_\+\+A\textquotesingle{}s Nef polyhedron. If the boolean flag \char`\"{}b\+Convert\+Points\char`\"{} is set to true, the elements points are converted to C\+G\+A\+L\textquotesingle{}s exact points. When the boolean flag \char`\"{}b\+Test\+Needed\char`\"{} is set to true, a preliminary intersection test is done. 
+
+Definition at line 452 of file intersection\+\_\+tools.\+cpp.
+
+
+\begin{DoxyCode}
+458 \{
+459     \textcolor{keywordtype}{bool} bElemIntersect = \textcolor{keyword}{true};
+460 
+461     \textcolor{comment}{// Assert if C was built}
+462     \hyperlink{common__header_8h_a593ccc80b790b2268653fcf6597bf451}{homemade\_assert\_msg}(!\hyperlink{classcarl_1_1_intersection___tools_adf2892a8902442fbfebb913e9a4fb8ac}{m\_nef\_C}.is\_empty(), \textcolor{stringliteral}{"Coupling restriction element was
+       not set yet!\(\backslash\)n"});
+463 
+464     \textcolor{comment}{// Dummy CGAL point}
+465     \hyperlink{_c_g_a_l__typedefs_8h_a9dc49a828e77bbd58c1f5db13edde547}{Point\_3}      dummy\_CGAL\_point;
+466     libMesh::Point dummy\_libMesh\_point;
+467 
+468     std::vector<double> bbox\_dims(6,0);
+469     \textcolor{keywordtype}{double} inter\_vol = 0;
+470 
+471     \textcolor{keywordflow}{if}(bTestNeeded)
+472     \{
+473         \textcolor{comment}{// Test the intersection beforehand}
+474         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.push(\textcolor{stringliteral}{"Test intersection"},\textcolor{stringliteral}{"Exact intersection construction inside coupling"});
+475         bElemIntersect = \hyperlink{classcarl_1_1_intersection___tools_ae7b16748a45a0579bafecb48ef2fc4ce}{libMesh\_exact\_do\_intersect}(elem\_A,elem\_B);
+476         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Test intersection"},\textcolor{stringliteral}{"Exact intersection construction inside coupling"});
+477     \}
+478     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(bConvertPoints)
+479     \{
+480         \textcolor{comment}{// Test already made somewhere else, but we need to set up the exact}
+481         \textcolor{comment}{// points.}
+482         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.push(\textcolor{stringliteral}{"Point conversion to exact"},\textcolor{stringliteral}{"Exact intersection construction inside
+       coupling"});
+483         \hyperlink{classcarl_1_1_intersection___tools_a1d6303ff6ffc19b6df42626e29a507ce}{convert\_elem\_to\_exact\_points}(elem\_A,
+      \hyperlink{classcarl_1_1_intersection___tools_ad636117b292272044b252be62124eb0a}{m\_exact\_points\_A});
+484         \hyperlink{classcarl_1_1_intersection___tools_a1d6303ff6ffc19b6df42626e29a507ce}{convert\_elem\_to\_exact\_points}(elem\_B,
+      \hyperlink{classcarl_1_1_intersection___tools_a2c3b6211dd1f9b0aa5f2ac8ffc383182}{m\_exact\_points\_B});
+485         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Point conversion to exact"},\textcolor{stringliteral}{"Exact intersection construction inside
+       coupling"});
+486     \}
+487 
+488     \textcolor{keywordflow}{if}(bElemIntersect)
+489     \{
+490         \textcolor{comment}{// Generate the Nef polyhedrons}
+491         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_nodes\_A = elem\_A->n\_nodes();
+492         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_nodes\_B = elem\_B->n\_nodes();
+493 
+494         std::vector<ExactPoint\_3>::const\_iterator exact\_points\_A\_begin = 
+      \hyperlink{classcarl_1_1_intersection___tools_ad636117b292272044b252be62124eb0a}{m\_exact\_points\_A}.begin();
+495         std::vector<ExactPoint\_3>::const\_iterator exact\_points\_B\_begin = 
+      \hyperlink{classcarl_1_1_intersection___tools_a2c3b6211dd1f9b0aa5f2ac8ffc383182}{m\_exact\_points\_B}.begin();
+496 
+497         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.push(\textcolor{stringliteral}{"Nef polyhedron construction"},\textcolor{stringliteral}{"Exact intersection construction inside
+       coupling"});
+498         \textcolor{keywordflow}{if}(bCreateNewNefForA)
+499         \{
+500             \textcolor{comment}{// Then we need to build a new nef polyhedron}
+501             \hyperlink{classcarl_1_1_intersection___tools_af689c53cf00359c518234d8d070c4e53}{convert\_exact\_points\_to\_Nef}( exact\_points\_A\_begin,
+502                                             exact\_points\_A\_begin + n\_nodes\_A,
+503                                             \hyperlink{classcarl_1_1_intersection___tools_a66a33158af0779366d4109e96a10ddc4}{m\_nef\_A});
+504             \hyperlink{classcarl_1_1_intersection___tools_a8333f16787459e65c4fe913dad50b5c6}{m\_nef\_I\_AC} = \hyperlink{classcarl_1_1_intersection___tools_a66a33158af0779366d4109e96a10ddc4}{m\_nef\_A}*\hyperlink{classcarl_1_1_intersection___tools_adf2892a8902442fbfebb913e9a4fb8ac}{m\_nef\_C};
+505         \}
+506         \textcolor{keywordflow}{else}
+507         \{
+508             \hyperlink{common__header_8h_a593ccc80b790b2268653fcf6597bf451}{homemade\_assert\_msg}(!\hyperlink{classcarl_1_1_intersection___tools_a8333f16787459e65c4fe913dad50b5c6}{m\_nef\_I\_AC}.is\_empty(), \textcolor{stringliteral}{"Intersection base is
+       empty!\(\backslash\)n"});
+509         \}
+510 
+511         \hyperlink{classcarl_1_1_intersection___tools_af689c53cf00359c518234d8d070c4e53}{convert\_exact\_points\_to\_Nef}( exact\_points\_B\_begin,
+512                                         exact\_points\_B\_begin + n\_nodes\_B,
+513                                         \hyperlink{classcarl_1_1_intersection___tools_a0b134a30452c8a767fc4265c7c0296a9}{m\_nef\_B});
+514         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Nef polyhedron construction"},\textcolor{stringliteral}{"Exact intersection construction inside
+       coupling"});
+515 
+516         \textcolor{comment}{// Intersect them}
+517         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.push(\textcolor{stringliteral}{"Nef polyhedron intersection"},\textcolor{stringliteral}{"Exact intersection construction inside
+       coupling"});
+518 
+519         \hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I} = \hyperlink{classcarl_1_1_intersection___tools_a0b134a30452c8a767fc4265c7c0296a9}{m\_nef\_B}*\hyperlink{classcarl_1_1_intersection___tools_a8333f16787459e65c4fe913dad50b5c6}{m\_nef\_I\_AC};
+520 
+521         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Nef polyhedron intersection"},\textcolor{stringliteral}{"Exact intersection construction inside
+       coupling"});
+522 
+523         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.push(\textcolor{stringliteral}{"Point set output"},\textcolor{stringliteral}{"Exact intersection construction inside coupling"});
+524 
+525         \textcolor{keywordflow}{if}(     !\hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I}.is\_empty() &&
+526                  \hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I}.number\_of\_volumes() > 1 &&
+527                  \hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I}.number\_of\_vertices() > 3 &&
+528                  \hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I}.number\_of\_facets() > 1)
+529         \{
+530             \textcolor{comment}{// Intersection exists! Extract points!}
+531             points\_out.clear();
+532             bElemIntersect = \textcolor{keyword}{true};
+533 
+534             \textcolor{keywordflow}{for}(Nef\_Polyhedron::Vertex\_const\_iterator it\_vertex = \hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I}.vertices\_begin();
+535                     it\_vertex != \hyperlink{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{m\_nef\_I}.vertices\_end();
+536                     ++it\_vertex)
+537             \{
+538                 dummy\_CGAL\_point = \hyperlink{classcarl_1_1_intersection___tools_a8cd632ee9314f5981c620af325245413}{ConvertExactToInexact}(it\_vertex->point());
+539                 points\_out.insert(libMesh::Point(dummy\_CGAL\_point.x(),dummy\_CGAL\_point.y(),dummy\_CGAL\_point
+      .z()));
+540             \}
+541 
+542             \textcolor{comment}{// Sometimes, CGAL will generate a very small volume, which follow}
+543             \textcolor{comment}{// the "if" conditions above, but results in a point or facet when}
+544             \textcolor{comment}{// converted to inexact values. The checks below test for it.}
+545             std::set<libMesh::Point>::const\_iterator it\_set = points\_out.begin();
+546             dummy\_libMesh\_point = *it\_set;
+547 
+548             bbox\_dims[0] = dummy\_libMesh\_point(0);
+549             bbox\_dims[1] = dummy\_libMesh\_point(0);
+550             bbox\_dims[2] = dummy\_libMesh\_point(1);
+551             bbox\_dims[3] = dummy\_libMesh\_point(1);
+552             bbox\_dims[4] = dummy\_libMesh\_point(2);
+553             bbox\_dims[5] = dummy\_libMesh\_point(2);
+554             ++it\_set;
+555 
+556             \textcolor{keywordflow}{for}(; it\_set != points\_out.end(); ++it\_set)
+557             \{
+558                 dummy\_libMesh\_point = *it\_set;
+559                 \textcolor{keywordflow}{if}(bbox\_dims[0] > dummy\_libMesh\_point(0)) \textcolor{comment}{// Min x}
+560                     bbox\_dims[0] = dummy\_libMesh\_point(0);
+561                 \textcolor{keywordflow}{if}(bbox\_dims[1] < dummy\_libMesh\_point(0)) \textcolor{comment}{// Max x}
+562                     bbox\_dims[1] = dummy\_libMesh\_point(0);
+563                 \textcolor{keywordflow}{if}(bbox\_dims[2] > dummy\_libMesh\_point(1)) \textcolor{comment}{// Min y}
+564                     bbox\_dims[2] = dummy\_libMesh\_point(1);
+565                 \textcolor{keywordflow}{if}(bbox\_dims[3] < dummy\_libMesh\_point(1)) \textcolor{comment}{// Max y}
+566                     bbox\_dims[3] = dummy\_libMesh\_point(1);
+567                 \textcolor{keywordflow}{if}(bbox\_dims[4] > dummy\_libMesh\_point(2)) \textcolor{comment}{// Min z}
+568                     bbox\_dims[4] = dummy\_libMesh\_point(2);
+569                 \textcolor{keywordflow}{if}(bbox\_dims[5] < dummy\_libMesh\_point(2)) \textcolor{comment}{// Max z}
+570                     bbox\_dims[5] = dummy\_libMesh\_point(2);
+571 
+572 \textcolor{comment}{//              it\_set->print();}
+573 \textcolor{comment}{//              std::cout << std::endl;}
+574             \}
+575 
+576             inter\_vol = std::abs((bbox\_dims[1] - bbox\_dims[0]) * (bbox\_dims[3] - bbox\_dims[2]) * (bbox\_dims
+      [5] - bbox\_dims[4]));
+577 \textcolor{comment}{//          std::cout << " -> Volume = " << inter\_vol << std::endl;}
+578             \textcolor{keywordflow}{if}(points\_out.size() < 4 || inter\_vol < \hyperlink{classcarl_1_1_intersection___tools_a931ecd3fd3103656ede9c84a2eed10d2}{m\_Min\_Inter\_Volume} )
+579             \{
+580                 \textcolor{comment}{// Invalid intersection!}
+581                 bElemIntersect = \textcolor{keyword}{false};
+582 
+583                 std::set<libMesh::Point>::const\_iterator it\_set = points\_out.begin();
+584 \textcolor{comment}{//              std::cout << " -> Volume = " << inter\_vol << std::endl;}
+585                 \textcolor{keywordflow}{for}(; it\_set != points\_out.end(); ++it\_set)
+586                 \{
+587 \textcolor{comment}{//                  it\_set->print();}
+588 \textcolor{comment}{//                  std::cout << std::endl;}
+589                 \}
+590 
+591             \}
+592         \}
+593         \textcolor{keywordflow}{else}
+594         \{
+595             bElemIntersect = \textcolor{keyword}{false};
+596         \}
+597 
+598         \hyperlink{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{m\_perf\_log}.pop(\textcolor{stringliteral}{"Point set output"},\textcolor{stringliteral}{"Exact intersection construction inside coupling"});
+599     \}
+600 
+601     \textcolor{keywordflow}{return} bElemIntersect;
+602 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___tools_acf2d17e703441bc9e3ed05d98f51ba85}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!libmesh\+\_\+set\+\_\+coupling\+\_\+nef\+\_\+polyhedron@{libmesh\+\_\+set\+\_\+coupling\+\_\+nef\+\_\+polyhedron}}
+\index{libmesh\+\_\+set\+\_\+coupling\+\_\+nef\+\_\+polyhedron@{libmesh\+\_\+set\+\_\+coupling\+\_\+nef\+\_\+polyhedron}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{libmesh\+\_\+set\+\_\+coupling\+\_\+nef\+\_\+polyhedron(const lib\+Mesh\+::\+Elem $\ast$elem\+\_\+\+C)}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Tools\+::libmesh\+\_\+set\+\_\+coupling\+\_\+nef\+\_\+polyhedron (
+\begin{DoxyParamCaption}
+\item[{const lib\+Mesh\+::\+Elem $\ast$}]{elem\+\_\+\+C}
+\end{DoxyParamCaption}
+)}\label{classcarl_1_1_intersection___tools_acf2d17e703441bc9e3ed05d98f51ba85}
+
+
+Set the Nef polyhedron for the coupling mesh element. 
+
+
+
+Definition at line 604 of file intersection\+\_\+tools.\+cpp.
+
+
+\begin{DoxyCode}
+605 \{
+606     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_nodes\_C = elem\_C->n\_nodes();
+607 
+608     \textcolor{comment}{// First, convert the element to a CGAL exact point vector}
+609     \hyperlink{classcarl_1_1_intersection___tools_a1d6303ff6ffc19b6df42626e29a507ce}{convert\_elem\_to\_exact\_points}(elem\_C,
+      \hyperlink{classcarl_1_1_intersection___tools_a473d6a254b10623659a1d8f81bbe695f}{m\_exact\_points\_C});
+610 
+611     \textcolor{comment}{// Second, convert to Nef}
+612     std::vector<ExactPoint\_3>::const\_iterator exact\_points\_C\_begin = 
+      \hyperlink{classcarl_1_1_intersection___tools_a473d6a254b10623659a1d8f81bbe695f}{m\_exact\_points\_C}.begin();
+613     \hyperlink{classcarl_1_1_intersection___tools_af689c53cf00359c518234d8d070c4e53}{convert\_exact\_points\_to\_Nef}( exact\_points\_C\_begin,
+614                                     exact\_points\_C\_begin + n\_nodes\_C,
+615                                     \hyperlink{classcarl_1_1_intersection___tools_adf2892a8902442fbfebb913e9a4fb8ac}{m\_nef\_C});
+616 
+617     \textcolor{comment}{// And, finally, associate the tetra and triangle tables to it}
+618     \textcolor{keywordflow}{if}(elem\_C->type() == libMesh::TET4)
+619     \{
+620         \textcolor{comment}{// Use tetrahedron geometry}
+621         \hyperlink{classcarl_1_1_intersection___tools_a2f6b6fff82b9a02400d3aeb3db1f4c82}{m\_elem\_C\_tetrahedrons} = &\hyperlink{classcarl_1_1_intersection___tools_a6e9a49f3b382810c884ba46b791bfcb8}{m\_TET\_tetrahedrons};
+622         \hyperlink{classcarl_1_1_intersection___tools_a89a78135b49b49c32bec8be4016782b3}{m\_elem\_C\_triangles} = &\hyperlink{classcarl_1_1_intersection___tools_a54e026b256ab6894b1f77950a425b1eb}{m\_TET\_triangles};
+623     \}
+624     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(elem\_C->type() == libMesh::HEX8)
+625     \{
+626         \textcolor{comment}{// Use hexaedron geometry}
+627         \hyperlink{classcarl_1_1_intersection___tools_a2f6b6fff82b9a02400d3aeb3db1f4c82}{m\_elem\_C\_tetrahedrons} = &\hyperlink{classcarl_1_1_intersection___tools_af74ec1bcb1a896df19642d340dd2762c}{m\_HEX\_tetrahedrons};
+628         \hyperlink{classcarl_1_1_intersection___tools_a89a78135b49b49c32bec8be4016782b3}{m\_elem\_C\_triangles} = &\hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles};
+629     \}
+630     \textcolor{keywordflow}{else}
+631     \{
+632         \hyperlink{common__header_8h_a05d65d26b911668ac90085745dca71f6}{homemade\_error\_msg}(\textcolor{stringliteral}{"Unsupported element type! Must be either TET4 or HEX8"});
+633     \}
+634 \}
+\end{DoxyCode}
+\hypertarget{classcarl_1_1_intersection___tools_ac2eb9f8074d4dc2511b3f36d3cfd5f3b}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!set\+\_\+element\+\_\+indexes@{set\+\_\+element\+\_\+indexes}}
+\index{set\+\_\+element\+\_\+indexes@{set\+\_\+element\+\_\+indexes}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{set\+\_\+element\+\_\+indexes()}]{\setlength{\rightskip}{0pt plus 5cm}void carl\+::\+Intersection\+\_\+\+Tools\+::set\+\_\+element\+\_\+indexes (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_ac2eb9f8074d4dc2511b3f36d3cfd5f3b}
+
+
+Build the tetrahedron and triangle decomposition mappings. 
+
+C\+G\+A\+L\textquotesingle{}s \char`\"{}do\+\_\+intersect\char`\"{} methods are not compatible with generic polyhedrons -\/ at most, we can determinate if a triangle intersects a tetrahedron. To determinate if two elements A and B intersect, we must then decompose them into these geometrical objects, and test the intersections pairwise. The \hyperlink{classcarl_1_1_intersection___tools_ac2eb9f8074d4dc2511b3f36d3cfd5f3b}{Intersection\+\_\+\+Tools\+::set\+\_\+element\+\_\+indexes} method fills the vectors \char`\"{}m\+\_\+\+X\+Y\+Z\+\_\+tetrahedrons\char`\"{} and \char`\"{}m\+\_\+\+X\+Y\+Z\+\_\+triangles\char`\"{} with a mapping between an T\+E\+T or H\+E\+X element and these decompositions. 
+
+Definition at line 13 of file intersection\+\_\+tools.\+cpp.
+
+
+\begin{DoxyCode}
+14 \{
+15     \hyperlink{classcarl_1_1_intersection___tools_a6e9a49f3b382810c884ba46b791bfcb8}{m\_TET\_tetrahedrons}.resize(1,std::vector<unsigned int>(4,0));
+16     \hyperlink{classcarl_1_1_intersection___tools_a54e026b256ab6894b1f77950a425b1eb}{m\_TET\_triangles}.resize(4,std::vector<unsigned int>(3,0));
+17     \hyperlink{classcarl_1_1_intersection___tools_a153baf989b64fb7033e42ba2342e0fc5}{m\_TET\_edges}.resize(6,std::vector<unsigned int>(2,0));
+18 
+19     \hyperlink{classcarl_1_1_intersection___tools_af74ec1bcb1a896df19642d340dd2762c}{m\_HEX\_tetrahedrons}.resize(5,std::vector<unsigned int>(4,0));
+20     \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles}.resize(12,std::vector<unsigned int>(3,0));
+21     \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\_HEX\_edges}.resize(12,std::vector<unsigned int>(2,0));
+22 
+23     \textcolor{comment}{// Set up tetra tetrahedrons (...)}
+24     \hyperlink{classcarl_1_1_intersection___tools_a6e9a49f3b382810c884ba46b791bfcb8}{m\_TET\_tetrahedrons}[0] = \{0, 1, 2, 3\};
+25 
+26     \textcolor{comment}{// Set up tetra triangles}
+27     \hyperlink{classcarl_1_1_intersection___tools_a54e026b256ab6894b1f77950a425b1eb}{m\_TET\_triangles}[0] = \{0, 1, 2\};
+28     \hyperlink{classcarl_1_1_intersection___tools_a54e026b256ab6894b1f77950a425b1eb}{m\_TET\_triangles}[1] = \{1, 2, 3\};
+29     \hyperlink{classcarl_1_1_intersection___tools_a54e026b256ab6894b1f77950a425b1eb}{m\_TET\_triangles}[2] = \{0, 1, 3\};
+30     \hyperlink{classcarl_1_1_intersection___tools_a54e026b256ab6894b1f77950a425b1eb}{m\_TET\_triangles}[3] = \{0, 2, 3\};
+31 
+32     \textcolor{comment}{// Set up tetra edges}
+33     \hyperlink{classcarl_1_1_intersection___tools_a153baf989b64fb7033e42ba2342e0fc5}{m\_TET\_edges}[0] = \{0, 1\};
+34     \hyperlink{classcarl_1_1_intersection___tools_a153baf989b64fb7033e42ba2342e0fc5}{m\_TET\_edges}[1] = \{0, 2\};
+35     \hyperlink{classcarl_1_1_intersection___tools_a153baf989b64fb7033e42ba2342e0fc5}{m\_TET\_edges}[2] = \{0, 3\};
+36     \hyperlink{classcarl_1_1_intersection___tools_a153baf989b64fb7033e42ba2342e0fc5}{m\_TET\_edges}[3] = \{1, 3\};
+37     \hyperlink{classcarl_1_1_intersection___tools_a153baf989b64fb7033e42ba2342e0fc5}{m\_TET\_edges}[4] = \{3, 2\};
+38     \hyperlink{classcarl_1_1_intersection___tools_a153baf989b64fb7033e42ba2342e0fc5}{m\_TET\_edges}[5] = \{2, 1\};
+39 
+40     \textcolor{comment}{// Set up hex tetrahedrons}
+41     \hyperlink{classcarl_1_1_intersection___tools_af74ec1bcb1a896df19642d340dd2762c}{m\_HEX\_tetrahedrons}[0] = \{0, 1, 3, 4\};
+42     \hyperlink{classcarl_1_1_intersection___tools_af74ec1bcb1a896df19642d340dd2762c}{m\_HEX\_tetrahedrons}[1] = \{5, 1, 4, 6\};
+43     \hyperlink{classcarl_1_1_intersection___tools_af74ec1bcb1a896df19642d340dd2762c}{m\_HEX\_tetrahedrons}[2] = \{7, 3, 4, 6\};
+44     \hyperlink{classcarl_1_1_intersection___tools_af74ec1bcb1a896df19642d340dd2762c}{m\_HEX\_tetrahedrons}[3] = \{2, 6, 1, 3\};
+45 
+46     \hyperlink{classcarl_1_1_intersection___tools_af74ec1bcb1a896df19642d340dd2762c}{m\_HEX\_tetrahedrons}[4] = \{1, 4, 6, 3\};
+47 
+48     \textcolor{comment}{// Set up hex triangles}
+49     \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles}[0] = \{0, 1, 2\};
+50     \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles}[1] = \{0, 3, 2\};
+51 
+52     \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles}[2] = \{0, 1, 5\};
+53     \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles}[3] = \{0, 4, 5\};
+54 
+55     \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles}[4] = \{0, 3, 7\};
+56     \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles}[5] = \{0, 4, 7\};
+57 
+58     \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles}[6] = \{6, 5, 4\};
+59     \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles}[7] = \{6, 7, 4\};
+60 
+61     \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles}[8]  = \{6, 5, 1\};
+62     \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles}[9]  = \{6, 2, 1\};
+63 
+64     \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles}[10] = \{6, 7, 3\};
+65     \hyperlink{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{m\_HEX\_triangles}[11] = \{6, 2, 3\};
+66 
+67     \textcolor{comment}{// Set up hex edges}
+68     \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\_HEX\_edges}[0] = \{0, 1\};
+69     \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\_HEX\_edges}[1] = \{1, 2\};
+70     \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\_HEX\_edges}[2] = \{2, 3\};
+71     \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\_HEX\_edges}[3] = \{3, 0\};
+72 
+73     \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\_HEX\_edges}[4] = \{4, 5\};
+74     \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\_HEX\_edges}[5] = \{5, 6\};
+75     \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\_HEX\_edges}[6] = \{6, 7\};
+76     \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\_HEX\_edges}[7] = \{7, 4\};
+77 
+78     \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\_HEX\_edges}[8]  = \{0, 4\};
+79     \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\_HEX\_edges}[9]  = \{1, 5\};
+80     \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\_HEX\_edges}[10] = \{2, 6\};
+81     \hyperlink{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{m\_HEX\_edges}[11] = \{3, 7\};
+82 \}
+\end{DoxyCode}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classcarl_1_1_intersection___tools_a8cd632ee9314f5981c620af325245413}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!Convert\+Exact\+To\+Inexact@{Convert\+Exact\+To\+Inexact}}
+\index{Convert\+Exact\+To\+Inexact@{Convert\+Exact\+To\+Inexact}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{Convert\+Exact\+To\+Inexact}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Exact\+Kernel\+\_\+to\+\_\+\+Kernel} carl\+::\+Intersection\+\_\+\+Tools\+::\+Convert\+Exact\+To\+Inexact\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a8cd632ee9314f5981c620af325245413}
+
+
+Convert exact C\+G\+A\+L constructs to inexact constructs. 
+
+
+
+Definition at line 51 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a89118c79160362561c0cf7f1743568a6}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!Convert\+Inexact\+To\+Exact@{Convert\+Inexact\+To\+Exact}}
+\index{Convert\+Inexact\+To\+Exact@{Convert\+Inexact\+To\+Exact}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{Convert\+Inexact\+To\+Exact}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Kernel\+\_\+to\+\_\+\+Exact\+Kernel} carl\+::\+Intersection\+\_\+\+Tools\+::\+Convert\+Inexact\+To\+Exact\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a89118c79160362561c0cf7f1743568a6}
+
+
+Convert inexact C\+G\+A\+L constructs to exact constructs. 
+
+
+
+Definition at line 50 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a0a3b4e978977cd29ebac810dc0a2baf6}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!Exact\+Hull\+Traits@{Exact\+Hull\+Traits}}
+\index{Exact\+Hull\+Traits@{Exact\+Hull\+Traits}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{Exact\+Hull\+Traits}]{\setlength{\rightskip}{0pt plus 5cm}C\+G\+A\+L\+::\+Convex\+\_\+hull\+\_\+traits\+\_\+3$<${\bf Exact\+Kernel}$>$ carl\+::\+Intersection\+\_\+\+Tools\+::\+Exact\+Hull\+Traits\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a0a3b4e978977cd29ebac810dc0a2baf6}
+
+
+C\+G\+A\+L Exact\+Kernel\textquotesingle{}s convex hull traits. 
+
+
+
+Definition at line 47 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a1bc3cab10caf53e5de762c4dea2ef1ba}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+dummy\+Poly@{m\+\_\+dummy\+Poly}}
+\index{m\+\_\+dummy\+Poly@{m\+\_\+dummy\+Poly}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+dummy\+Poly}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Exact\+Polyhedron} carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+dummy\+Poly\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a1bc3cab10caf53e5de762c4dea2ef1ba}
+
+
+Intersection polyhedron. 
+
+
+
+Definition at line 45 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a2f6b6fff82b9a02400d3aeb3db1f4c82}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+elem\+\_\+\+C\+\_\+tetrahedrons@{m\+\_\+elem\+\_\+\+C\+\_\+tetrahedrons}}
+\index{m\+\_\+elem\+\_\+\+C\+\_\+tetrahedrons@{m\+\_\+elem\+\_\+\+C\+\_\+tetrahedrons}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+elem\+\_\+\+C\+\_\+tetrahedrons}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$std\+::vector$<$unsigned int$>$ $>$$\ast$ carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+elem\+\_\+\+C\+\_\+tetrahedrons\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a2f6b6fff82b9a02400d3aeb3db1f4c82}
+
+
+Pointer for the appropriate tetrahedron vertex index list ({\bfseries useless!}) 
+
+
+
+Definition at line 77 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a89a78135b49b49c32bec8be4016782b3}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+elem\+\_\+\+C\+\_\+triangles@{m\+\_\+elem\+\_\+\+C\+\_\+triangles}}
+\index{m\+\_\+elem\+\_\+\+C\+\_\+triangles@{m\+\_\+elem\+\_\+\+C\+\_\+triangles}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+elem\+\_\+\+C\+\_\+triangles}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$std\+::vector$<$unsigned int$>$ $>$$\ast$ carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+elem\+\_\+\+C\+\_\+triangles\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a89a78135b49b49c32bec8be4016782b3}
+
+
+Pointer for the appropriate triangle vertex index list ({\bfseries useless!}) 
+
+
+
+Definition at line 78 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_ad636117b292272044b252be62124eb0a}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+exact\+\_\+points\+\_\+\+A@{m\+\_\+exact\+\_\+points\+\_\+\+A}}
+\index{m\+\_\+exact\+\_\+points\+\_\+\+A@{m\+\_\+exact\+\_\+points\+\_\+\+A}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+exact\+\_\+points\+\_\+\+A}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<${\bf Exact\+Point\+\_\+3}$>$ carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+exact\+\_\+points\+\_\+\+A\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_ad636117b292272044b252be62124eb0a}
+
+
+C\+G\+A\+L Exact point vectors. 
+
+
+
+Definition at line 41 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a2c3b6211dd1f9b0aa5f2ac8ffc383182}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+exact\+\_\+points\+\_\+\+B@{m\+\_\+exact\+\_\+points\+\_\+\+B}}
+\index{m\+\_\+exact\+\_\+points\+\_\+\+B@{m\+\_\+exact\+\_\+points\+\_\+\+B}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+exact\+\_\+points\+\_\+\+B}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<${\bf Exact\+Point\+\_\+3}$>$ carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+exact\+\_\+points\+\_\+\+B\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a2c3b6211dd1f9b0aa5f2ac8ffc383182}
+
+
+Definition at line 42 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a473d6a254b10623659a1d8f81bbe695f}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+exact\+\_\+points\+\_\+\+C@{m\+\_\+exact\+\_\+points\+\_\+\+C}}
+\index{m\+\_\+exact\+\_\+points\+\_\+\+C@{m\+\_\+exact\+\_\+points\+\_\+\+C}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+exact\+\_\+points\+\_\+\+C}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<${\bf Exact\+Point\+\_\+3}$>$ carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+exact\+\_\+points\+\_\+\+C\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a473d6a254b10623659a1d8f81bbe695f}
+
+
+Definition at line 43 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+\+H\+E\+X\+\_\+edges@{m\+\_\+\+H\+E\+X\+\_\+edges}}
+\index{m\+\_\+\+H\+E\+X\+\_\+edges@{m\+\_\+\+H\+E\+X\+\_\+edges}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+\+H\+E\+X\+\_\+edges}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$std\+::vector$<$unsigned int$>$ $>$ carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+\+H\+E\+X\+\_\+edges\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a418dc03e4edc3f5bba1f78f6fc5afe71}
+
+
+Vertex indices for a H\+E\+X$\ast$ element edges ({\bfseries not used!}) 
+
+
+
+Definition at line 75 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_af74ec1bcb1a896df19642d340dd2762c}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+\+H\+E\+X\+\_\+tetrahedrons@{m\+\_\+\+H\+E\+X\+\_\+tetrahedrons}}
+\index{m\+\_\+\+H\+E\+X\+\_\+tetrahedrons@{m\+\_\+\+H\+E\+X\+\_\+tetrahedrons}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+\+H\+E\+X\+\_\+tetrahedrons}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$std\+::vector$<$unsigned int$>$ $>$ carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+\+H\+E\+X\+\_\+tetrahedrons\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_af74ec1bcb1a896df19642d340dd2762c}
+
+
+Vertex indices for a H\+E\+X$\ast$ element tetrahedron decomposition. 
+
+
+
+Definition at line 73 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+\+H\+E\+X\+\_\+triangles@{m\+\_\+\+H\+E\+X\+\_\+triangles}}
+\index{m\+\_\+\+H\+E\+X\+\_\+triangles@{m\+\_\+\+H\+E\+X\+\_\+triangles}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+\+H\+E\+X\+\_\+triangles}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$std\+::vector$<$unsigned int$>$ $>$ carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+\+H\+E\+X\+\_\+triangles\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_aca79d0350f0969670dd9d06814c26583}
+
+
+Vertex indices for a H\+E\+X$\ast$ element surface triangles decomposition. 
+
+
+
+Definition at line 74 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a931ecd3fd3103656ede9c84a2eed10d2}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume@{m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume}}
+\index{m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume@{m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+\+Min\+\_\+\+Inter\+\_\+\+Volume\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a931ecd3fd3103656ede9c84a2eed10d2}
+
+
+Minimal volume cutoff for the intersections. 
+
+
+
+Definition at line 57 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a66a33158af0779366d4109e96a10ddc4}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+nef\+\_\+\+A@{m\+\_\+nef\+\_\+\+A}}
+\index{m\+\_\+nef\+\_\+\+A@{m\+\_\+nef\+\_\+\+A}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+nef\+\_\+\+A}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Nef\+\_\+\+Polyhedron} carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+nef\+\_\+\+A\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a66a33158af0779366d4109e96a10ddc4}
+
+
+Nef polyhedrons for the elements. 
+
+
+
+Definition at line 30 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a0b134a30452c8a767fc4265c7c0296a9}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+nef\+\_\+\+B@{m\+\_\+nef\+\_\+\+B}}
+\index{m\+\_\+nef\+\_\+\+B@{m\+\_\+nef\+\_\+\+B}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+nef\+\_\+\+B}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Nef\+\_\+\+Polyhedron} carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+nef\+\_\+\+B\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a0b134a30452c8a767fc4265c7c0296a9}
+
+
+Definition at line 31 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_adf2892a8902442fbfebb913e9a4fb8ac}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+nef\+\_\+\+C@{m\+\_\+nef\+\_\+\+C}}
+\index{m\+\_\+nef\+\_\+\+C@{m\+\_\+nef\+\_\+\+C}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+nef\+\_\+\+C}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Nef\+\_\+\+Polyhedron} carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+nef\+\_\+\+C\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_adf2892a8902442fbfebb913e9a4fb8ac}
+
+
+Definition at line 33 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+nef\+\_\+\+I@{m\+\_\+nef\+\_\+\+I}}
+\index{m\+\_\+nef\+\_\+\+I@{m\+\_\+nef\+\_\+\+I}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+nef\+\_\+\+I}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Nef\+\_\+\+Polyhedron} carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+nef\+\_\+\+I\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a47353dc1c374f45bf3dbaae667270cf3}
+
+
+Definition at line 32 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a8333f16787459e65c4fe913dad50b5c6}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+nef\+\_\+\+I\+\_\+\+A\+C@{m\+\_\+nef\+\_\+\+I\+\_\+\+A\+C}}
+\index{m\+\_\+nef\+\_\+\+I\+\_\+\+A\+C@{m\+\_\+nef\+\_\+\+I\+\_\+\+A\+C}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+nef\+\_\+\+I\+\_\+\+A\+C}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Nef\+\_\+\+Polyhedron} carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+nef\+\_\+\+I\+\_\+\+A\+C\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a8333f16787459e65c4fe913dad50b5c6}
+
+
+Nef polyhedron used to save the intersection between m\+\_\+nef\+\_\+\+A and m\+\_\+nef\+\_\+\+C, reducing the number of intersection operations. 
+
+
+
+Definition at line 38 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+perf\+\_\+log@{m\+\_\+perf\+\_\+log}}
+\index{m\+\_\+perf\+\_\+log@{m\+\_\+perf\+\_\+log}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+perf\+\_\+log}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Perf\+Log carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+perf\+\_\+log\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_afe18e6ca5fd12bae08efb98f69c71a48}
+
+
+lib\+Mesh\+::\+Perf\+Log object. 
+
+
+
+Definition at line 61 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a69657597ebb9655f8797b289939835a3}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+test\+\_\+tetra@{m\+\_\+test\+\_\+tetra}}
+\index{m\+\_\+test\+\_\+tetra@{m\+\_\+test\+\_\+tetra}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+test\+\_\+tetra}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Exact\+Tetrahedron} carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+test\+\_\+tetra\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a69657597ebb9655f8797b289939835a3}
+
+
+Definition at line 54 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a4331121a50baaa93e499f6cfb446c1b0}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+test\+\_\+triangle@{m\+\_\+test\+\_\+triangle}}
+\index{m\+\_\+test\+\_\+triangle@{m\+\_\+test\+\_\+triangle}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+test\+\_\+triangle}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Exact\+Triangle\+\_\+3} carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+test\+\_\+triangle\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a4331121a50baaa93e499f6cfb446c1b0}
+
+
+Definition at line 55 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a153baf989b64fb7033e42ba2342e0fc5}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+\+T\+E\+T\+\_\+edges@{m\+\_\+\+T\+E\+T\+\_\+edges}}
+\index{m\+\_\+\+T\+E\+T\+\_\+edges@{m\+\_\+\+T\+E\+T\+\_\+edges}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+\+T\+E\+T\+\_\+edges}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$std\+::vector$<$unsigned int$>$ $>$ carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+\+T\+E\+T\+\_\+edges\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a153baf989b64fb7033e42ba2342e0fc5}
+
+
+Vertex indices for a T\+E\+T$\ast$ element edges ({\bfseries not used!}) 
+
+
+
+Definition at line 71 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a6e9a49f3b382810c884ba46b791bfcb8}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+\+T\+E\+T\+\_\+tetrahedrons@{m\+\_\+\+T\+E\+T\+\_\+tetrahedrons}}
+\index{m\+\_\+\+T\+E\+T\+\_\+tetrahedrons@{m\+\_\+\+T\+E\+T\+\_\+tetrahedrons}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+\+T\+E\+T\+\_\+tetrahedrons}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$std\+::vector$<$unsigned int$>$ $>$ carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+\+T\+E\+T\+\_\+tetrahedrons\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a6e9a49f3b382810c884ba46b791bfcb8}
+
+
+Vertex indices for a T\+E\+T$\ast$ element tetrahedron. 
+
+
+
+Definition at line 69 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a54e026b256ab6894b1f77950a425b1eb}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!m\+\_\+\+T\+E\+T\+\_\+triangles@{m\+\_\+\+T\+E\+T\+\_\+triangles}}
+\index{m\+\_\+\+T\+E\+T\+\_\+triangles@{m\+\_\+\+T\+E\+T\+\_\+triangles}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{m\+\_\+\+T\+E\+T\+\_\+triangles}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$std\+::vector$<$unsigned int$>$ $>$ carl\+::\+Intersection\+\_\+\+Tools\+::m\+\_\+\+T\+E\+T\+\_\+triangles\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a54e026b256ab6894b1f77950a425b1eb}
+
+
+Vertex indices for a T\+E\+T$\ast$ element surface triangles. 
+
+
+
+Definition at line 70 of file intersection\+\_\+tools.\+h.
+
+\hypertarget{classcarl_1_1_intersection___tools_a651c43f074c2955bd58ef0d519c6ef73}{}\index{carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}!M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+tools@{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+tools}}
+\index{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+tools@{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+tools}!carl\+::\+Intersection\+\_\+\+Tools@{carl\+::\+Intersection\+\_\+\+Tools}}
+\subsubsection[{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+tools}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::\+Intersection\+\_\+\+Tools\+::\+M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+intersection\+\_\+tools\hspace{0.3cm}{\ttfamily [protected]}}\label{classcarl_1_1_intersection___tools_a651c43f074c2955bd58ef0d519c6ef73}
+
+
+Do performance log? {\itshape Default\+:} false. 
+
+
+
+Definition at line 60 of file intersection\+\_\+tools.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/\hyperlink{intersection__tools_8h}{intersection\+\_\+tools.\+h}\item 
+/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/common/intersections\+\_\+parallel/\hyperlink{intersection__tools_8cpp}{intersection\+\_\+tools.\+cpp}\end{DoxyCompactItemize}

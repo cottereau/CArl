@@ -1,0 +1,352 @@
+\hypertarget{libmesh__assemble__lin__anisotropic_8cpp}{}\section{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/\+N\+O\+T\+\_\+\+R\+E\+A\+D\+Y\+\_\+\+Y\+E\+T/libmesh\+\_\+assemble\+\_\+lin\+\_\+anisotropic.cpp File Reference}
+\label{libmesh__assemble__lin__anisotropic_8cpp}\index{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/\+N\+O\+T\+\_\+\+R\+E\+A\+D\+Y\+\_\+\+Y\+E\+T/libmesh\+\_\+assemble\+\_\+lin\+\_\+anisotropic.\+cpp@{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/\+N\+O\+T\+\_\+\+R\+E\+A\+D\+Y\+\_\+\+Y\+E\+T/libmesh\+\_\+assemble\+\_\+lin\+\_\+anisotropic.\+cpp}}
+{\ttfamily \#include \char`\"{}libmesh\+\_\+assemble\+\_\+lin\+\_\+anisotropic.\+h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{libmesh__assemble__lin__anisotropic_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{main} (int argc, char $\ast$$\ast$argv)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{libmesh__assemble__lin__anisotropic_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{}\index{libmesh\+\_\+assemble\+\_\+lin\+\_\+anisotropic.\+cpp@{libmesh\+\_\+assemble\+\_\+lin\+\_\+anisotropic.\+cpp}!main@{main}}
+\index{main@{main}!libmesh\+\_\+assemble\+\_\+lin\+\_\+anisotropic.\+cpp@{libmesh\+\_\+assemble\+\_\+lin\+\_\+anisotropic.\+cpp}}
+\subsubsection[{main(int argc, char $\ast$$\ast$argv)}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv}
+\end{DoxyParamCaption}
+)}\label{libmesh__assemble__lin__anisotropic_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}
+
+
+Definition at line 3 of file libmesh\+\_\+assemble\+\_\+lin\+\_\+anisotropic.\+cpp.
+
+
+\begin{DoxyCode}
+3                                 \{
+4 
+5     \textcolor{comment}{// --- Initialize libMesh}
+6     libMesh::LibMeshInit init(argc, argv);
+7 
+8     \textcolor{comment}{// Do performance log?}
+9     \textcolor{keyword}{const} \textcolor{keywordtype}{bool} MASTER\_bPerfLog\_carl\_libmesh = \textcolor{keyword}{true};
+10     libMesh::PerfLog perf\_log(\textcolor{stringliteral}{"Main program"}, MASTER\_bPerfLog\_carl\_libmesh);
+11 
+12     \textcolor{comment}{// libMesh's C++ / MPI communicator wrapper}
+13     libMesh::Parallel::Communicator& WorldComm = init.comm();
+14 
+15     \textcolor{comment}{// Number of processors and processor rank.}
+16     \textcolor{keywordtype}{int} rank = WorldComm.rank();
+17     \textcolor{keywordtype}{int} nodes = WorldComm.size();
+18 
+19     \textcolor{comment}{// --- Set up inputs}
+20 
+21     \textcolor{comment}{// Command line parser}
+22     GetPot command\_line(argc, argv);
+23 
+24     \textcolor{comment}{// File parser}
+25     GetPot field\_parser;
+26 
+27     \textcolor{comment}{// If there is an input file, parse it to get the parameters. Else, parse the command line}
+28     std::string input\_filename;
+29     \textcolor{keywordflow}{if} (command\_line.search(2, \textcolor{stringliteral}{"--inputfile"}, \textcolor{stringliteral}{"-i"})) \{
+30         input\_filename = command\_line.next(input\_filename);
+31         field\_parser.parse\_input\_file(input\_filename, \textcolor{stringliteral}{"#"}, \textcolor{stringliteral}{"\(\backslash\)n"}, \textcolor{stringliteral}{" \(\backslash\)t\(\backslash\)n"});
+32     \} \textcolor{keywordflow}{else} \{
+33         field\_parser = command\_line;
+34     \}
+35 
+36     \hyperlink{structlibmesh__assemble__input__params}{libmesh\_assemble\_input\_params} input\_params;
+37     \hyperlink{namespacecarl_a902f88f3c52c6fc9c974bc99832e78a7}{get\_input\_params}(field\_parser, input\_params);
+38 
+39     \textcolor{comment}{// Check libMesh installation dimension}
+40     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} dim = 3;
+41 
+42     libmesh\_example\_requires(dim == LIBMESH\_DIM, \textcolor{stringliteral}{"3D support"});
+43 
+44     \textcolor{comment}{// --- Declare the three meshes to be intersected}
+45 
+46     \textcolor{comment}{// - Parallelized meshes: A, B, mediator and weight}
+47     perf\_log.push(\textcolor{stringliteral}{"Meshes - Parallel"},\textcolor{stringliteral}{"Read files:"});
+48     libMesh::Mesh system\_mesh(WorldComm, dim);
+49     system\_mesh.read(input\_params.\hyperlink{structlibmesh__assemble__input__params_aaacb1a941decf01232ab3c5bd9b3bacf}{mesh\_file});
+50     system\_mesh.prepare\_for\_use();
+51 
+52     libMesh::Mesh mesh\_weight(WorldComm, dim);
+53     mesh\_weight.allow\_renumbering(\textcolor{keyword}{false});
+54     mesh\_weight.read(input\_params.\hyperlink{structlibmesh__assemble__input__params_abac50ee0db80bff6bb89d017d1fdc27b}{mesh\_weight\_file});
+55     mesh\_weight.prepare\_for\_use();
+56 
+57     perf\_log.pop(\textcolor{stringliteral}{"Meshes - Parallel"},\textcolor{stringliteral}{"Read files:"});
+58 
+59 \textcolor{comment}{//  // --- Generate the equation systems}
+60 \textcolor{comment}{//  perf\_log.push("Initialization","System initialization:");}
+61 \textcolor{comment}{//  carl::coupled\_system CoupledTest(WorldComm,input\_params.solver\_type);}
+62 
+63 \textcolor{comment}{//  libMesh::EquationSystems& equation\_systems\_inter =}
+64 \textcolor{comment}{//                  CoupledTest.add\_inter\_EquationSystem("InterSys", mesh\_inter);}
+65 
+66 \textcolor{comment}{//  // Add the weight function mesh}
+67 \textcolor{comment}{//  CoupledTest.add\_alpha\_mask("MicroSys",mesh\_weight);}
+68 \textcolor{comment}{//  
+      CoupledTest.set\_alpha\_mask\_parameters("MicroSys",domain\_Idx\_BIG,domain\_Idx\_micro[0],domain\_Idx\_coupling[0]);}
+69 
+70 \textcolor{comment}{//  perf\_log.pop("Initialization","System initialization:");}
+71 
+72 \textcolor{comment}{//  // - Build the MACRO system}
+73 
+74 \textcolor{comment}{//  perf\_log.push("Macro system","System initialization:");}
+75 \textcolor{comment}{//  libMesh::EquationSystems& equation\_systems\_BIG =}
+76 \textcolor{comment}{//                  CoupledTest.set\_BIG\_EquationSystem("BigSys", system\_mesh);}
+77 
+78 \textcolor{comment}{//  // [MACRO] Set up the physical properties}
+79 \textcolor{comment}{//  libMesh::LinearImplicitSystem& elasticity\_system\_BIG}
+80 \textcolor{comment}{//                                      = add\_elasticity(equation\_systems\_BIG);}
+81 
+82 \textcolor{comment}{//  // [MACRO] Defining the boundaries with Dirichlet conditions}
+83 \textcolor{comment}{//  set\_displaced\_border\_translation(elasticity\_system\_BIG, z\_upper\_hole,z\_upper\_hole\_id);}
+84 \textcolor{comment}{//  set\_displaced\_border\_translation(elasticity\_system\_BIG, z\_lower\_hole,z\_lower\_hole\_id);}
+85 \textcolor{comment}{//  set\_clamped\_border(elasticity\_system\_BIG, fixed\_bound\_id);}
+86 
+87 \textcolor{comment}{//  // [MACRO] Build stress system}
+88 \textcolor{comment}{//  libMesh::ExplicitSystem& stress\_system\_BIG}
+89 \textcolor{comment}{//                                      = add\_stress(equation\_systems\_BIG);}
+90 
+91 \textcolor{comment}{//  equation\_systems\_BIG.init();}
+92 
+93 \textcolor{comment}{//  perf\_log.pop("Macro system","System initialization:");}
+94 
+95 \textcolor{comment}{//  // - Build the micro system}
+96 
+97 \textcolor{comment}{//  perf\_log.push("Micro system","System initialization:");}
+98 \textcolor{comment}{//  libMesh::EquationSystems& equation\_systems\_micro =}
+99 \textcolor{comment}{//                  CoupledTest.add\_micro\_EquationSystem<libMesh::PetscMatrix<libMesh::Number>
+       >("MicroSys", mesh\_micro);}
+100 
+101 \textcolor{comment}{//  // [MICRO] Set up the physical properties}
+102 \textcolor{comment}{//  libMesh::LinearImplicitSystem& elasticity\_system\_micro}
+103 \textcolor{comment}{//                                      = add\_elasticity(equation\_systems\_micro);}
+104 
+105 \textcolor{comment}{//  // [MICRO] Build stress system}
+106 \textcolor{comment}{//  libMesh::ExplicitSystem& stress\_system\_micro}
+107 \textcolor{comment}{//                                      = add\_stress(equation\_systems\_micro);}
+108 
+109 \textcolor{comment}{//  equation\_systems\_micro.init();}
+110 \textcolor{comment}{//  perf\_log.pop("Micro system","System initialization:");}
+111 
+112 \textcolor{comment}{//  // - Build the RESTRICTED BIG system}
+113 \textcolor{comment}{//  perf\_log.push("RESTRICTED macro system","System initialization:");}
+114 \textcolor{comment}{//  libMesh::EquationSystems& equation\_systems\_R\_BIG =}
+115 \textcolor{comment}{//                  CoupledTest.set\_Restricted\_BIG\_EquationSystem("BigSys", mesh\_R\_BIG);}
+116 
+117 \textcolor{comment}{//  // [R. MACRO] Set up the physical properties}
+118 \textcolor{comment}{//  libMesh::ExplicitSystem& elasticity\_system\_R\_BIG}
+119 \textcolor{comment}{//                                      = add\_explicit\_elasticity(equation\_systems\_R\_BIG);}
+120 
+121 \textcolor{comment}{//  carl::reduced\_system\_init(elasticity\_system\_R\_BIG);}
+122 
+123 \textcolor{comment}{//  perf\_log.pop("RESTRICTED macro system","System initialization:");}
+124 
+125 \textcolor{comment}{//  // - Build the RESTRICTED micro system}
+126 
+127 \textcolor{comment}{//  perf\_log.push("RESTRICTED micro system","System initialization:");}
+128 \textcolor{comment}{//  libMesh::EquationSystems& equation\_systems\_R\_micro =}
+129 \textcolor{comment}{//                  CoupledTest.add\_Restricted\_micro\_EquationSystem("MicroSys", mesh\_R\_micro);}
+130 
+131 \textcolor{comment}{//  // [R. MICRO] Set up the physical properties}
+132 \textcolor{comment}{//  libMesh::ExplicitSystem& elasticity\_system\_R\_micro}
+133 \textcolor{comment}{//                                      = add\_explicit\_elasticity(equation\_systems\_R\_micro);}
+134 
+135 \textcolor{comment}{//  carl::reduced\_system\_init(elasticity\_system\_R\_micro);}
+136 \textcolor{comment}{//  perf\_log.pop("RESTRICTED micro system","System initialization:");}
+137 
+138 \textcolor{comment}{//  // - Build the mediator system}
+139 
+140 \textcolor{comment}{//  perf\_log.push("Mediator system","System initialization:");}
+141 \textcolor{comment}{//  libMesh::EquationSystems& equation\_systems\_mediator =}
+142 \textcolor{comment}{//                  CoupledTest.add\_mediator\_EquationSystem("MediatorSys", mesh\_mediator);}
+143 
+144 \textcolor{comment}{//  libMesh::LinearImplicitSystem& elasticity\_system\_mediator}
+145 \textcolor{comment}{//                                      = add\_elasticity(equation\_systems\_mediator);}
+146 
+147 \textcolor{comment}{//  equation\_systems\_mediator.init();}
+148 
+149 \textcolor{comment}{//  WorldComm.barrier();}
+150 
+151 \textcolor{comment}{//  perf\_log.pop("Mediator system","System initialization:");}
+152 
+153 \textcolor{comment}{//  // - Build the dummy inter system}
+154 
+155 \textcolor{comment}{//  perf\_log.push("Intersection system","System initialization:");}
+156 \textcolor{comment}{//  libMesh::ExplicitSystem& elasticity\_system\_inter}
+157 \textcolor{comment}{//                                      = add\_explicit\_elasticity(equation\_systems\_inter);}
+158 
+159 \textcolor{comment}{//  carl::reduced\_system\_init(elasticity\_system\_inter);}
+160 
+161 \textcolor{comment}{//  WorldComm.barrier();}
+162 
+163 \textcolor{comment}{//  perf\_log.pop("Intersection system","System initialization:");}
+164 
+165 \textcolor{comment}{//  perf\_log.push("Physical properties","System initialization:");}
+166 
+167 \textcolor{comment}{//  // --- Set the physical parameters}
+168 \textcolor{comment}{//  double BIG\_E = 0;}
+169 \textcolor{comment}{//  double BIG\_Mu = 0;}
+170 
+171 \textcolor{comment}{//  double coupling\_const = -1;}
+172 
+173 \textcolor{comment}{//  // Anisotropic properties for the micro system}
+174 \textcolor{comment}{//  carl::anisotropic\_elasticity\_tensor\_cubic\_sym
+       anisotropy\_data(equation\_systems\_micro,input\_params.physical\_params\_file,BIG\_E,BIG\_Mu);}
+175 
+176 \textcolor{comment}{//  // Homogeneous properties for the macro system}
+177 \textcolor{comment}{//  set\_constant\_physical\_properties(equation\_systems\_BIG,BIG\_E,BIG\_Mu);}
+178 
+179 \textcolor{comment}{//  perf\_log.pop("Physical properties","System initialization:");}
+180 
+181 \textcolor{comment}{//  // --- Set the coupling matrices}
+182 \textcolor{comment}{//  perf\_log.push("Set coupling matrices");}
+183 \textcolor{comment}{//  coupling\_const = BIG\_E;}
+184 
+185 \textcolor{comment}{//  // Set parameters}
+186 \textcolor{comment}{//  CoupledTest.set\_coupling\_parameters("MicroSys",coupling\_const,input\_params.mean\_distance);}
+187 
+188 \textcolor{comment}{//  // Use H1 norm}
+189 \textcolor{comment}{//  CoupledTest.use\_H1\_coupling("MicroSys");}
+190 
+191 \textcolor{comment}{//  // Assemble!}
+192 \textcolor{comment}{//  CoupledTest.assemble\_coupling\_elasticity\_3D\_parallel("BigSys","MicroSys",}
+193 \textcolor{comment}{//          "InterSys","MediatorSys",}
+194 \textcolor{comment}{//          mesh\_R\_BIG, mesh\_R\_micro,}
+195 \textcolor{comment}{//          local\_intersection\_pairs\_map,}
+196 \textcolor{comment}{//          local\_intersection\_restricted\_pairs\_map,}
+197 \textcolor{comment}{//          local\_intersection\_meshI\_to\_inter\_map,}
+198 \textcolor{comment}{//          inter\_mediator\_BIG,}
+199 \textcolor{comment}{//          inter\_mediator\_micro);}
+200 
+201 \textcolor{comment}{//  // Print some info}
+202 \textcolor{comment}{//  std::cout << std::endl;}
+203 \textcolor{comment}{//  std::cout << "| ---> Constants " << std::endl;}
+204 \textcolor{comment}{//  std::cout << "| Macro :" << std::endl;}
+205 \textcolor{comment}{//  std::cout << "|    E            : " << BIG\_E << std::endl;}
+206 \textcolor{comment}{//  std::cout << "|    Mu (lamba\_2) : " << BIG\_Mu << std::endl;}
+207 \textcolor{comment}{//  std::cout << "|    lambda\_1     : " << eval\_lambda\_1(BIG\_E,BIG\_Mu) << std::endl;}
+208 \textcolor{comment}{//  std::cout << "| Coupling :" << std::endl;}
+209 \textcolor{comment}{//  std::cout << "|    kappa        : " << coupling\_const << std::endl;}
+210 \textcolor{comment}{//  std::cout << "|    e            : " << input\_params.mean\_distance << std::endl;}
+211 
+212 \textcolor{comment}{//  switch(input\_params.solver\_type)}
+213 \textcolor{comment}{//  \{}
+214 \textcolor{comment}{//      case carl::LATIN\_MODIFIED\_STIFFNESS:}
+215 \textcolor{comment}{//      case carl::LATIN\_ORIGINAL\_STIFFNESS:}
+216 \textcolor{comment}{//      \{}
+217 \textcolor{comment}{//          std::cout << "| LATIN :" << std::endl;}
+218 \textcolor{comment}{//          std::cout << "|    k\_dA, k\_dB   : " << input\_params.k\_dA << " " << input\_params.k\_dB <<
+       std::endl;}
+219 \textcolor{comment}{//          std::cout << "|    k\_cA, k\_cB   : " << input\_params.k\_cA << " " << input\_params.k\_cB <<
+       std::endl;}
+220 \textcolor{comment}{//          break;}
+221 \textcolor{comment}{//      \}}
+222 \textcolor{comment}{//      case carl::CG:}
+223 \textcolor{comment}{//      \{}
+224 \textcolor{comment}{//          break;}
+225 \textcolor{comment}{//      \}}
+226 \textcolor{comment}{//  \}}
+227 \textcolor{comment}{//  perf\_log.pop("Set coupling matrices");}
+228     
+229 \textcolor{comment}{//  std::cout << "| restart file    : " << input\_params.coupled\_restart\_file\_base << "*" << std::endl;}
+230 
+231 \textcolor{comment}{//  std::cout << std::endl << "| --> Testing the solver " << std::endl << std::endl;}
+232 \textcolor{comment}{//  perf\_log.push("Set up","Coupled Solver:");}
+233 
+234 \textcolor{comment}{//  // --- Set restart files}
+235 \textcolor{comment}{//  if(input\_params.b\_PrintRestartFiles || input\_params.b\_UseRestartFiles)}
+236 \textcolor{comment}{//  \{}
+237 \textcolor{comment}{//      CoupledTest.set\_restart(    input\_params.b\_UseRestartFiles,}
+238 \textcolor{comment}{//              input\_params.b\_PrintRestartFiles,}
+239 \textcolor{comment}{//              input\_params.coupled\_restart\_file\_base);}
+240 \textcolor{comment}{//  \}}
+241 \textcolor{comment}{//  std::cout << std::endl << "| --> Setting the solver " << std::endl << std::endl;}
+242 
+243 \textcolor{comment}{//  // --- Set up the coupled solver!}
+244 \textcolor{comment}{//  switch(input\_params.solver\_type)}
+245 \textcolor{comment}{//  \{}
+246 \textcolor{comment}{//      case carl::LATIN\_MODIFIED\_STIFFNESS:}
+247 \textcolor{comment}{//      case carl::LATIN\_ORIGINAL\_STIFFNESS:}
+248 \textcolor{comment}{//      \{}
+249 \textcolor{comment}{//          CoupledTest.set\_LATIN\_solver(   "MicroSys","Elasticity",}
+250 \textcolor{comment}{//                                          assemble\_elasticity\_with\_weight,}
+251 \textcolor{comment}{//                                          assemble\_elasticity\_anisotropic\_with\_weight,}
+252 \textcolor{comment}{//                                          anisotropy\_data,}
+253 \textcolor{comment}{//                                          input\_params.k\_dA, input\_params.k\_dB, input\_params.k\_cA,
+       input\_params.k\_cB,}
+254 \textcolor{comment}{//                                          input\_params.LATIN\_eps, input\_params.LATIN\_conv\_max,
+       input\_params.LATIN\_relax);}
+255 \textcolor{comment}{//          break;}
+256 \textcolor{comment}{//      \}}
+257 \textcolor{comment}{//      case carl::CG:}
+258 \textcolor{comment}{//      \{}
+259 \textcolor{comment}{//          CoupledTest.use\_null\_space\_micro("MicroSys",true);}
+260 \textcolor{comment}{//          CoupledTest.set\_cg\_preconditioner\_type(input\_params.CG\_precond\_type);}
+261 \textcolor{comment}{//          CoupledTest.set\_CG\_solver(  "MicroSys","Elasticity",}
+262 \textcolor{comment}{//                                          assemble\_elasticity\_with\_weight,}
+263 \textcolor{comment}{//                                          assemble\_elasticity\_anisotropic\_with\_weight,}
+264 \textcolor{comment}{//                                          anisotropy\_data,}
+265 \textcolor{comment}{//                                          
+      input\_params.CG\_coupled\_conv\_abs,input\_params.CG\_coupled\_conv\_rel,}
+266 \textcolor{comment}{//                                          input\_params.CG\_coupled\_conv\_max,input\_params.CG\_coupled\_div,}
+267 \textcolor{comment}{//                                          input\_params.CG\_coupled\_conv\_corr);}
+268 \textcolor{comment}{//          break;}
+269 \textcolor{comment}{//      \}}
+270 \textcolor{comment}{//  \}}
+271 \textcolor{comment}{//  perf\_log.pop("Set up","Coupled Solver:");}
+272 
+273 
+274 \textcolor{comment}{//  // --- Solve !}
+275 \textcolor{comment}{//  perf\_log.push("Solve","Coupled Solver:");}
+276 \textcolor{comment}{//  CoupledTest.solve("MicroSys","Elasticity",input\_params.coupled\_convergence\_output);}
+277 \textcolor{comment}{//  perf\_log.pop("Solve","Coupled Solver:");}
+278 
+279 \textcolor{comment}{//  // --- Calculate stress}
+280 \textcolor{comment}{//  perf\_log.push("Compute stress - micro","Output:");}
+281 \textcolor{comment}{//  compute\_stresses(equation\_systems\_micro);}
+282 \textcolor{comment}{//  perf\_log.pop("Compute stress - micro","Output:");}
+283 
+284 \textcolor{comment}{//  perf\_log.push("Compute stress - macro","Output:");}
+285 \textcolor{comment}{//  compute\_stresses(equation\_systems\_BIG);}
+286 \textcolor{comment}{//  perf\_log.pop("Compute stress - macro","Output:");}
+287 
+288 \textcolor{comment}{//  // --- Export solution}
+289 \textcolor{comment}{// #ifdef LIBMESH\_HAVE\_EXODUS\_API}
+290 \textcolor{comment}{//  if(input\_params.b\_PrintOutput)}
+291 \textcolor{comment}{//  \{}
+292 \textcolor{comment}{//      perf\_log.push("Save output","Output:");}
+293 \textcolor{comment}{//      libMesh::ExodusII\_IO exo\_io\_micro(mesh\_micro, /*single\_precision=*/true);}
+294 
+295 \textcolor{comment}{//      std::set<std::string> system\_names\_micro;}
+296 \textcolor{comment}{//      system\_names\_micro.insert("Elasticity");}
+297 \textcolor{comment}{//      
+      exo\_io\_micro.write\_equation\_systems(input\_params.output\_file\_micro,equation\_systems\_micro,&system\_names\_micro);}
+298 
+299 \textcolor{comment}{//      exo\_io\_micro.write\_element\_data(equation\_systems\_micro);}
+300 
+301 \textcolor{comment}{//      libMesh::ExodusII\_IO exo\_io\_BIG(system\_mesh, /*single\_precision=*/true);}
+302 
+303 \textcolor{comment}{//      std::set<std::string> system\_names\_BIG;}
+304 \textcolor{comment}{//      system\_names\_BIG.insert("Elasticity");}
+305 \textcolor{comment}{//      
+      exo\_io\_BIG.write\_equation\_systems(input\_params.output\_file\_BIG,equation\_systems\_BIG,&system\_names\_BIG);}
+306 
+307 \textcolor{comment}{//      exo\_io\_BIG.write\_element\_data(equation\_systems\_BIG);}
+308 \textcolor{comment}{//      perf\_log.pop("Save output","Output:");}
+309 \textcolor{comment}{//  \}}
+310 \textcolor{comment}{// #endif}
+311 
+312 \textcolor{comment}{//  if(input\_params.b\_ExportScalingData)}
+313 \textcolor{comment}{//  \{}
+314 \textcolor{comment}{//      CoupledTest.print\_perf\_log(input\_params.scaling\_data\_file);}
+315 \textcolor{comment}{//  \}}
+316 
+317     \textcolor{keywordflow}{return} 0;
+318 \}
+\end{DoxyCode}

@@ -1,0 +1,308 @@
+\hypertarget{_c_arl___f_e_t_i__iterate_8cpp}{}\section{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/\+C\+Arl\+\_\+\+F\+E\+T\+I/\+C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+iterate.cpp File Reference}
+\label{_c_arl___f_e_t_i__iterate_8cpp}\index{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/\+C\+Arl\+\_\+\+F\+E\+T\+I/\+C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+iterate.\+cpp@{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/\+C\+Arl\+\_\+\+F\+E\+T\+I/\+C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+iterate.\+cpp}}
+{\ttfamily \#include \char`\"{}C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+iterate.\+h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{_c_arl___f_e_t_i__iterate_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{main} (int argc, char $\ast$$\ast$argv)
+\begin{DoxyCompactList}\small\item\em Program responsible to running the F\+E\+T\+I iterations. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{_c_arl___f_e_t_i__iterate_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{}\index{C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+iterate.\+cpp@{C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+iterate.\+cpp}!main@{main}}
+\index{main@{main}!C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+iterate.\+cpp@{C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+iterate.\+cpp}}
+\subsubsection[{main(int argc, char $\ast$$\ast$argv)}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv}
+\end{DoxyParamCaption}
+)}\label{_c_arl___f_e_t_i__iterate_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}
+
+
+Program responsible to running the F\+E\+T\+I iterations. 
+
+This program\textquotesingle{}s input file description can be found at the documentation of the function \hyperlink{namespacecarl_a902f88f3c52c6fc9c974bc99832e78a7}{carl\+::get\+\_\+input\+\_\+params(\+Get\+Pot\& field\+\_\+parser, feti\+\_\+iterate\+\_\+params\& input\+\_\+params)}.
+
+It will use the following files ...
+\begin{DoxyItemize}
+\item ... from the {\ttfamily input\+\_\+params.\+coupling\+\_\+folder\+\_\+path} folder\+:
+\begin{DoxyItemize}
+\item coupling matrices C\+\_\+1 and C\+\_\+2. {\itshape Files}\+:
+\begin{DoxyItemize}
+\item {\ttfamily coupling\+\_\+matrix\+\_\+macro.\+petscmat}
+\item {\ttfamily coupling\+\_\+matrix\+\_\+micro.\+petscmat}
+\end{DoxyItemize}
+\end{DoxyItemize}
+\item ... from the {\ttfamily input\+\_\+params.\+scratch\+\_\+folder\+\_\+path} folder\+:
+\begin{DoxyItemize}
+\item scalar values (iteration, residual, R\+B mode corrections). {\itshape Files}\+:
+\begin{DoxyItemize}
+\item {\ttfamily F\+E\+T\+I\+\_\+iter\+\_\+scalar\+\_\+data.\+dat}
+\end{DoxyItemize}
+\item solutions x\+\_\+1(kkk) and x\+\_\+2(kkk), from the system K\+\_\+i $\ast$ x\+\_\+i(kkk) = C\+\_\+i$^\wedge$\+T$\ast$p(kkk). {\itshape Files}\+:
+\begin{DoxyItemize}
+\item {\ttfamily ext\+\_\+solver\+\_\+\+A\+\_\+sys\+\_\+sol\+\_\+vec.\+petscvec}
+\item {\ttfamily ext\+\_\+solver\+\_\+\+B\+\_\+sys\+\_\+sol\+\_\+vec.\+petscvec}
+\end{DoxyItemize}
+\item previous iteration vectors r(kkk) anf phi(kkk)
+\begin{DoxyItemize}
+\item {\ttfamily F\+E\+T\+I\+\_\+iter\+\_\+\+\_\+phi\+\_\+\+\_\+current.\+petscvec}
+\item {\ttfamily F\+E\+T\+I\+\_\+iter\+\_\+\+\_\+r\+\_\+\+\_\+current.\+petscvec}
+\end{DoxyItemize}
+\item (several) previous iterations vectors p(jjj), q(jjj) (used for re-\/orthogonalization). {\itshape Files}\+:
+\begin{DoxyItemize}
+\item {\ttfamily F\+E\+T\+I\+\_\+iter\+\_\+\+\_\+q\+\_\+\+\_\+\mbox{[}jjj\mbox{]}.petscvec}, jjj = 0 ... kkk -\/ 1
+\item {\ttfamily F\+E\+T\+I\+\_\+iter\+\_\+\+\_\+p\+\_\+\+\_\+\mbox{[}jjj\mbox{]}.petscvec}, jjj = 0 ... kkk
+\end{DoxyItemize}
+\item previous p(jjj).q(jjj) values (with jjj = 0 ... kkk -\/ 1). {\itshape Files}\+:
+\begin{DoxyItemize}
+\item {\ttfamily F\+E\+T\+I\+\_\+iter\+\_\+p\+\_\+dot\+\_\+q.\+dat}
+\end{DoxyItemize}
+\item matrix inv (R\+\_\+\+I$^\wedge$t $\ast$ R\+\_\+\+I) = inv(\+R\+\_\+2$^\wedge$t$\ast$\+C\+\_\+2$^\wedge$t$\ast$\+C\+\_\+2$\ast$\+R\+\_\+2), used for the rigid body modes projections. {\itshape Files}\+:
+\begin{DoxyItemize}
+\item \mbox{[}R\+B\mbox{]} {\ttfamily rb\+\_\+inv\+\_\+\+R\+I\+T\+R\+I.\+petscmat}.
+\end{DoxyItemize}
+\item rigid body mode vectors multiplied by C\+\_\+2. {\itshape Files}\+:
+\begin{DoxyItemize}
+\item \mbox{[}R\+B\mbox{]} {\ttfamily rb\+\_\+coupl\+\_\+vector\+\_\+\mbox{[}iii\mbox{]}\+\_\+n\+\_\+\mbox{[}nb. of vectors\mbox{]}.petscvec}
+\end{DoxyItemize}
+\end{DoxyItemize}
+\item ... from the micro system folder (common vector path given by {\ttfamily input\+\_\+params.\+R\+B\+\_\+vectors\+\_\+base})\+:
+\begin{DoxyItemize}
+\item rigid body mode vectors. {\itshape Files}\+:
+\begin{DoxyItemize}
+\item \mbox{[}R\+B\mbox{]} {\ttfamily \mbox{[}input\+\_\+params.\+R\+B\+\_\+vectors\+\_\+base\mbox{]}\+\_\+rb\+\_\+vector\+\_\+\mbox{[}iii\mbox{]}\+\_\+n\+\_\+\mbox{[}nb. of vectors\mbox{]}.petscvec}
+\end{DoxyItemize}
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+The items marked with a \mbox{[}R\+B\mbox{]} are only needed if the rigid body modes projectors are used. In the last two cases, \mbox{[}nb. of vectors\mbox{]} is the number of rigid body mode vectors (given by {\ttfamily input\+\_\+params.\+nb\+\_\+of\+\_\+rb\+\_\+vectors}) and \mbox{[}iii\mbox{]} is an integer going from 0 to {\ttfamily input\+\_\+params.\+nb\+\_\+of\+\_\+rb\+\_\+vectors -\/ 1} (following C++ notation).
+
+This program outputs a series of files, all inside the {\ttfamily input\+\_\+params.\+scratch\+\_\+folder\+\_\+path} folder\+:
+\begin{DoxyItemize}
+\item (append) scalar values (iteration, residual, R\+B mode corrections). {\itshape Files}\+:
+\begin{DoxyItemize}
+\item {\ttfamily F\+E\+T\+I\+\_\+iter\+\_\+scalar\+\_\+data.\+dat}
+\end{DoxyItemize}
+\item (overwrite) vectors used as the R\+H\+S for the external solvers. {\itshape Files}\+:
+\begin{DoxyItemize}
+\item {\ttfamily ext\+\_\+solver\+\_\+\+A\+\_\+rhs.\+petscvec}
+\item {\ttfamily ext\+\_\+solver\+\_\+\+B\+\_\+rhs.\+petscvec}
+\end{DoxyItemize}
+\item next iteration vectors, phi(kkk+1), r(kkk+1), q(kkk+1), p(kkk+1). {\itshape Files}\+:
+\begin{DoxyItemize}
+\item {\ttfamily F\+E\+T\+I\+\_\+iter\+\_\+\+\_\+phi\+\_\+\+\_\+current.\+petscvec}
+\item {\ttfamily F\+E\+T\+I\+\_\+iter\+\_\+\+\_\+r\+\_\+\+\_\+current.\+petscvec}
+\item {\ttfamily F\+E\+T\+I\+\_\+iter\+\_\+\+\_\+q\+\_\+\+\_\+\mbox{[}kkk+1\mbox{]}.petscvec}
+\item {\ttfamily F\+E\+T\+I\+\_\+iter\+\_\+\+\_\+p\+\_\+\+\_\+\mbox{[}kkk+1\mbox{]}.petscvec}
+\end{DoxyItemize}
+\item (append) p(kkk).q(kkk) value. {\itshape Files}\+:
+\begin{DoxyItemize}
+\item {\ttfamily F\+E\+T\+I\+\_\+iter\+\_\+p\+\_\+dot\+\_\+q.\+dat} 
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+Definition at line 55 of file C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+iterate.\+cpp.
+
+
+\begin{DoxyCode}
+55                                 \{
+56 
+57     \textcolor{comment}{// --- Initialize libMesh}
+58     libMesh::LibMeshInit init(argc, argv);
+59 
+60     \textcolor{comment}{// Do performance log?}
+61     libMesh::PerfLog perf\_log(\textcolor{stringliteral}{"Main program"});
+62 
+63     \textcolor{comment}{// libMesh's C++ / MPI communicator wrapper}
+64     libMesh::Parallel::Communicator& WorldComm = init.comm();
+65 
+66     \textcolor{comment}{// Number of processors and processor rank.}
+67     \textcolor{keywordtype}{int} rank = WorldComm.rank();
+68     \textcolor{keywordtype}{int} nodes = WorldComm.size();
+69 
+70     \textcolor{comment}{// --- Set up inputs}
+71 
+72     \textcolor{comment}{// Command line parser}
+73     GetPot command\_line(argc, argv);
+74 
+75     \textcolor{comment}{// File parser}
+76     GetPot field\_parser;
+77 
+78     \textcolor{comment}{// If there is an input file, parse it to get the parameters. Else, parse the command line}
+79     std::string input\_filename;
+80     \textcolor{keywordflow}{if} (command\_line.search(2, \textcolor{stringliteral}{"--inputfile"}, \textcolor{stringliteral}{"-i"})) \{
+81         input\_filename = command\_line.next(input\_filename);
+82         field\_parser.parse\_input\_file(input\_filename, \textcolor{stringliteral}{"#"}, \textcolor{stringliteral}{"\(\backslash\)n"}, \textcolor{stringliteral}{" \(\backslash\)t\(\backslash\)n"});
+83     \} \textcolor{keywordflow}{else} \{
+84         field\_parser = command\_line;
+85     \}
+86 
+87     \hyperlink{structcarl_1_1feti__iterate__params}{carl::feti\_iterate\_params} input\_params;
+88     \hyperlink{namespacecarl_a902f88f3c52c6fc9c974bc99832e78a7}{get\_input\_params}(field\_parser, input\_params);
+89 
+90     \textcolor{comment}{// Object containing the FETI operations}
+91     \hyperlink{classcarl_1_1_f_e_t_i___operations}{carl::FETI\_Operations} feti\_op(WorldComm,input\_params.
+      \hyperlink{structcarl_1_1feti__iterate__params_a6f87360ece51431590f3a03f15945e55}{scratch\_folder\_path},input\_params.\hyperlink{structcarl_1_1feti__iterate__params_a198b85f203c17fa0f5973f9c2ced2110}{coupling\_folder\_path});
+92 
+93     \textcolor{comment}{// --- Define if the rb modes will be used or not}
+94     feti\_op.using\_rb\_modes(input\_params.\hyperlink{structcarl_1_1feti__iterate__params_a934be934df429fddea7600c8965bca89}{bUseRigidBodyModes});
+95 
+96     \textcolor{comment}{// --- Read the common files: coupling matrices, null space vectors ...}
+97     \textcolor{comment}{// Read up the coupling matricesconst std::string& filename)}
+98     feti\_op.set\_coupling\_matrix\_R\_micro();
+99     feti\_op.set\_coupling\_matrix\_R\_BIG();
+100 
+101     \textcolor{comment}{// --- Set up any matrices or vectors needed before calculating the outputs}
+102     \textcolor{comment}{// Set up the preconditioner}
+103     feti\_op.set\_preconditioner(input\_params.\hyperlink{structcarl_1_1feti__iterate__params_ac48e02bc42d7a5e3f3a0f70418fbae10}{CG\_precond\_type}, \textcolor{comment}{/* initial\_set = */} \textcolor{keyword}{false});
+104 
+105     \textcolor{comment}{// Read operations needed if we are using the rigid body modes}
+106     \textcolor{keywordflow}{if}(input\_params.\hyperlink{structcarl_1_1feti__iterate__params_a934be934df429fddea7600c8965bca89}{bUseRigidBodyModes})
+107     \{
+108         \textcolor{comment}{// Read the RB-related vectors and matrices}
+109         feti\_op.read\_null\_space\_vecs(input\_params.\hyperlink{structcarl_1_1feti__iterate__params_aa1d86f53ac7316537089cda134f7dd00}{RB\_vectors\_base},input\_params.
+      \hyperlink{structcarl_1_1feti__iterate__params_a5565d7f7666b2417af811d423e37d270}{nb\_of\_rb\_vectors});
+110         feti\_op.read\_null\_space\_inv\_RITRI\_mat();
+111     \}
+112 
+113     \textcolor{comment}{// --- Read the previous iteration files: scalar data, iteration vectors ...}
+114     \textcolor{comment}{/* Read the scalar data from the previous iterations '0 ... kkk'}
+115 \textcolor{comment}{     * We now have: 'kkk'}
+116 \textcolor{comment}{     *              'rho(0)'}
+117 \textcolor{comment}{     *              'rho(kkk)'}
+118 \textcolor{comment}{     *              '| RB\_corr(kkk) |'}
+119 \textcolor{comment}{     *              'p(0 ... kkk - 1).q(0 ... kkk - 1)'}
+120 \textcolor{comment}{     */}
+121     feti\_op.read\_scalar\_data();
+122 
+123     \textcolor{comment}{// Read the vector data from the previous iterations '0 ... kkk'}
+124     \textcolor{comment}{/* We now have: 'r(kkk)'}
+125 \textcolor{comment}{     *              'phi(kkk)'}
+126 \textcolor{comment}{     *              'p(0 ... kkk)'}
+127 \textcolor{comment}{     *              'q(0 ... kkk - 1)'}
+128 \textcolor{comment}{     */}
+129     feti\_op.read\_vector\_data();
+130 
+131     \textcolor{comment}{// Read the previous iteration 'kkk' external solver output, 'x\_i(kkk)'}
+132     feti\_op.read\_ext\_solver\_output();
+133 
+134     \textcolor{comment}{// --- Iterate!}
+135     \textcolor{comment}{// Calculate 'q(kkk) = C\_1 * x\_1(kkk) + C\_2 * x\_2(kkk)' and 'p(kkk).q(kkk)'}
+136     feti\_op.calculate\_q();
+137 
+138     \textcolor{comment}{// Calculate 'phi(kkk + 1) = phi(kkk) + gamma * p(kkk)'}
+139     \textcolor{comment}{// gamma = rho(kkk) / ( p(kkk).q(kkk) )}
+140     feti\_op.calculate\_phi();
+141 
+142     \textcolor{comment}{// Calculate 'r(kkk + 1) = r(kkk) - gamma * q(kkk)'}
+143     feti\_op.calculate\_r();
+144 
+145     \textcolor{comment}{// Calculate 'z(kkk + 1)' (formula depends on preconditioner and projection settings)}
+146     feti\_op.calculate\_z();
+147 
+148     \textcolor{comment}{// Calculate 'p(kkk + 1)'}
+149     feti\_op.calculate\_p();
+150 
+151     \textcolor{comment}{// Calculate 'RB\_corr(kkk+1)'}
+152     \textcolor{keywordflow}{if}(input\_params.\hyperlink{structcarl_1_1feti__iterate__params_a934be934df429fddea7600c8965bca89}{bUseRigidBodyModes})
+153     \{
+154         feti\_op.calculate\_rb\_correction();
+155     \}
+156 
+157     \textcolor{comment}{// Calculate the scalar data, 'rho(kkk+1)' and '| RB\_corr(kkk+1) |'}
+158     feti\_op.calculate\_scalar\_data();
+159 
+160     \textcolor{comment}{/* Export scalar data}
+161 \textcolor{comment}{     * Data to export: 'kkk+1'}
+162 \textcolor{comment}{     *                 'rho(0)'}
+163 \textcolor{comment}{     *                 'rho(kkk+1)'}
+164 \textcolor{comment}{     *                 '| RB\_corr(kkk+1) |'}
+165 \textcolor{comment}{     *                 'p(kkk).q(kkk)'}
+166 \textcolor{comment}{     */}
+167     feti\_op.export\_scalar\_data();
+168 
+169     \textcolor{comment}{/* Export the iteration vectors}
+170 \textcolor{comment}{     * Vectors to export: 'r(kkk+1)'}
+171 \textcolor{comment}{     *                    'phi(kkk+1)'}
+172 \textcolor{comment}{     *                    'p(kkk+1)'}
+173 \textcolor{comment}{     *                    'q(kkk)'}
+174 \textcolor{comment}{     */}
+175     feti\_op.export\_iter\_vecs();
+176 
+177     \textcolor{comment}{// // --- Check the convergence}
+178     \hyperlink{namespacecarl_aa16a7148474e795cb6fea24b9159dccb}{carl::IterationStatus} current\_iteration\_status = 
+      \hyperlink{namespacecarl_aa16a7148474e795cb6fea24b9159dccbace49062f1507d7b0433fc456c23e4756}{carl::IterationStatus::ITERATING};
+179     
+180     \textcolor{keywordflow}{if}(input\_params.\hyperlink{structcarl_1_1feti__iterate__params_a934be934df429fddea7600c8965bca89}{bUseRigidBodyModes})
+181     \{
+182         current\_iteration\_status = feti\_op.check\_convergence(input\_params.
+      \hyperlink{structcarl_1_1feti__iterate__params_a27dca64808ece87470d8b3c8e29f1209}{CG\_coupled\_conv\_rel}, input\_params.\hyperlink{structcarl_1_1feti__iterate__params_a60effd55cacd7ea048aef5d603d7b763}{CG\_coupled\_conv\_abs}, input\_params.
+      \hyperlink{structcarl_1_1feti__iterate__params_a84ca6f789614c1f57bd00256706f6180}{CG\_coupled\_conv\_max}, input\_params.\hyperlink{structcarl_1_1feti__iterate__params_aa6c49632bdf6096cdc8d6e960d269484}{CG\_coupled\_div}, input\_params.
+      \hyperlink{structcarl_1_1feti__iterate__params_ac059145cfe8efc1f101e3dca789cf74d}{CG\_coupled\_conv\_corr});
+183     \} \textcolor{keywordflow}{else} \{
+184         current\_iteration\_status = feti\_op.check\_convergence(input\_params.
+      \hyperlink{structcarl_1_1feti__iterate__params_a27dca64808ece87470d8b3c8e29f1209}{CG\_coupled\_conv\_rel}, input\_params.\hyperlink{structcarl_1_1feti__iterate__params_a60effd55cacd7ea048aef5d603d7b763}{CG\_coupled\_conv\_abs}, input\_params.
+      \hyperlink{structcarl_1_1feti__iterate__params_a84ca6f789614c1f57bd00256706f6180}{CG\_coupled\_conv\_max}, input\_params.\hyperlink{structcarl_1_1feti__iterate__params_aa6c49632bdf6096cdc8d6e960d269484}{CG\_coupled\_div});
+185     \}
+186 
+187     \textcolor{comment}{// Print the current values of the convergence parameters}
+188     feti\_op.print\_previous\_iters\_conv( \textcolor{comment}{/* nb. of iterations = 5 */});
+189 
+190     \textcolor{keywordflow}{switch} (current\_iteration\_status)
+191     \{
+192         \textcolor{keywordflow}{case} \hyperlink{namespacecarl_aa16a7148474e795cb6fea24b9159dccbace49062f1507d7b0433fc456c23e4756}{carl::IterationStatus::ITERATING} :
+193                 \textcolor{comment}{// --- Continue the iteration}
+194 
+195                 \textcolor{comment}{// Export the Ct\_i * p(kkk+1) vectors}
+196                 feti\_op.export\_ext\_solver\_rhs\_Ct\_p();
+197 
+198                 \textcolor{comment}{// --- Launch the "iter\_script.sh" script --- ONLY ON THE FIRST PROC!}
+199                 \textcolor{keywordflow}{if}(WorldComm.rank() == 0)
+200                 \{
+201                     std::string iter\_script\_command = \textcolor{stringliteral}{". "} + input\_params.
+      \hyperlink{structcarl_1_1feti__iterate__params_a6f87360ece51431590f3a03f15945e55}{scratch\_folder\_path} + \textcolor{stringliteral}{"/FETI\_iter\_script.sh"};
+202                     \textcolor{keywordflow}{if}(input\_params.\hyperlink{structcarl_1_1feti__iterate__params_a5154ac3475a52b9973386fde31d82c83}{scheduler} == 
+      \hyperlink{namespacecarl_a67066fdf35a0c326f5147098c0cf45d1a2bec097bc495ac4aacc355d3283f4b93}{carl::ClusterSchedulerType::LOCAL})
+203                     \{
+204                         std::cout << \textcolor{stringliteral}{" !!! LOCAL job 'scheduler: Run the following script manually: "} << 
+      std::endl;
+205                         std::cout << iter\_script\_command << std::endl << std::endl;
+206                     \} \textcolor{keywordflow}{else} \{
+207                         \hyperlink{namespacecarl_a54249fee021b3d53e1a7ae7208292437}{carl::exec\_command}(iter\_script\_command);
+208                     \}
+209                 \}
+210                 \textcolor{keywordflow}{break};
+211         \textcolor{keywordflow}{case} \hyperlink{namespacecarl_aa16a7148474e795cb6fea24b9159dccba46a5716c46e8a291122aa4f547eeded7}{carl::IterationStatus::CONVERGED} :
+212                 \textcolor{comment}{// --- Well ... converged!}
+213 
+214                 \textcolor{comment}{// Export the Ct\_i * phi(kkk+1) vectors}
+215                 feti\_op.export\_ext\_solver\_rhs\_Ct\_phi();
+216 
+217                 \textcolor{comment}{// Export the rigid body modes correction vector}
+218                 feti\_op.export\_rb\_correction\_vector();
+219                 
+220                 \textcolor{comment}{// --- Launch the "sol\_script.sh" script --- ONLY ON THE FIRST PROC!}
+221                 \textcolor{keywordflow}{if}(WorldComm.rank() == 0)
+222                 \{
+223                     std::string sol\_script\_command = \textcolor{stringliteral}{". "} + input\_params.
+      \hyperlink{structcarl_1_1feti__iterate__params_a6f87360ece51431590f3a03f15945e55}{scratch\_folder\_path} + \textcolor{stringliteral}{"/FETI\_sol\_script.sh"};
+224                     \textcolor{keywordflow}{if}(input\_params.\hyperlink{structcarl_1_1feti__iterate__params_a5154ac3475a52b9973386fde31d82c83}{scheduler} == 
+      \hyperlink{namespacecarl_a67066fdf35a0c326f5147098c0cf45d1a2bec097bc495ac4aacc355d3283f4b93}{carl::ClusterSchedulerType::LOCAL})
+225                     \{
+226                         std::cout << \textcolor{stringliteral}{" !!! LOCAL job 'scheduler: Run the following script manually: "} << 
+      std::endl;
+227                         std::cout << sol\_script\_command << std::endl << std::endl;
+228                     \} \textcolor{keywordflow}{else} \{
+229                         \hyperlink{namespacecarl_a54249fee021b3d53e1a7ae7208292437}{carl::exec\_command}(sol\_script\_command);
+230                     \}
+231                 \}
+232                 \textcolor{keywordflow}{break};
+233         \textcolor{keywordflow}{case} \hyperlink{namespacecarl_aa16a7148474e795cb6fea24b9159dccba2c1bef9620cec3d07740e836d7f8f595}{carl::IterationStatus::DIVERGED} :
+234                 \textcolor{comment}{// --- Well, we have to stop here ...}
+235                 \textcolor{keywordflow}{break};
+236     \}
+237 
+238     \textcolor{keywordflow}{return} 0;
+239 \}
+\end{DoxyCode}

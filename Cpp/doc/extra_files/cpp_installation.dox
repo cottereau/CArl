@@ -1,4 +1,35 @@
-/** \file cpp_installation.dox
+/**
+\file cpp_installation.dox
 
-	\page cpp_installation Pre-requisites and installation
- */
+\page cpp_installation Pre-requisites and installation
+
+\section Pre-requisites
+
+This code implementation use the following third party libraries: (the numbers indicate the oldest version for which they were tested)
+
+1. [Boost](http://www.boost.org) (version 1.60.0)
+2. [CGAL](http://www.cgal.org) (version 4.7)
+3. [PETSc](http://www.mcs.anl.gov/petsc/) (version 3.6.2)
+4. [libMesh](https://libmesh.github.io) (version 1.1.0, installed with [TetGen](http://wias-berlin.de/software/tetgen/) support for now)
+
+The following compiler combinations were tested:
+
+1. OS X / macOS : Clang (version 7.0.0) and OpenMPI (version 1.10.0)
+2. Linux : Intel C++ compilers (version 16.0.3) and Intel MPI (version 5.1.2)
+
+This code was not tested or compiled with other operational systems.
+
+\section installation
+
+The installation is done using [CMake](https://cmake.org) (version 3.4.2), and the following commands:
+
+    cd [CArl root directory]/Cpp/bin
+    cmake ..
+    make
+
+This will compile the CArl software using the default system compilers and with the same flags used for the libMesh, plus the `Release` optimization flags (`-O3 -DNDEBUG`). If you want to change these, use the appropriate CMake options or an interface such as `ccmake` or `cmake-gui`.
+
+The CMake script will search for the Boost and CGAL libraries at the default include paths. For the libMesh installation, it will search for a `LIBMESH_DIR` environement variable. If the environement variable is not found, it will set it as `/usr/local`. In both cases, the script will search the `libmesh-config` binary at the `$LIBMESH_DIR/bin` directory.
+
+After finishing the compilation process, a series of executables named `CArl_***` and `libmesh_***` will be added to the `[CArl root directory]/Cpp/bin` folder. The former are the core binaries of the C++ implementation, while the latter are used as an example based on libMesh's solvers.
+*/

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['usage',['Usage',['../cpp_usage.html',1,'cpp_main']]]
+  ['usage_20and_20implementation',['Usage and implementation',['../cpp_usage.html',1,'cpp_main']]]
 ];

@@ -1,0 +1,83 @@
+\hypertarget{common__functions_8h}{}\section{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/common\+\_\+functions.h File Reference}
+\label{common__functions_8h}\index{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/common\+\_\+functions.\+h@{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/common\+\_\+functions.\+h}}
+{\ttfamily \#include \char`\"{}common\+\_\+header\+\_\+libmesh.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}common\+\_\+header.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}common\+\_\+enums.\+h\char`\"{}}\\*
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structcarl_1_1_intersection_data}{carl\+::\+Intersection\+Data}
+\item 
+struct \hyperlink{structcarl_1_1_point_hash__3_d}{carl\+::\+Point\+Hash\+\_\+3\+D}
+\item 
+struct \hyperlink{structcarl_1_1_point_hash__3_d___equal}{carl\+::\+Point\+Hash\+\_\+3\+D\+\_\+\+Equal}
+\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespacecarl}{carl}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{common__functions_8h_a29df66564112441424244e1412e30706}{kronecker\+\_\+delta} (unsigned int i, unsigned int j)
+\item 
+void \hyperlink{common__functions_8h_a12842b8b730929713fc18ea2e2586557}{clear\+\_\+line} ()
+\item 
+std\+::string \hyperlink{namespacecarl_a855a8c682ef0ee0a35f987e051d2bbf2}{carl\+::\+Cluster\+Scheduler\+Type\+\_\+to\+\_\+string} (Cluster\+Scheduler\+Type input)
+\item 
+std\+::string \hyperlink{namespacecarl_ae4298594b456c7d030d5be6868d6dc63}{carl\+::\+Base\+C\+G\+Precond\+Type\+\_\+to\+\_\+string} (Base\+C\+G\+Precond\+Type input)
+\item 
+std\+::string \hyperlink{namespacecarl_a2df653606e38410b38a938470c3b7fd3}{carl\+::\+Ext\+Solver\+Type\+\_\+to\+\_\+string} (Ext\+Solver\+Type input)
+\item 
+std\+::string \hyperlink{namespacecarl_a54249fee021b3d53e1a7ae7208292437}{carl\+::exec\+\_\+command} (const std\+::string \&cmd)
+\item 
+void \hyperlink{namespacecarl_a543276bdc1b659a9373b4255892b7174}{carl\+::invert\+\_\+index\+\_\+unordered\+\_\+map} (const std\+::unordered\+\_\+map$<$ int, int $>$ \&input\+\_\+map, std\+::unordered\+\_\+map$<$ int, int $>$ \&output\+\_\+map)
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \hyperlink{namespacecarl_a48bf9a2c641710d703991550fc480884}{carl\+::jump\+\_\+lines} (T \&filestream, unsigned int number\+Of\+Lines=1)
+\item 
+int \hyperlink{namespacecarl_a3e28e30c4315c39fbddd46af79018d51}{carl\+::voigt\+\_\+index\+\_\+converter} (int aaa, int bbb)
+\item 
+void \hyperlink{namespacecarl_a87ce5fcb102a26f69dbef740667eb08b}{carl\+::print\+\_\+stats\+\_\+to\+\_\+file} (std\+::vector$<$ double $>$ \&vec\+\_\+data, const std\+::string filename)
+\item 
+{\footnotesize template$<$typename Sys $>$ }\\void \hyperlink{namespacecarl_a8b8d75f4ab54390f3e7c607ed4f0cf19}{carl\+::reduced\+\_\+system\+\_\+init} (Sys \&system\+\_\+input)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{common__functions_8h_a12842b8b730929713fc18ea2e2586557}{}\index{common\+\_\+functions.\+h@{common\+\_\+functions.\+h}!clear\+\_\+line@{clear\+\_\+line}}
+\index{clear\+\_\+line@{clear\+\_\+line}!common\+\_\+functions.\+h@{common\+\_\+functions.\+h}}
+\subsubsection[{clear\+\_\+line()}]{\setlength{\rightskip}{0pt plus 5cm}void clear\+\_\+line (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{common__functions_8h_a12842b8b730929713fc18ea2e2586557}
+
+
+Definition at line 88 of file common\+\_\+functions.\+cpp.
+
+
+\begin{DoxyCode}
+89 \{
+90     std::cout << \textcolor{charliteral}{'\(\backslash\)r'} << \textcolor{stringliteral}{"                                                                               "} 
+      << \textcolor{stringliteral}{"\(\backslash\)r"};
+91 \};
+\end{DoxyCode}
+\hypertarget{common__functions_8h_a29df66564112441424244e1412e30706}{}\index{common\+\_\+functions.\+h@{common\+\_\+functions.\+h}!kronecker\+\_\+delta@{kronecker\+\_\+delta}}
+\index{kronecker\+\_\+delta@{kronecker\+\_\+delta}!common\+\_\+functions.\+h@{common\+\_\+functions.\+h}}
+\subsubsection[{kronecker\+\_\+delta(unsigned int i, unsigned int j)}]{\setlength{\rightskip}{0pt plus 5cm}int kronecker\+\_\+delta (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{i, }
+\item[{unsigned int}]{j}
+\end{DoxyParamCaption}
+)}\label{common__functions_8h_a29df66564112441424244e1412e30706}
+
+
+Definition at line 3 of file common\+\_\+functions.\+cpp.
+
+
+\begin{DoxyCode}
+5 \{
+6     \textcolor{keywordflow}{return} i == j ? 1. : 0.;
+7 \};
+\end{DoxyCode}

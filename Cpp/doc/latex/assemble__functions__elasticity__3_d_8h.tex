@@ -1,0 +1,1216 @@
+\hypertarget{assemble__functions__elasticity__3_d_8h}{}\section{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/include/assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.h File Reference}
+\label{assemble__functions__elasticity__3_d_8h}\index{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/include/assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/include/assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}}
+{\ttfamily \#include \char`\"{}common\+\_\+header\+\_\+ext\+\_\+solver\+\_\+libmesh.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}weight\+\_\+parameter\+\_\+function.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ext\+\_\+solver\+\_\+libmesh\+\_\+enums.\+h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{assemble__functions__elasticity__3_d_8h_aea23a05af24215485f869a40649d9323}{set\+\_\+homogeneous\+\_\+physical\+\_\+properties} (lib\+Mesh\+::\+Equation\+Systems \&es, std\+::string \&physical\+Params\+File)
+\begin{DoxyCompactList}\small\item\em Set the homogeneous physical properties from a file. \end{DoxyCompactList}\item 
+void \hyperlink{assemble__functions__elasticity__3_d_8h_ae93bdb734dc37c19c8d0c7b73b5f755b}{set\+\_\+heterogeneous\+\_\+physical\+\_\+properties} (lib\+Mesh\+::\+Equation\+Systems \&es, std\+::string \&physical\+Params\+File)
+\begin{DoxyCompactList}\small\item\em Set the heterogeneous, isotropic physical properties from a file. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Real \hyperlink{assemble__functions__elasticity__3_d_8h_a47a0604a6b90a9b17a14e8fcba0eafb7}{eval\+\_\+lambda\+\_\+1} (lib\+Mesh\+::\+Real E, lib\+Mesh\+::\+Real mu)
+\begin{DoxyCompactList}\small\item\em Calculate lambda\+\_\+1 from E and Mu. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Real \hyperlink{assemble__functions__elasticity__3_d_8h_a218aeb9086b43ea98d92955a9264eee4}{eval\+\_\+elasticity\+\_\+tensor} (unsigned int i, unsigned int j, unsigned int k, unsigned int l, lib\+Mesh\+::\+Number E, lib\+Mesh\+::\+Number mu)
+\begin{DoxyCompactList}\small\item\em Calculate the elasticity tensor. \end{DoxyCompactList}\item 
+void \hyperlink{assemble__functions__elasticity__3_d_8h_a62ab03859c2ec11c13405298313da9b4}{Update\+\_\+\+Sub\+K\+\_\+isotropic} (lib\+Mesh\+::\+Dense\+Sub\+Matrix$<$ lib\+Mesh\+::\+Number $>$ \&Sub\+K, unsigned int qp, unsigned int C\+\_\+i, unsigned int C\+\_\+k, const std\+::vector$<$ std\+::vector$<$ lib\+Mesh\+::\+Real\+Gradient $>$ $>$ \&dphi, const unsigned int n\+\_\+components, const unsigned int n\+\_\+u\+\_\+dofs, const std\+::vector$<$ lib\+Mesh\+::\+Real $>$ \&Jx\+W, lib\+Mesh\+::\+Number E=1.\+0, lib\+Mesh\+::\+Number mu=0.\+4, double cte=1)
+\begin{DoxyCompactList}\small\item\em Calculate the rigidity sub-\/matrix contribution. \end{DoxyCompactList}\item 
+void \hyperlink{assemble__functions__elasticity__3_d_8h_a28fe329168ccdf10698ce40b2dca70b4}{assemble\+\_\+elasticity\+\_\+with\+\_\+weight} (lib\+Mesh\+::\+Equation\+Systems \&es, const std\+::string \&system\+\_\+name, \hyperlink{classweight__parameter__function}{weight\+\_\+parameter\+\_\+function} \&weight\+\_\+mask, \hyperlink{ext__solver__libmesh__enums_8h_acc44f45992a493fb31c90d260d4ab83f}{Weight\+Function\+System\+Type} system\+\_\+type)
+\begin{DoxyCompactList}\small\item\em Assemble homogeneous elasticity with domain weights. \end{DoxyCompactList}\item 
+void \hyperlink{assemble__functions__elasticity__3_d_8h_a2dd8cb6689b655c3ed988b7a2e07bf28}{assemble\+\_\+elasticity\+\_\+with\+\_\+weight\+\_\+and\+\_\+traction} (lib\+Mesh\+::\+Equation\+Systems \&es, const std\+::string \&system\+\_\+name, \hyperlink{classweight__parameter__function}{weight\+\_\+parameter\+\_\+function} \&weight\+\_\+mask, \hyperlink{ext__solver__libmesh__enums_8h_acc44f45992a493fb31c90d260d4ab83f}{Weight\+Function\+System\+Type} system\+\_\+type, int traction\+\_\+boundary\+\_\+id, std\+::vector$<$ double $>$ traction\+\_\+density)
+\begin{DoxyCompactList}\small\item\em Assemble homogeneous elasticity with domain weights and traction. \end{DoxyCompactList}\item 
+void \hyperlink{assemble__functions__elasticity__3_d_8h_a9bc91e2611cc2bcad0b974d568663f32}{assemble\+\_\+elasticity\+\_\+heterogeneous\+\_\+with\+\_\+weight} (lib\+Mesh\+::\+Equation\+Systems \&es, const std\+::string \&system\+\_\+name, \hyperlink{classweight__parameter__function}{weight\+\_\+parameter\+\_\+function} \&weight\+\_\+mask, \hyperlink{ext__solver__libmesh__enums_8h_acc44f45992a493fb31c90d260d4ab83f}{Weight\+Function\+System\+Type} system\+\_\+type)
+\begin{DoxyCompactList}\small\item\em Assemble heterogeneous elasticity with domain weights. \end{DoxyCompactList}\item 
+void \hyperlink{assemble__functions__elasticity__3_d_8h_a1b5f0b2890232d0fe23bbfa3fef621eb}{compute\+\_\+stresses} (lib\+Mesh\+::\+Equation\+Systems \&es)
+\begin{DoxyCompactList}\small\item\em Compute the stress (based on one of lib\+Mesh\textquotesingle{}s examples) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const bool \hyperlink{assemble__functions__elasticity__3_d_8h_ab37296de69e82d9b93c8f6db72aa6a89}{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+assemble\+\_\+fem} = false
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{assemble__functions__elasticity__3_d_8h_a9bc91e2611cc2bcad0b974d568663f32}{}\index{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}!assemble\+\_\+elasticity\+\_\+heterogeneous\+\_\+with\+\_\+weight@{assemble\+\_\+elasticity\+\_\+heterogeneous\+\_\+with\+\_\+weight}}
+\index{assemble\+\_\+elasticity\+\_\+heterogeneous\+\_\+with\+\_\+weight@{assemble\+\_\+elasticity\+\_\+heterogeneous\+\_\+with\+\_\+weight}!assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}}
+\subsubsection[{assemble\+\_\+elasticity\+\_\+heterogeneous\+\_\+with\+\_\+weight(lib\+Mesh\+::\+Equation\+Systems \&es, const std\+::string \&system\+\_\+name, weight\+\_\+parameter\+\_\+function \&weight\+\_\+mask, Weight\+Function\+System\+Type system\+\_\+type)}]{\setlength{\rightskip}{0pt plus 5cm}void assemble\+\_\+elasticity\+\_\+heterogeneous\+\_\+with\+\_\+weight (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Equation\+Systems \&}]{es, }
+\item[{const std\+::string \&}]{system\+\_\+name, }
+\item[{{\bf weight\+\_\+parameter\+\_\+function} \&}]{weight\+\_\+mask, }
+\item[{{\bf Weight\+Function\+System\+Type}}]{system\+\_\+type}
+\end{DoxyParamCaption}
+)}\label{assemble__functions__elasticity__3_d_8h_a9bc91e2611cc2bcad0b974d568663f32}
+
+
+Assemble heterogeneous elasticity with domain weights. 
+
+
+
+Definition at line 615 of file assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+619 \{
+620     libmesh\_assert\_equal\_to (system\_name, \textcolor{stringliteral}{"Elasticity"});
+621 
+622     libMesh::PerfLog perf\_log (\textcolor{stringliteral}{"Matrix Assembly (Heterogeneous elasticity)"},
+      \hyperlink{assemble__functions__elasticity__3_d_8h_ab37296de69e82d9b93c8f6db72aa6a89}{MASTER\_bPerfLog\_assemble\_fem});
+623 
+624     perf\_log.push(\textcolor{stringliteral}{"Preamble"});
+625     \textcolor{comment}{// Set up mesh}
+626     \textcolor{keyword}{const} libMesh::MeshBase& mesh = es.get\_mesh();
+627 
+628     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} dim = mesh.mesh\_dimension();
+629 
+630     \textcolor{comment}{// - Set up physical properties system ------------------------------------}
+631     libMesh::Number localE = -1;
+632     libMesh::Number localMu = -1;
+633 
+634     libMesh::ExplicitSystem& physical\_param\_system = es.get\_system<libMesh::ExplicitSystem>(\textcolor{stringliteral}{"
+      PhysicalConstants"});
+635     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} young\_var = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"E"});
+636     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} mu\_var = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"mu"});
+637 
+638     \textcolor{keyword}{const} libMesh::DofMap& physical\_dof\_map = physical\_param\_system.get\_dof\_map();
+639     std::vector<libMesh::dof\_id\_type> physical\_dof\_indices\_var;
+640 
+641     \textcolor{comment}{// - Set up elasticity system ---------------------------------------------}
+642     libMesh::LinearImplicitSystem& system = es.get\_system<libMesh::LinearImplicitSystem>(\textcolor{stringliteral}{"Elasticity"});
+643 
+644     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_components = 3;
+645     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} u\_var = system.variable\_number (\textcolor{stringliteral}{"u"});
+646     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} v\_var = system.variable\_number (\textcolor{stringliteral}{"v"});
+647     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} w\_var = system.variable\_number (\textcolor{stringliteral}{"w"});
+648 
+649     \textcolor{keyword}{const} libMesh::DofMap& dof\_map = system.get\_dof\_map();
+650     libMesh::FEType fe\_type = dof\_map.variable\_type(u\_var);
+651 
+652     \textcolor{comment}{// Set up pointers to FEBase's of dimension dim and FE type fe\_type}
+653     \textcolor{comment}{// -> 3D elements}
+654     libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe\_type));
+655     libMesh::QGauss qrule (dim, fe\_type.default\_quadrature\_order());
+656     fe->attach\_quadrature\_rule (&qrule);
+657 
+658     \textcolor{comment}{// -> Faces}
+659     libMesh::UniquePtr<libMesh::FEBase> fe\_face (libMesh::FEBase::build(dim, fe\_type));
+660     libMesh::QGauss qface(dim-1, fe\_type.default\_quadrature\_order());
+661     fe\_face->attach\_quadrature\_rule (&qface);
+662 
+663     \textcolor{comment}{// Jacobian}
+664     \textcolor{keyword}{const} std::vector<libMesh::Real>& JxW = fe->get\_JxW();
+665 
+666     \textcolor{comment}{// Shape functions derivatives}
+667     \textcolor{keyword}{const} std::vector<std::vector<libMesh::RealGradient> >& dphi = fe->get\_dphi();
+668 
+669     \textcolor{comment}{// Quadrature points}
+670     \textcolor{keyword}{const} std::vector<libMesh::Point>& qp\_points = fe->get\_xyz();
+671 
+672     \textcolor{comment}{// Weights for the Arlequin method}
+673     \textcolor{keywordtype}{double} weight\_alpha = 1;
+674 
+675     libMesh::DenseMatrix<libMesh::Number> Ke;
+676     libMesh::DenseVector<libMesh::Number> Fe;
+677 
+678     libMesh::DenseSubMatrix<libMesh::Number>
+679     Kuu(Ke), Kuv(Ke), Kuw(Ke),
+680     Kvu(Ke), Kvv(Ke), Kvw(Ke),
+681     Kwu(Ke), Kwv(Ke), Kww(Ke);
+682 
+683     libMesh::DenseSubVector<libMesh::Number>
+684     Fu(Fe),
+685     Fv(Fe),
+686     Fw(Fe);
+687 
+688     std::vector<libMesh::dof\_id\_type> dof\_indices;
+689     std::vector<libMesh::dof\_id\_type> dof\_indices\_u;
+690     std::vector<libMesh::dof\_id\_type> dof\_indices\_v;
+691     std::vector<libMesh::dof\_id\_type> dof\_indices\_w;
+692 
+693     libMesh::MeshBase::const\_element\_iterator       el     = mesh.active\_local\_elements\_begin();
+694     \textcolor{keyword}{const} libMesh::MeshBase::const\_element\_iterator end\_el = mesh.active\_local\_elements\_end();
+695 
+696     perf\_log.pop(\textcolor{stringliteral}{"Preamble"});
+697 
+698     \textcolor{comment}{// For each element}
+699     \textcolor{keywordflow}{for} ( ; el != end\_el; ++el)
+700     \{
+701         \textcolor{comment}{// Get its pointer}
+702         \textcolor{keyword}{const} libMesh::Elem* elem = *el;
+703 
+704         perf\_log.push(\textcolor{stringliteral}{"Define DoF"});
+705         \textcolor{comment}{// The total DoF indices, and those associated to each variable}
+706         dof\_map.dof\_indices (elem, dof\_indices);
+707         dof\_map.dof\_indices (elem, dof\_indices\_u, u\_var);
+708         dof\_map.dof\_indices (elem, dof\_indices\_v, v\_var);
+709         dof\_map.dof\_indices (elem, dof\_indices\_w, w\_var);
+710 
+711         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_dofs   = dof\_indices.size();
+712         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_u\_dofs = dof\_indices\_u.size();
+713         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_v\_dofs = dof\_indices\_v.size();
+714         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_w\_dofs = dof\_indices\_w.size();
+715 
+716         perf\_log.pop(\textcolor{stringliteral}{"Define DoF"});
+717 
+718         perf\_log.push(\textcolor{stringliteral}{"Define physical params"});
+719         \textcolor{comment}{// The DoF and values of the physical system}
+720         physical\_dof\_map.dof\_indices(elem, physical\_dof\_indices\_var, young\_var);
+721         localE = physical\_param\_system.current\_solution(physical\_dof\_indices\_var[0]);
+722 
+723         physical\_dof\_map.dof\_indices(elem, physical\_dof\_indices\_var, mu\_var);
+724         localMu = physical\_param\_system.current\_solution(physical\_dof\_indices\_var[0]);
+725         perf\_log.pop(\textcolor{stringliteral}{"Define physical params"});
+726 
+727         \textcolor{comment}{// Restart the FE to the "geometry" of the element}
+728         \textcolor{comment}{// -> Determines quadrature points, shape functions ...}
+729         \textcolor{comment}{// !!! User can change the points to be used (can use other mesh's points}
+730         \textcolor{comment}{//      instead of the quadrature points)}
+731         fe->reinit (elem);
+732 
+733         perf\_log.push(\textcolor{stringliteral}{"Matrix manipulations"});
+734         Ke.resize (n\_dofs, n\_dofs);
+735         Fe.resize (n\_dofs);
+736 
+737         \textcolor{comment}{// Set the positions of the sub-matrices}
+738         Kuu.reposition (u\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_u\_dofs, n\_u\_dofs);
+739         Kuv.reposition (u\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_u\_dofs, n\_v\_dofs);
+740         Kuw.reposition (u\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_u\_dofs, n\_w\_dofs);
+741 
+742         Kvu.reposition (v\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_v\_dofs, n\_u\_dofs);
+743         Kvv.reposition (v\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_v\_dofs, n\_v\_dofs);
+744         Kvw.reposition (v\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_v\_dofs, n\_w\_dofs);
+745 
+746         Kwu.reposition (w\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_w\_dofs, n\_u\_dofs);
+747         Kwv.reposition (w\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_w\_dofs, n\_v\_dofs);
+748         Kww.reposition (w\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_w\_dofs, n\_w\_dofs);
+749 
+750         Fu.reposition (u\_var*n\_u\_dofs, n\_u\_dofs);
+751         Fv.reposition (v\_var*n\_u\_dofs, n\_v\_dofs);
+752         Fw.reposition (w\_var*n\_u\_dofs, n\_w\_dofs);
+753         perf\_log.push(\textcolor{stringliteral}{"Matrix manipulations"});
+754 
+755         perf\_log.push(\textcolor{stringliteral}{"Matrix element calculations"});
+756         \textcolor{comment}{// For each quadrature point determinate the sub-matrices elements}
+757         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} qp=0; qp<qrule.n\_points(); qp++)
+758         \{
+759 
+760             perf\_log.push(\textcolor{stringliteral}{"Rigidity"},\textcolor{stringliteral}{"Matrix element calculations"});
+761             weight\_alpha = weight\_mask.\hyperlink{classweight__parameter__function_a247727d50e3208790204e57a83c8bdc4}{get\_alpha}(qp\_points[qp],system\_type);
+762 
+763             \textcolor{comment}{// Internal tension}
+764             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kuu, qp, 0, 0, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+765             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kuv, qp, 0, 1, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+766             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kuw, qp, 0, 2, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+767 
+768             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kvu, qp, 1, 0, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+769             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kvv, qp, 1, 1, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+770             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kvw, qp, 1, 2, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+771 
+772             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kwu, qp, 2, 0, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+773             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kwv, qp, 2, 1, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+774             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kww, qp, 2, 2, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+775 
+776             perf\_log.pop(\textcolor{stringliteral}{"Rigidity"},\textcolor{stringliteral}{"Matrix element calculations"});
+777         \}
+778 
+779         \textcolor{comment}{// Apply constraints}
+780         perf\_log.push(\textcolor{stringliteral}{"Constraints"},\textcolor{stringliteral}{"Matrix element calculations"});
+781         dof\_map.heterogenously\_constrain\_element\_matrix\_and\_vector(Ke, Fe, dof\_indices);
+782         perf\_log.pop(\textcolor{stringliteral}{"Constraints"},\textcolor{stringliteral}{"Matrix element calculations"});
+783 
+784         perf\_log.push(\textcolor{stringliteral}{"Adding elements"});
+785         system.matrix->add\_matrix (Ke, dof\_indices);
+786         system.rhs->add\_vector    (Fe, dof\_indices);
+787         perf\_log.pop(\textcolor{stringliteral}{"Adding elements"});
+788     \}
+789     
+790     system.matrix->close();
+791     system.rhs->close();
+792 \};
+\end{DoxyCode}
+\hypertarget{assemble__functions__elasticity__3_d_8h_a28fe329168ccdf10698ce40b2dca70b4}{}\index{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}!assemble\+\_\+elasticity\+\_\+with\+\_\+weight@{assemble\+\_\+elasticity\+\_\+with\+\_\+weight}}
+\index{assemble\+\_\+elasticity\+\_\+with\+\_\+weight@{assemble\+\_\+elasticity\+\_\+with\+\_\+weight}!assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}}
+\subsubsection[{assemble\+\_\+elasticity\+\_\+with\+\_\+weight(lib\+Mesh\+::\+Equation\+Systems \&es, const std\+::string \&system\+\_\+name, weight\+\_\+parameter\+\_\+function \&weight\+\_\+mask, Weight\+Function\+System\+Type system\+\_\+type)}]{\setlength{\rightskip}{0pt plus 5cm}void assemble\+\_\+elasticity\+\_\+with\+\_\+weight (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Equation\+Systems \&}]{es, }
+\item[{const std\+::string \&}]{system\+\_\+name, }
+\item[{{\bf weight\+\_\+parameter\+\_\+function} \&}]{weight\+\_\+mask, }
+\item[{{\bf Weight\+Function\+System\+Type}}]{system\+\_\+type}
+\end{DoxyParamCaption}
+)}\label{assemble__functions__elasticity__3_d_8h_a28fe329168ccdf10698ce40b2dca70b4}
+
+
+Assemble homogeneous elasticity with domain weights. 
+
+
+
+Definition at line 223 of file assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+227 \{
+228     libmesh\_assert\_equal\_to(system\_name, \textcolor{stringliteral}{"Elasticity"});
+229 
+230     libMesh::PerfLog perf\_log (\textcolor{stringliteral}{"Matrix Assembly (Homogeneous elasticity)"},
+      \hyperlink{assemble__functions__elasticity__3_d_8h_ab37296de69e82d9b93c8f6db72aa6a89}{MASTER\_bPerfLog\_assemble\_fem});
+231 
+232     perf\_log.push(\textcolor{stringliteral}{"Preamble"});
+233 
+234     \textcolor{keyword}{const} libMesh::MeshBase& mesh = es.get\_mesh();
+235 
+236     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} dim = mesh.mesh\_dimension();
+237 
+238     \textcolor{comment}{// - Set up physical properties system ------------------------------------}
+239     libMesh::ExplicitSystem& physical\_param\_system = es.get\_system<libMesh::ExplicitSystem>(\textcolor{stringliteral}{"
+      PhysicalConstants"});
+240     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} young\_var = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"E"});
+241     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} mu\_var = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"mu"});
+242 
+243     \textcolor{keyword}{const} libMesh::DofMap& physical\_dof\_map = physical\_param\_system.get\_dof\_map();
+244     std::vector<libMesh::dof\_id\_type> physical\_dof\_indices\_var;
+245 
+246     \textcolor{comment}{// The DoF and values of the physical system}
+247     \textcolor{keyword}{const} libMesh::Elem*  phys\_elem   = *(mesh.active\_local\_elements\_begin());
+248     physical\_dof\_map.dof\_indices(phys\_elem, physical\_dof\_indices\_var, young\_var);
+249     libMesh::Number localE = physical\_param\_system.current\_solution(physical\_dof\_indices\_var[0]);
+250 
+251     physical\_dof\_map.dof\_indices(phys\_elem, physical\_dof\_indices\_var, mu\_var);
+252     libMesh::Number localMu = physical\_param\_system.current\_solution(physical\_dof\_indices\_var[0]);
+253 
+254     \textcolor{comment}{// - Set up elasticity system ---------------------------------------------}
+255     libMesh::LinearImplicitSystem& system = es.get\_system<libMesh::LinearImplicitSystem>(\textcolor{stringliteral}{"Elasticity"});
+256 
+257     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_components = 3;
+258     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} u\_var = system.variable\_number (\textcolor{stringliteral}{"u"});
+259     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} v\_var = system.variable\_number (\textcolor{stringliteral}{"v"});
+260     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} w\_var = system.variable\_number (\textcolor{stringliteral}{"w"});
+261 
+262     \textcolor{keyword}{const} libMesh::DofMap& dof\_map = system.get\_dof\_map();
+263     libMesh::FEType fe\_type = dof\_map.variable\_type(u\_var);
+264 
+265     \textcolor{comment}{// Set up pointers to FEBase's of dimension dim and FE type fe\_type}
+266     \textcolor{comment}{// -> 3D elements}
+267     libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe\_type));
+268     libMesh::QGauss qrule (dim, fe\_type.default\_quadrature\_order());
+269     fe->attach\_quadrature\_rule (&qrule);
+270 
+271     \textcolor{comment}{// -> Faces}
+272     libMesh::UniquePtr<libMesh::FEBase> fe\_face (libMesh::FEBase::build(dim, fe\_type));
+273     libMesh::QGauss qface(dim-1, fe\_type.default\_quadrature\_order());
+274     fe\_face->attach\_quadrature\_rule (&qface);
+275 
+276     \textcolor{comment}{// Jacobian}
+277     \textcolor{keyword}{const} std::vector<libMesh::Real>& JxW = fe->get\_JxW();
+278 
+279     \textcolor{comment}{// Shape functions derivatives}
+280     \textcolor{keyword}{const} std::vector<std::vector<libMesh::RealGradient> >& dphi = fe->get\_dphi();
+281 
+282     \textcolor{comment}{// Quadrature points}
+283     \textcolor{keyword}{const} std::vector<libMesh::Point>& qp\_points = fe->get\_xyz();
+284 
+285     \textcolor{comment}{// Weights for the Arlequin method}
+286     \textcolor{keywordtype}{double} weight\_alpha = 1;
+287 
+288     libMesh::DenseMatrix<libMesh::Number> Ke;
+289     libMesh::DenseVector<libMesh::Number> Fe;
+290 
+291     libMesh::DenseSubMatrix<libMesh::Number>
+292     Kuu(Ke), Kuv(Ke), Kuw(Ke),
+293     Kvu(Ke), Kvv(Ke), Kvw(Ke),
+294     Kwu(Ke), Kwv(Ke), Kww(Ke);
+295 
+296     libMesh::DenseSubVector<libMesh::Number>
+297     Fu(Fe),
+298     Fv(Fe),
+299     Fw(Fe);
+300 
+301     std::vector<libMesh::dof\_id\_type> dof\_indices;
+302     std::vector<libMesh::dof\_id\_type> dof\_indices\_u;
+303     std::vector<libMesh::dof\_id\_type> dof\_indices\_v;
+304     std::vector<libMesh::dof\_id\_type> dof\_indices\_w;
+305 
+306     libMesh::MeshBase::const\_element\_iterator       el     = mesh.active\_local\_elements\_begin();
+307     \textcolor{keyword}{const} libMesh::MeshBase::const\_element\_iterator end\_el = mesh.active\_local\_elements\_end();
+308 
+309     perf\_log.pop(\textcolor{stringliteral}{"Preamble"});
+310 
+311     \textcolor{comment}{// For each element}
+312     \textcolor{keywordflow}{for} ( ; el != end\_el; ++el)
+313     \{
+314         \textcolor{comment}{// Get its pointer}
+315         \textcolor{keyword}{const} libMesh::Elem* elem = *el;
+316 
+317         perf\_log.push(\textcolor{stringliteral}{"Define DoF"});
+318         \textcolor{comment}{// The total DoF indices, and those associated to each variable}
+319         dof\_map.dof\_indices (elem, dof\_indices);
+320         dof\_map.dof\_indices (elem, dof\_indices\_u, u\_var);
+321         dof\_map.dof\_indices (elem, dof\_indices\_v, v\_var);
+322         dof\_map.dof\_indices (elem, dof\_indices\_w, w\_var);
+323 
+324         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_dofs   = dof\_indices.size();
+325         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_u\_dofs = dof\_indices\_u.size();
+326         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_v\_dofs = dof\_indices\_v.size();
+327         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_w\_dofs = dof\_indices\_w.size();
+328 
+329         perf\_log.pop(\textcolor{stringliteral}{"Define DoF"});
+330 
+331         \textcolor{comment}{// Restart the FE to the "geometry" of the element}
+332         \textcolor{comment}{// -> Determines quadrature points, shape functions ...}
+333         \textcolor{comment}{// !!! User can change the points to be used (can use other mesh's points}
+334         \textcolor{comment}{//      instead of the quadrature points)}
+335         fe->reinit (elem);
+336 
+337         perf\_log.push(\textcolor{stringliteral}{"Matrix manipulations"});
+338         Ke.resize (n\_dofs, n\_dofs);
+339         Fe.resize (n\_dofs);
+340 
+341         \textcolor{comment}{// Set the positions of the sub-matrices}
+342         Kuu.reposition (u\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_u\_dofs, n\_u\_dofs);
+343         Kuv.reposition (u\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_u\_dofs, n\_v\_dofs);
+344         Kuw.reposition (u\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_u\_dofs, n\_w\_dofs);
+345 
+346         Kvu.reposition (v\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_v\_dofs, n\_u\_dofs);
+347         Kvv.reposition (v\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_v\_dofs, n\_v\_dofs);
+348         Kvw.reposition (v\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_v\_dofs, n\_w\_dofs);
+349 
+350         Kwu.reposition (w\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_w\_dofs, n\_u\_dofs);
+351         Kwv.reposition (w\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_w\_dofs, n\_v\_dofs);
+352         Kww.reposition (w\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_w\_dofs, n\_w\_dofs);
+353 
+354         Fu.reposition (u\_var*n\_u\_dofs, n\_u\_dofs);
+355         Fv.reposition (v\_var*n\_u\_dofs, n\_v\_dofs);
+356         Fw.reposition (w\_var*n\_u\_dofs, n\_w\_dofs);
+357         perf\_log.push(\textcolor{stringliteral}{"Matrix manipulations"});
+358 
+359         \textcolor{comment}{// For each quadrature point determinate the sub-matrices elements}
+360         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} qp=0; qp<qrule.n\_points(); qp++)
+361         \{
+362 
+363             perf\_log.push(\textcolor{stringliteral}{"Rigidity"},\textcolor{stringliteral}{"Matrix element calculations"});
+364             weight\_alpha = weight\_mask.\hyperlink{classweight__parameter__function_a247727d50e3208790204e57a83c8bdc4}{get\_alpha}(qp\_points[qp],system\_type);
+365 
+366             \textcolor{comment}{// Internal tension}
+367             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kuu, qp, 0, 0, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+368             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kuv, qp, 0, 1, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+369             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kuw, qp, 0, 2, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+370 
+371             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kvu, qp, 1, 0, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+372             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kvv, qp, 1, 1, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+373             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kvw, qp, 1, 2, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+374 
+375             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kwu, qp, 2, 0, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+376             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kwv, qp, 2, 1, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+377             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kww, qp, 2, 2, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+378 
+379             perf\_log.pop(\textcolor{stringliteral}{"Rigidity"},\textcolor{stringliteral}{"Matrix element calculations"});
+380         \}
+381 
+382         \textcolor{comment}{// Apply constraints}
+383         perf\_log.push(\textcolor{stringliteral}{"Constraints"},\textcolor{stringliteral}{"Matrix element calculations"});
+384         dof\_map.heterogenously\_constrain\_element\_matrix\_and\_vector(Ke, Fe, dof\_indices);
+385         perf\_log.pop(\textcolor{stringliteral}{"Constraints"},\textcolor{stringliteral}{"Matrix element calculations"});
+386 
+387         perf\_log.push(\textcolor{stringliteral}{"Adding elements"});
+388         system.matrix->add\_matrix (Ke, dof\_indices);
+389         system.rhs->add\_vector    (Fe, dof\_indices);
+390         perf\_log.pop(\textcolor{stringliteral}{"Adding elements"});
+391     \}
+392 
+393     system.matrix->close();
+394     system.rhs->close();
+395 \}
+\end{DoxyCode}
+\hypertarget{assemble__functions__elasticity__3_d_8h_a2dd8cb6689b655c3ed988b7a2e07bf28}{}\index{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}!assemble\+\_\+elasticity\+\_\+with\+\_\+weight\+\_\+and\+\_\+traction@{assemble\+\_\+elasticity\+\_\+with\+\_\+weight\+\_\+and\+\_\+traction}}
+\index{assemble\+\_\+elasticity\+\_\+with\+\_\+weight\+\_\+and\+\_\+traction@{assemble\+\_\+elasticity\+\_\+with\+\_\+weight\+\_\+and\+\_\+traction}!assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}}
+\subsubsection[{assemble\+\_\+elasticity\+\_\+with\+\_\+weight\+\_\+and\+\_\+traction(lib\+Mesh\+::\+Equation\+Systems \&es, const std\+::string \&system\+\_\+name, weight\+\_\+parameter\+\_\+function \&weight\+\_\+mask, Weight\+Function\+System\+Type system\+\_\+type, int traction\+\_\+boundary\+\_\+id, std\+::vector$<$ double $>$ traction\+\_\+density)}]{\setlength{\rightskip}{0pt plus 5cm}void assemble\+\_\+elasticity\+\_\+with\+\_\+weight\+\_\+and\+\_\+traction (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Equation\+Systems \&}]{es, }
+\item[{const std\+::string \&}]{system\+\_\+name, }
+\item[{{\bf weight\+\_\+parameter\+\_\+function} \&}]{weight\+\_\+mask, }
+\item[{{\bf Weight\+Function\+System\+Type}}]{system\+\_\+type, }
+\item[{int}]{traction\+\_\+boundary\+\_\+id, }
+\item[{std\+::vector$<$ double $>$}]{traction\+\_\+density}
+\end{DoxyParamCaption}
+)}\label{assemble__functions__elasticity__3_d_8h_a2dd8cb6689b655c3ed988b7a2e07bf28}
+
+
+Assemble homogeneous elasticity with domain weights and traction. 
+
+
+
+Definition at line 397 of file assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+404 \{
+405     libmesh\_assert\_equal\_to(system\_name, \textcolor{stringliteral}{"Elasticity"});
+406 
+407     libMesh::PerfLog perf\_log (\textcolor{stringliteral}{"Matrix Assembly (Homogeneous elasticity)"},
+      \hyperlink{assemble__functions__elasticity__3_d_8h_ab37296de69e82d9b93c8f6db72aa6a89}{MASTER\_bPerfLog\_assemble\_fem});
+408 
+409     perf\_log.push(\textcolor{stringliteral}{"Preamble"});
+410 
+411     \textcolor{keyword}{const} libMesh::MeshBase& mesh = es.get\_mesh();
+412 
+413     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} dim = mesh.mesh\_dimension();
+414 
+415     \textcolor{comment}{// - Set up physical properties system ------------------------------------}
+416     libMesh::ExplicitSystem& physical\_param\_system = es.get\_system<libMesh::ExplicitSystem>(\textcolor{stringliteral}{"
+      PhysicalConstants"});
+417     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} young\_var = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"E"});
+418     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} mu\_var = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"mu"});
+419 
+420     \textcolor{keyword}{const} libMesh::DofMap& physical\_dof\_map = physical\_param\_system.get\_dof\_map();
+421     std::vector<libMesh::dof\_id\_type> physical\_dof\_indices\_var;
+422 
+423     \textcolor{comment}{// The DoF and values of the physical system}
+424     \textcolor{keyword}{const} libMesh::Elem*  phys\_elem   = *(mesh.active\_local\_elements\_begin());
+425     physical\_dof\_map.dof\_indices(phys\_elem, physical\_dof\_indices\_var, young\_var);
+426     libMesh::Number localE = physical\_param\_system.current\_solution(physical\_dof\_indices\_var[0]);
+427 
+428     physical\_dof\_map.dof\_indices(phys\_elem, physical\_dof\_indices\_var, mu\_var);
+429     libMesh::Number localMu = physical\_param\_system.current\_solution(physical\_dof\_indices\_var[0]);
+430 
+431     \textcolor{comment}{// - Set up elasticity system ---------------------------------------------}
+432     libMesh::LinearImplicitSystem& system = es.get\_system<libMesh::LinearImplicitSystem>(\textcolor{stringliteral}{"Elasticity"});
+433 
+434     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_components = 3;
+435     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} u\_var = system.variable\_number (\textcolor{stringliteral}{"u"});
+436     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} v\_var = system.variable\_number (\textcolor{stringliteral}{"v"});
+437     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} w\_var = system.variable\_number (\textcolor{stringliteral}{"w"});
+438 
+439     \textcolor{keyword}{const} libMesh::DofMap& dof\_map = system.get\_dof\_map();
+440     libMesh::FEType fe\_type = dof\_map.variable\_type(u\_var);
+441 
+442     \textcolor{comment}{// Set up pointers to FEBase's of dimension dim and FE type fe\_type}
+443     \textcolor{comment}{// -> 3D elements}
+444     libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe\_type));
+445     libMesh::QGauss qrule (dim, fe\_type.default\_quadrature\_order());
+446     fe->attach\_quadrature\_rule (&qrule);
+447 
+448     \textcolor{comment}{// -> Faces}
+449     libMesh::UniquePtr<libMesh::FEBase> fe\_face (libMesh::FEBase::build(dim, fe\_type));
+450     libMesh::QGauss qface(dim-1, fe\_type.default\_quadrature\_order());
+451     fe\_face->attach\_quadrature\_rule (&qface);
+452 
+453     \textcolor{comment}{// -> Face traction}
+454     libMesh::DenseVector<libMesh::Number> g\_vec(3);
+455     g\_vec(0) = traction\_density[0];
+456     g\_vec(1) = traction\_density[1];
+457     g\_vec(2) = traction\_density[2];
+458 
+459     \textcolor{comment}{// Jacobian}
+460     \textcolor{keyword}{const} std::vector<libMesh::Real>& JxW = fe->get\_JxW();
+461 
+462     \textcolor{comment}{// Shape functions derivatives}
+463     \textcolor{keyword}{const} std::vector<std::vector<libMesh::RealGradient> >& dphi = fe->get\_dphi();
+464 
+465     \textcolor{comment}{// Quadrature points}
+466     \textcolor{keyword}{const} std::vector<libMesh::Point>& qp\_points = fe->get\_xyz();
+467 
+468     \textcolor{comment}{// Face Jacobian}
+469     \textcolor{keyword}{const} std::vector<libMesh::Real> & JxW\_face = fe\_face->get\_JxW();
+470 
+471     \textcolor{comment}{// Face shape functions}
+472     \textcolor{keyword}{const} std::vector<std::vector<libMesh::Real> > & phi\_face = fe\_face->get\_phi();
+473 
+474     \textcolor{comment}{// Face quadrature points}
+475     \textcolor{keyword}{const} std::vector<libMesh::Point>& qp\_face\_points = fe\_face->get\_xyz();
+476 
+477 
+478     \textcolor{comment}{// Weights for the Arlequin method}
+479     \textcolor{keywordtype}{double} weight\_alpha = 1;
+480 
+481     libMesh::DenseMatrix<libMesh::Number> Ke;
+482     libMesh::DenseVector<libMesh::Number> Fe;
+483 
+484     libMesh::DenseSubMatrix<libMesh::Number>
+485     Kuu(Ke), Kuv(Ke), Kuw(Ke),
+486     Kvu(Ke), Kvv(Ke), Kvw(Ke),
+487     Kwu(Ke), Kwv(Ke), Kww(Ke);
+488 
+489     libMesh::DenseSubVector<libMesh::Number>
+490     Fu(Fe),
+491     Fv(Fe),
+492     Fw(Fe);
+493 
+494     std::vector<libMesh::dof\_id\_type> dof\_indices;
+495     std::vector<libMesh::dof\_id\_type> dof\_indices\_u;
+496     std::vector<libMesh::dof\_id\_type> dof\_indices\_v;
+497     std::vector<libMesh::dof\_id\_type> dof\_indices\_w;
+498 
+499     libMesh::MeshBase::const\_element\_iterator       el     = mesh.active\_local\_elements\_begin();
+500     \textcolor{keyword}{const} libMesh::MeshBase::const\_element\_iterator end\_el = mesh.active\_local\_elements\_end();
+501 
+502     perf\_log.pop(\textcolor{stringliteral}{"Preamble"});
+503 
+504     \textcolor{comment}{// For each element}
+505     \textcolor{keywordflow}{for} ( ; el != end\_el; ++el)
+506     \{
+507         \textcolor{comment}{// Get its pointer}
+508         \textcolor{keyword}{const} libMesh::Elem* elem = *el;
+509 
+510         perf\_log.push(\textcolor{stringliteral}{"Define DoF"});
+511         \textcolor{comment}{// The total DoF indices, and those associated to each variable}
+512         dof\_map.dof\_indices (elem, dof\_indices);
+513         dof\_map.dof\_indices (elem, dof\_indices\_u, u\_var);
+514         dof\_map.dof\_indices (elem, dof\_indices\_v, v\_var);
+515         dof\_map.dof\_indices (elem, dof\_indices\_w, w\_var);
+516 
+517         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_dofs   = dof\_indices.size();
+518         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_u\_dofs = dof\_indices\_u.size();
+519         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_v\_dofs = dof\_indices\_v.size();
+520         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_w\_dofs = dof\_indices\_w.size();
+521 
+522         perf\_log.pop(\textcolor{stringliteral}{"Define DoF"});
+523 
+524         \textcolor{comment}{// Restart the FE to the "geometry" of the element}
+525         \textcolor{comment}{// -> Determines quadrature points, shape functions ...}
+526         \textcolor{comment}{// !!! User can change the points to be used (can use other mesh's points}
+527         \textcolor{comment}{//      instead of the quadrature points)}
+528         fe->reinit (elem);
+529 
+530         perf\_log.push(\textcolor{stringliteral}{"Matrix manipulations"});
+531         Ke.resize (n\_dofs, n\_dofs);
+532         Fe.resize (n\_dofs);
+533 
+534         \textcolor{comment}{// Set the positions of the sub-matrices}
+535         Kuu.reposition (u\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_u\_dofs, n\_u\_dofs);
+536         Kuv.reposition (u\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_u\_dofs, n\_v\_dofs);
+537         Kuw.reposition (u\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_u\_dofs, n\_w\_dofs);
+538 
+539         Kvu.reposition (v\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_v\_dofs, n\_u\_dofs);
+540         Kvv.reposition (v\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_v\_dofs, n\_v\_dofs);
+541         Kvw.reposition (v\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_v\_dofs, n\_w\_dofs);
+542 
+543         Kwu.reposition (w\_var*n\_u\_dofs, u\_var*n\_u\_dofs, n\_w\_dofs, n\_u\_dofs);
+544         Kwv.reposition (w\_var*n\_u\_dofs, v\_var*n\_u\_dofs, n\_w\_dofs, n\_v\_dofs);
+545         Kww.reposition (w\_var*n\_u\_dofs, w\_var*n\_u\_dofs, n\_w\_dofs, n\_w\_dofs);
+546 
+547         Fu.reposition (u\_var*n\_u\_dofs, n\_u\_dofs);
+548         Fv.reposition (v\_var*n\_u\_dofs, n\_v\_dofs);
+549         Fw.reposition (w\_var*n\_u\_dofs, n\_w\_dofs);
+550         perf\_log.push(\textcolor{stringliteral}{"Matrix manipulations"});
+551 
+552         \textcolor{comment}{// For each quadrature point determinate the sub-matrices elements}
+553         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} qp=0; qp<qrule.n\_points(); qp++)
+554         \{
+555 
+556             perf\_log.push(\textcolor{stringliteral}{"Rigidity"},\textcolor{stringliteral}{"Matrix element calculations"});
+557             weight\_alpha = weight\_mask.\hyperlink{classweight__parameter__function_a247727d50e3208790204e57a83c8bdc4}{get\_alpha}(qp\_points[qp],system\_type);
+558 
+559             \textcolor{comment}{// Internal tension}
+560             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kuu, qp, 0, 0, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+561             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kuv, qp, 0, 1, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+562             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kuw, qp, 0, 2, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+563 
+564             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kvu, qp, 1, 0, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+565             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kvv, qp, 1, 1, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+566             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kvw, qp, 1, 2, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+567 
+568             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kwu, qp, 2, 0, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+569             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kwv, qp, 2, 1, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+570             \hyperlink{assemble__functions__elasticity__3_d_8cpp_afb409c3e3ab0f1c7a0bc00d398d3a43a}{Update\_SubK\_isotropic}(Kww, qp, 2, 2, dphi, n\_components, n\_u\_dofs, JxW, 
+      localE, localMu, weight\_alpha);
+571 
+572             perf\_log.pop(\textcolor{stringliteral}{"Rigidity"},\textcolor{stringliteral}{"Matrix element calculations"});
+573         \}
+574 
+575         \textcolor{comment}{// Assemble the traction}
+576         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} side=0; side<elem->n\_sides(); side++)
+577         \{
+578             \textcolor{keywordflow}{if} (elem->neighbor\_ptr(side) == libmesh\_nullptr)
+579             \{
+580                 fe\_face->reinit(elem, side);
+581 
+582                 \textcolor{comment}{// Apply a traction}
+583                 \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} qp=0; qp<qface.n\_points(); qp++)
+584                 \{
+585                     weight\_alpha = weight\_mask.\hyperlink{classweight__parameter__function_a247727d50e3208790204e57a83c8bdc4}{get\_alpha}(qp\_face\_points[qp],system\_type);
+586 
+587                     \textcolor{keywordflow}{if} (mesh.get\_boundary\_info().has\_boundary\_id(elem, side, traction\_boundary\_id))
+588                     \{   
+589                         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} dof\_iii=0; dof\_iii<n\_u\_dofs; dof\_iii++)
+590                         \{
+591                             Fu(dof\_iii) += weight\_alpha * JxW\_face[qp] * (g\_vec(0) * phi\_face[dof\_iii][qp])
+      ;
+592                             Fv(dof\_iii) += weight\_alpha * JxW\_face[qp] * (g\_vec(1) * phi\_face[dof\_iii][qp])
+      ;
+593                             Fw(dof\_iii) += weight\_alpha * JxW\_face[qp] * (g\_vec(2) * phi\_face[dof\_iii][qp])
+      ;
+594                         \}
+595                     \}
+596                 \}
+597             \}
+598         \}
+599 
+600         \textcolor{comment}{// Apply constraints}
+601         perf\_log.push(\textcolor{stringliteral}{"Constraints"},\textcolor{stringliteral}{"Matrix element calculations"});
+602         dof\_map.heterogenously\_constrain\_element\_matrix\_and\_vector(Ke, Fe, dof\_indices);
+603         perf\_log.pop(\textcolor{stringliteral}{"Constraints"},\textcolor{stringliteral}{"Matrix element calculations"});
+604 
+605         perf\_log.push(\textcolor{stringliteral}{"Adding elements"});
+606         system.matrix->add\_matrix (Ke, dof\_indices);
+607         system.rhs->add\_vector    (Fe, dof\_indices);
+608         perf\_log.pop(\textcolor{stringliteral}{"Adding elements"});
+609     \}
+610 
+611     system.matrix->close();
+612     system.rhs->close();
+613 \};
+\end{DoxyCode}
+\hypertarget{assemble__functions__elasticity__3_d_8h_a1b5f0b2890232d0fe23bbfa3fef621eb}{}\index{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}!compute\+\_\+stresses@{compute\+\_\+stresses}}
+\index{compute\+\_\+stresses@{compute\+\_\+stresses}!assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}}
+\subsubsection[{compute\+\_\+stresses(lib\+Mesh\+::\+Equation\+Systems \&es)}]{\setlength{\rightskip}{0pt plus 5cm}void compute\+\_\+stresses (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Equation\+Systems \&}]{es}
+\end{DoxyParamCaption}
+)}\label{assemble__functions__elasticity__3_d_8h_a1b5f0b2890232d0fe23bbfa3fef621eb}
+
+
+Compute the stress (based on one of lib\+Mesh\textquotesingle{}s examples) 
+
+
+
+Definition at line 794 of file assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+795 \{
+796     \textcolor{comment}{// Get mesh pointer}
+797     \textcolor{keyword}{const} libMesh::MeshBase& mesh = es.get\_mesh();
+798 
+799     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} dim = mesh.mesh\_dimension();
+800 
+801     \textcolor{comment}{// Get the Elasticity system}
+802     libMesh::LinearImplicitSystem& elasticity\_system = es.get\_system<libMesh::LinearImplicitSystem>(\textcolor{stringliteral}{"
+      Elasticity"});
+803 
+804     \textcolor{comment}{// Set the displacement variables}
+805     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} displacement\_vars[3];
+806     displacement\_vars[0] = elasticity\_system.variable\_number (\textcolor{stringliteral}{"u"});
+807     displacement\_vars[1] = elasticity\_system.variable\_number (\textcolor{stringliteral}{"v"});
+808     displacement\_vars[2] = elasticity\_system.variable\_number (\textcolor{stringliteral}{"w"});
+809     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} u\_var = elasticity\_system.variable\_number (\textcolor{stringliteral}{"u"});
+810 
+811     \textcolor{comment}{// - Set up physical properties system ------------------------------------}
+812     libMesh::ExplicitSystem& physical\_param\_system = es.get\_system<libMesh::ExplicitSystem>(\textcolor{stringliteral}{"
+      PhysicalConstants"});
+813     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} young\_var = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"E"});
+814     \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} mu\_var = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"mu"});
+815 
+816     \textcolor{keyword}{const} libMesh::DofMap& physical\_dof\_map = physical\_param\_system.get\_dof\_map();
+817     std::vector<libMesh::dof\_id\_type> physical\_dof\_indices\_var;
+818 
+819     \textcolor{comment}{// The DoF and values of the physical system}
+820     \textcolor{keyword}{const} libMesh::Elem*  phys\_elem   = *(mesh.active\_local\_elements\_begin());
+821     physical\_dof\_map.dof\_indices(phys\_elem, physical\_dof\_indices\_var, young\_var);
+822     libMesh::Number localE = physical\_param\_system.current\_solution(physical\_dof\_indices\_var[0]);
+823 
+824     physical\_dof\_map.dof\_indices(phys\_elem, physical\_dof\_indices\_var, mu\_var);
+825     libMesh::Number localMu = physical\_param\_system.current\_solution(physical\_dof\_indices\_var[0]);
+826 
+827     \textcolor{comment}{// - Degrees of freedom ---------------------------------------------------}
+828     \textcolor{comment}{// Get the DoF of the Elasticity system}
+829     \textcolor{keyword}{const} libMesh::DofMap& elasticity\_dof\_map = elasticity\_system.get\_dof\_map();
+830 
+831     \textcolor{comment}{// Get the type of FE used for "u\_var" (same as others)}
+832     libMesh::FEType fe\_type = elasticity\_dof\_map.variable\_type(u\_var);
+833 
+834     \textcolor{comment}{// Build a FE to be used here and attach a default quadrature}
+835     libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe\_type));
+836     libMesh::QGauss qrule (dim, fe\_type.default\_quadrature\_order());
+837     fe->attach\_quadrature\_rule (&qrule);
+838 
+839     \textcolor{comment}{// - Stress variables}
+840 
+841     \textcolor{comment}{// Jacobian vector and d\_phi}
+842     \textcolor{keyword}{const} std::vector<libMesh::Real>& JxW = fe->get\_JxW();
+843     \textcolor{keyword}{const} std::vector<std::vector<libMesh::RealGradient> >& dphi = fe->get\_dphi();
+844 
+845     \textcolor{comment}{// Get the stress system and its DoF map}
+846     libMesh::ExplicitSystem& stress\_system = es.get\_system<libMesh::ExplicitSystem>(\textcolor{stringliteral}{"StressSystem"});
+847     \textcolor{keyword}{const} libMesh::DofMap& stress\_dof\_map = stress\_system.get\_dof\_map();
+848 
+849     \textcolor{comment}{// The 9 stress variables + von Mises}
+850     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} sigma\_vars[3][3];
+851     sigma\_vars[0][0] = stress\_system.variable\_number (\textcolor{stringliteral}{"sigma\_00"});
+852     sigma\_vars[0][1] = stress\_system.variable\_number (\textcolor{stringliteral}{"sigma\_01"});
+853     sigma\_vars[0][2] = stress\_system.variable\_number (\textcolor{stringliteral}{"sigma\_02"});
+854     sigma\_vars[1][0] = stress\_system.variable\_number (\textcolor{stringliteral}{"sigma\_10"});
+855     sigma\_vars[1][1] = stress\_system.variable\_number (\textcolor{stringliteral}{"sigma\_11"});
+856     sigma\_vars[1][2] = stress\_system.variable\_number (\textcolor{stringliteral}{"sigma\_12"});
+857     sigma\_vars[2][0] = stress\_system.variable\_number (\textcolor{stringliteral}{"sigma\_20"});
+858     sigma\_vars[2][1] = stress\_system.variable\_number (\textcolor{stringliteral}{"sigma\_21"});
+859     sigma\_vars[2][2] = stress\_system.variable\_number (\textcolor{stringliteral}{"sigma\_22"});
+860     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} vonMises\_var = stress\_system.variable\_number (\textcolor{stringliteral}{"vonMises"});
+861 
+862     \textcolor{comment}{// Define a table of DoF indices for each elasticity variable}
+863     std::vector< std::vector<libMesh::dof\_id\_type> > elasticity\_dof\_indices\_var(elasticity\_system.n\_vars())
+      ;
+864 
+865     \textcolor{comment}{// Define a vector for the stress DoF indices}
+866     std::vector<libMesh::dof\_id\_type> stress\_dof\_indices\_var;
+867 
+868     \textcolor{comment}{// "Local" matrix}
+869     libMesh::DenseMatrix<libMesh::Number> elem\_sigma;
+870 
+871     \textcolor{comment}{// Iterators over the local elements}
+872     libMesh::MeshBase::const\_element\_iterator       el     = mesh.active\_local\_elements\_begin();
+873     \textcolor{keyword}{const} libMesh::MeshBase::const\_element\_iterator end\_el = mesh.active\_local\_elements\_end();
+874 
+875     \textcolor{keywordflow}{for} ( ; el != end\_el; ++el)
+876     \{
+877         \textcolor{keyword}{const} libMesh::Elem* elem = *el;
+878 
+879         \textcolor{comment}{/*      For each variable identified by "displacement\_vars[var]", get}
+880 \textcolor{comment}{         *  the GLOBAL indices from the elasticity DoF map and save it in the}
+881 \textcolor{comment}{         *  vector "elasticity\_dof\_indices\_var[var]"}
+882 \textcolor{comment}{         */}
+883         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} var=0; var<3; var++)
+884         \{
+885             elasticity\_dof\_map.dof\_indices (elem, elasticity\_dof\_indices\_var[var], displacement\_vars[var]);
+886         \}
+887 
+888         physical\_dof\_map.dof\_indices(elem, physical\_dof\_indices\_var, young\_var);
+889         localE = physical\_param\_system.current\_solution(physical\_dof\_indices\_var[0]);
+890 
+891         physical\_dof\_map.dof\_indices(elem, physical\_dof\_indices\_var, mu\_var);
+892         localMu = physical\_param\_system.current\_solution(physical\_dof\_indices\_var[0]);
+893 
+894         \textcolor{comment}{// Restart the element properties and the local stress contribution matrix}
+895         fe->reinit (elem);
+896         elem\_sigma.resize(3,3);
+897 
+898         \textcolor{comment}{// For each quadrature point}
+899         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} qp=0; qp<qrule.n\_points(); qp++)
+900         \{
+901             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} C\_i=0; C\_i<3; C\_i++)
+902             \{
+903                 \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} C\_j=0; C\_j<3; C\_j++)
+904                 \{
+905                     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} C\_k=0; C\_k<3; C\_k++)
+906                     \{
+907                         \textcolor{comment}{// Number of DoFs of the elasticity}
+908                         \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} n\_var\_dofs = elasticity\_dof\_indices\_var[C\_k].size();
+909 
+910                         libMesh::Gradient displacement\_gradient\_k;
+911                         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} l=0; l<n\_var\_dofs; l++)
+912                         \{
+913                             \textcolor{comment}{/*}
+914 \textcolor{comment}{                             *      For each DoF of the elasticity problem, "l",}
+915 \textcolor{comment}{                             *  get the gradient of the shape functions at the}
+916 \textcolor{comment}{                             *  quadrature point "qp", and add it to the total}
+917 \textcolor{comment}{                             *  displacement gradient, scaled by the elasticity's}
+918 \textcolor{comment}{                             *  current solution for the displacement variable}
+919 \textcolor{comment}{                             *  "C\_k"}
+920 \textcolor{comment}{                             */}
+921                             displacement\_gradient\_k.add\_scaled(dphi[l][qp], elasticity\_system.
+      current\_solution(elasticity\_dof\_indices\_var[C\_k][l]));
+922                         \}
+923 
+924                         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} C\_l=0; C\_l<3; C\_l++)
+925                         \{
+926                             \textcolor{comment}{// S\_\{i,j\} = C\_\{i,j,k,l\} * E\_\{k,l\}}
+927                             elem\_sigma(C\_i,C\_j) += JxW[qp]*(
+      \hyperlink{assemble__functions__elasticity__3_d_8cpp_a218aeb9086b43ea98d92955a9264eee4}{eval\_elasticity\_tensor}(C\_i,C\_j,C\_k,C\_l,localE,localMu) * displacement\_gradient\_k(C\_l)
+       );
+928                         \}
+929                     \}
+930                 \}
+931             \}
+932         \}
+933 
+934         \textcolor{comment}{// Rescale the matrix by the elem. volume}
+935         elem\_sigma.scale(1./elem->volume());
+936 
+937         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} i=0; i<3; i++)
+938         \{
+939             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} j=0; j<3; j++)
+940             \{
+941                 \textcolor{comment}{// For each variable of the stress system, get the DoF map}
+942                 stress\_dof\_map.dof\_indices(elem, stress\_dof\_indices\_var, sigma\_vars[i][j]);
+943 
+944                 \textcolor{comment}{// Get the first index (CONSTANT MONOMIAL basis functions, hence}
+945                 \textcolor{comment}{// only one element}
+946                 libMesh::dof\_id\_type dof\_index = stress\_dof\_indices\_var[0];
+947 
+948                 \textcolor{comment}{// To be sure, test if the DoF index is inside this processor}
+949                 \textcolor{keywordflow}{if}( (stress\_system.solution->first\_local\_index() <= dof\_index) &&
+950                     (dof\_index < stress\_system.solution->last\_local\_index()) )
+951                 \{
+952                     stress\_system.solution->set(dof\_index, elem\_sigma(i,j));
+953                 \}
+954             \}
+955         \}
+956 
+957         \textcolor{comment}{// Calculate von Mises}
+958         libMesh::Number vonMises\_value = std::sqrt( 0.5*( pow(elem\_sigma(0,0) - elem\_sigma(1,1),2.) +
+959                  pow(elem\_sigma(1,1) - elem\_sigma(2,2),2.) +
+960                  pow(elem\_sigma(2,2) - elem\_sigma(0,0),2.) +
+961                  6.*(pow(elem\_sigma(0,1),2.) + pow(elem\_sigma(1,2),2.) + pow(elem\_sigma(2,0),2.))
+962                  ) );
+963 
+964         \textcolor{comment}{// Get the DoF map}
+965         stress\_dof\_map.dof\_indices (elem, stress\_dof\_indices\_var, vonMises\_var);
+966 
+967         \textcolor{comment}{// Get the first index (CONSTANT MONOMIAL basis functions, hence}
+968         \textcolor{comment}{// only one element}
+969         libMesh::dof\_id\_type dof\_index = stress\_dof\_indices\_var[0];
+970 
+971         \textcolor{comment}{// To be sure, test if the DoF index is inside this processor}
+972         \textcolor{keywordflow}{if}( (stress\_system.solution->first\_local\_index() <= dof\_index) &&
+973             (dof\_index < stress\_system.solution->last\_local\_index()) )
+974         \{
+975             stress\_system.solution->set(dof\_index, vonMises\_value);
+976         \}
+977     \}
+978 
+979     \textcolor{comment}{// Close solution and update it}
+980     stress\_system.solution->close();
+981     stress\_system.update();
+982 \}\end{DoxyCode}
+\hypertarget{assemble__functions__elasticity__3_d_8h_a218aeb9086b43ea98d92955a9264eee4}{}\index{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}!eval\+\_\+elasticity\+\_\+tensor@{eval\+\_\+elasticity\+\_\+tensor}}
+\index{eval\+\_\+elasticity\+\_\+tensor@{eval\+\_\+elasticity\+\_\+tensor}!assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}}
+\subsubsection[{eval\+\_\+elasticity\+\_\+tensor(unsigned int i, unsigned int j, unsigned int k, unsigned int l, lib\+Mesh\+::\+Number E, lib\+Mesh\+::\+Number mu)}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Real eval\+\_\+elasticity\+\_\+tensor (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{i, }
+\item[{unsigned int}]{j, }
+\item[{unsigned int}]{k, }
+\item[{unsigned int}]{l, }
+\item[{lib\+Mesh\+::\+Number}]{E, }
+\item[{lib\+Mesh\+::\+Number}]{mu}
+\end{DoxyParamCaption}
+)}\label{assemble__functions__elasticity__3_d_8h_a218aeb9086b43ea98d92955a9264eee4}
+
+
+Calculate the elasticity tensor. 
+
+
+
+Definition at line 180 of file assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+186 \{
+187     \textcolor{keyword}{const} libMesh::Real lambda\_1 = \hyperlink{assemble__functions__elasticity__3_d_8cpp_a47a0604a6b90a9b17a14e8fcba0eafb7}{eval\_lambda\_1}(E,mu);
+188     \textcolor{keyword}{const} libMesh::Real lambda\_2 = mu;
+189 
+190     \textcolor{keywordflow}{return} lambda\_1 * \hyperlink{common__functions_8cpp_a29df66564112441424244e1412e30706}{kronecker\_delta}(i,j) * \hyperlink{common__functions_8cpp_a29df66564112441424244e1412e30706}{kronecker\_delta}(k,l)
+191                     + lambda\_2 * (\hyperlink{common__functions_8cpp_a29df66564112441424244e1412e30706}{kronecker\_delta}(i,k) * 
+      \hyperlink{common__functions_8cpp_a29df66564112441424244e1412e30706}{kronecker\_delta}(j,l)
+192                     + \hyperlink{common__functions_8cpp_a29df66564112441424244e1412e30706}{kronecker\_delta}(i,l) * \hyperlink{common__functions_8cpp_a29df66564112441424244e1412e30706}{kronecker\_delta}(j,k));
+193 \}
+\end{DoxyCode}
+\hypertarget{assemble__functions__elasticity__3_d_8h_a47a0604a6b90a9b17a14e8fcba0eafb7}{}\index{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}!eval\+\_\+lambda\+\_\+1@{eval\+\_\+lambda\+\_\+1}}
+\index{eval\+\_\+lambda\+\_\+1@{eval\+\_\+lambda\+\_\+1}!assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}}
+\subsubsection[{eval\+\_\+lambda\+\_\+1(lib\+Mesh\+::\+Real E, lib\+Mesh\+::\+Real mu)}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Real eval\+\_\+lambda\+\_\+1 (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Real}]{E, }
+\item[{lib\+Mesh\+::\+Real}]{mu}
+\end{DoxyParamCaption}
+)}\label{assemble__functions__elasticity__3_d_8h_a47a0604a6b90a9b17a14e8fcba0eafb7}
+
+
+Calculate lambda\+\_\+1 from E and Mu. 
+
+
+
+Definition at line 175 of file assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+176 \{
+177     \textcolor{keywordflow}{return} mu*(E - 2*mu)/(3*mu-E);
+178 \}
+\end{DoxyCode}
+\hypertarget{assemble__functions__elasticity__3_d_8h_ae93bdb734dc37c19c8d0c7b73b5f755b}{}\index{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}!set\+\_\+heterogeneous\+\_\+physical\+\_\+properties@{set\+\_\+heterogeneous\+\_\+physical\+\_\+properties}}
+\index{set\+\_\+heterogeneous\+\_\+physical\+\_\+properties@{set\+\_\+heterogeneous\+\_\+physical\+\_\+properties}!assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}}
+\subsubsection[{set\+\_\+heterogeneous\+\_\+physical\+\_\+properties(lib\+Mesh\+::\+Equation\+Systems \&es, std\+::string \&physical\+Params\+File)}]{\setlength{\rightskip}{0pt plus 5cm}void set\+\_\+heterogeneous\+\_\+physical\+\_\+properties (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Equation\+Systems \&}]{es, }
+\item[{std\+::string \&}]{physical\+Params\+File}
+\end{DoxyParamCaption}
+)}\label{assemble__functions__elasticity__3_d_8h_ae93bdb734dc37c19c8d0c7b73b5f755b}
+
+
+Set the heterogeneous, isotropic physical properties from a file. 
+
+
+
+Definition at line 71 of file assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+72 \{
+73     \textcolor{keyword}{const} libMesh::Parallel::Communicator& SysComm = es.comm();
+74     \textcolor{keywordtype}{int} rank = SysComm.rank();
+75     \textcolor{keywordtype}{int} nodes = SysComm.size();
+76 
+77     \textcolor{comment}{// Read the random data info}
+78     std::vector<double> inputE;
+79     std::vector<double> inputMu;
+80     std::vector<int>    inputIdx;
+81 
+82     \textcolor{keywordtype}{int} NbOfSubdomains = -1;
+83 
+84     \textcolor{keywordtype}{double} meanE = 0;
+85     \textcolor{keywordtype}{double} meanMu = 0;
+86 
+87     \textcolor{keywordflow}{if}(rank == 0)
+88     \{
+89         std::ifstream physicalParamsIFS(physicalParamsFile);
+90         physicalParamsIFS >> NbOfSubdomains;
+91         inputE.resize(NbOfSubdomains);
+92         inputMu.resize(NbOfSubdomains);
+93         inputIdx.resize(NbOfSubdomains);
+94 
+95         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} iii = 0; iii < NbOfSubdomains; ++iii)
+96         \{
+97             physicalParamsIFS >> inputE[iii];
+98             physicalParamsIFS >> inputMu[iii];
+99             physicalParamsIFS >> inputIdx[iii];
+100 
+101             meanE += inputE[iii];
+102             meanMu += inputMu[iii];
+103         \}
+104         meanE /= NbOfSubdomains;
+105         meanMu /= NbOfSubdomains;
+106         physicalParamsIFS.close();
+107     \}
+108 
+109     \textcolor{keywordflow}{if}(nodes > 1)
+110     \{
+111         SysComm.broadcast(NbOfSubdomains);
+112         SysComm.broadcast(meanE);
+113         SysComm.broadcast(meanMu);
+114 
+115         \textcolor{keywordflow}{if}(rank != 0)
+116         \{
+117             inputE.resize(NbOfSubdomains);
+118             inputMu.resize(NbOfSubdomains);
+119             inputIdx.resize(NbOfSubdomains);
+120         \}
+121         SysComm.broadcast(inputE);
+122         SysComm.broadcast(inputMu);
+123         SysComm.broadcast(inputIdx);
+124     \}
+125 
+126     \textcolor{comment}{// Mesh pointer}
+127     \textcolor{keyword}{const} libMesh::MeshBase& mesh = es.get\_mesh();
+128 
+129     \textcolor{comment}{// Physical system and its "variables"}
+130     libMesh::ExplicitSystem& physical\_param\_system = es.get\_system<libMesh::ExplicitSystem>(\textcolor{stringliteral}{"
+      PhysicalConstants"});
+131     \textcolor{keyword}{const} libMesh::DofMap& physical\_dof\_map = physical\_param\_system.get\_dof\_map();
+132 
+133     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} physical\_consts[2];
+134     physical\_consts[0] = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"E"});
+135     physical\_consts[1] = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"mu"});
+136 
+137     std::vector<libMesh::dof\_id\_type> physical\_dof\_indices\_var;
+138     libMesh::MeshBase::const\_element\_iterator       el     = mesh.active\_local\_elements\_begin();
+139     \textcolor{keyword}{const} libMesh::MeshBase::const\_element\_iterator end\_el = mesh.active\_local\_elements\_end();
+140 
+141     \textcolor{keywordtype}{int} currentSubdomain = -1;
+142 
+143     \textcolor{keywordflow}{for} ( ; el != end\_el; ++el)
+144     \{
+145         \textcolor{keyword}{const} libMesh::Elem* elem = *el;
+146 
+147         currentSubdomain = elem->subdomain\_id()-1;
+148 
+149         \textcolor{comment}{// Young modulus, E}
+150         physical\_dof\_map.dof\_indices(elem, physical\_dof\_indices\_var, physical\_consts[0]);
+151         libMesh::dof\_id\_type dof\_index = physical\_dof\_indices\_var[0];
+152 
+153         \textcolor{keywordflow}{if}( (physical\_param\_system.solution->first\_local\_index() <= dof\_index) &&
+154         (dof\_index < physical\_param\_system.solution->last\_local\_index()) )
+155         \{
+156             physical\_param\_system.solution->set(dof\_index, inputE[currentSubdomain]);
+157         \}
+158 
+159         \textcolor{comment}{// Mu}
+160         physical\_dof\_map.dof\_indices (elem, physical\_dof\_indices\_var, physical\_consts[1]);
+161 
+162         dof\_index = physical\_dof\_indices\_var[0];
+163 
+164         \textcolor{keywordflow}{if}( (physical\_param\_system.solution->first\_local\_index() <= dof\_index) &&
+165         (dof\_index < physical\_param\_system.solution->last\_local\_index()) )
+166         \{
+167             physical\_param\_system.solution->set(dof\_index, inputMu[currentSubdomain]);
+168         \}
+169     \}
+170 
+171     physical\_param\_system.solution->close();
+172     physical\_param\_system.update();
+173 \}
+\end{DoxyCode}
+\hypertarget{assemble__functions__elasticity__3_d_8h_aea23a05af24215485f869a40649d9323}{}\index{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}!set\+\_\+homogeneous\+\_\+physical\+\_\+properties@{set\+\_\+homogeneous\+\_\+physical\+\_\+properties}}
+\index{set\+\_\+homogeneous\+\_\+physical\+\_\+properties@{set\+\_\+homogeneous\+\_\+physical\+\_\+properties}!assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}}
+\subsubsection[{set\+\_\+homogeneous\+\_\+physical\+\_\+properties(lib\+Mesh\+::\+Equation\+Systems \&es, std\+::string \&physical\+Params\+File)}]{\setlength{\rightskip}{0pt plus 5cm}void set\+\_\+homogeneous\+\_\+physical\+\_\+properties (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Equation\+Systems \&}]{es, }
+\item[{std\+::string \&}]{physical\+Params\+File}
+\end{DoxyParamCaption}
+)}\label{assemble__functions__elasticity__3_d_8h_aea23a05af24215485f869a40649d9323}
+
+
+Set the homogeneous physical properties from a file. 
+
+
+
+Definition at line 3 of file assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+4 \{
+5     \textcolor{keyword}{const} libMesh::Parallel::Communicator& SysComm = es.comm();
+6     \textcolor{keywordtype}{int} rank = SysComm.rank();
+7     \textcolor{keywordtype}{int} nodes = SysComm.size();
+8 
+9     \textcolor{comment}{// Read the random data info}
+10     \textcolor{keywordtype}{double} inputE;
+11     \textcolor{keywordtype}{double} inputMu;
+12 
+13     \textcolor{keywordflow}{if}(rank == 0)
+14     \{
+15         std::ifstream physicalParamsIFS(physicalParamsFile);
+16         physicalParamsIFS >> inputE >> inputMu;
+17     \}
+18 
+19     \textcolor{keywordflow}{if}(nodes > 1)
+20     \{
+21         SysComm.broadcast(inputE);
+22         SysComm.broadcast(inputMu);
+23     \}
+24 
+25     \textcolor{comment}{// Mesh pointer}
+26     \textcolor{keyword}{const} libMesh::MeshBase& mesh = es.get\_mesh();
+27 
+28     \textcolor{comment}{// Physical system and its "variables"}
+29     libMesh::ExplicitSystem& physical\_param\_system = es.get\_system<libMesh::ExplicitSystem>(\textcolor{stringliteral}{"
+      PhysicalConstants"});
+30     \textcolor{keyword}{const} libMesh::DofMap& physical\_dof\_map = physical\_param\_system.get\_dof\_map();
+31 
+32     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} physical\_consts[2];
+33     physical\_consts[0] = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"E"});
+34     physical\_consts[1] = physical\_param\_system.variable\_number (\textcolor{stringliteral}{"mu"});
+35 
+36     std::vector<libMesh::dof\_id\_type> physical\_dof\_indices\_var;
+37     libMesh::MeshBase::const\_element\_iterator       el     = mesh.active\_local\_elements\_begin();
+38     \textcolor{keyword}{const} libMesh::MeshBase::const\_element\_iterator end\_el = mesh.active\_local\_elements\_end();
+39 
+40     \textcolor{keywordflow}{for} ( ; el != end\_el; ++el)
+41     \{
+42         \textcolor{keyword}{const} libMesh::Elem* elem = *el;
+43 
+44         \textcolor{comment}{// Young modulus, E}
+45         physical\_dof\_map.dof\_indices(elem, physical\_dof\_indices\_var, physical\_consts[0]);
+46         libMesh::dof\_id\_type dof\_index = physical\_dof\_indices\_var[0];
+47 
+48         \textcolor{keywordflow}{if}( (physical\_param\_system.solution->first\_local\_index() <= dof\_index) &&
+49         (dof\_index < physical\_param\_system.solution->last\_local\_index()) )
+50         \{
+51             physical\_param\_system.solution->set(dof\_index, inputE);
+52         \}
+53 
+54         \textcolor{comment}{// Mu}
+55         physical\_dof\_map.dof\_indices (elem, physical\_dof\_indices\_var, physical\_consts[1]);
+56 
+57         dof\_index = physical\_dof\_indices\_var[0];
+58 
+59         \textcolor{keywordflow}{if}( (physical\_param\_system.solution->first\_local\_index() <= dof\_index) &&
+60         (dof\_index < physical\_param\_system.solution->last\_local\_index()) )
+61         \{
+62             physical\_param\_system.solution->set(dof\_index, inputMu);
+63         \}
+64 
+65     \}
+66 
+67     physical\_param\_system.solution->close();
+68     physical\_param\_system.update();
+69 \}
+\end{DoxyCode}
+\hypertarget{assemble__functions__elasticity__3_d_8h_a62ab03859c2ec11c13405298313da9b4}{}\index{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}!Update\+\_\+\+Sub\+K\+\_\+isotropic@{Update\+\_\+\+Sub\+K\+\_\+isotropic}}
+\index{Update\+\_\+\+Sub\+K\+\_\+isotropic@{Update\+\_\+\+Sub\+K\+\_\+isotropic}!assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}}
+\subsubsection[{Update\+\_\+\+Sub\+K\+\_\+isotropic(lib\+Mesh\+::\+Dense\+Sub\+Matrix$<$ lib\+Mesh\+::\+Number $>$ \&\+Sub\+K, unsigned int qp, unsigned int C\+\_\+i, unsigned int C\+\_\+k, const std\+::vector$<$ std\+::vector$<$ lib\+Mesh\+::\+Real\+Gradient $>$ $>$ \&dphi, const unsigned int n\+\_\+components, const unsigned int n\+\_\+u\+\_\+dofs, const std\+::vector$<$ lib\+Mesh\+::\+Real $>$ \&\+Jx\+W, lib\+Mesh\+::\+Number E=1.\+0, lib\+Mesh\+::\+Number mu=0.\+4, double cte=1)}]{\setlength{\rightskip}{0pt plus 5cm}void Update\+\_\+\+Sub\+K\+\_\+isotropic (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Dense\+Sub\+Matrix$<$ lib\+Mesh\+::\+Number $>$ \&}]{Sub\+K, }
+\item[{unsigned int}]{qp, }
+\item[{unsigned int}]{C\+\_\+i, }
+\item[{unsigned int}]{C\+\_\+k, }
+\item[{const std\+::vector$<$ std\+::vector$<$ lib\+Mesh\+::\+Real\+Gradient $>$ $>$ \&}]{dphi, }
+\item[{const unsigned int}]{n\+\_\+components, }
+\item[{const unsigned int}]{n\+\_\+u\+\_\+dofs, }
+\item[{const std\+::vector$<$ lib\+Mesh\+::\+Real $>$ \&}]{Jx\+W, }
+\item[{lib\+Mesh\+::\+Number}]{E = {\ttfamily 1.0}, }
+\item[{lib\+Mesh\+::\+Number}]{mu = {\ttfamily 0.4}, }
+\item[{double}]{cte = {\ttfamily 1}}
+\end{DoxyParamCaption}
+)}\label{assemble__functions__elasticity__3_d_8h_a62ab03859c2ec11c13405298313da9b4}
+
+
+Calculate the rigidity sub-\/matrix contribution. 
+
+
+
+Definition at line 195 of file assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+207 \{
+208     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} iii=0; iii<n\_u\_dofs; iii++)
+209     \{
+210         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} jjj=0; jjj<n\_u\_dofs; jjj++)
+211         \{
+212             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} C\_j=0; C\_j<n\_components; C\_j++)
+213             \{
+214                 \textcolor{keywordflow}{for}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} C\_l=0; C\_l<n\_components; C\_l++)
+215                 \{
+216                     SubK(iii,jjj) += cte * JxW[qp]*(\hyperlink{assemble__functions__elasticity__3_d_8cpp_a218aeb9086b43ea98d92955a9264eee4}{eval\_elasticity\_tensor}(C\_i,C\_j,
+      C\_k,C\_l,E,mu) * dphi[iii][qp](C\_j)*dphi[jjj][qp](C\_l));
+217                 \}
+218             \}
+219         \}
+220     \}
+221 \};
+\end{DoxyCode}
+
+
+\subsection{Variable Documentation}
+\hypertarget{assemble__functions__elasticity__3_d_8h_ab37296de69e82d9b93c8f6db72aa6a89}{}\index{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}!M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+assemble\+\_\+fem@{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+assemble\+\_\+fem}}
+\index{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+assemble\+\_\+fem@{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+assemble\+\_\+fem}!assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h@{assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h}}
+\subsubsection[{M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+assemble\+\_\+fem}]{\setlength{\rightskip}{0pt plus 5cm}const bool M\+A\+S\+T\+E\+R\+\_\+b\+Perf\+Log\+\_\+assemble\+\_\+fem = false}\label{assemble__functions__elasticity__3_d_8h_ab37296de69e82d9b93c8f6db72aa6a89}
+
+
+Definition at line 17 of file assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h.
+

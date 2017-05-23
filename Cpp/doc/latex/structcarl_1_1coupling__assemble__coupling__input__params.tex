@@ -1,0 +1,200 @@
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params}{}\section{carl\+:\+:coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params Struct Reference}
+\label{structcarl_1_1coupling__assemble__coupling__input__params}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+
+
+Structure containing the parameters for the construction of the coupling matrices.  
+
+
+
+
+{\ttfamily \#include $<$carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h$>$}
+
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params_af311a867cd2103103da6f37851832d18}{mesh\+\_\+\+B\+I\+G\+\_\+file}
+\begin{DoxyCompactList}\small\item\em Path to the macro (B\+I\+G) system mesh. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params_a704cd64a2a6e9c980a46130bc9ec921b}{mesh\+\_\+micro\+\_\+file}
+\begin{DoxyCompactList}\small\item\em Path to the micro system mesh. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params_ad2f08c3035377449238a1d830c666630}{mesh\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file}
+\begin{DoxyCompactList}\small\item\em Path to the restricted macro (B\+I\+G) system mesh. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params_ab73f9619bf9653bd3ed2cd019dff5f04}{mesh\+\_\+restrict\+\_\+micro\+\_\+file}
+\begin{DoxyCompactList}\small\item\em Path to the restricted micro system mesh. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params_a4fa79c1dc75b71bbda8e54d351ede2d2}{mesh\+\_\+mediator\+\_\+file}
+\begin{DoxyCompactList}\small\item\em Path to the mediator system mesh. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params_aa922a4b0252168abcfd52a9eb3e2b796}{common\+\_\+inter\+\_\+file}
+\begin{DoxyCompactList}\small\item\em Common path to the intersection meshes and tables. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params_a38e203a052eb26245cc22e80084464dd}{equivalence\+\_\+table\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file}
+\begin{DoxyCompactList}\small\item\em Equivalence table between the macro (B\+I\+G) system mesh and its restriction mesh. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params_a07948e27f6a1a82cffbd1780f28350c7}{equivalence\+\_\+table\+\_\+restrict\+\_\+micro\+\_\+file}
+\begin{DoxyCompactList}\small\item\em Equivalence table between the micro system mesh and its restriction mesh. \end{DoxyCompactList}\item 
+\hyperlink{namespacecarl_ab4549821791d976a4bb9a3460fe1718e}{carl\+::\+Mediator\+Type} \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params_aa520455b2876272ffc924f060f2a332a}{mediator\+\_\+type}
+\begin{DoxyCompactList}\small\item\em Use which mesh as the mediator mesh? {\itshape Values}\+: carl\+::\+Mediator\+Type\+::\+U\+S\+E\+\_\+\+M\+A\+C\+R\+O, carl\+::\+Mediator\+Type\+::\+U\+S\+E\+\_\+\+M\+I\+C\+R\+O or carl\+::\+Mediator\+Type\+::\+U\+S\+E\+\_\+\+E\+X\+T\+E\+R\+N\+A\+L (L\+A\+S\+T C\+A\+S\+E N\+O\+T I\+M\+P\+L\+E\+M\+E\+N\+T\+E\+D Y\+E\+T!). \end{DoxyCompactList}\item 
+bool \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params_adefe0489c1e39fb6bb1965a3e80d2bf5}{b\+\_\+\+Use\+Mesh\+\_\+micro\+\_\+\+As\+Mediator}
+\begin{DoxyCompactList}\small\item\em Use the micro system\textquotesingle{}s restricted mesh as the mediator? \end{DoxyCompactList}\item 
+double \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params_a2cfb03a4663c3c6bc494a88084000249}{coupling\+\_\+width}
+\begin{DoxyCompactList}\small\item\em Width of the coupling region. \end{DoxyCompactList}\item 
+double \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params_a9f0e82658b0e37c16faed3bc3a176dc1}{coupling\+\_\+rigidity}
+\begin{DoxyCompactList}\small\item\em Rigidity used for the coupling matrix. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params_a1344edd32f644b03b19a499e47fb1ca4}{output\+\_\+folder}
+\begin{DoxyCompactList}\small\item\em Path to output folder. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Structure containing the parameters for the construction of the coupling matrices. 
+
+Details on the parameters setup are found in the documentation of \hyperlink{namespacecarl_aba5c04efa5a0abae78d3efd00ae694e3}{carl\+::get\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}(Get\+Pot\& field\+\_\+parser, \hyperlink{structcarl_1_1coupling__assemble__coupling__input__params}{coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}\& input\+\_\+params). 
+
+Definition at line 20 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params_adefe0489c1e39fb6bb1965a3e80d2bf5}{}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}!b\+\_\+\+Use\+Mesh\+\_\+micro\+\_\+\+As\+Mediator@{b\+\_\+\+Use\+Mesh\+\_\+micro\+\_\+\+As\+Mediator}}
+\index{b\+\_\+\+Use\+Mesh\+\_\+micro\+\_\+\+As\+Mediator@{b\+\_\+\+Use\+Mesh\+\_\+micro\+\_\+\+As\+Mediator}!carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+\subsubsection[{b\+\_\+\+Use\+Mesh\+\_\+micro\+\_\+\+As\+Mediator}]{\setlength{\rightskip}{0pt plus 5cm}bool carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params\+::b\+\_\+\+Use\+Mesh\+\_\+micro\+\_\+\+As\+Mediator}\label{structcarl_1_1coupling__assemble__coupling__input__params_adefe0489c1e39fb6bb1965a3e80d2bf5}
+
+
+Use the micro system\textquotesingle{}s restricted mesh as the mediator? 
+
+
+
+Definition at line 36 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params_aa922a4b0252168abcfd52a9eb3e2b796}{}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}!common\+\_\+inter\+\_\+file@{common\+\_\+inter\+\_\+file}}
+\index{common\+\_\+inter\+\_\+file@{common\+\_\+inter\+\_\+file}!carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+\subsubsection[{common\+\_\+inter\+\_\+file}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params\+::common\+\_\+inter\+\_\+file}\label{structcarl_1_1coupling__assemble__coupling__input__params_aa922a4b0252168abcfd52a9eb3e2b796}
+
+
+Common path to the intersection meshes and tables. 
+
+
+
+Definition at line 28 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params_a9f0e82658b0e37c16faed3bc3a176dc1}{}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}!coupling\+\_\+rigidity@{coupling\+\_\+rigidity}}
+\index{coupling\+\_\+rigidity@{coupling\+\_\+rigidity}!carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+\subsubsection[{coupling\+\_\+rigidity}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params\+::coupling\+\_\+rigidity}\label{structcarl_1_1coupling__assemble__coupling__input__params_a9f0e82658b0e37c16faed3bc3a176dc1}
+
+
+Rigidity used for the coupling matrix. 
+
+
+
+Definition at line 39 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params_a2cfb03a4663c3c6bc494a88084000249}{}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}!coupling\+\_\+width@{coupling\+\_\+width}}
+\index{coupling\+\_\+width@{coupling\+\_\+width}!carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+\subsubsection[{coupling\+\_\+width}]{\setlength{\rightskip}{0pt plus 5cm}double carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params\+::coupling\+\_\+width}\label{structcarl_1_1coupling__assemble__coupling__input__params_a2cfb03a4663c3c6bc494a88084000249}
+
+
+Width of the coupling region. 
+
+
+
+Definition at line 38 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params_a38e203a052eb26245cc22e80084464dd}{}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}!equivalence\+\_\+table\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file@{equivalence\+\_\+table\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file}}
+\index{equivalence\+\_\+table\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file@{equivalence\+\_\+table\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file}!carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+\subsubsection[{equivalence\+\_\+table\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params\+::equivalence\+\_\+table\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file}\label{structcarl_1_1coupling__assemble__coupling__input__params_a38e203a052eb26245cc22e80084464dd}
+
+
+Equivalence table between the macro (B\+I\+G) system mesh and its restriction mesh. 
+
+
+
+Definition at line 31 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params_a07948e27f6a1a82cffbd1780f28350c7}{}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}!equivalence\+\_\+table\+\_\+restrict\+\_\+micro\+\_\+file@{equivalence\+\_\+table\+\_\+restrict\+\_\+micro\+\_\+file}}
+\index{equivalence\+\_\+table\+\_\+restrict\+\_\+micro\+\_\+file@{equivalence\+\_\+table\+\_\+restrict\+\_\+micro\+\_\+file}!carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+\subsubsection[{equivalence\+\_\+table\+\_\+restrict\+\_\+micro\+\_\+file}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params\+::equivalence\+\_\+table\+\_\+restrict\+\_\+micro\+\_\+file}\label{structcarl_1_1coupling__assemble__coupling__input__params_a07948e27f6a1a82cffbd1780f28350c7}
+
+
+Equivalence table between the micro system mesh and its restriction mesh. 
+
+
+
+Definition at line 33 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params_aa520455b2876272ffc924f060f2a332a}{}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}!mediator\+\_\+type@{mediator\+\_\+type}}
+\index{mediator\+\_\+type@{mediator\+\_\+type}!carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+\subsubsection[{mediator\+\_\+type}]{\setlength{\rightskip}{0pt plus 5cm}{\bf carl\+::\+Mediator\+Type} carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params\+::mediator\+\_\+type}\label{structcarl_1_1coupling__assemble__coupling__input__params_aa520455b2876272ffc924f060f2a332a}
+
+
+Use which mesh as the mediator mesh? {\itshape Values}\+: carl\+::\+Mediator\+Type\+::\+U\+S\+E\+\_\+\+M\+A\+C\+R\+O, carl\+::\+Mediator\+Type\+::\+U\+S\+E\+\_\+\+M\+I\+C\+R\+O or carl\+::\+Mediator\+Type\+::\+U\+S\+E\+\_\+\+E\+X\+T\+E\+R\+N\+A\+L (L\+A\+S\+T C\+A\+S\+E N\+O\+T I\+M\+P\+L\+E\+M\+E\+N\+T\+E\+D Y\+E\+T!). 
+
+
+
+Definition at line 35 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params_af311a867cd2103103da6f37851832d18}{}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}!mesh\+\_\+\+B\+I\+G\+\_\+file@{mesh\+\_\+\+B\+I\+G\+\_\+file}}
+\index{mesh\+\_\+\+B\+I\+G\+\_\+file@{mesh\+\_\+\+B\+I\+G\+\_\+file}!carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+\subsubsection[{mesh\+\_\+\+B\+I\+G\+\_\+file}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params\+::mesh\+\_\+\+B\+I\+G\+\_\+file}\label{structcarl_1_1coupling__assemble__coupling__input__params_af311a867cd2103103da6f37851832d18}
+
+
+Path to the macro (B\+I\+G) system mesh. 
+
+
+
+Definition at line 21 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params_a4fa79c1dc75b71bbda8e54d351ede2d2}{}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}!mesh\+\_\+mediator\+\_\+file@{mesh\+\_\+mediator\+\_\+file}}
+\index{mesh\+\_\+mediator\+\_\+file@{mesh\+\_\+mediator\+\_\+file}!carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+\subsubsection[{mesh\+\_\+mediator\+\_\+file}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params\+::mesh\+\_\+mediator\+\_\+file}\label{structcarl_1_1coupling__assemble__coupling__input__params_a4fa79c1dc75b71bbda8e54d351ede2d2}
+
+
+Path to the mediator system mesh. 
+
+
+
+Definition at line 27 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params_a704cd64a2a6e9c980a46130bc9ec921b}{}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}!mesh\+\_\+micro\+\_\+file@{mesh\+\_\+micro\+\_\+file}}
+\index{mesh\+\_\+micro\+\_\+file@{mesh\+\_\+micro\+\_\+file}!carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+\subsubsection[{mesh\+\_\+micro\+\_\+file}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params\+::mesh\+\_\+micro\+\_\+file}\label{structcarl_1_1coupling__assemble__coupling__input__params_a704cd64a2a6e9c980a46130bc9ec921b}
+
+
+Path to the micro system mesh. 
+
+
+
+Definition at line 22 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params_ad2f08c3035377449238a1d830c666630}{}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}!mesh\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file@{mesh\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file}}
+\index{mesh\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file@{mesh\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file}!carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+\subsubsection[{mesh\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params\+::mesh\+\_\+restrict\+\_\+\+B\+I\+G\+\_\+file}\label{structcarl_1_1coupling__assemble__coupling__input__params_ad2f08c3035377449238a1d830c666630}
+
+
+Path to the restricted macro (B\+I\+G) system mesh. 
+
+
+
+Definition at line 24 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params_ab73f9619bf9653bd3ed2cd019dff5f04}{}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}!mesh\+\_\+restrict\+\_\+micro\+\_\+file@{mesh\+\_\+restrict\+\_\+micro\+\_\+file}}
+\index{mesh\+\_\+restrict\+\_\+micro\+\_\+file@{mesh\+\_\+restrict\+\_\+micro\+\_\+file}!carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+\subsubsection[{mesh\+\_\+restrict\+\_\+micro\+\_\+file}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params\+::mesh\+\_\+restrict\+\_\+micro\+\_\+file}\label{structcarl_1_1coupling__assemble__coupling__input__params_ab73f9619bf9653bd3ed2cd019dff5f04}
+
+
+Path to the restricted micro system mesh. 
+
+
+
+Definition at line 25 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+\hypertarget{structcarl_1_1coupling__assemble__coupling__input__params_a1344edd32f644b03b19a499e47fb1ca4}{}\index{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}!output\+\_\+folder@{output\+\_\+folder}}
+\index{output\+\_\+folder@{output\+\_\+folder}!carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params@{carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params}}
+\subsubsection[{output\+\_\+folder}]{\setlength{\rightskip}{0pt plus 5cm}std\+::string carl\+::coupling\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+params\+::output\+\_\+folder}\label{structcarl_1_1coupling__assemble__coupling__input__params_a1344edd32f644b03b19a499e47fb1ca4}
+
+
+Path to output folder. 
+
+
+
+Definition at line 41 of file carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/include/parsers/\hyperlink{carl__assemble__coupling__input__parser_8h}{carl\+\_\+assemble\+\_\+coupling\+\_\+input\+\_\+parser.\+h}\end{DoxyCompactItemize}

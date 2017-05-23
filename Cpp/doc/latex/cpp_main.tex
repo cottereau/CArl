@@ -1,0 +1,78 @@
+
+\begin{DoxyItemize}
+\item \hyperlink{cpp_installation}{Pre-\/requisites and installation}
+\item \hyperlink{cpp_usage}{Usage}
+\item \hyperlink{cpp_examples}{Examples} 
+\end{DoxyItemize}\hypertarget{cpp_installation}{}\section{Pre-\/requisites and installation}\label{cpp_installation}
+\hypertarget{cpp_installation_Pre-requisites}{}\subsection{Pre-\/requisites}\label{cpp_installation_Pre-requisites}
+This code implementation use the following third party libraries\+: (the numbers indicate the oldest version for which they were tested)
+
+
+\begin{DoxyEnumerate}
+\item \href{http://www.boost.org}{\tt Boost} (version 1.\+60.\+0)
+\item \href{http://www.cgal.org}{\tt C\+G\+A\+L} (version 4.\+7)
+\item \href{http://www.mcs.anl.gov/petsc/}{\tt P\+E\+T\+Sc} (version 3.\+6.\+2)
+\item \href{https://libmesh.github.io}{\tt lib\+Mesh} (version 1.\+1.\+0, installed with \href{http://wias-berlin.de/software/tetgen/}{\tt Tet\+Gen} support for now)
+\end{DoxyEnumerate}
+
+The following compiler combinations were tested\+:
+
+
+\begin{DoxyEnumerate}
+\item O\+S X / mac\+O\+S \+: Clang (version 7.\+0.\+0) and Open\+M\+P\+I (version 1.\+10.\+0)
+\item Linux \+: Intel C++ compilers (version 16.\+0.\+3) and Intel M\+P\+I (version 5.\+1.\+2)
+\end{DoxyEnumerate}
+
+This code was not tested or compiled with other operational systems.\hypertarget{cpp_installation_installation}{}\subsection{installation}\label{cpp_installation_installation}
+The installation is done using \href{https://cmake.org}{\tt C\+Make} (version 3.\+4.\+2), and the following commands\+: \begin{DoxyVerb}cd [CArl root directory]/Cpp/bin
+cmake ..
+make
+\end{DoxyVerb}
+
+
+This will compile the C\+Arl software using the default system compilers and with the same flags used for the lib\+Mesh, plus the {\ttfamily Release} optimization flags ({\ttfamily -\/\+O3 -\/\+D\+N\+D\+E\+B\+U\+G}). If you want to change these, use the appropriate C\+Make options or an interface such as {\ttfamily ccmake} or {\ttfamily cmake-\/gui}.
+
+The C\+Make script will search for the Boost and C\+G\+A\+L libraries at the default include paths. For the lib\+Mesh installation, it will search for a {\ttfamily L\+I\+B\+M\+E\+S\+H\+\_\+\+D\+I\+R} environement variable. If the environement variable is not found, it will set it as {\ttfamily /usr/local}. In both cases, the script will search the {\ttfamily libmesh-\/config} binary at the {\ttfamily \$\+L\+I\+B\+M\+E\+S\+H\+\_\+\+D\+I\+R/bin} directory.
+
+After finishing the compilation process, a series of executables named {\ttfamily C\+Arl\+\_\+$\ast$$\ast$$\ast$} and {\ttfamily libmesh\+\_\+$\ast$$\ast$$\ast$} will be added to the {\ttfamily \mbox{[}C\+Arl root directory\mbox{]}/\+Cpp/bin} folder. The former are the core binaries of the C++ implementation, while the latter are used as an example based on lib\+Mesh\textquotesingle{}s solvers. \hypertarget{cpp_usage}{}\section{Usage}\label{cpp_usage}
+\hypertarget{cpp_usage_Implementation}{}\subsection{Implementation}\label{cpp_usage_Implementation}
+The C++ implementation of the Arlequin method follows the algorithms presented in \mbox{[}\mbox{[}\mbox{[}R\+E\+F\mbox{]}\mbox{]}\mbox{]}, and it is roughly divided into three parts\+:
+
+
+\begin{DoxyEnumerate}
+\item the mesh intersection search,
+\item the coupling matrices assembly,
+\item and the coupled system solver, based on the F\+E\+T\+I algorithm.
+\end{DoxyEnumerate}
+
+The first two steps are implemented in the \hyperlink{_c_arl__build__intersections_8cpp}{C\+Arl\+\_\+build\+\_\+intersections} and \hyperlink{_c_arl__assemble__coupling_8cpp}{C\+Arl\+\_\+assemble\+\_\+coupling}, respectivelly. Their corresponding pages contain the documentation of the input parameters.
+
+To allow the usage of external solvers in a non-\/intrusive way, the F\+E\+T\+I algorithm implementation is broken down into several {\ttfamily C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+$\ast$$\ast$$\ast$} binaries\+:
+
+
+\begin{DoxyEnumerate}
+\item 
+\end{DoxyEnumerate}
+
+If a scheduling software used (such as P\+B\+S), the user only has to configure and execute the {\ttfamily C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+setup\+\_\+init} binary -\/ it will automatically submit the appropriate
+
+
+\begin{DoxyEnumerate}
+\item run the to find the mesh intersections.
+\item run the {\ttfamily C\+Arl\+\_\+assemble\+\_\+coupling} binary to assemble the coupling matrices.
+\item run any preliminary programs needed to prepare the external solvers.
+\item run the {\ttfamily C\+Arl\+\_\+\+F\+E\+T\+I\+\_\+setup\+\_\+init} binary to start the coupled solver
+\end{DoxyEnumerate}
+\begin{DoxyEnumerate}
+\item A preamble, with the ...
+\begin{DoxyEnumerate}
+\item ... mesh intersection search
+\item ... assembly of the coupling matrices
+\item ... preparation of the external solvers
+\end{DoxyEnumerate}
+\item A solver, based on the F\+E\+T\+I method \mbox{[}\mbox{[}\mbox{[}R\+E\+F\mbox{]}\mbox{]}\mbox{]}
+\end{DoxyEnumerate}
+
+The binaries {\ttfamily C\+Arl\+\_\+build\+\_\+intersections} and {\ttfamily C\+Arl\+\_\+assemble\+\_\+coupling} are responsible for the steps 1a. and 1b., while the step 1c. depend on the
+
+ \hypertarget{cpp_examples}{}\section{Examples}\label{cpp_examples}

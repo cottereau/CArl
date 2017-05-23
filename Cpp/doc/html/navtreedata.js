@@ -2,8 +2,8 @@ var NAVTREE =
 [
   [ "CArl", "index.html", [
     [ "Presentation", "index.html", null ],
-    [ "MATLAB implementation", "matlab_main.html", null ],
-    [ "C++ implementation", "cpp_main.html", "cpp_main" ],
+    [ "CArl MATLAB", "matlab_main.html", null ],
+    [ "CArl C++", "cpp_main.html", "cpp_main" ],
     [ "References", "articles.html", null ],
     [ "Namespaces", null, [
       [ "Namespace List", "namespaces.html", "namespaces" ],
@@ -47,8 +47,8 @@ var NAVTREEINDEX =
 "classcarl_1_1_f_e_t_i___operations.html#a067cab6ead10411079ae05a812c35d53",
 "classcarl_1_1_mesh___intersection.html#a256506b058cda4c9b767d14277b9650c",
 "classcarl_1_1coupling__matrices__3.html#a34a3d938e7ad54997b5d8a227614f983",
-"functions_vars_z.html",
-"structcarl_1_1parallel__intersection__params.html"
+"functions_vars_x.html",
+"structcarl_1_1libmesh__solve__linear__system__input__params.html#ae381749fcf14eec703f3b5c79febf398"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

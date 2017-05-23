@@ -1,0 +1,172 @@
+\hypertarget{common__assemble__functions__elasticity__3_d_8cpp}{}\section{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.cpp File Reference}
+\label{common__assemble__functions__elasticity__3_d_8cpp}\index{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp@{/\+Users/breubreubreu/\+Programming/\+C\+Arl/\+Cpp/src/execs/ext\+\_\+solver\+\_\+libmesh/ext\+\_\+solver\+\_\+libmesh\+\_\+common/common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp}}
+{\ttfamily \#include \char`\"{}common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{common__assemble__functions__elasticity__3_d_8cpp_a5a1c67dcc7beadc87326a0b08b51081a}{set\+\_\+displaced\+\_\+border\+\_\+translation} (lib\+Mesh\+::\+Implicit\+System \&elasticity\+\_\+system, \hyperlink{structborder__displacement__values}{border\+\_\+displacement\+\_\+values} \&displ, int boundary\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Set a displacement border. \end{DoxyCompactList}\item 
+void \hyperlink{common__assemble__functions__elasticity__3_d_8cpp_a2ab22af687ba4728815bcf71500f2b8e}{set\+\_\+clamped\+\_\+border} (lib\+Mesh\+::\+Implicit\+System \&elasticity\+\_\+system, int boundary\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Set a clamped border. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Explicit\+System \& \hyperlink{common__assemble__functions__elasticity__3_d_8cpp_ad95879d1efa8b4e69af5946d65a611cd}{add\+\_\+stress} (lib\+Mesh\+::\+Equation\+Systems \&input\+\_\+systems)
+\begin{DoxyCompactList}\small\item\em Add a stress lib\+Mesh\+::\+Explicit\+System to the input lib\+Mesh\+::\+Equation\+Systems. \end{DoxyCompactList}\item 
+lib\+Mesh\+::\+Linear\+Implicit\+System \& \hyperlink{common__assemble__functions__elasticity__3_d_8cpp_a18748b118aa2b5af33e78cbe3809ca88}{add\+\_\+elasticity} (lib\+Mesh\+::\+Equation\+Systems \&input\+\_\+systems, lib\+Mesh\+::\+Order order, lib\+Mesh\+::\+F\+E\+Family family)
+\begin{DoxyCompactList}\small\item\em Add a linear elasticity lib\+Mesh\+::\+Linear\+Implicit\+System to the input lib\+Mesh\+::\+Equation\+Systems\& input\+\_\+systems. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{common__assemble__functions__elasticity__3_d_8cpp_a18748b118aa2b5af33e78cbe3809ca88}{}\index{common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp@{common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp}!add\+\_\+elasticity@{add\+\_\+elasticity}}
+\index{add\+\_\+elasticity@{add\+\_\+elasticity}!common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp@{common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp}}
+\subsubsection[{add\+\_\+elasticity(lib\+Mesh\+::\+Equation\+Systems \&input\+\_\+systems, lib\+Mesh\+::\+Order order, lib\+Mesh\+::\+F\+E\+Family family)}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Linear\+Implicit\+System\& add\+\_\+elasticity (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Equation\+Systems \&}]{input\+\_\+systems, }
+\item[{lib\+Mesh\+::\+Order}]{order, }
+\item[{lib\+Mesh\+::\+F\+E\+Family}]{family}
+\end{DoxyParamCaption}
+)}\label{common__assemble__functions__elasticity__3_d_8cpp_a18748b118aa2b5af33e78cbe3809ca88}
+
+
+Add a linear elasticity lib\+Mesh\+::\+Linear\+Implicit\+System to the input lib\+Mesh\+::\+Equation\+Systems\& input\+\_\+systems. 
+
+
+
+Definition at line 68 of file common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+71 \{
+72     libMesh::ExplicitSystem& physical\_variables =
+73             input\_systems.add\_system<libMesh::ExplicitSystem> (\textcolor{stringliteral}{"PhysicalConstants"});
+74 
+75     \textcolor{comment}{// Physical constants are set as constant, monomial}
+76     physical\_variables.add\_variable(\textcolor{stringliteral}{"E"}, libMesh::CONSTANT, libMesh::MONOMIAL);
+77     physical\_variables.add\_variable(\textcolor{stringliteral}{"mu"}, libMesh::CONSTANT, libMesh::MONOMIAL);
+78     physical\_variables.add\_variable(\textcolor{stringliteral}{"Index"}, libMesh::CONSTANT, libMesh::MONOMIAL);
+79 
+80     libMesh::LinearImplicitSystem& elasticity\_system =
+81             input\_systems.add\_system<libMesh::LinearImplicitSystem> (\textcolor{stringliteral}{"Elasticity"});
+82 
+83     elasticity\_system.add\_variable(\textcolor{stringliteral}{"u"}, order, family);
+84     elasticity\_system.add\_variable(\textcolor{stringliteral}{"v"}, order, family);
+85     elasticity\_system.add\_variable(\textcolor{stringliteral}{"w"}, order, family);
+86 
+87     \textcolor{keywordflow}{return} elasticity\_system;
+88 \}
+\end{DoxyCode}
+\hypertarget{common__assemble__functions__elasticity__3_d_8cpp_ad95879d1efa8b4e69af5946d65a611cd}{}\index{common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp@{common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp}!add\+\_\+stress@{add\+\_\+stress}}
+\index{add\+\_\+stress@{add\+\_\+stress}!common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp@{common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp}}
+\subsubsection[{add\+\_\+stress(lib\+Mesh\+::\+Equation\+Systems \&input\+\_\+systems)}]{\setlength{\rightskip}{0pt plus 5cm}lib\+Mesh\+::\+Explicit\+System\& add\+\_\+stress (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Equation\+Systems \&}]{input\+\_\+systems}
+\end{DoxyParamCaption}
+)}\label{common__assemble__functions__elasticity__3_d_8cpp_ad95879d1efa8b4e69af5946d65a611cd}
+
+
+Add a stress lib\+Mesh\+::\+Explicit\+System to the input lib\+Mesh\+::\+Equation\+Systems. 
+
+
+
+Definition at line 49 of file common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+50 \{
+51     libMesh::ExplicitSystem& stress\_system =
+52             input\_systems.add\_system<libMesh::ExplicitSystem> (\textcolor{stringliteral}{"StressSystem"});
+53 
+54     stress\_system.add\_variable(\textcolor{stringliteral}{"sigma\_00"}, libMesh::CONSTANT, libMesh::MONOMIAL);
+55     stress\_system.add\_variable(\textcolor{stringliteral}{"sigma\_01"}, libMesh::CONSTANT, libMesh::MONOMIAL);
+56     stress\_system.add\_variable(\textcolor{stringliteral}{"sigma\_02"}, libMesh::CONSTANT, libMesh::MONOMIAL);
+57     stress\_system.add\_variable(\textcolor{stringliteral}{"sigma\_10"}, libMesh::CONSTANT, libMesh::MONOMIAL);
+58     stress\_system.add\_variable(\textcolor{stringliteral}{"sigma\_11"}, libMesh::CONSTANT, libMesh::MONOMIAL);
+59     stress\_system.add\_variable(\textcolor{stringliteral}{"sigma\_12"}, libMesh::CONSTANT, libMesh::MONOMIAL);
+60     stress\_system.add\_variable(\textcolor{stringliteral}{"sigma\_20"}, libMesh::CONSTANT, libMesh::MONOMIAL);
+61     stress\_system.add\_variable(\textcolor{stringliteral}{"sigma\_21"}, libMesh::CONSTANT, libMesh::MONOMIAL);
+62     stress\_system.add\_variable(\textcolor{stringliteral}{"sigma\_22"}, libMesh::CONSTANT, libMesh::MONOMIAL);
+63     stress\_system.add\_variable(\textcolor{stringliteral}{"vonMises"}, libMesh::CONSTANT, libMesh::MONOMIAL);
+64 
+65     \textcolor{keywordflow}{return} stress\_system;
+66 \}
+\end{DoxyCode}
+\hypertarget{common__assemble__functions__elasticity__3_d_8cpp_a2ab22af687ba4728815bcf71500f2b8e}{}\index{common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp@{common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp}!set\+\_\+clamped\+\_\+border@{set\+\_\+clamped\+\_\+border}}
+\index{set\+\_\+clamped\+\_\+border@{set\+\_\+clamped\+\_\+border}!common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp@{common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp}}
+\subsubsection[{set\+\_\+clamped\+\_\+border(lib\+Mesh\+::\+Implicit\+System \&elasticity\+\_\+system, int boundary\+\_\+id)}]{\setlength{\rightskip}{0pt plus 5cm}void set\+\_\+clamped\+\_\+border (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Implicit\+System \&}]{elasticity\+\_\+system, }
+\item[{int}]{boundary\+\_\+id}
+\end{DoxyParamCaption}
+)}\label{common__assemble__functions__elasticity__3_d_8cpp_a2ab22af687ba4728815bcf71500f2b8e}
+
+
+Set a clamped border. 
+
+
+
+Definition at line 27 of file common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+28 \{
+29     \textcolor{comment}{// Defining the boundaries with Dirichlet conditions ...}
+30     std::set<libMesh::boundary\_id\_type> boundary\_id\_displacement;
+31 
+32     boundary\_id\_displacement.insert(boundary\_id);
+33 
+34     std::vector<unsigned int> variables(3);
+35     variables[0] = elasticity\_system.variable\_number(\textcolor{stringliteral}{"u"});
+36     variables[1] = elasticity\_system.variable\_number(\textcolor{stringliteral}{"v"});
+37     variables[2] = elasticity\_system.variable\_number(\textcolor{stringliteral}{"w"});
+38 
+39     libMesh::ZeroFunction<> zero\_function;
+40 
+41     \textcolor{comment}{// ... and set them}
+42     libMesh::DirichletBoundary dirichlet\_bc(    boundary\_id\_displacement,
+43                                                 variables,
+44                                                 &zero\_function);
+45 
+46     elasticity\_system.get\_dof\_map().add\_dirichlet\_boundary(dirichlet\_bc);
+47 \}
+\end{DoxyCode}
+\hypertarget{common__assemble__functions__elasticity__3_d_8cpp_a5a1c67dcc7beadc87326a0b08b51081a}{}\index{common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp@{common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp}!set\+\_\+displaced\+\_\+border\+\_\+translation@{set\+\_\+displaced\+\_\+border\+\_\+translation}}
+\index{set\+\_\+displaced\+\_\+border\+\_\+translation@{set\+\_\+displaced\+\_\+border\+\_\+translation}!common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp@{common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp}}
+\subsubsection[{set\+\_\+displaced\+\_\+border\+\_\+translation(lib\+Mesh\+::\+Implicit\+System \&elasticity\+\_\+system, border\+\_\+displacement\+\_\+values \&displ, int boundary\+\_\+id)}]{\setlength{\rightskip}{0pt plus 5cm}void set\+\_\+displaced\+\_\+border\+\_\+translation (
+\begin{DoxyParamCaption}
+\item[{lib\+Mesh\+::\+Implicit\+System \&}]{elasticity\+\_\+system, }
+\item[{{\bf border\+\_\+displacement\+\_\+values} \&}]{displ, }
+\item[{int}]{boundary\+\_\+id}
+\end{DoxyParamCaption}
+)}\label{common__assemble__functions__elasticity__3_d_8cpp_a5a1c67dcc7beadc87326a0b08b51081a}
+
+
+Set a displacement border. 
+
+
+
+Definition at line 4 of file common\+\_\+assemble\+\_\+functions\+\_\+elasticity\+\_\+3\+D.\+cpp.
+
+
+\begin{DoxyCode}
+5 \{
+6     \textcolor{comment}{// Defining the boundaries with Dirichlet conditions ...}
+7     std::set<libMesh::boundary\_id\_type> boundary\_id\_displacement;
+8 
+9     boundary\_id\_displacement.insert(boundary\_id);
+10 
+11     std::vector<unsigned int> variables(3);
+12     variables[0] = elasticity\_system.variable\_number(\textcolor{stringliteral}{"u"});
+13     variables[1] = elasticity\_system.variable\_number(\textcolor{stringliteral}{"v"});
+14     variables[2] = elasticity\_system.variable\_number(\textcolor{stringliteral}{"w"});
+15 
+16     \hyperlink{classborder__displacement__function}{border\_displacement\_function} move\_border(   variables[0],variables[1],
+      variables[2],
+17                                         displ.\hyperlink{structborder__displacement__values_a79fb24700b001a0e4089816f6e9596b1}{x\_displ},displ.\hyperlink{structborder__displacement__values_add771bac55cf12535ad4329d92c81d92}{y\_displ},displ.
+      \hyperlink{structborder__displacement__values_a2c7c653e236a44f295db2d74ced8706b}{z\_displ});
+18 
+19     \textcolor{comment}{// ... and set them}
+20     libMesh::DirichletBoundary dirichlet\_bc(    boundary\_id\_displacement,
+21                                                 variables,
+22                                                 &move\_border);
+23 
+24     elasticity\_system.get\_dof\_map().add\_dirichlet\_boundary(dirichlet\_bc);
+25 \}
+\end{DoxyCode}
