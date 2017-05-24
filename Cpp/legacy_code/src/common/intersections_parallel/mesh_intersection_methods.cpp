@@ -265,7 +265,7 @@ void Mesh_Intersection::export_intersection_data(const std::string & filename_ba
 
 	// Set the filenames depending on the processor rank
 	std::string mesh_file_out = filename_base + mesh_format;
-	std::string table_file_out = filename_base + "_inter_table_Full.dat";
+	std::string table_file_out = filename_base + "_inter_table.dat";
 
 	// Print the mesh
 	libMesh::NameBasedIO output_mesh(m_libMesh_Mesh);

@@ -52,12 +52,11 @@ void Stitch_Meshes::set_base_filenames(const std::string & filename_base, const 
 	for(unsigned int iii = 0; iii < m_nb_files; ++iii)
 	{
 		m_mesh_filenames[iii] = filename_base + "_r_" + std::to_string(iii) + "_n_" + std::to_string(m_nb_files) + mesh_format;
-		m_table_filenames[iii] = filename_base + "_r_" + std::to_string(iii) + "_n_" + std::to_string(m_nb_files) + "_inter_table_Full.dat";
+		m_table_filenames[iii] = filename_base + "_r_" + std::to_string(iii) + "_n_" + std::to_string(m_nb_files) + "_inter_table.dat";
 	}
 
-	// m_mesh_output = m_base_output + ".msh";
 	m_mesh_output = m_base_output + ".e";
-	m_table_output= m_base_output + "_inter_table_Full.dat";
+	m_table_output= m_base_output + "_inter_pairs.dat";
 
 	m_bFilenamesSet = true;
 }
@@ -243,16 +242,18 @@ void Stitch_Meshes::join_tables()
 
 	for(unsigned int iii = 0; iii < m_nb_of_intersections; ++iii)
 	{
-		joined_tables_file 	<< iii << " "
-							<< m_intersection_pairs[iii].first << " "
-							<< m_intersection_pairs[iii].second << " "
-							<< m_intersection_nb_of_elements[iii] << " ";
-		for(unsigned jjj = 0; jjj < m_intersection_nb_of_elements[iii]; ++jjj)
-		{
-			joined_tables_file 	<< intersection_elem_idx << " ";
-			++intersection_elem_idx;
-		}
-		joined_tables_file 	<< std::endl;
+		joined_tables_file 	<< m_intersection_pairs[iii].first << " "
+							<< m_intersection_pairs[iii].second << std::endl;
+		// joined_tables_file 	<< iii << " "
+		// 					<< m_intersection_pairs[iii].first << " "
+		// 					<< m_intersection_pairs[iii].second << " "
+		// 					<< m_intersection_nb_of_elements[iii] << " ";
+		// for(unsigned jjj = 0; jjj < m_intersection_nb_of_elements[iii]; ++jjj)
+		// {
+		// 	joined_tables_file 	<< intersection_elem_idx << " ";
+		// 	++intersection_elem_idx;
+		// }
+		// joined_tables_file 	<< std::endl;
 	}
 	joined_tables_file.close();
 }

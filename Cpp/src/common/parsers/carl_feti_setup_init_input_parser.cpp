@@ -23,11 +23,24 @@ void get_input_params(GetPot& field_parser,
 			std::cout << "     on computers without a job scheduler (PBS, SLURM). You will have to launch" << std::endl;
 			std::cout << "     each script MANUALLY!!! Reason: MPI does not support recursive 'mpirun' calls" << std::endl;
 			input_params.scheduler = carl::ClusterSchedulerType::LOCAL;
+			input_params.script_filename = "";
 		}
-		else if(cluster_scheduler_type == "PBS")
+		else if(cluster_scheduler_type == "PBS") {
 			input_params.scheduler = carl::ClusterSchedulerType::PBS;
-		else if(cluster_scheduler_type == "SLURM")
+			if (field_parser.search(1, "ScriptFile")) {
+				input_params.script_filename = field_parser.next(input_params.script_filename);
+			} else {
+				homemade_error_msg("Missing the script file (needed for the PBS scheduler)!");
+			}
+		}
+		else if(cluster_scheduler_type == "SLURM") {
 			input_params.scheduler = carl::ClusterSchedulerType::SLURM;
+			if (field_parser.search(1, "ScriptFile")) {
+				input_params.script_filename = field_parser.next(input_params.script_filename);
+			} else {
+				homemade_error_msg("Missing the script file (needed for the SLURM scheduler)!");
+			}
+		}
 		else
 			homemade_error_msg("Invalid scheduler type!");
 	} else {
@@ -101,14 +114,6 @@ void get_input_params(GetPot& field_parser,
 		std::cout << input_params.scratch_folder_path << std::endl;
 	} else {
 		homemade_error_msg("Missing the external scratch folder path!");
-	}
-
-	if (field_parser.search(1, "ScriptFile")) {
-		input_params.script_filename = field_parser.next(
-				input_params.script_filename);
-		std::cout << input_params.script_filename << std::endl;
-	} else {
-		homemade_error_msg("Missing the script file!");
 	}
 
 	if (field_parser.search(1, "CouplingMatricesFolder")) {

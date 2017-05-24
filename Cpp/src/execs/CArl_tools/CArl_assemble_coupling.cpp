@@ -148,8 +148,8 @@ int main(int argc, char** argv) {
 	std::string local_inter_mesh_filename = input_params.common_inter_file + "_r_"
 										+ std::to_string(rank) + "_n_" + std::to_string(nodes) + ".e";
 	std::string local_inter_table_filename = input_params.common_inter_file + "_r_"
-										+ std::to_string(rank) + "_n_" + std::to_string(nodes) + "_inter_table_Full.dat";
-	std::string global_inter_table_filename = input_params.common_inter_file + "_stitched_inter_table_Full.dat";
+										+ std::to_string(rank) + "_n_" + std::to_string(nodes) + "_inter_table.dat";
+	std::string global_inter_table_filename = input_params.common_inter_file + "_global_inter_pairs.dat";
 
 	mesh_inter.read(local_inter_mesh_filename);
 	mesh_inter.prepare_for_use();

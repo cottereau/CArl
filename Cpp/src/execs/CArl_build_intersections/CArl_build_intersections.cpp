@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
 	libMesh::Mesh test_mesh_full_I(LocalComm,3);
 
 	// Object used to stitch the meshes and to join the local intersection tables into a global one
-	carl::Stitch_Meshes	join_meshes(test_mesh_full_I,input_params.output_base + "_stitched");
+	carl::Stitch_Meshes	join_meshes(test_mesh_full_I,input_params.output_base + "_global");
 	join_meshes.set_grid_constraints(test_mesh_A,test_mesh_B);
 
 	// Set filenames

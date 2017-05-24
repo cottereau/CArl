@@ -712,8 +712,10 @@ void carl::set_global_mediator_system_intersection_lists(
 
 		for(int iii = 0; iii < nbOfIntersections; ++iii)
 		{
-			intersection_full_file 	>> temp_interID
-									>> temp_idxA[iii] >> temp_idxB[iii];
+			// intersection_full_file 	>> temp_interID
+			// 						>> temp_idxA[iii] >> temp_idxB[iii];
+			// intersection_full_file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			intersection_full_file 	>> temp_idxA[iii] >> temp_idxB[iii];
 			intersection_full_file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		}
 		intersection_full_file.close();
