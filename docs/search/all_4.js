@@ -28,5 +28,6 @@ var searchData=
   ['ext_5fsolver_5fbig_5ftype',['ext_solver_BIG_type',['../structcarl_1_1feti__setup__init__params.html#a60ddeeac9b3c334b3f4516dc347affec',1,'carl::feti_setup_init_params']]],
   ['ext_5fsolver_5fmicro',['ext_solver_micro',['../structcarl_1_1feti__setup__init__params.html#aaa4b53d66e1dde62585701fab931a50c',1,'carl::feti_setup_init_params']]],
   ['ext_5fsolver_5fmicro_5finput',['ext_solver_micro_input',['../structcarl_1_1feti__setup__init__params.html#a27dfcdd54488314398184e8f7a989ab2',1,'carl::feti_setup_init_params']]],
-  ['ext_5fsolver_5fmicro_5ftype',['ext_solver_micro_type',['../structcarl_1_1feti__setup__init__params.html#a087f44c8b913718d70c2cd3c06e13262',1,'carl::feti_setup_init_params']]]
+  ['ext_5fsolver_5fmicro_5ftype',['ext_solver_micro_type',['../structcarl_1_1feti__setup__init__params.html#a087f44c8b913718d70c2cd3c06e13262',1,'carl::feti_setup_init_params']]],
+  ['external_20solver_20assembly',['External solver assembly',['../traction_example_sys_assemble.html',1,'cpp_exampletraction']]]
 ];
