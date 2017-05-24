@@ -103,8 +103,8 @@ $(document).ready(function(){initNavTree('cpp_exampletraction.html','');});
 <div class="title">3D traction test </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This page contains an example with a coupled 3D traction system, with a detailed description of the input parameter files and the progression of the solver. The files associated to this example can be found at the <code>[CArl root directory]/Cpp/bin</code> folder - and the scripts must be launched submited from there.</p>
-<p>NOTE**: before launching the PBS files, configure them to load the appropriate modules (MPI, compilers).</p>
+<div class="textblock"><p>This page contains an example with a coupled 3D traction system, with a detailed description of the input parameter files and the progression of the solver. The files associated to this example can be found at the <code>[CArl root directory]/Cpp/bin</code> folder - and the scripts must be launched / submited from there.</p>
+<p><b>NOTE</b>: before launching the PBS files, configure them to load the appropriate modules (MPI, compilers).</p>
 <h1><a class="anchor" id="traction_example_physical"></a>
 Physical model</h1>
 <div class="image">
@@ -112,39 +112,49 @@ Physical model</h1>
 <div class="caption">
 Domains of the meshes used for the 3D coupled traction test: (a) coupled system, (b) and (c) system mesh domains, and (d) coupling region</div></div>
 <p> Consider two coupled bricks, both with an linear elasticy model with a Young modulus <img class="formulaInl" alt="$E = 200 GPa$" src="form_15.png"/> and a shear modulus <img class="formulaInl" alt="$\mu = 80 GPa$" src="form_16.png"/>. Their domains <img class="formulaInl" alt="$\Omega_1$" src="form_17.png"/> and <img class="formulaInl" alt="$\Omega_2$" src="form_18.png"/> are represented at the figure above. Both models are coupled at the region <img class="formulaInl" alt="$\Omega_{12}^c$" src="form_19.png"/>. A force density <img class="formulaInl" alt="$\mathbf{F}=100kPa$" src="form_20.png"/> is applied on the face <img class="formulaInl" alt="$\Gamma_F$" src="form_21.png"/> of the domain <img class="formulaInl" alt="$\Omega_2$" src="form_18.png"/>, and the face <img class="formulaInl" alt="$\Gamma_0$" src="form_22.png"/> of the domain <img class="formulaInl" alt="$\Omega_1$" src="form_17.png"/> is clamped.</p>
-<h1><a class="anchor" id="traction_example_physical"></a>
-Physical model</h1>
+<p>The model associated to the <img class="formulaInl" alt="$\Omega_1$" src="form_17.png"/> domain will be considered as the <code>Macro</code> or <code>A</code> model, while the one associated to <img class="formulaInl" alt="$\Omega_2$" src="form_18.png"/> domain will be considered as the <code>Micro</code> or <code>B</code> model.</p>
+<h1><a class="anchor" id="traction_example_mesh"></a>
+Mesh and physical parameter files</h1>
 <p>All the meshes and physical parameter files are found at the <code>examples/coupled_traction_test/meshes</code> folder. The domains <img class="formulaInl" alt="$\Omega_1$" src="form_17.png"/> and <img class="formulaInl" alt="$\Omega_2$" src="form_18.png"/> are modelized by the meshes <code>test_brick_A_1k.msh</code> and <code>test_brick_B_1k.msh</code> (each one of them has around <img class="formulaInl" alt="$\sim1000$" src="form_23.png"/> elements). The coupling region is represented by the mesh <code>test_brick_C.msh</code> (with <img class="formulaInl" alt="$\sim3500$" src="form_24.png"/> elements). The physical parameters are saved in the <code>test_brick_I_1_physical.dat</code>.</p>
 <h1><a class="anchor" id="traction_example_inter"></a>
 Intersection search</h1>
-<p>Before solving the coupled system we have to assemble the coupling matrices - and before doing this, we have to find the intersections between the meshes <code>test_brick_A_1k.msh</code> and <code>test_brick_B_1k.msh</code>, inside the coupling region defined by <code>test_brick_C.msh</code>. This can be done by either submiting the file <code>scripts/PBS_FETI_test_inter_traction_test_1k.pbs</code>, if using a PBS scheduler, or by launching the <code>scripts/LOCAL_FETI_test_inter_traction_test_1k.sh</code> script, if running locally. In either case, the following command will be executed </p><pre class="fragment">mpirun -np 4 ./CArl_build_intersections -i examples/coupled_traction_test/intersection/inter_traction_test_1k.txt
-</pre><h2><a class="anchor" id="Input"></a>
+<p>Before solving the coupled system we have to assemble the coupling matrices - and before doing this, we have to find the intersections between the meshes <code>test_brick_A_1k.msh</code> and <code>test_brick_B_1k.msh</code>, inside the coupling region defined by <code>test_brick_C.msh</code>. This can be done by either submiting the file <code>scripts/PBS_FETI_test_inter_traction_test_1k.pbs</code>, if using a PBS scheduler, or by launching the <code>scripts/LOCAL_FETI_test_inter_traction_test_1k.sh</code> script, if running locally.</p>
+<p>In either case, the <code>CArl_build_intersections</code> will be executed using 4 processors, and using the file <code>examples/coupled_traction_test/intersection/inter_traction_test_1k.txt</code> for the input parameters. </p><pre class="fragment">mpirun -np 4 ./CArl_build_intersections -i examples/coupled_traction_test/intersection/inter_traction_test_1k.txt
+</pre><h2><a class="anchor" id="traction_example_inter_i"></a>
 Input</h2>
-<p>Here is the input file, <code>examples/coupled_traction_test/intersection/inter_traction_test_1k.txt</code>, and a break down of the options</p>
+<p>File: <code>examples/coupled_traction_test/intersection/inter_traction_test_1k.txt</code>: </p><pre class="fragment">### Required parameters
+# - Mesh files
+MeshA examples/coupled_traction_test/meshes/test_brick_A_1k.msh
+MeshB examples/coupled_traction_test/meshes/test_brick_B_1k.msh
+MeshC examples/coupled_traction_test/meshes/test_brick_C.msh
+
+### Optional parameters
+# - Output filename base
+OutputBase examples/coupled_traction_test/intersection/output/inter_1k/inter
+
+# - Meshing algorithm choice
+MeshingMethod CGAL
+
+# - Boolean flags, uncomment to activate
+
+# &gt; Stitch together the intersection meshes? 
+#   (done in a single processor, can be numerically expensive)
+#StitchInterMeshes
+
+# &gt; Verbose output?
+#   (prints coupling mesh partitioning before and after rebalancing)
+#VerboseOutput
+</pre><p>Input file parameters:</p>
 <ul>
-<li>Paths to the model and coupling meshes <pre class="fragment"> # - Mesh files
- MeshA examples/coupled_traction_test/meshes/test_brick_A_1k.msh
- MeshB examples/coupled_traction_test/meshes/test_brick_B_1k.msh
- MeshC examples/coupled_traction_test/meshes/test_brick_C.msh
-</pre></li>
-<li>Common output filename. All the intersection output files will be named <code>[OutputBase]_***</code>. The folders of the path must be created beforehand. <pre class="fragment"> # - Output filename base
- OutputBase examples/coupled_traction_test/intersection/output/inter_1k/inter
-</pre></li>
-<li>Type of intersection meshing method, either based on <code>CGAL</code> or <code>TETGEN</code>. The usage of <code>CGAL</code> is highly recommended. <pre class="fragment"> # - Meshing algorithm choice
- MeshingMethod CGAL
-</pre></li>
-<li>Stitch together the intersection meshes? Only really useful for visualization of the intersection mesh, done in a single processor and numerically expensive. <pre class="fragment"> # &gt; Stitch together the intersection meshes? 
- #   (done in a single processor, can be numerically expensive)
- #StitchInterMeshes
-</pre></li>
-<li>Print some extra information about the intersection search? (partitioning) <pre class="fragment"> # &gt; Verbose output?
- #   (prints coupling mesh partitioning before and after rebalancing)
- #VerboseOutput
-</pre></li>
+<li><code>MeshA</code>, <code>MeshB</code> and <code>MeshC</code>: paths to the two model meshes and to the coupling region mesh.</li>
+<li><code>OutputBase</code>: common output filename. All the intersection output files will be named <code>[OutputBase]_***</code>. The folders of the path must be created beforehand.</li>
+<li><code>MeshingMethod</code>: type of intersection meshing method, either based on <code>CGAL</code> or <code>TETGEN</code>. The usage of <code>CGAL</code> is highly recommended.</li>
+<li><code>StitchInterMeshes</code>: if this flag is set, the intersection meshes will be stitched together. This is only really useful for visualization of the intersection mesh. Since it's done in a single processor, this is potentially numerically expensive.</li>
+<li><code>VerboseOutput</code>: if this flag is set, some extra information (such as the coupling mesh repartitioning) will be printed.</li>
 </ul>
-<h2><a class="anchor" id="Output"></a>
+<h2><a class="anchor" id="traction_example_inter_o"></a>
 Output</h2>
-<p>Here are the output files, with their descriptions</p>
+<p>After building the intersections, the following files will be created at the <code>examples/coupled_traction_test/intersection/output/inter_1k</code> folder:</p>
 <ul>
 <li>"Restricted" meshes. Meshes containing the elements of the system meshes that intersect the coupling region. <pre class="fragment"> inter_A_restriction.msh
  inter_B_restriction.msh 
@@ -157,14 +167,17 @@ Output</h2>
  inter_r_2_n_4.e
  inter_r_3_n_4.e
 </pre></li>
-<li>Tables containing information about the intersections (intersecting element pairs, and indexes of the intersection mesh elements used to build it) [[[FORMAT]]]. Each processor generates its own (local) intersection mesh. <pre class="fragment"> inter_r_0_n_4_inter_table_Full.dat  
- inter_r_1_n_4_inter_table_Full.dat 
- inter_r_2_n_4_inter_table_Full.dat
- inter_r_3_n_4_inter_table_Full.dat
+<li>Tables containing information about the intersections (intersecting element pairs, and indexes of the intersection mesh elements used to build it) [[[FORMAT]]]. Each processor generates its own (local) intersection mesh. <pre class="fragment"> inter_r_0_n_4_inter_table.dat  
+ inter_r_1_n_4_inter_table.dat 
+ inter_r_2_n_4_inter_table.dat
+ inter_r_3_n_4_inter_table.dat
+</pre></li>
+<li>Table containing a global list of the intersection pairs. <pre class="fragment"> inter_inter_pairs.dat
 </pre></li>
 </ul>
 <h1><a class="anchor" id="traction_example_coupl_assemble"></a>
 Coupling matrices assembly</h1>
+<p>With the files above, we are ready to assemble the coupling matrices.</p>
 <h1><a class="anchor" id="traction_example_sys_assemble"></a>
 External solver assembly</h1>
 <h1><a class="anchor" id="traction_example_coupled_solver"></a>

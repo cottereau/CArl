@@ -234,7 +234,7 @@ $(document).ready(function(){initNavTree('_c_arl__build__intersections_8cpp_sour
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    libMesh::Mesh test_mesh_full_I(LocalComm,3);</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    <span class="comment">// Object used to stitch the meshes and to join the local intersection tables into a global one</span></div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    <a class="code" href="classcarl_1_1_stitch___meshes.html">carl::Stitch_Meshes</a> join_meshes(test_mesh_full_I,input_params.<a class="code" href="structcarl_1_1parallel__intersection__params.html#a74ba855a7e3dc3595531e6204eb57db2">output_base</a> + <span class="stringliteral">&quot;_stitched&quot;</span>);</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    <a class="code" href="classcarl_1_1_stitch___meshes.html">carl::Stitch_Meshes</a> join_meshes(test_mesh_full_I,input_params.<a class="code" href="structcarl_1_1parallel__intersection__params.html#a74ba855a7e3dc3595531e6204eb57db2">output_base</a> + <span class="stringliteral">&quot;_global&quot;</span>);</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    join_meshes.set_grid_constraints(test_mesh_A,test_mesh_B);</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    <span class="comment">// Set filenames</span></div>

@@ -823,114 +823,116 @@ $(document).ready(function(){initNavTree('mesh__tables_8cpp_source.html','');});
 <div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;</div>
 <div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;        <span class="keywordflow">for</span>(<span class="keywordtype">int</span> iii = 0; iii &lt; nbOfIntersections; ++iii)</div>
 <div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;        {</div>
-<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;            intersection_full_file  &gt;&gt; temp_interID</div>
-<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;                                    &gt;&gt; temp_idxA[iii] &gt;&gt; temp_idxB[iii];</div>
-<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;            intersection_full_file.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), <span class="charliteral">&#39;\n&#39;</span>);</div>
-<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;        }</div>
-<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;        intersection_full_file.close();</div>
-<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;    }</div>
-<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;</div>
-<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;    <span class="keywordflow">if</span>(nodes &gt; 1)</div>
-<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;    {</div>
-<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;        WorldComm.broadcast(nbOfIntersections);</div>
-<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;</div>
-<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;        <span class="keywordflow">if</span>(rank != 0)</div>
-<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;        {</div>
-<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;            temp_idxA.resize(nbOfIntersections);</div>
-<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;            temp_idxB.resize(nbOfIntersections);</div>
-<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;        }</div>
-<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;        WorldComm.broadcast(temp_idxA);</div>
-<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;        WorldComm.broadcast(temp_idxB);</div>
-<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;    }</div>
-<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;</div>
-<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;    inter_mediator_A.reserve(nbOfIntersections);</div>
-<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;    inter_mediator_B.reserve(nbOfIntersections);</div>
-<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;</div>
-<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;    <span class="keywordtype">int</span> mediator_idx;</div>
-<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> iii = 0; iii &lt; nbOfIntersections; ++iii)</div>
-<div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;    {</div>
-<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;        mediator_idx = equivalence_table_system_to_mediator.at(temp_idxA[iii]);</div>
-<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;        inter_mediator_B.emplace(std::make_pair(mediator_idx, temp_idxB[iii]));</div>
-<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;    }</div>
-<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;</div>
-<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;    <span class="keywordtype">int</span> system_idx;</div>
-<div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iii = 0; iii &lt; equivalence_table_system_to_mediator.size(); ++iii)</div>
-<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;    {</div>
-<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;        system_idx = equivalence_table_mediator_to_system.at(iii);</div>
-<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;        inter_mediator_A.emplace(std::make_pair(iii, system_idx));</div>
-<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;    }</div>
-<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;};</div>
-<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;</div>
-<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;<span class="keywordtype">void</span> carl::repartition_system_meshes(</div>
-<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;        <span class="keyword">const</span> libMesh::Parallel::Communicator&amp; WorldComm,</div>
-<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;        libMesh::Mesh&amp; mesh_input,</div>
-<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;        libMesh::Mesh&amp; mesh_intersect,</div>
-<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;        std::unordered_map&lt;<span class="keywordtype">int</span>,std::pair&lt;int,int&gt; &gt;&amp; local_intersection_pairs_map,</div>
-<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;        <span class="keywordtype">bool</span> bUseSecond)</div>
-<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;{</div>
-<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;    std::vector&lt;double&gt; mesh_input_weights;</div>
-<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;    mesh_input_weights.resize(mesh_input.n_elem(),0);</div>
-<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;</div>
-<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;    <span class="comment">// Nb. of intersections associated to each elem of mesh_intersect</span></div>
-<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;    std::vector&lt;int&gt;    inter_per_elem(mesh_intersect.n_elem());</div>
-<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;</div>
-<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;    std::unordered_map&lt;int,std::pair&lt;int,int&gt; &gt;::const_iterator inter_pairsIt =</div>
-<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;            local_intersection_pairs_map.begin();</div>
-<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;    <span class="keyword">const</span> std::unordered_map&lt;int,std::pair&lt;int,int&gt; &gt;::const_iterator end_inter_pairsIt =</div>
-<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;            local_intersection_pairs_map.end();</div>
-<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;    <span class="keywordflow">for</span>( ; inter_pairsIt != end_inter_pairsIt; ++inter_pairsIt)</div>
-<div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160;    {</div>
-<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;        <span class="keyword">const</span> std::pair&lt;int,int&gt;&amp; dummy_pair = inter_pairsIt-&gt;second;</div>
-<div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;</div>
-<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;        <span class="keywordflow">if</span>(bUseSecond)</div>
-<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;        {</div>
-<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;            ++inter_per_elem[dummy_pair.first];</div>
-<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;        }</div>
-<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;        <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;        {</div>
-<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;            ++inter_per_elem[dummy_pair.second];</div>
-<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;        }</div>
-<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;    }</div>
-<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;</div>
-<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;    inter_pairsIt = local_intersection_pairs_map.begin();</div>
-<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;    <span class="keywordflow">for</span>( ; inter_pairsIt != end_inter_pairsIt; ++inter_pairsIt)</div>
-<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;    {</div>
-<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;        <span class="keyword">const</span> std::pair&lt;int,int&gt;&amp; dummy_pair = inter_pairsIt-&gt;second;</div>
-<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;</div>
-<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;        <span class="keywordflow">if</span>(bUseSecond)</div>
-<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;        {</div>
-<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;            mesh_input_weights[dummy_pair.second] += inter_per_elem[dummy_pair.first];</div>
-<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;        }</div>
-<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;        <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;        {</div>
-<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;            mesh_input_weights[dummy_pair.first] += inter_per_elem[dummy_pair.second];</div>
-<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160;        }</div>
-<div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160;    }</div>
-<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;</div>
-<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;    WorldComm.sum(mesh_input_weights);</div>
+<div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;            <span class="comment">// intersection_full_file   &gt;&gt; temp_interID</span></div>
+<div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;            <span class="comment">//                      &gt;&gt; temp_idxA[iii] &gt;&gt; temp_idxB[iii];</span></div>
+<div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;            <span class="comment">// intersection_full_file.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), &#39;\n&#39;);</span></div>
+<div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;            intersection_full_file  &gt;&gt; temp_idxA[iii] &gt;&gt; temp_idxB[iii];</div>
+<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;            intersection_full_file.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), <span class="charliteral">&#39;\n&#39;</span>);</div>
+<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;        }</div>
+<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;        intersection_full_file.close();</div>
+<div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;    }</div>
+<div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;</div>
+<div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;    <span class="keywordflow">if</span>(nodes &gt; 1)</div>
+<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;    {</div>
+<div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;        WorldComm.broadcast(nbOfIntersections);</div>
+<div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;</div>
+<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;        <span class="keywordflow">if</span>(rank != 0)</div>
+<div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;        {</div>
+<div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;            temp_idxA.resize(nbOfIntersections);</div>
+<div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;            temp_idxB.resize(nbOfIntersections);</div>
+<div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;        }</div>
+<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;        WorldComm.broadcast(temp_idxA);</div>
+<div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;        WorldComm.broadcast(temp_idxB);</div>
+<div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;    }</div>
+<div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;</div>
+<div class="line"><a name="l00737"></a><span class="lineno">  737</span>&#160;    inter_mediator_A.reserve(nbOfIntersections);</div>
+<div class="line"><a name="l00738"></a><span class="lineno">  738</span>&#160;    inter_mediator_B.reserve(nbOfIntersections);</div>
+<div class="line"><a name="l00739"></a><span class="lineno">  739</span>&#160;</div>
+<div class="line"><a name="l00740"></a><span class="lineno">  740</span>&#160;    <span class="keywordtype">int</span> mediator_idx;</div>
+<div class="line"><a name="l00741"></a><span class="lineno">  741</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> iii = 0; iii &lt; nbOfIntersections; ++iii)</div>
+<div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;    {</div>
+<div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;        mediator_idx = equivalence_table_system_to_mediator.at(temp_idxA[iii]);</div>
+<div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;        inter_mediator_B.emplace(std::make_pair(mediator_idx, temp_idxB[iii]));</div>
+<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;    }</div>
+<div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;</div>
+<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;    <span class="keywordtype">int</span> system_idx;</div>
+<div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iii = 0; iii &lt; equivalence_table_system_to_mediator.size(); ++iii)</div>
+<div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;    {</div>
+<div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;        system_idx = equivalence_table_mediator_to_system.at(iii);</div>
+<div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160;        inter_mediator_A.emplace(std::make_pair(iii, system_idx));</div>
+<div class="line"><a name="l00752"></a><span class="lineno">  752</span>&#160;    }</div>
+<div class="line"><a name="l00753"></a><span class="lineno">  753</span>&#160;};</div>
+<div class="line"><a name="l00754"></a><span class="lineno">  754</span>&#160;</div>
+<div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160;<span class="keywordtype">void</span> carl::repartition_system_meshes(</div>
+<div class="line"><a name="l00756"></a><span class="lineno">  756</span>&#160;        <span class="keyword">const</span> libMesh::Parallel::Communicator&amp; WorldComm,</div>
+<div class="line"><a name="l00757"></a><span class="lineno">  757</span>&#160;        libMesh::Mesh&amp; mesh_input,</div>
+<div class="line"><a name="l00758"></a><span class="lineno">  758</span>&#160;        libMesh::Mesh&amp; mesh_intersect,</div>
+<div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160;        std::unordered_map&lt;<span class="keywordtype">int</span>,std::pair&lt;int,int&gt; &gt;&amp; local_intersection_pairs_map,</div>
+<div class="line"><a name="l00760"></a><span class="lineno">  760</span>&#160;        <span class="keywordtype">bool</span> bUseSecond)</div>
+<div class="line"><a name="l00761"></a><span class="lineno">  761</span>&#160;{</div>
+<div class="line"><a name="l00762"></a><span class="lineno">  762</span>&#160;    std::vector&lt;double&gt; mesh_input_weights;</div>
+<div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160;    mesh_input_weights.resize(mesh_input.n_elem(),0);</div>
+<div class="line"><a name="l00764"></a><span class="lineno">  764</span>&#160;</div>
+<div class="line"><a name="l00765"></a><span class="lineno">  765</span>&#160;    <span class="comment">// Nb. of intersections associated to each elem of mesh_intersect</span></div>
+<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;    std::vector&lt;int&gt;    inter_per_elem(mesh_intersect.n_elem());</div>
+<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160;</div>
+<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;    std::unordered_map&lt;int,std::pair&lt;int,int&gt; &gt;::const_iterator inter_pairsIt =</div>
+<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;            local_intersection_pairs_map.begin();</div>
+<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;    <span class="keyword">const</span> std::unordered_map&lt;int,std::pair&lt;int,int&gt; &gt;::const_iterator end_inter_pairsIt =</div>
+<div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160;            local_intersection_pairs_map.end();</div>
+<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;    <span class="keywordflow">for</span>( ; inter_pairsIt != end_inter_pairsIt; ++inter_pairsIt)</div>
+<div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;    {</div>
+<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;        <span class="keyword">const</span> std::pair&lt;int,int&gt;&amp; dummy_pair = inter_pairsIt-&gt;second;</div>
+<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160;</div>
+<div class="line"><a name="l00776"></a><span class="lineno">  776</span>&#160;        <span class="keywordflow">if</span>(bUseSecond)</div>
+<div class="line"><a name="l00777"></a><span class="lineno">  777</span>&#160;        {</div>
+<div class="line"><a name="l00778"></a><span class="lineno">  778</span>&#160;            ++inter_per_elem[dummy_pair.first];</div>
+<div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;        }</div>
+<div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;        <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;        {</div>
+<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;            ++inter_per_elem[dummy_pair.second];</div>
+<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;        }</div>
+<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;    }</div>
+<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;</div>
+<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;    inter_pairsIt = local_intersection_pairs_map.begin();</div>
+<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;    <span class="keywordflow">for</span>( ; inter_pairsIt != end_inter_pairsIt; ++inter_pairsIt)</div>
+<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;    {</div>
+<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;        <span class="keyword">const</span> std::pair&lt;int,int&gt;&amp; dummy_pair = inter_pairsIt-&gt;second;</div>
+<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;</div>
+<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;        <span class="keywordflow">if</span>(bUseSecond)</div>
+<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;        {</div>
+<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;            mesh_input_weights[dummy_pair.second] += inter_per_elem[dummy_pair.first];</div>
+<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;        }</div>
+<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;        <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160;        {</div>
+<div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160;            mesh_input_weights[dummy_pair.first] += inter_per_elem[dummy_pair.second];</div>
+<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;        }</div>
+<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;    }</div>
 <div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;</div>
-<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160;    <span class="comment">// Basic partitioning</span></div>
-<div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;    libMesh::MeshBase::const_element_iterator           mesh_inputIt =</div>
-<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;            mesh_input.elements_begin();</div>
-<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;    <span class="keyword">const</span> libMesh::MeshBase::const_element_iterator     end_mesh_inputIt =</div>
-<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160;            mesh_input.elements_end();</div>
-<div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;    <span class="keywordflow">for</span>( ; mesh_inputIt != end_mesh_inputIt; ++mesh_inputIt )</div>
-<div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160;    {</div>
-<div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160;        <span class="keyword">const</span> libMesh::Elem* elem_input = *mesh_inputIt;</div>
-<div class="line"><a name="l00809"></a><span class="lineno">  809</span>&#160;        <span class="keywordtype">int</span> idxinput = elem_input-&gt;id();</div>
-<div class="line"><a name="l00810"></a><span class="lineno">  810</span>&#160;</div>
-<div class="line"><a name="l00811"></a><span class="lineno">  811</span>&#160;        mesh_input_weights[idxinput] += elem_input-&gt;n_nodes();</div>
-<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;    }</div>
-<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;</div>
-<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;    libMesh::ErrorVector dummy_input_error(mesh_input.n_elem());</div>
-<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iii = 0; iii &lt; mesh_input.n_elem(); ++iii)</div>
-<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;        dummy_input_error[iii] = mesh_input_weights[iii];</div>
-<div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;</div>
-<div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;    libMesh::Partitioner * dummy_partitioner_input = mesh_input.partitioner().get();</div>
-<div class="line"><a name="l00819"></a><span class="lineno">  819</span>&#160;    dummy_partitioner_input-&gt;attach_weights(&amp;dummy_input_error);</div>
-<div class="line"><a name="l00820"></a><span class="lineno">  820</span>&#160;    mesh_input.partition();</div>
-<div class="line"><a name="l00821"></a><span class="lineno">  821</span>&#160;};</div>
-<div class="line"><a name="l00822"></a><span class="lineno">  822</span>&#160;</div>
+<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160;    WorldComm.sum(mesh_input_weights);</div>
+<div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;</div>
+<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;    <span class="comment">// Basic partitioning</span></div>
+<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;    libMesh::MeshBase::const_element_iterator           mesh_inputIt =</div>
+<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160;            mesh_input.elements_begin();</div>
+<div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;    <span class="keyword">const</span> libMesh::MeshBase::const_element_iterator     end_mesh_inputIt =</div>
+<div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160;            mesh_input.elements_end();</div>
+<div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160;    <span class="keywordflow">for</span>( ; mesh_inputIt != end_mesh_inputIt; ++mesh_inputIt )</div>
+<div class="line"><a name="l00809"></a><span class="lineno">  809</span>&#160;    {</div>
+<div class="line"><a name="l00810"></a><span class="lineno">  810</span>&#160;        <span class="keyword">const</span> libMesh::Elem* elem_input = *mesh_inputIt;</div>
+<div class="line"><a name="l00811"></a><span class="lineno">  811</span>&#160;        <span class="keywordtype">int</span> idxinput = elem_input-&gt;id();</div>
+<div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;</div>
+<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;        mesh_input_weights[idxinput] += elem_input-&gt;n_nodes();</div>
+<div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;    }</div>
+<div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;</div>
+<div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;    libMesh::ErrorVector dummy_input_error(mesh_input.n_elem());</div>
+<div class="line"><a name="l00817"></a><span class="lineno">  817</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iii = 0; iii &lt; mesh_input.n_elem(); ++iii)</div>
+<div class="line"><a name="l00818"></a><span class="lineno">  818</span>&#160;        dummy_input_error[iii] = mesh_input_weights[iii];</div>
+<div class="line"><a name="l00819"></a><span class="lineno">  819</span>&#160;</div>
+<div class="line"><a name="l00820"></a><span class="lineno">  820</span>&#160;    libMesh::Partitioner * dummy_partitioner_input = mesh_input.partitioner().get();</div>
+<div class="line"><a name="l00821"></a><span class="lineno">  821</span>&#160;    dummy_partitioner_input-&gt;attach_weights(&amp;dummy_input_error);</div>
+<div class="line"><a name="l00822"></a><span class="lineno">  822</span>&#160;    mesh_input.partition();</div>
+<div class="line"><a name="l00823"></a><span class="lineno">  823</span>&#160;};</div>
+<div class="line"><a name="l00824"></a><span class="lineno">  824</span>&#160;</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -5,6 +5,8 @@
 
 \section sec_cpp_usage Usage
 
+\subsection subsec_cpp_workflow Workflow
+
 The C++ implementation of the Arlequin method follows the algorithms presented in [[[REF]]], and it is roughly divided into three parts:
 
 1. the mesh intersection search,
@@ -20,6 +22,34 @@ Before calling the coupled system solver, though, the user has to do any prelimi
 The figure below presents a workflow for using the C++ version of CArl. The page \ref cpp_examples shows, in detailed steps, how to run a simple test case using external solvers based on the libMesh library. Finally, a more detailed description of the role of each `CArl_FETI_***` binaries is presented in the section \ref sec_cpp_implementation.
 
 \image html CArl_FETI_structure_slide_reduced.png "Workflow of the C++ version of CArl"
+
+\subsection subsec_cpp_input Input file syntax
+
+All the `CArl_FETI_***` binaries take as an input a configuration file though the command line argument `-i`:
+
+    ./CArl_FETI_*** -i [input file]
+
+These input files contain parameters such as file paths, output folders, configuration parameters and Boolean flags. They are case-sensitive, and the symbol `#` is used to comment a single line.
+
+Most of the parameters follow a `ParameterName [value]` format:
+
+    # Cluster scheduler type
+    ClusterSchedulerType LOCAL
+
+    # Path to the base script file
+    ScriptFile examples/coupled_traction_test/FETI_solver/common_script.sh
+
+Since a space separates the `ParameterName` and the `[value]`, values containing spaces must be enclosed in `' '`:
+
+    # Command used for the external solver for the system A
+    ExtSolverA 'mpirun -n 4 ./libmesh_solve_linear_system -i '
+
+Boolean flags do not have a `[value]`. Adding / uncommenting the `ParameterName` activates the option:
+
+    # Use the rigid body modes from the model B?
+    UseRigidBodyModesB 
+
+ A description of each file and its parameters can be found at the documentation pages of the corresponding `CArl_FETI_***` binaries. 
 
 \section sec_cpp_implementation Implementation of the FETI solver
 

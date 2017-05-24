@@ -5,7 +5,10 @@ var cpp_main =
       [ "installation", "cpp_installation.html#installation", null ]
     ] ],
     [ "Usage and implementation", "cpp_usage.html", [
-      [ "Usage", "cpp_usage.html#sec_cpp_usage", null ],
+      [ "Usage", "cpp_usage.html#sec_cpp_usage", [
+        [ "Workflow", "cpp_usage.html#subsec_cpp_workflow", null ],
+        [ "Input file syntax", "cpp_usage.html#subsec_cpp_input", null ]
+      ] ],
       [ "Implementation of the FETI solver", "cpp_usage.html#sec_cpp_implementation", null ],
       [ "Notes and references", "cpp_usage.html#cpp_usage_refs", null ]
     ] ],
