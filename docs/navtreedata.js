@@ -5,6 +5,7 @@ var NAVTREE =
     [ "CArl MATLAB", "matlab_main.html", null ],
     [ "CArl C++", "cpp_main.html", "cpp_main" ],
     [ "References", "articles.html", null ],
+    [ "Funding", "carl_funding.html", null ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -28,9 +29,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 ".html",
-"classcarl_1_1_intersection___search.html#aab4276c3ba5b247b46300de675a10cb4",
-"classcarl_1_1_stitch___meshes.html#a9bc08080ddc1f39ee4456aff9eeca725",
-"libmesh__solve__linear__system_8h_source.html"
+"classcarl_1_1_intersection___search.html#aa84f57dd84826955813efe60c87d199d",
+"classcarl_1_1_stitch___meshes.html#a7bf918ef98a9bc853afe749c44d35f35",
+"libmesh__solve__linear__system_8cpp_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
