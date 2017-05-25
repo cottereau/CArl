@@ -127,8 +127,6 @@ Using the 3D traction test to check the compilation</h1>
 </pre><p>This will build the intersections, assemble the coupling matrices, and set up the external solvers. After this, the coupled solver can be launched using the command </p><pre class="fragment">. scripts/LOCAL_FETI_launch_coupled_solver.sh
 </pre><p>From this point onwards, the user must manually do the iterations and post-treatment. Each one of the binaries will print on the screen the next command to be used.</p>
 <p>In both cases, the intersections will be saved at the <code>[intersection_dir]</code> folder, and the coupled solution at the <code>[solver_dir]/coupled_solution</code> folder. The folder <code>[solver_dir]/coupled_solution_correct</code> contains a reference solution, with both the meshes and the solution vectors. Any other folders found at <code>[solver_dir]</code> are auxiliary folders created during the simulation, and can be deleted after its end.</p>
-<h1><a class="anchor" id="traction_example_solution"></a>
-Coupled solution</h1>
 <h1><a class="anchor" id="traction_example_detailed"></a>
 Detailed description</h1>
 <p>We will do a detailed description of each step and its input files in the following pages:</p>

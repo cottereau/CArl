@@ -1,6 +1,5 @@
 var NAVTREEINDEX3 =
 {
-"libmesh__solve__linear__system_8h_source.html":[6,0,0,1,3,8],
 "libmesh__solve__linear__system__input__parser_8cpp_source.html":[6,0,0,0,4,6],
 "libmesh__solve__linear__system__input__parser_8h_source.html":[6,0,0,2,0,6],
 "matlab_main.html":[1],
@@ -143,12 +142,14 @@ var NAVTREEINDEX3 =
 "structlibmesh__assemble__input__params.html#abac50ee0db80bff6bb89d017d1fdc27b":[5,0,6,2],
 "structlibmesh__assemble__input__params.html#ae23881f91f012a17aca3f6d296f97ae9":[5,0,6,0],
 "structlibmesh__assemble__input__params.html#af6d7a41287b40d913e5110b115b0b692":[5,0,6,3],
-"traction_example_coupl_assemble.html":[2,2,0,6],
-"traction_example_coupled_solver.html":[2,2,0,8],
-"traction_example_inter.html":[2,2,0,5],
-"traction_example_inter.html#traction_example_inter_i":[2,2,0,5,0],
-"traction_example_inter.html#traction_example_inter_o":[2,2,0,5,1],
-"traction_example_sys_assemble.html":[2,2,0,7],
+"traction_example_coupl_assemble.html":[2,2,0,5],
+"traction_example_coupl_assemble.html#traction_example_coupl_assemble_input":[2,2,0,5,0],
+"traction_example_coupl_assemble.html#traction_example_coupl_assemble_output":[2,2,0,5,1],
+"traction_example_coupled_solver.html":[2,2,0,7],
+"traction_example_inter.html":[2,2,0,4],
+"traction_example_inter.html#traction_example_inter_i":[2,2,0,4,0],
+"traction_example_inter.html#traction_example_inter_o":[2,2,0,4,1],
+"traction_example_sys_assemble.html":[2,2,0,6],
 "weak__formulations_8cpp_source.html":[6,0,0,0,3,2],
 "weak__formulations_8h_source.html":[6,0,0,2,20]
 };

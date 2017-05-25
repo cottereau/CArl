@@ -103,7 +103,49 @@ $(document).ready(function(){initNavTree('traction_example_coupl_assemble.html',
 <div class="title">Coupling matrices assembly </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"></div></div><!-- contents -->
+<div class="textblock"><p>Now that we have the mesh intersections, we can use them to build the coupling matrices. Three matrices will be constructed:</p>
+<ul>
+<li>Two <img class="formulaInl" alt="$ n_{\mbox{Med}} \times n_m$" src="form_25.png"/> coupling matrices, noted as <img class="formulaInl" alt="$C_m$" src="form_29.png"/> ( <img class="formulaInl" alt="$m = 1,2$" src="form_9.png"/>).</li>
+<li>One <img class="formulaInl" alt="$ n_{\mbox{Med}} \times n_{\mbox{Med}}$" src="form_30.png"/> matrix, noted as <img class="formulaInl" alt="$C_{\mbox{Med}}$" src="form_31.png"/>.</li>
+</ul>
+<p><img class="formulaInl" alt="$ n_{\mbox{Med}} $" src="form_26.png"/> and <img class="formulaInl" alt="$ n_m $" src="form_27.png"/> are the number of degrees of freedom of the mediator and the model <img class="formulaInl" alt="$ m $" src="form_28.png"/> meshes, respectively. The <img class="formulaInl" alt="$C_m$" src="form_29.png"/> matrices are the coupling matrices between the models and the mediator space used by the Arlequin method. The <img class="formulaInl" alt="$C_{\mbox{Med}}$" src="form_31.png"/> is completely defined inside the mediator space, and it is used by the solver preconditioners. By default, the restricted mesh of the <code>Macro</code> / <code>A</code> model is used as the mediator.</p>
+<p>Submiting <code>scripts/PBS_FETI_test_assemble_coupling_matrices_traction_test_1k.pbs</code> or executing <code>scripts/LOCAL_FETI_test_assemble_coupling_matrices_traction_test_1k.sh</code> will run the command </p><pre class="fragment">mpirun -n 4 ./CArl_assemble_coupling -i examples/coupled_traction_test/FETI_solver/brick_traction_1k/assemble_coupling_1k.txt
+</pre><p><b>Note</b>: the <code>CArl_assemble_coupling</code> <em>MUST</em> be executed with the same number of processors as the intersection construction case. This is because each processor does most of the coupling matrices calculations independently, reading only one of the <code>[nb. of processors]</code> intersection meshes.</p>
+<h1><a class="anchor" id="traction_example_coupl_assemble_input"></a>
+Input</h1>
+<p>File: examples/coupled_traction_test/FETI_solver/brick_traction_1k/assemble_coupling_1k.txt </p><pre class="fragment">### Coupling matrices assembly parameters
+# - Model meshes
+MeshA examples/coupled_traction_test/meshes/test_brick_A_1k.msh
+MeshB examples/coupled_traction_test/meshes/test_brick_B_1k.msh
+
+# - Intersection meshes and table files
+InterBase examples/coupled_traction_test/intersection/output/inter_1k/inter
+
+### Coupling parameters
+# - Coupling region width (same unit as the meshes)
+CouplingWidth 0.5
+
+# - Coupling rigidity (in MPa, if mm was used for the meshes)
+CouplingRigidity 2e5
+
+# - Output folder path
+OutputFolder examples/coupled_traction_test/FETI_solver/brick_traction_1k/coupling_matrices
+</pre><p>Input file parameters:</p>
+<ul>
+<li><code>MeshA</code>, <code>MeshB</code>: as before, paths to the two model meshes.</li>
+<li><code>InterBase</code>: common filename for the intersection and restriction meshes.</li>
+<li><code>CouplingWidth</code>: width of the coupling region (same unit as the meshes, <img class="formulaInl" alt="$e$" src="form_0.png"/> in the <img class="formulaInl" alt="$L_2$" src="form_1.png"/> coupling term).</li>
+<li><code>CouplingRigidity</code>: rigidity used for the coupling matrix (in MPa, if mm was used for the meshes, <img class="formulaInl" alt="$\kappa$" src="form_2.png"/> in both the <img class="formulaInl" alt="$L_2$" src="form_1.png"/> and <img class="formulaInl" alt="$H_1$" src="form_3.png"/> terms).</li>
+<li><code>OutputFolder</code>: folder where the coupling matrices will be saved.</li>
+</ul>
+<p>Other optional parameters (not used here) include the paths to the restricted meshes and their mappings with the model meshes, and the choice of the mediator mesh. Those options are described at <a class="el" href="_c_arl__assemble__coupling_8cpp.html">CArl_assemble_coupling.cpp</a>.</p>
+<h1><a class="anchor" id="traction_example_coupl_assemble_output"></a>
+Output</h1>
+<p>After running the coupling assembly program, the three matrices will be created inside the <code>OutputFolder</code>: </p><pre class="fragment">coupling_matrix_micro.petscmat
+coupling_matrix_macro.petscmat
+coupling_matrix_mediator.petscmat
+</pre><p>These matrices are saved using PETSc's binary format. The extension <code>.petscmat</code> is arbitrary. Three other files, named <code>***.info</code>, contain some information on how PETSc should read these files (mainly, the matric block size). </p>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

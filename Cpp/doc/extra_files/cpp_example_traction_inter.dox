@@ -8,6 +8,8 @@ In either case, the `CArl_build_intersections` will be executed using 4 processo
 
     mpirun -np 4 ./CArl_build_intersections -i examples/coupled_traction_test/intersection/inter_traction_test_1k.txt
 
+This program also creates the restricted meshes of the two models. These meshes contain only the elements of the model meshes that intersect the coupling region, and are a by-product of the intersection search. They are used for two reasons: they can be used to better distribute the work during the assembly of the coupling matrices, and, in general, the restriction of the `Macro` / `A` model mesh is used as the mediator space between the models.
+
 \section traction_example_inter_i Input
 
 File: `examples/coupled_traction_test/intersection/inter_traction_test_1k.txt`: 
