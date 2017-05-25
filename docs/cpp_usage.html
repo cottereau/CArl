@@ -136,6 +136,9 @@ ExtSolverA 'mpirun -n 4 ./libmesh_solve_linear_system -i '
 </pre><p>Boolean flags do not have a <code>[value]</code>. Adding / uncommenting the <code>ParameterName</code> activates the option: </p><pre class="fragment"># Use the rigid body modes from the model B?
 UseRigidBodyModesB 
 </pre><p>A description of each file and its parameters can be found at the documentation pages of the corresponding <code>CArl_FETI_***</code> binaries.</p>
+<h1><a class="anchor" id="secrb"></a>
+Rigid body modes</h1>
+<p>If the matrix of any of the models is ill-conditioned, the FETI solver needs its null space vectors / rigid body modes to work properly. These vectors must be saved in PETSc's binary format. An example of such a model is a linear elastic system under only a traction force. A detailed description of this case is shown in the <a class="el" href="cpp_exampletraction.html">3D traction test</a> example.</p>
 <h1><a class="anchor" id="sec_cpp_implementation"></a>
 Implementation of the FETI solver</h1>
 <p>This section enters in some details of the implementation of the FETI solver, and as such reading the references [[[REF]]] and [[[REF]]] beforehand is highly recommended.</p>
@@ -145,12 +148,12 @@ Implementation of the FETI solver</h1>
 <ol type="1">
 <li><b>Setup</b>:<ol type="a">
 <li><a class="el" href="_c_arl___f_e_t_i__setup__init_8cpp_source.html">CArl_FETI_setup_init</a> generates the input parameter files for the other binaries, and the three execution scripts: <code>init_script.sh</code>, <code>iter_script.sh</code> and <code>sol_script.sh</code>. It then starts the setup of conjugate gradient method (CG) used by the coupled solver to calculate the Lagrange multipliers, and finally executes the <code>init_script.sh</code> script.</li>
-<li>The <code>init_script.sh</code> script runs the external solvers for the uncoupled solutions <img class="formulaInl" alt="$u_{m,0}$" src="form_8.png"/> ( <img class="formulaInl" alt="$m = 1,2$" src="form_9.png"/>), and the initial auxiliary vectors <img class="formulaInl" alt="$x_m(0)$" src="form_10.png"/> (if needed). After these solvers are finished, the script launches <a class="el" href="_c_arl___f_e_t_i__setup__finish_8cpp_source.html">CArl_FETI_setup_finish</a>.</li>
+<li>The <code>init_script.sh</code> script runs the external solvers for the uncoupled solutions <img class="formulaInl" alt="$u_{m,0}$" src="form_10.png"/> ( <img class="formulaInl" alt="$m = 1,2$" src="form_11.png"/>), and the initial auxiliary vectors <img class="formulaInl" alt="$x_l(0)$" src="form_38.png"/> (if needed). After these solvers are finished, the script launches <a class="el" href="_c_arl___f_e_t_i__setup__finish_8cpp_source.html">CArl_FETI_setup_finish</a>.</li>
 <li><a class="el" href="_c_arl___f_e_t_i__setup__finish_8cpp_source.html">CArl_FETI_setup_finish</a> finishes the CG solver setup, and executes <code>iter_script.sh</code>.</li>
 </ol>
 </li>
 <li><b>Iterate</b><ol type="a">
-<li>The <code>iter_script.sh</code> script runs the external solvers for the <img class="formulaInl" alt="$iii$" src="form_11.png"/>-th auxiliary vectors <img class="formulaInl" alt="$x_m(iii)$" src="form_12.png"/>. After these solvers are finished, the script launches <a class="el" href="_c_arl___f_e_t_i__iterate_8cpp_source.html">CArl_FETI_iterate</a></li>
+<li>The <code>iter_script.sh</code> script runs the external solvers for the <img class="formulaInl" alt="$iii$" src="form_13.png"/>-th auxiliary vectors <img class="formulaInl" alt="$x_l(iii)$" src="form_39.png"/>. After these solvers are finished, the script launches <a class="el" href="_c_arl___f_e_t_i__iterate_8cpp_source.html">CArl_FETI_iterate</a></li>
 <li><a class="el" href="_c_arl___f_e_t_i__iterate_8cpp_source.html">CArl_FETI_iterate</a> all the other operations involved in the CG solver iteration, and checks the convergence parameters:<ul>
 <li>If the CG solver neither converged or diverged, it executes <code>iter_script.sh</code> again.</li>
 <li>If the CG solver converged, it executes <code>sol_script.sh</code>.</li>
@@ -160,7 +163,7 @@ Implementation of the FETI solver</h1>
 </ol>
 </li>
 <li><b>Solution</b><ol type="a">
-<li>The <code>sol_script.sh</code> runs the external solvers for the final auxiliary vectors <img class="formulaInl" alt="$x_m(FINAL)$" src="form_13.png"/>, used to calculate the coupling effects on the models' solutions. After these solvers are finished, the script launches CArl_FETI_set_sol, which assembles and exports the coupled system solutions <img class="formulaInl" alt="$u_{m}$" src="form_14.png"/>.</li>
+<li>The <code>sol_script.sh</code> runs the external solvers for the final auxiliary vectors <img class="formulaInl" alt="$x_l(FINAL)$" src="form_40.png"/>, used to calculate the coupling effects on the models' solutions. After these solvers are finished, the script launches CArl_FETI_set_sol, which assembles and exports the coupled system solutions <img class="formulaInl" alt="$u_{m}$" src="form_16.png"/>.</li>
 </ol>
 </li>
 </ol>

@@ -103,7 +103,129 @@ $(document).ready(function(){initNavTree('traction_example_sys_assemble.html',''
 <div class="title">External solver assembly </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"></div></div><!-- contents -->
+<div class="textblock"><p>In this example, we use the programs <code>libmesh_assemble_lin_homogeneous__min_x_clamped</code> and <code>libmesh_assemble_lin_homogeneous__max_x_traction</code> to assembly the decoupled system models using libMesh. These executables are not a "core" part of the C++ implementation of <code>CArl</code>, being used here only to demonstrate how the coupled solver works.</p>
+<p>Submiting <code>scripts/PBS_FETI_test_assemble_ext_solver_traction_test_1k.pbs</code> or executing <code>scripts/LOCAL_FETI_test_assemble_ext_solver_traction_test_1k.sh</code> will run the commands </p><pre class="fragment">mkdir -p examples/coupled_traction_test/FETI_solver/brick_traction_1k/system_matrices
+mpirun -np 4 ./libmesh_assemble_lin_homogeneous__min_x_clamped -i examples/coupled_traction_test/FETI_solver/brick_traction_1k/assemble_brick_traction_A_1k.txt 
+mpirun -np 4 ./libmesh_assemble_lin_homogeneous__max_x_traction -i examples/coupled_traction_test/FETI_solver/brick_traction_1k/assemble_brick_traction_B_1k.txt
+</pre><h1><a class="anchor" id="traction_example_sys_assemble_i"></a>
+Input</h1>
+<p>Both programs use similar input files, and use the same parser function.</p>
+<p>File: examples/coupled_traction_test/FETI_solver/brick_traction_1k/assemble_brick_traction_A_1k.txt </p><pre class="fragment">### 'Macro' system assembly parameters
+# - Path to the model mesh
+Mesh examples/coupled_traction_test/meshes/test_brick_A_1k.msh
+
+# - Path to the physical parameter file
+PhysicalParameters examples/coupled_traction_test/meshes/test_brick_I_1_physical.dat
+
+# - Path to the weight function mesh
+MeshWeight examples/coupled_traction_test/meshes/test_brick_mask.msh
+
+# - Path to the weight function parameters 
+WeightIndexes examples/coupled_traction_test/meshes/test_brick_mask_idx.dat
+
+# - System type (will determinate  which weights will be used)
+SystemType  Macro
+
+# - Output files base name
+OutputBase examples/coupled_traction_test/FETI_solver/brick_traction_1k/system_matrices/traction_model_A
+</pre><p>File: examples/coupled_traction_test/FETI_solver/brick_traction_1k/assemble_brick_traction_B_1k.txt </p><pre class="fragment">### 'Micro' system assembly parameters
+# - Path to the model mesh
+Mesh examples/coupled_traction_test/meshes/test_brick_B_1k.msh
+
+# - Path to the physical parameter file
+PhysicalParameters examples/coupled_traction_test/meshes/test_brick_I_1_physical.dat
+
+# - Path to the weight function mesh
+MeshWeight examples/coupled_traction_test/meshes/test_brick_mask.msh
+
+# - Path to the weight function parameters
+WeightIndexes examples/coupled_traction_test/meshes/test_brick_mask_idx.dat
+
+# - System type (will determinate  which weights will be used)
+SystemType  Micro
+
+# - Output files base name
+OutputBase examples/coupled_traction_test/FETI_solver/brick_traction_1k/system_matrices/traction_model_B
+
+# &gt; Calculate and export the rigid body modes vectors?
+ExportRBVectors
+</pre><p>Input file parameters:</p><ul>
+<li><code>Mesh</code>: model mesh.</li>
+<li><code>PhysicalParameters</code>: file containing the physical parameters - in this case the Young and shear modulus in <img class="formulaInl" alt="$MPa$" src="form_34.png"/>.</li>
+<li><code>SystemType</code>: parameter used to tell the assembler which weight functions must be used. Can be either <code>Micro</code> or <code>Macro</code>.</li>
+<li><code>MeshWeight</code>: mesh defining the domains of the Arlequin weight parameters.</li>
+<li><code>WeightIndexes</code>: file containing the indices of the domains of the Arlequin weight parameters.</li>
+<li><code>OutputBase</code>: filename base of the output files (including folders).</li>
+<li><code>ExportRBVectors</code>: if this flag is set, the assembler will build and export the rigid body modes vectors.</li>
+</ul>
+<h1><a class="anchor" id="traction_example_sys_assemble_weight"></a>
+Weight functions</h1>
+<p>The <code>SystemType</code>, <code>MeshWeight</code> and <code>WeightIndexes</code> parameters are used to control the <em>weight parameter functions</em> used by the Arlequin method, noted as <img class="formulaInl" alt="$(\alpha_1, \alpha_2)$" src="form_35.png"/> in [[[REF]]]. These parameters are used to guarantee a proper partitioning of the energy over the coupling region - and also over any region where both models are present, but are not coupled. The weight parameters follow the equations below: </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\begin{eqnarray*} \alpha_l &amp;\geq&amp; 0 \mbox{ in } \Omega_l, \ l = 1,2, \\ \alpha_l &amp;=&amp; 1 \mbox{ in } \Omega_l \setminus \Omega^c_{12}, \\ \alpha_1 + \alpha_2 &amp;=&amp; 1 \mbox{ in } \Omega^c_{12}. \end{eqnarray*}" src="form_37.png"/>
+</p>
+<p>The <code>MeshWeight</code> and <code>WeightIndexes</code> are used to determinate the regions and the values of <img class="formulaInl" alt="$ \alpha_l$" src="form_44.png"/>, while <code>SystemType</code> determinates which one must be used ( <img class="formulaInl" alt="$ \alpha_1$" src="form_45.png"/> for <code>Macro</code>, <img class="formulaInl" alt="$ \alpha_1$" src="form_45.png"/> for <code>Micro</code>).</p>
+<p>Each element of the <code>MeshWeight</code> has a physical index which determinates which kind of region it represents. When assembling the matrices and vectors, the assembly programs will</p>
+<ul>
+<li>check where inside this matrix the quadrature points are located,</li>
+<li>get the physical index,</li>
+<li>following <code>SystemType</code> and <code>WeightIndexes</code>, choose the weight parameter value.</li>
+</ul>
+<p>The check step is essentially a position search inside the <code>MeshWeight</code>, and hence it is recommended to use the smallest number of elements possible.</p>
+<p>Here's the <code>MeshWeight</code> used here:</p>
+<div class="image">
+<img src="test_brick_mask.png" alt="test_brick_mask.png"/>
+</div>
+<p>Here's the <code>WeightIndexes</code> file used in this example: </p><pre class="fragment">###
+#     The file "test_brick_mask.msh" contains a "mask" that identifies, in the
+#   full coupled model domain, the regions with:
+#
+#   - only one of the models
+#   - the coupling area
+#   - both models, but outside the coupling area
+#
+#     This file contains the physical indexes identifying each of these domains, and the
+#   weights associated to them.
+###
+
+# Only the "macro" model
+MacroDomainOnlyIdx 69
+
+# Only the "micro" model
+MicroDomainOnlyIdx 67
+
+# Coupling area
+CouplingDomainIdx 68
+
+# Both models, outside the coupling area
+# !!! not used in this example !!!
+#BothDomainsIdx = -1
+
+# Weight of the macro model at the coupling region
+# [ micro weight ] = 1 - [ macro weight ]
+AlphaCouplingMacro 0.5
+
+# Weight of the macro model on the area with both models, outside the coupling area
+# !!! not used in this example !!!
+</pre><h1><a class="anchor" id="traction_example_sys_assemble_o"></a>
+Output</h1>
+<p>After running the external solver assembly programs, the following matrices and vectors will be created:</p>
+<ul>
+<li>Internal work matrices: <pre class="fragment"> traction_model_A_sys_mat.petscmat
+ traction_model_B_sys_mat.petscmat
+</pre></li>
+<li>External work vectors: <pre class="fragment"> traction_model_A_sys_rhs_vec.petscvec
+ traction_model_B_sys_rhs_vec.petscvec
+</pre></li>
+<li>Rigid body modes of the <code>Micro</code> / <code>B</code> model: <pre class="fragment"> traction_model_B_rb_vector_0_n_6.petscvec
+ traction_model_B_rb_vector_1_n_6.petscvec
+ traction_model_B_rb_vector_2_n_6.petscvec
+ traction_model_B_rb_vector_3_n_6.petscvec
+ traction_model_B_rb_vector_4_n_6.petscvec
+ traction_model_B_rb_vector_5_n_6.petscvec
+</pre></li>
+</ul>
+<p>These matrices and vectors are saved using PETSc's binary format. The extensions <code>.petsc***</code> is arbitrary. For each one of these files, an auxiliary file with an <code>.info</code> appended is created. It contains some information on how PETSc should read the matrix or vector. </p>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

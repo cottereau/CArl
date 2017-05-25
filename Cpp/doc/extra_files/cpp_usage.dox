@@ -53,6 +53,10 @@ Boolean flags do not have a `[value]`. Adding / uncommenting the `ParameterName`
 
  A description of each file and its parameters can be found at the documentation pages of the corresponding `CArl_FETI_***` binaries. 
 
+\section secrb Rigid body modes
+
+If the matrix of any of the models is ill-conditioned, the FETI solver needs its null space vectors / rigid body modes to work properly. These vectors must be saved in PETSc's binary format. An example of such a model is a linear elastic system under only a traction force. A detailed description of this case is shown in the \ref cpp_exampletraction example.
+
 \section sec_cpp_implementation Implementation of the FETI solver
 
 This section enters in some details of the implementation of the FETI solver, and as such reading the references [[[REF]]] and [[[REF]]] beforehand is highly recommended.
@@ -65,16 +69,16 @@ The figure below shows the structure of the FETI solver. It proceeds in the foll
 
 1. **Setup**:
    1. \ref CArl_FETI_setup_init.cpp "CArl_FETI_setup_init" generates the input parameter files for the other binaries, and the three execution scripts: `init_script.sh`, `iter_script.sh` and `sol_script.sh`. It then starts the setup of conjugate gradient method (CG) used by the coupled solver to calculate the Lagrange multipliers, and finally executes the `init_script.sh` script.
-   2. The `init_script.sh` script runs the external solvers for the uncoupled solutions \f$u_{m,0}\f$ (\f$m = 1,2\f$), and the initial auxiliary vectors \f$x_m(0)\f$ (if needed). After these solvers are finished, the script launches \ref CArl_FETI_setup_finish.cpp "CArl_FETI_setup_finish".
+   2. The `init_script.sh` script runs the external solvers for the uncoupled solutions \f$u_{m,0}\f$ (\f$m = 1,2\f$), and the initial auxiliary vectors \f$x_l(0)\f$ (if needed). After these solvers are finished, the script launches \ref CArl_FETI_setup_finish.cpp "CArl_FETI_setup_finish".
    3. \ref CArl_FETI_setup_finish.cpp "CArl_FETI_setup_finish" finishes the CG solver setup, and executes `iter_script.sh`.
 2. **Iterate**
-   1. The `iter_script.sh` script runs the external solvers for the \f$iii\f$-th auxiliary vectors \f$x_m(iii)\f$. After these solvers are finished, the script launches \ref CArl_FETI_iterate.cpp "CArl_FETI_iterate"
+   1. The `iter_script.sh` script runs the external solvers for the \f$iii\f$-th auxiliary vectors \f$x_l(iii)\f$. After these solvers are finished, the script launches \ref CArl_FETI_iterate.cpp "CArl_FETI_iterate"
    2. \ref CArl_FETI_iterate.cpp "CArl_FETI_iterate" all the other operations involved in the CG solver iteration, and checks the convergence parameters:
      - If the CG solver neither converged or diverged, it executes `iter_script.sh` again.
      - If the CG solver converged, it executes `sol_script.sh`.
 	 - If the CG solver diverged, it stops the algorithm.
 3. **Solution**
-   1. The `sol_script.sh` runs the external solvers for the final auxiliary vectors \f$x_m(FINAL)\f$, used to calculate the coupling effects on the models' solutions. After these solvers are finished, the script launches \ref CArl_FETI_set_sol.cpp "CArl_FETI_set_sol", which assembles and exports the coupled system solutions \f$u_{m}\f$.
+   1. The `sol_script.sh` runs the external solvers for the final auxiliary vectors \f$x_l(FINAL)\f$, used to calculate the coupling effects on the models' solutions. After these solvers are finished, the script launches \ref CArl_FETI_set_sol.cpp "CArl_FETI_set_sol", which assembles and exports the coupled system solutions \f$u_{m}\f$.
    
 As said above, this process is completely automated if a scheduling software, such as PBS, is used: the user only has to configure and execute the `CArl_FETI_setup_init` binary. Details about the input parameters of each binary can be found at its documentation page (linked above).
 

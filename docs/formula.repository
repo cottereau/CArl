@@ -2,31 +2,45 @@
 \form#1:$L_2$
 \form#2:$\kappa$
 \form#3:$H_1$
-\form#4:${R^I}^t \cdot R^I = R^t C^t \cdot C R $
-\form#5:$ inv({R^I}^t \cdot R^I)$
-\form#6:$\phi_0$
-\form#7:$ u_0,i$
-\form#8:$u_{m,0}$
-\form#9:$m = 1,2$
-\form#10:$x_m(0)$
-\form#11:$iii$
-\form#12:$x_m(iii)$
-\form#13:$x_m(FINAL)$
-\form#14:$u_{m}$
-\form#15:$E = 200 GPa$
-\form#16:$\mu = 80 GPa$
-\form#17:$\Omega_1$
-\form#18:$\Omega_2$
-\form#19:$\Omega_{12}^c$
-\form#20:$\mathbf{F}=100kPa$
-\form#21:$\Gamma_F$
-\form#22:$\Gamma_0$
-\form#23:$\sim1000$
-\form#24:$\sim3500$
-\form#25:$ n_{\mbox{Med}} \times n_m$
-\form#26:$ n_{\mbox{Med}} $
-\form#27:$ n_m $
-\form#28:$ m $
-\form#29:$C_m$
-\form#30:$ n_{\mbox{Med}} \times n_{\mbox{Med}}$
-\form#31:$C_{\mbox{Med}}$
+\form#4:$x_{\mbox{Max}}$
+\form#5:$x_{\mbox{Min}}$
+\form#6:${R^I}^t \cdot R^I = R^t C^t \cdot C R $
+\form#7:$ inv({R^I}^t \cdot R^I)$
+\form#8:$\phi_0$
+\form#9:$ u_0,i$
+\form#10:$u_{m,0}$
+\form#11:$m = 1,2$
+\form#12:$x_m(0)$
+\form#13:$iii$
+\form#14:$x_m(iii)$
+\form#15:$x_m(FINAL)$
+\form#16:$u_{m}$
+\form#17:$E = 200 GPa$
+\form#18:$\mu = 80 GPa$
+\form#19:$\Omega_1$
+\form#20:$\Omega_2$
+\form#21:$\Omega_{12}^c$
+\form#22:$\mathbf{F}=100 MPa$
+\form#23:$\Gamma_F$
+\form#24:$\Gamma_0$
+\form#25:$\sim1000$
+\form#26:$\sim3500$
+\form#27:$ n_{\mbox{Med}} \times n_m$
+\form#28:$C_m$
+\form#29:$ n_{\mbox{Med}} \times n_{\mbox{Med}}$
+\form#30:$C_{\mbox{Med}}$
+\form#31:$ n_{\mbox{Med}} $
+\form#32:$ n_m $
+\form#33:$ m $
+\form#34:$MPa$
+\form#35:$(\alpha_1, \alpha_2)$
+\form#36:\begin{eqnarray*} \alpha_l &\geq& 0 \text{ in } \Omega_l, \ l = 1,2, \\ \alpha_l &=& 1 \text{ in } \Omega_l \setminus \Omega^c_{12}, \\ \alpha_1 + \alpha_2 &=& 1 \text{ in } \Omega^c_{12}. \end{eqnarray*}
+\form#37:\begin{eqnarray*} \alpha_l &\geq& 0 \mbox{ in } \Omega_l, \ l = 1,2, \\ \alpha_l &=& 1 \mbox{ in } \Omega_l \setminus \Omega^c_{12}, \\ \alpha_1 + \alpha_2 &=& 1 \mbox{ in } \Omega^c_{12}. \end{eqnarray*}
+\form#38:$x_l(0)$
+\form#39:$x_l(iii)$
+\form#40:$x_l(FINAL)$
+\form#41:$ n_{\mbox{Med}} \times n_l$
+\form#42:$C_l$
+\form#43:$ n_l $
+\form#44:$ \alpha_l$
+\form#45:$ \alpha_1$

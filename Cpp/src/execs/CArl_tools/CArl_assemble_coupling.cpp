@@ -4,8 +4,7 @@
  Usage: `./CArl_assemble_coupling -i [input file]`
 
 This program uses the intersections previously constructed to build the couplig matrices.
-The input file is parsed by the carl::get_input_params(GetPot& field_parser, coupling_assemble_coupling_input_params& input_params) 
-function, and it contains the following parameters. 
+The input file is parsed by the carl::get_input_params(GetPot& field_parser, coupling_assemble_coupling_input_params& input_params) function, and it contains the following parameters. 
 
 Required parameters:
  + System and intersection meshes:

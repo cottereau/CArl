@@ -10,7 +10,7 @@ This page contains an example with a coupled 3D traction system, with a detailed
 
 \image html all_traction_bricks_horizontal.png "Domains of the meshes used for the 3D coupled traction test: (a) coupled system, (b) and (c) system mesh domains, and (d) coupling region"
 
-Consider two coupled bricks, both with an linear elasticy model with a Young modulus \f$E = 200 GPa\f$ and a shear modulus \f$\mu = 80 GPa\f$. Their domains \f$\Omega_1\f$ and \f$\Omega_2\f$ are represented at the figure above. Both models are coupled at the region \f$\Omega_{12}^c\f$. A force density \f$\mathbf{F}=100kPa\f$ is applied on the face \f$\Gamma_F\f$ of the domain \f$\Omega_2\f$, and the face \f$\Gamma_0\f$ of the domain \f$\Omega_1\f$ is clamped.
+Consider two coupled bricks, both with an linear elasticy model with a Young modulus \f$E = 200 GPa\f$ and a shear modulus \f$\mu = 80 GPa\f$. Their domains \f$\Omega_1\f$ and \f$\Omega_2\f$ are represented at the figure above. Both models are coupled at the region \f$\Omega_{12}^c\f$. A force density \f$\mathbf{F}=100 MPa\f$ is applied on the face \f$\Gamma_F\f$ of the domain \f$\Omega_2\f$, and the face \f$\Gamma_0\f$ of the domain \f$\Omega_1\f$ is clamped.
 
 The model associated to the \f$\Omega_1\f$ domain will be considered as the `Macro` or `A` model, while the one associated to \f$\Omega_2\f$ domain will be considered as the `Micro` or `B` model.
 
@@ -24,7 +24,7 @@ For simplicity, we will use the following "aliases" for the folders in this exam
 	[intersection_dir] = examples/coupled_traction_test/intersection
 	[solver_dir] = examples/coupled_traction_test/FETI_solver/brick_traction_1k
 
-\section traction_example_check_install Using the 3D traction test to check the compilation
+\section traction_example_check_install Checking the compilation
 
 If you just want to use the 3D traction test to check the compilation of the CArl software on a cluster with the PBS scheduler, execute the command
 

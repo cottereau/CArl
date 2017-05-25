@@ -1,5 +1,6 @@
 var NAVTREEINDEX3 =
 {
+"libmesh__solve__linear__system_8h_source.html":[6,0,0,1,3,8],
 "libmesh__solve__linear__system__input__parser_8cpp_source.html":[6,0,0,0,4,6],
 "libmesh__solve__linear__system__input__parser_8h_source.html":[6,0,0,2,0,6],
 "matlab_main.html":[1],
@@ -150,6 +151,9 @@ var NAVTREEINDEX3 =
 "traction_example_inter.html#traction_example_inter_i":[2,2,0,4,0],
 "traction_example_inter.html#traction_example_inter_o":[2,2,0,4,1],
 "traction_example_sys_assemble.html":[2,2,0,6],
+"traction_example_sys_assemble.html#traction_example_sys_assemble_i":[2,2,0,6,0],
+"traction_example_sys_assemble.html#traction_example_sys_assemble_o":[2,2,0,6,2],
+"traction_example_sys_assemble.html#traction_example_sys_assemble_weight":[2,2,0,6,1],
 "weak__formulations_8cpp_source.html":[6,0,0,0,3,2],
 "weak__formulations_8h_source.html":[6,0,0,2,20]
 };

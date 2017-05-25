@@ -111,122 +111,122 @@ $(document).ready(function(){initNavTree('libmesh__assemble__lin__homogeneous___
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;libmesh_assemble_lin_homogeneous.h&quot;</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv) {</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    <span class="comment">// [USER] Traction force density</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    std::vector&lt;double&gt; traction_density(3,0);</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    traction_density[0] = 100.;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    <span class="comment">// --- Initialize libMesh</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    libMesh::LibMeshInit init(argc, argv);</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <span class="comment">// Do performance log?</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">bool</span> MASTER_bPerfLog_carl_libmesh = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    libMesh::PerfLog perf_log(<span class="stringliteral">&quot;Main program&quot;</span>, MASTER_bPerfLog_carl_libmesh);</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="comment">// libMesh&#39;s C++ / MPI communicator wrapper</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    libMesh::Parallel::Communicator&amp; WorldComm = init.comm();</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="comment">// Number of processors and processor rank.</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keywordtype">int</span> rank = WorldComm.rank();</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordtype">int</span> nodes = WorldComm.size();</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="comment">// --- Set up inputs</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv) {</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="comment">// Command line parser</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    GetPot command_line(argc, argv);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="comment">// File parser</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    GetPot field_parser;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="comment">// If there is an input file, parse it to get the parameters. Else, parse the command line</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    std::string input_filename;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordflow">if</span> (command_line.search(2, <span class="stringliteral">&quot;--inputfile&quot;</span>, <span class="stringliteral">&quot;-i&quot;</span>)) {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        input_filename = command_line.next(input_filename);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        field_parser.parse_input_file(input_filename, <span class="stringliteral">&quot;#&quot;</span>, <span class="stringliteral">&quot;\n&quot;</span>, <span class="stringliteral">&quot; \t\n&quot;</span>);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        field_parser = command_line;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    }</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <a class="code" href="structlibmesh__assemble__input__params.html">libmesh_assemble_input_params</a> input_params;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    get_input_params(field_parser, input_params);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="comment">// [USER] Traction force density</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    std::vector&lt;double&gt; traction_density(3,0);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    traction_density[0] = 100.;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    </div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="comment">// --- Initialize libMesh</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    libMesh::LibMeshInit init(argc, argv);</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="comment">// Do performance log?</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">bool</span> MASTER_bPerfLog_carl_libmesh = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    libMesh::PerfLog perf_log(<span class="stringliteral">&quot;Main program&quot;</span>, MASTER_bPerfLog_carl_libmesh);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="comment">// libMesh&#39;s C++ / MPI communicator wrapper</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    libMesh::Parallel::Communicator&amp; WorldComm = init.comm();</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="comment">// Number of processors and processor rank.</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordtype">int</span> rank = WorldComm.rank();</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordtype">int</span> nodes = WorldComm.size();</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="comment">// Check libMesh installation dimension</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> dim = 3;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    libmesh_example_requires(dim == LIBMESH_DIM, <span class="stringliteral">&quot;3D support&quot;</span>);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="comment">// --- Set up inputs</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="comment">// Command line parser</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    GetPot command_line(argc, argv);</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="comment">// --- Declare the three meshes to be intersected</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="comment">// - Parallelized meshes: A, B, mediator and weight</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    perf_log.push(<span class="stringliteral">&quot;Meshes - Parallel&quot;</span>,<span class="stringliteral">&quot;Read files:&quot;</span>);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    libMesh::Mesh system_mesh(WorldComm, dim);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    system_mesh.read(input_params.<a class="code" href="structlibmesh__assemble__input__params.html#aaacb1a941decf01232ab3c5bd9b3bacf">mesh_file</a>);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    system_mesh.prepare_for_use();</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    libMesh::Mesh mesh_weight(WorldComm, dim);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    mesh_weight.allow_renumbering(<span class="keyword">false</span>);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    mesh_weight.read(input_params.<a class="code" href="structlibmesh__assemble__input__params.html#abac50ee0db80bff6bb89d017d1fdc27b">mesh_weight_file</a>);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    mesh_weight.prepare_for_use();</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    perf_log.pop(<span class="stringliteral">&quot;Meshes - Parallel&quot;</span>,<span class="stringliteral">&quot;Read files:&quot;</span>);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="comment">// File parser</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    GetPot field_parser;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="comment">// If there is an input file, parse it to get the parameters. Else, parse the command line</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    std::string input_filename;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordflow">if</span> (command_line.search(2, <span class="stringliteral">&quot;--inputfile&quot;</span>, <span class="stringliteral">&quot;-i&quot;</span>)) {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        input_filename = command_line.next(input_filename);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        field_parser.parse_input_file(input_filename, <span class="stringliteral">&quot;#&quot;</span>, <span class="stringliteral">&quot;\n&quot;</span>, <span class="stringliteral">&quot; \t\n&quot;</span>);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        field_parser = command_line;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    }</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <a class="code" href="structlibmesh__assemble__input__params.html">libmesh_assemble_input_params</a> input_params;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    get_input_params(field_parser, input_params);</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="comment">// --- Generate the equation systems</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    perf_log.push(<span class="stringliteral">&quot;System setup:&quot;</span>);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="comment">// Check libMesh installation dimension</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> dim = 3;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="comment">// Set the equation systems object</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    libMesh::EquationSystems equation_systems(system_mesh);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="comment">// Add linear elasticity and physical parameters systems</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    libMesh::LinearImplicitSystem&amp; elasticity_system</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                                        = <a class="code" href="_c_arl__assemble__coupling_8cpp.html#a1fab87d9dc5c891ae8234cec6cf73491">add_elasticity</a>(equation_systems);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="comment">// Initialize the equation systems</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    equation_systems.init();</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    libmesh_example_requires(dim == LIBMESH_DIM, <span class="stringliteral">&quot;3D support&quot;</span>);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="comment">// --- Declare the three meshes to be intersected</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="comment">// - Parallelized meshes: A, B, mediator and weight</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    perf_log.push(<span class="stringliteral">&quot;Meshes - Parallel&quot;</span>,<span class="stringliteral">&quot;Read files:&quot;</span>);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    libMesh::Mesh system_mesh(WorldComm, dim);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    system_mesh.read(input_params.<a class="code" href="structlibmesh__assemble__input__params.html#aaacb1a941decf01232ab3c5bd9b3bacf">mesh_file</a>);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    system_mesh.prepare_for_use();</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="comment">// Homogeneous properties for the macro system</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    set_homogeneous_physical_properties(equation_systems, input_params.<a class="code" href="structlibmesh__assemble__input__params.html#a2aef9210c303764810d978496712e9b3">physical_params_file</a>);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="comment">// Set the weight function object</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <a class="code" href="classweight__parameter__function.html">weight_parameter_function</a>  system_weight(mesh_weight);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    system_weight.set_parameters(input_params.<a class="code" href="structlibmesh__assemble__input__params.html#a9b91599c97b26e5446f26440f74b896f">weight_domain_idx_file</a>);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    libMesh::Mesh mesh_weight(WorldComm, dim);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    mesh_weight.allow_renumbering(<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    mesh_weight.read(input_params.<a class="code" href="structlibmesh__assemble__input__params.html#abac50ee0db80bff6bb89d017d1fdc27b">mesh_weight_file</a>);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    mesh_weight.prepare_for_use();</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    perf_log.pop(<span class="stringliteral">&quot;Meshes - Parallel&quot;</span>,<span class="stringliteral">&quot;Read files:&quot;</span>);</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    perf_log.pop(<span class="stringliteral">&quot;System setup:&quot;</span>);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="comment">// Assemble!</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    assemble_elasticity_with_weight_and_traction(equation_systems,<span class="stringliteral">&quot;Elasticity&quot;</span>,system_weight,</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                            input_params.<a class="code" href="structlibmesh__assemble__input__params.html#a030b78e020faf6210813844e8f0c2eca">system_type</a>,</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                            boundary_id_cube::MAX_X,</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                            traction_density);</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment">// Print MatLab debugging output? Variable defined at &quot;carl_headers.h&quot;</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#ifdef PRINT_MATLAB_DEBUG</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    elasticity_system.matrix-&gt;print_matlab(input_params.<a class="code" href="structlibmesh__assemble__input__params.html#af6d7a41287b40d913e5110b115b0b692">output_base</a> + <span class="stringliteral">&quot;_sys_mat.m&quot;</span>);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    elasticity_system.rhs-&gt;print_matlab(input_params.<a class="code" href="structlibmesh__assemble__input__params.html#af6d7a41287b40d913e5110b115b0b692">output_base</a> + <span class="stringliteral">&quot;_sys_rhs_vec.m&quot;</span>);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="comment">// --- Generate the equation systems</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    perf_log.push(<span class="stringliteral">&quot;System setup:&quot;</span>);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="comment">// Set the equation systems object</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    libMesh::EquationSystems equation_systems(system_mesh);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="comment">// Add linear elasticity and physical parameters systems</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    libMesh::LinearImplicitSystem&amp; elasticity_system</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                                        = <a class="code" href="_c_arl__assemble__coupling_8cpp.html#a1fab87d9dc5c891ae8234cec6cf73491">add_elasticity</a>(equation_systems);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="comment">// Initialize the equation systems</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    equation_systems.init();</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="comment">// Export matrix and vector</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    libMesh::PetscMatrix&lt;libMesh::Number&gt; * temp_mat_ptr = libMesh::cast_ptr&lt;libMesh::PetscMatrix&lt;libMesh::Number&gt; * &gt;(elasticity_system.matrix);</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    libMesh::PetscVector&lt;libMesh::Number&gt; * temp_vec_ptr = libMesh::cast_ptr&lt;libMesh::PetscVector&lt;libMesh::Number&gt; * &gt;(elasticity_system.rhs);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    carl::write_PETSC_matrix(*temp_mat_ptr, input_params.<a class="code" href="structlibmesh__assemble__input__params.html#af6d7a41287b40d913e5110b115b0b692">output_base</a> + <span class="stringliteral">&quot;_sys_mat.petscmat&quot;</span>);</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    carl::write_PETSC_vector(*temp_vec_ptr, input_params.<a class="code" href="structlibmesh__assemble__input__params.html#af6d7a41287b40d913e5110b115b0b692">output_base</a> + <span class="stringliteral">&quot;_sys_rhs_vec.petscvec&quot;</span>);</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="comment">// Homogeneous properties for the macro system</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    set_homogeneous_physical_properties(equation_systems, input_params.<a class="code" href="structlibmesh__assemble__input__params.html#a2aef9210c303764810d978496712e9b3">physical_params_file</a>);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="comment">// Set the weight function object</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <a class="code" href="classweight__parameter__function.html">weight_parameter_function</a>  system_weight(mesh_weight);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    system_weight.set_parameters(input_params.<a class="code" href="structlibmesh__assemble__input__params.html#a9b91599c97b26e5446f26440f74b896f">weight_domain_idx_file</a>);</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="comment">// If needed, print rigid body vectors</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordflow">if</span>(input_params.<a class="code" href="structlibmesh__assemble__input__params.html#ae23881f91f012a17aca3f6d296f97ae9">bCalculateRBVectors</a>)</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    {</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        MatNullSpace nullsp_sys;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        build_rigid_body_vectors(elasticity_system,nullsp_sys);</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        write_rigid_body_vectors(nullsp_sys,input_params.<a class="code" href="structlibmesh__assemble__input__params.html#af6d7a41287b40d913e5110b115b0b692">output_base</a>,WorldComm.rank());</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        MatNullSpaceDestroy(&amp;nullsp_sys);</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    }</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    </div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    perf_log.pop(<span class="stringliteral">&quot;System setup:&quot;</span>);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="comment">// Assemble!</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    assemble_elasticity_with_weight_and_traction(equation_systems,<span class="stringliteral">&quot;Elasticity&quot;</span>,system_weight,</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                            input_params.<a class="code" href="structlibmesh__assemble__input__params.html#a030b78e020faf6210813844e8f0c2eca">system_type</a>,</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                            boundary_id_cube::MAX_X,</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;                            traction_density);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="comment">// Print MatLab debugging output? Variable defined at &quot;carl_headers.h&quot;</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="preprocessor">#ifdef PRINT_MATLAB_DEBUG</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    elasticity_system.matrix-&gt;print_matlab(input_params.<a class="code" href="structlibmesh__assemble__input__params.html#af6d7a41287b40d913e5110b115b0b692">output_base</a> + <span class="stringliteral">&quot;_sys_mat.m&quot;</span>);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    elasticity_system.rhs-&gt;print_matlab(input_params.<a class="code" href="structlibmesh__assemble__input__params.html#af6d7a41287b40d913e5110b115b0b692">output_base</a> + <span class="stringliteral">&quot;_sys_rhs_vec.m&quot;</span>);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="comment">// Export matrix and vector</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    libMesh::PetscMatrix&lt;libMesh::Number&gt; * temp_mat_ptr = libMesh::cast_ptr&lt;libMesh::PetscMatrix&lt;libMesh::Number&gt; * &gt;(elasticity_system.matrix);</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    libMesh::PetscVector&lt;libMesh::Number&gt; * temp_vec_ptr = libMesh::cast_ptr&lt;libMesh::PetscVector&lt;libMesh::Number&gt; * &gt;(elasticity_system.rhs);</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    carl::write_PETSC_matrix(*temp_mat_ptr, input_params.<a class="code" href="structlibmesh__assemble__input__params.html#af6d7a41287b40d913e5110b115b0b692">output_base</a> + <span class="stringliteral">&quot;_sys_mat.petscmat&quot;</span>);</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    carl::write_PETSC_vector(*temp_vec_ptr, input_params.<a class="code" href="structlibmesh__assemble__input__params.html#af6d7a41287b40d913e5110b115b0b692">output_base</a> + <span class="stringliteral">&quot;_sys_rhs_vec.petscvec&quot;</span>);</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="comment">// If needed, print rigid body vectors</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="keywordflow">if</span>(input_params.<a class="code" href="structlibmesh__assemble__input__params.html#ae23881f91f012a17aca3f6d296f97ae9">bCalculateRBVectors</a>)</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    {</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        MatNullSpace nullsp_sys;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        build_rigid_body_vectors(elasticity_system,nullsp_sys);</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        write_rigid_body_vectors(nullsp_sys,input_params.<a class="code" href="structlibmesh__assemble__input__params.html#af6d7a41287b40d913e5110b115b0b692">output_base</a>,WorldComm.rank());</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        MatNullSpaceDestroy(&amp;nullsp_sys);</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    }</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    </div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;}</div>
 <div class="ttc" id="structlibmesh__assemble__input__params_html_abac50ee0db80bff6bb89d017d1fdc27b"><div class="ttname"><a href="structlibmesh__assemble__input__params.html#abac50ee0db80bff6bb89d017d1fdc27b">libmesh_assemble_input_params::mesh_weight_file</a></div><div class="ttdeci">std::string mesh_weight_file</div><div class="ttdoc">Path to the mesh containing the weight region indices. </div><div class="ttdef"><b>Definition:</b> <a href="libmesh__assemble__system__input__parser_8h_source.html#l00019">libmesh_assemble_system_input_parser.h:19</a></div></div>
 <div class="ttc" id="structlibmesh__assemble__input__params_html_ae23881f91f012a17aca3f6d296f97ae9"><div class="ttname"><a href="structlibmesh__assemble__input__params.html#ae23881f91f012a17aca3f6d296f97ae9">libmesh_assemble_input_params::bCalculateRBVectors</a></div><div class="ttdeci">bool bCalculateRBVectors</div><div class="ttdoc">Build and export the rigid body modes vectors? </div><div class="ttdef"><b>Definition:</b> <a href="libmesh__assemble__system__input__parser_8h_source.html#l00023">libmesh_assemble_system_input_parser.h:23</a></div></div>
 <div class="ttc" id="classweight__parameter__function_html"><div class="ttname"><a href="classweight__parameter__function.html">weight_parameter_function</a></div><div class="ttdef"><b>Definition:</b> <a href="execs_2ext__solver__libmesh_2ext__solver__libmesh__common_2include_2weight__parameter__function_8h_source.html#l00013">weight_parameter_function.h:13</a></div></div>
 <div class="ttc" id="structlibmesh__assemble__input__params_html_a2aef9210c303764810d978496712e9b3"><div class="ttname"><a href="structlibmesh__assemble__input__params.html#a2aef9210c303764810d978496712e9b3">libmesh_assemble_input_params::physical_params_file</a></div><div class="ttdeci">std::string physical_params_file</div><div class="ttdoc">Physical parameters. </div><div class="ttdef"><b>Definition:</b> <a href="libmesh__assemble__system__input__parser_8h_source.html#l00016">libmesh_assemble_system_input_parser.h:16</a></div></div>
-<div class="ttc" id="_c_arl__assemble__coupling_8cpp_html_a1fab87d9dc5c891ae8234cec6cf73491"><div class="ttname"><a href="_c_arl__assemble__coupling_8cpp.html#a1fab87d9dc5c891ae8234cec6cf73491">add_elasticity</a></div><div class="ttdeci">libMesh::ImplicitSystem &amp; add_elasticity(libMesh::EquationSystems &amp;input_systems, libMesh::Order order=libMesh::FIRST, libMesh::FEFamily family=libMesh::LAGRANGE)</div><div class="ttdoc">Add a linear elasticity libMesh::LinearImplicitSystem to the input libMesh::EquationSystems& input_sy...</div><div class="ttdef"><b>Definition:</b> <a href="_c_arl__assemble__coupling_8cpp_source.html#l00048">CArl_assemble_coupling.cpp:48</a></div></div>
+<div class="ttc" id="_c_arl__assemble__coupling_8cpp_html_a1fab87d9dc5c891ae8234cec6cf73491"><div class="ttname"><a href="_c_arl__assemble__coupling_8cpp.html#a1fab87d9dc5c891ae8234cec6cf73491">add_elasticity</a></div><div class="ttdeci">libMesh::ImplicitSystem &amp; add_elasticity(libMesh::EquationSystems &amp;input_systems, libMesh::Order order=libMesh::FIRST, libMesh::FEFamily family=libMesh::LAGRANGE)</div><div class="ttdoc">Add a linear elasticity libMesh::LinearImplicitSystem to the input libMesh::EquationSystems& input_sy...</div><div class="ttdef"><b>Definition:</b> <a href="_c_arl__assemble__coupling_8cpp_source.html#l00047">CArl_assemble_coupling.cpp:47</a></div></div>
 <div class="ttc" id="structlibmesh__assemble__input__params_html"><div class="ttname"><a href="structlibmesh__assemble__input__params.html">libmesh_assemble_input_params</a></div><div class="ttdef"><b>Definition:</b> <a href="libmesh__assemble__system__input__parser_8h_source.html#l00014">libmesh_assemble_system_input_parser.h:14</a></div></div>
 <div class="ttc" id="structlibmesh__assemble__input__params_html_a9b91599c97b26e5446f26440f74b896f"><div class="ttname"><a href="structlibmesh__assemble__input__params.html#a9b91599c97b26e5446f26440f74b896f">libmesh_assemble_input_params::weight_domain_idx_file</a></div><div class="ttdeci">std::string weight_domain_idx_file</div><div class="ttdoc">Path to the file identifying the weight function regions. </div><div class="ttdef"><b>Definition:</b> <a href="libmesh__assemble__system__input__parser_8h_source.html#l00020">libmesh_assemble_system_input_parser.h:20</a></div></div>
 <div class="ttc" id="structlibmesh__assemble__input__params_html_a030b78e020faf6210813844e8f0c2eca"><div class="ttname"><a href="structlibmesh__assemble__input__params.html#a030b78e020faf6210813844e8f0c2eca">libmesh_assemble_input_params::system_type</a></div><div class="ttdeci">WeightFunctionSystemType system_type</div><div class="ttdoc">Indicates if the system to be assembled is a micro or a macro system (used to choose the proper weigh...</div><div class="ttdef"><b>Definition:</b> <a href="libmesh__assemble__system__input__parser_8h_source.html#l00017">libmesh_assemble_system_input_parser.h:17</a></div></div>

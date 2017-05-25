@@ -2,7 +2,7 @@ var cpp_exampletraction =
 [
     [ "Physical model", "cpp_exampletraction.html#traction_example_physical", null ],
     [ "Files and folders", "cpp_exampletraction.html#traction_example_mesh", null ],
-    [ "Using the 3D traction test to check the compilation", "cpp_exampletraction.html#traction_example_check_install", null ],
+    [ "Checking the compilation", "cpp_exampletraction.html#traction_example_check_install", null ],
     [ "Detailed description", "cpp_exampletraction.html#traction_example_detailed", null ],
     [ "Intersection search", "traction_example_inter.html", [
       [ "Input", "traction_example_inter.html#traction_example_inter_i", null ],
@@ -12,6 +12,10 @@ var cpp_exampletraction =
       [ "Input", "traction_example_coupl_assemble.html#traction_example_coupl_assemble_input", null ],
       [ "Output", "traction_example_coupl_assemble.html#traction_example_coupl_assemble_output", null ]
     ] ],
-    [ "External solver assembly", "traction_example_sys_assemble.html", null ],
+    [ "External solver assembly", "traction_example_sys_assemble.html", [
+      [ "Input", "traction_example_sys_assemble.html#traction_example_sys_assemble_i", null ],
+      [ "Weight functions", "traction_example_sys_assemble.html#traction_example_sys_assemble_weight", null ],
+      [ "Output", "traction_example_sys_assemble.html#traction_example_sys_assemble_o", null ]
+    ] ],
     [ "Coupled system solver", "traction_example_coupled_solver.html", null ]
 ];

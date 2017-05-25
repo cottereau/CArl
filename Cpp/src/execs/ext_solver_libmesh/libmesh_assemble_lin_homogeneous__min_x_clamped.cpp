@@ -1,5 +1,25 @@
 #include "libmesh_assemble_lin_homogeneous.h"
 
+/**	\brief Program used to assemble the rigidity matrix and the vectors of a linear, homogeneous elasticity model with a clamped \f$x_{\mbox{Min}}\f$ face.
+ * 
+ *  Usage: `./libmesh_assemble_lin_homogeneous__min_x_clamped -i [input file]`
+ *	
+ * The input file is parsed by the get_input_params(GetPot& field_parser, libmesh_assemble_input_params& input_params) function, and it contains the following parameters. 
+ *
+ *	Required parameters:
+ *	  - `Mesh` : path to the mesh.
+ *    - `PhysicalParameters` : physical parameters.
+ *    - `SystemType` : parameter used to tell the assembler which weight functions must be used. *Values*: `Micro` or `Macro`.
+ *	  - `MeshWeight` : path to the mesh defining the domains of the Arlequin weight parameters.
+ *    - `WeightIndexes` : path to the indices of the domains of the Arlequin weight parameters.
+ *
+ *  Optional parameter:
+ *    - `OutputBase` or `--output` : base of the output files (including folders). *Default*: `test_system`.
+ *
+ *  Boolean flags:
+ *    - `ExportRBVectors` : build and export the rigid body modes vectors.
+ */
+
 int main(int argc, char** argv) {
 
 	// [USER] Fixed boudary
