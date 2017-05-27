@@ -1,7 +1,9 @@
 #PBS -l walltime=0:10:00
-#PBS -q haswellq
-#PBS -P couest
 #PBS -l select=1:ncpus=4:mpiprocs=4
+
+# "fusion" PBS options
+# #PBS -q haswellq
+# #PBS -P [PROJECT NAME]
 
 # Charge the modules here
 # "fusion" cluster modules

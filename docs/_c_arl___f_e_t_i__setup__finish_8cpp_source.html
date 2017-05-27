@@ -49,6 +49,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -109,128 +110,147 @@ $(document).ready(function(){initNavTree('_c_arl___f_e_t_i__setup__finish_8cpp_s
 <div class="title">CArl_FETI_setup_finish.cpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;CArl_FETI_setup_finish.h&quot;</span></div>
+<a href="_c_arl___f_e_t_i__setup__finish_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_c_arl___f_e_t_i__setup__finish_8h.html">CArl_FETI_setup_finish.h</a>&quot;</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv) {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="comment">// --- Initialize libMesh</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    libMesh::LibMeshInit init(argc, argv);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="comment">// Do performance log?</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    libMesh::PerfLog perf_log(<span class="stringliteral">&quot;Main program&quot;</span>);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="comment">// libMesh&#39;s C++ / MPI communicator wrapper</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    libMesh::Parallel::Communicator&amp; WorldComm = init.comm();</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="comment">// Number of processors and processor rank.</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordtype">int</span> rank = WorldComm.rank();</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">int</span> nodes = WorldComm.size();</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="comment">// --- Set up inputs</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="comment">// Command line parser</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    GetPot command_line(argc, argv);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="comment">// File parser</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    GetPot field_parser;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="comment">// If there is an input file, parse it to get the parameters. Else, parse the command line</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    std::string input_filename;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordflow">if</span> (command_line.search(2, <span class="stringliteral">&quot;--inputfile&quot;</span>, <span class="stringliteral">&quot;-i&quot;</span>)) {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        input_filename = command_line.next(input_filename);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        field_parser.parse_input_file(input_filename, <span class="stringliteral">&quot;#&quot;</span>, <span class="stringliteral">&quot;\n&quot;</span>, <span class="stringliteral">&quot; \t\n&quot;</span>);</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        field_parser = command_line;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    }</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <a class="code" href="structcarl_1_1feti__setup__finish__params.html">carl::feti_setup_finish_params</a> input_params;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    get_input_params(field_parser, input_params);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="comment">// Object containing the FETI operations</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <a class="code" href="classcarl_1_1_f_e_t_i___operations.html">carl::FETI_Operations</a> feti_op(WorldComm,input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#ac8490d7133284997e9497f13c75ed1bd">scratch_folder_path</a>,input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#aebb6a453ba760ab225a75d6b4e96fa75">coupling_folder_path</a>);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="comment">// --- Define if the rb modes will be used or not</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    feti_op.using_rb_modes(input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#a4226249254863225438b36c9c2f47615">bUseRigidBodyModes</a>);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="comment">// --- Read the files!</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="comment">// Read up the coupling matricesconst std::string&amp; filename)</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    feti_op.set_coupling_matrix_R_micro();</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    feti_op.set_coupling_matrix_R_BIG();</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="comment">// Read the decoupled solutions, K_i * u_0,i  = F_i </span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    feti_op.read_decoupled_solutions();</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="comment">// Read operations needed if we are using the rigid body modes</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordflow">if</span>(input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#a4226249254863225438b36c9c2f47615">bUseRigidBodyModes</a>)</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    {</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        <span class="comment">// Read the solutions of K_i * x_i(0)  = C_i^T * phi(0)</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        feti_op.read_ext_solver_output();</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        <span class="comment">// Read the RB-related vectors and matrices</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        feti_op.read_null_space_vecs(input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#aebec4649657ad7602a20111ffdb01e06">RB_vectors_base</a>,input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#a3fea6d0b9c2825b61e90714790c716de">nb_of_rb_vectors</a>);</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        feti_op.read_null_space_inv_RITRI_mat();</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    }</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="comment">// --- Set up any matrices or vectors needed before calculating the outputs</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="comment">// Set up the preconditioner</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    feti_op.set_preconditioner(input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#ad5b14913a3808cee9a058d7a90c4ee5e">CG_precond_type</a> <span class="comment">/*, initial_set = true */</span> );</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="comment">// --- Calculate the output vectors! All are saved internaly inside the object</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="comment">// Calculate r(0)</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    feti_op.calculate_initial_r();</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="comment">// Calculate p(0)</span></div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    feti_op.calculate_initial_p();</div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="_c_arl___f_e_t_i__setup__finish_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">   61</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="_c_arl___f_e_t_i__setup__finish_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">main</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv) {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="comment">// --- Initialize libMesh</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    libMesh::LibMeshInit init(argc, argv);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="comment">// Do performance log?</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    libMesh::PerfLog perf_log(<span class="stringliteral">&quot;Main program&quot;</span>);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="comment">// libMesh&#39;s C++ / MPI communicator wrapper</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    libMesh::Parallel::Communicator&amp; WorldComm = init.comm();</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="comment">// Number of processors and processor rank.</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordtype">int</span> rank = WorldComm.rank();</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordtype">int</span> nodes = WorldComm.size();</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="comment">// --- Set up inputs</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="comment">// Command line parser</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    GetPot command_line(argc, argv);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="comment">// File parser</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    GetPot field_parser;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="comment">// If there is an input file, parse it to get the parameters. Else, parse the command line</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    std::string input_filename;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordflow">if</span> (command_line.search(2, <span class="stringliteral">&quot;--inputfile&quot;</span>, <span class="stringliteral">&quot;-i&quot;</span>)) {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        input_filename = command_line.next(input_filename);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        field_parser.parse_input_file(input_filename, <span class="stringliteral">&quot;#&quot;</span>, <span class="stringliteral">&quot;\n&quot;</span>, <span class="stringliteral">&quot; \t\n&quot;</span>);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        field_parser = command_line;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    }</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <a class="code" href="structcarl_1_1feti__setup__finish__params.html">carl::feti_setup_finish_params</a> input_params;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <a class="code" href="namespacecarl.html#a902f88f3c52c6fc9c974bc99832e78a7">get_input_params</a>(field_parser, input_params);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="comment">// Object containing the FETI operations</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <a class="code" href="classcarl_1_1_f_e_t_i___operations.html">carl::FETI_Operations</a> feti_op(WorldComm,input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#ac8490d7133284997e9497f13c75ed1bd">scratch_folder_path</a>,input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#aebb6a453ba760ab225a75d6b4e96fa75">coupling_folder_path</a>);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="comment">// --- Define if the rb modes will be used or not</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#a548253e562c086929dd880e1f5598630">using_rb_modes</a>(input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#a4226249254863225438b36c9c2f47615">bUseRigidBodyModes</a>);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="comment">// --- Read the files!</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="comment">// Read up the coupling matricesconst std::string&amp; filename)</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#adf235fed677b91418b87f2c95dd7de70">set_coupling_matrix_R_micro</a>();</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#a4f5445815dc2ef7b8182dcccc05463a2">set_coupling_matrix_R_BIG</a>();</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="comment">// Read the decoupled solutions, K_i * u_0,i  = F_i </span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#a21f21442d768b053c891e832f31a7d6e">read_decoupled_solutions</a>();</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="comment">// Read operations needed if we are using the rigid body modes</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">if</span>(input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#a4226249254863225438b36c9c2f47615">bUseRigidBodyModes</a>)</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    {</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        <span class="comment">// Read the solutions of K_i * x_i(0)  = C_i^t * phi(0)</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#ad925f9a61ac106d011e3b05f47fd3afe">read_ext_solver_output</a>();</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="comment">// Calculations needed if we are using the rigid body modes</span></div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <span class="keywordflow">if</span>(input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#a4226249254863225438b36c9c2f47615">bUseRigidBodyModes</a>)</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    {</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        <span class="comment">// Calculate the rigid body modes correction RB_corr</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        feti_op.calculate_rb_correction();</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    }</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="comment">// --- Export output vectors!</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    <span class="comment">// Export &#39;r(0)&#39; and &#39;p(0)&#39;</span></div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    feti_op.export_inital_vecs();</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    <span class="comment">// Export the Ct_i * p(0) vectors</span></div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    feti_op.export_ext_solver_rhs_initial();</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <span class="comment">// Export the scalar data, rho(0) and, if pertinent, |RB_corr|</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    feti_op.export_initial_scalar_data();</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <span class="comment">// --- Launch the &quot;iter_script.sh&quot; script --- ONLY ON THE FIRST PROC!</span></div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    <span class="keywordflow">if</span>(WorldComm.rank() == 0)</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    {</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        std::string iter_script_command = <span class="stringliteral">&quot;. &quot;</span> + input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#ac8490d7133284997e9497f13c75ed1bd">scratch_folder_path</a> + <span class="stringliteral">&quot;/FETI_iter_script.sh&quot;</span>;</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        <span class="keywordflow">if</span>(input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#a30e2fbb1ab52dbbce37968be8e6f95b1">scheduler</a> == carl::ClusterSchedulerType::LOCAL)</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;        {</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;            std::cout &lt;&lt; <span class="stringliteral">&quot; !!! LOCAL test: MPI commands cannot be launched recursivelly !!! &quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;            std::cout &lt;&lt; <span class="stringliteral">&quot;     Run the following program by hand: &quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;            std::cout &lt;&lt; iter_script_command &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;            carl::exec_command(iter_script_command);</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        }</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    }</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;}</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        <span class="comment">// Read the RB-related vectors and matrices</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#a265fad70304acb55178dfe0126c83d0d">read_null_space_vecs</a>(input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#aebec4649657ad7602a20111ffdb01e06">RB_vectors_base</a>,input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#a3fea6d0b9c2825b61e90714790c716de">nb_of_rb_vectors</a>);</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#a9b32c7f7321f1eb9e068708293485013">read_null_space_inv_RITRI_mat</a>();</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    }</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <span class="comment">// --- Set up any matrices or vectors needed before calculating the outputs</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="comment">// Set up the preconditioner</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#a55fb42247284b7468ebe6440b7c48bef">set_preconditioner</a>(input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#ad5b14913a3808cee9a058d7a90c4ee5e">CG_precond_type</a> <span class="comment">/*, initial_set = true */</span> );</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <span class="comment">// --- Calculate the output vectors! All are saved internaly inside the object</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="comment">// Calculate r(0)</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#a6d7e107e98a08d9abc351a9cddc37871">calculate_initial_r</a>();</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="comment">// Calculate p(0)</span></div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#af84b7a871c2d8937b640b7e665d51a5f">calculate_initial_p</a>();</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    <span class="comment">// Calculations needed if we are using the rigid body modes</span></div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <span class="keywordflow">if</span>(input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#a4226249254863225438b36c9c2f47615">bUseRigidBodyModes</a>)</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    {</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        <span class="comment">// Calculate the rigid body modes correction RB_corr</span></div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#abb5c3844bf76169f8ded17fb797fac63">calculate_rb_correction</a>();</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    }</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    <span class="comment">// --- Export output vectors!</span></div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="comment">// Export &#39;r(0)&#39; and &#39;p(0)&#39;</span></div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#a8b61ae513a10da13f8ebf00e8ec2ec7c">export_inital_vecs</a>();</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    <span class="comment">// Export the Ct_i * p(0) vectors</span></div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#aaf32fdf315e2c7d5b805b67baed49bf2">export_ext_solver_rhs_initial</a>();</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <span class="comment">// Export the scalar data, rho(0) and, if pertinent, |RB_corr|</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    feti_op.<a class="code" href="classcarl_1_1_f_e_t_i___operations.html#ae25352065815843ea6ccbe404a4440af">export_initial_scalar_data</a>();</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    <span class="comment">// --- Launch the &quot;iter_script.sh&quot; script --- ONLY ON THE FIRST PROC!</span></div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    <span class="keywordflow">if</span>(WorldComm.rank() == 0)</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    {</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        std::string iter_script_command = <span class="stringliteral">&quot;. &quot;</span> + input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#ac8490d7133284997e9497f13c75ed1bd">scratch_folder_path</a> + <span class="stringliteral">&quot;/FETI_iter_script.sh&quot;</span>;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        <span class="keywordflow">if</span>(input_params.<a class="code" href="structcarl_1_1feti__setup__finish__params.html#a30e2fbb1ab52dbbce37968be8e6f95b1">scheduler</a> == <a class="code" href="namespacecarl.html#a67066fdf35a0c326f5147098c0cf45d1a2bec097bc495ac4aacc355d3283f4b93">carl::ClusterSchedulerType::LOCAL</a>)</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        {</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;            std::cout &lt;&lt; <span class="stringliteral">&quot; !!! LOCAL test: MPI commands cannot be launched recursivelly !!! &quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;            std::cout &lt;&lt; <span class="stringliteral">&quot;     Run the following program by hand: &quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;            std::cout &lt;&lt; iter_script_command &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;            <a class="code" href="namespacecarl.html#a54249fee021b3d53e1a7ae7208292437">carl::exec_command</a>(iter_script_command);</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        }</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    }</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;}</div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_a8b61ae513a10da13f8ebf00e8ec2ec7c"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#a8b61ae513a10da13f8ebf00e8ec2ec7c">carl::FETI_Operations::export_inital_vecs</a></div><div class="ttdeci">void export_inital_vecs()</div><div class="ttdoc">Export the initial iteration vectors, r(0) and p(0) </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations___i_o_8cpp_source.html#l00600">FETI_operations_IO.cpp:600</a></div></div>
+<div class="ttc" id="namespacecarl_html_a902f88f3c52c6fc9c974bc99832e78a7"><div class="ttname"><a href="namespacecarl.html#a902f88f3c52c6fc9c974bc99832e78a7">carl::get_input_params</a></div><div class="ttdeci">void get_input_params(GetPot &amp;field_parser, feti_iterate_params &amp;input_params)</div><div class="ttdoc">Parser function for the coupled solver test programs. </div><div class="ttdef"><b>Definition:</b> <a href="carl__feti__iterate__input__parser_8cpp_source.html#l00013">carl_feti_iterate_input_parser.cpp:13</a></div></div>
 <div class="ttc" id="structcarl_1_1feti__setup__finish__params_html_ad5b14913a3808cee9a058d7a90c4ee5e"><div class="ttname"><a href="structcarl_1_1feti__setup__finish__params.html#ad5b14913a3808cee9a058d7a90c4ee5e">carl::feti_setup_finish_params::CG_precond_type</a></div><div class="ttdeci">carl::BaseCGPrecondType CG_precond_type</div><div class="ttdoc">[CG] Type of preconditionner. </div><div class="ttdef"><b>Definition:</b> <a href="carl__feti__setup__finish__input__parser_8h_source.html#l00033">carl_feti_setup_finish_input_parser.h:33</a></div></div>
+<div class="ttc" id="namespacecarl_html_a54249fee021b3d53e1a7ae7208292437"><div class="ttname"><a href="namespacecarl.html#a54249fee021b3d53e1a7ae7208292437">carl::exec_command</a></div><div class="ttdeci">std::string exec_command(const std::string &amp;cmd)</div><div class="ttdef"><b>Definition:</b> <a href="common__functions_8cpp_source.html#l00060">common_functions.cpp:60</a></div></div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_adf235fed677b91418b87f2c95dd7de70"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#adf235fed677b91418b87f2c95dd7de70">carl::FETI_Operations::set_coupling_matrix_R_micro</a></div><div class="ttdeci">void set_coupling_matrix_R_micro()</div><div class="ttdoc">Read the mediator - micro system coupling matrix. </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations___i_o_8cpp_source.html#l00006">FETI_operations_IO.cpp:6</a></div></div>
 <div class="ttc" id="structcarl_1_1feti__setup__finish__params_html_a4226249254863225438b36c9c2f47615"><div class="ttname"><a href="structcarl_1_1feti__setup__finish__params.html#a4226249254863225438b36c9c2f47615">carl::feti_setup_finish_params::bUseRigidBodyModes</a></div><div class="ttdeci">bool bUseRigidBodyModes</div><div class="ttdoc">[RB] Use the rigid body modes for the micro system? </div><div class="ttdef"><b>Definition:</b> <a href="carl__feti__setup__finish__input__parser_8h_source.html#l00026">carl_feti_setup_finish_input_parser.h:26</a></div></div>
 <div class="ttc" id="structcarl_1_1feti__setup__finish__params_html_ac8490d7133284997e9497f13c75ed1bd"><div class="ttname"><a href="structcarl_1_1feti__setup__finish__params.html#ac8490d7133284997e9497f13c75ed1bd">carl::feti_setup_finish_params::scratch_folder_path</a></div><div class="ttdeci">std::string scratch_folder_path</div><div class="ttdoc">Path to the folder which will be used to save the temporary files during the solve operation...</div><div class="ttdef"><b>Definition:</b> <a href="carl__feti__setup__finish__input__parser_8h_source.html#l00023">carl_feti_setup_finish_input_parser.h:23</a></div></div>
 <div class="ttc" id="structcarl_1_1feti__setup__finish__params_html_a30e2fbb1ab52dbbce37968be8e6f95b1"><div class="ttname"><a href="structcarl_1_1feti__setup__finish__params.html#a30e2fbb1ab52dbbce37968be8e6f95b1">carl::feti_setup_finish_params::scheduler</a></div><div class="ttdeci">ClusterSchedulerType scheduler</div><div class="ttdoc">Cluster scheduler software type. Values: PBS, SLURM (code not implemented for the later yet)...</div><div class="ttdef"><b>Definition:</b> <a href="carl__feti__setup__finish__input__parser_8h_source.html#l00020">carl_feti_setup_finish_input_parser.h:20</a></div></div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_af84b7a871c2d8937b640b7e665d51a5f"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#af84b7a871c2d8937b640b7e665d51a5f">carl::FETI_Operations::calculate_initial_p</a></div><div class="ttdeci">void calculate_initial_p()</div><div class="ttdoc">Calculate the initial p(0) vector. </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations__operations_8cpp_source.html#l00078">FETI_operations_operations.cpp:78</a></div></div>
 <div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html">carl::FETI_Operations</a></div><div class="ttdoc">Class containing the operations needed for the FETI solver. </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations_8h_source.html#l00036">FETI_operations.h:36</a></div></div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_a265fad70304acb55178dfe0126c83d0d"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#a265fad70304acb55178dfe0126c83d0d">carl::FETI_Operations::read_null_space_vecs</a></div><div class="ttdeci">void read_null_space_vecs(const std::string &amp;RB_vectors_base, int nb_of_rb_vectors)</div><div class="ttdoc">Read the null space vectors. </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations___i_o_8cpp_source.html#l00131">FETI_operations_IO.cpp:131</a></div></div>
 <div class="ttc" id="structcarl_1_1feti__setup__finish__params_html_aebec4649657ad7602a20111ffdb01e06"><div class="ttname"><a href="structcarl_1_1feti__setup__finish__params.html#aebec4649657ad7602a20111ffdb01e06">carl::feti_setup_finish_params::RB_vectors_base</a></div><div class="ttdeci">std::string RB_vectors_base</div><div class="ttdoc">[RB] Common path base for the micro system&#39;s rigid body mode vectors. </div><div class="ttdef"><b>Definition:</b> <a href="carl__feti__setup__finish__input__parser_8h_source.html#l00027">carl_feti_setup_finish_input_parser.h:27</a></div></div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_abb5c3844bf76169f8ded17fb797fac63"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#abb5c3844bf76169f8ded17fb797fac63">carl::FETI_Operations::calculate_rb_correction</a></div><div class="ttdeci">void calculate_rb_correction()</div><div class="ttdoc">Calculate the rigid body modes corrections. </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations__operations_8cpp_source.html#l00285">FETI_operations_operations.cpp:285</a></div></div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_ae25352065815843ea6ccbe404a4440af"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#ae25352065815843ea6ccbe404a4440af">carl::FETI_Operations::export_initial_scalar_data</a></div><div class="ttdeci">void export_initial_scalar_data()</div><div class="ttdoc">Export the initial iteration scalar data, rho(0) and | RB_corr(0) | </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations___i_o_8cpp_source.html#l00626">FETI_operations_IO.cpp:626</a></div></div>
 <div class="ttc" id="structcarl_1_1feti__setup__finish__params_html_a3fea6d0b9c2825b61e90714790c716de"><div class="ttname"><a href="structcarl_1_1feti__setup__finish__params.html#a3fea6d0b9c2825b61e90714790c716de">carl::feti_setup_finish_params::nb_of_rb_vectors</a></div><div class="ttdeci">int nb_of_rb_vectors</div><div class="ttdoc">[RB] Number of RB mode vectors. </div><div class="ttdef"><b>Definition:</b> <a href="carl__feti__setup__finish__input__parser_8h_source.html#l00028">carl_feti_setup_finish_input_parser.h:28</a></div></div>
 <div class="ttc" id="structcarl_1_1feti__setup__finish__params_html"><div class="ttname"><a href="structcarl_1_1feti__setup__finish__params.html">carl::feti_setup_finish_params</a></div><div class="ttdoc">Structure containing the parameters for the setup initialization of the FETI solver. </div><div class="ttdef"><b>Definition:</b> <a href="carl__feti__setup__finish__input__parser_8h_source.html#l00016">carl_feti_setup_finish_input_parser.h:16</a></div></div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_a4f5445815dc2ef7b8182dcccc05463a2"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#a4f5445815dc2ef7b8182dcccc05463a2">carl::FETI_Operations::set_coupling_matrix_R_BIG</a></div><div class="ttdeci">void set_coupling_matrix_R_BIG()</div><div class="ttdoc">Read the mediator - macro system coupling matrix. </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations___i_o_8cpp_source.html#l00050">FETI_operations_IO.cpp:50</a></div></div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_a9b32c7f7321f1eb9e068708293485013"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#a9b32c7f7321f1eb9e068708293485013">carl::FETI_Operations::read_null_space_inv_RITRI_mat</a></div><div class="ttdeci">void read_null_space_inv_RITRI_mat()</div><div class="ttdoc">Read the  matrix. </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations___i_o_8cpp_source.html#l00173">FETI_operations_IO.cpp:173</a></div></div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_a548253e562c086929dd880e1f5598630"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#a548253e562c086929dd880e1f5598630">carl::FETI_Operations::using_rb_modes</a></div><div class="ttdeci">void using_rb_modes(bool bUseRigidBodyModes)</div><div class="ttdoc">Set up the. </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations__setup_8cpp_source.html#l00275">FETI_operations_setup.cpp:275</a></div></div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_a21f21442d768b053c891e832f31a7d6e"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#a21f21442d768b053c891e832f31a7d6e">carl::FETI_Operations::read_decoupled_solutions</a></div><div class="ttdeci">void read_decoupled_solutions()</div><div class="ttdoc">Read the decoupled solutions, . </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations___i_o_8cpp_source.html#l00222">FETI_operations_IO.cpp:222</a></div></div>
+<div class="ttc" id="_c_arl___f_e_t_i__setup__finish_8h_html"><div class="ttname"><a href="_c_arl___f_e_t_i__setup__finish_8h.html">CArl_FETI_setup_finish.h</a></div></div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_ad925f9a61ac106d011e3b05f47fd3afe"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#ad925f9a61ac106d011e3b05f47fd3afe">carl::FETI_Operations::read_ext_solver_output</a></div><div class="ttdeci">void read_ext_solver_output()</div><div class="ttdoc">Read the latest external solver output. </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations___i_o_8cpp_source.html#l00282">FETI_operations_IO.cpp:282</a></div></div>
+<div class="ttc" id="namespacecarl_html_a67066fdf35a0c326f5147098c0cf45d1a2bec097bc495ac4aacc355d3283f4b93"><div class="ttname"><a href="namespacecarl.html#a67066fdf35a0c326f5147098c0cf45d1a2bec097bc495ac4aacc355d3283f4b93">carl::LOCAL</a></div><div class="ttdef"><b>Definition:</b> <a href="common__enums_8h_source.html#l00015">common_enums.h:15</a></div></div>
+<div class="ttc" id="_c_arl___f_e_t_i__setup__finish_8cpp_html_a3c04138a5bfe5d72780bb7e82a18e627"><div class="ttname"><a href="_c_arl___f_e_t_i__setup__finish_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">main</a></div><div class="ttdeci">int main(int argc, char **argv)</div><div class="ttdef"><b>Definition:</b> <a href="_c_arl___f_e_t_i__setup__finish_8cpp_source.html#l00061">CArl_FETI_setup_finish.cpp:61</a></div></div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_a6d7e107e98a08d9abc351a9cddc37871"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#a6d7e107e98a08d9abc351a9cddc37871">carl::FETI_Operations::calculate_initial_r</a></div><div class="ttdeci">void calculate_initial_r()</div><div class="ttdoc">Calculate the inital residual vector, r(0) </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations__operations_8cpp_source.html#l00084">FETI_operations_operations.cpp:84</a></div></div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_aaf32fdf315e2c7d5b805b67baed49bf2"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#aaf32fdf315e2c7d5b805b67baed49bf2">carl::FETI_Operations::export_ext_solver_rhs_initial</a></div><div class="ttdeci">void export_ext_solver_rhs_initial()</div><div class="ttdoc">Calculate and export the external solver RHS&#39;s for the first iteration. </div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations___i_o_8cpp_source.html#l00518">FETI_operations_IO.cpp:518</a></div></div>
+<div class="ttc" id="classcarl_1_1_f_e_t_i___operations_html_a55fb42247284b7468ebe6440b7c48bef"><div class="ttname"><a href="classcarl_1_1_f_e_t_i___operations.html#a55fb42247284b7468ebe6440b7c48bef">carl::FETI_Operations::set_preconditioner</a></div><div class="ttdeci">void set_preconditioner(BaseCGPrecondType CG_precond_type, bool bInitialSet=true)</div><div class="ttdef"><b>Definition:</b> <a href="_f_e_t_i__operations__setup_8cpp_source.html#l00241">FETI_operations_setup.cpp:241</a></div></div>
 <div class="ttc" id="structcarl_1_1feti__setup__finish__params_html_aebb6a453ba760ab225a75d6b4e96fa75"><div class="ttname"><a href="structcarl_1_1feti__setup__finish__params.html#aebb6a453ba760ab225a75d6b4e96fa75">carl::feti_setup_finish_params::coupling_folder_path</a></div><div class="ttdeci">std::string coupling_folder_path</div><div class="ttdoc">Folder containing the coupling matrices. </div><div class="ttdef"><b>Definition:</b> <a href="carl__feti__setup__finish__input__parser_8h_source.html#l00031">carl_feti_setup_finish_input_parser.h:31</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d44054de776ac2dd1b3fc6b7ee338f3e.html">execs</a></li><li class="navelem"><a class="el" href="dir_f4608836a4829a335b32c55c574dc5c2.html">CArl_FETI</a></li><li class="navelem"><b>CArl_FETI_setup_finish.cpp</b></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d44054de776ac2dd1b3fc6b7ee338f3e.html">execs</a></li><li class="navelem"><a class="el" href="dir_f4608836a4829a335b32c55c574dc5c2.html">CArl_FETI</a></li><li class="navelem"><a class="el" href="_c_arl___f_e_t_i__setup__finish_8cpp.html">CArl_FETI_setup_finish.cpp</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>

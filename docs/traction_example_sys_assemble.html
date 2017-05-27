@@ -49,6 +49,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li class="current"><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -161,9 +162,9 @@ ExportRBVectors
 <h1><a class="anchor" id="traction_example_sys_assemble_weight"></a>
 Weight functions</h1>
 <p>The <code>SystemType</code>, <code>MeshWeight</code> and <code>WeightIndexes</code> parameters are used to control the <em>weight parameter functions</em> used by the Arlequin method, noted as <img class="formulaInl" alt="$(\alpha_1, \alpha_2)$" src="form_35.png"/> in [[[REF]]]. These parameters are used to guarantee a proper partitioning of the energy over the coupling region - and also over any region where both models are present, but are not coupled. The weight parameters follow the equations below: </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\begin{eqnarray*} \alpha_l &amp;\geq&amp; 0 \mbox{ in } \Omega_l, \ l = 1,2, \\ \alpha_l &amp;=&amp; 1 \mbox{ in } \Omega_l \setminus \Omega^c_{12}, \\ \alpha_1 + \alpha_2 &amp;=&amp; 1 \mbox{ in } \Omega^c_{12}. \end{eqnarray*}" src="form_37.png"/>
+<img class="formulaDsp" alt="\begin{eqnarray*} \alpha_l &amp;\geq&amp; 0 \mbox{ in } \Omega_l, \ l = 1,2, \\ \alpha_l &amp;=&amp; 1 \mbox{ in } \Omega_l \setminus \Omega^c_{12}, \\ \alpha_1 + \alpha_2 &amp;=&amp; 1 \mbox{ in } \Omega^c_{12}. \end{eqnarray*}" src="form_36.png"/>
 </p>
-<p>The <code>MeshWeight</code> and <code>WeightIndexes</code> are used to determinate the regions and the values of <img class="formulaInl" alt="$ \alpha_l$" src="form_44.png"/>, while <code>SystemType</code> determinates which one must be used ( <img class="formulaInl" alt="$ \alpha_1$" src="form_45.png"/> for <code>Macro</code>, <img class="formulaInl" alt="$ \alpha_1$" src="form_45.png"/> for <code>Micro</code>).</p>
+<p>The <code>MeshWeight</code> and <code>WeightIndexes</code> are used to determinate the regions and the values of <img class="formulaInl" alt="$ \alpha_l$" src="form_37.png"/>, while <code>SystemType</code> determinates which one must be used ( <img class="formulaInl" alt="$ \alpha_1$" src="form_38.png"/> for <code>Macro</code>, <img class="formulaInl" alt="$ \alpha_1$" src="form_38.png"/> for <code>Micro</code>).</p>
 <p>Each element of the <code>MeshWeight</code> has a physical index which determinates which kind of region it represents. When assembling the matrices and vectors, the assembly programs will</p>
 <ul>
 <li>check where inside this matrix the quadrature points are located,</li>
@@ -175,7 +176,7 @@ Weight functions</h1>
 <div class="image">
 <img src="test_brick_mask.png" alt="test_brick_mask.png"/>
 </div>
-<p>Here's the <code>WeightIndexes</code> file used in this example: </p><pre class="fragment">###
+<p>and here's the <code>WeightIndexes</code> file used in this example: </p><pre class="fragment">###
 #     The file "test_brick_mask.msh" contains a "mask" that identifies, in the
 #   full coupled model domain, the regions with:
 #
@@ -196,17 +197,14 @@ MicroDomainOnlyIdx 67
 # Coupling area
 CouplingDomainIdx 68
 
-# Both models, outside the coupling area
-# !!! not used in this example !!!
-#BothDomainsIdx = -1
-
 # Weight of the macro model at the coupling region
 # [ micro weight ] = 1 - [ macro weight ]
 AlphaCouplingMacro 0.5
-
-# Weight of the macro model on the area with both models, outside the coupling area
-# !!! not used in this example !!!
-</pre><h1><a class="anchor" id="traction_example_sys_assemble_o"></a>
+</pre><p>Together, they will generate the weight parameter function below: </p><div class="image">
+<img src="bricks_traction_structure_with_alpha.png" alt="bricks_traction_structure_with_alpha.png"/>
+</div>
+<p>Two parameters were not used in this example: <code>BothDomainsIdx</code> and <code>AlphaEps</code>. They are used in cases where the domains overlap over a region, but are not coupled, with the former defining the <code>MeshWeight</code>'s element physical index, and the latter the weight of the <code>Macro</code> model.</p>
+<h1><a class="anchor" id="traction_example_sys_assemble_o"></a>
 Output</h1>
 <p>After running the external solver assembly programs, the following matrices and vectors will be created:</p>
 <ul>

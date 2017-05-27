@@ -49,6 +49,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li class="current"><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -105,10 +106,10 @@ $(document).ready(function(){initNavTree('traction_example_coupl_assemble.html',
 <div class="contents">
 <div class="textblock"><p>Now that we have the mesh intersections, we can use them to build the coupling matrices. Three matrices will be constructed:</p>
 <ul>
-<li>Two <img class="formulaInl" alt="$ n_{\mbox{Med}} \times n_l$" src="form_41.png"/> coupling matrices, noted as <img class="formulaInl" alt="$C_l$" src="form_42.png"/> ( <img class="formulaInl" alt="$m = 1,2$" src="form_11.png"/>).</li>
+<li>Two <img class="formulaInl" alt="$ n_{\mbox{Med}} \times n_l$" src="form_27.png"/> coupling matrices, noted as <img class="formulaInl" alt="$C_l$" src="form_28.png"/> ( <img class="formulaInl" alt="$m = 1,2$" src="form_11.png"/>).</li>
 <li>One <img class="formulaInl" alt="$ n_{\mbox{Med}} \times n_{\mbox{Med}}$" src="form_29.png"/> matrix, noted as <img class="formulaInl" alt="$C_{\mbox{Med}}$" src="form_30.png"/>.</li>
 </ul>
-<p><img class="formulaInl" alt="$ n_{\mbox{Med}} $" src="form_31.png"/> and <img class="formulaInl" alt="$ n_l $" src="form_43.png"/> are the number of degrees of freedom of the mediator and the model <img class="formulaInl" alt="$ m $" src="form_33.png"/> meshes, respectively. The <img class="formulaInl" alt="$C_l$" src="form_42.png"/> matrices are the coupling matrices between the models and the mediator space used by the Arlequin method. The <img class="formulaInl" alt="$C_{\mbox{Med}}$" src="form_30.png"/> is completely defined inside the mediator space, and it is used by the solver preconditioners. By default, the restricted mesh of the <code>Macro</code> / <code>A</code> model is used as the mediator.</p>
+<p><img class="formulaInl" alt="$ n_{\mbox{Med}} $" src="form_31.png"/> and <img class="formulaInl" alt="$ n_l $" src="form_32.png"/> are the number of degrees of freedom of the mediator and the model <img class="formulaInl" alt="$ m $" src="form_33.png"/> meshes, respectively. The <img class="formulaInl" alt="$C_l$" src="form_28.png"/> matrices are the coupling matrices between the models and the mediator space used by the Arlequin method. The <img class="formulaInl" alt="$C_{\mbox{Med}}$" src="form_30.png"/> is completely defined inside the mediator space, and it is used by the conjugate gradient solver preconditioners. By default, the restricted mesh of the <code>Macro</code> / <code>A</code> model is used as the mediator.</p>
 <p>Submiting <code>scripts/PBS_FETI_test_assemble_coupling_matrices_traction_test_1k.pbs</code> or executing <code>scripts/LOCAL_FETI_test_assemble_coupling_matrices_traction_test_1k.sh</code> will run the command </p><pre class="fragment">mpirun -n 4 ./CArl_assemble_coupling -i examples/coupled_traction_test/FETI_solver/brick_traction_1k/assemble_coupling_1k.txt
 </pre><p><b>Note</b>: the <code>CArl_assemble_coupling</code> <em>MUST</em> be executed with the same number of processors as the intersection construction case. This is because each processor does most of the coupling matrices calculations independently, reading only one of the <code>[nb. of processors]</code> intersection meshes.</p>
 <h1><a class="anchor" id="traction_example_coupl_assemble_input"></a>

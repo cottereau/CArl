@@ -49,6 +49,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -115,80 +116,463 @@ $(document).ready(function(){initNavTree('classcarl_1_1lib_mesh__fe__addresses__
 <div class="title">carl::libMesh_fe_addresses_3 Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5ecefb94eec8a2cad6c21ccc12c524d9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5ecefb94eec8a2cad6c21ccc12c524d9"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>libMesh_fe_addresses_3</b> (libMesh::System &amp;input_system, const std::string u_var_name=&quot;u&quot;, const std::string v_var_name=&quot;v&quot;, const std::string w_var_name=&quot;w&quot;)</td></tr>
+<tr class="memitem:a5ecefb94eec8a2cad6c21ccc12c524d9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a5ecefb94eec8a2cad6c21ccc12c524d9">libMesh_fe_addresses_3</a> (libMesh::System &amp;input_system, const std::string u_var_name=&quot;u&quot;, const std::string v_var_name=&quot;v&quot;, const std::string w_var_name=&quot;w&quot;)</td></tr>
 <tr class="separator:a5ecefb94eec8a2cad6c21ccc12c524d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b3ed2307324193887a1d07708654b15"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5b3ed2307324193887a1d07708654b15"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_DoFs</b> (int idx=0)</td></tr>
+<tr class="memitem:a5b3ed2307324193887a1d07708654b15"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a5b3ed2307324193887a1d07708654b15">set_DoFs</a> (int idx=0)</td></tr>
 <tr class="separator:a5b3ed2307324193887a1d07708654b15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a00a369a85085d3ea80f41a80f9240cd2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a00a369a85085d3ea80f41a80f9240cd2"></a>
-libMesh::System &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>eq_system</b></td></tr>
+<tr class="memitem:a00a369a85085d3ea80f41a80f9240cd2"><td class="memItemLeft" align="right" valign="top">libMesh::System &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a00a369a85085d3ea80f41a80f9240cd2">eq_system</a></td></tr>
 <tr class="separator:a00a369a85085d3ea80f41a80f9240cd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b98976e0abb51da524d0750bfcaa313"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4b98976e0abb51da524d0750bfcaa313"></a>
-const libMesh::MeshBase &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>mesh</b></td></tr>
+<tr class="memitem:a4b98976e0abb51da524d0750bfcaa313"><td class="memItemLeft" align="right" valign="top">const libMesh::MeshBase &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a4b98976e0abb51da524d0750bfcaa313">mesh</a></td></tr>
 <tr class="separator:a4b98976e0abb51da524d0750bfcaa313"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f5ce3cc4f0ac44cf0ec4455928422e6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f5ce3cc4f0ac44cf0ec4455928422e6"></a>
-const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>dim</b></td></tr>
+<tr class="memitem:a5f5ce3cc4f0ac44cf0ec4455928422e6"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a5f5ce3cc4f0ac44cf0ec4455928422e6">dim</a></td></tr>
 <tr class="separator:a5f5ce3cc4f0ac44cf0ec4455928422e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66548903d66794e618d176376e101636"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66548903d66794e618d176376e101636"></a>
-const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>u_var</b></td></tr>
+<tr class="memitem:a66548903d66794e618d176376e101636"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a66548903d66794e618d176376e101636">u_var</a></td></tr>
 <tr class="separator:a66548903d66794e618d176376e101636"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9968e0844a5f7881b357a43f9c80d271"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9968e0844a5f7881b357a43f9c80d271"></a>
-const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>v_var</b></td></tr>
+<tr class="memitem:a9968e0844a5f7881b357a43f9c80d271"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a9968e0844a5f7881b357a43f9c80d271">v_var</a></td></tr>
 <tr class="separator:a9968e0844a5f7881b357a43f9c80d271"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac20af6d63174a015605348bd0cf83f1c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac20af6d63174a015605348bd0cf83f1c"></a>
-const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>w_var</b></td></tr>
+<tr class="memitem:ac20af6d63174a015605348bd0cf83f1c"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac20af6d63174a015605348bd0cf83f1c">w_var</a></td></tr>
 <tr class="separator:ac20af6d63174a015605348bd0cf83f1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08da73b64b37fc9b3059924591db2948"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a08da73b64b37fc9b3059924591db2948"></a>
-const libMesh::DofMap &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>dof_map</b></td></tr>
+<tr class="memitem:a08da73b64b37fc9b3059924591db2948"><td class="memItemLeft" align="right" valign="top">const libMesh::DofMap &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a08da73b64b37fc9b3059924591db2948">dof_map</a></td></tr>
 <tr class="separator:a08da73b64b37fc9b3059924591db2948"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e846af08149d7e65adad645e402d086"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1e846af08149d7e65adad645e402d086"></a>
-libMesh::FEType&#160;</td><td class="memItemRight" valign="bottom"><b>fe_type</b></td></tr>
+<tr class="memitem:a1e846af08149d7e65adad645e402d086"><td class="memItemLeft" align="right" valign="top">libMesh::FEType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a1e846af08149d7e65adad645e402d086">fe_type</a></td></tr>
 <tr class="separator:a1e846af08149d7e65adad645e402d086"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1c6278181a94410966bf313f2ecabe2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae1c6278181a94410966bf313f2ecabe2"></a>
-libMesh::UniquePtr&lt; libMesh::FEBase &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>fe_unique_ptr</b></td></tr>
+<tr class="memitem:ae1c6278181a94410966bf313f2ecabe2"><td class="memItemLeft" align="right" valign="top">libMesh::UniquePtr&lt; libMesh::FEBase &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ae1c6278181a94410966bf313f2ecabe2">fe_unique_ptr</a></td></tr>
 <tr class="separator:ae1c6278181a94410966bf313f2ecabe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab65bb9f83a2b413504d666ad68544fa6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab65bb9f83a2b413504d666ad68544fa6"></a>
-libMesh::QGauss&#160;</td><td class="memItemRight" valign="bottom"><b>qrule</b></td></tr>
+<tr class="memitem:ab65bb9f83a2b413504d666ad68544fa6"><td class="memItemLeft" align="right" valign="top">libMesh::QGauss&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ab65bb9f83a2b413504d666ad68544fa6">qrule</a></td></tr>
 <tr class="separator:ab65bb9f83a2b413504d666ad68544fa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae605a2361e42cf2dd2ef8103143060b1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae605a2361e42cf2dd2ef8103143060b1"></a>
-const libMesh::Elem *&#160;</td><td class="memItemRight" valign="bottom"><b>elem</b></td></tr>
+<tr class="memitem:ae605a2361e42cf2dd2ef8103143060b1"><td class="memItemLeft" align="right" valign="top">const libMesh::Elem *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ae605a2361e42cf2dd2ef8103143060b1">elem</a></td></tr>
 <tr class="separator:ae605a2361e42cf2dd2ef8103143060b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a124437d3ae6b57b70beb1fc110d72e96"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a124437d3ae6b57b70beb1fc110d72e96"></a>
-std::vector&lt; libMesh::dof_id_type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dof_indices</b></td></tr>
+<tr class="memitem:a124437d3ae6b57b70beb1fc110d72e96"><td class="memItemLeft" align="right" valign="top">std::vector&lt; libMesh::dof_id_type &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a124437d3ae6b57b70beb1fc110d72e96">dof_indices</a></td></tr>
 <tr class="separator:a124437d3ae6b57b70beb1fc110d72e96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b5abe23e90121a4b73076ee30ff0864"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0b5abe23e90121a4b73076ee30ff0864"></a>
-std::vector&lt; libMesh::dof_id_type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dof_indices_u</b></td></tr>
+<tr class="memitem:a0b5abe23e90121a4b73076ee30ff0864"><td class="memItemLeft" align="right" valign="top">std::vector&lt; libMesh::dof_id_type &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a0b5abe23e90121a4b73076ee30ff0864">dof_indices_u</a></td></tr>
 <tr class="separator:a0b5abe23e90121a4b73076ee30ff0864"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc4eda615f6af70d704974b4af3dc25e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afc4eda615f6af70d704974b4af3dc25e"></a>
-std::vector&lt; libMesh::dof_id_type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dof_indices_v</b></td></tr>
+<tr class="memitem:afc4eda615f6af70d704974b4af3dc25e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; libMesh::dof_id_type &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#afc4eda615f6af70d704974b4af3dc25e">dof_indices_v</a></td></tr>
 <tr class="separator:afc4eda615f6af70d704974b4af3dc25e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7668338feadf63c7a02e57255888167"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac7668338feadf63c7a02e57255888167"></a>
-std::vector&lt; libMesh::dof_id_type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>dof_indices_w</b></td></tr>
+<tr class="memitem:ac7668338feadf63c7a02e57255888167"><td class="memItemLeft" align="right" valign="top">std::vector&lt; libMesh::dof_id_type &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac7668338feadf63c7a02e57255888167">dof_indices_w</a></td></tr>
 <tr class="separator:ac7668338feadf63c7a02e57255888167"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58f0a44b9a123347f35281cbc58e7206"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58f0a44b9a123347f35281cbc58e7206"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>n_dofs</b></td></tr>
+<tr class="memitem:a58f0a44b9a123347f35281cbc58e7206"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a58f0a44b9a123347f35281cbc58e7206">n_dofs</a></td></tr>
 <tr class="separator:a58f0a44b9a123347f35281cbc58e7206"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f131cedd24e8c5ec44bfbb50acf8b17"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4f131cedd24e8c5ec44bfbb50acf8b17"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>n_dofs_u</b></td></tr>
+<tr class="memitem:a4f131cedd24e8c5ec44bfbb50acf8b17"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a4f131cedd24e8c5ec44bfbb50acf8b17">n_dofs_u</a></td></tr>
 <tr class="separator:a4f131cedd24e8c5ec44bfbb50acf8b17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e5c89ad957ccce0c03fcc14f51ab4ba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8e5c89ad957ccce0c03fcc14f51ab4ba"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>n_dofs_v</b></td></tr>
+<tr class="memitem:a8e5c89ad957ccce0c03fcc14f51ab4ba"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a8e5c89ad957ccce0c03fcc14f51ab4ba">n_dofs_v</a></td></tr>
 <tr class="separator:a8e5c89ad957ccce0c03fcc14f51ab4ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac62177ed269417b444a1174e142b48fa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac62177ed269417b444a1174e142b48fa"></a>
-unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>n_dofs_w</b></td></tr>
+<tr class="memitem:ac62177ed269417b444a1174e142b48fa"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac62177ed269417b444a1174e142b48fa">n_dofs_w</a></td></tr>
 <tr class="separator:ac62177ed269417b444a1174e142b48fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00023">23</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a5ecefb94eec8a2cad6c21ccc12c524d9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">carl::libMesh_fe_addresses_3::libMesh_fe_addresses_3 </td>
+          <td>(</td>
+          <td class="paramtype">libMesh::System &amp;&#160;</td>
+          <td class="paramname"><em>input_system</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>u_var_name</em> = <code>&quot;u&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>v_var_name</em> = <code>&quot;v&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>w_var_name</em> = <code>&quot;w&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00032">32</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+<div class="fragment"><div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                                                           :</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a00a369a85085d3ea80f41a80f9240cd2">eq_system</a> { input_system },</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a4b98976e0abb51da524d0750bfcaa313">mesh</a> { <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a00a369a85085d3ea80f41a80f9240cd2">eq_system</a>.get_mesh() },</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a5f5ce3cc4f0ac44cf0ec4455928422e6">dim</a> { <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a4b98976e0abb51da524d0750bfcaa313">mesh</a>.mesh_dimension() },</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a66548903d66794e618d176376e101636">u_var</a> { input_system.variable_number(u_var_name) },</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a9968e0844a5f7881b357a43f9c80d271">v_var</a> { input_system.variable_number(v_var_name) },</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac20af6d63174a015605348bd0cf83f1c">w_var</a> { input_system.variable_number(w_var_name) },</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a08da73b64b37fc9b3059924591db2948">dof_map</a> { input_system.get_dof_map() },</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a1e846af08149d7e65adad645e402d086">fe_type</a> { <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a08da73b64b37fc9b3059924591db2948">dof_map</a>.variable_type(<a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a66548903d66794e618d176376e101636">u_var</a>) },</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ae1c6278181a94410966bf313f2ecabe2">fe_unique_ptr</a> { libMesh::FEBase::build(<a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a5f5ce3cc4f0ac44cf0ec4455928422e6">dim</a>, <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a1e846af08149d7e65adad645e402d086">fe_type</a>) },</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ab65bb9f83a2b413504d666ad68544fa6">qrule</a> { <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a5f5ce3cc4f0ac44cf0ec4455928422e6">dim</a>, <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a1e846af08149d7e65adad645e402d086">fe_type</a>.default_quadrature_order() },</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a58f0a44b9a123347f35281cbc58e7206">n_dofs</a> { 0 },</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a4f131cedd24e8c5ec44bfbb50acf8b17">n_dofs_u</a> { 0 },</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a8e5c89ad957ccce0c03fcc14f51ab4ba">n_dofs_v</a> { 0 },</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac62177ed269417b444a1174e142b48fa">n_dofs_w</a> { 0 }</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ae1c6278181a94410966bf313f2ecabe2">fe_unique_ptr</a>-&gt;attach_quadrature_rule(&amp;<a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ab65bb9f83a2b413504d666ad68544fa6">qrule</a>);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    };</div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a1e846af08149d7e65adad645e402d086"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a1e846af08149d7e65adad645e402d086">carl::libMesh_fe_addresses_3::fe_type</a></div><div class="ttdeci">libMesh::FEType fe_type</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00062">assemble_coupling.h:62</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a58f0a44b9a123347f35281cbc58e7206"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a58f0a44b9a123347f35281cbc58e7206">carl::libMesh_fe_addresses_3::n_dofs</a></div><div class="ttdeci">unsigned int n_dofs</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00073">assemble_coupling.h:73</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a08da73b64b37fc9b3059924591db2948"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a08da73b64b37fc9b3059924591db2948">carl::libMesh_fe_addresses_3::dof_map</a></div><div class="ttdeci">const libMesh::DofMap &amp; dof_map</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00061">assemble_coupling.h:61</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a4f131cedd24e8c5ec44bfbb50acf8b17"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a4f131cedd24e8c5ec44bfbb50acf8b17">carl::libMesh_fe_addresses_3::n_dofs_u</a></div><div class="ttdeci">unsigned int n_dofs_u</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00074">assemble_coupling.h:74</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_ac20af6d63174a015605348bd0cf83f1c"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac20af6d63174a015605348bd0cf83f1c">carl::libMesh_fe_addresses_3::w_var</a></div><div class="ttdeci">const unsigned int w_var</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00060">assemble_coupling.h:60</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a4b98976e0abb51da524d0750bfcaa313"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a4b98976e0abb51da524d0750bfcaa313">carl::libMesh_fe_addresses_3::mesh</a></div><div class="ttdeci">const libMesh::MeshBase &amp; mesh</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00056">assemble_coupling.h:56</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a5f5ce3cc4f0ac44cf0ec4455928422e6"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a5f5ce3cc4f0ac44cf0ec4455928422e6">carl::libMesh_fe_addresses_3::dim</a></div><div class="ttdeci">const unsigned int dim</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00057">assemble_coupling.h:57</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a8e5c89ad957ccce0c03fcc14f51ab4ba"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a8e5c89ad957ccce0c03fcc14f51ab4ba">carl::libMesh_fe_addresses_3::n_dofs_v</a></div><div class="ttdeci">unsigned int n_dofs_v</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00075">assemble_coupling.h:75</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_ac62177ed269417b444a1174e142b48fa"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac62177ed269417b444a1174e142b48fa">carl::libMesh_fe_addresses_3::n_dofs_w</a></div><div class="ttdeci">unsigned int n_dofs_w</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00076">assemble_coupling.h:76</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a9968e0844a5f7881b357a43f9c80d271"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a9968e0844a5f7881b357a43f9c80d271">carl::libMesh_fe_addresses_3::v_var</a></div><div class="ttdeci">const unsigned int v_var</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00059">assemble_coupling.h:59</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_ab65bb9f83a2b413504d666ad68544fa6"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#ab65bb9f83a2b413504d666ad68544fa6">carl::libMesh_fe_addresses_3::qrule</a></div><div class="ttdeci">libMesh::QGauss qrule</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00064">assemble_coupling.h:64</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a66548903d66794e618d176376e101636"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a66548903d66794e618d176376e101636">carl::libMesh_fe_addresses_3::u_var</a></div><div class="ttdeci">const unsigned int u_var</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00058">assemble_coupling.h:58</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a00a369a85085d3ea80f41a80f9240cd2"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a00a369a85085d3ea80f41a80f9240cd2">carl::libMesh_fe_addresses_3::eq_system</a></div><div class="ttdeci">libMesh::System &amp; eq_system</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00052">assemble_coupling.h:52</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_ae1c6278181a94410966bf313f2ecabe2"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#ae1c6278181a94410966bf313f2ecabe2">carl::libMesh_fe_addresses_3::fe_unique_ptr</a></div><div class="ttdeci">libMesh::UniquePtr&lt; libMesh::FEBase &gt; fe_unique_ptr</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00063">assemble_coupling.h:63</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a5b3ed2307324193887a1d07708654b15"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void carl::libMesh_fe_addresses_3::set_DoFs </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>idx</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00078">78</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+<div class="fragment"><div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keyword">const</span> libMesh::Elem* elem_dummy = <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a4b98976e0abb51da524d0750bfcaa313">mesh</a>.elem(idx);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ae605a2361e42cf2dd2ef8103143060b1">elem</a> = <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a4b98976e0abb51da524d0750bfcaa313">mesh</a>.elem(idx);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a08da73b64b37fc9b3059924591db2948">dof_map</a>.dof_indices(elem_dummy, <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a124437d3ae6b57b70beb1fc110d72e96">dof_indices</a>);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a08da73b64b37fc9b3059924591db2948">dof_map</a>.dof_indices(elem_dummy, <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a0b5abe23e90121a4b73076ee30ff0864">dof_indices_u</a>, <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a66548903d66794e618d176376e101636">u_var</a>);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a08da73b64b37fc9b3059924591db2948">dof_map</a>.dof_indices(elem_dummy, <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#afc4eda615f6af70d704974b4af3dc25e">dof_indices_v</a>, <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a9968e0844a5f7881b357a43f9c80d271">v_var</a>);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a08da73b64b37fc9b3059924591db2948">dof_map</a>.dof_indices(elem_dummy, <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac7668338feadf63c7a02e57255888167">dof_indices_w</a>, <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac20af6d63174a015605348bd0cf83f1c">w_var</a>);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a58f0a44b9a123347f35281cbc58e7206">n_dofs</a> = <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a124437d3ae6b57b70beb1fc110d72e96">dof_indices</a>.size();</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a4f131cedd24e8c5ec44bfbb50acf8b17">n_dofs_u</a> = <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a0b5abe23e90121a4b73076ee30ff0864">dof_indices_u</a>.size();</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;        <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#a8e5c89ad957ccce0c03fcc14f51ab4ba">n_dofs_v</a> = <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#afc4eda615f6af70d704974b4af3dc25e">dof_indices_v</a>.size();</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac62177ed269417b444a1174e142b48fa">n_dofs_w</a> = <a class="code" href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac7668338feadf63c7a02e57255888167">dof_indices_w</a>.size();</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    };</div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a58f0a44b9a123347f35281cbc58e7206"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a58f0a44b9a123347f35281cbc58e7206">carl::libMesh_fe_addresses_3::n_dofs</a></div><div class="ttdeci">unsigned int n_dofs</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00073">assemble_coupling.h:73</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_afc4eda615f6af70d704974b4af3dc25e"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#afc4eda615f6af70d704974b4af3dc25e">carl::libMesh_fe_addresses_3::dof_indices_v</a></div><div class="ttdeci">std::vector&lt; libMesh::dof_id_type &gt; dof_indices_v</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00070">assemble_coupling.h:70</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a08da73b64b37fc9b3059924591db2948"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a08da73b64b37fc9b3059924591db2948">carl::libMesh_fe_addresses_3::dof_map</a></div><div class="ttdeci">const libMesh::DofMap &amp; dof_map</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00061">assemble_coupling.h:61</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a4f131cedd24e8c5ec44bfbb50acf8b17"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a4f131cedd24e8c5ec44bfbb50acf8b17">carl::libMesh_fe_addresses_3::n_dofs_u</a></div><div class="ttdeci">unsigned int n_dofs_u</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00074">assemble_coupling.h:74</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_ac20af6d63174a015605348bd0cf83f1c"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac20af6d63174a015605348bd0cf83f1c">carl::libMesh_fe_addresses_3::w_var</a></div><div class="ttdeci">const unsigned int w_var</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00060">assemble_coupling.h:60</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a4b98976e0abb51da524d0750bfcaa313"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a4b98976e0abb51da524d0750bfcaa313">carl::libMesh_fe_addresses_3::mesh</a></div><div class="ttdeci">const libMesh::MeshBase &amp; mesh</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00056">assemble_coupling.h:56</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a8e5c89ad957ccce0c03fcc14f51ab4ba"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a8e5c89ad957ccce0c03fcc14f51ab4ba">carl::libMesh_fe_addresses_3::n_dofs_v</a></div><div class="ttdeci">unsigned int n_dofs_v</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00075">assemble_coupling.h:75</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a124437d3ae6b57b70beb1fc110d72e96"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a124437d3ae6b57b70beb1fc110d72e96">carl::libMesh_fe_addresses_3::dof_indices</a></div><div class="ttdeci">std::vector&lt; libMesh::dof_id_type &gt; dof_indices</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00068">assemble_coupling.h:68</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_ac62177ed269417b444a1174e142b48fa"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac62177ed269417b444a1174e142b48fa">carl::libMesh_fe_addresses_3::n_dofs_w</a></div><div class="ttdeci">unsigned int n_dofs_w</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00076">assemble_coupling.h:76</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_ac7668338feadf63c7a02e57255888167"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#ac7668338feadf63c7a02e57255888167">carl::libMesh_fe_addresses_3::dof_indices_w</a></div><div class="ttdeci">std::vector&lt; libMesh::dof_id_type &gt; dof_indices_w</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00071">assemble_coupling.h:71</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a0b5abe23e90121a4b73076ee30ff0864"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a0b5abe23e90121a4b73076ee30ff0864">carl::libMesh_fe_addresses_3::dof_indices_u</a></div><div class="ttdeci">std::vector&lt; libMesh::dof_id_type &gt; dof_indices_u</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00069">assemble_coupling.h:69</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a9968e0844a5f7881b357a43f9c80d271"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a9968e0844a5f7881b357a43f9c80d271">carl::libMesh_fe_addresses_3::v_var</a></div><div class="ttdeci">const unsigned int v_var</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00059">assemble_coupling.h:59</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_a66548903d66794e618d176376e101636"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#a66548903d66794e618d176376e101636">carl::libMesh_fe_addresses_3::u_var</a></div><div class="ttdeci">const unsigned int u_var</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00058">assemble_coupling.h:58</a></div></div>
+<div class="ttc" id="classcarl_1_1lib_mesh__fe__addresses__3_html_ae605a2361e42cf2dd2ef8103143060b1"><div class="ttname"><a href="classcarl_1_1lib_mesh__fe__addresses__3.html#ae605a2361e42cf2dd2ef8103143060b1">carl::libMesh_fe_addresses_3::elem</a></div><div class="ttdeci">const libMesh::Elem * elem</div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8h_source.html#l00065">assemble_coupling.h:65</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a5f5ce3cc4f0ac44cf0ec4455928422e6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int carl::libMesh_fe_addresses_3::dim</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00057">57</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a124437d3ae6b57b70beb1fc110d72e96"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;libMesh::dof_id_type&gt; carl::libMesh_fe_addresses_3::dof_indices</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00068">68</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0b5abe23e90121a4b73076ee30ff0864"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;libMesh::dof_id_type&gt; carl::libMesh_fe_addresses_3::dof_indices_u</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00069">69</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afc4eda615f6af70d704974b4af3dc25e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;libMesh::dof_id_type&gt; carl::libMesh_fe_addresses_3::dof_indices_v</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00070">70</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac7668338feadf63c7a02e57255888167"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;libMesh::dof_id_type&gt; carl::libMesh_fe_addresses_3::dof_indices_w</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00071">71</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a08da73b64b37fc9b3059924591db2948"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const libMesh::DofMap&amp; carl::libMesh_fe_addresses_3::dof_map</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00061">61</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae605a2361e42cf2dd2ef8103143060b1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const libMesh::Elem* carl::libMesh_fe_addresses_3::elem</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00065">65</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a00a369a85085d3ea80f41a80f9240cd2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">libMesh::System&amp; carl::libMesh_fe_addresses_3::eq_system</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00052">52</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1e846af08149d7e65adad645e402d086"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">libMesh::FEType carl::libMesh_fe_addresses_3::fe_type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00062">62</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae1c6278181a94410966bf313f2ecabe2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">libMesh::UniquePtr&lt;libMesh::FEBase&gt; carl::libMesh_fe_addresses_3::fe_unique_ptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00063">63</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4b98976e0abb51da524d0750bfcaa313"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const libMesh::MeshBase&amp; carl::libMesh_fe_addresses_3::mesh</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00056">56</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a58f0a44b9a123347f35281cbc58e7206"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int carl::libMesh_fe_addresses_3::n_dofs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00073">73</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4f131cedd24e8c5ec44bfbb50acf8b17"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int carl::libMesh_fe_addresses_3::n_dofs_u</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00074">74</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8e5c89ad957ccce0c03fcc14f51ab4ba"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int carl::libMesh_fe_addresses_3::n_dofs_v</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00075">75</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac62177ed269417b444a1174e142b48fa"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int carl::libMesh_fe_addresses_3::n_dofs_w</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00076">76</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab65bb9f83a2b413504d666ad68544fa6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">libMesh::QGauss carl::libMesh_fe_addresses_3::qrule</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00064">64</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a66548903d66794e618d176376e101636"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int carl::libMesh_fe_addresses_3::u_var</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00058">58</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9968e0844a5f7881b357a43f9c80d271"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int carl::libMesh_fe_addresses_3::v_var</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00059">59</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac20af6d63174a015605348bd0cf83f1c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned int carl::libMesh_fe_addresses_3::w_var</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="assemble__coupling_8h_source.html#l00060">60</a> of file <a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>/Users/breubreubreu/Programming/CArl/Cpp/src/include/<a class="el" href="assemble__coupling_8h_source.html">assemble_coupling.h</a></li>
 </ul>
 </div><!-- contents -->
@@ -196,7 +580,7 @@ unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>n_dofs_w</b><
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>carl</b></li><li class="navelem"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html">libMesh_fe_addresses_3</a></li>
+    <li class="navelem"><a class="el" href="namespacecarl.html">carl</a></li><li class="navelem"><a class="el" href="classcarl_1_1lib_mesh__fe__addresses__3.html">libMesh_fe_addresses_3</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>

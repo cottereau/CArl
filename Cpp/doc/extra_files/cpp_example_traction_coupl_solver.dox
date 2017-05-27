@@ -2,4 +2,142 @@
 
 \page  traction_example_coupled_solver Coupled system solver
 
+After finishing the assembly of the coupling matrices and any preliminary steps linked to the external solvers, we are ready to launch the coupled system solver. 
+
+As discussed at the \ref cpp_usage page, the user only has to configure and launch the `CArl_FETI_setup_init` binary when using a scheduler such as PBS. This will generate any scripts and files needed by the other `CArl_FETI_***` binaries. We will describe here only the configuration of `CArl_FETI_setup_init`, and the final output of the solver.
+
+Submiting `scripts/PBS_FETI_launch_coupled_solver.pbs` will run the command 
+
+	mpirun -np 4 ./CArl_FETI_setup_init -i examples/coupled_traction_test/FETI_solver/brick_traction_1k/PBS_setup_FETI_solver_1k.txt
+
+Executing the local version, `scripts/LOCAL_FETI_launch_coupled_solver.sh`, will run essentially the same program, but with the `LOCAL_setup_FETI_solver_1k.txt` as the input. It only differs from the PBS file on the scheluder parameters.
+
+\section traction_example_coupled_solver_i Input
+
+The input file of the coupled solver has a considerableamount of parameter. We will describe them by parts here.
+
+\subsection traction_example_coupled_solver_scheduler Scheduler parameters
+
+	### Scheduler parameters
+	ClusterSchedulerType PBS
+
+	# - Path to the base PBS script file
+	ScriptFile examples/coupled_traction_test/FETI_solver/common_script.sh
+
+ - `ClusterSchedulerType`: scheduler type. Can be either `LOCAL` or `PBS`. A third option, `SLURM`, is present in the code, but its usage is not implemented yet. The option `LOCAL` is used for simulations without the scheduler.
+ - `ScriptFile`: path to the file used to generate the scripts for the other `CArl_FETI` binaries. This parameter is ignored for the `LOCAL` "scheduler". 
+ 
+ Here's the file used in this example:
+
+	 #PBS -l walltime=0:10:00
+     #PBS -l select=1:ncpus=4:mpiprocs=4
+
+     # "fusion" PBS options
+     # #PBS -q haswellq
+     # #PBS -P [PROJECT NAME]
+
+     # Charge the modules here
+     # "fusion" cluster modules
+     # module purge
+     # module load intel-compilers/16.0.3
+     # module load intel-mpi/5.1.2
+
+     cd $PBS_O_WORKDIR
+
+Adjust its parameters as needed (mainly, the modules, queue and project parameters). Notice that some parameters are missing, such as the job name, output and error file paths and the command to be executed. These will be added by `CArl_FETI_setup_init` when generating the scripts.
+
+\subsection traction_example_coupled_solver_ext External solver parameters
+
+	### External solver parameters
+	# - External solver commands - must set the commands between ' ' !!!
+	ExtSolverA 'mpirun -n 4 ./libmesh_solve_linear_system -i ' 
+	ExtSolverB 'mpirun -n 4 ./libmesh_solve_linear_system -i '
+
+	# - External solver types
+	ExtSolverAType LIBMESH_LINEAR
+	ExtSolverBType LIBMESH_LINEAR
+
+	# - External solver input files
+	ExtSolverAInput examples/coupled_traction_test/FETI_solver/brick_traction_1k/solve_traction_test_A_1k.txt
+	ExtSolverBInput examples/coupled_traction_test/FETI_solver/brick_traction_1k/solve_traction_test_B_1k.txt
+
+ - `ExtSolverA` and `ExtSolverB`: command to execute the external solvers for models `A` and `B`. In this case, the same linear solver, based on libMesh and PETSc, will be used. Its input file description can be found [[[WHERE]]].
+ - `ExtSolverAType` and `ExtSolverBType`: external solvers type. The algorithm needs this information to properly generate the files used to set the external solvers.
+ - `ExtSolverAInput` and `ExtSolverBInput`: external solver input files. In this case, they contain the file paths and parameters needed by them. They are described in [[[WHERE]]]
+
+\subsection traction_example_coupled_solver_params Coupled solver parameters
+
+	### Coupled solver parameters
+	# - Path to the scratch folder
+	ScratchFolderPath examples/coupled_traction_test/FETI_solver/brick_traction_1k/scratch_folder
+
+	# - Path to the coupling matrices
+	CouplingMatricesFolder examples/coupled_traction_test/FETI_solver/brick_traction_1k/coupling_matrices
+
+	# - Output folder
+	OutputFolder examples/coupled_traction_test/FETI_solver/brick_traction_1k/coupled_solution
+
+ - `ScratchFolderPath`: path to the folder (that will be created by this program) where all the auxiliary files will be saved.
+ - `CouplingMatricesFolder`: path to the coupling matrices folder.
+ - `OutputFolder`: path to the folder where the coupled solutions will be saved.
+
+\subsection traction_example_coupled_solver_rigid Rigid body parameters
+
+The parameters below are only needed if one of the models is ill-conditioned - which is the case for the `Micro` / `B` model in this example.
+
+	### Rigid body modes
+	# > Use the rigid body modes from the model B?
+	UseRigidBodyModesB 
+
+	# > If the flag 'UseRigidBodyModesB' is used, get the ...
+	#    ... path to the external forces vector for the model B
+	ExtForceSystemB examples/coupled_traction_test/FETI_solver/brick_traction_1k/system_matrices/traction_model_B_sys_rhs_vec.petscvec
+
+	#    ... number of rigid body modes
+	NbOfRBVectors 6
+
+	#    ... common name of the rigid body modes vectors: 
+	#        Notation: [RBVectorBase]_[iii]_n_[NbOfRBVectors].petscvec, iii = 0 ... NbOfRBVectors - 1
+	RBVectorBase examples/coupled_traction_test/FETI_solver/brick_traction_1k/system_matrices/traction_model_B_rb_vector
+
+ - `UseRigidBodyModesB`: if this parameter is given, the rigid body modes for the model `B` will be used. The parameters below are only needed if `UseRigidBodyModesB` is used.
+ - `ExtForceSystemB`: path to the external forces work vector for the model `B` (needed to generate the initial coupling solution).
+ - `NbOfRBVectors`: number of rigid body modes vectors.
+ - `RBVectorBase`: common filename for the rigid body modes vectors.
+
+\subsection traction_example_coupled_solver_other Other parameters
+
+A few other optional parameters are not used in this example. They control the choice of the conjugate gradient (CG) solver's preconditioner and convergence parameters, and if not used explicitly, default values will be used.
+
+ - `CGPreconditionerType`: choice of the CG preconditioner type. The values can be either
+   + `NONE`: no preconditioner is used;
+   + `Coupling_operator`: use \f$(C_{\mbox{Med}})^{-1}\f$; or
+   + `Coupling_operator_jacobi`: use \f$(\mbox{diag}(C_{\mbox{Med}}))^{-1}\f$.
+    The square matrix \f$C_{\mbox{Med}}\f$ is the coupling matrix reduced to the mediator space, and its usage as the preconditioner is explained in [[[REF]]]. `Coupling_operator` (which is the default value) results in the least number of iterations, but depends on solving a linear system inside the mediator space. `Coupling_operator_jacobi` depends only on simple vector products, but converges more slowly. In general, `Coupling_operator` is the best option, since in most cases solving a linear system on the mediator space is considerably faster than using the external solvers.
+ - `CoupledConvAbs`: absolute convergence of the residual, \f$ | r |^2 < \epsilon_{\mbox{abs}} \f$. By default, \f$ \epsilon_{\mbox{abs}} = 10^{-20}\f$.
+ - `CoupledConvRel`: convergence of the residual, relative to its initial value, \f$ | r |^2 < \epsilon_{\mbox{rel}} \cdot | r_0 |^2  \f$. By default, it is set as \f$\epsilon_{\mbox{rel}} = 10^{-5}\f$.
+ - `CoupledCorrConvRel`: convergence of the rigid body corrections, relative to its previous value, \f$ | u_{\mbox{RB},n}  |^2 < \epsilon_{\mbox{RB}} \cdot | u_{\mbox{RB},n} |^2  \f$. By default, \f$ \epsilon_{\mbox{RB}} = 1e-6\f$.
+ - `CoupledDiv` : relative divergence of the residual, \f$ | r |^2 > D_{\mbox{rel}} \cdot | r_0 |^2  \f$.  By default, \f$ D_{\mbox{rel}} = 10^5\f$.
+ - `CoupledIterMax` : maximum number of iterations, \f$n > D_{\mbox{iter}}\f$. By default, \f$ D_{\mbox{iter}} = 10^3\f$.
+
+When developing the CArl C++ programs, we noted that sometimes using only the CG residual to check the convergence was not enough, namely when one of the models is ill-conditioned (such as the model `Micro` / `B` in this example). In these cases, the FETI algorithm adds a correction to the coupled solution depending on the model's rigid body modes, which might converge slower than the residual. The parameter `CoupledCorrConvRel` is used to check the convergence of these corrections. More details on this can be found at [[[REF]]].
+
+\section traction_example_coupled_solver_o Output
+
+The `CArl_FETI_setup_init` program will generate several files inside the scratch folder `ScratchFolderPath`. They include files used to initialize the FETI / CG solver and scripts and parameter files used by the other `CArl_FETI_***` binaries. A detailed description of what each file does can be found at the \ref CArl_FETI_setup_init.cpp "CArl_FETI_setup_init" documentation page.
+
+After finishing iterating, the files `coupled_sol_A.petscvec` and `coupled_sol_B.petscvec` will be created at the `coupled solution` folder. They can be "applied" to the model meshes using the `libmesh_apply_solution_homogeneous` program. This can be done by either submiting `scripts/PBS_FETI_apply_solution_traction_test_1k.pbs` or executing `scripts/LOCAL_FETI_apply_solution_traction_test_1k.sh`.
+
+The resulting meshes, named `coupled_sol_brick_A_1k.e` and `coupled_sol_brick_B_1k.e`, can be found in the same folder. After applying the deformations, the solution should resemble the figure below:
+
+\image html coupling_brick_deformed.png "Deformed mesh for the 3D coupled bricks test (x500 deformation)"
+
+\section traction_example_coupled_solver_other_bin Other binaries
+
+A description of the files needed by the other `CArl_FETI_***` binaries and their input parsers can be found at each binary's documentation page:
+
+ - \ref CArl_FETI_setup_finish.cpp "CArl_FETI_setup_finish"
+ - \ref CArl_FETI_iterate.cpp "CArl_FETI_iterate"
+ - \ref CArl_FETI_solution.cpp "CArl_FETI_solution"
+
  */

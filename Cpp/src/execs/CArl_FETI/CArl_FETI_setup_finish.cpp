@@ -1,46 +1,62 @@
 #include "CArl_FETI_setup_finish.h"
 
-/**	\brief Program responsible to finish the FETI setup and launch the iterations
- *
- *	This program's input file description can be found at the documentation of the function 
- *  carl::get_input_params(GetPot& field_parser, feti_setup_finish_params& input_params).
- *  
- *  It will use the following files ... 
- *  * ... from the `input_params.coupling_folder_path` folder:
- *    + coupling matrices C_1, C_2 and C_M (the latter used for the preconditioner). *Files*:
- *      - `coupling_matrix_macro.petscmat`
- *      - `coupling_matrix_micro.petscmat`
- *      - `coupling_matrix_mediator.petscmat`
- *
- *  * ... from the `input_params.scratch_folder_path` folder:
- *    + solutions u_0,1 and u_0,2, from the system K_i * u_0,i = F_i. *Files*:
- *      - `ext_solver_u0_A_sys_sol_vec.petscvec`
- *      - `ext_solver_u0_B_sys_sol_vec.petscvec`
- *    + solutions x_1(kkk) and x_2(kkk), from the system K_i * x_i(kkk) = C_i^T*phi_0. *Files*:
- *      - [RB] `ext_solver_A_sys_sol_vec.petscvec`
- *      - [RB] `ext_solver_B_sys_sol_vec.petscvec`
- *    + matrix inv (R_I^t * R_I) = inv(R_2^t*C_2^t*C_2*R_2), used for the rigid body modes projections. *Files*:
- *      - [RB] `rb_inv_RITRI.petscmat`.
- *    + rigid body mode vectors multiplied by C_2. *Files*:
- *      - [RB] `rb_coupl_vector_[iii]_n_[nb. of vectors].petscvec`
- *
- *  * ... from the micro system folder (common vector path given by `input_params.RB_vectors_base`):
- *    + rigid body mode vectors. *Files*:
- *      - [RB] `[input_params.RB_vectors_base]_rb_vector_[iii]_n_[nb. of vectors].petscvec`
- *
- * The items marked with a [RB] are only needed if the rigid body modes projectors are used.
- * In the last two cases, [nb. of vectors] is the number of rigid body mode vectors (given by `input_params.nb_of_rb_vectors`)
- * and [iii] is an integer going from 0 to `input_params.nb_of_rb_vectors - 1` (following C++ notation).
- *
- * This program outputs a series of files, all inside the `input_params.scratch_folder_path` folder:
- *   + initial iteration vectors, r(0), z(0), p(0). *Files*:
- *     - `FETI_iter__r__0.petscvec`
- *     - `FETI_iter__p__0.petscvec`
- *   + (overwrite) vectors used as the RHS for the external solvers. *Files*:
- *     - `ext_solver_A_rhs.petscvec`
- *     - `ext_solver_B_rhs.petscvec`
- *   + (create) scalar values (iteration, residual, RB mode corrections). *Files*:
- *     - `FETI_iter_scalar_data.dat`
+/** \file CArl_FETI_setup_finish.cpp
+\brief Program responsible to finish the FETI setup and launch the iterations
+
+This program's input file description can be found at the documentation of the function 
+  carl::get_input_params(GetPot& field_parser, feti_setup_finish_params& input_params) .
+  
+  It will use the following files ... 
+ - ... from the `input_params.coupling_folder_path` folder:
+   + coupling matrices \f$C_1\f$, \f$C_2\f$ and \f$C_{\mbox{Med}}\f$ (the latter used for the preconditioner). *Files*:
+
+         coupling_matrix_macro.petscmat
+         coupling_matrix_micro.petscmat
+         coupling_matrix_mediator.petscmat
+
+ -  ... from the `input_params.scratch_folder_path` folder:
+   + solutions \f$u_0,1\f$ and \f$u_{0,2}\f$, from the system \f$K_l * u_{0,l} = F_l\f$. *Files*:
+
+         ext_solver_u0_A_sys_sol_vec.petscvec
+         ext_solver_u0_B_sys_sol_vec.petscvec
+
+   + [RB] solutions \f$x_1(kkk)\f$ and \f$x_2(kkk)\f$, from the system \f$K_l * x_l(kkk) = C_l^t*\phi_0\f$. *Files*:
+
+         ext_solver_A_sys_sol_vec.petscvec
+         ext_solver_B_sys_sol_vec.petscvec
+
+   + [RB] matrix \f$\mbox{inv}(R_I^t * R_I) = \mbox{inv}(R_2^t*C_2^t*C_2*R_2)\f$, used for the rigid body modes projections. *Files*:
+
+         rb_inv_RITRI.petscmat
+
+   + [RB] rigid body mode vectors multiplied by \f$C_2\f$. *Files*:
+
+         rb_coupl_vector_[iii]_n_[nb. of vectors].petscvec
+
+ - ... from the micro system folder (common vector path given by `input_params.RB_vectors_base`):
+   + [RB] rigid body mode vectors. *Files*:
+
+         [input_params.RB_vectors_base]_rb_vector_[iii]_n_[nb. of vectors].petscvec
+
+The items marked with a [RB] are only needed if the rigid body modes projectors are used.
+In the last two cases, [nb. of vectors] is the number of rigid body mode vectors (given by `input_params.nb_of_rb_vectors`)
+and [iii] is an integer going from 0 to `input_params.nb_of_rb_vectors - 1` (following C++ notation).
+
+This program outputs a series of files, all inside the `input_params.scratch_folder_path` folder:
+  + initial iteration vectors, \f$r(0)\f$, \f$z(0)\f$, \f$p(0)\f$. *Files*:
+
+        FETI_iter__r__0.petscvec
+        FETI_iter__p__0.petscvec
+
+  + (overwrite) vectors used as the RHS for the external solvers. *Files*:
+
+        ext_solver_A_rhs.petscvec
+        ext_solver_B_rhs.petscvec
+
+  + (create) scalar values (iteration, residual, RB mode corrections). *Files*:
+
+        FETI_iter_scalar_data.dat
+
  */
 int main(int argc, char** argv) {
 
@@ -95,7 +111,7 @@ int main(int argc, char** argv) {
 	// Read operations needed if we are using the rigid body modes
 	if(input_params.bUseRigidBodyModes)
 	{
-		// Read the solutions of K_i * x_i(0)  = C_i^T * phi(0)
+		// Read the solutions of K_i * x_i(0)  = C_i^t * phi(0)
 		feti_op.read_ext_solver_output();
 
 		// Read the RB-related vectors and matrices

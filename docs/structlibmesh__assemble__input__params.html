@@ -49,6 +49,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -114,42 +115,150 @@ $(document).ready(function(){initNavTree('structlibmesh__assemble__input__params
 <div class="title">libmesh_assemble_input_params Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="libmesh__assemble__system__input__parser_8h_source.html">libmesh_assemble_system_input_parser.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:aaacb1a941decf01232ab3c5bd9b3bacf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaacb1a941decf01232ab3c5bd9b3bacf"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#aaacb1a941decf01232ab3c5bd9b3bacf">mesh_file</a></td></tr>
-<tr class="memdesc:aaacb1a941decf01232ab3c5bd9b3bacf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Path to the system mesh. <br /></td></tr>
+<tr class="memitem:aaacb1a941decf01232ab3c5bd9b3bacf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#aaacb1a941decf01232ab3c5bd9b3bacf">mesh_file</a></td></tr>
+<tr class="memdesc:aaacb1a941decf01232ab3c5bd9b3bacf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Path to the system mesh.  <a href="#aaacb1a941decf01232ab3c5bd9b3bacf">More...</a><br /></td></tr>
 <tr class="separator:aaacb1a941decf01232ab3c5bd9b3bacf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2aef9210c303764810d978496712e9b3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2aef9210c303764810d978496712e9b3"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#a2aef9210c303764810d978496712e9b3">physical_params_file</a></td></tr>
-<tr class="memdesc:a2aef9210c303764810d978496712e9b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Physical parameters. <br /></td></tr>
+<tr class="memitem:a2aef9210c303764810d978496712e9b3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#a2aef9210c303764810d978496712e9b3">physical_params_file</a></td></tr>
+<tr class="memdesc:a2aef9210c303764810d978496712e9b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Physical parameters.  <a href="#a2aef9210c303764810d978496712e9b3">More...</a><br /></td></tr>
 <tr class="separator:a2aef9210c303764810d978496712e9b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a030b78e020faf6210813844e8f0c2eca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a030b78e020faf6210813844e8f0c2eca"></a>
-WeightFunctionSystemType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#a030b78e020faf6210813844e8f0c2eca">system_type</a></td></tr>
-<tr class="memdesc:a030b78e020faf6210813844e8f0c2eca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates if the system to be assembled is a micro or a macro system (used to choose the proper weight function). <br /></td></tr>
+<tr class="memitem:a030b78e020faf6210813844e8f0c2eca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="ext__solver__libmesh__enums_8h.html#acc44f45992a493fb31c90d260d4ab83f">WeightFunctionSystemType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#a030b78e020faf6210813844e8f0c2eca">system_type</a></td></tr>
+<tr class="memdesc:a030b78e020faf6210813844e8f0c2eca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates if the system to be assembled is a micro or a macro system (used to choose the proper weight function).  <a href="#a030b78e020faf6210813844e8f0c2eca">More...</a><br /></td></tr>
 <tr class="separator:a030b78e020faf6210813844e8f0c2eca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abac50ee0db80bff6bb89d017d1fdc27b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abac50ee0db80bff6bb89d017d1fdc27b"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#abac50ee0db80bff6bb89d017d1fdc27b">mesh_weight_file</a></td></tr>
-<tr class="memdesc:abac50ee0db80bff6bb89d017d1fdc27b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Path to the mesh containing the weight region indices. <br /></td></tr>
+<tr class="memitem:abac50ee0db80bff6bb89d017d1fdc27b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#abac50ee0db80bff6bb89d017d1fdc27b">mesh_weight_file</a></td></tr>
+<tr class="memdesc:abac50ee0db80bff6bb89d017d1fdc27b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Path to the mesh containing the weight region indices.  <a href="#abac50ee0db80bff6bb89d017d1fdc27b">More...</a><br /></td></tr>
 <tr class="separator:abac50ee0db80bff6bb89d017d1fdc27b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b91599c97b26e5446f26440f74b896f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9b91599c97b26e5446f26440f74b896f"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#a9b91599c97b26e5446f26440f74b896f">weight_domain_idx_file</a></td></tr>
-<tr class="memdesc:a9b91599c97b26e5446f26440f74b896f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Path to the file identifying the weight function regions. <br /></td></tr>
+<tr class="memitem:a9b91599c97b26e5446f26440f74b896f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#a9b91599c97b26e5446f26440f74b896f">weight_domain_idx_file</a></td></tr>
+<tr class="memdesc:a9b91599c97b26e5446f26440f74b896f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Path to the file identifying the weight function regions.  <a href="#a9b91599c97b26e5446f26440f74b896f">More...</a><br /></td></tr>
 <tr class="separator:a9b91599c97b26e5446f26440f74b896f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6d7a41287b40d913e5110b115b0b692"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af6d7a41287b40d913e5110b115b0b692"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#af6d7a41287b40d913e5110b115b0b692">output_base</a></td></tr>
-<tr class="memdesc:af6d7a41287b40d913e5110b115b0b692"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output filename base. <br /></td></tr>
+<tr class="memitem:af6d7a41287b40d913e5110b115b0b692"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#af6d7a41287b40d913e5110b115b0b692">output_base</a></td></tr>
+<tr class="memdesc:af6d7a41287b40d913e5110b115b0b692"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output filename base.  <a href="#af6d7a41287b40d913e5110b115b0b692">More...</a><br /></td></tr>
 <tr class="separator:af6d7a41287b40d913e5110b115b0b692"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae23881f91f012a17aca3f6d296f97ae9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae23881f91f012a17aca3f6d296f97ae9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#ae23881f91f012a17aca3f6d296f97ae9">bCalculateRBVectors</a></td></tr>
-<tr class="memdesc:ae23881f91f012a17aca3f6d296f97ae9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build and export the rigid body modes vectors? <br /></td></tr>
+<tr class="memitem:ae23881f91f012a17aca3f6d296f97ae9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structlibmesh__assemble__input__params.html#ae23881f91f012a17aca3f6d296f97ae9">bCalculateRBVectors</a></td></tr>
+<tr class="memdesc:ae23881f91f012a17aca3f6d296f97ae9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build and export the rigid body modes vectors?  <a href="#ae23881f91f012a17aca3f6d296f97ae9">More...</a><br /></td></tr>
 <tr class="separator:ae23881f91f012a17aca3f6d296f97ae9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p>Definition at line <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html#l00014">14</a> of file <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html">libmesh_assemble_system_input_parser.h</a>.</p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="ae23881f91f012a17aca3f6d296f97ae9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool libmesh_assemble_input_params::bCalculateRBVectors</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build and export the rigid body modes vectors? </p>
+
+<p>Definition at line <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html#l00023">23</a> of file <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html">libmesh_assemble_system_input_parser.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aaacb1a941decf01232ab3c5bd9b3bacf"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string libmesh_assemble_input_params::mesh_file</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Path to the system mesh. </p>
+
+<p>Definition at line <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html#l00015">15</a> of file <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html">libmesh_assemble_system_input_parser.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abac50ee0db80bff6bb89d017d1fdc27b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string libmesh_assemble_input_params::mesh_weight_file</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Path to the mesh containing the weight region indices. </p>
+
+<p>Definition at line <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html#l00019">19</a> of file <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html">libmesh_assemble_system_input_parser.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af6d7a41287b40d913e5110b115b0b692"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string libmesh_assemble_input_params::output_base</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Output filename base. </p>
+
+<p>Definition at line <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html#l00022">22</a> of file <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html">libmesh_assemble_system_input_parser.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2aef9210c303764810d978496712e9b3"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string libmesh_assemble_input_params::physical_params_file</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Physical parameters. </p>
+
+<p>Definition at line <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html#l00016">16</a> of file <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html">libmesh_assemble_system_input_parser.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a030b78e020faf6210813844e8f0c2eca"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="ext__solver__libmesh__enums_8h.html#acc44f45992a493fb31c90d260d4ab83f">WeightFunctionSystemType</a> libmesh_assemble_input_params::system_type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Indicates if the system to be assembled is a micro or a macro system (used to choose the proper weight function). </p>
+
+<p>Definition at line <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html#l00017">17</a> of file <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html">libmesh_assemble_system_input_parser.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9b91599c97b26e5446f26440f74b896f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string libmesh_assemble_input_params::weight_domain_idx_file</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Path to the file identifying the weight function regions. </p>
+
+<p>Definition at line <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html#l00020">20</a> of file <a class="el" href="libmesh__assemble__system__input__parser_8h_source.html">libmesh_assemble_system_input_parser.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/Users/breubreubreu/Programming/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/<a class="el" href="libmesh__assemble__system__input__parser_8h_source.html">libmesh_assemble_system_input_parser.h</a></li>
 </ul>
 </div><!-- contents -->

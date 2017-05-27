@@ -9,3 +9,7 @@ div.image img[src="all_traction_bricks_horizontal.png"]{
 div.image img[src="anr.jpg"]{
     width:200px;
 }
+
+div.image img[src="bricks_traction_structure_with_alpha.png"]{
+    width:400px;
+}

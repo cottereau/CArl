@@ -49,6 +49,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -109,7 +110,7 @@ $(document).ready(function(){initNavTree('mpi__carl__tools_8h_source.html','');}
 <div class="title">mpi_carl_tools.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
+<a href="mpi__carl__tools_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * mpi_carl_tools.h</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: Feb 22, 2016</span></div>
@@ -119,18 +120,18 @@ $(document).ready(function(){initNavTree('mpi__carl__tools_8h_source.html','');}
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifndef COMMON_LIBMESH_CODE_MPI_CARL_TOOLS_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#define COMMON_LIBMESH_CODE_MPI_CARL_TOOLS_H_</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;carl_headers.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="carl__headers_8h.html">carl_headers.h</a>&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacecarl.html">carl</a></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;{</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keywordtype">void</span> broadcast_index_unordered_map(</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#a9709628dd76d2b74384c5f82d77b3dda">broadcast_index_unordered_map</a>(</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;        std::unordered_map&lt;int,int&gt;&amp; index_map,</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        <span class="keyword">const</span> libMesh::Parallel::Communicator&amp; CommComm,</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        <span class="keywordtype">int</span> origin_rank = 0);</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> MPI_reduce_vector(std::vector&lt;T&gt; &amp; r, <span class="keywordtype">int</span> root, <span class="keyword">const</span> libMesh::Parallel::Communicator&amp; Comm)</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="namespacecarl.html#a461e9a455e02d991c920b4b56390f326">   22</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#a461e9a455e02d991c920b4b56390f326">MPI_reduce_vector</a>(std::vector&lt;T&gt; &amp; r, <span class="keywordtype">int</span> root, <span class="keyword">const</span> libMesh::Parallel::Communicator&amp; Comm)</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;{</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keywordflow">if</span> (Comm.size() &gt; 1 &amp;&amp; !r.empty())</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        {</div>
@@ -144,13 +145,16 @@ $(document).ready(function(){initNavTree('mpi__carl__tools_8h_source.html','');}
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    }</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* COMMON_LIBMESH_CODE_MPI_CARL_TOOLS_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="carl__headers_8h_html"><div class="ttname"><a href="carl__headers_8h.html">carl_headers.h</a></div></div>
 <div class="ttc" id="namespacecarl_html"><div class="ttname"><a href="namespacecarl.html">carl</a></div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8cpp_source.html#l00003">assemble_coupling.cpp:3</a></div></div>
+<div class="ttc" id="namespacecarl_html_a9709628dd76d2b74384c5f82d77b3dda"><div class="ttname"><a href="namespacecarl.html#a9709628dd76d2b74384c5f82d77b3dda">carl::broadcast_index_unordered_map</a></div><div class="ttdeci">void broadcast_index_unordered_map(std::unordered_map&lt; int, int &gt; &amp;index_map, const libMesh::Parallel::Communicator &amp;CommComm, int origin_rank=0)</div><div class="ttdef"><b>Definition:</b> <a href="mpi__carl__tools_8cpp_source.html#l00003">mpi_carl_tools.cpp:3</a></div></div>
+<div class="ttc" id="namespacecarl_html_a461e9a455e02d991c920b4b56390f326"><div class="ttname"><a href="namespacecarl.html#a461e9a455e02d991c920b4b56390f326">carl::MPI_reduce_vector</a></div><div class="ttdeci">void MPI_reduce_vector(std::vector&lt; T &gt; &amp;r, int root, const libMesh::Parallel::Communicator &amp;Comm)</div><div class="ttdef"><b>Definition:</b> <a href="mpi__carl__tools_8h_source.html#l00022">mpi_carl_tools.h:22</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_b0856f6b0d80ccb263b2f415c91f9e17.html">include</a></li><li class="navelem"><b>mpi_carl_tools.h</b></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_b0856f6b0d80ccb263b2f415c91f9e17.html">include</a></li><li class="navelem"><a class="el" href="mpi__carl__tools_8h.html">mpi_carl_tools.h</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>

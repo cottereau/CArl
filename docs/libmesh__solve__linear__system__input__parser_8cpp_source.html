@@ -49,6 +49,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -109,101 +110,114 @@ $(document).ready(function(){initNavTree('libmesh__solve__linear__system__input_
 <div class="title">libmesh_solve_linear_system_input_parser.cpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
+<a href="libmesh__solve__linear__system__input__parser_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * libmesh_solve_linear_system_input_parser.h</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: Apr 16, 2017</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: Thiago Milanetto Schlittler</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;libmesh_solve_linear_system_input_parser.h&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="libmesh__solve__linear__system__input__parser_8h.html">libmesh_solve_linear_system_input_parser.h</a>&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacecarl.html">carl</a></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;{</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keywordtype">void</span> get_input_params(GetPot&amp; field_parser,</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;        libmesh_solve_linear_system_input_params&amp; input_params) {</div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="namespacecarl.html#a2b7d0a416cdffe9589a3912c1f4ef20b">   12</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#a902f88f3c52c6fc9c974bc99832e78a7">get_input_params</a>(GetPot&amp; field_parser,</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;        <a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html">libmesh_solve_linear_system_input_params</a>&amp; input_params) {</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keywordflow">if</span> (field_parser.search(1, <span class="stringliteral">&quot;SysMatrix&quot;</span>)) {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;        input_params.sys_matrix_file = field_parser.next(</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                input_params.sys_matrix_file);</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;        input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#a2a39165021ba68bc91c857d860539c34">sys_matrix_file</a> = field_parser.next(</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#a2a39165021ba68bc91c857d860539c34">sys_matrix_file</a>);</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        homemade_error_msg(<span class="stringliteral">&quot;Missing the system matrix file!&quot;</span>);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        <a class="code" href="common__header_8h.html#a05d65d26b911668ac90085745dca71f6">homemade_error_msg</a>(<span class="stringliteral">&quot;Missing the system matrix file!&quot;</span>);</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    }</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keywordflow">if</span> (field_parser.search(1, <span class="stringliteral">&quot;SysRHSVector&quot;</span>)) {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        input_params.sys_rhs_vec_file = field_parser.next(</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                input_params.sys_rhs_vec_file);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#ab61ffd0ba104883487ed36c6b5ce9e70">sys_rhs_vec_file</a> = field_parser.next(</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#ab61ffd0ba104883487ed36c6b5ce9e70">sys_rhs_vec_file</a>);</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        homemade_error_msg(<span class="stringliteral">&quot;Missing the system RHS vector file!&quot;</span>);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <a class="code" href="common__header_8h.html#a05d65d26b911668ac90085745dca71f6">homemade_error_msg</a>(<span class="stringliteral">&quot;Missing the system RHS vector file!&quot;</span>);</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    }</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordflow">if</span> (field_parser.search(1, <span class="stringliteral">&quot;OutputBase&quot;</span>)) {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        input_params.output_base = field_parser.next(</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                input_params.output_base);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#a8ef071dca667af6aeafc942ff15df7ad">output_base</a> = field_parser.next(</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#a8ef071dca667af6aeafc942ff15df7ad">output_base</a>);</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        homemade_error_msg(<span class="stringliteral">&quot;Missing the output filename base!&quot;</span>);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <a class="code" href="common__header_8h.html#a05d65d26b911668ac90085745dca71f6">homemade_error_msg</a>(<span class="stringliteral">&quot;Missing the output filename base!&quot;</span>);</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    }</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordflow">if</span> (field_parser.search(1, <span class="stringliteral">&quot;SysEps&quot;</span>)) {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        input_params.sys_eps = field_parser.next(</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                input_params.sys_eps);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#aac011ff9dbbc01b0177480e9cdadb5b8">sys_eps</a> = field_parser.next(</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#aac011ff9dbbc01b0177480e9cdadb5b8">sys_eps</a>);</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        input_params.sys_eps = 1e-5;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#aac011ff9dbbc01b0177480e9cdadb5b8">sys_eps</a> = 1e-5;</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    }</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">if</span> (field_parser.search(1, <span class="stringliteral">&quot;SysIterDiv&quot;</span>)) {</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        input_params.sys_iter_div = field_parser.next(</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                input_params.sys_iter_div);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#afead959622d671c5b5ee1200c2e43dad">sys_iter_div</a> = field_parser.next(</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#afead959622d671c5b5ee1200c2e43dad">sys_iter_div</a>);</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        input_params.sys_iter_div = 1000;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#afead959622d671c5b5ee1200c2e43dad">sys_iter_div</a> = 1000;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    }</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordflow">if</span> (field_parser.search(1, <span class="stringliteral">&quot;RBVectorBase&quot;</span>)) {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        input_params.path_to_rb_vectors = field_parser.next(</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                input_params.path_to_rb_vectors);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        input_params.bUseRBVectors = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#ab1c0d1c19d1849c0b32e0a1d95d11bff">path_to_rb_vectors</a> = field_parser.next(</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#ab1c0d1c19d1849c0b32e0a1d95d11bff">path_to_rb_vectors</a>);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#ae381749fcf14eec703f3b5c79febf398">bUseRBVectors</a> = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordflow">if</span> (field_parser.search(1, <span class="stringliteral">&quot;NbOfRBVectors&quot;</span>)) {</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            input_params.nb_of_rb_vectors = field_parser.next(</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                    input_params.nb_of_rb_vectors);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#abe24bbe9e6a211c17bbb0d2f58d4cd90">nb_of_rb_vectors</a> = field_parser.next(</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                    input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#abe24bbe9e6a211c17bbb0d2f58d4cd90">nb_of_rb_vectors</a>);</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            input_params.nb_of_rb_vectors = 6;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#abe24bbe9e6a211c17bbb0d2f58d4cd90">nb_of_rb_vectors</a> = 6;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        }</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        input_params.bUseRBVectors = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#ae381749fcf14eec703f3b5c79febf398">bUseRBVectors</a> = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    }</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;};</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="keywordtype">void</span> print_input_params(<span class="keyword">const</span> std::string&amp; output_filename,</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        libmesh_solve_linear_system_input_params&amp; input_params) {</div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="namespacecarl.html#ada1b77b2d0f0c7274a9457ba20e16a68">   67</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="namespacecarl.html#ada1b77b2d0f0c7274a9457ba20e16a68">print_input_params</a>(<span class="keyword">const</span> std::string&amp; output_filename,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html">libmesh_solve_linear_system_input_params</a>&amp; input_params) {</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    std::ofstream output_file(output_filename);</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    output_file &lt;&lt; <span class="stringliteral">&quot;SysMatrix &quot;</span> &lt;&lt; input_params.sys_matrix_file &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    output_file &lt;&lt; <span class="stringliteral">&quot;SysRHSVector &quot;</span> &lt;&lt; input_params.sys_rhs_vec_file &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    output_file &lt;&lt; <span class="stringliteral">&quot;OutputBase &quot;</span> &lt;&lt; input_params.output_base &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    output_file &lt;&lt; <span class="stringliteral">&quot;SysMatrix &quot;</span> &lt;&lt; input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#a2a39165021ba68bc91c857d860539c34">sys_matrix_file</a> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    output_file &lt;&lt; <span class="stringliteral">&quot;SysRHSVector &quot;</span> &lt;&lt; input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#ab61ffd0ba104883487ed36c6b5ce9e70">sys_rhs_vec_file</a> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    output_file &lt;&lt; <span class="stringliteral">&quot;OutputBase &quot;</span> &lt;&lt; input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#a8ef071dca667af6aeafc942ff15df7ad">output_base</a> &lt;&lt; std::endl;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    output_file &lt;&lt; <span class="stringliteral">&quot;SysEps &quot;</span> &lt;&lt; input_params.sys_eps &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    output_file &lt;&lt; <span class="stringliteral">&quot;SysIterDiv &quot;</span> &lt;&lt; input_params.sys_iter_div &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    output_file &lt;&lt; <span class="stringliteral">&quot;SysEps &quot;</span> &lt;&lt; input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#aac011ff9dbbc01b0177480e9cdadb5b8">sys_eps</a> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    output_file &lt;&lt; <span class="stringliteral">&quot;SysIterDiv &quot;</span> &lt;&lt; input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#afead959622d671c5b5ee1200c2e43dad">sys_iter_div</a> &lt;&lt; std::endl;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordflow">if</span>(input_params.bUseRBVectors)</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordflow">if</span>(input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#ae381749fcf14eec703f3b5c79febf398">bUseRBVectors</a>)</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    {</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        output_file &lt;&lt; <span class="stringliteral">&quot;RBVectorBase &quot;</span> &lt;&lt; input_params.path_to_rb_vectors &lt;&lt; std::endl;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        output_file &lt;&lt; <span class="stringliteral">&quot;NbOfRBVectors &quot;</span> &lt;&lt; input_params.nb_of_rb_vectors &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        output_file &lt;&lt; <span class="stringliteral">&quot;RBVectorBase &quot;</span> &lt;&lt; input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#ab1c0d1c19d1849c0b32e0a1d95d11bff">path_to_rb_vectors</a> &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;        output_file &lt;&lt; <span class="stringliteral">&quot;NbOfRBVectors &quot;</span> &lt;&lt; input_params.<a class="code" href="structcarl_1_1libmesh__solve__linear__system__input__params.html#abe24bbe9e6a211c17bbb0d2f58d4cd90">nb_of_rb_vectors</a> &lt;&lt; std::endl;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    }</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    output_file.close();</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;};</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;};</div>
+<div class="ttc" id="structcarl_1_1libmesh__solve__linear__system__input__params_html_a2a39165021ba68bc91c857d860539c34"><div class="ttname"><a href="structcarl_1_1libmesh__solve__linear__system__input__params.html#a2a39165021ba68bc91c857d860539c34">carl::libmesh_solve_linear_system_input_params::sys_matrix_file</a></div><div class="ttdeci">std::string sys_matrix_file</div><div class="ttdoc">Path to the system matrix file. </div><div class="ttdef"><b>Definition:</b> <a href="libmesh__solve__linear__system__input__parser_8h_source.html#l00018">libmesh_solve_linear_system_input_parser.h:18</a></div></div>
+<div class="ttc" id="common__header_8h_html_a05d65d26b911668ac90085745dca71f6"><div class="ttname"><a href="common__header_8h.html#a05d65d26b911668ac90085745dca71f6">homemade_error_msg</a></div><div class="ttdeci">#define homemade_error_msg(msg)</div><div class="ttdef"><b>Definition:</b> <a href="common__header_8h_source.html#l00073">common_header.h:73</a></div></div>
+<div class="ttc" id="namespacecarl_html_a902f88f3c52c6fc9c974bc99832e78a7"><div class="ttname"><a href="namespacecarl.html#a902f88f3c52c6fc9c974bc99832e78a7">carl::get_input_params</a></div><div class="ttdeci">void get_input_params(GetPot &amp;field_parser, feti_iterate_params &amp;input_params)</div><div class="ttdoc">Parser function for the coupled solver test programs. </div><div class="ttdef"><b>Definition:</b> <a href="carl__feti__iterate__input__parser_8cpp_source.html#l00013">carl_feti_iterate_input_parser.cpp:13</a></div></div>
+<div class="ttc" id="structcarl_1_1libmesh__solve__linear__system__input__params_html"><div class="ttname"><a href="structcarl_1_1libmesh__solve__linear__system__input__params.html">carl::libmesh_solve_linear_system_input_params</a></div><div class="ttdef"><b>Definition:</b> <a href="libmesh__solve__linear__system__input__parser_8h_source.html#l00017">libmesh_solve_linear_system_input_parser.h:17</a></div></div>
+<div class="ttc" id="structcarl_1_1libmesh__solve__linear__system__input__params_html_afead959622d671c5b5ee1200c2e43dad"><div class="ttname"><a href="structcarl_1_1libmesh__solve__linear__system__input__params.html#afead959622d671c5b5ee1200c2e43dad">carl::libmesh_solve_linear_system_input_params::sys_iter_div</a></div><div class="ttdeci">int sys_iter_div</div><div class="ttdoc">Maximum number of iterations. </div><div class="ttdef"><b>Definition:</b> <a href="libmesh__solve__linear__system__input__parser_8h_source.html#l00023">libmesh_solve_linear_system_input_parser.h:23</a></div></div>
 <div class="ttc" id="namespacecarl_html"><div class="ttname"><a href="namespacecarl.html">carl</a></div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8cpp_source.html#l00003">assemble_coupling.cpp:3</a></div></div>
+<div class="ttc" id="structcarl_1_1libmesh__solve__linear__system__input__params_html_a8ef071dca667af6aeafc942ff15df7ad"><div class="ttname"><a href="structcarl_1_1libmesh__solve__linear__system__input__params.html#a8ef071dca667af6aeafc942ff15df7ad">carl::libmesh_solve_linear_system_input_params::output_base</a></div><div class="ttdeci">std::string output_base</div><div class="ttdoc">Output filename base. </div><div class="ttdef"><b>Definition:</b> <a href="libmesh__solve__linear__system__input__parser_8h_source.html#l00020">libmesh_solve_linear_system_input_parser.h:20</a></div></div>
+<div class="ttc" id="structcarl_1_1libmesh__solve__linear__system__input__params_html_abe24bbe9e6a211c17bbb0d2f58d4cd90"><div class="ttname"><a href="structcarl_1_1libmesh__solve__linear__system__input__params.html#abe24bbe9e6a211c17bbb0d2f58d4cd90">carl::libmesh_solve_linear_system_input_params::nb_of_rb_vectors</a></div><div class="ttdeci">int nb_of_rb_vectors</div><div class="ttdoc">Number of RB mode vectors. </div><div class="ttdef"><b>Definition:</b> <a href="libmesh__solve__linear__system__input__parser_8h_source.html#l00026">libmesh_solve_linear_system_input_parser.h:26</a></div></div>
+<div class="ttc" id="structcarl_1_1libmesh__solve__linear__system__input__params_html_aac011ff9dbbc01b0177480e9cdadb5b8"><div class="ttname"><a href="structcarl_1_1libmesh__solve__linear__system__input__params.html#aac011ff9dbbc01b0177480e9cdadb5b8">carl::libmesh_solve_linear_system_input_params::sys_eps</a></div><div class="ttdeci">double sys_eps</div><div class="ttdoc">Relative convergence parameter. </div><div class="ttdef"><b>Definition:</b> <a href="libmesh__solve__linear__system__input__parser_8h_source.html#l00022">libmesh_solve_linear_system_input_parser.h:22</a></div></div>
+<div class="ttc" id="structcarl_1_1libmesh__solve__linear__system__input__params_html_ae381749fcf14eec703f3b5c79febf398"><div class="ttname"><a href="structcarl_1_1libmesh__solve__linear__system__input__params.html#ae381749fcf14eec703f3b5c79febf398">carl::libmesh_solve_linear_system_input_params::bUseRBVectors</a></div><div class="ttdeci">bool bUseRBVectors</div><div class="ttdoc">Use rigid body mode vectors? Default: false. </div><div class="ttdef"><b>Definition:</b> <a href="libmesh__solve__linear__system__input__parser_8h_source.html#l00027">libmesh_solve_linear_system_input_parser.h:27</a></div></div>
+<div class="ttc" id="libmesh__solve__linear__system__input__parser_8h_html"><div class="ttname"><a href="libmesh__solve__linear__system__input__parser_8h.html">libmesh_solve_linear_system_input_parser.h</a></div></div>
+<div class="ttc" id="structcarl_1_1libmesh__solve__linear__system__input__params_html_ab61ffd0ba104883487ed36c6b5ce9e70"><div class="ttname"><a href="structcarl_1_1libmesh__solve__linear__system__input__params.html#ab61ffd0ba104883487ed36c6b5ce9e70">carl::libmesh_solve_linear_system_input_params::sys_rhs_vec_file</a></div><div class="ttdeci">std::string sys_rhs_vec_file</div><div class="ttdoc">Path to the system RHS vector file. </div><div class="ttdef"><b>Definition:</b> <a href="libmesh__solve__linear__system__input__parser_8h_source.html#l00019">libmesh_solve_linear_system_input_parser.h:19</a></div></div>
+<div class="ttc" id="namespacecarl_html_ada1b77b2d0f0c7274a9457ba20e16a68"><div class="ttname"><a href="namespacecarl.html#ada1b77b2d0f0c7274a9457ba20e16a68">carl::print_input_params</a></div><div class="ttdeci">void print_input_params(const std::string &amp;output_filename, libmesh_solve_linear_system_input_params &amp;input_params)</div><div class="ttdoc">Function used to generate a solver input file from "input_params". </div><div class="ttdef"><b>Definition:</b> <a href="libmesh__solve__linear__system__input__parser_8cpp_source.html#l00067">libmesh_solve_linear_system_input_parser.cpp:67</a></div></div>
+<div class="ttc" id="structcarl_1_1libmesh__solve__linear__system__input__params_html_ab1c0d1c19d1849c0b32e0a1d95d11bff"><div class="ttname"><a href="structcarl_1_1libmesh__solve__linear__system__input__params.html#ab1c0d1c19d1849c0b32e0a1d95d11bff">carl::libmesh_solve_linear_system_input_params::path_to_rb_vectors</a></div><div class="ttdeci">std::string path_to_rb_vectors</div><div class="ttdoc">Path to a folder containing the rigid body mode vectors. </div><div class="ttdef"><b>Definition:</b> <a href="libmesh__solve__linear__system__input__parser_8h_source.html#l00025">libmesh_solve_linear_system_input_parser.h:25</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_fdedb0aba14d44ce9d99bc100e026e6a.html">common</a></li><li class="navelem"><a class="el" href="dir_b36ec5ff618b4d472b6b4240654a0c34.html">parsers</a></li><li class="navelem"><b>libmesh_solve_linear_system_input_parser.cpp</b></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_fdedb0aba14d44ce9d99bc100e026e6a.html">common</a></li><li class="navelem"><a class="el" href="dir_b36ec5ff618b4d472b6b4240654a0c34.html">parsers</a></li><li class="navelem"><a class="el" href="libmesh__solve__linear__system__input__parser_8cpp.html">libmesh_solve_linear_system_input_parser.cpp</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>

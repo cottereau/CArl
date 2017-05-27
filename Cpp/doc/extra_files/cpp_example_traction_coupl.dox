@@ -7,7 +7,7 @@ Now that we have the mesh intersections, we can use them to build the coupling m
  - Two \f$ n_{\mbox{Med}} \times n_l\f$ coupling matrices, noted as \f$C_l\f$ (\f$m = 1,2\f$).
  - One \f$ n_{\mbox{Med}} \times n_{\mbox{Med}}\f$ matrix, noted as \f$C_{\mbox{Med}}\f$.
 
-\f$ n_{\mbox{Med}} \f$ and \f$ n_l \f$ are the number of degrees of freedom of the mediator and the model \f$ m \f$ meshes, respectively. The \f$C_l\f$ matrices are the coupling matrices between the models and the mediator space used by the Arlequin method. The \f$C_{\mbox{Med}}\f$ is completely defined inside the mediator space, and it is used by the solver preconditioners. By default, the restricted mesh of the `Macro` / `A` model is used as the mediator.
+\f$ n_{\mbox{Med}} \f$ and \f$ n_l \f$ are the number of degrees of freedom of the mediator and the model \f$ m \f$ meshes, respectively. The \f$C_l\f$ matrices are the coupling matrices between the models and the mediator space used by the Arlequin method. The \f$C_{\mbox{Med}}\f$ is completely defined inside the mediator space, and it is used by the conjugate gradient solver preconditioners. By default, the restricted mesh of the `Macro` / `A` model is used as the mediator.
 
 Submiting `scripts/PBS_FETI_test_assemble_coupling_matrices_traction_test_1k.pbs` or executing `scripts/LOCAL_FETI_test_assemble_coupling_matrices_traction_test_1k.sh` will run the command
 

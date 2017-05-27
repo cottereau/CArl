@@ -49,6 +49,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -130,24 +131,211 @@ Inheritance diagram for border_displacement_function:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a96fa6052b759f3348654178cab730362"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a96fa6052b759f3348654178cab730362"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>border_displacement_function</b> (unsigned int u_var, unsigned int v_var, unsigned int w_var, libMesh::Real x_displ=0, libMesh::Real y_displ=0, libMesh::Real z_displ=0)</td></tr>
+<tr class="memitem:a96fa6052b759f3348654178cab730362"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classborder__displacement__function.html#a96fa6052b759f3348654178cab730362">border_displacement_function</a> (unsigned int u_var, unsigned int v_var, unsigned int w_var, libMesh::Real x_displ=0, libMesh::Real y_displ=0, libMesh::Real z_displ=0)</td></tr>
 <tr class="separator:a96fa6052b759f3348654178cab730362"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36164904aab66a842edd7f43cb6b391c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a36164904aab66a842edd7f43cb6b391c"></a>
-virtual libMesh::Number&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (const libMesh::Point &amp;, const libMesh::Real=0)</td></tr>
+<tr class="memitem:a36164904aab66a842edd7f43cb6b391c"><td class="memItemLeft" align="right" valign="top">virtual libMesh::Number&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classborder__displacement__function.html#a36164904aab66a842edd7f43cb6b391c">operator()</a> (const libMesh::Point &amp;, const libMesh::Real=0)</td></tr>
 <tr class="separator:a36164904aab66a842edd7f43cb6b391c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a286bf7b4ca0e09e3804e2b90730454db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a286bf7b4ca0e09e3804e2b90730454db"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (const libMesh::Point &amp;p, const libMesh::Real, libMesh::DenseVector&lt; libMesh::Number &gt; &amp;output)</td></tr>
+<tr class="memitem:a286bf7b4ca0e09e3804e2b90730454db"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classborder__displacement__function.html#a286bf7b4ca0e09e3804e2b90730454db">operator()</a> (const libMesh::Point &amp;p, const libMesh::Real, libMesh::DenseVector&lt; libMesh::Number &gt; &amp;output)</td></tr>
 <tr class="separator:a286bf7b4ca0e09e3804e2b90730454db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae04386c0af6b4722d226c034351d8b5e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae04386c0af6b4722d226c034351d8b5e"></a>
-virtual libMesh::UniquePtr&lt; FunctionBase&lt; libMesh::Number &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const </td></tr>
+<tr class="memitem:ae04386c0af6b4722d226c034351d8b5e"><td class="memItemLeft" align="right" valign="top">virtual libMesh::UniquePtr&lt; FunctionBase&lt; libMesh::Number &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classborder__displacement__function.html#ae04386c0af6b4722d226c034351d8b5e">clone</a> () const </td></tr>
 <tr class="separator:ae04386c0af6b4722d226c034351d8b5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>3D border displacement class, derived from libMesh::FunctionBase&lt;libMesh::Number&gt;. </p>
 
 <p>Definition at line <a class="el" href="common__assemble__functions__elasticity__3_d_8h_source.html#l00015">15</a> of file <a class="el" href="common__assemble__functions__elasticity__3_d_8h_source.html">common_assemble_functions_elasticity_3D.h</a>.</p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a96fa6052b759f3348654178cab730362"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">border_displacement_function::border_displacement_function </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>u_var</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>v_var</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>w_var</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">libMesh::Real&#160;</td>
+          <td class="paramname"><em>x_displ</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">libMesh::Real&#160;</td>
+          <td class="paramname"><em>y_displ</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">libMesh::Real&#160;</td>
+          <td class="paramname"><em>z_displ</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="common__assemble__functions__elasticity__3_d_8h_source.html#l00022">22</a> of file <a class="el" href="common__assemble__functions__elasticity__3_d_8h_source.html">common_assemble_functions_elasticity_3D.h</a>.</p>
+<div class="fragment"><div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                                : _u_var(u_var),</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                                  _v_var(v_var),</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                                  _w_var(w_var),</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                                  _x_displ(x_displ),</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                                  _y_displ(y_displ),</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                                  _z_displ(z_displ)</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;        {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;            this-&gt;_initialized = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ae04386c0af6b4722d226c034351d8b5e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual libMesh::UniquePtr&lt;FunctionBase&lt;libMesh::Number&gt; &gt; border_displacement_function::clone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="common__assemble__functions__elasticity__3_d_8h_source.html#l00055">55</a> of file <a class="el" href="common__assemble__functions__elasticity__3_d_8h_source.html">common_assemble_functions_elasticity_3D.h</a>.</p>
+<div class="fragment"><div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <span class="keywordflow">return</span> libMesh::UniquePtr&lt;FunctionBase&lt;libMesh::Number&gt; &gt;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                (<span class="keyword">new</span> <a class="code" href="classborder__displacement__function.html#a96fa6052b759f3348654178cab730362">border_displacement_function</a>(  _u_var, _v_var, _w_var,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                                            _x_displ, _y_displ, _z_displ));</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        }</div>
+<div class="ttc" id="classborder__displacement__function_html_a96fa6052b759f3348654178cab730362"><div class="ttname"><a href="classborder__displacement__function.html#a96fa6052b759f3348654178cab730362">border_displacement_function::border_displacement_function</a></div><div class="ttdeci">border_displacement_function(unsigned int u_var, unsigned int v_var, unsigned int w_var, libMesh::Real x_displ=0, libMesh::Real y_displ=0, libMesh::Real z_displ=0)</div><div class="ttdef"><b>Definition:</b> <a href="common__assemble__functions__elasticity__3_d_8h_source.html#l00022">common_assemble_functions_elasticity_3D.h:22</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a class="anchor" id="a36164904aab66a842edd7f43cb6b391c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual libMesh::Number border_displacement_function::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const libMesh::Point &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const libMesh::Real&#160;</td>
+          <td class="paramname"> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="common__assemble__functions__elasticity__3_d_8h_source.html#l00038">38</a> of file <a class="el" href="common__assemble__functions__elasticity__3_d_8h_source.html">common_assemble_functions_elasticity_3D.h</a>.</p>
+<div class="fragment"><div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;            libmesh_not_implemented();</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a class="anchor" id="a286bf7b4ca0e09e3804e2b90730454db"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void border_displacement_function::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const libMesh::Point &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const libMesh::Real&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">libMesh::DenseVector&lt; libMesh::Number &gt; &amp;&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="common__assemble__functions__elasticity__3_d_8h_source.html#l00043">43</a> of file <a class="el" href="common__assemble__functions__elasticity__3_d_8h_source.html">common_assemble_functions_elasticity_3D.h</a>.</p>
+<div class="fragment"><div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        {</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            output.resize(3);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            output.zero();</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            output(_u_var) = _x_displ;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;            output(_v_var) = _y_displ;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            output(_w_var) = _z_displ;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>/Users/breubreubreu/Programming/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/<a class="el" href="common__assemble__functions__elasticity__3_d_8h_source.html">common_assemble_functions_elasticity_3D.h</a></li>
 </ul>
 </div><!-- contents -->

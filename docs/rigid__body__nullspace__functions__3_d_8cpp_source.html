@@ -49,6 +49,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -109,9 +110,9 @@ $(document).ready(function(){initNavTree('rigid__body__nullspace__functions__3_d
 <div class="title">rigid_body_nullspace_functions_3D.cpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;rigid_body_nullspace_functions_3D.h&quot;</span></div>
+<a href="rigid__body__nullspace__functions__3_d_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="rigid__body__nullspace__functions__3_d_8h.html">rigid_body_nullspace_functions_3D.h</a>&quot;</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="keywordtype">void</span> build_rigid_body_vectors(libMesh::ImplicitSystem&amp;  input_system, MatNullSpace&amp; nullsp_sys)</div>
+<div class="line"><a name="l00003"></a><span class="lineno"><a class="line" href="rigid__body__nullspace__functions__3_d_8cpp.html#ae89c68ca2fb752127c2c39e23668f914">    3</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="rigid__body__nullspace__functions__3_d_8cpp.html#ae89c68ca2fb752127c2c39e23668f914">build_rigid_body_vectors</a>(libMesh::ImplicitSystem&amp;  input_system, MatNullSpace&amp; nullsp_sys)</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;{</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    <span class="comment">// --- Set up some temporary variables to simplify code</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
@@ -156,7 +157,7 @@ $(document).ready(function(){initNavTree('rigid__body__nullspace__functions__3_d
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;};</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keywordtype">void</span> write_rigid_body_vectors(MatNullSpace&amp; nullsp_sys, <span class="keyword">const</span> std::string output_base, <span class="keywordtype">int</span> rank)</div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="rigid__body__nullspace__functions__3_d_8cpp.html#a92d61aec182bca7a41728f3856f7113f">   49</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="rigid__body__nullspace__functions__3_d_8cpp.html#a92d61aec182bca7a41728f3856f7113f">write_rigid_body_vectors</a>(MatNullSpace&amp; nullsp_sys, <span class="keyword">const</span> std::string output_base, <span class="keywordtype">int</span> rank)</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;{</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="comment">// PETSc variables</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    PetscInt    nullsp_nvecs;</div>
@@ -173,20 +174,25 @@ $(document).ready(function(){initNavTree('rigid__body__nullspace__functions__3_d
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        filename = output_base + <span class="stringliteral">&quot;_rb_vector_&quot;</span> + std::to_string(iii) + <span class="stringliteral">&quot;_n_&quot;</span> + std::to_string(nullsp_nvecs);</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="comment">// Export the RB vector</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        carl::write_PETSC_vector(nullsp_vecs[iii], filename + <span class="stringliteral">&quot;.petscvec&quot;</span>,rank,PETSC_COMM_WORLD);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <a class="code" href="namespacecarl.html#a1632084ec1f296b63559648cc9c2047f">carl::write_PETSC_vector</a>(nullsp_vecs[iii], filename + <span class="stringliteral">&quot;.petscvec&quot;</span>,rank,PETSC_COMM_WORLD);</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">// Print MatLab debugging output? Variable defined at &quot;carl_headers.h&quot;</span></div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">#ifdef PRINT_MATLAB_DEBUG</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        carl::write_PETSC_vector_MATLAB(nullsp_vecs[iii],filename + <span class="stringliteral">&quot;.m&quot;</span>,PETSC_COMM_WORLD);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <a class="code" href="namespacecarl.html#a25d36e4c1615382a1832d73c716599db">carl::write_PETSC_vector_MATLAB</a>(nullsp_vecs[iii],filename + <span class="stringliteral">&quot;.m&quot;</span>,PETSC_COMM_WORLD);</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    };</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;};</div>
+<div class="ttc" id="namespacecarl_html_a1632084ec1f296b63559648cc9c2047f"><div class="ttname"><a href="namespacecarl.html#a1632084ec1f296b63559648cc9c2047f">carl::write_PETSC_vector</a></div><div class="ttdeci">void write_PETSC_vector(libMesh::PetscVector&lt; libMesh::Number &gt; &amp;input_vec, const std::string &amp;filename, int dim=1)</div><div class="ttdef"><b>Definition:</b> <a href="_p_e_t_s_c__matrix__operations_8cpp_source.html#l00338">PETSC_matrix_operations.cpp:338</a></div></div>
+<div class="ttc" id="rigid__body__nullspace__functions__3_d_8cpp_html_a92d61aec182bca7a41728f3856f7113f"><div class="ttname"><a href="rigid__body__nullspace__functions__3_d_8cpp.html#a92d61aec182bca7a41728f3856f7113f">write_rigid_body_vectors</a></div><div class="ttdeci">void write_rigid_body_vectors(MatNullSpace &amp;nullsp_sys, const std::string output_base, int rank)</div><div class="ttdoc">Export the rigid body mode vectors to a folder. </div><div class="ttdef"><b>Definition:</b> <a href="rigid__body__nullspace__functions__3_d_8cpp_source.html#l00049">rigid_body_nullspace_functions_3D.cpp:49</a></div></div>
+<div class="ttc" id="rigid__body__nullspace__functions__3_d_8h_html"><div class="ttname"><a href="rigid__body__nullspace__functions__3_d_8h.html">rigid_body_nullspace_functions_3D.h</a></div></div>
+<div class="ttc" id="rigid__body__nullspace__functions__3_d_8cpp_html_ae89c68ca2fb752127c2c39e23668f914"><div class="ttname"><a href="rigid__body__nullspace__functions__3_d_8cpp.html#ae89c68ca2fb752127c2c39e23668f914">build_rigid_body_vectors</a></div><div class="ttdeci">void build_rigid_body_vectors(libMesh::ImplicitSystem &amp;input_system, MatNullSpace &amp;nullsp_sys)</div><div class="ttdoc">Build the rigid body modes associated to a given system. </div><div class="ttdef"><b>Definition:</b> <a href="rigid__body__nullspace__functions__3_d_8cpp_source.html#l00003">rigid_body_nullspace_functions_3D.cpp:3</a></div></div>
+<div class="ttc" id="namespacecarl_html_a25d36e4c1615382a1832d73c716599db"><div class="ttname"><a href="namespacecarl.html#a25d36e4c1615382a1832d73c716599db">carl::write_PETSC_vector_MATLAB</a></div><div class="ttdeci">void write_PETSC_vector_MATLAB(Vec input_vec, const std::string &amp;filename, MPI_Comm comm=PETSC_COMM_WORLD)</div><div class="ttdef"><b>Definition:</b> <a href="_p_e_t_s_c__matrix__operations_8cpp_source.html#l00344">PETSC_matrix_operations.cpp:344</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d44054de776ac2dd1b3fc6b7ee338f3e.html">execs</a></li><li class="navelem"><a class="el" href="dir_a63ec64ffea6c51d9559f4b3c33d129e.html">ext_solver_libmesh</a></li><li class="navelem"><a class="el" href="dir_d1b5fc4f6775fb613f87cc5788c3f6a4.html">ext_solver_libmesh_common</a></li><li class="navelem"><b>rigid_body_nullspace_functions_3D.cpp</b></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_d44054de776ac2dd1b3fc6b7ee338f3e.html">execs</a></li><li class="navelem"><a class="el" href="dir_a63ec64ffea6c51d9559f4b3c33d129e.html">ext_solver_libmesh</a></li><li class="navelem"><a class="el" href="dir_d1b5fc4f6775fb613f87cc5788c3f6a4.html">ext_solver_libmesh_common</a></li><li class="navelem"><a class="el" href="rigid__body__nullspace__functions__3_d_8cpp.html">rigid_body_nullspace_functions_3D.cpp</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>

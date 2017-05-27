@@ -17,5 +17,15 @@ var cpp_exampletraction =
       [ "Weight functions", "traction_example_sys_assemble.html#traction_example_sys_assemble_weight", null ],
       [ "Output", "traction_example_sys_assemble.html#traction_example_sys_assemble_o", null ]
     ] ],
-    [ "Coupled system solver", "traction_example_coupled_solver.html", null ]
+    [ "Coupled system solver", "traction_example_coupled_solver.html", [
+      [ "Input", "traction_example_coupled_solver.html#traction_example_coupled_solver_i", [
+        [ "Scheduler parameters", "traction_example_coupled_solver.html#traction_example_coupled_solver_scheduler", null ],
+        [ "External solver parameters", "traction_example_coupled_solver.html#traction_example_coupled_solver_ext", null ],
+        [ "Coupled solver parameters", "traction_example_coupled_solver.html#traction_example_coupled_solver_params", null ],
+        [ "Rigid body parameters", "traction_example_coupled_solver.html#traction_example_coupled_solver_rigid", null ],
+        [ "Other parameters", "traction_example_coupled_solver.html#traction_example_coupled_solver_other", null ]
+      ] ],
+      [ "Output", "traction_example_coupled_solver.html#traction_example_coupled_solver_o", null ],
+      [ "Other binaries", "traction_example_coupled_solver.html#traction_example_coupled_solver_other_bin", null ]
+    ] ]
 ];

@@ -9,4 +9,4 @@ InputMesh examples/coupled_traction_test/meshes/test_brick_A_1k.msh
 PhysicalParameters examples/coupled_traction_test/meshes/test_brick_I_1_physical.dat
 
 # - Output mesh
-OutputMesh examples/coupled_traction_test/FETI_solver/brick_traction_1k/coupled_solution/deformed_brick_A_1k.e
+OutputMesh examples/coupled_traction_test/FETI_solver/brick_traction_1k/coupled_solution/coupled_sol_brick_A_1k.e

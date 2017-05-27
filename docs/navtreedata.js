@@ -6,21 +6,37 @@ var NAVTREE =
     [ "CArl C++", "cpp_main.html", "cpp_main" ],
     [ "References", "articles.html", null ],
     [ "Funding", "carl_funding.html", null ],
+    [ "Namespaces", null, [
+      [ "Namespace List", "namespaces.html", "namespaces" ],
+      [ "Namespace Members", "namespacemembers.html", [
+        [ "All", "namespacemembers.html", null ],
+        [ "Functions", "namespacemembers_func.html", null ],
+        [ "Enumerations", "namespacemembers_enum.html", null ],
+        [ "Enumerator", "namespacemembers_eval.html", null ]
+      ] ]
+    ] ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
-        [ "Functions", "functions_func.html", null ],
-        [ "Variables", "functions_vars.html", "functions_vars" ]
+        [ "Functions", "functions_func.html", "functions_func" ],
+        [ "Variables", "functions_vars.html", "functions_vars" ],
+        [ "Typedefs", "functions_type.html", null ],
+        [ "Enumerator", "functions_eval.html", null ]
       ] ]
     ] ],
     [ "Files", null, [
       [ "File List", "files.html", "files" ],
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
-        [ "Functions", "globals_func.html", null ]
+        [ "Functions", "globals_func.html", null ],
+        [ "Variables", "globals_vars.html", null ],
+        [ "Typedefs", "globals_type.html", null ],
+        [ "Enumerations", "globals_enum.html", null ],
+        [ "Enumerator", "globals_eval.html", null ],
+        [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
   ] ]
@@ -28,10 +44,12 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-".html",
-"classcarl_1_1_intersection___search.html#aa84f57dd84826955813efe60c87d199d",
-"classcarl_1_1_stitch___meshes.html#a7bf918ef98a9bc853afe749c44d35f35",
-"libmesh__solve__linear__system_8h_source.html"
+"_c_arl___f_e_t_i__iterate_8cpp.html",
+"classcarl_1_1_f_e_t_i___operations.html#a1a74744d91b5feaac0166e86a7a83d2d",
+"classcarl_1_1_mesh___intersection.html#a6608de84c7eafe85c8685692abe2ca2e",
+"classcarl_1_1coupling__matrices__3.html#af3bb0a4c9c9cb246d968fb66a054f1c1",
+"functions_w.html",
+"structcarl_1_1parallel__intersection__params.html#aa984f7e6899406a1d17bdaa22e669e22"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

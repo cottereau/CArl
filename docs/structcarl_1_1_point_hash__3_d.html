@@ -49,6 +49,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -114,17 +115,53 @@ $(document).ready(function(){initNavTree('structcarl_1_1_point_hash__3_d.html','
 <div class="title">carl::PointHash_3D Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="common__functions_8h_source.html">common_functions.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:afadeca3cd8c39441530cb908033caae9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afadeca3cd8c39441530cb908033caae9"></a>
-std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (const std::vector&lt; long &gt; &amp;k) const </td></tr>
+<tr class="memitem:afadeca3cd8c39441530cb908033caae9"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcarl_1_1_point_hash__3_d.html#afadeca3cd8c39441530cb908033caae9">operator()</a> (const std::vector&lt; long &gt; &amp;k) const </td></tr>
 <tr class="separator:afadeca3cd8c39441530cb908033caae9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p>Definition at line <a class="el" href="common__functions_8h_source.html#l00051">51</a> of file <a class="el" href="common__functions_8h_source.html">common_functions.h</a>.</p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="afadeca3cd8c39441530cb908033caae9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t carl::PointHash_3D::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; long &gt; &amp;&#160;</td>
+          <td class="paramname"><em>k</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="common__functions_8h_source.html#l00052">52</a> of file <a class="el" href="common__functions_8h_source.html">common_functions.h</a>.</p>
+<div class="fragment"><div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordtype">long</span> prime0 = 73856093;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordtype">long</span> prime1 = 19349669;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordtype">long</span> prime2 = 83492791;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordtype">long</span> primeN = 2038074743;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keywordflow">return</span> ( ( k[0] * prime0 ) ^ ( k[1] * prime1 ) ^ ( k[2] * prime2 ) ) % primeN;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/Users/breubreubreu/Programming/CArl/Cpp/src/include/<a class="el" href="common__functions_8h_source.html">common_functions.h</a></li>
 </ul>
 </div><!-- contents -->
@@ -132,7 +169,7 @@ std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>carl</b></li><li class="navelem"><a class="el" href="structcarl_1_1_point_hash__3_d.html">PointHash_3D</a></li>
+    <li class="navelem"><a class="el" href="namespacecarl.html">carl</a></li><li class="navelem"><a class="el" href="structcarl_1_1_point_hash__3_d.html">PointHash_3D</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>

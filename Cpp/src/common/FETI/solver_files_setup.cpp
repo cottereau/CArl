@@ -129,7 +129,7 @@ void Solver_Files_Setup::generate_libmesh_external_solver_inputs()
 	carl::print_input_params(m_ext_solver_u0_A_input_filename,solver_A_input_params);
 	carl::print_input_params(m_ext_solver_u0_B_input_filename,solver_B_input_params);
 
-	// Set K_i * y(k)_i = C_i^T * p(k) and K_i * x_i(kkk)  = C_i^T * phi(kkk)
+	// Set K_i * y(k)_i = C_i^t * p(k) and K_i * x_i(kkk)  = C_i^t * phi(kkk)
 	solver_A_input_params.output_base = m_input_params.scratch_folder_path + "/ext_solver_A";
 	solver_B_input_params.output_base = m_input_params.scratch_folder_path + "/ext_solver_B";
 
@@ -265,7 +265,7 @@ void Solver_Files_Setup::generate_FETI_inputs()
 
 	m_CArl_FETI_setup_finish_input_filename = m_input_params.scratch_folder_path + "/CArl_FETI_setup_finish.txt";
 	m_CArl_FETI_iterate_input_filename = m_input_params.scratch_folder_path + "/CArl_FETI_iterate.txt";
-	m_CArl_FETI_solution_input_filename = m_input_params.scratch_folder_path + "/CArl_FETI_set_sol.txt";
+	m_CArl_FETI_solution_input_filename = m_input_params.scratch_folder_path + "/CArl_FETI_solution.txt";
 
 	if(m_comm.rank() == 0)
 	{
@@ -289,9 +289,9 @@ void Solver_Files_Setup::generate_FETI_scripts()
 		carl::exec_command(command_string.c_str());
 	}
 
-	m_CArl_FETI_setup_finish_script_filename = m_input_params.scratch_folder_path + "/FETI_setup_finish.sh";
-	m_CArl_FETI_iterate_script_filename = m_input_params.scratch_folder_path + "/FETI_iterate.sh";
-	m_CArl_FETI_solution_script_filename = m_input_params.scratch_folder_path + "/FETI_solution.sh";
+	m_CArl_FETI_setup_finish_script_filename = m_input_params.scratch_folder_path + "/CArl_FETI_setup_finish.sh";
+	m_CArl_FETI_iterate_script_filename = m_input_params.scratch_folder_path + "/CArl_FETI_iterate.sh";
+	m_CArl_FETI_solution_script_filename = m_input_params.scratch_folder_path + "/CArl_FETI_solution.sh";
 
 	switch (m_input_params.scheduler)
 	{

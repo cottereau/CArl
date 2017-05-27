@@ -344,7 +344,7 @@ void base_CG_solver::build_CG_runtime_null_space_projection_matrices(libMesh::Pe
 		 * 		PI = I - C * R * ( R^t * C^t * C * R )^-1 * R^t * C^t
 		 * 		   = I - C * R * (RITRI_mat)^-1 * R^t * C^t
 		 * 		   = I - C * R * (inv_RITRI_mat) * R^t * C^t
-		 * 		   = I - RC    * (inv_RITRI_mat) * RC^T
+		 * 		   = I - RC    * (inv_RITRI_mat) * RC^t
 		 *
 		 *  * force projector
 		 *

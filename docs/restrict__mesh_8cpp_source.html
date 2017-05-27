@@ -49,6 +49,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -109,14 +110,14 @@ $(document).ready(function(){initNavTree('restrict__mesh_8cpp_source.html','');}
 <div class="title">restrict_mesh.cpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
+<a href="restrict__mesh_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * restrict_mesh.cpp</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: May 17, 2016</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: Thiago Milanetto Schlittler</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;restrict_mesh.h&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="restrict__mesh_8h.html">restrict_mesh.h</a>&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacecarl.html">carl</a></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;{</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
@@ -309,6 +310,7 @@ $(document).ready(function(){initNavTree('restrict__mesh_8cpp_source.html','');}
 <div class="ttc" id="namespacecarl_html"><div class="ttname"><a href="namespacecarl.html">carl</a></div><div class="ttdef"><b>Definition:</b> <a href="assemble__coupling_8cpp_source.html#l00003">assemble_coupling.cpp:3</a></div></div>
 <div class="ttc" id="classcarl_1_1_patch__construction_html_a59f947d3d18761b1ad1a5913eb59ca83"><div class="ttname"><a href="classcarl_1_1_patch__construction.html#a59f947d3d18761b1ad1a5913eb59ca83">carl::Patch_construction::m_Intersection_Test</a></div><div class="ttdeci">Intersection_Tools m_Intersection_Test</div><div class="ttdoc">Intersection search and construction tools. </div><div class="ttdef"><b>Definition:</b> <a href="patch__construction_8h_source.html#l00059">patch_construction.h:59</a></div></div>
 <div class="ttc" id="classcarl_1_1_mesh__restriction_html_adce7d5a94e5e65f5bee4145eb25ebd61"><div class="ttname"><a href="classcarl_1_1_mesh__restriction.html#adce7d5a94e5e65f5bee4145eb25ebd61">carl::Mesh_restriction::BuildRestriction</a></div><div class="ttdeci">void BuildRestriction(const libMesh::ReplicatedMesh &amp;Coupling_mesh)</div><div class="ttdoc">Build the restriction of the parent mesh to the coupling region defined by Coupling_mesh. </div><div class="ttdef"><b>Definition:</b> <a href="restrict__mesh_8cpp_source.html#l00036">restrict_mesh.cpp:36</a></div></div>
+<div class="ttc" id="restrict__mesh_8h_html"><div class="ttname"><a href="restrict__mesh_8h.html">restrict_mesh.h</a></div></div>
 <div class="ttc" id="classcarl_1_1_intersection___tools_html_a8238069bd83ef1029c6a5b60a188763b"><div class="ttname"><a href="classcarl_1_1_intersection___tools.html#a8238069bd83ef1029c6a5b60a188763b">carl::Intersection_Tools::FindAllIntersection</a></div><div class="ttdeci">bool FindAllIntersection(const libMesh::Elem *Query_elem, std::unique_ptr&lt; libMesh::PointLocatorBase &gt; &amp;point_locator, std::set&lt; unsigned int &gt; &amp;Intersecting_elems)</div><div class="ttdoc">Find all elements from the mesh intersecting Query_elem, using the mesh&#39;s libMesh::PointLocatorBase. </div><div class="ttdef"><b>Definition:</b> <a href="intersection__tools_8cpp_source.html#l00200">intersection_tools.cpp:200</a></div></div>
 <div class="ttc" id="classcarl_1_1_patch__construction_html_aec2f60b62d5d7b44bfcc4f9ca9de28d2"><div class="ttname"><a href="classcarl_1_1_patch__construction.html#aec2f60b62d5d7b44bfcc4f9ca9de28d2">carl::Patch_construction::m_Mesh_parent</a></div><div class="ttdeci">libMesh::ReplicatedMesh &amp; m_Mesh_parent</div><div class="ttdoc">Parent mesh. </div><div class="ttdef"><b>Definition:</b> <a href="patch__construction_8h_source.html#l00054">patch_construction.h:54</a></div></div>
 <div class="ttc" id="classcarl_1_1_patch__construction_html_a47c4343835537781c48813feed01e60e"><div class="ttname"><a href="classcarl_1_1_patch__construction.html#a47c4343835537781c48813feed01e60e">carl::Patch_construction::m_Patch_Elem_Neighbours</a></div><div class="ttdeci">std::unordered_map&lt; unsigned int, std::unordered_set&lt; unsigned int &gt; &gt; m_Patch_Elem_Neighbours</div><div class="ttdoc">Element neighbour table for the patch. </div><div class="ttdef"><b>Definition:</b> <a href="patch__construction_8h_source.html#l00067">patch_construction.h:67</a></div></div>
@@ -324,7 +326,7 @@ $(document).ready(function(){initNavTree('restrict__mesh_8cpp_source.html','');}
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_fdedb0aba14d44ce9d99bc100e026e6a.html">common</a></li><li class="navelem"><a class="el" href="dir_77fbc263d13389d0e95d3721baf8fbbf.html">intersections_parallel</a></li><li class="navelem"><b>restrict_mesh.cpp</b></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_fdedb0aba14d44ce9d99bc100e026e6a.html">common</a></li><li class="navelem"><a class="el" href="dir_77fbc263d13389d0e95d3721baf8fbbf.html">intersections_parallel</a></li><li class="navelem"><a class="el" href="restrict__mesh_8cpp.html">restrict_mesh.cpp</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>

@@ -91,7 +91,7 @@ Here's the `MeshWeight` used here:
 
 \image html test_brick_mask.png
 
-Here's the `WeightIndexes` file used in this example:
+and here's the `WeightIndexes` file used in this example:
 
 	###
 	#     The file "test_brick_mask.msh" contains a "mask" that identifies, in the
@@ -114,16 +114,14 @@ Here's the `WeightIndexes` file used in this example:
 	# Coupling area
 	CouplingDomainIdx 68
 
-	# Both models, outside the coupling area
-	# !!! not used in this example !!!
-	#BothDomainsIdx = -1
-
 	# Weight of the macro model at the coupling region
 	# [ micro weight ] = 1 - [ macro weight ]
 	AlphaCouplingMacro 0.5
 
-	# Weight of the macro model on the area with both models, outside the coupling area
-	# !!! not used in this example !!!
+Together, they will generate the weight parameter function below:
+\image html bricks_traction_structure_with_alpha.png
+
+Two parameters were not used in this example: `BothDomainsIdx` and `AlphaEps`. They are used in cases where the domains overlap over a region, but are not coupled, with the former defining the `MeshWeight`'s element physical index, and the latter the weight of the `Macro` model.
 
 \section traction_example_sys_assemble_o Output
 
