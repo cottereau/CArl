@@ -1,87 +1,79 @@
-\form#0:$e$
-\form#1:$L_2$
-\form#2:$\kappa$
-\form#3:$H_1$
-\form#4:$x_{\mbox{Max}}$
-\form#5:$x_{\mbox{Min}}$
-\form#6:${R^I}^t \cdot R^I = R^t C^t \cdot C R $
-\form#7:$ inv({R^I}^t \cdot R^I)$
-\form#8:$\phi_0$
-\form#9:$ u_0,i$
-\form#10:$u_{m,0}$
-\form#11:$m = 1,2$
-\form#12:$x_l(0)$
-\form#13:$iii$
-\form#14:$x_l(iii)$
-\form#15:$x_l(FINAL)$
-\form#16:$u_{m}$
-\form#17:$E = 200 GPa$
-\form#18:$\mu = 80 GPa$
-\form#19:$\Omega_1$
-\form#20:$\Omega_2$
-\form#21:$\Omega_{12}^c$
-\form#22:$\mathbf{F}=100 MPa$
-\form#23:$\Gamma_F$
-\form#24:$\Gamma_0$
-\form#25:$\sim1000$
-\form#26:$\sim3500$
-\form#27:$ n_{\mbox{Med}} \times n_l$
-\form#28:$C_l$
-\form#29:$ n_{\mbox{Med}} \times n_{\mbox{Med}}$
-\form#30:$C_{\mbox{Med}}$
-\form#31:$ n_{\mbox{Med}} $
-\form#32:$ n_l $
-\form#33:$ m $
-\form#34:$MPa$
-\form#35:$(\alpha_1, \alpha_2)$
-\form#36:\begin{eqnarray*} \alpha_l &\geq& 0 \mbox{ in } \Omega_l, \ l = 1,2, \\ \alpha_l &=& 1 \mbox{ in } \Omega_l \setminus \Omega^c_{12}, \\ \alpha_1 + \alpha_2 &=& 1 \mbox{ in } \Omega^c_{12}. \end{eqnarray*}
-\form#37:$ \alpha_l$
-\form#38:$ \alpha_1$
-\form#39:$(C_{\mbox{Med}})^{-1}$
-\form#40:$(\mbox{diag}C_{\mbox{Med}})^{-1}$
-\form#41:$ \left| r \right|^2 < \epsilon_{\mbox{abs}} $
-\form#42:$ \epsilon_{\mbox{abs}} = 10^{-20}$
-\form#43:$ \left| r \right|^2 < \epsilon_{\mbox{rel}} \cdot \left| r_0 \right|^2 $
-\form#44:$\epsilon_{\mbox{rel}} = 10^{-5}$
-\form#45:$ \left| u_{\mbox{RB},n} \right|^2 < \epsilon_{\mbox{RB}} \cdot \left| u_{\mbox{RB},n} \right|^2 $
-\form#46:$ \epsilon_{\mbox{RB}}1e-6$
-\form#47:$ \left| r \right|^2 > D_{\mbox{rel}} \cdot \left| r_0 \right|^2 $
-\form#48:$ D_{\mbox{rel}} = 10^5$
-\form#49:$n > D_{\mbox{iter}}$
-\form#50:$ D_{\mbox{iter}} = 10^3$
-\form#51:$(\mbox{diag}(C_{\mbox{Med}}))^{-1}$
-\form#52:$ | r |^2 < \epsilon_{\mbox{abs}} $
-\form#53:$ | r |^2 < \epsilon_{\mbox{rel}} \cdot | r_0 |^2 $
-\form#54:$ | u_{\mbox{RB},n} |^2 < \epsilon_{\mbox{RB}} \cdot | u_{\mbox{RB},n} |^2 $
-\form#55:$ | r |^2 > D_{\mbox{rel}} \cdot | r_0 |^2 $
-\form#56:$ \epsilon_{\mbox{RB}} = 1e-6$
-\form#57:$C_1 and C_2$
-\form#58:$C_2$
-\form#59:$C_1$
-\form#60:$u_0,1$
-\form#61:$u_{0,2}$
-\form#62:$K_l * u_{0,l} = F_l$
-\form#63:$x_1(kkk)$
-\form#64:$x_2(kkk)$
-\form#65:$K_l * x_l(kkk) = C_l^t*\phi_0$
-\form#66:$\mbox{inv}(R_I^t * R_I) = \mbox{inv}(R_2^t*C_2^t*C_2*R_2)$
-\form#67:$r(0)$
-\form#68:$z(0)$
-\form#69:$p(0)$
-\form#70:$u_{0,1}$
-\form#71:$u_{0,}2$
-\form#72:$x_1(kkk) and $
-\form#73:$K_l * x_l(kkk) = C_l^T*phi(kkk)$
-\form#74:$K_i * x_i(kkk) = C_i^t*p(kkk)$
-\form#75:$r(kkk)$
-\form#76:$phi(kkk)$
-\form#77:$p(jjj)$
-\form#78:$q(jjj)$
-\form#79:$p(jjj)\cdot q(jjj)$
-\form#80:$jjj = 0 ... kkk - 1$
-\form#81:$phi(kkk+1)$
-\form#82:$r(kkk+1)$
-\form#83:$q(kkk+1)$
-\form#84:$p(kkk+1)$
-\form#85:$p(kkk)\cdot q(kkk)$
-\form#86:$K_l * x_l(kkk) = C_l^t*phi(kkk)$
+\form#0:$C_1$
+\form#1:$C_2$
+\form#2:$x_1(kkk)$
+\form#3:$x_2(kkk)$
+\form#4:$K_i * x_i(kkk) = C_i^t*p(kkk)$
+\form#5:$r(kkk)$
+\form#6:$phi(kkk)$
+\form#7:$p(jjj)$
+\form#8:$q(jjj)$
+\form#9:$p(jjj)\cdot q(jjj)$
+\form#10:$jjj = 0 ... kkk - 1$
+\form#11:$\mbox{inv}(R_I^t * R_I) = \mbox{inv}(R_2^t*C_2^t*C_2*R_2)$
+\form#12:$phi(kkk+1)$
+\form#13:$r(kkk+1)$
+\form#14:$q(kkk+1)$
+\form#15:$p(kkk+1)$
+\form#16:$p(kkk)\cdot q(kkk)$
+\form#17:$C_{\mbox{Med}}$
+\form#18:$u_0,1$
+\form#19:$u_{0,2}$
+\form#20:$K_l * u_{0,l} = F_l$
+\form#21:$K_l * x_l(kkk) = C_l^t*\phi_0$
+\form#22:$r(0)$
+\form#23:$z(0)$
+\form#24:$p(0)$
+\form#25:$u_{0,1}$
+\form#26:$u_{0,}2$
+\form#27:$x_1(kkk) and $
+\form#28:$K_l * x_l(kkk) = C_l^t*phi(kkk)$
+\form#29:$e$
+\form#30:$L_2$
+\form#31:$\kappa$
+\form#32:$H_1$
+\form#33:$x_{\mbox{Max}}$
+\form#34:$x_{\mbox{Min}}$
+\form#35:${R^I}^t \cdot R^I = R^t C^t \cdot C R $
+\form#36:$ inv({R^I}^t \cdot R^I)$
+\form#37:$\phi_0$
+\form#38:$ u_0,i$
+\form#39:$u_{m,0}$
+\form#40:$m = 1,2$
+\form#41:$x_l(0)$
+\form#42:$iii$
+\form#43:$x_l(iii)$
+\form#44:$x_l(FINAL)$
+\form#45:$u_{m}$
+\form#46:$E = 200 GPa$
+\form#47:$\mu = 80 GPa$
+\form#48:$\Omega_1$
+\form#49:$\Omega_2$
+\form#50:$\Omega_{12}^c$
+\form#51:$\mathbf{F}=100 MPa$
+\form#52:$\Gamma_F$
+\form#53:$\Gamma_0$
+\form#54:$\sim1000$
+\form#55:$\sim3500$
+\form#56:$ n_{\mbox{Med}} \times n_l$
+\form#57:$C_l$
+\form#58:$ n_{\mbox{Med}} \times n_{\mbox{Med}}$
+\form#59:$ n_{\mbox{Med}} $
+\form#60:$ n_l $
+\form#61:$ m $
+\form#62:$MPa$
+\form#63:$(\alpha_1, \alpha_2)$
+\form#64:\begin{eqnarray*} \alpha_l &\geq& 0 \mbox{ in } \Omega_l, \ l = 1,2, \\ \alpha_l &=& 1 \mbox{ in } \Omega_l \setminus \Omega^c_{12}, \\ \alpha_1 + \alpha_2 &=& 1 \mbox{ in } \Omega^c_{12}. \end{eqnarray*}
+\form#65:$ \alpha_l$
+\form#66:$ \alpha_1$
+\form#67:$(C_{\mbox{Med}})^{-1}$
+\form#68:$(\mbox{diag}(C_{\mbox{Med}}))^{-1}$
+\form#69:$ | r |^2 < \epsilon_{\mbox{abs}} $
+\form#70:$ \epsilon_{\mbox{abs}} = 10^{-20}$
+\form#71:$ | r |^2 < \epsilon_{\mbox{rel}} \cdot | r_0 |^2 $
+\form#72:$\epsilon_{\mbox{rel}} = 10^{-5}$
+\form#73:$ | u_{\mbox{RB},n} |^2 < \epsilon_{\mbox{RB}} \cdot | u_{\mbox{RB},n} |^2 $
+\form#74:$ \epsilon_{\mbox{RB}} = 1e-6$
+\form#75:$ | r |^2 > D_{\mbox{rel}} \cdot | r_0 |^2 $
+\form#76:$ D_{\mbox{rel}} = 10^5$
+\form#77:$n > D_{\mbox{iter}}$
+\form#78:$ D_{\mbox{iter}} = 10^3$

@@ -1,6 +1,5 @@
 var NAVTREEINDEX4 =
 {
-"functions_w.html":[6,3,0,20],
 "functions_x.html":[6,3,0,21],
 "functions_y.html":[6,3,0,22],
 "functions_z.html":[6,3,0,23],
@@ -15,8 +14,8 @@ var NAVTREEINDEX4 =
 "hierarchy.html":[6,2],
 "include_2weight__parameter__function_8h.html":[7,0,0,2,21],
 "include_2weight__parameter__function_8h_source.html":[7,0,0,2,21],
-"index.html":[0],
 "index.html":[],
+"index.html":[0],
 "intersection__input__parser_8cpp.html":[7,0,0,0,4,5],
 "intersection__input__parser_8cpp.html#ab80eec3eb20ff6a403ad01bafa649df2":[7,0,0,0,4,5,0],
 "intersection__input__parser_8cpp_source.html":[7,0,0,0,4,5],
@@ -107,8 +106,8 @@ var NAVTREEINDEX4 =
 "mpi__carl__tools_8h.html#a461e9a455e02d991c920b4b56390f326":[7,0,0,2,14,1],
 "mpi__carl__tools_8h.html#a9709628dd76d2b74384c5f82d77b3dda":[7,0,0,2,14,0],
 "mpi__carl__tools_8h_source.html":[7,0,0,2,14],
-"namespacecarl.html":[6,0,0],
 "namespacecarl.html":[5,0,0],
+"namespacecarl.html":[6,0,0],
 "namespacemembers.html":[5,1,0],
 "namespacemembers_enum.html":[5,1,2],
 "namespacemembers_eval.html":[5,1,3],
@@ -249,5 +248,6 @@ var NAVTREEINDEX4 =
 "structcarl_1_1parallel__intersection__params.html#a15197709febaff5f7082264db05d2aa7":[6,0,0,16,1],
 "structcarl_1_1parallel__intersection__params.html#a16529af2562e264bf3c5822d8d653b08":[6,0,0,16,0],
 "structcarl_1_1parallel__intersection__params.html#a74ba855a7e3dc3595531e6204eb57db2":[6,0,0,16,6],
-"structcarl_1_1parallel__intersection__params.html#a77a1bbaf19e80f8dfd2612c2e86acb45":[6,0,0,16,4]
+"structcarl_1_1parallel__intersection__params.html#a77a1bbaf19e80f8dfd2612c2e86acb45":[6,0,0,16,4],
+"structcarl_1_1parallel__intersection__params.html#aa984f7e6899406a1d17bdaa22e669e22":[6,0,0,16,3]
 };

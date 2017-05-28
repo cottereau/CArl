@@ -10,8 +10,7 @@ var cpp_main =
         [ "Input file syntax", "cpp_usage.html#subsec_cpp_input", null ]
       ] ],
       [ "Rigid body modes", "cpp_usage.html#secrb", null ],
-      [ "Implementation of the FETI solver", "cpp_usage.html#sec_cpp_implementation", null ],
-      [ "Notes and references", "cpp_usage.html#cpp_usage_refs", null ]
+      [ "Implementation of the FETI solver", "cpp_usage.html#sec_cpp_implementation", null ]
     ] ],
     [ "Examples", "cpp_examples.html", "cpp_examples" ]
 ];

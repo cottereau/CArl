@@ -129,22 +129,22 @@ Functions</h2></td></tr>
 <p>This program's input file description can be found at the documentation of the function <a class="el" href="namespacecarl.html#afe02e73d82d3c09395afe0e786840369" title="Parser function for the coupled solver test programs. ">carl::get_input_params(GetPot&amp; field_parser, feti_setup_finish_params&amp; input_params)</a> .</p>
 <p>It will use the following files ...</p><ul>
 <li>... from the <code>input_params.coupling_folder_path</code> folder:<ul>
-<li>coupling matrices <img class="formulaInl" alt="$C_1$" src="form_59.png"/>, <img class="formulaInl" alt="$C_2$" src="form_58.png"/> and <img class="formulaInl" alt="$C_{\mbox{Med}}$" src="form_30.png"/> (the latter used for the preconditioner). <em>Files</em>: <pre class="fragment">coupling_matrix_macro.petscmat
+<li>coupling matrices <img class="formulaInl" alt="$C_1$" src="form_0.png"/>, <img class="formulaInl" alt="$C_2$" src="form_1.png"/> and <img class="formulaInl" alt="$C_{\mbox{Med}}$" src="form_17.png"/> (the latter used for the preconditioner). <em>Files</em>: <pre class="fragment">coupling_matrix_macro.petscmat
 coupling_matrix_micro.petscmat
 coupling_matrix_mediator.petscmat
 </pre></li>
 </ul>
 </li>
 <li>... from the <code>input_params.scratch_folder_path</code> folder:<ul>
-<li>solutions <img class="formulaInl" alt="$u_0,1$" src="form_60.png"/> and <img class="formulaInl" alt="$u_{0,2}$" src="form_61.png"/>, from the system <img class="formulaInl" alt="$K_l * u_{0,l} = F_l$" src="form_62.png"/>. <em>Files</em>: <pre class="fragment">ext_solver_u0_A_sys_sol_vec.petscvec
+<li>solutions <img class="formulaInl" alt="$u_0,1$" src="form_18.png"/> and <img class="formulaInl" alt="$u_{0,2}$" src="form_19.png"/>, from the system <img class="formulaInl" alt="$K_l * u_{0,l} = F_l$" src="form_20.png"/>. <em>Files</em>: <pre class="fragment">ext_solver_u0_A_sys_sol_vec.petscvec
 ext_solver_u0_B_sys_sol_vec.petscvec
 </pre></li>
-<li>[RB] solutions <img class="formulaInl" alt="$x_1(kkk)$" src="form_63.png"/> and <img class="formulaInl" alt="$x_2(kkk)$" src="form_64.png"/>, from the system <img class="formulaInl" alt="$K_l * x_l(kkk) = C_l^t*\phi_0$" src="form_65.png"/>. <em>Files</em>: <pre class="fragment">ext_solver_A_sys_sol_vec.petscvec
+<li>[RB] solutions <img class="formulaInl" alt="$x_1(kkk)$" src="form_2.png"/> and <img class="formulaInl" alt="$x_2(kkk)$" src="form_3.png"/>, from the system <img class="formulaInl" alt="$K_l * x_l(kkk) = C_l^t*\phi_0$" src="form_21.png"/>. <em>Files</em>: <pre class="fragment">ext_solver_A_sys_sol_vec.petscvec
 ext_solver_B_sys_sol_vec.petscvec
 </pre></li>
-<li>[RB] matrix <img class="formulaInl" alt="$\mbox{inv}(R_I^t * R_I) = \mbox{inv}(R_2^t*C_2^t*C_2*R_2)$" src="form_66.png"/>, used for the rigid body modes projections. <em>Files</em>: <pre class="fragment">rb_inv_RITRI.petscmat
+<li>[RB] matrix <img class="formulaInl" alt="$\mbox{inv}(R_I^t * R_I) = \mbox{inv}(R_2^t*C_2^t*C_2*R_2)$" src="form_11.png"/>, used for the rigid body modes projections. <em>Files</em>: <pre class="fragment">rb_inv_RITRI.petscmat
 </pre></li>
-<li>[RB] rigid body mode vectors multiplied by <img class="formulaInl" alt="$C_2$" src="form_58.png"/>. <em>Files</em>: <pre class="fragment">rb_coupl_vector_[iii]_n_[nb. of vectors].petscvec
+<li>[RB] rigid body mode vectors multiplied by <img class="formulaInl" alt="$C_2$" src="form_1.png"/>. <em>Files</em>: <pre class="fragment">rb_coupl_vector_[iii]_n_[nb. of vectors].petscvec
 </pre></li>
 </ul>
 </li>
@@ -156,7 +156,7 @@ ext_solver_B_sys_sol_vec.petscvec
 </ul>
 <p>The items marked with a [RB] are only needed if the rigid body modes projectors are used. In the last two cases, [nb. of vectors] is the number of rigid body mode vectors (given by <code>input_params.nb_of_rb_vectors</code>) and [iii] is an integer going from 0 to <code>input_params.nb_of_rb_vectors - 1</code> (following C++ notation).</p>
 <p>This program outputs a series of files, all inside the <code>input_params.scratch_folder_path</code> folder:</p><ul>
-<li>initial iteration vectors, <img class="formulaInl" alt="$r(0)$" src="form_67.png"/>, <img class="formulaInl" alt="$z(0)$" src="form_68.png"/>, <img class="formulaInl" alt="$p(0)$" src="form_69.png"/>. <em>Files</em>: <pre class="fragment">FETI_iter__r__0.petscvec
+<li>initial iteration vectors, <img class="formulaInl" alt="$r(0)$" src="form_22.png"/>, <img class="formulaInl" alt="$z(0)$" src="form_23.png"/>, <img class="formulaInl" alt="$p(0)$" src="form_24.png"/>. <em>Files</em>: <pre class="fragment">FETI_iter__r__0.petscvec
 FETI_iter__p__0.petscvec
 </pre></li>
 <li>(overwrite) vectors used as the RHS for the external solvers. <em>Files</em>: <pre class="fragment">ext_solver_A_rhs.petscvec

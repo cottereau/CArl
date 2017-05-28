@@ -129,7 +129,7 @@ Functions</h2></td></tr>
 <p>This program's input file description can be found at the documentation of the function <a class="el" href="namespacecarl.html#a902f88f3c52c6fc9c974bc99832e78a7" title="Parser function for the coupled solver test programs. ">carl::get_input_params(GetPot&amp; field_parser, feti_iterate_params&amp; input_params)</a>.</p>
 <p>It will use the following files ...</p><ul>
 <li>... from the <code>input_params.coupling_folder_path</code> folder:<ul>
-<li>coupling matrices <img class="formulaInl" alt="$C_1$" src="form_59.png"/> and <img class="formulaInl" alt="$C_2$" src="form_58.png"/>. <em>Files</em>: <pre class="fragment">coupling_matrix_macro.petscmat
+<li>coupling matrices <img class="formulaInl" alt="$C_1$" src="form_0.png"/> and <img class="formulaInl" alt="$C_2$" src="form_1.png"/>. <em>Files</em>: <pre class="fragment">coupling_matrix_macro.petscmat
 coupling_matrix_micro.petscmat
 </pre></li>
 </ul>
@@ -137,20 +137,20 @@ coupling_matrix_micro.petscmat
 <li>... from the <code>input_params.scratch_folder_path</code> folder:<ul>
 <li>scalar values (iteration, residual, RB mode corrections). <em>Files</em>: <pre class="fragment">FETI_iter_scalar_data.dat
 </pre></li>
-<li>solutions <img class="formulaInl" alt="$x_1(kkk)$" src="form_63.png"/> and <img class="formulaInl" alt="$x_2(kkk)$" src="form_64.png"/>, from the system <img class="formulaInl" alt="$K_i * x_i(kkk) = C_i^t*p(kkk)$" src="form_74.png"/>. <em>Files</em>: <pre class="fragment">ext_solver_A_sys_sol_vec.petscvec
+<li>solutions <img class="formulaInl" alt="$x_1(kkk)$" src="form_2.png"/> and <img class="formulaInl" alt="$x_2(kkk)$" src="form_3.png"/>, from the system <img class="formulaInl" alt="$K_i * x_i(kkk) = C_i^t*p(kkk)$" src="form_4.png"/>. <em>Files</em>: <pre class="fragment">ext_solver_A_sys_sol_vec.petscvec
 ext_solver_B_sys_sol_vec.petscvec
 </pre></li>
-<li>previous iteration vectors <img class="formulaInl" alt="$r(kkk)$" src="form_75.png"/> anf <img class="formulaInl" alt="$phi(kkk)$" src="form_76.png"/> <pre class="fragment">FETI_iter__phi__current.petscvec
+<li>previous iteration vectors <img class="formulaInl" alt="$r(kkk)$" src="form_5.png"/> anf <img class="formulaInl" alt="$phi(kkk)$" src="form_6.png"/> <pre class="fragment">FETI_iter__phi__current.petscvec
 FETI_iter__r__current.petscvec
 </pre></li>
-<li>(several) previous iterations vectors <img class="formulaInl" alt="$p(jjj)$" src="form_77.png"/>, <img class="formulaInl" alt="$q(jjj)$" src="form_78.png"/> (used for re-orthogonalization). <em>Files</em>: <pre class="fragment">FETI_iter__q__[jjj].petscvec, jjj = 0 ... kkk - 1
+<li>(several) previous iterations vectors <img class="formulaInl" alt="$p(jjj)$" src="form_7.png"/>, <img class="formulaInl" alt="$q(jjj)$" src="form_8.png"/> (used for re-orthogonalization). <em>Files</em>: <pre class="fragment">FETI_iter__q__[jjj].petscvec, jjj = 0 ... kkk - 1
 FETI_iter__p__[jjj].petscvec, jjj = 0 ... kkk
 </pre></li>
-<li>previous <img class="formulaInl" alt="$p(jjj)\cdot q(jjj)$" src="form_79.png"/> values (with <img class="formulaInl" alt="$jjj = 0 ... kkk - 1$" src="form_80.png"/>). <em>Files</em>: <pre class="fragment">FETI_iter_p_dot_q.dat
+<li>previous <img class="formulaInl" alt="$p(jjj)\cdot q(jjj)$" src="form_9.png"/> values (with <img class="formulaInl" alt="$jjj = 0 ... kkk - 1$" src="form_10.png"/>). <em>Files</em>: <pre class="fragment">FETI_iter_p_dot_q.dat
 </pre></li>
-<li>[RB] matrix <img class="formulaInl" alt="$\mbox{inv}(R_I^t * R_I) = \mbox{inv}(R_2^t*C_2^t*C_2*R_2)$" src="form_66.png"/>, used for the rigid body modes projections. <em>Files</em>: <pre class="fragment">rb_inv_RITRI.petscmat
+<li>[RB] matrix <img class="formulaInl" alt="$\mbox{inv}(R_I^t * R_I) = \mbox{inv}(R_2^t*C_2^t*C_2*R_2)$" src="form_11.png"/>, used for the rigid body modes projections. <em>Files</em>: <pre class="fragment">rb_inv_RITRI.petscmat
 </pre></li>
-<li>[RB] rigid body mode vectors multiplied by <img class="formulaInl" alt="$C_2$" src="form_58.png"/>. <em>Files</em>: <pre class="fragment">rb_coupl_vector_[iii]_n_[nb. of vectors].petscvec
+<li>[RB] rigid body mode vectors multiplied by <img class="formulaInl" alt="$C_2$" src="form_1.png"/>. <em>Files</em>: <pre class="fragment">rb_coupl_vector_[iii]_n_[nb. of vectors].petscvec
 </pre></li>
 </ul>
 </li>
@@ -167,12 +167,12 @@ FETI_iter__p__[jjj].petscvec, jjj = 0 ... kkk
 <li>(overwrite) vectors used as the RHS for the external solvers. <em>Files</em>: <pre class="fragment"> ext_solver_A_rhs.petscvec
  ext_solver_B_rhs.petscvec
 </pre></li>
-<li>next iteration vectors, <img class="formulaInl" alt="$phi(kkk+1)$" src="form_81.png"/>, <img class="formulaInl" alt="$r(kkk+1)$" src="form_82.png"/>, <img class="formulaInl" alt="$q(kkk+1)$" src="form_83.png"/>, <img class="formulaInl" alt="$p(kkk+1)$" src="form_84.png"/>. <em>Files</em>: <pre class="fragment"> FETI_iter__phi__current.petscvec
+<li>next iteration vectors, <img class="formulaInl" alt="$phi(kkk+1)$" src="form_12.png"/>, <img class="formulaInl" alt="$r(kkk+1)$" src="form_13.png"/>, <img class="formulaInl" alt="$q(kkk+1)$" src="form_14.png"/>, <img class="formulaInl" alt="$p(kkk+1)$" src="form_15.png"/>. <em>Files</em>: <pre class="fragment"> FETI_iter__phi__current.petscvec
  FETI_iter__r__current.petscvec
  FETI_iter__q__[kkk+1].petscvec
  FETI_iter__p__[kkk+1].petscvec
 </pre></li>
-<li>(append) <img class="formulaInl" alt="$p(kkk)\cdot q(kkk)$" src="form_85.png"/> value. <em>Files</em>: <pre class="fragment"> FETI_iter_p_dot_q.dat</pre></li>
+<li>(append) <img class="formulaInl" alt="$p(kkk)\cdot q(kkk)$" src="form_16.png"/> value. <em>Files</em>: <pre class="fragment"> FETI_iter_p_dot_q.dat</pre></li>
 </ul>
 
 <p>Definition in file <a class="el" href="_c_arl___f_e_t_i__iterate_8cpp_source.html">CArl_FETI_iterate.cpp</a>.</p>

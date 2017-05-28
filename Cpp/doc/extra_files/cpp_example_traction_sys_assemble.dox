@@ -70,7 +70,7 @@ Input file parameters:
 
 \section traction_example_sys_assemble_weight Weight functions
 
-The `SystemType`, `MeshWeight` and `WeightIndexes` parameters are used to control the _weight parameter functions_ used by the Arlequin method, noted as \f$(\alpha_1, \alpha_2)\f$ in [[[REF]]]. These parameters are used to guarantee a proper partitioning of the energy over the coupling region - and also over any region where both models are present, but are not coupled. The weight parameters follow the equations below:
+The `SystemType`, `MeshWeight` and `WeightIndexes` parameters are used to control the _weight parameter functions_ used by the Arlequin method, noted as \f$(\alpha_1, \alpha_2)\f$ in refs. \ref traction_example_sys_assemble_note_1 "1" and \ref traction_example_sys_assemble_note_2 "2". These parameters are used to guarantee a proper partitioning of the energy over the coupling region - and also over any region where both models are present, but are not coupled. The weight parameters follow the equations below:
 \f{eqnarray*}{
 	\alpha_l &\geq& 0 \mbox{ in } \Omega_l, \ l = 1,2, \\
 	\alpha_l &=& 1 \mbox{ in } \Omega_l \setminus \Omega^c_{12}, \\
@@ -148,4 +148,8 @@ After running the external solver assembly programs, the following matrices and 
 
 These matrices and vectors are saved using PETSc's binary format. The extensions `.petsc***` is arbitrary. For each one of these files, an auxiliary file with an `.info` appended is created. It contains some information on how PETSc should read the matrix or vector.
 
+\anchor traction_example_sys_assemble_note_1 1. T. M. Schlittler, R. Cottereau, _Fully scalable implementation of a volume coupling scheme for the modeling of polycrystalline materials_, Computational Mechanics (submitted, under review)
+
+\anchor traction_example_sys_assemble_note_2 2. D. Néron, H. Ben Dhia, R. Cottereau, _A decoupled strategy to solve reduced-order multimodel
+problems in the PGD and Arlequin frameworks_. Comput Mech pp. 1{13 (2016). DOI 10.1007/s00466-015-1236-0.
  */

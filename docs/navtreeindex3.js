@@ -140,7 +140,6 @@ var NAVTREEINDEX3 =
 "cpp_installation.html#installation":[2,0,1],
 "cpp_main.html":[2],
 "cpp_usage.html":[2,1],
-"cpp_usage.html#cpp_usage_refs":[2,1,3],
 "cpp_usage.html#sec_cpp_implementation":[2,1,2],
 "cpp_usage.html#sec_cpp_usage":[2,1,0],
 "cpp_usage.html#secrb":[2,1,1],
@@ -249,5 +248,6 @@ var NAVTREEINDEX3 =
 "functions_vars_w.html":[6,3,2,17],
 "functions_vars_x.html":[6,3,2,18],
 "functions_vars_y.html":[6,3,2,19],
-"functions_vars_z.html":[6,3,2,20]
+"functions_vars_z.html":[6,3,2,20],
+"functions_w.html":[6,3,0,20]
 };

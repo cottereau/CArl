@@ -128,10 +128,10 @@ Functions</h2></td></tr>
 <div class="textblock"><p>Program responsible to calculate the coupled system solution of the FETI algorithm. </p>
 <p>This program's input file description can be found at the documentation of the function <a class="el" href="namespacecarl.html#a177d464e2a8ca02ee332afc410ec061d" title="Parser function for the coupled solver test programs. ">carl::get_input_params(GetPot&amp; field_parser, feti_set_sol_params&amp; input_params)</a>.</p>
 <p>It will use the following files from the <code>input_params.scratch_folder_path</code> folder:</p><ul>
-<li>solutions <img class="formulaInl" alt="$u_{0,1}$" src="form_70.png"/> and <img class="formulaInl" alt="$u_{0,}2$" src="form_71.png"/>, from the system <img class="formulaInl" alt="$K_l * u_{0,l} = F_l$" src="form_62.png"/>. <em>Files</em>: <pre class="fragment">ext_solver_u0_A_sys_sol_vec.petscvec
+<li>solutions <img class="formulaInl" alt="$u_{0,1}$" src="form_25.png"/> and <img class="formulaInl" alt="$u_{0,}2$" src="form_26.png"/>, from the system <img class="formulaInl" alt="$K_l * u_{0,l} = F_l$" src="form_20.png"/>. <em>Files</em>: <pre class="fragment">ext_solver_u0_A_sys_sol_vec.petscvec
 ext_solver_u0_B_sys_sol_vec.petscvec
 </pre></li>
-<li>solutions <img class="formulaInl" alt="$x_1(kkk) and $" src="form_72.png"/>x_2(kkk), from the system <img class="formulaInl" alt="$K_l * x_l(kkk) = C_l^t*phi(kkk)$" src="form_86.png"/>. <em>Files</em>: <pre class="fragment">ext_solver_A_sys_sol_vec.petscvec
+<li>solutions <img class="formulaInl" alt="$x_1(kkk) and $" src="form_27.png"/>x_2(kkk), from the system <img class="formulaInl" alt="$K_l * x_l(kkk) = C_l^t*phi(kkk)$" src="form_28.png"/>. <em>Files</em>: <pre class="fragment">ext_solver_A_sys_sol_vec.petscvec
 ext_solver_B_sys_sol_vec.petscvec
 </pre></li>
 <li>rigid body mode correction vector. <em>Files</em>: <pre class="fragment">[RB] FETI_RB_correction.petscvec

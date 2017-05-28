@@ -152,7 +152,7 @@ OutputBase examples/coupled_traction_test/FETI_solver/brick_traction_1k/system_m
 ExportRBVectors
 </pre><p>Input file parameters:</p><ul>
 <li><code>Mesh</code>: model mesh.</li>
-<li><code>PhysicalParameters</code>: file containing the physical parameters - in this case the Young and shear modulus in <img class="formulaInl" alt="$MPa$" src="form_34.png"/>.</li>
+<li><code>PhysicalParameters</code>: file containing the physical parameters - in this case the Young and shear modulus in <img class="formulaInl" alt="$MPa$" src="form_62.png"/>.</li>
 <li><code>SystemType</code>: parameter used to tell the assembler which weight functions must be used. Can be either <code>Micro</code> or <code>Macro</code>.</li>
 <li><code>MeshWeight</code>: mesh defining the domains of the Arlequin weight parameters.</li>
 <li><code>WeightIndexes</code>: file containing the indices of the domains of the Arlequin weight parameters.</li>
@@ -161,10 +161,10 @@ ExportRBVectors
 </ul>
 <h1><a class="anchor" id="traction_example_sys_assemble_weight"></a>
 Weight functions</h1>
-<p>The <code>SystemType</code>, <code>MeshWeight</code> and <code>WeightIndexes</code> parameters are used to control the <em>weight parameter functions</em> used by the Arlequin method, noted as <img class="formulaInl" alt="$(\alpha_1, \alpha_2)$" src="form_35.png"/> in [[[REF]]]. These parameters are used to guarantee a proper partitioning of the energy over the coupling region - and also over any region where both models are present, but are not coupled. The weight parameters follow the equations below: </p><p class="formulaDsp">
-<img class="formulaDsp" alt="\begin{eqnarray*} \alpha_l &amp;\geq&amp; 0 \mbox{ in } \Omega_l, \ l = 1,2, \\ \alpha_l &amp;=&amp; 1 \mbox{ in } \Omega_l \setminus \Omega^c_{12}, \\ \alpha_1 + \alpha_2 &amp;=&amp; 1 \mbox{ in } \Omega^c_{12}. \end{eqnarray*}" src="form_36.png"/>
+<p>The <code>SystemType</code>, <code>MeshWeight</code> and <code>WeightIndexes</code> parameters are used to control the <em>weight parameter functions</em> used by the Arlequin method, noted as <img class="formulaInl" alt="$(\alpha_1, \alpha_2)$" src="form_63.png"/> in refs. <a class="el" href="traction_example_sys_assemble.html#traction_example_sys_assemble_note_1">1</a> and <a class="el" href="traction_example_sys_assemble.html#traction_example_sys_assemble_note_2">2</a>. These parameters are used to guarantee a proper partitioning of the energy over the coupling region - and also over any region where both models are present, but are not coupled. The weight parameters follow the equations below: </p><p class="formulaDsp">
+<img class="formulaDsp" alt="\begin{eqnarray*} \alpha_l &amp;\geq&amp; 0 \mbox{ in } \Omega_l, \ l = 1,2, \\ \alpha_l &amp;=&amp; 1 \mbox{ in } \Omega_l \setminus \Omega^c_{12}, \\ \alpha_1 + \alpha_2 &amp;=&amp; 1 \mbox{ in } \Omega^c_{12}. \end{eqnarray*}" src="form_64.png"/>
 </p>
-<p>The <code>MeshWeight</code> and <code>WeightIndexes</code> are used to determinate the regions and the values of <img class="formulaInl" alt="$ \alpha_l$" src="form_37.png"/>, while <code>SystemType</code> determinates which one must be used ( <img class="formulaInl" alt="$ \alpha_1$" src="form_38.png"/> for <code>Macro</code>, <img class="formulaInl" alt="$ \alpha_1$" src="form_38.png"/> for <code>Micro</code>).</p>
+<p>The <code>MeshWeight</code> and <code>WeightIndexes</code> are used to determinate the regions and the values of <img class="formulaInl" alt="$ \alpha_l$" src="form_65.png"/>, while <code>SystemType</code> determinates which one must be used ( <img class="formulaInl" alt="$ \alpha_1$" src="form_66.png"/> for <code>Macro</code>, <img class="formulaInl" alt="$ \alpha_1$" src="form_66.png"/> for <code>Micro</code>).</p>
 <p>Each element of the <code>MeshWeight</code> has a physical index which determinates which kind of region it represents. When assembling the matrices and vectors, the assembly programs will</p>
 <ul>
 <li>check where inside this matrix the quadrature points are located,</li>
@@ -222,7 +222,9 @@ Output</h1>
  traction_model_B_rb_vector_5_n_6.petscvec
 </pre></li>
 </ul>
-<p>These matrices and vectors are saved using PETSc's binary format. The extensions <code>.petsc***</code> is arbitrary. For each one of these files, an auxiliary file with an <code>.info</code> appended is created. It contains some information on how PETSc should read the matrix or vector. </p>
+<p>These matrices and vectors are saved using PETSc's binary format. The extensions <code>.petsc***</code> is arbitrary. For each one of these files, an auxiliary file with an <code>.info</code> appended is created. It contains some information on how PETSc should read the matrix or vector.</p>
+<p><a class="anchor" id="traction_example_sys_assemble_note_1"></a>1. T. M. Schlittler, R. Cottereau, <em>Fully scalable implementation of a volume coupling scheme for the modeling of polycrystalline materials</em>, Computational Mechanics (submitted, under review)</p>
+<p><a class="anchor" id="traction_example_sys_assemble_note_2"></a>2. D. Néron, H. Ben Dhia, R. Cottereau, <em>A decoupled strategy to solve reduced-order multimodel problems in the PGD and Arlequin frameworks</em>. Comput Mech pp. 1{13 (2016). DOI 10.1007/s00466-015-1236-0. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

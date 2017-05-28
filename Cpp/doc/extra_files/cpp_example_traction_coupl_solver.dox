@@ -113,14 +113,14 @@ A few other optional parameters are not used in this example. They control the c
    + `NONE`: no preconditioner is used;
    + `Coupling_operator`: use \f$(C_{\mbox{Med}})^{-1}\f$; or
    + `Coupling_operator_jacobi`: use \f$(\mbox{diag}(C_{\mbox{Med}}))^{-1}\f$.
-    The square matrix \f$C_{\mbox{Med}}\f$ is the coupling matrix reduced to the mediator space, and its usage as the preconditioner is explained in [[[REF]]]. `Coupling_operator` (which is the default value) results in the least number of iterations, but depends on solving a linear system inside the mediator space. `Coupling_operator_jacobi` depends only on simple vector products, but converges more slowly. In general, `Coupling_operator` is the best option, since in most cases solving a linear system on the mediator space is considerably faster than using the external solvers.
+    The square matrix \f$C_{\mbox{Med}}\f$ is the coupling matrix reduced to the mediator space, and its usage as the preconditioner is explained in ref. \ref traction_example_coupled_solver_note_1 "1". `Coupling_operator` (which is the default value) results in the least number of iterations, but depends on solving a linear system inside the mediator space. `Coupling_operator_jacobi` depends only on simple vector products, but converges more slowly. In general, `Coupling_operator` is the best option, since in most cases solving a linear system on the mediator space is considerably faster than using the external solvers.
  - `CoupledConvAbs`: absolute convergence of the residual, \f$ | r |^2 < \epsilon_{\mbox{abs}} \f$. By default, \f$ \epsilon_{\mbox{abs}} = 10^{-20}\f$.
  - `CoupledConvRel`: convergence of the residual, relative to its initial value, \f$ | r |^2 < \epsilon_{\mbox{rel}} \cdot | r_0 |^2  \f$. By default, it is set as \f$\epsilon_{\mbox{rel}} = 10^{-5}\f$.
  - `CoupledCorrConvRel`: convergence of the rigid body corrections, relative to its previous value, \f$ | u_{\mbox{RB},n}  |^2 < \epsilon_{\mbox{RB}} \cdot | u_{\mbox{RB},n} |^2  \f$. By default, \f$ \epsilon_{\mbox{RB}} = 1e-6\f$.
  - `CoupledDiv` : relative divergence of the residual, \f$ | r |^2 > D_{\mbox{rel}} \cdot | r_0 |^2  \f$.  By default, \f$ D_{\mbox{rel}} = 10^5\f$.
  - `CoupledIterMax` : maximum number of iterations, \f$n > D_{\mbox{iter}}\f$. By default, \f$ D_{\mbox{iter}} = 10^3\f$.
 
-When developing the CArl C++ programs, we noted that sometimes using only the CG residual to check the convergence was not enough, namely when one of the models is ill-conditioned (such as the model `Micro` / `B` in this example). In these cases, the FETI algorithm adds a correction to the coupled solution depending on the model's rigid body modes, which might converge slower than the residual. The parameter `CoupledCorrConvRel` is used to check the convergence of these corrections. More details on this can be found at [[[REF]]].
+When developing the CArl C++ programs, we noted that sometimes using only the CG residual to check the convergence was not enough, namely when one of the models is ill-conditioned (such as the model `Micro` / `B` in this example). In these cases, the FETI algorithm adds a correction to the coupled solution depending on the model's rigid body modes, which might converge slower than the residual. The parameter `CoupledCorrConvRel` is used to check the convergence of these corrections. More details on this can be found at ref. \ref traction_example_coupled_solver_note_1 "1".
 
 \section traction_example_coupled_solver_o Output
 
@@ -139,5 +139,7 @@ A description of the files needed by the other `CArl_FETI_***` binaries and thei
  - \ref CArl_FETI_setup_finish.cpp "CArl_FETI_setup_finish"
  - \ref CArl_FETI_iterate.cpp "CArl_FETI_iterate"
  - \ref CArl_FETI_solution.cpp "CArl_FETI_solution"
+
+\anchor traction_example_coupled_solver_note_1 1. T. M. Schlittler, R. Cottereau, _Fully scalable implementation of a volume coupling scheme for the modeling of polycrystalline materials_, Computational Mechanics (submitted, under review)
 
  */

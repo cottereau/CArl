@@ -129,7 +129,7 @@ Functions</h2></td></tr>
 <p>This program's input file description can be found at the documentation of the function <a class="el" href="namespacecarl.html#a35e71784d7728be3e70e52362caeb2e2" title="Parser function for the coupled solver test programs. ">carl::get_input_params(GetPot&amp; field_parser, feti_setup_init_params&amp; input_params)</a>.</p>
 <p>If the rigid body modes are used (<code>input_params.bUseRigidBodyModes = true</code>), it will use the following files ...</p><ul>
 <li>... from the <code>input_params.coupling_folder_path</code> folder:<ul>
-<li>coupling matrices <img class="formulaInl" alt="$C_1$" src="form_59.png"/> and <img class="formulaInl" alt="$C_2$" src="form_58.png"/>. <em>Files</em>: <pre class="fragment">coupling_matrix_macro.petscmat
+<li>coupling matrices <img class="formulaInl" alt="$C_1$" src="form_0.png"/> and <img class="formulaInl" alt="$C_2$" src="form_1.png"/>. <em>Files</em>: <pre class="fragment">coupling_matrix_macro.petscmat
 coupling_matrix_micro.petscmat
 </pre></li>
 </ul>
@@ -171,9 +171,9 @@ ext_solver_B_rhs.petscvec
 <li>If the rigid body modes are used ...<ul>
 <li>[RB] initial solution (the Lagrange multipliers) <pre class="fragment">FETI_iter__phi__current.petscvec
 </pre></li>
-<li>[RB] products between <img class="formulaInl" alt="$C_2$" src="form_58.png"/> and the rigid body modes vectors ([nb. of vectors] is the number of rigid body mode vectors (given by <code>input_params.nb_of_rb_vectors</code>) and [iii] is an integer going from 0 to <code>input_params.nb_of_rb_vectors - 1</code>, following C++ notation) <pre class="fragment">rb_coupl_vector_[iii]_n_[nb. of vectors].petscvec
+<li>[RB] products between <img class="formulaInl" alt="$C_2$" src="form_1.png"/> and the rigid body modes vectors ([nb. of vectors] is the number of rigid body mode vectors (given by <code>input_params.nb_of_rb_vectors</code>) and [iii] is an integer going from 0 to <code>input_params.nb_of_rb_vectors - 1</code>, following C++ notation) <pre class="fragment">rb_coupl_vector_[iii]_n_[nb. of vectors].petscvec
 </pre></li>
-<li>[RB] matrix <img class="formulaInl" alt="$\mbox{inv}(R_I^t * R_I) = \mbox{inv}(R_2^t*C_2^t*C_2*R_2)$" src="form_66.png"/>, used for the rigid body modes projections <pre class="fragment">rb_inv_RITRI.petscmat</pre></li>
+<li>[RB] matrix <img class="formulaInl" alt="$\mbox{inv}(R_I^t * R_I) = \mbox{inv}(R_2^t*C_2^t*C_2*R_2)$" src="form_11.png"/>, used for the rigid body modes projections <pre class="fragment">rb_inv_RITRI.petscmat</pre></li>
 </ul>
 </li>
 </ul>
