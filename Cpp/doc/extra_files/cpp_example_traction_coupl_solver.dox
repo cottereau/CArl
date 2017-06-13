@@ -61,9 +61,9 @@ Adjust its parameters as needed (mainly, the modules, queue and project paramete
 	ExtSolverAInput examples/coupled_traction_test/FETI_solver/brick_traction_1k/solve_traction_test_A_1k.txt
 	ExtSolverBInput examples/coupled_traction_test/FETI_solver/brick_traction_1k/solve_traction_test_B_1k.txt
 
- - `ExtSolverA` and `ExtSolverB`: command to execute the external solvers for models `A` and `B`. In this case, the same linear solver, based on libMesh and PETSc, will be used. Its input file description can be found [[[WHERE]]].
+ - `ExtSolverA` and `ExtSolverB`: command to execute the external solvers for models `A` and `B`. In this case, the same linear solver, based on libMesh and PETSc, will be used.
  - `ExtSolverAType` and `ExtSolverBType`: external solvers type. The algorithm needs this information to properly generate the files used to set the external solvers.
- - `ExtSolverAInput` and `ExtSolverBInput`: external solver input files. In this case, they contain the file paths and parameters needed by them. They are described in [[[WHERE]]]
+ - `ExtSolverAInput` and `ExtSolverBInput`: external solver input files. In this case, they contain the file paths and parameters needed by them.
 
 \subsection traction_example_coupled_solver_params Coupled solver parameters
 
