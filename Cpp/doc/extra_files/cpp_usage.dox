@@ -39,7 +39,7 @@ Most of the parameters follow a `ParameterName [value]` format:
     ClusterSchedulerType LOCAL
 
     # Path to the base script file
-    ScriptFile examples/coupled_traction_test/FETI_solver/common_script.sh
+    ScriptFile scripts/common_script.sh
 
 Since a space separates the `ParameterName` and the `[value]`, values containing spaces must be enclosed in `' '`:
 

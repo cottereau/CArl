@@ -22,7 +22,7 @@ The input file of the coupled solver has a considerableamount of parameter. We w
 	ClusterSchedulerType PBS
 
 	# - Path to the base PBS script file
-	ScriptFile examples/coupled_traction_test/FETI_solver/common_script.sh
+	ScriptFile scripts/common_script.sh
 
  - `ClusterSchedulerType`: scheduler type. Can be either `LOCAL` or `PBS`. A third option, `SLURM`, is present in the code, but its usage is not implemented yet. The option `LOCAL` is used for simulations without the scheduler.
  - `ScriptFile`: path to the file used to generate the scripts for the other `CArl_FETI` binaries. This parameter is ignored for the `LOCAL` "scheduler". 

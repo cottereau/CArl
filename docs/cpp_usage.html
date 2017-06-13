@@ -131,7 +131,7 @@ Input file syntax</h2>
 ClusterSchedulerType LOCAL
 
 # Path to the base script file
-ScriptFile examples/coupled_traction_test/FETI_solver/common_script.sh
+ScriptFile scripts/common_script.sh
 </pre><p>Since a space separates the <code>ParameterName</code> and the <code>[value]</code>, values containing spaces must be enclosed in `' '`: </p><pre class="fragment"># Command used for the external solver for the system A
 ExtSolverA 'mpirun -n 4 ./libmesh_solve_linear_system -i '
 </pre><p>Boolean flags do not have a <code>[value]</code>. Adding / uncommenting the <code>ParameterName</code> activates the option: </p><pre class="fragment"># Use the rigid body modes from the model B?

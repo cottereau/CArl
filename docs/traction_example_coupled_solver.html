@@ -117,7 +117,7 @@ Scheduler parameters</h2>
 ClusterSchedulerType PBS
 
 # - Path to the base PBS script file
-ScriptFile examples/coupled_traction_test/FETI_solver/common_script.sh
+ScriptFile scripts/common_script.sh
 </pre><ul>
 <li><code>ClusterSchedulerType</code>: scheduler type. Can be either <code>LOCAL</code> or <code>PBS</code>. A third option, <code>SLURM</code>, is present in the code, but its usage is not implemented yet. The option <code>LOCAL</code> is used for simulations without the scheduler.</li>
 <li><code>ScriptFile</code>: path to the file used to generate the scripts for the other <code>CArl_FETI</code> binaries. This parameter is ignored for the <code>LOCAL</code> "scheduler".</li>
