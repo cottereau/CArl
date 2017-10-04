@@ -143,7 +143,7 @@ Rigid body modes</h1>
 <h1><a class="anchor" id="sec_cpp_implementation"></a>
 Implementation of the FETI solver</h1>
 <p>This section enters in some details of the implementation of the FETI solver, and as such reading the refs. <a class="el" href="cpp_usage.html#cpp_usage_note_1">1</a> and <a class="el" href="cpp_usage.html#cpp_usage_note_2">cpp_usage_note_2</a> beforehand is highly recommended.</p>
-<p>As said above, our implementation of the FETI algortihm is broken down into several <code>CArl_FETI_***</code> binaries. The "break points" correspont to the operations of the FETI algorithm where the solutions of the external solvers are needed. Before closing, each one of these binaries executes a script which first submits the jobs for the external solver, and then calls the appropriate <code>CArl_FETI_***</code> binary to continue the algortihm.</p>
+<p>As said above, our implementation of the FETI algortihm is broken down into several <code>CArl_FETI_***</code> binaries. The "break points" correspond to the operations of the FETI algorithm where the solutions of the external solvers are needed. Before closing, each one of these binaries executes a script which first submits the jobs for the external solver, and then calls the appropriate <code>CArl_FETI_***</code> binary to continue the algortihm.</p>
 <p>This approach allows a non-intrusive usaage of the external solvers: the user only has to worry to save the data to be sent from the <code>CArl_FETI_***</code> binaries and the external solvers in the appropriate format (see note 3). It also avoids wasting cluster resources with idling jobs.</p>
 <p>The figure below shows the structure of the FETI solver. It proceeds in the following manner:</p>
 <ol type="1">
