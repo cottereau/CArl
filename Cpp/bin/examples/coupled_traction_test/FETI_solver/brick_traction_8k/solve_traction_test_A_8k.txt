@@ -1,0 +1,13 @@
+### System A external solver parameters
+# - System matrix
+SysMatrix examples/coupled_traction_test/FETI_solver/brick_traction_8k/system_matrices/traction_model_A_sys_mat.petscmat
+
+# - System RHS vector
+SysRHSVector examples/coupled_traction_test/FETI_solver/brick_traction_8k/system_matrices/traction_model_A_sys_rhs_vec.petscvec
+
+# - Output filename base
+OutputBase examples/coupled_traction_test/FETI_solver/brick_traction_8k/system_matrices/traction_model_A_sol
+
+# - Convergence parameters
+SysEps 1e-9
+SysIterDiv 1000

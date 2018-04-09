@@ -15,12 +15,3 @@ CouplingRigidity 2e5
 # - Output filename base
 OutputFolder examples/coupled_traction_test/FETI_solver/brick_traction_8k/coupling_matrices
 
-# - Restriction meshes and tables
-#Mesh_A_Restriction [PATH_TO_MESH_A_RESTRICTION]
-#Mesh_B_Restriction [PATH_TO_MESH_B_RESTRICTION]
-#Mesh_A_RestrictionEquivalenceTable [PATH_TO_MESH_A_EQUIVALENCE_TABLE]
-#Mesh_B_RestrictionEquivalenceTable [PATH_TO_MESH_B_EQUIVALENCE_TABLE]
-
-# - Mediator mesh:
-# > Uncomment to use the mesh B's restriction as the Mediator
-#MediatorMesh UseRestricted_B
