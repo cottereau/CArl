@@ -1,0 +1,17 @@
+#!/bin/sh
+
+module purge
+module load git/2.16.2  
+module load intel-compilers/17.0.4
+module load intel-mpi/2017.0.3
+module load intel-mkl/2017.0.3  
+module load libgmp/6.1.2
+module load libmpfr/3.1.5
+module load cmake/3.10.2 
+module load python/2.7.13
+
+export PETSC_DIR="/home/gattif/srclib/petsc"
+export PETSC_ARCH="arch-linux2-cxx-opt"
+export CGAL_DIR="/home/gattif/LOCAL/cgal"
+export LIBMESH_DIR="/home/gattif/LOCAL/libmesh"
+export BOOST_ROOT="home/gattif/LOCAL/boost"

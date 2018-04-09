@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -S /bin/bash
-#PBS -N test_ae_1k
+#PBS -N test_ae_8k
 #PBS -l walltime=3:59:00
 #PBS -l select=1:ncpus=4:mpiprocs=4
 
@@ -18,10 +18,11 @@ module load intel-mpi/2017.0.3
 # On se place dans le repertoire depuis lequel le job a ete soumis
 cd $PBS_O_WORKDIR
 
-mkdir -p examples/coupled_traction_test/FETI_solver/brick_traction_1k/system_matrices
+mkdir -p examples/coupled_traction_test/FETI_solver/brick_traction_8k/system_matrices
 
 echo " --- Assemble clamped coupled model ..."
-mpirun -np 4 ./libmesh_assemble_lin_homogeneous__min_x_clamped -i examples/coupled_traction_test/FETI_solver/brick_traction_1k/assemble_brick_traction_A_1k.txt 
+mpirun -np 4 ./libmesh_assemble_lin_homogeneous__min_x_clamped -i examples/coupled_traction_test/FETI_solver/brick_traction_8k/assemble_brick_traction_A_8k.txt 
 
 echo " --- Assemble traction coupled model ..."
-mpirun -np 4 ./libmesh_assemble_lin_homogeneous__max_x_traction -i examples/coupled_traction_test/FETI_solver/brick_traction_1k/assemble_brick_traction_B_1k.txt
+mpirun -np 4 ./libmesh_assemble_lin_homogeneous__max_x_traction -i examples/coupled_traction_test/FETI_solver/brick_traction_8k/assemble_brick_traction_B_8k.txt
+
