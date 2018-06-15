@@ -1,0 +1,9 @@
+brick_traction_1k/scratch_folder/*
+brick_traction_8k/scratch_folder/*
+brick_traction_1k/system_matrices/*
+brick_traction_8k/system_matrices/*
+brick_traction_1k/coupling_matrices/*
+brick_traction_8k/coupling_matrices/*
+brick_traction_1k/coupled_solution/*
+brick_traction_8k/coupled_solution/*
+

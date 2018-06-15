@@ -1,5 +1,5 @@
 #include "libmesh_assemble_lin_homogeneous.h"
-#include "elasticity_system.h"
+//#include "elasticity_system.h"
 /**	\brief Program used to assemble the rigidity matrix and the vectors of a linear, homogeneous elasticity model with a clamped \f$x_{\mbox{Min}}\f$ face.
  * 
  *  Usage: `./libmesh_assemble_lin_homogeneous__min_x_clamped -i [input file]`

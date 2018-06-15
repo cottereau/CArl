@@ -68,6 +68,7 @@
 #include "libmesh/numeric_vector.h"
 #include "libmesh/quadrature.h"
 #include "libmesh/sparse_matrix.h"
+#include "libmesh/unsteady_solver.h"
 #include "libmesh/steady_solver.h"
 #include "libmesh/transient_system.h"
 
