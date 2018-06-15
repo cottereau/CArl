@@ -1,8 +1,8 @@
 #include "libmesh_assemble_lin_homogeneous.h"
-
-/**	\brief Program used to assemble the rigidity matrix and the vectors of a linear, homogeneous elasticity model with a traction applied to \f$x_{\mbox{Max}}\f$ face.
+#include "elasticity_system.h"
+/**	\brief Program used to assemble the rigidity matrix and the vectors of a linear, homogeneous elasticity model with a clamped \f$x_{\mbox{Min}}\f$ face.
  * 
- *  Usage: `./libmesh_assemble_lin_homogeneous__max_x_traction -i [input file]`
+ *  Usage: `./libmesh_assemble_lin_homogeneous__min_x_clamped -i [input file]`
  *	
  * The input file is parsed by the get_input_params(GetPot& field_parser, libmesh_assemble_input_params& input_params) function, and it contains the following parameters. 
  *
@@ -22,9 +22,8 @@
 
 int main(int argc, char** argv) {
 
-	// [USER] Traction force density
-	std::vector<double> traction_density(3,0);
-	traction_density[0] = 100.;
+	// [USER] Fixed boudary
+	boundary_id_cube fixed_bound_id = boundary_id_cube::MIN_X;
 	
 	// --- Initialize libMesh
 	libMesh::LibMeshInit init(argc, argv);
@@ -73,7 +72,7 @@ int main(int argc, char** argv) {
 	system_mesh.read(input_params.mesh_file);
 	system_mesh.prepare_for_use();
 
-	libMesh::Mesh mesh_weight(WorldComm, dim);
+	libMesh::Mesh mesh_weight(WorldComm, dim); //mesh_weight: mesh object
 	mesh_weight.allow_renumbering(false);
 	mesh_weight.read(input_params.mesh_weight_file);
 	mesh_weight.prepare_for_use();
@@ -83,18 +82,52 @@ int main(int argc, char** argv) {
 	// --- Generate the equation systems
 	perf_log.push("System setup:");
 
+    //=======================================================================
+    const libMesh::Real deltat = .0000625;
+    unsigned int n_time_steps = 300;
 	// Set the equation systems object
 	libMesh::EquationSystems equation_systems(system_mesh);
+    // Add Newmark system with linear elasticity and physical parameters systems
 
-	// Add linear elasticity and physical parameters systems
-	libMesh::LinearImplicitSystem& elasticity_system
-										= add_elasticity(equation_systems);
+    ElasticitySystem & elasticity_system =
+        equation_systems.add_system<ElasticitySystem> ("Linear Elasticity");
+    //ElasticitySystem& elasticity_system = add_dyn_newmark(equation_systems);
+    
+    //Create ExplicitSystem to help output velocity
+    libMesh::ExplicitSystem * v_system;
+    v_system = &add_vel_newmark(equation_systems);
+    
+    // Create ExplicitSystem to help output acceleration
+    libMesh::ExplicitSystem * a_system;
+    a_system = &add_acc_newmark(equation_systems);
+
+    // Define and reset solver
+    elasticity_system.time_solver.reset(new libMesh::NewmarkSolver(elasticity_system)); 
+
+	// Set clamped border
+	set_clamped_border(elasticity_system, fixed_bound_id);
 
 	// Initialize the equation systems
 	equation_systems.init();
 
+    // Set the time stepping options
+    elasticity_system.deltat = deltat;    
+
 	// Homogeneous properties for the macro system
-	set_homogeneous_physical_properties(equation_systems, input_params.physical_params_file);
+	set_homogeneous_physical_properties_dyn(equation_systems, input_params.physical_params_file);
+
+    // And the nonlinear solver options
+    libMesh::DiffSolver& solver = *(elasticity_system.time_solver->diff_solver().get());
+    solver.quiet = false;
+    solver.verbose = true;
+    solver.max_nonlinear_iterations = 15;
+    solver.relative_step_tolerance = 1.e-3;
+    solver.relative_residual_tolerance = 0.0;
+    solver.absolute_residual_tolerance = 0.0;
+
+    // And the linear solver options
+    solver.max_linear_iterations = 50000;
+    solver.initial_linear_tolerance = 1.e-3;
 
 	// Set the weight function object
 	weight_parameter_function  system_weight(mesh_weight);
@@ -103,10 +136,9 @@ int main(int argc, char** argv) {
 	perf_log.pop("System setup:");
 
 	// Assemble!
-	assemble_elasticity_with_weight_and_traction(equation_systems,"Elasticity",system_weight,
-							input_params.system_type,
-							boundary_id_cube::MAX_X,
-							traction_density);
+	assemble_elasticity_with_weight_dyn(equation_systems,"Linear Elasticity",system_weight,
+        input_params.system_type);
+
 // Print MatLab debugging output? Variable defined at "carl_headers.h"
 #ifdef PRINT_MATLAB_DEBUG
 	elasticity_system.matrix->print_matlab(input_params.output_base + "_sys_mat.m");
@@ -128,6 +160,33 @@ int main(int argc, char** argv) {
 		write_rigid_body_vectors(nullsp_sys,input_params.output_base,WorldComm.rank());
 		MatNullSpaceDestroy(&nullsp_sys);
 	}
-	
+
 	return 0;
 }
+
+//ElasticitySystem& add_dyn_newmark(libMesh::EquationSystems& input_systems, 
+//    libMesh::Order order, 
+//    libMesh::FEFamily family)
+//{
+//    libMesh::ExplicitSystem& physical_variables =
+//        input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
+//
+//    // Physical constants are set as constant, monomial
+//    physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
+//    physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
+//    physical_variables.add_variable("Rho", libMesh::CONSTANT, libMesh::MONOMIAL);
+//    physical_variables.add_variable("Index", libMesh::CONSTANT, libMesh::MONOMIAL);
+//
+//    ElasticitySystem& elasticity_system =
+//        input_systems.add_system<ElasticitySystem> ("Linear Elasticity");
+//
+//    return elasticity_system;
+//}
+
+/* Local Variables:                                                        */
+/* mode: c++                                                               */
+/* show-trailing-whitespace: t                                             */
+/* coding: utf-8                                                           */
+/* c-file-style: "stroustrup"                                              */
+/* End:                                                                    */
+/* vim: set sw=4 ts=4 et tw=80 smartindent :                               */

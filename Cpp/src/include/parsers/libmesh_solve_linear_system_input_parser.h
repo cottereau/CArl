@@ -20,6 +20,10 @@ struct libmesh_solve_linear_system_input_params {
 	std::string output_base; 	///< Output filename base.
 
 	double sys_eps;		///< Relative convergence parameter.
+    double alpha1,alpha2; //< Newmark's alpha parameters
+    double beta1,beta2;   //< Newmark's beta  parameters
+    double gamma1,gamma2; //< Newmark's gamma parameters
+
 	int sys_iter_div;	///< Maximum number of iterations.
 
 	std::string path_to_rb_vectors;	///< Path to a folder containing the rigid body mode vectors.

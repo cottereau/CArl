@@ -10,7 +10,6 @@
 
 #include "common_header_ext_solver_libmesh.h"
 #include "ext_solver_libmesh_enums.h"
-
 /// 3D border displacement class, derived from libMesh::FunctionBase<libMesh::Number>.
 class border_displacement_function : public libMesh::FunctionBase<libMesh::Number>
 {
@@ -78,8 +77,24 @@ void set_clamped_border(libMesh::ImplicitSystem& elasticity_system, int boundary
 libMesh::ExplicitSystem& add_stress(libMesh::EquationSystems& input_systems);
 
 /// Add a linear elasticity libMesh::LinearImplicitSystem to the input libMesh::EquationSystems& input_systems.
-libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
-												libMesh::Order order = libMesh::FIRST,
-												libMesh::FEFamily family = libMesh::LAGRANGE);
-		
+libMesh::LinearImplicitSystem& add_elasticity(libMesh::EquationSystems& input_systems,
+    libMesh::Order order = libMesh::FIRST,
+    libMesh::FEFamily family = libMesh::LAGRANGE);
+
+libMesh::ExplicitSystem& add_vel_newmark(libMesh::EquationSystems& input_systems, 
+    libMesh::Order order = libMesh::FIRST, 
+    libMesh::FEFamily family = libMesh::LAGRANGE);
+
+libMesh::ExplicitSystem& add_acc_newmark(libMesh::EquationSystems& input_systems, 
+    libMesh::Order order = libMesh::FIRST, 
+    libMesh::FEFamily family = libMesh::LAGRANGE);
+
 #endif /* COMMON_FUNCTIONS_ELASTICITY_3D_H_ */
+
+/* Local Variables:                                                        */
+/* mode: c++                                                               */
+/* show-trailing-whitespace: t                                             */
+/* coding: utf-8                                                           */
+/* c-file-style: "stroustrup"                                              */
+/* End:                                                                    */
+/* vim: set sw=4 ts=4 et tw=80 smartindent :                               */

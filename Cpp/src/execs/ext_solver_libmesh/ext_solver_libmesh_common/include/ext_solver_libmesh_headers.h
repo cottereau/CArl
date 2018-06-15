@@ -10,6 +10,7 @@
 
 #include "common_header_ext_solver_libmesh.h"
 #include "assemble_functions_elasticity_3D.h"
+#include "assemble_functions_elasticity_3D_dyn.h"
 #include "ext_solver_libmesh_enums.h"
 #include "common_assemble_functions_elasticity_3D.h"
 #include "weight_parameter_function.h"

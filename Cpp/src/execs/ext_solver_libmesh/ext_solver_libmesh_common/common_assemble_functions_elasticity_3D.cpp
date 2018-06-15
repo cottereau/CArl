@@ -1,5 +1,4 @@
 #include "common_assemble_functions_elasticity_3D.h"
-
 // Some boundary conditions functions
 void set_displaced_border_translation(libMesh::ImplicitSystem& elasticity_system, border_displacement_values& displ, int boundary_id)
 {
@@ -86,3 +85,38 @@ libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_s
 
 	return elasticity_system;
 }
+
+libMesh::ExplicitSystem& add_vel_newmark(libMesh::EquationSystems& input_systems, 
+    libMesh::Order order, 
+    libMesh::FEFamily family)
+{
+    libMesh::ExplicitSystem& v_system = 
+        input_systems.add_system<libMesh::ExplicitSystem>("Velocity");
+    v_system.add_variable("u_vel", order, family);
+    v_system.add_variable("v_vel", order, family);
+    v_system.add_variable("w_vel", order, family);
+
+    return v_system;
+}
+
+libMesh::ExplicitSystem& add_acc_newmark(libMesh::EquationSystems& input_systems, 
+    libMesh::Order order,
+    libMesh::FEFamily family)
+{
+    libMesh::ExplicitSystem& a_system = 
+        input_systems.add_system<libMesh::ExplicitSystem>("Acceleration");
+    a_system.add_variable("u_accel", order, family);
+    a_system.add_variable("v_accel", order, family);
+    a_system.add_variable("w_accel", order, family);
+
+    return a_system;
+}
+
+
+/* Local Variables:                                                        */
+/* mode: c++                                                               */
+/* show-trailing-whitespace: t                                             */
+/* coding: utf-8                                                           */
+/* c-file-style: "stroustrup"                                              */
+/* End:                                                                    */
+/* vim: set sw=4 ts=4 et tw=80 smartindent :                               */

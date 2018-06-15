@@ -61,7 +61,10 @@
 #include "libmesh/fem_context.h"
 #include "libmesh/getpot.h"
 #include "libmesh/mesh.h"
+#include "libmesh/enum_solver_package.h"
+#include "libmesh/enum_solver_type.h"
 #include "libmesh/newton_solver.h"
+#include "libmesh/newmark_solver.h"
 #include "libmesh/numeric_vector.h"
 #include "libmesh/quadrature.h"
 #include "libmesh/sparse_matrix.h"
@@ -84,7 +87,6 @@
 #include <petscksp.h>
 
 #include "carl_headers.h"
-
 // #define homemade_error_msg(msg) do \
 // { \
 // 	std::cerr << "Error: " <<  msg << std::endl; \

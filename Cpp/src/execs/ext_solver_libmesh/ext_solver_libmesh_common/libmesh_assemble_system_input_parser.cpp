@@ -3,8 +3,10 @@
  *
  *  Created on: Apr 16, 2017
  *      Author: Thiago Milanetto Schlittler
+ *  Added dynamics on: May 31, 2018
+ *      Author: Filippo Gatti
  */
-
+// This file contains the subroutines to read the input files
 #include "libmesh_assemble_system_input_parser.h"
 void get_input_params(GetPot& field_parser,
 		libmesh_assemble_input_params& input_params) {
@@ -21,6 +23,7 @@ void get_input_params(GetPot& field_parser,
 	if ( field_parser.search(1, "PhysicalParameters") )
 	{
 		input_params.physical_params_file = field_parser.next(input_params.physical_params_file);
+        std::cout << " >> INPUT FILE: " << input_params.physical_params_file; 
 	}
 	else
 	{

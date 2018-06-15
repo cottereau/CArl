@@ -90,6 +90,28 @@ int main(int argc, char** argv) {
 	libMesh::LinearImplicitSystem& elasticity_system
 										= add_elasticity(equation_systems);
 
+    // Add two displacement variables, u and v, to the system
+    unsigned int u_var = system.add_variable("u", SECOND, LAGRANGE);
+    unsigned int v_var = system.add_variable("v", SECOND, LAGRANGE);
+    // Set-up dynamic system
+    if( time_solver == std::string("newmark") )
+    {
+        //Create ExplicitSystem to help output velocity
+        v_system = &equation_systems.add_system<ExplicitSystem> ("Velocity");
+        v_system->add_variable("u_vel", FIRST, LAGRANGE);
+        v_system->add_variable("v_vel", FIRST, LAGRANGE);
+        v_system->add_variable("w_vel", FIRST, LAGRANGE);
+        
+        // Create ExplicitSystem to help output acceleration
+        a_system = &equation_systems.add_system<ExplicitSystem> ("Acceleration");
+        a_system->add_variable("u_accel", FIRST, LAGRANGE);
+        a_system->add_variable("v_accel", FIRST, LAGRANGE);
+        a_system->add_variable("w_accel", FIRST, LAGRANGE);
+    }
+        
+    if( time_solver == std::string("newmark"))
+        system.time_solver.reset(new NewmarkSolver(system));
+
 	// Initialize the equation systems
 	equation_systems.init();
 
@@ -99,6 +121,7 @@ int main(int argc, char** argv) {
 	// Set the weight function object
 	weight_parameter_function  system_weight(mesh_weight);
 	system_weight.set_parameters(input_params.weight_domain_idx_file);
+
 
 	perf_log.pop("System setup:");
 

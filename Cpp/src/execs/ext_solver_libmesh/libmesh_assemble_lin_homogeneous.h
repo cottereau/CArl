@@ -12,5 +12,4 @@
 #include "libmesh_assemble_system_input_parser.h"
 #include "PETSC_matrix_operations.h"
 #include "rigid_body_nullspace_functions_3D.h"
-
 #endif /* EXECS_LIBMESH_ASSEMBLE_LIN_HOMOGENEOUS_H_ */

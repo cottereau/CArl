@@ -40,6 +40,31 @@ void get_input_params(GetPot& field_parser,
 		input_params.sys_eps = 1e-5;
 	}
 
+    if (field_parser.search(1,"Newmark")) {
+		input_params.alpha1 = field_parser.next(
+				input_params.alpha1);
+		input_params.beta1 = field_parser.next(
+				input_params.beta1);
+		input_params.gamma1 = field_parser.next(
+				input_params.gamma1);
+        //
+		input_params.alpha2 = field_parser.next(
+				input_params.alpha2);
+		input_params.beta2 = field_parser.next(
+				input_params.beta2);
+		input_params.gamma2 = field_parser.next(
+				input_params.gamma2);
+
+    } else {
+        input_params.alpha1 = 1.00;  
+        input_params.alpha2 = 1.00;  
+        input_params.beta1  = 0.25;  
+        input_params.beta2  = 0.25;
+        input_params.gamma1 = 0.50; 
+        input_params.gamma2 = 0.50;  
+    }
+            
+
 	if (field_parser.search(1, "SysIterDiv")) {
 		input_params.sys_iter_div = field_parser.next(
 				input_params.sys_iter_div);
