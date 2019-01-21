@@ -42,7 +42,6 @@ void get_input_params(GetPot& field_parser,
 		else if(sys_type == "NoWeight" || sys_type == "NOWEIGHT" || sys_type == "noweight")
 		{
 			input_params.system_type = WeightFunctionSystemType::NO_WEIGHT;
-			std::cout << " >> Warning: Will not use the weight parameters!" << std::endl;
 		}
 		else
 			homemade_error_msg("Invalid system type (must be either Macro, Micro or NoWeight)!");

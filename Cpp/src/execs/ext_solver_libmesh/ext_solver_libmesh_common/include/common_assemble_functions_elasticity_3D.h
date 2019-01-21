@@ -11,6 +11,7 @@
 #include "common_header_ext_solver_libmesh.h"
 #include "ext_solver_libmesh_enums.h"
 #include "libmesh/fem_system.h"
+#include "weight_parameter_function.h"
 /// 3D border displacement class, derived from libMesh::FunctionBase<libMesh::Number>.
 
 #define BOUNDARY_ID_MIN_Z 0
@@ -134,6 +135,7 @@ void set_displaced_border_translation(libMesh::ImplicitSystem& elasticity_system
 
 /// Set a clamped border.
 void set_clamped_border(libMesh::ImplicitSystem& elasticity_system, int boundary_id);
+void set_clamped_border_dyn(ElasticitySystem& elasticity_system, int boundary_id);
 
 /// Add a stress libMesh::ExplicitSystem to the input libMesh::EquationSystems.
 libMesh::ExplicitSystem& add_stress(libMesh::EquationSystems& input_systems);

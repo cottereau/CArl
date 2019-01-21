@@ -68,6 +68,10 @@ void set_homogeneous_physical_properties(libMesh::EquationSystems& es, std::stri
 	physical_param_system.update();
 }
 
+
+
+
+
 void set_heterogeneous_physical_properties(libMesh::EquationSystems& es, std::string& physicalParamsFile)
 {
 	const libMesh::Parallel::Communicator& SysComm = es.comm();
@@ -675,6 +679,7 @@ void assemble_elasticity_heterogeneous_with_weight(	libMesh::EquationSystems& es
 	libMesh::DenseMatrix<libMesh::Number> Ke;
 	libMesh::DenseVector<libMesh::Number> Fe;
 
+  std::cout << "COMPARE";
 	libMesh::DenseSubMatrix<libMesh::Number>
 	Kuu(Ke), Kuv(Ke), Kuw(Ke),
 	Kvu(Ke), Kvv(Ke), Kvw(Ke),
