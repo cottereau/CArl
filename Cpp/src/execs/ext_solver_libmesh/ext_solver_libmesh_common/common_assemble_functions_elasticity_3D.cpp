@@ -1,4 +1,5 @@
 #include "common_assemble_functions_elasticity_3D.h"
+#include "weight_parameter_function.h"
 // Create Elasticity System for dynamic analysis
 
 void ElasticitySystem::init_data()
@@ -11,12 +12,6 @@ void ElasticitySystem::init_data()
     this->time_evolving(_v_var,2);
     this->time_evolving(_w_var,2);
     ///
-//      , weight_parameter_function& weight_mask,
-//              WeightFunctionSystemType system_type,
-//    std::vector<double> force_vol;
-//    std::vector<double> traction_density;
-//    int traction_boundary_id;
-
     // [USER] Fixed boudary
     boundary_id_cube fixed_bound_id = boundary_id_cube::MIN_X;
     set_clamped_border_dyn(*this, fixed_bound_id);
@@ -92,9 +87,9 @@ bool ElasticitySystem::element_time_derivative(bool request_jacobian,
 
 
     libMesh::Gradient body_force(0.0, 0.0, 0.0);
-    body_force(0) = force_vol[0];
-    body_force(1) = force_vol[1];
-    body_force(2) = force_vol[2];
+    body_force(0) = this->force_vol[0];
+    body_force(1) = this->force_vol[1];
+    body_force(2) = this->force_vol[2];
     
     // Here we apply sinusoidal pressure values for 0<t<0.002
     // at one end of the pipe-mesh.
@@ -111,7 +106,7 @@ bool ElasticitySystem::element_time_derivative(bool request_jacobian,
 
     for (unsigned int qp=0; qp != n_qpoints; qp++)
     {
-        weight_alpha = weight_mask.get_alpha(qp,system_type);
+        weight_alpha = this->p_system_weight->get_alpha(qp,this->r_system_type);
         libMesh::Gradient grad_u, grad_v, grad_w;
         c.interior_gradient(_u_var, qp, grad_u);
         c.interior_gradient(_v_var, qp, grad_v);
@@ -214,9 +209,9 @@ bool ElasticitySystem::side_time_derivative (bool request_jacobian,
         unsigned int n_qpoints = c.get_side_qrule().n_points();
 
         libMesh::Gradient traction(0.0, 0.0, -1.0);
-        traction(0) = traction_density[0];
-        traction(1) = traction_density[1];
-        traction(2) = traction_density[2];
+        traction(0) = this->traction_density[0];
+        traction(1) = this->traction_density[1];
+        traction(2) = this->traction_density[2];
 
         for (unsigned int qp=0; qp != n_qpoints; qp++)
         {
@@ -310,6 +305,25 @@ bool ElasticitySystem::mass_residual(bool request_jacobian,
     return request_jacobian;
 }
 
+//void set_system_type(WeightFunctionSystemType& system_type)
+//{
+//    r_system_type = system_type;
+//}
+
+void ElasticitySystem::set_weight_mask(weight_parameter_function& system_weight,
+        WeightFunctionSystemType& system_type)
+{
+    this->p_system_weight = &system_weight;
+    this->r_system_type = system_type;
+}
+
+void ElasticitySystem::set_loading(int traction_boundary_id,std::vector<double> force_vol,
+        std::vector<double> traction_density)
+{
+    this->traction_density = traction_density;
+    
+    this->force_vol = force_vol;
+}
 
 libMesh::Real ElasticitySystem::elasticity_tensor(unsigned int i, unsigned int j, 
         unsigned int k, unsigned int l)

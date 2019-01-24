@@ -15,7 +15,8 @@
 #include "ext_solver_libmesh_enums.h"
 
 /// Set the homogeneous physical properties from a file ---> add rho
-void set_homogeneous_physical_properties_dyn(libMesh::EquationSystems& es, std::string& physicalParamsFile);
+void set_homogeneous_physical_properties_dyn(libMesh::EquationSystems& es, 
+    std::string& physicalParamsFile);
 
 /// Set the heterogeneous, isotropic physical properties from a file ---> add rho
 void set_heterogeneous_physical_properties_dyn(libMesh::EquationSystems& es, std::string& physicalParamsFile);

@@ -45,6 +45,12 @@ class ElasticitySystem : public libMesh::FEMSystem
         // Context initialization
         virtual void init_context(libMesh::DiffContext & context);
 
+        virtual void set_weight_mask(weight_parameter_function& system_weight,
+            WeightFunctionSystemType& system_type);
+
+        virtual void set_loading(int traction_boundary_id,
+            std::vector<double> force_vol,std::vector<double> traction_density);
+                //
         // Element residual and jacobian calculations
         // Time dependent parts
         virtual bool element_time_derivative (bool request_jacobian,
@@ -62,7 +68,13 @@ class ElasticitySystem : public libMesh::FEMSystem
         // Indices for each variable;
         unsigned int _u_var, _v_var, _w_var;
 
+        int traction_boundary_id;
+        std::vector<double> force_vol;
+        std::vector<double> traction_density;
+
         libMesh::Real _rho;
+        weight_parameter_function *p_system_weight;
+        WeightFunctionSystemType r_system_type;
 
         libMesh::Real kronecker_delta(unsigned int i, unsigned int j)
         {
@@ -70,8 +82,10 @@ class ElasticitySystem : public libMesh::FEMSystem
         }
 
         libMesh::Real elasticity_tensor(unsigned int i, unsigned int j, unsigned int k, unsigned int l);
-};
+        
+        //virtual void set_system_type(WeightFunctionSystemType system_type);
 
+};
 
 
 class border_displacement_function : public libMesh::FunctionBase<libMesh::Number>
