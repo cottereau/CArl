@@ -2,19 +2,13 @@
 #include "assemble_functions_elasticity_3D_dyn.h"
 #include "common_assemble_functions_elasticity_3D.h"
 
-
 void set_homogeneous_physical_properties_dyn(libMesh::EquationSystems& es, 
-        std::string& physicalParamsFile,
-        system_weight,system_type,boundary_id_cube,traction_density); 
+        std::string& physicalParamsFile)
 {
     const libMesh::Parallel::Communicator& SysComm = es.comm();
     int rank = SysComm.rank();
     int nodes = SysComm.size();
      
-    WeightFunctionSystemType system_type;
-    std::vector<double> force_vol;
-    std::vector<double> traction_density;
-    int traction_boundary_id;
     // Read the random data info
     double inputE;
     double inputMu;
@@ -33,6 +27,16 @@ void set_homogeneous_physical_properties_dyn(libMesh::EquationSystems& es,
     
     // Mesh pointer
     const libMesh::MeshBase& mesh = es.get_mesh();
+
+//    libMesh::ExplicitSystem& external_loading = es.get_system<libMesh::ExplicitSystem>("ExternalLoading");
+//    external_loading.traction_density(0) = traction_density[0];
+//    external_loading.traction_density(1) = traction_density[1];
+//    external_loading.traction_density(2) = traction_density[2];
+//    
+//    external_loading.force_vol(0) = force_vol[0];
+//    external_loading.force_vol(1) = force_vol[1];
+//    external_loading.force_vol(2) = force_vol[2];
+
 
     // Physical system and its "variables"
     libMesh::ExplicitSystem& physical_param_system = es.get_system<libMesh::ExplicitSystem>("PhysicalConstants");
