@@ -1,6 +1,6 @@
 ### 'Macro' system assembly parameters
 # - Path to the model mesh
-Mesh examples/coupled_traction_test/meshes/test_brick_A_1k.msh
+Mesh examples/coupled_traction_test/meshes/test_brick_A_dyn.msh
 
 # - Path to the physical parameter file
 PhysicalParameters examples/coupled_traction_test/meshes/test_brick_I_1_physical_dyn.dat
@@ -15,5 +15,5 @@ WeightIndexes examples/coupled_traction_test/meshes/test_brick_mask_idx.dat
 SystemType	Macro
 
 # - Output files base name
-OutputBase examples/coupled_traction_test/FETI_solver/brick_traction_1k/system_matrices/traction_model_A
+OutputBase examples/coupled_traction_test/FETI_solver/brick_traction_1k_dyn/system_matrices_dyn/traction_model_A
 

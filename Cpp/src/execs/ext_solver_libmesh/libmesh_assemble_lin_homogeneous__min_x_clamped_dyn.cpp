@@ -23,7 +23,7 @@
 int main(int argc, char** argv) {
     // [USER] Traction force density
     std::vector<double> traction_density(3,0);
-    traction_density[0] = 100.;
+    traction_density[0] = 0.;
     std::vector<double> force_vol(3,0);
     force_vol[2] = 100.;
     //
@@ -78,6 +78,9 @@ int main(int argc, char** argv) {
     mesh_weight.allow_renumbering(false);
     mesh_weight.read(input_params.mesh_weight_file);
     mesh_weight.prepare_for_use();
+
+    weight_parameter_function system_weight(mesh_weight);
+    system_weight.set_parameters(input_params.weight_domain_idx_file);
     
     perf_log.pop("Meshes - Parallel","Read files:");
     
@@ -96,13 +99,11 @@ int main(int argc, char** argv) {
     physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
     physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
     physical_variables.add_variable("Index", libMesh::CONSTANT, libMesh::MONOMIAL);
-    //
-    weight_parameter_function  system_weight(mesh_weight);
-    system_weight.set_parameters(input_params.weight_domain_idx_file);
-    //
-        
+
     ElasticitySystem & elasticity_system =
         equation_systems.add_system<ElasticitySystem>("Linear Elasticity");
+    
+    elasticity_system.set_weight_mask(system_weight,input_params.system_type);
     //Create ExplicitSystem to help output velocity
     libMesh::ExplicitSystem * v_system;
     v_system = &add_vel_newmark(equation_systems);
@@ -120,9 +121,10 @@ int main(int argc, char** argv) {
     // Homogeneous properties for the macro system
     equation_systems.init();
     //
-    set_homogeneous_physical_properties_dyn(equation_systems, input_params.physical_params_file,
-        system_weight,input_params.system_type,boundary_id_cube::MAX_X,
-        traction_density); 
+    elasticity_system.set_loading(boundary_id_cube::MAX_X,force_vol,traction_density);
+
+    set_homogeneous_physical_properties_dyn(equation_systems, 
+        input_params.physical_params_file);
     //
     // Physical constants are set as constant, monomial
     const libMesh::Parallel::Communicator& SysComm = equation_systems.comm();

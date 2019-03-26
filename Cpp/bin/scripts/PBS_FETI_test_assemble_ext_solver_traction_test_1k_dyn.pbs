@@ -31,6 +31,6 @@ mkdir -p examples/coupled_traction_test/FETI_solver/brick_traction_1k_dyn/system
 echo " --- Assemble clamped coupled model ..."
 mpirun -np 4 ./libmesh_assemble_lin_homogeneous__min_x_clamped_dyn -i examples/coupled_traction_test/FETI_solver/brick_traction_1k_dyn/assemble_brick_traction_A_1k_dyn.txt 
 
-echo " --- Assemble traction coupled model ..."
-mpirun -np 4 ./libmesh_assemble_lin_homogeneous__max_x_traction_dyn -i examples/coupled_traction_test/FETI_solver/brick_traction_1k_dyn/assemble_brick_traction_B_1k_dyn.txt
-
+#echo " --- Assemble traction coupled model ..."
+#mpirun -np 4 ./libmesh_assemble_lin_homogeneous__max_x_traction_dyn -i examples/coupled_traction_test/FETI_solver/brick_traction_1k_dyn/assemble_brick_traction_B_1k_dyn.txt
+#
