@@ -12,6 +12,7 @@ This software is mainly developed at laboratoire MSSMat (Ecole Centrale Paris - 
 * contact : [Regis Cottereau](mailto:regis.cottereau@ecp.fr)
 * contributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec, D. Neron, T. M. Schlittler
 
+more detail on installation procedures and examples can be found the [related help web page](https://cottereau.github.io/CArl/)
 ## MATLAB IMPLEMENTATION
 
 The MATLAB implementation of the CArl software can be found at the directory `MATLAB`. Currently, the software to which it is interfaced includes :
@@ -27,7 +28,7 @@ Before using the software, you should make sure that you update the matlab path 
 `>> addpath( genpath('install_dir_CArl/'));`
 where you replace `install_dir_CArl` by the full path to the directory `CArl/`
 
-Additionally, you might want to write this line in the startup file (generally located in `~/matlab/startup.m`)
+Additionally, you might want to write this line in the startup file (located by defaut for instance in MacOS in `~/Documents/MATLAB/startup.m`)
 
 This code has not been extensively tested, but should run on Matlab versions R2013a and newer (mainly because the objects triangulation and delaunayTriangulation are required)
 
@@ -45,7 +46,7 @@ Some examples (in 1D and 2D) can be launched through use of the routine `Test.m`
  
 ## C++ / MPI IMPLEMENTATION
 
-The C++ / MPI implementation of the CArl software can found at the directory `Cpp`. Currently, it is capable of interfacing with external solvers based on the [PETSc](http://www.mcs.anl.gov/petsc/) toolkit (including the libMesh solvers, when compiled with PETSc support).
+The C++ / MPI implementation of the CArl software can be found in the directory `Cpp`. Currently, it is capable of interfacing with external solvers based on the [PETSc](http://www.mcs.anl.gov/petsc/) toolkit (including the libMesh solvers, when compiled with PETSc support).
 
 The usage of this implementation will be added in the near future, together with a general documentation and examples.
 
