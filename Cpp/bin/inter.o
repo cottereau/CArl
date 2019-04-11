@@ -1,0 +1,85 @@
+*** Warning, This code is deprecated, and likely to be removed in future library versions! src/mesh/mesh_tools.C, line 317, compiled Mar 25 2018 at 17:11:52 ***
+*** Warning, This code is deprecated, and likely to be removed in future library versions! ./include/libmesh/mesh_tools.h, line 71, compiled Mar 25 2018 at 17:11:52 ***
+*** Warning, This code is deprecated, and likely to be removed in future library versions! /home/gattif/LOCAL/libmesh/include/libmesh/bounding_box.h, line 105, compiled Jun 15 2018 at 14:51:05 ***
+ -> Using CGAL to generate mesh
+*** Warning, This code is deprecated, and likely to be removed in future library versions! /home/gattif/LOCAL/libmesh/include/libmesh/mesh_base.h, line 541, compiled Jun 15 2018 at 14:56:19 ***
+*** Warning, This code is deprecated, and likely to be removed in future library versions! /home/gattif/LOCAL/libmesh/include/libmesh/elem.h, line 1847, compiled Jun 15 2018 at 14:51:06 ***
+*** Warning, This code is deprecated, and likely to be removed in future library versions! /home/gattif/LOCAL/libmesh/include/libmesh/elem.h, line 1993, compiled Jun 15 2018 at 14:51:06 ***
+*** Warning, This code is deprecated, and likely to be removed in future library versions! /home/gattif/LOCAL/libmesh/include/libmesh/mesh_base.h, line 457, compiled Jun 15 2018 at 14:51:05 ***
+    TOTAL volume, proc. 0
+ -> Intersection volume / real    : 8 / 8
+
+    DEBUG: discrete grid
+ -> eps             : 2e-09
+ -> volume          : 2.50078e-09
+ -> Grid dimensions : 1000000005 1000000005 1000000005 
+
+
+ ------------------------------------------------------------------------------------------------
+| Processor id:   0                                                                              |
+| Num Processors: 4                                                                              |
+| Time:           Wed Jan 16 18:23:39 2019                                                       |
+| OS:             Linux                                                                          |
+| HostName:       fusion-shm17                                                                   |
+| OS Release:     3.10.0-693.21.1.el7.x86_64                                                     |
+| OS Version:     #1 SMP Wed Mar 7 19:03:37 UTC 2018                                             |
+| Machine:        x86_64                                                                         |
+| Username:       gattif                                                                         |
+| Configuration:  ./configure  '--with-cxx=mpiicpc'                                              |
+|  '--with-cc=mpiicc'                                                                            |
+|  '--prefix=/home/gattif/LOCAL/libmesh/'                                                        |
+|  '--with-vtk=yes'                                                                              |
+|  '--enable-unique-ptr'                                                                         |
+|  '--with-mpi=/gpfs/opt/compilers/intel/compilers_and_libraries_2017.4.196/linux/mpi/intel64/bin'|
+|  '--with-boost=/home/gattif/LOCAL/boost/'                                                      |
+|  '--disable-strict-lgpl'                                                                       |
+|  '--with-hdf5=/gpfs/opt/libraries/hdf5/1.8.16'                                                 |
+|  '--with-methods=opt'                                                                          |
+|  'PETSC_DIR=/home/gattif/srclib/petsc'                                                         |
+|  'PETSC_ARCH=arch-linux2-cxx-opt'                                                              |
+ ------------------------------------------------------------------------------------------------
+ --------------------------------------------------------------------------------------------------------------
+| Intersection search Performance: Alive time=79.7364, Active time=77.7089                                     |
+ --------------------------------------------------------------------------------------------------------------
+| Event                           nCalls     Total Time  Avg Time    Total Time  Avg Time    % of Active Time  |
+|                                            w/o Sub     w/o Sub     With Sub    With Sub    w/o S    With S   |
+|--------------------------------------------------------------------------------------------------------------|
+|                                                                                                              |
+|                                                                                                              |
+| Brute force                                                                                                  |
+|   Build intersections           79         0.2804      0.003549    74.8477     0.947439    0.36     96.32    |
+|   Build patches                 79         0.7184      0.009094    0.7184      0.009094    0.92     0.92     |
+|   Find intersections            79         0.0034      0.000043    0.7761      0.009824    0.00     1.00     |
+|   Prepare mesh                  1          0.0022      0.002180    0.0022      0.002180    0.00     0.00     |
+|                                                                                                              |
+| Brute force (preamble run)                                                                                   |
+|   Build patches                 80         0.7467      0.009334    0.7467      0.009334    0.96     0.96     |
+|   Find intersections            80         0.0028      0.000035    0.6192      0.007740    0.00     0.80     |
+|                                                                                                              |
+| Brute force algorithm                                                                                        |
+|   Find intersection             14045      0.8352      0.000059    0.8352      0.000059    1.07     1.07     |
+|   Preamble                      159        0.5532      0.003479    0.5532      0.003479    0.71     0.71     |
+|                                                                                                              |
+| Build intersections                                                                                          |
+|   Build intersection polyhedron 3187       74.5055     0.023378    74.5055     0.023378    95.88    95.88    |
+|   Update intersection           400        0.0610      0.000153    0.0610      0.000153    0.08     0.08     |
+ --------------------------------------------------------------------------------------------------------------
+| Totals:                         18189      77.7089                                         100.00            |
+ --------------------------------------------------------------------------------------------------------------
+
+ ------------------------------------------------------------------------------------------------------------
+| Main program Performance: Alive time=79.9212, Active time=78.2066                                          |
+ ------------------------------------------------------------------------------------------------------------
+| Event                         nCalls     Total Time  Avg Time    Total Time  Avg Time    % of Active Time  |
+|                                          w/o Sub     w/o Sub     With Sub    With Sub    w/o S    With S   |
+|------------------------------------------------------------------------------------------------------------|
+|                                                                                                            |
+| Join intersection tables      1          0.0089      0.008934    0.0089      0.008934    0.01     0.01     |
+| Prepare intersection load     2          0.0007      0.000334    0.0000      0.000000    0.00     0.00     |
+| Restrict meshes               1          0.0223      0.022280    0.0223      0.022280    0.03     0.03     |
+| Search intersection           1          78.1333     78.133301   78.1333     78.133301   99.91    99.91    |
+| Set up                        1          0.0414      0.041370    0.0414      0.041370    0.05     0.05     |
+ ------------------------------------------------------------------------------------------------------------
+| Totals:                       6          78.2066                                         100.00            |
+ ------------------------------------------------------------------------------------------------------------
+

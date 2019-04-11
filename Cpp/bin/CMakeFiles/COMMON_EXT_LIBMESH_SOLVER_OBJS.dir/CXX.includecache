@@ -6,26 +6,6 @@
 
 #IncludeRegexTransform: 
 
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/assemble_functions_elasticity_3D.h
-common_header_ext_solver_libmesh.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/common_header_ext_solver_libmesh.h
-common_assemble_functions_elasticity_3D.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/common_assemble_functions_elasticity_3D.h
-weight_parameter_function.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/weight_parameter_function.h
-ext_solver_libmesh_enums.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/ext_solver_libmesh_enums.h
-
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/assemble_functions_elasticity_3D_dyn.h
-common_header_ext_solver_libmesh.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/common_header_ext_solver_libmesh.h
-common_assemble_functions_elasticity_3D.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/common_assemble_functions_elasticity_3D.h
-weight_parameter_function.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/weight_parameter_function.h
-ext_solver_libmesh_enums.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/ext_solver_libmesh_enums.h
-
 ../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/common_assemble_functions_elasticity_3D.h
 common_header_ext_solver_libmesh.h
 ../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/common_header_ext_solver_libmesh.h
@@ -33,6 +13,8 @@ ext_solver_libmesh_enums.h
 ../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/ext_solver_libmesh_enums.h
 libmesh/fem_system.h
 ../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/libmesh/fem_system.h
+weight_parameter_function.h
+../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/weight_parameter_function.h
 
 ../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/common_header_ext_solver_libmesh.h
 libmesh/analytic_function.h
@@ -186,28 +168,6 @@ petscksp.h
 carl_headers.h
 ../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/carl_headers.h
 
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/libmesh_apply_solution_input_parser.h
-carl_headers.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/carl_headers.h
-ext_solver_libmesh_enums.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/ext_solver_libmesh_enums.h
-
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/libmesh_assemble_system_input_parser.h
-common_header_ext_solver_libmesh.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/common_header_ext_solver_libmesh.h
-ext_solver_libmesh_enums.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/ext_solver_libmesh_enums.h
-
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/rigid_body_nullspace_functions_3D.h
-common_header_ext_solver_libmesh.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/common_header_ext_solver_libmesh.h
-PETSC_matrix_operations.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/PETSC_matrix_operations.h
-
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/weight_parameter_function.h
-common_header_ext_solver_libmesh.h
-../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/common_header_ext_solver_libmesh.h
-
 ../src/include/CGAL_typedefs.h
 CGAL/Exact_predicates_inexact_constructions_kernel.h
 -
@@ -261,10 +221,6 @@ CGAL/IO/Triangulation_geomview_ostream_2.h
 -
 CGAL/IO/Triangulation_geomview_ostream_3.h
 -
-
-../src/include/PETSC_matrix_operations.h
-carl_headers.h
-../src/include/carl_headers.h
 
 ../src/include/carl_headers.h
 common_header.h
@@ -483,6 +439,10 @@ petscksp.h
 ../src/include/ext_solver_libmesh_enums.h
 common_header_ext_solver_libmesh.h
 ../src/include/common_header_ext_solver_libmesh.h
+
+../src/include/weight_parameter_function.h
+carl_headers.h
+../src/include/carl_headers.h
 
 /gpfs/opt/libraries/libgmp/6.1.2/include/gmp.h
 iosfwd
@@ -32244,29 +32204,9 @@ CGAL/version.h
 CGAL/Kernel/Wutils.h
 -
 
-/home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/assemble_functions_elasticity_3D.cpp
-assemble_functions_elasticity_3D.h
-/home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/assemble_functions_elasticity_3D.h
-
-/home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/assemble_functions_elasticity_3D_dyn.cpp
-assemble_functions_elasticity_3D.h
-/home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/assemble_functions_elasticity_3D.h
-assemble_functions_elasticity_3D_dyn.h
-/home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/assemble_functions_elasticity_3D_dyn.h
-
 /home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/common_assemble_functions_elasticity_3D.cpp
 common_assemble_functions_elasticity_3D.h
 /home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/common_assemble_functions_elasticity_3D.h
-
-/home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/libmesh_apply_solution_input_parser.cpp
-libmesh_apply_solution_input_parser.h
-/home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/libmesh_apply_solution_input_parser.h
-
-/home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/libmesh_assemble_system_input_parser.cpp
-libmesh_assemble_system_input_parser.h
-/home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/libmesh_assemble_system_input_parser.h
-
-/home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/rigid_body_nullspace_functions_3D.cpp
-rigid_body_nullspace_functions_3D.h
-/home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/rigid_body_nullspace_functions_3D.h
+weight_parameter_function.h
+/home/gattif/srclib/CArl/Cpp/src/execs/ext_solver_libmesh/ext_solver_libmesh_common/weight_parameter_function.h
 

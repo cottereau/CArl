@@ -1,0 +1,4 @@
+ --- Assemble clamped coupled model ...
+ >> INPUT FILE: examples/coupled_traction_test/meshes/test_brick_I_1_physical_dyn.dat >> Warning: Both system's domain index not defined!
+ >> Warning: Alpha epsilon not defined, using 1e-2!
+DEBUG WEIGHTS OKDEBUG PROPERTIES OKAssembling the System

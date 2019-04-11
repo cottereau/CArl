@@ -19,13 +19,13 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/gpfs/opt/libraries/libmpfr/3.1.5/include"
-  "/gpfs/opt/libraries/libgmp/6.1.2/include"
   "."
-  "/home/gattif/LOCAL/cgal/include"
   "../src/include"
   "../src/include/parsers"
   "../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include"
+  "/gpfs/opt/libraries/libmpfr/3.1.5/include"
+  "/gpfs/opt/libraries/libgmp/6.1.2/include"
+  "/home/gattif/LOCAL/cgal/include"
   "/home/gattif/LOCAL/boost/include"
   )
 

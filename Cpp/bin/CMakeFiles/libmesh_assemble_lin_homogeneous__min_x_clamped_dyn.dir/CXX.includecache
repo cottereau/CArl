@@ -33,6 +33,8 @@ ext_solver_libmesh_enums.h
 ../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/ext_solver_libmesh_enums.h
 libmesh/fem_system.h
 ../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/libmesh/fem_system.h
+weight_parameter_function.h
+../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/weight_parameter_function.h
 
 ../src/execs/ext_solver_libmesh/ext_solver_libmesh_common/include/common_header_ext_solver_libmesh.h
 libmesh/analytic_function.h
