@@ -20,4 +20,4 @@
 # On se place dans le repertoire depuis lequel le job a ete soumis
 cd $PBS_O_WORKDIR
 
-mpirun -np 4 ./CArl_FETI_setup_init -i examples/coupled_traction_test/FETI_solver/brick_traction_1k/PBS_setup_FETI_solver_1k.txt
+mpirun -np 4 ./CArl_FETI_setup_init -i ../examples/coupled_traction_test/FETI_solver/brick_traction_1k/PBS_setup_FETI_solver_1k.txt
