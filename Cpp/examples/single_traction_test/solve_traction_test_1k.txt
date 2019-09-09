@@ -1,0 +1,9 @@
+### Required parameters
+# - System
+SysMatrix ../examples/single_traction_test/system_matrices/traction_test_1k/traction_test_sys_mat.petscmat
+SysRHSVector ../examples/single_traction_test/system_matrices/traction_test_1k/traction_test_sys_rhs_vec.petscvec
+OutputBase ../examples/single_traction_test/system_matrices/traction_test_1k/traction_test_sol
+
+### Optional parameters
+SysEps 1e-9
+SysIterDiv 1000

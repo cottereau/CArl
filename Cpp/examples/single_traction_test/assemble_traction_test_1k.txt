@@ -1,0 +1,10 @@
+### Required parameters
+# - System
+Mesh ../examples/single_traction_test/meshes/test_brick_A_1k.msh
+PhysicalParameters ../examples/single_traction_test/meshes/test_brick_I_1_physical.dat
+SystemType	NoWeight
+
+MeshWeight ../examples/single_traction_test/meshes/test_brick_mask.msh
+WeightIndexes ../examples/single_traction_test/meshes/test_brick_mask_idx.dat
+
+OutputBase ../examples/single_traction_test/system_matrices/traction_test_1k/traction_test
