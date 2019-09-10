@@ -2,7 +2,7 @@
 ClusterSchedulerType PBS
 
 # - Path to the base PBS script file
-ScriptFile scripts/common_script.sh
+ScriptFile ../examples/coupled_traction_test/scripts/common_script.sh
 
 ### External solver parameters
 # - External solver commands - must set the commands between ' ' !!!
