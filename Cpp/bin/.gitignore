@@ -1,0 +1,6 @@
+CArl_*
+libmesh_*
+DartConfiguration.tcl
+Makefile
+*cmake*
+CMake*
