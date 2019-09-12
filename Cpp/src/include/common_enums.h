@@ -21,7 +21,9 @@ enum ClusterSchedulerType {
 // External solver types
 enum ExtSolverType {
 	LIBMESH_LINEAR = 0,
-	DUMMY = 1
+	DUMMY = 1,
+	LIBMESH_DYNAMIC = 2,
+	LIBMESH_NONLINGEOM = 3
 };
 
 // Mediator space type

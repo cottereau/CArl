@@ -51,6 +51,12 @@ std::string carl::ExtSolverType_to_string(ExtSolverType input)
 
 		case ExtSolverType::DUMMY :	return "DUMMY";
 						break;
+
+	case ExtSolverType::LIBMESH_DYNAMIC : return "LIBMESH_DYNAMIC";
+	  break;
+
+	case ExtSolverType::LIBMESH_NONLINGEOM : return "LIBMESH_NONLINGEOM";
+	  break;
 	}
 
 	homemade_error_msg("Invalid enumerate argument!");

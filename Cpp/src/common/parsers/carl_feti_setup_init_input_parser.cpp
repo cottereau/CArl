@@ -71,6 +71,12 @@ void get_input_params(GetPot& field_parser,
 		if(ext_solver_type == "LIBMESH_LINEAR")
 		{
 			input_params.ext_solver_BIG_type = carl::ExtSolverType::LIBMESH_LINEAR;
+		} else if(ext_solver_type == "LIBMESH_DYNAMIC")
+		  {
+		    input_params.ext_solver_BIG_type = carl::ExtSolverType::LIBMESH_DYNAMIC;
+		  } else if(ext_solver_type == "LIBMESH_NONLINGEOM")
+		  {
+		    input_params.ext_solver_BIG_type = carl::ExtSolverType::LIBMESH_NONLINGEOM;
 		} else { 
 			homemade_error_msg("Invalid external solver A type!");
 		}
@@ -85,6 +91,12 @@ void get_input_params(GetPot& field_parser,
 		if(ext_solver_type == "LIBMESH_LINEAR")
 		{
 			input_params.ext_solver_BIG_type = carl::ExtSolverType::LIBMESH_LINEAR;
+		} else if(ext_solver_type == "LIBMESH_DYNAMIC")
+		  {
+		    input_params.ext_solver_BIG_type = carl::ExtSolverType::LIBMESH_DYNAMIC;
+		  } else if(ext_solver_type == "LIBMESH_NONLINGEOM")
+		  {
+		    input_params.ext_solver_BIG_type = carl::ExtSolverType::LIBMESH_NONLINGEOM;
 		} else { 
 			homemade_error_msg("Invalid external solver B type!");
 		}
