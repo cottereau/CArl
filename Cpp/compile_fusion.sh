@@ -1,21 +1,18 @@
 #!/bin/bash
 module purge
-module load intel-compilers/2018.2
-module load intel-mpi/2018.2  
-module load intel-mkl/2018.2
+module load git/2.22.0
+module load openmpi/4.0.0
+module load hdf5/1.8.20
+module load cmake/3.16.0
+module load blas/3.8.0 
+module load lapack/3.8.0
 module load libgmp/6.1.2
 module load libmpfr/3.1.5
-module load cmake/3.14.4 
-#module load python/2.7.13
 
-export PETSC_DIR="/home/gattif/srclib/petsc"
-export PETSC_ARCH="arch-linux2-cxx-opt"
-export CGAL_DIR="/home/gattif/LOCAL/cgal"
-export LIBMESH_DIR="/home/gattif/LOCAL/libmesh"
-export BOOST_ROOT="/home/gattif/LOCAL/boost"
-export CC=icc CXX=icpc 
-export I_MPI_CC=icc I_MPI_CXX=icpc 
+export locinst=/home/user/LOCAL
 
-cmake -DCMAKE_CXX_FLAGS="-std=c++11" -DCMAKE_C_FLAGS="-std=gnu99" ../
-
-make -j 24 #>& ../log-2018.txt
+export BOOST_ROOT=$locinst/boost
+export CGAL_DIR=$locinst/cgal
+export LIBMESH_DIR=$locinst/libmesh
+export PETSC_DIR=$locinst/petsc
+export PETSC_ARCH="linux-openmpi-gcc"

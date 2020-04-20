@@ -50,7 +50,7 @@ void Patch_construction::insert_patch_element(const libMesh::Elem		* Patch_elem)
 	m_Patch_Elem_indexes.insert(Patch_elem->id());
 	for(unsigned int iii = 0; iii < Patch_elem->n_nodes(); ++iii)
 	{
-		m_Patch_Node_indexes.insert(Patch_elem->node(iii));
+		m_Patch_Node_indexes.insert(Patch_elem->node_id(iii));
 	}
 }
 
@@ -79,7 +79,7 @@ void Patch_construction::BuildPatch(const libMesh::Elem 	* Query_elem)
 
 	// First element is ok!
 	libMesh::Elem * 	First_Patch_elems = NULL;
-	libMesh::Elem * 	elem_candidate = NULL;
+	const libMesh::Elem * 	elem_candidate = NULL;
 	std::set<unsigned int>::iterator it_set_start = Intersecting_elems.begin();
 	for( ; it_set_start != Intersecting_elems.end(); ++it_set_start)
 	{
@@ -89,7 +89,7 @@ void Patch_construction::BuildPatch(const libMesh::Elem 	* Query_elem)
 
 		for(unsigned int iii = 0; iii < First_Patch_elems->n_neighbors(); ++iii)
 		{
-			elem_candidate = First_Patch_elems->neighbor(iii);
+			elem_candidate = First_Patch_elems->neighbor_ptr(iii);
 			if(elem_candidate != NULL)
 			{
 				Patch_Test_Queue.push_back(elem_candidate->id());
@@ -124,7 +124,7 @@ void Patch_construction::BuildPatch(const libMesh::Elem 	* Query_elem)
 			// ... And add its neighbours (if they weren't tested yet)
 			for(unsigned int iii = 0; iii < Tested_elem->n_neighbors(); ++iii)
 			{
-				elem_candidate = Tested_elem->neighbor(iii);
+				elem_candidate = Tested_elem->neighbor_ptr(iii);
 				if(elem_candidate != NULL)
 				{
 					Candidate_idx = elem_candidate->id();
@@ -145,7 +145,7 @@ void Patch_construction::BuildPatch(const libMesh::Elem 	* Query_elem)
 	std::unordered_set<unsigned int>::iterator it_set_end = m_Patch_Elem_indexes.end();
 	m_Patch_Elem_Neighbours.reserve(m_Patch_Elem_indexes.size());
 
-	libMesh::Elem * elem_neighbour;
+	const libMesh::Elem * elem_neighbour;
 	unsigned int elem_neighbour_id;
 
 	for( ; it_set != it_set_end; ++it_set)
@@ -155,7 +155,7 @@ void Patch_construction::BuildPatch(const libMesh::Elem 	* Query_elem)
 
 		for(unsigned int iii = 0; iii < elem->n_neighbors(); ++iii)
 		{
-			elem_neighbour = elem->neighbor(iii);
+			elem_neighbour = elem->neighbor_ptr(iii);
 
 			if(elem_neighbour != NULL)
 			{
@@ -448,7 +448,7 @@ void Patch_construction::build_patch_mesh()
 
 		for(unsigned int iii = 0; iii < originalElem->n_nodes(); ++iii)
 		{
-			originalNode = originalElem->node(iii);
+			originalNode = originalElem->node_id(iii);
 			outputNode = m_node_map_Parent_to_Patch[originalNode];
 			dummyElem->set_node(iii) = m_Mesh_patch.node_ptr(outputNode);
 		}
