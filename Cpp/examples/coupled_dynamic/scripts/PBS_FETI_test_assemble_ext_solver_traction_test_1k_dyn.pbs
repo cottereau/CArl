@@ -1,0 +1,42 @@
+#!/bin/bash
+
+#PBS -S /bin/bash
+#PBS -N test_i_1k
+#PBS -l walltime=3:59:00
+#PBS -l select=1:ncpus=4:mpiprocs=4
+#PBS -P omaha
+#PBS -q defaultq
+
+module purge
+module load intel-compilers/2018.2
+module load intel-mpi/2018.2  
+module load intel-mkl/2018.2
+module load libgmp/6.1.2
+module load libmpfr/3.1.5
+module load cmake/3.14.4 
+
+export PETSC_DIR="/home/gattif/srclib/petsc"
+export PETSC_ARCH="arch-linux2-cxx-opt"
+export CGAL_DIR="/home/gattif/LOCAL/cgal"
+export LIBMESH_DIR="/home/gattif/LOCAL/libmesh"
+export BOOST_ROOT="/home/gattif/LOCAL/boost"
+
+# On se place dans le repertoire depuis lequel le job a ete soumis
+cd $PBS_O_WORKDIR
+
+common_options="write_interval=1 solver_quiet=false relative_step_tolerance=1e-3 relative_residual_tolerance=1.e-3"
+
+petsc_options="-ksp_type cg -pc_type jacobi"
+
+options="deltat=0.25 n_timesteps=20 time_solver=newmark $common_options $petsc_options"
+
+
+cd $PBS_O_WORKDIR
+
+mkdir -p ../examples/coupled_dynamic/FETI_solver/brick_dynamic_1k/system_matrices
+
+echo " --- Assemble clamped coupled model ..."
+mpirun -np 4 ./libmesh_assemble_lin_homogeneous__min_x_clamped_dyn -i ../examples/coupled_dynamic/FETI_solver/brick_dynamic_1k/assemble_brick_dynamic_A_1k.txt $options 
+
+#echo " --- Assemble traction coupled model ..."
+#mpirun -np 4 ./libmesh_assemble_lin_homogeneous__max_x_traction_dyn -i ../examples/coupled_dynamic/FETI_solver/brick_traction_1k/assemble_brick_traction_B_1k.txt

@@ -1,0 +1,9 @@
+Currently Loaded Modulefiles:
+  1) cmake/3.14.4             5) intel-mpi/2018.2
+  2) git/2.22.0               6) phdf5/1.10.3-intel-mpi
+  3) intel-compilers/2018.2   7) texlive/2017
+  4) intel-mkl/2018.2
+[proxy:0:0@fusion-shm17] HYDU_create_process (../../utils/launch/launch.c:825): execvp error on file ./libmesh_assemble_lin_dynamic (No such file or directory)
+[proxy:0:0@fusion-shm17] HYDU_create_process (../../utils/launch/launch.c:825): execvp error on file ./libmesh_assemble_lin_dynamic (No such file or directory)
+[proxy:0:0@fusion-shm17] HYDU_create_process (../../utils/launch/launch.c:825): execvp error on file ./libmesh_assemble_lin_dynamic (No such file or directory)
+[proxy:0:0@fusion-shm17] HYDU_create_process (../../utils/launch/launch.c:825): execvp error on file ./libmesh_assemble_lin_dynamic (No such file or directory)

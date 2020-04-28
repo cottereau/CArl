@@ -1,0 +1,18 @@
+### 'Macro' system assembly parameters
+# - Path to the model mesh
+Mesh ../examples/coupled_dynamic/meshes/test_brick_A_1k.msh
+
+# - Path to the physical parameter file
+PhysicalParameters ../examples/coupled_dynamic/meshes/test_brick_I_1_physical.dat
+
+# - Path to the weight function mesh
+MeshWeight ../examples/coupled_dynamic/meshes/test_brick_mask.msh
+
+# - Path to the weight function parameters 
+WeightIndexes ../examples/coupled_dynamic/meshes/test_brick_mask_idx.dat
+
+# - System type (will determinate  which weights will be used)
+SystemType	Macro
+
+# - Output files base name
+OutputBase ../examples/coupled_dynamic/FETI_solver/brick_dynamic_1k/system_matrices/dynamic_model_A

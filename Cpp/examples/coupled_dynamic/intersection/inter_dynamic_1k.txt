@@ -1,0 +1,44 @@
+### Required parameters
+# - Mesh files
+MeshA ../examples/coupled_dynamic/meshes/test_brick_A_1k.msh
+MeshB ../examples/coupled_dynamic/meshes/test_brick_B_1k.msh
+MeshC ../examples/coupled_dynamic/meshes/test_brick_C.msh
+
+### Optional parameters
+# - Output filename base
+OutputBase ../examples/coupled_dynamic/intersection/output/inter_1k/inter
+
+# - Meshing algorithm choice
+MeshingMethod CGAL
+
+# - Boolean flags, uncomment to activate
+
+# > Stitch together the intersection meshes? 
+#   (done in a single processor, can be numerically expensive)
+#StitchInterMeshes
+
+# > Verbose output?
+#   (prints coupling mesh partitioning before and after rebalancing)
+#VerboseOutput
+
+
+# Solve a transient instead of a steady problem?
+transient = true 
+
+# The interval between our timesteps
+deltat = 0.25
+
+# And the number of timesteps to take.
+# Note: Use 25 timesteps to simulate approximately three periods of oscillation.
+n_timesteps = 5
+
+# Write out every nth timestep to file.
+write_interval = 1
+
+# Turn this off to see the NewtonSolver chatter
+solver_quiet = false
+
+# Nonlinear solver tolerance
+relative_step_tolerance = 1e-3
+
+relative_residual_tolerance = 1.e-3
