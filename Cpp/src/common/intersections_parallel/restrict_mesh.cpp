@@ -80,7 +80,7 @@ void Mesh_restriction::BuildRestriction(const libMesh::ReplicatedMesh 	& Couplin
 			m_Intersection_Test.FindAllIntersection(Query_elem,m_Parent_Point_Locator,Intersecting_elems);
 
 			libMesh::Elem * 	First_Restriction_elems = NULL;
-			libMesh::Elem * 	elem_candidate = NULL;
+			const libMesh::Elem * 	elem_candidate = NULL;
 			it_set_start      = Intersecting_elems.begin();
 
 			for( ; it_set_start != Intersecting_elems.end(); ++it_set_start)
@@ -91,7 +91,7 @@ void Mesh_restriction::BuildRestriction(const libMesh::ReplicatedMesh 	& Couplin
 
 				for(unsigned int iii = 0; iii < First_Restriction_elems->n_neighbors(); ++iii)
 				{
-					elem_candidate = First_Restriction_elems->neighbor(iii);
+					elem_candidate = First_Restriction_elems->neighbor_ptr(iii);
 					if(elem_candidate != NULL && Treated_From_Mesh.find(elem_candidate->id())==Treated_From_Mesh.end())
 					{
 						Restriction_Test_Queue.push_back(elem_candidate->id());
@@ -122,7 +122,7 @@ void Mesh_restriction::BuildRestriction(const libMesh::ReplicatedMesh 	& Couplin
 					// ... And add its neighbours (if they weren't tested yet)
 					for(unsigned int iii = 0; iii < Tested_elem->n_neighbors(); ++iii)
 					{
-						elem_candidate = Tested_elem->neighbor(iii);
+						elem_candidate = Tested_elem->neighbor_ptr(iii);
 						if(elem_candidate != NULL)
 						{
 							Candidate_idx = elem_candidate->id();
