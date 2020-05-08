@@ -16,3 +16,6 @@ export CGAL_DIR=$locinst/cgal
 export LIBMESH_DIR=$locinst/libmesh
 export PETSC_DIR=$locinst/petsc
 export PETSC_ARCH="linux-openmpi-gcc"
+
+cmake -DCMAKE_CXX_COMPILER=mpicxx -DCMAKE_C_COMPILER=mpicc -DCMAKE_BUILD_TYPE=Release -DBOOST_ROOT=${BOOST_ROOT} ..
+make -j24

@@ -10,7 +10,7 @@ This project is focused on the development of a software based on the [Arlequin 
 This software is mainly developed at laboratoire MSSMat (Ecole Centrale Paris - CNRS).
 
 * contact : [Regis Cottereau](mailto:regis.cottereau@ecp.fr)
-* contributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec, D. Neron, T. M. Schlittler
+* contributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec, D. Neron, T. M. Schlittler, F. Gatti, G. Jacquet
 
 more detail on installation procedures and examples can be found the [related help web page](https://cottereau.github.io/CArl/)
 ## MATLAB IMPLEMENTATION
@@ -50,21 +50,24 @@ The C++ / MPI implementation of the CArl software can be found in the directory 
 
 The usage of this implementation will be added in the near future, together with a general documentation and examples.
 
-### PRE-REQUISITES
+### REQUIREMENTS
 
 This code implementation use the following third party libraries: (the numbers indicate the oldest version for which they were tested)
 
-1. [Boost](http://www.boost.org) (version 1.60.0)
+1. [Boost](http://www.boost.org) (version 1.65.0)
 1. [CGAL](http://www.cgal.org) (version 4.7)
-1. [PETSc](http://www.mcs.anl.gov/petsc/) (version 3.6.2)
-1. [libMesh](https://libmesh.github.io) (version 1.1.0, installed with [TetGen](http://wias-berlin.de/software/tetgen/) support for now)
+1. [PETSc](http://www.mcs.anl.gov/petsc/) (version 3.13.1)
+1. [libMesh](https://libmesh.github.io) (version 1.5.1)
 
-The following compiler combinations were tested:
+#### Tested compiler combinations:
 
 1. OS X / macOS : Clang (version 7.0.0) and OpenMPI (version 1.10.0)
-1. Linux : Intel C++ compilers (version 16.0.3) and Intel MPI (version 5.1.2)
+2. Linux : Intel C++ compilers (version 16.0.3) and Intel MPI (version 5.1.2)
+3. [Linux](#compile-on-linux-with-MPICH-and-opnempi) : MPICH (version 3.4a2) and OpenMPI (version 4.0.0)
 
-This code was not tested or compiled with other operational systems.
+Guidelines for installation 3 is found in [this file](./Cpp/requirements_fusion_mpich_openmpi.md). It corresponds to a clena setup for [FUSION](https://mesocentre.pages.centralesupelec.fr/user_doc/fusion/01_hardware_configuration/) cluster @[Mésocentre Moulon](https://mesocentre.pages.centralesupelec.fr/user_doc/) 
+
+This code was not tested or compiled with other operational systems. 
 
 ### INSTALLATION
 
@@ -79,6 +82,15 @@ The installation is done using [CMake](https://cmake.org) (version 3.4.2), and t
 This will compile the CArl software using the default system compilers and with the `Release` optimization flags (`-O3 -DNDEBUG`). If you want to change these, use the appropriate flags or an interface such as `ccmake` or `cmake-gui`.
 
 The CMake script will search for the Boost and CGAL libraries at the default include paths. For the libMesh installation, it will search for a `LIBMESH_DIR` environement variable. If the environement variable is not found, it will set it as `/usr/local`. In both cases, the script will search the `libmesh-config` binary at the `$LIBMESH_DIR/bin` directory. 
+
+#### Compile on Linux with MPICH and OpenMPI
+If you installed requirements according to [Linux setup 3](#tested-compiler-combinations), `CArl` can be compiler by modifying `[CArl root directory]/Cpp/scripts/compile_fusion.sh` with custom paths and then running:
+
+`cp [CArl root directory]/Cpp/scripts/compile_fusion.sh [CArl root directory]/Cpp/bin/`
+
+`cd [CArl root directory]/Cpp/bin`
+
+`. compile_fusion.sh`
 
 ## REFERENCES
 
