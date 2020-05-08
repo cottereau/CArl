@@ -84,7 +84,7 @@ This will compile the CArl software using the default system compilers and with 
 The CMake script will search for the Boost and CGAL libraries at the default include paths. For the libMesh installation, it will search for a `LIBMESH_DIR` environement variable. If the environement variable is not found, it will set it as `/usr/local`. In both cases, the script will search the `libmesh-config` binary at the `$LIBMESH_DIR/bin` directory. 
 
 #### Compile on Linux with MPICH and OpenMPI
-If you installed requirements according to [Linux setup 3](#tested-compiler-combinations), `CArl` can be compiler by modifying `[CArl root directory]/Cpp/scripts/compile_fusion.sh` with custom paths and then running:
+If you installed requirements according to [Linux setup 3](#tested-compiler-combinations), `CArl` can be compiler by modifying `[CArl root directory]/Cpp/common/compile_fusion.sh` with custom paths and then running:
 
 `cp [CArl root directory]/Cpp/scripts/compile_fusion.sh [CArl root directory]/Cpp/bin/`
 
