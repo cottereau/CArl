@@ -24,19 +24,4 @@ export CGAL_DIR=$locinst/cgal
 export LIBMESH_DIR=$locinst/libmesh
 export PETSC_DIR=$locinst/petsc
 export PETSC_ARCH="linux-openmpi-gcc"
-
-# [OLD VERSION INTEL]
-## module purge
-## module load intel-compilers/2018.2
-## module load intel-mpi/2018.2  
-## module load intel-mkl/2018.2
-## module load libgmp/6.1.2
-## module load libmpfr/3.1.5
-## module load cmake/3.14.4 
-## 
-## export PETSC_DIR="/home/gattif/srclib/petsc"
-## export PETSC_ARCH="arch-linux2-cxx-opt"
-## export CGAL_DIR="/home/gattif/LOCAL/cgal"
-## export LIBMESH_DIR="/home/gattif/LOCAL/libmesh"
-## export BOOST_ROOT="/home/gattif/LOCAL/boost"
-
+export CARLBUILD=$locinst/CArl/Cpp/bin

@@ -1,5 +1,8 @@
 #!/bin/bash
-
+# Run example named "test" on 2 nodes - 24 MPI processes (12 MPI processes per node):
+#
+#   ./prepare_batch_run.sh test 2 12 
+#
 select=$2
 ncpus=$3
 mpiprocs=$3
@@ -17,3 +20,4 @@ for f in ./scripts/*.pbs; do
     sed -i 's/'"$mpistring"'/'"$newmpistring"'/g' ./run/$nf
 done
 
+cp ./scripts/PBS_run*.sh ./run/
