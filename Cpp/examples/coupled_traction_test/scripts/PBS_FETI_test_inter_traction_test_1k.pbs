@@ -1,12 +1,13 @@
 #!/bin/bash
-
 #PBS -S /bin/bash
-#PBS -N test_i_1k
+#PBS -N test_i_1ki
+#PBS -o ro.txt
+#PBS -e re.txt
 #PBS -l walltime=3:59:00
 #PBS -l select=1:ncpus=4:mpiprocs=4
 
 # "fusion" PBS options
-# #PBS -P [PROJECT NAME]
+#PBS -P omaha
 
 # Charge the modules here
 # "fusion" cluster modules
@@ -20,6 +21,6 @@
 # On se place dans le repertoire depuis lequel le job a ete soumis
 cd $PBS_O_WORKDIR
 
-mkdir -p ../examples/coupled_traction_test/intersection/output/inter_1k
+mkdir -p ./intersection/output/inter_1k
 
-mpirun -np 4 ./CArl_build_intersections -i ../examples/coupled_traction_test/intersection/inter_traction_test_1k.txt
+mpirun -np 4 $CARLBUILD/CArl_build_intersections -i ./intersection/inter_traction_test_1k.txt

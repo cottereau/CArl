@@ -6,7 +6,7 @@
 #PBS -l select=1:ncpus=4:mpiprocs=4
 
 # "fusion" PBS options
-# #PBS -P [PROJECT NAME]
+#PBS -P omaha
 
 # Charge the modules here
 # "fusion" cluster modules
@@ -21,4 +21,4 @@
 cd $PBS_O_WORKDIR
 
 echo " --- Assemble coupling matrices ..."
-mpirun -np 4 ./CArl_assemble_coupling -i ../examples/coupled_traction_test/FETI_solver/brick_traction_1k/assemble_coupling_1k.txt
+mpirun -np 4 $CARLBUILD/CArl_assemble_coupling -i ./FETI_solver/brick_traction_1k/assemble_coupling_1k.txt

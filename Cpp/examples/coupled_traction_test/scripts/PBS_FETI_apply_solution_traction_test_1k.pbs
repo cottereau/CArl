@@ -4,9 +4,9 @@
 #PBS -N test_s_1k
 #PBS -l walltime=3:59:00
 #PBS -l select=1:ncpus=4:mpiprocs=4
-
+#
 # "fusion" PBS options
-# #PBS -P [PROJECT NAME]
+#PBS -P omaha
 
 # Charge the modules here
 # "fusion" cluster modules
@@ -20,6 +20,6 @@
 # On se place dans le repertoire depuis lequel le job a ete soumis
 cd $PBS_O_WORKDIR
 
-mpirun -n 4 ./libmesh_apply_solution_homogeneous -i ../examples/coupled_traction_test/FETI_solver/brick_traction_1k/apply_solution_brick_traction_A_1k.txt
+mpirun -n 4 ./libmesh_apply_solution_homogeneous -i $CARL_DIR/examples/coupled_traction_test/FETI_solver/brick_traction_1k/apply_solution_brick_traction_A_1k.txt
 
-mpirun -n 4 ./libmesh_apply_solution_homogeneous -i ../examples/coupled_traction_test/FETI_solver/brick_traction_1k/apply_solution_brick_traction_B_1k.txt  
+mpirun -n 4 ./libmesh_apply_solution_homogeneous -i $CARL_DIR/examples/coupled_traction_test/FETI_solver/brick_traction_1k/apply_solution_brick_traction_B_1k.txt  
