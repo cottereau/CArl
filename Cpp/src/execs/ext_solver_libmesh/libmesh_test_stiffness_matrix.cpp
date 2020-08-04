@@ -1,30 +1,14 @@
 #include "libmesh_assemble_lin_homogeneous.h"
 
-/** \brief Program used to assemble the rigidity matrix and the vectors of a linear, homogeneous elasticity model with a clamped \f$x_{\mbox{Min}}\f$ face.
- * 
- *  Usage: `./libmesh_assemble_lin_homogeneous__min_x_clamped -i [input file]`
- *  
- * The input file is parsed by the get_input_params(GetPot& field_parser, libmesh_assemble_input_params& input_params) function, and it contains the following parameters. 
- *
- *  Required parameters:
- *    - `Mesh` : path to the mesh.
- *    - `PhysicalParameters` : physical parameters.
- *    - `SystemType` : parameter used to tell the assembler which weight functions must be used. *Values*: `Micro` or `Macro`.
- *    - `MeshWeight` : path to the mesh defining the domains of the Arlequin weight parameters.
- *    - `WeightIndexes` : path to the indices of the domains of the Arlequin weight parameters.
- *
- *  Optional parameter:
- *    - `OutputBase` or `--output` : base of the output files (including folders). *Default*: `test_system`.
- *
- *  Boolean flags:
- *    - `ExportRBVectors` : build and export the rigid body modes vectors.
- */
-
 int main(int argc, char** argv) {
 
   // [USER] Fixed boudary
   boundary_id_cube fixed_bound_id = boundary_id_cube::MIN_X;
   
+  // [USER] Traction force density
+  std::vector<double> traction_density(3,0);
+  traction_density[0] = 100.;
+
   // --- Initialize libMesh
   libMesh::LibMeshInit init(argc, argv);
 
@@ -56,10 +40,7 @@ int main(int argc, char** argv) {
     field_parser = command_line;
   }
 
-  //libmesh_assemble_input_params is a strcture of CArl
-  //defined on libmesh_assemble_system_input_parser.h
-
-  libmesh_assemble_input_params input_params; // struct type 
+  libmesh_assemble_input_params input_params;
   get_input_params(field_parser, input_params);
 
   // Check libMesh installation dimension
@@ -83,24 +64,25 @@ int main(int argc, char** argv) {
   perf_log.pop("Meshes - Parallel","Read files:");
 
   // --- Generate the equation systems
-  perf_log.push("System setup:"); //add to stack of per_log 
+  perf_log.push("System setup:");
 
   // Set the equation systems object
   libMesh::EquationSystems equation_systems(system_mesh);
 
   // Add linear elasticity and physical parameters systems
   libMesh::LinearImplicitSystem& elasticity_system
-                    = add_elasticity(equation_systems); // define in common_assemble_functions_elasticity_3D.cpp
-                    //by default order is FIRST and family is LAGRANGE (definition function in the file 
-                    //common_assemble_functions_elasticity_3D.h). 
-                    //See also http://libmesh.github.io/doxygen/namespacelibMesh.html#af3eb3e8751995b944fc135ea53b09da2
+                    = add_elasticity(equation_systems);
 
+  // Is important to define mass matrix at this point 
+  // because of unlike NewmarkSystem it is not define by default.
+  elasticity_system.add_matrix("mass");
+
+  printf("set_clamped_border function\n");
   // Set clamped border
-                    //add Dirichlet Boundary conditions
   set_clamped_border(elasticity_system, fixed_bound_id);
 
   // Initialize the equation systems
-  equation_systems.init();
+  equation_systems.init();  
 
   // Homogeneous properties for the macro system
   set_homogeneous_physical_properties(equation_systems, input_params.physical_params_file);
@@ -112,21 +94,34 @@ int main(int argc, char** argv) {
   perf_log.pop("System setup:");
 
   // Assemble!
-  assemble_elasticity_with_weight(equation_systems,"Elasticity",system_weight,
-              input_params.system_type);
-            
 
+  assemble_elasticity_with_weight_and_traction(equation_systems,"Elasticity",system_weight,
+              input_params.system_type,
+              boundary_id_cube::MAX_X,
+              traction_density);
+
+   libMesh::SparseMatrix< libMesh::Number > *stiffness = get_stiffness_matrix(
+                                  equation_systems,
+                                  "Elasticity",
+                                  system_weight,
+                                  input_params.system_type);
+              
+  libMesh::SparseMatrix< libMesh::Number > *mass = assemble_mass_matrix(equation_systems,"Elasticity");
 // Print MatLab debugging output? Variable defined at "carl_headers.h"
 #ifdef PRINT_MATLAB_DEBUG
   elasticity_system.matrix->print_matlab(input_params.output_base + "_sys_mat.m");
   elasticity_system.rhs->print_matlab(input_params.output_base + "_sys_rhs_vec.m");
+  mass->print_matlab(input_params.output_base + "_mass_test_sys_mat.m");
+  stiffness->print_matlab(input_params.output_base + "_stiffness_test_sys_mat.m");
 #endif
 
   // Export matrix and vector
-  libMesh::PetscMatrix<libMesh::Number> * temp_mat_ptr = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number> * >(elasticity_system.matrix);
+  libMesh::PetscMatrix<libMesh::Number> * temp_mat_stiffness_ptr = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number> * >(stiffness);
+  libMesh::PetscMatrix<libMesh::Number> * temp_mat_mass_ptr = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number> * >(mass);
   libMesh::PetscVector<libMesh::Number> * temp_vec_ptr = libMesh::cast_ptr<libMesh::PetscVector<libMesh::Number> * >(elasticity_system.rhs);
 
-  carl::write_PETSC_matrix(*temp_mat_ptr, input_params.output_base + "_sys_mat.petscmat");
+  carl::write_PETSC_matrix(*temp_mat_stiffness_ptr, input_params.output_base + "_stiffness_test_sys_mat.petscmat");
+  carl::write_PETSC_matrix(*temp_mat_mass_ptr, input_params.output_base + "_mass_test_sys_mat.petscmat");
   carl::write_PETSC_vector(*temp_vec_ptr, input_params.output_base + "_sys_rhs_vec.petscvec");
 
   // If needed, print rigid body vectors

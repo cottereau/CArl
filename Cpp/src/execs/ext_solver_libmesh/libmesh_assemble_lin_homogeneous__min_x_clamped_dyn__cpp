@@ -1,0 +1,267 @@
+#include "libmesh_assemble_lin_homogeneous.h"
+
+/** \brief Program used to assemble the rigidity matrix and the vectors of a linear, homogeneous elasticity model with a traction applied to \f$x_{\mbox{Max}}\f$ face.
+ * 
+ *  Usage: `./libmesh_assemble_lin_homogeneous__max_x_traction -i [input file]`
+ *  
+ * The input file is parsed by the get_input_params(GetPot& field_parser, libmesh_assemble_input_params& input_params) function, and it contains the following parameters. 
+ *
+ *  Required parameters:
+ *    - `Mesh` : path to the mesh.
+ *    - `PhysicalParameters` : physical parameters.
+ *    - `SystemType` : parameter used to tell the assembler which weight functions must be used. *Values*: `Micro` or `Macro`.
+ *    - `MeshWeight` : path to the mesh defining the domains of the Arlequin weight parameters.
+ *    - `WeightIndexes` : path to the indices of the domains of the Arlequin weight parameters.
+ *
+ *  Optional parameter:
+ *    - `OutputBase` or `--output` : base of the output files (including folders). *Default*: `test_system`.
+ *
+ *  Boolean flags:
+ *    - `ExportRBVectors` : build and export the rigid body modes vectors.
+ */
+
+
+int main(int argc, char** argv)
+ {
+  //[USER]
+  std::vector<double> traction_density(3,0);
+  traction_density[2] = 100.;
+
+  //[USER]
+   int clamped_id = boundary_id_cube::MAX_Z;
+
+  // --- Initialize libMesh
+    libMesh::LibMeshInit init(argc, argv);
+  
+  // Do performance log?
+  const bool MASTER_bPerfLog_carl_libmesh = true;
+  libMesh::PerfLog perf_log("Main program", MASTER_bPerfLog_carl_libmesh);
+
+  // libMesh's C++ / MPI communicator wrapper
+  libMesh::Parallel::Communicator& WorldComm = init.comm();
+
+  // Number of processors and processor rank.
+  int rank = WorldComm.rank();
+  int nodes = WorldComm.size();
+
+
+  // Parse the input file
+  GetPot command_line(argc, argv);
+  
+  // File parser
+  GetPot field_parser;
+
+  std::string input_filename;
+  if (command_line.search(1,"-i")) 
+  {
+      input_filename = command_line.next(input_filename);
+      field_parser.parse_input_file(input_filename, "#", "\n", " \t\n");
+  } 
+  else 
+  {
+      field_parser = command_line;
+  }
+
+  libmesh_assemble_input_params input_params;
+  get_input_params(field_parser,input_params);
+
+  // Check libMesh installation dimension
+  const unsigned int dim = 3;
+
+  libmesh_example_requires(dim == LIBMESH_DIM, "3D support");
+
+  // This example requires a linear solver package.
+  libmesh_example_requires(libMesh::default_solver_package() != INVALID_SOLVER_PACKAGE,
+                           "--enable-petsc, --enable-trilinos, or --enable-eigen");
+  // LasPack solvers don't work so well for this example, Trilinos doesn't work at all.
+  // PETSc and Eigen both work...
+  libmesh_example_requires(libMesh::default_solver_package() == PETSC_SOLVERS || \
+                           libMesh::default_solver_package() == EIGEN_SOLVERS, "--enable-petsc");
+
+
+  // - Parallelized meshes: A, B, mediator and weight
+  perf_log.push("Meshes - Parallel","Read files:");
+  libMesh::Mesh system_mesh(WorldComm, dim);
+  system_mesh.read(input_params.mesh_file);
+  system_mesh.prepare_for_use();
+  system_mesh.print_info();
+
+  libMesh::Mesh mesh_weight(WorldComm, dim);
+  mesh_weight.allow_renumbering(false);
+  mesh_weight.read(input_params.mesh_weight_file);
+  mesh_weight.prepare_for_use();
+
+    // Create an equation systems object.
+  EquationSystems equation_systems (system_mesh);
+
+  // Add linear elasticity and physical parameters systems
+  ElasticitySystem & system =
+    equation_systems.add_system<ElasticitySystem> ("Elasticity");
+
+  add_physical_parameter(equation_systems);
+
+  // Initialize the equation systems
+  equation_systems.init();
+
+  // Homogeneous properties for the macro system
+  _set_homogeneous_physical_properties(equation_systems, input_params.physical_params_file);
+
+  // Set the weight function object
+  weight_parameter_function  system_weight(mesh_weight);
+  system_weight.set_parameters(input_params.weight_domain_idx_file);
+
+  perf_log.pop("System setup:");
+
+  // Assemble!
+  _assemble_elasticity_with_weight_and_traction(equation_systems,"Elasticity",system_weight,
+              input_params.system_type,
+              clamped_id,
+              traction_density);
+
+//Add variable
+  ExplicitSystem * v_system;
+  ExplicitSystem * a_system;
+
+  {
+    // Create ExplicitSystem to help output velocity
+      v_system = &equation_systems.add_system<ExplicitSystem> ("Velocity");
+      v_system->add_variable("u_vel", FIRST, LAGRANGE);
+      v_system->add_variable("v_vel", FIRST, LAGRANGE);
+      v_system->add_variable("w_vel", FIRST, LAGRANGE);
+
+      // Create ExplicitSystem to help output acceleration
+      a_system = &equation_systems.add_system<ExplicitSystem> ("Acceleration");
+      a_system->add_variable("u_accel", FIRST, LAGRANGE);
+      a_system->add_variable("v_accel", FIRST, LAGRANGE);
+      a_system->add_variable("w_accel", FIRST, LAGRANGE);
+  }
+std::string time_solver = "newmark";
+system.time_solver = libmesh_make_unique<NewmarkSolver>(system);
+system.deltat = input_params.deltat;
+
+// And the nonlinear solver options
+  DiffSolver & solver = *(system.time_solver->diff_solver().get());
+  solver.quiet = input_params.solver_quiet;
+  solver.verbose = !solver.quiet;
+  solver.max_nonlinear_iterations = input_params.max_nonlinear_iterations;
+  solver.relative_step_tolerance = input_params.relative_step_tolerance;
+  solver.relative_residual_tolerance = input_params.relative_residual_tolerance;
+  solver.absolute_residual_tolerance = input_params.absolute_residual_tolerance;
+
+  // And the linear solver options
+  solver.max_linear_iterations = input_params.max_linear_iterations;
+  solver.initial_linear_tolerance = input_params.initial_linear_tolerance;
+
+  equation_systems.print_info();
+
+  NewmarkSolver * newmark = cast_ptr<NewmarkSolver*>(system.time_solver.get());
+  newmark->compute_initial_accel();
+
+      // Copy over initial velocity and acceleration for output.
+      // Note we can do this because of the matching variables/FE spaces
+      *(v_system->solution) = system.get_vector("_old_solution_rate");
+      *(a_system->solution) = system.get_vector("_old_solution_accel");
+
+
+
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
+  system.matrix->print_matlab(input_params.output_base + "_sys_mat.m");
+  system.rhs->print_matlab(input_params.output_base + "_sys_rhs_vec.m");
+#endif
+
+#ifdef LIBMESH_HAVE_EXODUS_API
+// Output initial state
+  {
+    std::ostringstream file_name;
+
+    // We write the file in the ExodusII format.
+    file_name << std::string("out.")+time_solver+std::string(".e-s.")
+              << std::setw(3)
+              << std::setfill('0')
+              << std::right
+              << 0;
+
+    ExodusII_IO(system_mesh).write_timestep(file_name.str(),
+                                     equation_systems,
+                                     1, // This number indicates how many time steps
+                                        // are being written to the file
+                                     system.time);
+  }
+#endif // #ifdef LIBMESH_HAVE_EXODUS_API
+
+for (unsigned int t_step=0; t_step != input_params.n_timesteps; ++t_step)
+  {
+      // A pretty update message
+      libMesh::out << "\n\nSolving time step "
+                   << t_step
+                   << ", time = "
+                   << system.time
+                   << std::endl;
+
+    system.solve(); //-> lance la fonction ElasticitySystem::init_data
+    //Advance to the next timestep in a transient problem
+    //->lance la fonction ElasticitySystem::element_time_derivative                
+    //->lance la fonction ElasticitySystem::side_time_derivative
+    system.time_solver->advance_timestep();
+      // Copy over updated velocity and acceleration for output.
+      // Note we can do this because of the matching variables/FE spaces
+
+    *(v_system->solution) = system.get_vector("_old_solution_rate");
+    *(a_system->solution) = system.get_vector("_old_solution_accel");
+
+#ifdef LIBMESH_HAVE_EXODUS_API
+      // Write out this timestep if we're requested to
+      if ((t_step+1)%input_params.write_interval == 0)
+        {
+          std::ostringstream file_name;
+
+          // We write the file in the ExodusII format.
+          file_name << std::string("out.")+time_solver+std::string(".e-s.")
+                    << std::setw(3)
+                    << std::setfill('0')
+                    << std::right
+                    << t_step+1;
+
+          ExodusII_IO(system_mesh).write_timestep(file_name.str(),
+                                           equation_systems,
+                                           1, // This number indicates how many time steps
+                                              // are being written to the file
+                                           system.time);
+        }
+#endif // #ifdef LIBMESH_HAVE_EXODUS_API
+    }
+
+
+  // Export matrix and vector
+  libMesh::PetscMatrix<libMesh::Number> * temp_mat_ptr = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number> * >(system.matrix);
+  libMesh::PetscVector<libMesh::Number> * temp_vec_ptr = libMesh::cast_ptr<libMesh::PetscVector<libMesh::Number> * >(system.rhs);
+
+  carl::write_PETSC_matrix(*temp_mat_ptr, input_params.output_base + "_sys_mat.petscmat");
+  carl::write_PETSC_vector(*temp_vec_ptr, input_params.output_base + "_sys_rhs_vec.petscvec");
+
+
+  // If needed, print rigid body vectors
+  if(input_params.bCalculateRBVectors)
+  {
+    MatNullSpace nullsp_sys;
+    build_rigid_body_vectors(system,nullsp_sys);
+    write_rigid_body_vectors(nullsp_sys,input_params.output_base,WorldComm.rank());
+    MatNullSpaceDestroy(&nullsp_sys);
+  }
+
+
+
+  
+  return 0;
+
+  }
+
+
+/* Local Variables:                                                        */
+/* mode: c                                                                 */
+/* show-trailing-whitespace: t                                             */
+/* coding: utf-8                                                           */
+/* c-file-style: "stroustrup"                                              */
+/* End:                                                                    */
+/* vim: set sw=2 ts=4 et tw=80 smartindent :                               */

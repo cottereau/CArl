@@ -21,12 +21,36 @@ struct libmesh_assemble_input_params {
 
 	std::string output_base; 	///< Output filename base.
 	bool bCalculateRBVectors;	///< Build and export the rigid body modes vectors?
+//};
+//
+//struct dynamic_params 
+//{
+	/*dynamic params*/
+	double deltat; //step time of calculatiom
+	bool transient;
+	unsigned int n_timesteps; // number of time step
+	unsigned int write_interval;
+	bool solver_quiet;
+	double relative_step_tolerance;
+	double relative_residual_tolerance;
+	unsigned int max_nonlinear_iterations;
+	unsigned int max_linear_iterations;
+	double initial_linear_tolerance;
+	double absolute_residual_tolerance;
+};
+
+struct material_params
+{
+	/* material params */
+	double rho = 10000;
+	double poisson_ratio = 1e6;
+	double young_modulus = 0.5;
 };
 
 /**	\brief Parser function for the coupled solver test programs.
  *	
  *	Required parameters:
- *	  - `Mesh` : path to the mesh.
+ *	  - `Mesh`: path to the mesh.
  *    - `PhysicalParameters` : physical parameters.
  *    - `SystemType` : parameter used to tell the assembler which weight functions must be used. *Values*: `Micro` or `Macro`.
  *	  - `MeshWeight` : path to the mesh defining the domains of the Arlequin weight parameters.
@@ -39,5 +63,17 @@ struct libmesh_assemble_input_params {
  *    - `ExportRBVectors` : build and export the rigid body modes vectors.
  */
 void get_input_params(GetPot& field_parser,
-		libmesh_assemble_input_params& input_params);
+	libmesh_assemble_input_params& input_params);
+
+//void get_input_params(GetPot& field_parser,
+//		dynamic_params& input_params);
+
+void get_input_params(GetPot& field_parser,
+		material_params& input_params);
+
+void get_file_params(GetPot command_line,
+					libmesh_assemble_input_params& carl_params,  
+					material_params& input_material_params);
+
+
 #endif /* LIBMESH_ASSEMBLE_SYSTEM_INPUT_PARSER_H_ */
