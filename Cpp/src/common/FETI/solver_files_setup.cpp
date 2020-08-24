@@ -316,18 +316,18 @@ void Solver_Files_Setup::generate_FETI_scripts_LOCAL()
 		std::string command_to_run;
 
 		// Set the u0_i scripts
-		command_to_run = "./CArl_FETI_setup_finish -i " + m_CArl_FETI_setup_finish_input_filename;
+		command_to_run = "$CARLBUILD/CArl_FETI_setup_finish -i " + m_CArl_FETI_setup_finish_input_filename;
 		std::ofstream output_script(m_CArl_FETI_setup_finish_script_filename);
 		output_script << "mpirun -n " << m_comm.size() << " " << command_to_run << std::endl;
 		output_script.close();
 		
 		
-		command_to_run = "./CArl_FETI_iterate -i " + m_CArl_FETI_iterate_input_filename;
+		command_to_run = "$CARLBUILD/CArl_FETI_iterate -i " + m_CArl_FETI_iterate_input_filename;
 		output_script.open(m_CArl_FETI_iterate_script_filename);
 		output_script << "mpirun -n " << m_comm.size() << " "  << command_to_run << std::endl;
 		output_script.close();
 
-		command_to_run = "./CArl_FETI_solution -i " + m_CArl_FETI_solution_input_filename;
+		command_to_run = "$CARLBUILD/CArl_FETI_solution -i " + m_CArl_FETI_solution_input_filename;
 		output_script.open(m_CArl_FETI_solution_script_filename);
 		output_script << "mpirun -n " << m_comm.size() << " "  << command_to_run << std::endl;
 		output_script.close();
@@ -351,7 +351,7 @@ void Solver_Files_Setup::generate_FETI_scripts_PBS()
 		// Set the u0_i scripts
 		pbs_output = m_input_params.scratch_folder_path + "/output_CArl_FETI_setup_finish.txt";
 		pbs_error  = m_input_params.scratch_folder_path + "/error_CArl_FETI_setup_finish.txt";
-		command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + " ./CArl_FETI_setup_finish -i " +
+		command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + " $CARLBUILD/CArl_FETI_setup_finish -i " +
 							m_CArl_FETI_setup_finish_input_filename;
 
 		this->print_PBS_script(	m_CArl_FETI_setup_finish_script_filename, "CArl_setup_f",
@@ -360,7 +360,7 @@ void Solver_Files_Setup::generate_FETI_scripts_PBS()
 		
 		pbs_output = m_input_params.scratch_folder_path + "/output_CArl_FETI_iterate.txt";
 		pbs_error  = m_input_params.scratch_folder_path + "/error_CArl_FETI_iterate.txt";
-		command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + " ./CArl_FETI_iterate -i " +
+		command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + " $CARLBUILD/CArl_FETI_iterate -i " +
 							m_CArl_FETI_iterate_input_filename;
 
 		this->print_PBS_script(	m_CArl_FETI_iterate_script_filename, "CArl_iter",
@@ -369,7 +369,7 @@ void Solver_Files_Setup::generate_FETI_scripts_PBS()
 
 		pbs_output = m_input_params.scratch_folder_path + "/output_CArl_FETI_solution.txt";
 		pbs_error  = m_input_params.scratch_folder_path + "/error_CArl_FETI_solution.txt";
-		command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + " ./CArl_FETI_solution -i " +
+		command_to_run = "mpirun -n " + std::to_string(m_comm.size()) + " $CARLBUILD/CArl_FETI_solution -i " +
 							m_CArl_FETI_solution_input_filename;
 
 		this->print_PBS_script(	m_CArl_FETI_solution_script_filename, "CArl_sol",
