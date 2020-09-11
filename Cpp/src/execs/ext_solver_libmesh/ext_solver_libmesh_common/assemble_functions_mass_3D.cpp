@@ -1,8 +1,9 @@
 #include "assemble_functions_elasticity_3D.h"
 #include "assemble_functions_mass_3D.h"
+#include "libmesh_assemble_system_input_parser.h"
 
 using namespace libMesh;
-
+/*
 void get_input_params(GetPot& field_parser,
   libmesh_assemble_interpolation_params& input_params) 
 {
@@ -42,24 +43,24 @@ void get_input_params(GetPot& field_parser,
   else
     printf("[ERROR] Matrices system A found");
 }
-
+*/
 //Matrice of rigidity
 libMesh::SparseMatrix< libMesh::Number > * get_stiffness_matrix(libMesh::EquationSystems& es,
-				const std::string& system_name,
-				weight_parameter_function& weight_mask,
-				WeightFunctionSystemType system_type)
+        const std::string& system_name,
+        weight_parameter_function& weight_mask,
+        WeightFunctionSystemType system_type)
 {
-	assemble_elasticity_with_weight(es,system_name,weight_mask,system_type);
-	libMesh::LinearImplicitSystem& system = es.get_system<libMesh::LinearImplicitSystem>("Elasticity");
-	libMesh::SparseMatrix< libMesh::Number > * stiffness = system.matrix;
-	return stiffness;
+  assemble_elasticity_with_weight(es,system_name,weight_mask,system_type);
+  libMesh::LinearImplicitSystem& system = es.get_system<libMesh::LinearImplicitSystem>("Elasticity");
+  libMesh::SparseMatrix< libMesh::Number > * stiffness = system.matrix;
+  return stiffness;
 }
 
 libMesh::SparseMatrix< libMesh::Number > * get_mass_matrix(libMesh::EquationSystems& es,
-				const std::string& system_name)
+        const std::string& system_name)
 {
-	libMesh::SparseMatrix< libMesh::Number > * mass = assemble_mass_matrix(es,system_name);
-	return mass;
+  libMesh::SparseMatrix< libMesh::Number > * mass = assemble_mass_matrix(es,system_name);
+  return mass;
 }
 
 void Update_SubM( libMesh::DenseSubMatrix<libMesh::Number>& SubM,
@@ -83,18 +84,18 @@ void Update_SubM( libMesh::DenseSubMatrix<libMesh::Number>& SubM,
 libMesh::SparseMatrix< libMesh::Number > * assemble_mass_matrix(libMesh::EquationSystems& es, const std::string& system_name)
 {
   //printf("in assemble_mass_matrix functions\n");
-	libmesh_assert_equal_to (system_name, "Elasticity");
-	libMesh::LinearImplicitSystem& system = es.get_system<libMesh::LinearImplicitSystem>("Elasticity");
+  libmesh_assert_equal_to (system_name, "Elasticity");
+  libMesh::LinearImplicitSystem& system = es.get_system<libMesh::LinearImplicitSystem>("Elasticity");
 
   // Get a constant reference to the mesh object.
   const MeshBase & mesh = es.get_mesh();
 
   // The dimension that we are running
   const unsigned int dim = mesh.mesh_dimension();
-	libMesh::SparseMatrix< libMesh::Number > & mass = system.get_matrix("mass");
-	
-	
-	// for the first (and only) variable in the system.
+  libMesh::SparseMatrix< libMesh::Number > & mass = system.get_matrix("mass");
+  
+  
+  // for the first (and only) variable in the system.
   const unsigned int u_var = system.variable_number("u");
   const unsigned int v_var = system.variable_number("v");
   const unsigned int w_var = system.variable_number("w");
@@ -252,5 +253,60 @@ libMesh::SparseMatrix< libMesh::Number > * assemble_mass_matrix(libMesh::Equatio
   system.rhs->close();
 
   return &mass;
+
+}
+
+
+void get_mass_tilde(libMesh::Parallel::Communicator& WorldComm, 
+  libmesh_assemble_input_params& input_params, 
+  libMesh::EquationSystems equation_systems)
+{
+  libMesh::Real delta_t = input_params.deltat;
+  libMesh::Real beta = 0.25;
+  PetscScalar a = beta*delta_t*delta_t;
+
+// Export matrix and vector
+
+  
+  //libMesh::PetscVector<libMesh::Number> * temp_vec_ptr = libMesh::cast_ptr<libMesh::PetscVector<libMesh::Number> * >(elasticity_system.rhs);
+
+  /*
+  */
+
+  libMesh::SparseMatrix< libMesh::Number > * mass = get_mass_matrix(equation_systems,"Linear Elasticity");
+  //libMesh::SparseMatrix< libMesh::Number > * stiffness = get_stiffness_matrix(equation_systems,"Linear Elasticity");
+  libMesh::PetscMatrix<libMesh::Number> * temp_mat_mass_ptr = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number> * >(mass);
+  //libMesh::PetscMatrix<libMesh::Number> * temp_mat_stiffness_ptr = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number> * >(stiffness);
+  //carl::write_PETSC_matrix(*temp_mat_stiffness_ptr, input_params.output_base + "_stiffness_test_sys_mat.petscmat");
+  //carl::write_PETSC_matrix(*temp_mat_mass_ptr, input_params.output_base + "_mass_test_sys_mat.petscmat");
+  //carl::write_PETSC_vector(*temp_vec_ptr, input_params.output_base + "_sys_rhs_vec.petscvec");
+  
+  Mat sys_mat_PETSC_M;
+  Mat sys_mat_PETSC_K;
+  MatCreate(WorldComm.get(),&sys_mat_PETSC_M);
+  MatCreate(WorldComm.get(),&sys_mat_PETSC_K);
+
+  //carl::read_PETSC_matrix(sys_mat_PETSC_M, input_params.output_base+"_mass_test_sys_mat.petscmat", WorldComm.get());
+  //carl::read_PETSC_matrix(sys_mat_PETSC_K, input_params.output_base+"_stiffness_test_sys_mat.petscmat", WorldComm.get());
+
+  //calculate de M~  = M + a*K
+  MatAXPY(sys_mat_PETSC_M, a, sys_mat_PETSC_K, DIFFERENT_NONZERO_PATTERN);
+  libMesh::PetscMatrix<libMesh::Number> sys_mat_PETSC_M_tilde(sys_mat_PETSC_M,WorldComm);
+
+/*
+
+std::string mass_tilde_path = "./GC_solver/mass_tilde/"; 
+std::vector<std::string> str;
+split(input_params.output_base, str,'/');
+
+std::string name_matrix_tilde_matlab = mass_tilde_path+"mass_tilde_"+str[str.size()-1]+".m";
+std::string name_matrix_tilde_petsc  = mass_tilde_path+"mass_tilde_"+str[str.size()-1]+".petscmat";
+
+#ifdef PRINT_MATLAB_DEBUG
+  sys_mat_PETSC_M_tilde.print_matlab(name_matrix_tilde_matlab);
+#endif
+
+carl::write_PETSC_matrix(sys_mat_PETSC_M_tilde,name_matrix_tilde_petsc);
+*/
 
 }

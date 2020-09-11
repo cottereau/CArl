@@ -40,7 +40,7 @@ using namespace std;
 // Bring in everything from the libMesh namespace
 using namespace libMesh;
 
-void set_clamped_boundary_info(libMesh::Mesh& mesh, 
+void set_dirichlet_bc(libMesh::Mesh& mesh, 
                 unsigned int bound_clamped_id, 
                 unsigned int bound_force_id,
                 bool node_enabeled);
@@ -212,7 +212,7 @@ int main (int argc, char ** argv)
   //passing force to system
   system.setForce(force);
 
-  set_clamped_boundary_info(
+  set_dirichlet_bc(
                 mesh, 
                 bound_clamped_id, 
                 bound_force_id,
@@ -220,7 +220,7 @@ int main (int argc, char ** argv)
 
 
   // Reading of material parameter
-  system.read_material_params(input_params.physical_params_file);
+  system.set_homogeneous_physical_properties(equation_systems, input_params.physical_params_file);
 
   // Solve this as a time-dependent or steady system
   std::string time_solver = std::string("newmark")/*infile("time_solver","DIE!")*/;
@@ -381,7 +381,7 @@ int main (int argc, char ** argv)
 }
 
 
-void set_clamped_boundary_info(
+void set_dirichlet_bc(
                 libMesh::Mesh& mesh, 
                 unsigned int bound_clamped_id, 
                 unsigned int bound_force_id,

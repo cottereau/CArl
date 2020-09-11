@@ -56,15 +56,16 @@ int main(int argc, char** argv) {
     field_parser = command_line;
   }
 
-  //libmesh_assemble_input_params is a strcture of CArl
-  //defined on libmesh_assemble_system_input_parser.h
+  // Declaration of a struct variable to catch all inputs from the input file
+  libmesh_assemble_input_params input_params; // struct type
 
-  libmesh_assemble_input_params input_params; // struct type 
+  // Getting parsing argument from all file
   get_input_params(field_parser, input_params);
 
   // Check libMesh installation dimension
   const unsigned int dim = 3;
 
+  // Make sure libMesh was compiled for 3D
   libmesh_example_requires(dim == LIBMESH_DIM, "3D support");
 
   // --- Declare the three meshes to be intersected

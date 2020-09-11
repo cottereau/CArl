@@ -47,13 +47,13 @@ boundary_id_type boundary_id_max_z = 5;
 
 void ElasticitySystem::init_data()
 {
-  _u_var = this->add_variable ("Ux", _fe_type);
+  _u_var = this->add_variable ("u", _fe_type);
   if (_dim > 1)
-    _v_var = this->add_variable ("Uy", _fe_type);
+    _v_var = this->add_variable ("v", _fe_type);
   else
     _v_var = _u_var;
   if (_dim > 2)
-    _w_var = this->add_variable ("Uz", _fe_type);
+    _w_var = this->add_variable ("w", _fe_type);
   else
     _w_var = _v_var;
 
@@ -135,13 +135,13 @@ void ElasticitySystem::set_clamped_border(boundary_id_type boundary)
   boundary_id_displacement.insert(boundary);
 
   //Define variabl. 
-  _u_var = this->add_variable ("Ux", _fe_type);
+  _u_var = this->add_variable ("u", _fe_type);
   if (_dim > 1)
-    _v_var = this->add_variable ("Uy", _fe_type);
+    _v_var = this->add_variable ("v", _fe_type);
   else
     _v_var = _u_var;
   if (_dim > 2)
-    _w_var = this->add_variable ("Uz", _fe_type);
+    _w_var = this->add_variable ("w", _fe_type);
   else
     _w_var = _v_var;
 
@@ -175,7 +175,6 @@ void ElasticitySystem::set_clamped_border(boundary_id_type boundary)
    */
 
 }
-
 
 void ElasticitySystem::init_context(DiffContext & context)
 {
@@ -343,8 +342,7 @@ bool ElasticitySystem::element_time_derivative(bool request_jacobian,
   return request_jacobian;
 }
 
-bool ElasticitySystem::side_time_derivative (bool request_jacobian,
-                                             DiffContext & context)
+bool ElasticitySystem::side_time_derivative (bool request_jacobian, DiffContext & context)
 {
   FEMContext & c = cast_ref<FEMContext &>(context);
   Real force = getForce();
@@ -511,18 +509,22 @@ bool ElasticitySystem::mass_residual(bool request_jacobian,
 
 Real ElasticitySystem::elasticity_tensor(unsigned int i, unsigned int j, unsigned int k, unsigned int l)
 {
-  // Hard code material parameters for the sake of simplicity
+  
+  // Hard-coded material parameters for the sake of simplicity
   const Real poisson_ratio = this->getPoissonRatio();
   const Real young_modulus = this->getYoungModulus();
+  Real shear_modulus = 0.5*young_modulus/(1.0+poisson_ratio);
 
-  // Define the Lame constants
-  const Real lambda_1 = (young_modulus*poisson_ratio)/((1.+poisson_ratio)*(1.-2.*poisson_ratio));
-  const Real lambda_2 = young_modulus/(2.*(1.+poisson_ratio));
-  ////printf(">>>>[elasticity_system]execution de la commande ElasticitySystem::elasticity_tensor\n");
+  return eval_elasticity_tensor(i,j,k,l,young_modulus,shear_modulus);
 
-  return
-    lambda_1 * kronecker_delta(i, j) * kronecker_delta(k, l) +
-    lambda_2 * (kronecker_delta(i, k) * kronecker_delta(j, l) + kronecker_delta(i, l) * kronecker_delta(j, k));
+  // // Define the Lame constants
+  // const Real lambda_1 = (young_modulus*poisson_ratio)/((1.+poisson_ratio)*(1.-2.*poisson_ratio));
+  // const Real lambda_2 = young_modulus/(2.*(1.+poisson_ratio));
+  // ////printf(">>>>[elasticity_system]execution de la commande ElasticitySystem::elasticity_tensor\n");
+
+  // return
+  //  lambda_1 * kronecker_delta(i, j) * kronecker_delta(k, l) +
+  //  lambda_2 * (kronecker_delta(i, k) * kronecker_delta(j, l) + kronecker_delta(i, l) * kronecker_delta(j, k));
 
 }
 
@@ -574,14 +576,17 @@ void ElasticitySystem::setForce(Real force)
   this->force = force;
 }
 
-void ElasticitySystem::read_material_params(string& file_name)
+void ElasticitySystem::set_homogeneous_physical_properties(EquationSystems& es, string& physicalParamsFile)
 {
  
-  Real input_rho, input_E, input_v;
 
-  if(!file_name.empty())
+ set_homogeneous_physical_properties(es, physicalParamsFile);
+
+ Real input_rho, input_E, input_v;
+
+  if(!physicalParamsFile.empty())
     {
-      std::ifstream physicalParamsIFS(file_name);
+      std::ifstream physicalParamsIFS(physicalParamsFile);
       physicalParamsIFS>>input_rho>>input_E>>input_v;
 
       setRho(input_rho);
@@ -590,8 +595,55 @@ void ElasticitySystem::read_material_params(string& file_name)
     }
   else
     printf("[!] no file passed");
-
 }
+
+void ElasticitySystem::set_dirichlet_bc(Mesh& mesh, unsigned int bound_clamped_id, 
+  unsigned int bound_force_id,bool node_enabeled = false)
+
+{
+  unsigned int n_boundaries = 6;
+    for (const auto & elem : mesh.element_ptr_range())
+    {
+      std::vector<unsigned int> list_side (6,0);
+      std::vector<bool> list_found(6,0);
+
+      for (auto side : elem->side_index_range())
+        {          
+          for(unsigned int it; it<n_boundaries; it++)
+            if(mesh.get_boundary_info().has_boundary_id(elem, side, it))
+              {
+                list_side[it] = side;
+                list_found[it] = true;
+              }
+        }
+
+        if(node_enabeled)
+        {
+          if(list_found[bound_clamped_id])
+            for(auto n:elem->node_index_range())
+                if(elem->is_node_on_side(n, list_side[bound_clamped_id]))
+                     mesh.get_boundary_info().add_node(elem->node_ptr(n), node_boundary_id);
+
+          if(list_found[bound_force_id])
+            for(auto n:elem->node_index_range())
+                if(elem->is_node_on_side(n, list_side[bound_force_id]))
+                     mesh.get_boundary_info().add_node(elem->node_ptr(n), pressure_boundary_id);
+        }
+        else {
+
+          if(list_found[bound_clamped_id])
+            for(auto e : elem->edge_index_range())
+              if(elem->is_edge_on_side(e, list_side[bound_clamped_id]))
+                mesh.get_boundary_info().add_edge(elem, e,edge_boundary_id);
+
+          if(list_found[bound_force_id])
+            for(auto e: elem->edge_index_range())
+              if(elem->is_edge_on_side(e,list_side[bound_clamped_id]))
+              mesh.get_boundary_info().add_edge(elem,e,pressure_boundary_id);
+        }
+    }
+}
+
 
 /*void ElasticitySystem::set_clamped_face(Mesh & mesh, boundary_id_type id_type)
 { 

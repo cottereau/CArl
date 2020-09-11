@@ -17,6 +17,8 @@
 
 // DiffSystem framework files
 #include "libmesh/fem_system.h"
+#include "libmesh/mesh.h"
+#include "assemble_functions_elasticity_3D.h"
 
 using namespace libMesh;
 using namespace std;
@@ -86,12 +88,14 @@ public:
   void setForce(Real force);
 
   //Read parameter from file
-  void read_material_params(std::string& file_name);
+  void set_homogeneous_physical_properties(EquationSystems& es, string& physicalParamsFile);
   //set boundary
   void set_clamped_border(boundary_id_type boundary);
 
-  unsigned int get_dim(){return _dim;}
+  void set_dirichlet_bc(Mesh& mesh, unsigned int bound_clamped_id, 
+    unsigned int bound_force_id, bool node_enabeled);
 
+  unsigned int get_dim(){return _dim;}
 
 private:
 
@@ -114,7 +118,6 @@ private:
 
   Real elasticity_tensor(unsigned int i, unsigned int j, unsigned int k, unsigned int l);
 
-  
 };
 
 

@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
 
   carl::libmesh_solve_linear_system_input_params input_params;
   carl::get_input_params(field_parser, input_params);
-
+  unsigned int n_timesteps = input_params.n_timesteps;
   // Check libMesh installation dimension
   const unsigned int dim = 3;
 

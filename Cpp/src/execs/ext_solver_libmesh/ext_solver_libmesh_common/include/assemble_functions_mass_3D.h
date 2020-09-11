@@ -20,9 +20,9 @@ struct libmesh_assemble_interpolation_params
   std::string output_folder;
 };
 
-void get_input_params(GetPot& field_parser,
+/*void get_input_params(GetPot& field_parser,
      libmesh_assemble_interpolation_params& input_params);
-
+*/
 
 libMesh::SparseMatrix< libMesh::Number > * get_stiffness_matrix(libMesh::EquationSystems& es,
 				const std::string& system_name,

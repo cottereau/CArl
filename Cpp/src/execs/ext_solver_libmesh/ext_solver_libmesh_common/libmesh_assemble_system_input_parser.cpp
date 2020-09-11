@@ -9,201 +9,223 @@
 
 void get_input_params(GetPot& field_parser,libmesh_assemble_input_params& input_params) 
 {
-	// Set mesh files
-	if (field_parser.search(1, "Mesh")) {
-		input_params.mesh_file = field_parser.next(input_params.mesh_file);
-	} else {
-		homemade_error_msg("[CArl Parameters]Missing the system mesh file!");
-	}
+  // Set mesh files
+  if (field_parser.search(1, "Mesh")) {
+    input_params.mesh_file = field_parser.next(input_params.mesh_file);
+  } else {
+    homemade_error_msg("[CArl Parameters]Missing the system mesh file!");
+  }
 
-	// Set constant parameters
-	if ( field_parser.search(1, "PhysicalParameters") )
-	{
-		input_params.physical_params_file = field_parser.next(input_params.physical_params_file);
-	}
-	else
-	{
-		homemade_error_msg("[CArl Parameters]Missing the physical parameters file!");
-	}
+  // Set constant parameters
+  if ( field_parser.search(1, "PhysicalParameters") )
+  {
+    input_params.physical_params_file = field_parser.next(input_params.physical_params_file);
+  }
+  else
+  {
+    homemade_error_msg("[CArl Parameters]Missing the physical parameters file!");
+  }
 
-	// Set weight function
-	std::string sys_type;
-	if ( field_parser.search(1, "SystemType") )
-	{
-		sys_type = field_parser.next(sys_type);
-		if(sys_type == "Macro" || sys_type == "MACRO" || sys_type == "macro")
-			input_params.system_type = WeightFunctionSystemType::MACRO;
-		else if(sys_type == "Micro" || sys_type == "MICRO" || sys_type == "micro")
-			input_params.system_type = WeightFunctionSystemType::MICRO;
-		else if(sys_type == "NoWeight" || sys_type == "NOWEIGHT" || sys_type == "noweight")
-		{
-			input_params.system_type = WeightFunctionSystemType::NO_WEIGHT;
-			std::cout << " >> [CArl Parameters]Warning: Will not use the weight parameters!" << std::endl;
-		}
-		else
-			homemade_error_msg("[CArl Parameters]Invalid system type (must be either Macro, Micro or NoWeight)!");
-	}
-	else
-	{
-		homemade_error_msg("[CArl Parameters]Missing the system type (must be either Macro, Micro or NoWeight)!");
-	}
+  // Set weight function
+  std::string sys_type;
+  if ( field_parser.search(1, "SystemType") )
+  {
+    sys_type = field_parser.next(sys_type);
+    if(sys_type == "Macro" || sys_type == "MACRO" || sys_type == "macro")
+      input_params.system_type = WeightFunctionSystemType::MACRO;
+    else if(sys_type == "Micro" || sys_type == "MICRO" || sys_type == "micro")
+      input_params.system_type = WeightFunctionSystemType::MICRO;
+    else if(sys_type == "NoWeight" || sys_type == "NOWEIGHT" || sys_type == "noweight")
+    {
+      input_params.system_type = WeightFunctionSystemType::NO_WEIGHT;
+      std::cout << " >> [CArl Parameters]Warning: Will not use the weight parameters!" << std::endl;
+    }
+    else
+      homemade_error_msg("[CArl Parameters]Invalid system type (must be either Macro, Micro or NoWeight)!");
+  }
+  else
+  {
+    homemade_error_msg("[CArl Parameters]Missing the system type (must be either Macro, Micro or NoWeight)!");
+  }
 
-	if ( field_parser.search(1, "MeshWeight") )
-	{
-		input_params.mesh_weight_file = field_parser.next(input_params.mesh_weight_file);
-	}
-	else
-	{
-		homemade_error_msg("[CArl Parameters]Missing the weight mesh file!");
-	}
+  if ( field_parser.search(1, "MeshWeight") )
+  {
+    input_params.mesh_weight_file = field_parser.next(input_params.mesh_weight_file);
+  }
+  else
+  {
+    homemade_error_msg("[CArl Parameters]Missing the weight mesh file!");
+  }
 
-	if( field_parser.search(1, "WeightIndexes") )
-	{
-		input_params.weight_domain_idx_file = field_parser.next(input_params.weight_domain_idx_file);
-	}
-	else
-	{
-		homemade_error_msg("[CArl Parameters]Missing the weight value file!");
-	}
+  if( field_parser.search(1, "WeightIndexes") )
+  {
+    input_params.weight_domain_idx_file = field_parser.next(input_params.weight_domain_idx_file);
+  }
+  else
+  {
+    homemade_error_msg("[CArl Parameters]Missing the weight value file!");
+  }
 
-	// Output
-	if (field_parser.search(2, "--output", "OutputBase"))
-	{
-		input_params.output_base = field_parser.next(
-			input_params.output_base);
-	} else {
-		input_params.output_base = "test_system";
-	}
+  // Output
+  if (field_parser.search(2, "--output", "OutputBase"))
+  {
+    input_params.output_base = field_parser.next(
+      input_params.output_base);
+  } else {
+    input_params.output_base = "test_system";
+  }
 
-	if (field_parser.search(1, "ExportRBVectors")) {
-		input_params.bCalculateRBVectors = true;
-	} else {
-		input_params.bCalculateRBVectors = false;
-	}
+  if (field_parser.search(1, "ExportRBVectors")) {
+    input_params.bCalculateRBVectors = true;
+  } else {
+    input_params.bCalculateRBVectors = false;
+  }
 //}
+
+if (field_parser.search(1,"Dynamic")) {
+  input_params.dynamic_analysis = true;
+} else {
+  input_params.dynamic_analysis = false;
+}
 //
 //void get_dynamic_params(GetPot& field_parser, 
-//	dynamic_params& input_params)
+//  dynamic_params& input_params)
 //{
-	if (field_parser.search(1, "max_nonlinear_iterations")) {
-		input_params.max_nonlinear_iterations  = field_parser.next(
-				input_params.max_nonlinear_iterations );
-	} else {
-		input_params.max_nonlinear_iterations = 15;
-		printf("[WARNING][LibMesh Parameters]Missing parameter : max_nonlinear_iterations\n");
-	}
+  if (field_parser.search(1, "max_nonlinear_iterations")) {
+    input_params.max_nonlinear_iterations  = field_parser.next(
+        input_params.max_nonlinear_iterations );
+  } else {
+    input_params.max_nonlinear_iterations = 15;
+    printf("[WARNING][LibMesh Parameters]Missing parameter : max_nonlinear_iterations\n");
+  }
 
-	if (field_parser.search(1, "max_linear_iterations")) {
-		input_params.max_linear_iterations  = field_parser.next(
-				input_params.max_linear_iterations );
-	}else {
-		input_params.max_linear_iterations = 50000;
-		printf("[WARNING][LibMesh Parameters]Missing parameter : max_linear_iterations\n");
-	}
+  if (field_parser.search(1, "max_linear_iterations")) {
+    input_params.max_linear_iterations  = field_parser.next(
+        input_params.max_linear_iterations );
+  }else {
+    input_params.max_linear_iterations = 50000;
+    printf("[WARNING][LibMesh Parameters]Missing parameter : max_linear_iterations\n");
+  }
 
-	if (field_parser.search(1, "initial_linear_tolerance")) {
-		input_params.initial_linear_tolerance  = field_parser.next(
-				input_params.initial_linear_tolerance );
-	}else {
-		input_params.initial_linear_tolerance = 1.e-3;
-		printf("[WARNING][LibMesh Parameters]Missing parameter : initial_linear_tolerance\n");
-	}
+  if (field_parser.search(1, "initial_linear_tolerance")) {
+    input_params.initial_linear_tolerance  = field_parser.next(
+        input_params.initial_linear_tolerance );
+  }else {
+    input_params.initial_linear_tolerance = 1.e-3;
+    printf("[WARNING][LibMesh Parameters]Missing parameter : initial_linear_tolerance\n");
+  }
 
-	if (field_parser.search(1, "absolute_residual_tolerance")) {
-		input_params.absolute_residual_tolerance  = field_parser.next(
-				input_params.absolute_residual_tolerance );
-	}else {
-		input_params.absolute_residual_tolerance = 0.0;
-		printf("[WARNING][LibMesh Parameters]Missing parameter : absolute_residual_tolerance\n");
-	}
+  if (field_parser.search(1, "absolute_residual_tolerance")) {
+    input_params.absolute_residual_tolerance  = field_parser.next(
+        input_params.absolute_residual_tolerance );
+  }else {
+    input_params.absolute_residual_tolerance = 0.0;
+    printf("[WARNING][LibMesh Parameters]Missing parameter : absolute_residual_tolerance\n");
+  }
 
-	if (field_parser.search(1, "deltat")) {
-		input_params.deltat = field_parser.next(
-				input_params.deltat);
-	} else {
-		input_params.deltat = 0.25;
-		printf("[WARNING][LibMesh Parameters]Missing the step time : deltat!\n");
-	}
+  if (field_parser.search(1, "deltat")) {
+    input_params.deltat = field_parser.next(
+        input_params.deltat);
+  } else {
+    input_params.deltat = 0.25;
+    printf("[WARNING][LibMesh Parameters]Missing the step time : deltat!\n");
+  }
 
-	if (field_parser.search(1, "transient")) {
-		input_params.transient = true;
-	} else {
-		input_params.transient = false;
-	}
+  if (field_parser.search(1, "beta")) {
+    input_params.deltat = field_parser.next(
+        input_params.beta);
+  } else {
+    input_params.beta = 0.25;
+    printf("[WARNING][LibMesh Parameters]Missing the step time : deltat!\n");
+  }
 
-	if (field_parser.search(1, "n_timesteps")) {
-		input_params.n_timesteps = field_parser.next(
-				input_params.n_timesteps);
-	} else {
-		input_params.n_timesteps = 25;
-		printf("[WARNING][LibMesh Parameters]Missing the number of step : n_timesteps!\n");
-	}
+  if (field_parser.search(1, "gamma")) {
+    input_params.deltat = field_parser.next(
+        input_params.gamma);
+  } else {
+    input_params.gamma = 0.5;
+    printf("[WARNING][LibMesh Parameters]Missing the step time : deltat!\n");
+  }
 
-	if (field_parser.search(1, "write_interval")) {
-		input_params.write_interval = field_parser.next(
-				input_params.write_interval);
-	} else {
-		input_params.write_interval = 1;
-		printf("[WARNING][LibMesh Parameters]Missing the write_interval : write_interval!\n");
-	}
+  if (field_parser.search(1, "transient")) {
+    input_params.transient = true;
+  } else {
+    input_params.transient = false;
+  }
 
-	if (field_parser.search(1, "solver_quite")) {
-		input_params.solver_quiet = true;
-	} else {
-		input_params.solver_quiet = false;
-	}
+  if (field_parser.search(1, "n_timesteps")) {
+    input_params.n_timesteps = field_parser.next(
+        input_params.n_timesteps);
+  } else {
+    input_params.n_timesteps = 1;
+    printf("[WARNING][LibMesh Parameters]Missing the number of step : n_timesteps!\n");
+  }
 
-	if (field_parser.search(1, "relative_step_tolerance")) {
-		input_params.relative_step_tolerance = field_parser.next(
-				input_params.relative_step_tolerance);
-	} else {
-		input_params.relative_step_tolerance = 1.e-3;
-		printf("[WARNING][LibMesh Parameters]Missing the  : relative_step_tolerance!\n");
-	}
+  if (field_parser.search(1, "write_interval")) {
+    input_params.write_interval = field_parser.next(
+        input_params.write_interval);
+  } else {
+    input_params.write_interval = 1;
+    printf("[WARNING][LibMesh Parameters]Missing the write_interval : write_interval!\n");
+  }
 
-	if (field_parser.search(1, "relative_residual_tolerance")) {
-		input_params.relative_residual_tolerance = field_parser.next(
-				input_params.relative_residual_tolerance);
-	} else {
-		input_params.relative_residual_tolerance = 0.0;
-		printf("[WARNING][LibMesh Parameters]Missing the variable : relative_residual_tolerance!\n");
-	}
+  if (field_parser.search(1, "solver_quite")) {
+    input_params.solver_quiet = true;
+  } else {
+    input_params.solver_quiet = false;
+  }
+
+  if (field_parser.search(1, "relative_step_tolerance")) {
+    input_params.relative_step_tolerance = field_parser.next(
+        input_params.relative_step_tolerance);
+  } else {
+    input_params.relative_step_tolerance = 1.e-3;
+    printf("[WARNING][LibMesh Parameters]Missing the  : relative_step_tolerance!\n");
+  }
+
+  if (field_parser.search(1, "relative_residual_tolerance")) {
+    input_params.relative_residual_tolerance = field_parser.next(
+        input_params.relative_residual_tolerance);
+  } else {
+    input_params.relative_residual_tolerance = 0.0;
+    printf("[WARNING][LibMesh Parameters]Missing the variable : relative_residual_tolerance!\n");
+  }
 }
 
 // void get_material_params(GetPot& field_parser, 
-// 	material_params& input_params)
+//  material_params& input_params)
 // {
-// 	if (field_parser.search(1, "rho")) {
-// 		input_params.rho = field_parser.next(
-// 				input_params.rho);
-// 	} else {
-// 		input_params.rho = 1000;
-// 		homemade_error_msg("[WARNING][Material Parameters]Missing the paramater rho");
-// 	}
+//  if (field_parser.search(1, "rho")) {
+//    input_params.rho = field_parser.next(
+//        input_params.rho);
+//  } else {
+//    input_params.rho = 1000;
+//    homemade_error_msg("[WARNING][Material Parameters]Missing the paramater rho");
+//  }
 
-// 	if (field_parser.search(1, "poisson_ratio")) {
-// 		input_params.poisson_ratio = field_parser.next(
-// 				input_params.poisson_ratio);
-// 	} else {
-// 		input_params.poisson_ratio = 0.2;
-// 		homemade_error_msg("[WARNING][Material Parameters]Missing the paramater poisson_ratio");
-// 	}
+//  if (field_parser.search(1, "poisson_ratio")) {
+//    input_params.poisson_ratio = field_parser.next(
+//        input_params.poisson_ratio);
+//  } else {
+//    input_params.poisson_ratio = 0.2;
+//    homemade_error_msg("[WARNING][Material Parameters]Missing the paramater poisson_ratio");
+//  }
 
-// 	if (field_parser.search(1, "young_modulus")) {
-// 		input_params.young_modulus = field_parser.next(
-// 				input_params.young_modulus);
-// 	} else {
-// 		input_params.young_modulus = 3e6;
-// 		homemade_error_msg("[WARNING][Material Parameters]Missing the paramater young_modulus");
-// 	}
+//  if (field_parser.search(1, "young_modulus")) {
+//    input_params.young_modulus = field_parser.next(
+//        input_params.young_modulus);
+//  } else {
+//    input_params.young_modulus = 3e6;
+//    homemade_error_msg("[WARNING][Material Parameters]Missing the paramater young_modulus");
+//  }
 // }
 
 
 // void get_file_params(GetPot command_line,
-// 					libmesh_assemble_input_params& carl_params,  
-// 					material_params& input_material_params)
+//          libmesh_assemble_input_params& carl_params,  
+//          material_params& input_material_params)
 // {
-// 	// File parser
+//  // File parser
 //   GetPot field_parser;
 //   // If there is an input file, parse it to get the parameters. Else, parse the command line
 //   std::string input_filename;

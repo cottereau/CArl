@@ -21,12 +21,15 @@ struct libmesh_assemble_input_params {
 
 	std::string output_base; 	///< Output filename base.
 	bool bCalculateRBVectors;	///< Build and export the rigid body modes vectors?
+  bool dynamic_analysis; // dynamic analysis
 //};
 //
 //struct dynamic_params 
 //{
 	/*dynamic params*/
 	double deltat; //step time of calculatiom
+	double beta; 
+	double gamma;
 	bool transient;
 	unsigned int n_timesteps; // number of time step
 	unsigned int write_interval;

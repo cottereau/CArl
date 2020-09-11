@@ -46,7 +46,7 @@ else
 
 //Parse file content to the input_params
 libmesh_assemble_interpolation_params input_params;
-	get_input_params(field_parser, input_params);
+//	get_input_params(field_parser, input_params);
 
 //Interpolation matrix
 Mat sys_mat_PETSC_H_save;
