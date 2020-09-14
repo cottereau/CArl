@@ -19,6 +19,7 @@
 #include "libmesh/fem_system.h"
 #include "libmesh/mesh.h"
 #include "assemble_functions_elasticity_3D.h"
+#include "assemble_functions_mass_3D.h"
 
 using namespace libMesh;
 using namespace std;
@@ -49,8 +50,8 @@ public:
       _dim(3),
       _fe_type(),
       _rho(1.0)
-  {
 
+  {
   }
  
   // System initialization
@@ -95,7 +96,11 @@ public:
   void set_dirichlet_bc(Mesh& mesh, unsigned int bound_clamped_id, 
     unsigned int bound_force_id, bool node_enabeled);
 
-  unsigned int get_dim(){return _dim;}
+  unsigned int get_dim(){return _dim;};
+
+  void assemble_mass_tilde_with_weight(EquationSystems& es, 
+    string& system_name, weight_parameter_function& weight_mask, 
+    WeightFunctionSystemType system_type);
 
 private:
 

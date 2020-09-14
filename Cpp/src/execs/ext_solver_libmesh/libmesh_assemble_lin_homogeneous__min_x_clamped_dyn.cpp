@@ -94,24 +94,31 @@ int main (int argc, char ** argv)
   // Create an equation systems object
   EquationSystems equation_systems (system_mesh);
 
-  // Declare the system "Navier-Stokes" and its variables.
   ElasticitySystem & elasticity_system = equation_systems.add_system<ElasticitySystem> ("Linear Elasticity");
-
-  // [TODO] Check assign external loads
-  elasticity_system.setForce(force);
+  //LinearImplicitSystem& elasticity_system
+  //                  = add_elasticity(equation_systems); // define in common_assemble_functions_elasticity_3D.cpp
+  //                  //by default order is FIRST and family is LAGRANGE (definition function in the file 
+  //                  //common_assemble_functions_elasticity_3D.h). 
+  //                  //See also http://libmesh.github.io/doxygen/namespacelibMesh.html#af3eb3e8751995b944fc135ea53b09da2
 
   // Set clamped boundary
   elasticity_system.set_dirichlet_bc(system_mesh,bound_clamped_id,bound_force_id,false);
-
-  // Reading of material parameter
-  elasticity_system.set_homogeneous_physical_properties(equation_systems, input_params.physical_params_file);
-  //(input_params.physical_params_file);
   
+  equation_systems.init();
 
+  //elasticity_system.setForce(force);
+  
+  // Set material parameter
+  elasticity_system.set_homogeneous_physical_properties(equation_systems, input_params.physical_params_file);
+  
+  // Set the weight function object
+  weight_parameter_function  system_weight(mesh_weight);
+  system_weight.set_parameters(input_params.weight_domain_idx_file);
 
+  perf_log.pop("System setup:");
 
-  // Solve this as a time-dependent or steady system
-  std::string time_solver = std::string("newmark")/*infile("time_solver","DIE!")*/;
+/*  // Solve this as a time-dependent or steady system
+  std::string time_solver = std::string("newmark")/*infile("time_solver","DIE!");
 
   ExplicitSystem * v_system;
   ExplicitSystem * a_system;
@@ -165,7 +172,7 @@ int main (int argc, char ** argv)
 
   //libMesh::SparseMatrix< libMesh::Number > * MassTilde = 
   //  get_mass_tilde(equation_systems,"Linear Elasticity")
-
+*/
   
   // Export matrix and vector
   libMesh::PetscMatrix<libMesh::Number> * temp_mat_ptr = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number> * >(elasticity_system.matrix);

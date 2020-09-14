@@ -9,10 +9,10 @@
 #define ELASTICITY_3D_ASSEMBLE_FUNCTIONS_ELASTICITY_3D_H_
 
 #include "common_header_ext_solver_libmesh.h"
-
 #include "common_assemble_functions_elasticity_3D.h"
 #include "weight_parameter_function.h"
 #include "ext_solver_libmesh_enums.h"
+
 
 const bool MASTER_bPerfLog_assemble_fem = false;
 
