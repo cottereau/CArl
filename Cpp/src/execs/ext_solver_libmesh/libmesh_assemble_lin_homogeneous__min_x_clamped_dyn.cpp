@@ -24,11 +24,13 @@ using namespace libMesh;
 
 int main (int argc, char ** argv)
 {
+  // [USER] Fixed boudary
+  boundary_id_cube fixed_bound_id = boundary_id_cube::MIN_X;
 
-  const boundary_id_type bound_clamped_id = boundary_id_min_x;
-  const boundary_id_type bound_force_id   = boundary_id_max_z;
+  //const boundary_id_type bound_clamped_id = boundary_id_min_x;
+  //const boundary_id_type bound_force_id   = boundary_id_max_z;
 
-  Real force = 10000.; 
+  //Real force = 10000.; 
 
   // Initialize libMesh.
   LibMeshInit init (argc, argv);
@@ -94,22 +96,21 @@ int main (int argc, char ** argv)
   // Create an equation systems object
   EquationSystems equation_systems (system_mesh);
 
-  ElasticitySystem & elasticity_system = equation_systems.add_system<ElasticitySystem> ("Linear Elasticity");
-  //LinearImplicitSystem& elasticity_system
-  //                  = add_elasticity(equation_systems); // define in common_assemble_functions_elasticity_3D.cpp
+  //*// ElasticitySystem & elasticity_system = equation_systems.add_system<ElasticitySystem>("Linear Elasticity");
+  NewmarkSystem& elasticity_system
+    = add_dynamic_elasticity(equation_systems); // define in common_assemble_functions_elasticity_3D.cpp
   //                  //by default order is FIRST and family is LAGRANGE (definition function in the file 
   //                  //common_assemble_functions_elasticity_3D.h). 
   //                  //See also http://libmesh.github.io/doxygen/namespacelibMesh.html#af3eb3e8751995b944fc135ea53b09da2
 
-  // Set clamped boundary
-  elasticity_system.set_dirichlet_bc(system_mesh,bound_clamped_id,bound_force_id,false);
-  
-  equation_systems.init();
+  // Set clamped border
+                    //add Dirichlet Boundary conditions
+  set_clamped_border(elasticity_system, fixed_bound_id);
 
-  //elasticity_system.setForce(force);
+  equation_systems.init();
   
   // Set material parameter
-  elasticity_system.set_homogeneous_physical_properties(equation_systems, input_params.physical_params_file);
+  set_homogeneous_physical_properties(equation_systems, input_params.physical_params_file);
   
   // Set the weight function object
   weight_parameter_function  system_weight(mesh_weight);
@@ -117,75 +118,24 @@ int main (int argc, char ** argv)
 
   perf_log.pop("System setup:");
 
-/*  // Solve this as a time-dependent or steady system
-  std::string time_solver = std::string("newmark")/*infile("time_solver","DIE!");
+  // Assemble!
+  assemble_mass_tilde_with_weight(equation_systems,"Elasticity",system_weight,
+    input_params.system_type, input_params);
 
-  ExplicitSystem * v_system;
-  ExplicitSystem * a_system;
 
-  // Create ExplicitSystem to help output velocity
-  v_system = &equation_systems.add_system<ExplicitSystem> ("Velocity");
-  v_system->add_variable("u_vel", FIRST, LAGRANGE);
-  v_system->add_variable("v_vel", FIRST, LAGRANGE);
-  v_system->add_variable("w_vel", FIRST, LAGRANGE);
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
+  elasticity_system.matrix->print_matlab(input_params.output_base + "_sys_mat.m");
+  elasticity_system.rhs->print_matlab(input_params.output_base + "_sys_rhs_vec.m");
+#endif
 
-  // Create ExplicitSystem to help output acceleration
-  a_system = &equation_systems.add_system<ExplicitSystem> ("Acceleration");
-  a_system->add_variable("u_accel", FIRST, LAGRANGE);
-  a_system->add_variable("v_accel", FIRST, LAGRANGE);
-  a_system->add_variable("w_accel", FIRST, LAGRANGE);
-  
-  elasticity_system.time_solver = libmesh_make_unique<NewmarkSolver>(elasticity_system);
-  
-  // Initialize the system
-  //->launch init_data() methode of ElasticitySystem
-  equation_systems.init();
-
-  // Set the time stepping options 
-  // Read step time
-  const Real deltat = static_cast<Real>(input_params.deltat);
-  elasticity_system.deltat = deltat;
-
-  // And the nonlinear solver options
-  DiffSolver & solver = *(elasticity_system.time_solver->diff_solver().get());
-  solver.quiet = input_params.solver_quiet;
-  solver.verbose = !solver.quiet;
-  solver.max_nonlinear_iterations = input_params.max_nonlinear_iterations;
-  solver.relative_step_tolerance = static_cast<Real>(input_params.relative_step_tolerance);
-  solver.relative_residual_tolerance = static_cast<Real>(input_params.relative_residual_tolerance);
-  solver.absolute_residual_tolerance = static_cast<Real>(input_params.absolute_residual_tolerance);
-
-  // And the linear solver options
-  solver.max_linear_iterations = input_params.max_linear_iterations;
-  solver.initial_linear_tolerance = static_cast<Real>(input_params.initial_linear_tolerance);
-  //unsigned int n_timesteps = input_params.n_timesteps;
-  // Print information about the elasticity_system to the screen.
-  equation_systems.print_info();
-
-  NewmarkSolver * newmark = cast_ptr<NewmarkSolver*>(elasticity_system.time_solver.get());
-  newmark->compute_initial_accel();
-
-  // Copy over initial velocity and acceleration for output.
-  // Note we can do this because of the matching variables/FE spaces
-  *(v_system->solution) = elasticity_system.get_vector("_old_solution_rate");
-  *(a_system->solution) = elasticity_system.get_vector("_old_solution_accel");
-
-  //libMesh::SparseMatrix< libMesh::Number > * MassTilde = 
-  //  get_mass_tilde(equation_systems,"Linear Elasticity")
-*/
-  
   // Export matrix and vector
   libMesh::PetscMatrix<libMesh::Number> * temp_mat_ptr = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number> * >(elasticity_system.matrix);
   libMesh::PetscVector<libMesh::Number> * temp_vec_ptr = libMesh::cast_ptr<libMesh::PetscVector<libMesh::Number> * >(elasticity_system.rhs);
-  
-  libMesh::PetscVector<libMesh::Number> * temp_vel_ptr = libMesh::cast_ptr<libMesh::PetscVector<libMesh::Number> *>(&elasticity_system.get_vector("_old_solution_rate"));
-  libMesh::PetscVector<libMesh::Number> * temp_acc_ptr = libMesh::cast_ptr<libMesh::PetscVector<libMesh::Number> *>(&elasticity_system.get_vector("_old_solution_accel"));
-  
+
   carl::write_PETSC_matrix(*temp_mat_ptr, input_params.output_base + "_sys_mat.petscmat");
   carl::write_PETSC_vector(*temp_vec_ptr, input_params.output_base + "_sys_rhs_vec.petscvec");
-  carl::write_PETSC_vector(*temp_vel_ptr, input_params.output_base + "_sys_vel_n.petscvec");
-  carl::write_PETSC_vector(*temp_acc_ptr, input_params.output_base + "_sys_acc_n.petscvec");
-  
+
   // If needed, print rigid body vectors
   if(input_params.bCalculateRBVectors)
   {
@@ -194,12 +144,11 @@ int main (int argc, char ** argv)
     write_rigid_body_vectors(nullsp_sys,input_params.output_base,WorldComm.rank());
     MatNullSpaceDestroy(&nullsp_sys);
   }
-  // All done.
-  //
+
   return 0;
 }
 /* Local Variables:                                                        */
-/* mode: c                                                              */
+/* mode: c                                                                 */
 /* show-trailing-whitespace: t                                             */
 /* coding: utf-8                                                           */
 /* c-file-style: "stroustrup"                                              */

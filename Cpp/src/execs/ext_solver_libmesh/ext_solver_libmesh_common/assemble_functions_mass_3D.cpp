@@ -4,66 +4,6 @@
 #include "PETSC_matrix_operations.h"
 
 using namespace libMesh;
-/*
-void get_input_params(GetPot& field_parser,
-  libmesh_assemble_interpolation_params& input_params) 
-{
-
-  if(field_parser.search(1, "PathTildeMatrixA"))
-    input_params.path_tilde_matrices_A = field_parser.next(input_params.path_tilde_matrices_A);
-  else
-    printf("[ERROR] Matrices system A found");
-
-  if(field_parser.search(1, "MacroCouplingMatrix"))
-    input_params.path_macro_coupling_matrix = field_parser.next(input_params.path_macro_coupling_matrix);
-  else
-    printf("[ERROR] Path to Macro Coupling Matrix not found\n");
-
-  if(field_parser.search(1,"AlphaA"))
-    input_params.alpha_A = field_parser.next(input_params.alpha_A);
-  else
-    printf("[ERROR] Alpha value not passed to the program\n");
-
-  if(field_parser.search(1, "PathTildeMatrixB"))
-    input_params.path_tilde_matrices_B = field_parser.next(input_params.path_tilde_matrices_B);
-  else
-    printf("[ERROR] Matrices system B found");
-
-  if(field_parser.search(1,"MicroCouplingMatrix"))
-    input_params.path_micro_coupling_matrix = field_parser.next(input_params.path_micro_coupling_matrix);
-  else
-    printf("[ERROR] Path to Micro Coupling Matrix not found");
-
-  if(field_parser.search(1,"AlphaB"))
-    input_params.alpha_B = field_parser.next(input_params.alpha_B);
-  else
-    printf("[ERROR] Alpha value not passed to the program\n");
-
-  if(field_parser.search(1, "OutputFolder"))
-    input_params.output_folder = field_parser.next(input_params.output_folder);
-  else
-    printf("[ERROR] Matrices system A found");
-}
-*/
-//Matrice of rigidity
-/* libMesh::SparseMatrix< libMesh::Number > * get_stiffness_matrix(libMesh::EquationSystems& es,
-        const std::string& system_name,
-        weight_parameter_function& weight_mask,
-        WeightFunctionSystemType system_type)
-{
-  assemble_elasticity_with_weight(es,system_name,weight_mask,system_type);
-  libMesh::LinearImplicitSystem& system = es.get_system<libMesh::LinearImplicitSystem>("Elasticity");
-  libMesh::SparseMatrix< libMesh::Number > * stiffness = system.matrix;
-  return stiffness;
-}
-
-libMesh::SparseMatrix< libMesh::Number > * get_mass_matrix(libMesh::EquationSystems& es,
-        const std::string& system_name)
-{
-  libMesh::SparseMatrix< libMesh::Number > * mass = assemble_mass_matrix(es,system_name);
-  return mass;
-}
-*/
 
 void Update_SubM( libMesh::DenseSubMatrix<libMesh::Number>& SubM,
   unsigned int qp,const std::vector<std::vector<libMesh::Real>> & phi,
@@ -80,18 +20,19 @@ void Update_SubM( libMesh::DenseSubMatrix<libMesh::Number>& SubM,
 }
 
 //
-void assemble_mass_tilde_with_weight(libMesh::EquationSystems& es, 
-  const std::string& system_name, weight_parameter_function& weight_mask, 
+void assemble_mass_tilde_with_weight( libMesh::EquationSystems& es,
+  const std::string& system_name, weight_parameter_function& weight_mask,
   WeightFunctionSystemType system_type, libmesh_assemble_input_params& input_params)
 {
-  libmesh_assert_equal_to (system_name, "Elasticity");
+
+  libmesh_assert_equal_to(system_name, "Elasticity");
 
   libMesh::PerfLog perf_log ("Mass/Stiffness Matrix Assembly ",MASTER_bPerfLog_assemble_fem);
 
   perf_log.push("Preamble");
 
   libMesh::Real delta_t = input_params.deltat;
-  libMesh::Real beta = 0.25;
+  libMesh::Real beta = input_params.beta;
   PetscScalar betaDeltat2 = beta*delta_t*delta_t;
 
   const MeshBase & mesh = es.get_mesh();
@@ -119,9 +60,9 @@ void assemble_mass_tilde_with_weight(libMesh::EquationSystems& es,
   libMesh::Number localRho = physical_param_system.current_solution(physical_dof_indices_var[0]);
 
   // - Set up elasticity system ---------------------------------------------
-  ElasticitySystem& system = es.get_system<ElasticitySystem>("Linear Elasticity");
+  libMesh::NewmarkSystem& system = es.get_system<libMesh::NewmarkSystem>("Elasticity");
 
-  libMesh::SparseMatrix< libMesh::Number > & mass = system.add_matrix("mass_tilde");
+  //libMesh::SparseMatrix< libMesh::Number > & mass = system.add_matrix("mass_tilde");
   
   const unsigned int n_components = 3;
   const unsigned int u_var = system.variable_number("u");
@@ -252,7 +193,7 @@ void assemble_mass_tilde_with_weight(libMesh::EquationSystems& es,
     for (unsigned int qp=0; qp<qrule.n_points(); qp++)
     {
 
-      perf_log.pop("Mass","Matrix element calculations");
+      perf_log.push("Element Mass/Stiffness","Matrix element calculations");
       weight_alpha = weight_mask.get_alpha(qp_points[qp],system_type);
 
       // Internal tension
@@ -280,84 +221,29 @@ void assemble_mass_tilde_with_weight(libMesh::EquationSystems& es,
       Update_SubM(Mwv, qp, phi, dim, n_u_dofs, JxW, localRho);
       Update_SubM(Mww, qp, phi, dim, n_u_dofs, JxW, localRho);
 
-      perf_log.pop("Stiffness/Mass matrix","Matrix element calculations");
+      perf_log.pop("Element Mass/Stiffness","Matrix element calculations");
     }
+    perf_log.pop("Stiffness/Mass Matrix manipulations");
+
+    // Ktilde
+    Ke.add(betaDeltat2,Me);
+    Ke.scale(1./betaDeltat2);
+    // // Mtilde
+    // Me.add(betaDeltat2,Ke);
 
     // Apply constraints
     perf_log.push("Constraints","Matrix element calculations");
     dof_map.heterogenously_constrain_element_matrix_and_vector(Ke, Fe, dof_indices);
-    dof_map.heterogenously_constrain_element_matrix_and_vector(Me, Fe, dof_indices);
     perf_log.pop("Constraints","Matrix element calculations");
-
+    // dof_map.heterogenously_constrain_element_matrix_and_vector(Me, Fe, dof_indices);
+ 
     perf_log.push("Adding elements");
-    
-    Me.add(betaDeltat2,Ke);
-
-    mass.add_matrix(Me,dof_indices);
-    system.matrix->add_matrix(Me, dof_indices);
-
+    system.matrix->add_matrix(Ke, dof_indices);
+    // system.matrix->add_matrix(Me, dof_indices);
     system.rhs->add_vector(Fe, dof_indices);
     perf_log.pop("Adding elements");
   }
 
   system.matrix->close();
   system.rhs->close();
-
-
-  libMesh::PetscMatrix<libMesh::Number> * temp_mass_tilde = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number>* >(system.request_matrix("mass_tilde"));
-  carl::write_PETSC_matrix(*temp_mass_tilde, input_params.output_base + "_mass_tilde_with_weights.petscmat");
-
-#ifdef PRINT_MATLAB_DEBUG
-  temp_mass_tilde->print_matlab(input_params.output_base + "_mass_tilde_with_weights.m");
-#endif
-
-
 }
-
-/*
-void get_mass_tilde(libMesh::Parallel::Communicator& WorldComm, 
-  libmesh_assemble_input_params& input_params, libMesh::EquationSystems equation_systems)
-{
-  
-
-// Export matrix and vector
-
-  
-  //libMesh::PetscVector<libMesh::Number> * temp_vec_ptr = libMesh::cast_ptr<libMesh::PetscVector<libMesh::Number> * >(elasticity_system.rhs);
-
- 
-
-  //libMesh::SparseMatrix< libMesh::Number > * mass = get_mass_matrix(equation_systems,"Linear Elasticity");
-  //libMesh::SparseMatrix< libMesh::Number > * stiffness = get_stiffness_matrix(equation_systems,"Linear Elasticity");
-  //carl::write_PETSC_matrix(*temp_mat_mass_ptr, input_params.output_base + "_mass_test_sys_mat.petscmat");
-  //carl::write_PETSC_vector(*temp_vec_ptr, input_params.output_base + "_sys_rhs_vec.petscvec");
-  
-  Mat sys_mat_PETSC_M;
-  Mat sys_mat_PETSC_K;
-  MatCreate(WorldComm.get(),&sys_mat_PETSC_M);
-  MatCreate(WorldComm.get(),&sys_mat_PETSC_K);
-
-  //carl::read_PETSC_matrix(sys_mat_PETSC_M, input_params.output_base+"_mass_test_sys_mat.petscmat", WorldComm.get());
-  //carl::read_PETSC_matrix(sys_mat_PETSC_K, input_params.output_base+"_stiffness_test_sys_mat.petscmat", WorldComm.get());
-
-  //calculate de M~  = M + a*K
-  MatAXPY(sys_mat_PETSC_M, a, sys_mat_PETSC_K, DIFFERENT_NONZERO_PATTERN);
-  libMesh::PetscMatrix<libMesh::Number> sys_mat_PETSC_M_tilde(sys_mat_PETSC_M,WorldComm);
-
-
-std::string mass_tilde_path = "./GC_solver/mass_tilde/"; 
-std::vector<std::string> str;
-split(input_params.output_base, str,'/');
-
-std::string name_matrix_tilde_matlab = mass_tilde_path+"mass_tilde_"+str[str.size()-1]+".m";
-std::string name_matrix_tilde_petsc  = mass_tilde_path+"mass_tilde_"+str[str.size()-1]+".petscmat";
-
-
-
-carl::write_PETSC_matrix(sys_mat_PETSC_M_tilde,name_matrix_tilde_petsc);
-
-  return;
-
-}
-
-*/
