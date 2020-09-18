@@ -251,7 +251,7 @@ void Update_SubK_isotropic( libMesh::DenseSubMatrix<libMesh::Number>& SubK,
   }
 };
 
-void assemble_elasticity_with_weight( libMesh::EquationSystems& es,
+void assemble_elasticity_with_weight(libMesh::EquationSystems& es,
               const std::string& system_name,
               weight_parameter_function& weight_mask,
               WeightFunctionSystemType system_type)
@@ -504,7 +504,6 @@ void assemble_elasticity_with_weight_and_traction(libMesh::EquationSystems& es,
 
   // Face quadrature points
   const std::vector<libMesh::Point>& qp_face_points = fe_face->get_xyz();
-
 
   // Weights for the Arlequin method
   double weight_alpha = 1;

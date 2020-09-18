@@ -20,6 +20,9 @@
  *    - `ExportRBVectors` : build and export the rigid body modes vectors.
  */
 
+using namespace std;
+using namespace libMesh;
+
 int main(int argc, char** argv) {
 
   // [USER] Traction force density
@@ -27,14 +30,14 @@ int main(int argc, char** argv) {
   traction_density[0] = 100.;
   
   // --- Initialize libMesh
-  libMesh::LibMeshInit init(argc, argv);
+  LibMeshInit init(argc, argv);
 
   // Do performance log?
   const bool MASTER_bPerfLog_carl_libmesh = true;
-  libMesh::PerfLog perf_log("Main program", MASTER_bPerfLog_carl_libmesh);
+  PerfLog perf_log("Main program", MASTER_bPerfLog_carl_libmesh);
 
   // libMesh's C++ / MPI communicator wrapper
-  libMesh::Parallel::Communicator& WorldComm = init.comm();
+  Parallel::Communicator& WorldComm = init.comm();
 
   // Number of processors and processor rank.
   int rank = WorldComm.rank();
@@ -69,11 +72,11 @@ int main(int argc, char** argv) {
 
   // - Parallelized meshes: A, B, mediator and weight
   perf_log.push("Meshes - Parallel","Read files:");
-  libMesh::Mesh system_mesh(WorldComm, dim);
+  Mesh system_mesh(WorldComm, dim);
   system_mesh.read(input_params.mesh_file);
   system_mesh.prepare_for_use();
 
-  libMesh::Mesh mesh_weight(WorldComm, dim);
+  Mesh mesh_weight(WorldComm, dim);
   mesh_weight.allow_renumbering(false);
   mesh_weight.read(input_params.mesh_weight_file);
   mesh_weight.prepare_for_use();
@@ -84,11 +87,11 @@ int main(int argc, char** argv) {
   perf_log.push("System setup:");
 
   // Set the equation systems object
-  libMesh::EquationSystems equation_systems(system_mesh);
+  EquationSystems equation_systems(system_mesh);
 
   // Add linear elasticity and physical parameters systems
-  libMesh::LinearImplicitSystem& elasticity_system
-                    = add_elasticity(equation_systems);
+  LinearImplicitSystem& elasticity_system
+                    = add_elasticity(equation_systems,"Elasticity");
 
   // Initialize the equation systems
   equation_systems.init();
@@ -114,8 +117,8 @@ int main(int argc, char** argv) {
 #endif
 
   // Export matrix and vector
-  libMesh::PetscMatrix<libMesh::Number> * temp_mat_ptr = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number> * >(elasticity_system.matrix);
-  libMesh::PetscVector<libMesh::Number> * temp_vec_ptr = libMesh::cast_ptr<libMesh::PetscVector<libMesh::Number> * >(elasticity_system.rhs);
+  PetscMatrix<Number> * temp_mat_ptr = cast_ptr<PetscMatrix<Number> * >(elasticity_system.matrix);
+  PetscVector<Number> * temp_vec_ptr = cast_ptr<PetscVector<Number> * >(elasticity_system.rhs);
 
   carl::write_PETSC_matrix(*temp_mat_ptr, input_params.output_base + "_sys_mat.petscmat");
   carl::write_PETSC_vector(*temp_vec_ptr, input_params.output_base + "_sys_rhs_vec.petscvec");

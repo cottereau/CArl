@@ -37,10 +37,10 @@ int main (int argc, char ** argv)
 
   // Do performance log?
   const bool MASTER_bPerfLog_carl_libmesh = true;
-  libMesh::PerfLog perf_log("Main program", MASTER_bPerfLog_carl_libmesh);
+  PerfLog perf_log("Main program", MASTER_bPerfLog_carl_libmesh);
   
   // libMesh's C++ / MPI communicator wrapper
-  libMesh::Parallel::Communicator& WorldComm = init.comm();
+  Parallel::Communicator& WorldComm = init.comm();
 
   // Number of processors and processor rank.
   int rank = WorldComm.rank();
@@ -79,11 +79,11 @@ int main (int argc, char ** argv)
 
   // - Parallelized meshes: A, B, mediator and weight
   perf_log.push("Meshes - Parallel","Read files:");
-  libMesh::Mesh system_mesh(WorldComm, dim);
+  Mesh system_mesh(WorldComm, dim);
   system_mesh.read(input_params.mesh_file);
   system_mesh.prepare_for_use();
 
-  libMesh::Mesh mesh_weight(WorldComm, dim);
+  Mesh mesh_weight(WorldComm, dim);
   mesh_weight.allow_renumbering(false);
   mesh_weight.read(input_params.mesh_weight_file);
   mesh_weight.prepare_for_use();
@@ -96,45 +96,71 @@ int main (int argc, char ** argv)
   // Create an equation systems object
   EquationSystems equation_systems (system_mesh);
 
-  //*// ElasticitySystem & elasticity_system = equation_systems.add_system<ElasticitySystem>("Linear Elasticity");
-  NewmarkSystem& elasticity_system
-    = add_dynamic_elasticity(equation_systems); // define in common_assemble_functions_elasticity_3D.cpp
-  //                  //by default order is FIRST and family is LAGRANGE (definition function in the file 
-  //                  //common_assemble_functions_elasticity_3D.h). 
-  //                  //See also http://libmesh.github.io/doxygen/namespacelibMesh.html#af3eb3e8751995b944fc135ea53b09da2
+  // Create NewmarkSystem "Elasticity"
+  NewmarkSystem& elasticity_system = add_dynamic_elasticity(equation_systems,
+    "Dynamic Elasticity");
 
   // Set clamped border
-                    //add Dirichlet Boundary conditions
   set_clamped_border(elasticity_system, fixed_bound_id);
 
-  equation_systems.init();
-  
-  // Set material parameter
-  set_homogeneous_physical_properties(equation_systems, input_params.physical_params_file);
-  
+  // Set Newmark's parameters
+  libMesh::Real deltat = input_params.deltat;
+  libMesh::Real beta = input_params.beta;
+  libMesh::Real gamma = input_params.gamma;
+  elasticity_system.set_newmark_parameters(deltat,beta,gamma);
+
+  // Start time integration from t=0
+  elasticity_system.time = 0.;
+
   // Set the weight function object
   weight_parameter_function  system_weight(mesh_weight);
   system_weight.set_parameters(input_params.weight_domain_idx_file);
 
   perf_log.pop("System setup:");
 
+  // Initialize equation system
+  equation_systems.init();
+  
+  // Set material parameter
+  set_homogeneous_physical_properties(equation_systems, input_params.physical_params_file);
+  
   // Assemble!
-  assemble_mass_tilde_with_weight(equation_systems,"Elasticity",system_weight,
+  assemble_dynamic_elasticity_with_weight(equation_systems,"Dynamic Elasticity",system_weight,
     input_params.system_type, input_params);
 
+  SparseMatrix < Number > * mass      = elasticity_system.request_matrix("mass");
+  SparseMatrix < Number > * stiffness = elasticity_system.request_matrix("stifness");
+  SparseMatrix < Number > * damping   = elasticity_system.request_matrix("damping");
+  SparseMatrix < Number > * mass_tilde= elasticity_system.request_matrix("mass_tilde");
+  NumericVector< Number > * force     = elasticity_system.equest_vector("force");
 
 // Print MatLab debugging output? Variable defined at "carl_headers.h"
 #ifdef PRINT_MATLAB_DEBUG
-  elasticity_system.matrix->print_matlab(input_params.output_base + "_sys_mat.m");
-  elasticity_system.rhs->print_matlab(input_params.output_base + "_sys_rhs_vec.m");
+  //elasticity_system.matrix->print_matlab(input_params.output_base + "_sys_mat.m");
+  //elasticity_system.rhs->print_matlab(input_params.output_base + "_sys_rhs_vec.m");
+  mass->print_matlab(input_params.output_base + "_mass.m");
+  stiffness->print_matlab(input_params.output_base + "stiffness.m");
+  damping->print_matlab(input_params.output_base + "_damping.m");
+  mass_tilde->print_matlab(input_params.output_base + "_mass_tilde.m");
+  force->print_matlab(input_params.output_base + "_force.m");
 #endif
 
   // Export matrix and vector
-  libMesh::PetscMatrix<libMesh::Number> * temp_mat_ptr = libMesh::cast_ptr<libMesh::PetscMatrix<libMesh::Number> * >(elasticity_system.matrix);
-  libMesh::PetscVector<libMesh::Number> * temp_vec_ptr = libMesh::cast_ptr<libMesh::PetscVector<libMesh::Number> * >(elasticity_system.rhs);
+  //PetscMatrix<Number> * temp_mass_ptr = cast_ptr<PetscMatrix<Number> * >(elasticity_system.matrix);
+  //PetscVector<Number> * temp_vec_ptr = cast_ptr<PetscVector<Number> * >(elasticity_system.rhs);
+  PetscMatrix<Number> * temp_mass_ptr = cast_ptr<PetscMatrix<Number> * >(mass);
+  PetscMatrix<Number> * temp_stiffness_ptr = cast_ptr<PetscMatrix<Number> * >(stiffness);
+  PetscMatrix<Number> * temp_damping_ptr = cast_ptr<PetscMatrix<Number> * >(damping);
+  PetscVector<Number> * temp_force_ptr = cast_ptr<PetscVector<Number> * >(force);
+  PetscMatrix<Number> * temp_mass_tilde_ptr = cast_ptr<PetscMatrix<Number> * >(mass_tilde);
 
-  carl::write_PETSC_matrix(*temp_mat_ptr, input_params.output_base + "_sys_mat.petscmat");
-  carl::write_PETSC_vector(*temp_vec_ptr, input_params.output_base + "_sys_rhs_vec.petscvec");
+  //carl::write_PETSC_matrix(*temp_mat_ptr, input_params.output_base + "_sys_mat.petscmat");
+  //carl::write_PETSC_vector(*temp_vec_ptr, input_params.output_base + "_sys_rhs_vec.petscvec");
+  carl::write_PETSC_matrix(*temp_mass_ptr, input_params.output_base + "_mass.petscvec");
+  carl::write_PETSC_matrix(*temp_stiffness_ptr, input_params.output_base + "_stiffness.petscvec");
+  carl::write_PETSC_matrix(*temp_damping_ptr, input_params.output_base + "_damping.petscvec");
+  carl::write_PETSC_matrix(*temp_mass_tilde_ptr, input_params.output_base + "_mass_tilde.petscvec");
+  carl::write_PETSC_vector(*temp_force_ptr, input_params.output_base + "_force.petscvec");
 
   // If needed, print rigid body vectors
   if(input_params.bCalculateRBVectors)

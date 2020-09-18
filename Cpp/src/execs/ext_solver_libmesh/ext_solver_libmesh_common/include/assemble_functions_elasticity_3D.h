@@ -39,7 +39,6 @@ void Update_SubK_isotropic(	libMesh::DenseSubMatrix<libMesh::Number>& SubK,
 					unsigned int C_i,
 					unsigned int C_k,
 					const std::vector<std::vector<libMesh::RealGradient> >& dphi,
-
 					const unsigned int n_components,
 					const unsigned int n_u_dofs,
 					const std::vector<libMesh::Real>& JxW,

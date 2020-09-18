@@ -78,10 +78,14 @@ void set_clamped_border(libMesh::ImplicitSystem& elasticity_system, int boundary
 libMesh::ExplicitSystem& add_stress(libMesh::EquationSystems& input_systems);
 
 /// Add a linear elasticity libMesh::LinearImplicitSystem to the input libMesh::EquationSystems& input_systems.
-libMesh::LinearImplicitSystem& add_elasticity(  libMesh::EquationSystems& input_systems,
-  libMesh::Order order = libMesh::FIRST, libMesh::FEFamily family = libMesh::LAGRANGE);
+libMesh::LinearImplicitSystem& add_elasticity(libMesh::EquationSystems& input_systems,
+                                              const std::string& system_name,
+                                              libMesh::Order order = libMesh::FIRST,
+                                              libMesh::FEFamily family = libMesh::LAGRANGE);
 
 libMesh::NewmarkSystem& add_dynamic_elasticity(libMesh::EquationSystems& input_systems,
-  libMesh::Order order = libMesh::FIRST, libMesh::FEFamily family = libMesh::LAGRANGE);
+                                               const std::string& system_name,
+                                               libMesh::Order order = libMesh::FIRST,
+                                               libMesh::FEFamily family = libMesh::LAGRANGE);
 
 #endif /* COMMON_FUNCTIONS_ELASTICITY_3D_H_ */

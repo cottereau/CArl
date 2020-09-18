@@ -7,32 +7,6 @@
 #include "ext_solver_libmesh_enums.h"
 #include "libmesh_assemble_system_input_parser.h"
 
-
-/*struct libmesh_assemble_interpolation_params
-{
-  std::string path_tilde_matrices_A;
-  std::string path_macro_coupling_matrix;
-  libMesh::Real alpha_A;
-
-  std::string path_tilde_matrices_B;
-  std::string path_micro_coupling_matrix;
-  libMesh::Real alpha_B;
-
-  std::string output_folder;
-};
-
-/*void get_input_params(GetPot& field_parser,
-     libmesh_assemble_interpolation_params& input_params);
-
-
-libMesh::SparseMatrix< libMesh::Number > * get_stiffness_matrix(libMesh::EquationSystems& es,
-				const std::string& system_name,
-				weight_parameter_function& weight_mask,
-				WeightFunctionSystemType system_type);
-
-libMesh::SparseMatrix< libMesh::Number> * get_mass_matrix(libMesh::EquationSystems& es,
-				const std::string& system_name);
-*/
 void Update_SubM( libMesh::DenseSubMatrix<libMesh::Number>& SubM,
           unsigned int qp,
           const std::vector<std::vector<libMesh::Real>> & phi,
@@ -41,12 +15,19 @@ void Update_SubM( libMesh::DenseSubMatrix<libMesh::Number>& SubM,
           const std::vector<libMesh::Real>& JxW,
           double weight);
 
-void assemble_mass_tilde_with_weight(libMesh::EquationSystems& es, 
-  const std::string& system_name, weight_parameter_function& weight_mask, 
-  WeightFunctionSystemType system_type, libmesh_assemble_input_params& input_params);
+void assemble_dynamic_elasticity_with_weight(libMesh::EquationSystems& es, 
+          const std::string& system_name,
+          weight_parameter_function& weight_mask,
+          WeightFunctionSystemType system_type,
+          libmesh_assemble_input_params& input_params);
 
-/* void get_mass_tilde(libMesh::Parallel::Communicator& WorldComm, 
-  libmesh_assemble_input_params& input_params, 
-  libMesh::EquationSystems equation_systems);*/
+
+void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSystems& es, 
+          const std::string& system_name,
+          weight_parameter_function& weight_mask,
+          WeightFunctionSystemType system_type,
+          int traction_boundary_id,
+          std::vector<double> traction_density,
+          libmesh_assemble_input_params& input_params);
 
 #endif /*ASSEMBLE_FUNCTIONS_MASS_3D_H_*/

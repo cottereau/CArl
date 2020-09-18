@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 
 	// Add linear elasticity and stress
 	libMesh::LinearImplicitSystem& elasticity_system
-										= add_elasticity(equation_systems);
+										= add_elasticity(equation_systems,"Elasticity");
 	add_stress(equation_systems);
 
 	// Initialize the equation systems

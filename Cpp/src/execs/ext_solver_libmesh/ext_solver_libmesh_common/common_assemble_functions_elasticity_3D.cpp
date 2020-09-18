@@ -66,9 +66,10 @@ libMesh::ExplicitSystem& add_stress(libMesh::EquationSystems& input_systems)
   return stress_system;
 }
 
-libMesh::LinearImplicitSystem& add_elasticity(  libMesh::EquationSystems& input_systems,
-                        libMesh::Order order,
-                        libMesh::FEFamily family)
+libMesh::LinearImplicitSystem& add_elasticity(libMesh::EquationSystems& input_systems,
+                                              const std::string& system_name,
+                                              libMesh::Order order,
+                                              libMesh::FEFamily family)
 {
   libMesh::ExplicitSystem& physical_variables =
       input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
@@ -80,7 +81,7 @@ libMesh::LinearImplicitSystem& add_elasticity(  libMesh::EquationSystems& input_
   physical_variables.add_variable("Index", libMesh::CONSTANT, libMesh::MONOMIAL);
   
   libMesh::LinearImplicitSystem& elasticity_system =
-      input_systems.add_system<libMesh::LinearImplicitSystem> ("Elasticity");
+      input_systems.add_system<libMesh::LinearImplicitSystem> (system_name);
 
   elasticity_system.add_variable("u", order, family);
   elasticity_system.add_variable("v", order, family);
@@ -91,7 +92,9 @@ libMesh::LinearImplicitSystem& add_elasticity(  libMesh::EquationSystems& input_
 
 
 libMesh::NewmarkSystem& add_dynamic_elasticity(libMesh::EquationSystems& input_systems,
-  libMesh::Order order, libMesh::FEFamily family)
+                                               const std::string& system_name,
+                                               libMesh::Order order,
+                                               libMesh::FEFamily family)
 {
   libMesh::ExplicitSystem& physical_variables =
     input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
@@ -103,7 +106,7 @@ libMesh::NewmarkSystem& add_dynamic_elasticity(libMesh::EquationSystems& input_s
   physical_variables.add_variable("Index", libMesh::CONSTANT, libMesh::MONOMIAL);
   
   libMesh::NewmarkSystem& elasticity_system =
-    input_systems.add_system<libMesh::NewmarkSystem> ("Elasticity");
+    input_systems.add_system<libMesh::NewmarkSystem> (system_name);
   
   // Displacement
   elasticity_system.add_variable("u", order, family);
