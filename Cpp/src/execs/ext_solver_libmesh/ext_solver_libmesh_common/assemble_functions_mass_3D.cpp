@@ -63,12 +63,12 @@ void assemble_dynamic_elasticity_with_weight(libMesh::EquationSystems& es,
   libMesh::NewmarkSystem& system = es.get_system<libMesh::NewmarkSystem>("Elasticity");
 
   libMesh::SparseMatrix < libMesh::Number > & stiffness = system.get_matrix("stiffness");
-  libMesh::SparseMatrix < libMesh::Number > & damping   = system.get_matrix("damping");
-  libMesh::SparseMatrix < libMesh::Number > & mass      = system.get_matrix("mass");
+  //libMesh::SparseMatrix < libMesh::Number > & damping   = system.get_matrix("damping");
+  //libMesh::SparseMatrix < libMesh::Number > & mass      = system.get_matrix("mass");
   libMesh::NumericVector< libMesh::Number > & force     = system.get_vector("force");
   libMesh::DenseMatrix< libMesh::Number > zero_matrix;
 
-  libMesh::SparseMatrix < libMesh::Number > & mass_tilde = system.add_matrix("mass_tilde");
+  //libMesh::SparseMatrix < libMesh::Number > & mass_tilde = system.add_matrix("mass_tilde");
 
   const unsigned int n_components = 3;
   const unsigned int u_var = system.variable_number("u");
@@ -261,8 +261,8 @@ void assemble_dynamic_elasticity_with_weight(libMesh::EquationSystems& es,
     perf_log.pop("Constraints","Matrix element calculations");
 
     stiffness.add_matrix(Ke,dof_indices);
-    damping.add_matrix(Ce,dof_indices);
-    mass.add_matrix(Me,dof_indices);
+    //damping.add_matrix(Ce,dof_indices);
+    //mass.add_matrix(Me,dof_indices);
     force.add_vector(Fe,dof_indices);
     // // Ktilde
     // Ke.add(betaDeltat2,Me);
@@ -271,10 +271,9 @@ void assemble_dynamic_elasticity_with_weight(libMesh::EquationSystems& es,
     Me.add(betaDeltat2,Ke);
  
     perf_log.push("Adding elements");
-    mass_tilde.add_matrix(Me, dof_indices);
-    system.matrix->add_matrix(zero_matrix, dof_indices);
-    // system.matrix->add_matrix(Me, dof_indices);
-    //system.rhs->add_vector(Fe, dof_indices);
+    //mass_tilde.add_matrix(Me, dof_indices);
+    system.matrix->add_matrix(Me, dof_indices);
+    system.rhs->add_vector(Fe, dof_indices);
     perf_log.pop("Adding elements");
   }
   system.matrix->close();
@@ -300,6 +299,7 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
 
   libMesh::Real deltat = input_params.deltat;
   libMesh::Real beta = input_params.beta;
+  libMesh::Real gamma = input_params.gamma;
   PetscScalar betaDeltat2 = beta*deltat*deltat;
 
   const MeshBase & mesh = es.get_mesh();
@@ -330,12 +330,12 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
   libMesh::NewmarkSystem& system = es.get_system<libMesh::NewmarkSystem>("Dynamic Elasticity");
 
   libMesh::SparseMatrix < libMesh::Number > & stiffness = system.get_matrix("stiffness");
-  libMesh::SparseMatrix < libMesh::Number > & damping   = system.get_matrix("damping");
-  libMesh::SparseMatrix < libMesh::Number > & mass      = system.get_matrix("mass");
+  //libMesh::SparseMatrix < libMesh::Number > & damping   = system.get_matrix("damping");
+  //libMesh::SparseMatrix < libMesh::Number > & mass      = system.get_matrix("mass");
   libMesh::NumericVector< libMesh::Number > & force     = system.get_vector("force");
   libMesh::DenseMatrix< libMesh::Number > zero_matrix;
 
-  libMesh::SparseMatrix < libMesh::Number > & mass_tilde = system.add_matrix("mass_tilde");
+  //libMesh::SparseMatrix < libMesh::Number > & mass_tilde = system.add_matrix("mass_tilde");
   
   const unsigned int n_components = 3;
   const unsigned int u_var = system.variable_number("u");
@@ -361,6 +361,7 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
   g_vec(0) = traction_density[0];
   g_vec(1) = traction_density[1];
   g_vec(2) = traction_density[2];
+  libMesh::Real amp_n = sqrt(g_vec(0)*g_vec(0)+g_vec(1)*g_vec(1)+g_vec(2)*g_vec(2));
 
   // Jacobian
   const std::vector<libMesh::Real>& JxW = fe->get_JxW();
@@ -549,9 +550,9 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
           { 
             for (unsigned int dof_iii=0; dof_iii<n_u_dofs; dof_iii++)
             {
-              Fu(dof_iii) += weight_alpha * JxW_face[qp] * (g_vec(0) * phi_face[dof_iii][qp]);
-              Fv(dof_iii) += weight_alpha * JxW_face[qp] * (g_vec(1) * phi_face[dof_iii][qp]);
-              Fw(dof_iii) += weight_alpha * JxW_face[qp] * (g_vec(2) * phi_face[dof_iii][qp]);
+              Fu(dof_iii) += amp_n * weight_alpha * JxW_face[qp] * (g_vec(0) * phi_face[dof_iii][qp]);
+              Fv(dof_iii) += amp_n * weight_alpha * JxW_face[qp] * (g_vec(1) * phi_face[dof_iii][qp]);
+              Fw(dof_iii) += amp_n * weight_alpha * JxW_face[qp] * (g_vec(2) * phi_face[dof_iii][qp]);
             }
           }
         }
@@ -569,8 +570,8 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
     perf_log.pop("Constraints","Matrix element calculations");
 
     stiffness.add_matrix(Ke,dof_indices);
-    damping.add_matrix(Ce,dof_indices);
-    mass.add_matrix(Me,dof_indices);
+    //damping.add_matrix(Ce,dof_indices);
+    //mass.add_matrix(Me,dof_indices);
     force.add_vector(Fe,dof_indices);
     // // Ktilde
     // Ke.add(betaDeltat2,Me);
@@ -579,10 +580,9 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
     Me.add(betaDeltat2,Ke);
  
     perf_log.push("Adding elements");
-    mass_tilde.add_matrix(Me, dof_indices);
-    system.matrix->add_matrix(zero_matrix, dof_indices);
-    // system.matrix->add_matrix(Me, dof_indices);
-    //system.rhs->add_vector(Fe, dof_indices);
+    //mass_tilde.add_matrix(Me, dof_indices);
+    system.matrix->add_matrix(Me, dof_indices);
+    system.rhs->add_vector(Fe, dof_indices);
     perf_log.pop("Adding elements");
   }
   system.matrix->close();
@@ -590,4 +590,58 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
 }
 
 
+void update_dynamic_rhs(libMesh::EquationSystems& es,
+                const std::string& system_name, 
+                weight_parameter_function& weight_mask,
+                WeightFunctionSystemType system_type,
+                int traction_boundary_id, double amp_n,
+                std::vector<double> traction_density,
+                const std::string& stiffness_file,
+                const std::string& force_file,
+                const std::string& displacement_file,
+                const std::string& velocity_file,
+                const std::string& acceleration_file,
+                libmesh_assemble_input_params& input_params)
+{
+  libmesh_assert_equal_to(system_name, "Dynamic Elasticity");
 
+  libMesh::PerfLog perf_log ("Mass/Stiffness Matrix Assembly ",MASTER_bPerfLog_assemble_fem);
+
+  perf_log.push("Preamble");
+  
+  libMesh::Real deltat = input_params.deltat;
+  libMesh::Real beta = input_params.beta;
+  libMesh::Real gamma = input_params.gamma;
+  PetscScalar betaDeltat2 = beta*deltat*deltat;
+
+  const MeshBase & mesh = es.get_mesh();
+
+  const unsigned int dim = mesh.mesh_dimension();
+  
+  // - Set up elasticity system ---------------------------------------------
+  libMesh::NewmarkSystem& system = es.get_system<libMesh::NewmarkSystem>("Dynamic Elasticity");
+  
+  libMesh::SparseMatrix < libMesh::Number > & stiffness = system.get_matrix("stiffness");
+  libMesh::NumericVector< libMesh::Number > & displacement = system.get_vector("displacement");
+  libMesh::NumericVector< libMesh::Number > & velocity = system.get_vector("velocity");
+  libMesh::NumericVector< libMesh::Number > & acceleration = system.get_vector("acceleration");
+  libMesh::NumericVector< libMesh::Number > & force = system.get_vector("force");  
+  libMesh::NumericVector< libMesh::Number > & rhs_m = system.get_vector("rhs_m");
+  
+  system.rhs->zero();
+
+  force.scale(amp_n);
+
+  // compute auxiliary vectors rhs_m
+  libMesh::Real a0 = deltat*deltat*(0.5-beta);
+
+  rhs_m.zero();
+  rhs_m.add(-1., displacement);
+  rhs_m.add(-deltat, velocity);
+  rhs_m.add(-a0, acceleration);
+
+  system.rhs->add(force);
+  system.rhs->add_vector(rhs_m,stiffness);
+
+  return;
+}

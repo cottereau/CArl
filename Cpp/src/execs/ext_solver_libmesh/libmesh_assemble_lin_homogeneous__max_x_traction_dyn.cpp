@@ -90,18 +90,18 @@ int main(int argc, char** argv) {
   EquationSystems equation_systems(system_mesh);
 
   // Add linear elasticity and physical parameters systems
-  NewmarkSystem& elasticity_system
-    = add_dynamic_elasticity(equation_systems,"Dynamic Elasticity"); // define in common_assemble_functions_elasticity_3D.cpp
-  //                  //by default order is FIRST and family is LAGRANGE (definition function in the file 
-  //                  //common_assemble_functions_elasticity_3D.h). 
-  //                  //See also http://libmesh.github.io/doxygen/namespacelibMesh.html#af3eb3e8751995b944fc135ea53b09da2
+  // Create NewmarkSystem "Elasticity"
+  NewmarkSystem& elasticity_system = add_dynamic_elasticity(equation_systems,
+    "Dynamic Elasticity");
 
+  // Set Newmark's parameters
+  libMesh::Real deltat = input_params.deltat;
+  libMesh::Real beta = input_params.beta;
+  libMesh::Real gamma = input_params.gamma;
+  elasticity_system.set_newmark_parameters(deltat,beta,gamma);
 
-  // Initialize the equation systems
-  equation_systems.init();
-
-  // Homogeneous properties for the macro system
-  set_homogeneous_physical_properties(equation_systems, input_params.physical_params_file);
+  // Start time integration from t=0
+  elasticity_system.time = 0.;
 
   // Set the weight function object
   weight_parameter_function  system_weight(mesh_weight);
@@ -109,9 +109,15 @@ int main(int argc, char** argv) {
 
   perf_log.pop("System setup:");
 
+  // Initialize the equation systems
+  equation_systems.init();
+
+  // Set material parameter
+  set_homogeneous_physical_properties(equation_systems, input_params.physical_params_file);
+  
   // Assemble!
-  assemble_dynamic_elasticity_with_weight_and_traction(equation_systems,"Elasticity",
-    system_weight, input_params.system_type, boundary_id_cube::MAX_X, traction_density,
+  assemble_dynamic_elasticity_with_weight_and_traction(equation_systems,"Dynamic Elasticity",
+    system_weight, input_params.system_type, boundary_id_cube::MAX_X, traction_density, 
     input_params);
 
 // Print MatLab debugging output? Variable defined at "carl_headers.h"
