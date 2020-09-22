@@ -134,3 +134,10 @@ int main(int argc, char** argv) {
   
   return 0;
 }
+/* Local Variables:                                                        */
+/* mode: c                                                                 */
+/* show-trailing-whitespace: t                                             */
+/* coding: utf-8                                                           */
+/* c-file-style: "stroustrup"                                              */
+/* End:                                                                    */
+/* vim: set sw=2 ts=2 et tw=80 smartindent :                               */

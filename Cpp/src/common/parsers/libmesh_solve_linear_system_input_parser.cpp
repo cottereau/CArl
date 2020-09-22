@@ -76,7 +76,6 @@ void get_input_params(GetPot& field_parser,
         input_params.n_timesteps);
   } else {
     input_params.n_timesteps = 25;
-    printf("[WARNING][LibMesh Parameters]Missing the number of step : n_timesteps!\n");
   }
 };
 

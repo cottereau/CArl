@@ -19,7 +19,7 @@ void assemble_dynamic_elasticity_with_weight(libMesh::EquationSystems& es,
           const std::string& system_name,
           weight_parameter_function& weight_mask,
           WeightFunctionSystemType system_type,
-          libmesh_assemble_input_params& input_params);
+          double deltat, double beta);
 
 void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSystems& es,
           const std::string& system_name, 
@@ -27,7 +27,7 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
           WeightFunctionSystemType system_type,
           int traction_boundary_id,
           std::vector<double> traction_density,
-          libmesh_assemble_input_params& input_params);
+          double deltat, double beta);
 
 void update_dynamic_rhs(libMesh::EquationSystems& es,
           const std::string& system_name, 
@@ -40,6 +40,6 @@ void update_dynamic_rhs(libMesh::EquationSystems& es,
           const std::string& displacement_file,
           const std::string& velocity_file,
           const std::string& acceleration_file,
-          libmesh_assemble_input_params& input_params);
+          double deltat, double beta);
 
 #endif /*ASSEMBLE_FUNCTIONS_MASS_3D_H_*/

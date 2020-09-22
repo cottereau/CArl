@@ -1,6 +1,5 @@
 #include "assemble_functions_elasticity_3D.h"
 #include "assemble_functions_mass_3D.h"
-#include "elasticity_system.h"
 #include "PETSC_matrix_operations.h"
 
 using namespace libMesh;
@@ -22,17 +21,17 @@ void Update_SubM( libMesh::DenseSubMatrix<libMesh::Number>& SubM,
 // Dynamic elasticity with no external forces
 void assemble_dynamic_elasticity_with_weight(libMesh::EquationSystems& es,
   const std::string& system_name, weight_parameter_function& weight_mask,
-  WeightFunctionSystemType system_type, libmesh_assemble_input_params& input_params)
+  WeightFunctionSystemType system_type, double deltat, double beta)
 {
 
-  libmesh_assert_equal_to(system_name, "Elasticity");
+  libmesh_assert_equal_to(system_name, "Dynamic Elasticity");
 
   libMesh::PerfLog perf_log ("Mass/Stiffness Matrix Assembly ",MASTER_bPerfLog_assemble_fem);
 
   perf_log.push("Preamble");
 
-  libMesh::Real deltat = input_params.deltat;
-  libMesh::Real beta = input_params.beta;
+  //libMesh::Real deltat = input_params.deltat;
+  //libMesh::Real beta = input_params.beta;
   PetscScalar betaDeltat2 = beta*deltat*deltat;
 
   const MeshBase & mesh = es.get_mesh();
@@ -60,7 +59,7 @@ void assemble_dynamic_elasticity_with_weight(libMesh::EquationSystems& es,
   libMesh::Number localRho = physical_param_system.current_solution(physical_dof_indices_var[0]);
 
   // - Set up elasticity system ---------------------------------------------
-  libMesh::NewmarkSystem& system = es.get_system<libMesh::NewmarkSystem>("Elasticity");
+  libMesh::NewmarkSystem& system = es.get_system<libMesh::NewmarkSystem>("Dynamic Elasticity");
 
   libMesh::SparseMatrix < libMesh::Number > & stiffness = system.get_matrix("stiffness");
   //libMesh::SparseMatrix < libMesh::Number > & damping   = system.get_matrix("damping");
@@ -288,7 +287,7 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
                 WeightFunctionSystemType system_type,
                 int traction_boundary_id,
                 std::vector<double> traction_density,
-                libmesh_assemble_input_params& input_params)
+                double deltat, double beta)
 {
 
   libmesh_assert_equal_to(system_name, "Dynamic Elasticity");
@@ -297,9 +296,9 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
 
   perf_log.push("Preamble");
 
-  libMesh::Real deltat = input_params.deltat;
-  libMesh::Real beta = input_params.beta;
-  libMesh::Real gamma = input_params.gamma;
+  //libMesh::Real deltat = input_params.deltat;
+  //libMesh::Real beta = input_params.beta;
+  //libMesh::Real gamma = input_params.gamma;
   PetscScalar betaDeltat2 = beta*deltat*deltat;
 
   const MeshBase & mesh = es.get_mesh();
@@ -601,7 +600,7 @@ void update_dynamic_rhs(libMesh::EquationSystems& es,
                 const std::string& displacement_file,
                 const std::string& velocity_file,
                 const std::string& acceleration_file,
-                libmesh_assemble_input_params& input_params)
+                double deltat, double beta)
 {
   libmesh_assert_equal_to(system_name, "Dynamic Elasticity");
 
@@ -609,9 +608,9 @@ void update_dynamic_rhs(libMesh::EquationSystems& es,
 
   perf_log.push("Preamble");
   
-  libMesh::Real deltat = input_params.deltat;
-  libMesh::Real beta = input_params.beta;
-  libMesh::Real gamma = input_params.gamma;
+  //libMesh::Real deltat = input_params.deltat;
+  //libMesh::Real beta = input_params.beta;
+  //libMesh::Real gamma = input_params.gamma;
   PetscScalar betaDeltat2 = beta*deltat*deltat;
 
   const MeshBase & mesh = es.get_mesh();

@@ -95,9 +95,9 @@ int main(int argc, char** argv) {
     "Dynamic Elasticity");
 
   // Set Newmark's parameters
-  libMesh::Real deltat = input_params.deltat;
-  libMesh::Real beta = input_params.beta;
-  libMesh::Real gamma = input_params.gamma;
+  libMesh::Real deltat = input_params.deltatB;
+  libMesh::Real beta = input_params.betaB;
+  libMesh::Real gamma = input_params.gammaB;
   elasticity_system.set_newmark_parameters(deltat,beta,gamma);
 
   // Start time integration from t=0
@@ -118,7 +118,7 @@ int main(int argc, char** argv) {
   // Assemble!
   assemble_dynamic_elasticity_with_weight_and_traction(equation_systems,"Dynamic Elasticity",
     system_weight, input_params.system_type, boundary_id_cube::MAX_X, traction_density, 
-    input_params);
+    deltat, beta);
 
 // Print MatLab debugging output? Variable defined at "carl_headers.h"
 #ifdef PRINT_MATLAB_DEBUG
@@ -144,3 +144,10 @@ int main(int argc, char** argv) {
   
   return 0;
 }
+/* Local Variables:                                                        */
+/* mode: c                                                                 */
+/* show-trailing-whitespace: t                                             */
+/* coding: utf-8                                                           */
+/* c-file-style: "stroustrup"                                              */
+/* End:                                                                    */
+/* vim: set sw=2 ts=2 et tw=80 smartindent :                               */

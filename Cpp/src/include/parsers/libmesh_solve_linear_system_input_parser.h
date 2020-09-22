@@ -25,21 +25,23 @@ struct libmesh_solve_linear_system_input_params {
   std::string path_to_rb_vectors; ///< Path to a folder containing the rigid body mode vectors.
   int nb_of_rb_vectors; ///< Number of RB mode vectors.
   bool bUseRBVectors;   ///< Use rigid body mode vectors? *Default*: `false`.
-  bool dynamic_analysis;
-  double deltat; //step time of calculatiom
-  double beta; 
-  double gamma;
-  bool transient;
+  double deltatA;       ///< time_step A
+  double betaA;         ///< beta Newmark coefficient for A   
+  double gammaA;        ///< gamma Newmark coefficient for A   
+  double deltatB;       ///< time_step A
+  double betaB;         ///< beta Newmark coefficient for A   
+  double gammaB;        ///< gamma Newmark coefficient for A   
+//  bool transient;
   unsigned int n_timesteps; // number of time step
-  unsigned int write_interval;
-  bool solver_quiet;
-  double relative_step_tolerance;
-  double relative_residual_tolerance;
-  unsigned int max_nonlinear_iterations;
-  unsigned int max_linear_iterations;
-  double initial_linear_tolerance;
-  double absolute_residual_tolerance;
-
+//  unsigned int write_interval;
+//  bool solver_quiet;
+//  double relative_step_tolerance;
+//  double relative_residual_tolerance;
+//  unsigned int max_nonlinear_iterations;
+//  unsigned int max_linear_iterations;
+//  double initial_linear_tolerance;
+//  double absolute_residual_tolerance;
+//
 };
 
 /** \brief Parser function for the coupled solver test programs.
@@ -65,3 +67,10 @@ void print_input_params(const std::string& output_filename,
 
 
 #endif /* LIBMESH_SOLVE_LINEAR_SYSTEM_INPUT_PARSER_H_ */
+/* Local Variables:                                                        */
+/* mode: c                                                                 */
+/* show-trailing-whitespace: t                                             */
+/* coding: utf-8                                                           */
+/* c-file-style: "stroustrup"                                              */
+/* End:                                                                    */
+/* vim: set sw=2 ts=2 et tw=80 smartindent :                               */

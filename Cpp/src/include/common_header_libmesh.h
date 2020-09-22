@@ -52,7 +52,7 @@
 #include "libmesh/namebased_io.h"
 #include "libmesh/petsc_preconditioner.h"
 #include "libmesh/fem_system.h"
-
+#include "libmesh/newmark_system.h"
 #include "libmesh/boundary_info.h"
 #include "libmesh/diff_solver.h"
 #include "libmesh/dof_map.h"

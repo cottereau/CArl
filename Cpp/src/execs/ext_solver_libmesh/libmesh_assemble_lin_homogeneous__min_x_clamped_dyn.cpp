@@ -104,9 +104,9 @@ int main (int argc, char ** argv)
   set_clamped_border(elasticity_system, fixed_bound_id);
 
   // Set Newmark's parameters
-  libMesh::Real deltat = input_params.deltat;
-  libMesh::Real beta = input_params.beta;
-  libMesh::Real gamma = input_params.gamma;
+  libMesh::Real deltat = input_params.deltatA;
+  libMesh::Real beta = input_params.betaA;
+  libMesh::Real gamma = input_params.gammaA;
   elasticity_system.set_newmark_parameters(deltat,beta,gamma);
 
   // Start time integration from t=0
@@ -126,7 +126,7 @@ int main (int argc, char ** argv)
   
   // Assemble!
   assemble_dynamic_elasticity_with_weight(equation_systems,"Dynamic Elasticity",system_weight,
-    input_params.system_type, input_params);
+    input_params.system_type, deltat, beta);
 
   //SparseMatrix < Number > * mass      = elasticity_system.request_matrix("mass");
   //SparseMatrix < Number > * stiffness = elasticity_system.request_matrix("stifness");
@@ -179,4 +179,4 @@ int main (int argc, char ** argv)
 /* coding: utf-8                                                           */
 /* c-file-style: "stroustrup"                                              */
 /* End:                                                                    */
-/* vim: set sw=2 ts=4 et tw=80 smartindent :                               */
+/* vim: set sw=2 ts=2 et tw=80 smartindent :                               */

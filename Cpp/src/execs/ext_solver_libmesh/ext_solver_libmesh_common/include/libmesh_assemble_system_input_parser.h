@@ -27,19 +27,21 @@ struct libmesh_assemble_input_params {
 //struct dynamic_params 
 //{
   /*dynamic params*/
-  double deltat; //step time of calculatiom
-  double beta; 
-  double gamma;
-  bool transient;
-  unsigned int n_timesteps; // number of time step
-  unsigned int write_interval;
-  bool solver_quiet;
-  double relative_step_tolerance;
-  double relative_residual_tolerance;
-  unsigned int max_nonlinear_iterations;
-  unsigned int max_linear_iterations;
-  double initial_linear_tolerance;
-  double absolute_residual_tolerance;
+  double deltatA; //step time of calculatiom
+  double betaA; 
+  double gammaA;
+  double deltatB; //step time of calculatiom
+  double betaB; 
+  double gammaB;
+  //unsigned int n_timesteps; // number of time step
+  //unsigned int write_interval;
+  //bool solver_quiet;
+  //double relative_step_tolerance;
+  //double relative_residual_tolerance;
+  //unsigned int max_nonlinear_iterations;
+  //unsigned int max_linear_iterations;
+  //double initial_linear_tolerance;
+  //double absolute_residual_tolerance;
 };
 
 struct material_params
