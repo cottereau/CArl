@@ -25,7 +25,8 @@ Before install and compile, please export the following environment variables:
 `export CGAL_DIR=$locinst/cgal`
 `export LIBMESH_DIR=$locinst/libmesh`
 `export PETSC_DIR=$locinst/petsc`
-`export PETSC_ARCH="linux-openmpi-gcc"`
+`export PETSC_ARCH="linux-openmpi-gcc"
+
 
 # INSTALL ___BOOST___
 
@@ -72,7 +73,7 @@ Install:
 Download ___PETSc___ (version 3.13.1) from [github repository](https://gitlab.com/petsc/petsc.git):
 
 `cd $locinst`
-`git clone -b maint https://gitlab.com/petsc/petsc.git petsc`
+`git clone -b v3.13.1 https://gitlab.com/petsc/petsc.git petsc`
 
 Configure:
 
@@ -85,7 +86,7 @@ Install (with check):
 
 # INSTALL ___LIBMESH___
 
-Download ___LIBMESH___ (version 1.5.1) from the [github repositor](git://github.com/libMesh/libmesh.git):
+Download ___LIBMESH___ (version 1.5.1) from the [github repository](git://github.com/libMesh/libmesh.git):
 
 `cd $srclib`
 `git clone git://github.com/libMesh/libmesh.git libmesh`
