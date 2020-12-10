@@ -19,7 +19,8 @@ void assemble_dynamic_elasticity_with_weight(libMesh::EquationSystems& es,
           const std::string& system_name,
           weight_parameter_function& weight_mask,
           WeightFunctionSystemType system_type,
-          double deltat, double beta);
+          double deltat, 
+          double beta);
 
 void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSystems& es,
           const std::string& system_name, 
@@ -27,19 +28,37 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
           WeightFunctionSystemType system_type,
           int traction_boundary_id,
           std::vector<double> traction_density,
-          double deltat, double beta);
+          double deltat, 
+          double beta);
+
+void apply_initial(libMesh::EquationSystems & es,
+                   const std::string & system_name,
+                   const bool & zeroed,
+                   const std::string& dis_vec_name,
+                   const std::string& vel_vec_name,
+                   const std::string& acc_vec_name,
+                   libMesh::Parallel::Communicator& WorldComm);
+
 
 void update_dynamic_rhs(libMesh::EquationSystems& es,
           const std::string& system_name, 
           weight_parameter_function& weight_mask,
           WeightFunctionSystemType system_type,
-          int traction_boundary_id, double amp_n,
-          std::vector<double> traction_density,
-          const std::string& stiffness_file,
-          const std::string& force_file,
-          const std::string& displacement_file,
-          const std::string& velocity_file,
-          const std::string& acceleration_file,
-          double deltat, double beta);
+          double amp_n,
+          const std::string& stf_mat_file,
+          const std::string& fex_vec_name,
+          const std::string& dis_vec_name,
+          const std::string& vel_vec_name,
+          const std::string& acc_vec_name,
+          libMesh::Parallel::Communicator& WorldComm,
+          double deltat, 
+          double beta);
 
 #endif /*ASSEMBLE_FUNCTIONS_MASS_3D_H_*/
+/* Local Variables:                                                        */
+/* mode: c                                                                 */
+/* show-trailing-whitespace: t                                             */
+/* coding: utf-8                                                           */
+/* c-file-style: "stroustrup"                                              */
+/* End:                                                                    */
+/* vim: set sw=2 ts=2 et tw=80 smartindent :                               */

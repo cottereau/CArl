@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
   carl::read_PETSC_matrix(sys_mat_PETSC, input_params.sys_matrix_file, WorldComm.get());
   carl::read_PETSC_vector(sys_rhs_vec_PETSC, input_params.sys_rhs_vec_file, WorldComm.get());
 
-  // Set up the libMesh versions
+  // Construct Vectors/Matrix
   libMesh::PetscMatrix<libMesh::Number> sys_mat(sys_mat_PETSC,WorldComm);
   libMesh::PetscVector<libMesh::Number> sys_rhs_vec(sys_rhs_vec_PETSC,WorldComm);
   libMesh::PetscVector<libMesh::Number> sys_sol_vec(WorldComm);

@@ -53,7 +53,7 @@ void set_homogeneous_physical_properties(libMesh::EquationSystems& es, std::stri
     {
       physical_param_system.solution->set(dof_index, inputE);
     }
-
+    
     // Shear modulus, Mu
     physical_dof_map.dof_indices (elem, physical_dof_indices_var, physical_consts[1]);
     dof_index = physical_dof_indices_var[0];
@@ -1010,3 +1010,10 @@ void compute_stresses(libMesh::EquationSystems& es)
   stress_system.solution->close();
   stress_system.update();
 };
+/* Local Variables:                                                        */
+/* mode: c                                                                 */
+/* show-trailing-whitespace: t                                             */
+/* coding: utf-8                                                           */
+/* c-file-style: "stroustrup"                                              */
+/* End:                                                                    */
+/* vim: set sw=2 ts=2 et tw=80 smartindent :                               */

@@ -1009,4 +1009,3 @@ namespace carl
 /* c-file-style: "stroustrup"                                              */
 /* End:                                                                    */
 /* vim: set sw=2 ts=2 et tw=80 smartindent :                               */
-

@@ -84,6 +84,7 @@ libMesh::LinearImplicitSystem& add_elasticity(libMesh::EquationSystems& input_sy
                                               libMesh::FEFamily family = libMesh::LAGRANGE);
 
 libMesh::NewmarkSystem& add_dynamic_elasticity(libMesh::EquationSystems& input_systems,
+//libMesh::LinearImplicitSystem& add_dynamic_elasticity(libMesh::EquationSystems& input_systems,
                                                const std::string& system_name,
                                                libMesh::Order order = libMesh::FIRST,
                                                libMesh::FEFamily family = libMesh::LAGRANGE);

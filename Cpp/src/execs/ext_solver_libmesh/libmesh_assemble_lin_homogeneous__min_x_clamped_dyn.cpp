@@ -68,7 +68,7 @@ int main (int argc, char ** argv)
 
   // Getting parsing argument from all file
   get_input_params(field_parser, input_params);
-
+  std::cout << " -> DEBUG 1 = " << std::endl;
   // Check libMesh installation dimension
   const unsigned int dim = 3;
 
@@ -76,7 +76,7 @@ int main (int argc, char ** argv)
   libmesh_example_requires(dim == LIBMESH_DIM, "3D support");
 
   // --- Declare the three meshes to be intersected
-
+  std::cout << " -> DEBUG 2 = " << std::endl;
   // - Parallelized meshes: A, B, mediator and weight
   perf_log.push("Meshes - Parallel","Read files:");
   Mesh system_mesh(WorldComm, dim);
@@ -87,7 +87,7 @@ int main (int argc, char ** argv)
   mesh_weight.allow_renumbering(false);
   mesh_weight.read(input_params.mesh_weight_file);
   mesh_weight.prepare_for_use();
-
+  std::cout << " -> DEBUG 3 = " << std::endl;
   perf_log.pop("Meshes - Parallel","Read files:");
 
   // --- Generate the equation systems
@@ -99,15 +99,14 @@ int main (int argc, char ** argv)
   // Create NewmarkSystem "Elasticity"
   NewmarkSystem& elasticity_system = add_dynamic_elasticity(equation_systems,
     "Dynamic Elasticity");
-
+  //LinearImplicitSystem elasticity_system = add_dynamic_elasticity(equation_systems,
+  
   // Set clamped border
   set_clamped_border(elasticity_system, fixed_bound_id);
 
   // Set Newmark's parameters
-  libMesh::Real deltat = input_params.deltatA;
-  libMesh::Real beta = input_params.betaA;
-  libMesh::Real gamma = input_params.gammaA;
-  elasticity_system.set_newmark_parameters(deltat,beta,gamma);
+  elasticity_system.set_newmark_parameters(input_params.deltat,
+    input_params.beta,input_params.gamma);
 
   // Start time integration from t=0
   elasticity_system.time = 0.;
@@ -124,12 +123,20 @@ int main (int argc, char ** argv)
   // Set material parameter
   set_homogeneous_physical_properties(equation_systems, input_params.physical_params_file);
   
+  // Initial conditions 
+  apply_initial(equation_systems,"Dynamic Elasticity",
+                true,
+                input_params.dis_vec_name,
+                input_params.vel_vec_name,
+                input_params.acc_vec_name,
+                WorldComm);
+
   // Assemble!
   assemble_dynamic_elasticity_with_weight(equation_systems,"Dynamic Elasticity",system_weight,
-    input_params.system_type, deltat, beta);
+    input_params.system_type, input_params.deltat, input_params.beta);
 
   //SparseMatrix < Number > * mass      = elasticity_system.request_matrix("mass");
-  //SparseMatrix < Number > * stiffness = elasticity_system.request_matrix("stifness");
+  SparseMatrix < Number > * stiffness = elasticity_system.request_matrix("stifness");
   //SparseMatrix < Number > * damping   = elasticity_system.request_matrix("damping");
   //SparseMatrix < Number > * mass_tilde= elasticity_system.request_matrix("mass_tilde");
   //NumericVector< Number > * force     = elasticity_system.equest_vector("force");
@@ -138,10 +145,10 @@ int main (int argc, char ** argv)
 #ifdef PRINT_MATLAB_DEBUG
   elasticity_system.matrix->print_matlab(input_params.output_base + "_sys_mat.m");
   elasticity_system.rhs->print_matlab(input_params.output_base + "_sys_rhs_vec.m");
-  //mass->print_matlab(input_params.output_base + "_mass.m");
-  //stiffness->print_matlab(input_params.output_base + "stiffness.m");
+  //mass->print_matlab(input_params.output_base + "_sys_mat.m");
+  stiffness->print_matlab(input_params.output_base + "_K_mat.m");
   //damping->print_matlab(input_params.output_base + "_damping.m");
-  //mass_tilde->print_matlab(input_params.output_base + "_mass_tilde.m");
+  //mass_tilde->print_matlab(input_params.output_base + "_sys_mat.m");
   //force->print_matlab(input_params.output_base + "_force.m");
 #endif
 
@@ -149,17 +156,17 @@ int main (int argc, char ** argv)
   PetscMatrix<Number> * temp_mat_ptr = cast_ptr<PetscMatrix<Number> * >(elasticity_system.matrix);
   PetscVector<Number> * temp_vec_ptr = cast_ptr<PetscVector<Number> * >(elasticity_system.rhs);
   //PetscMatrix<Number> * temp_mass_ptr = cast_ptr<PetscMatrix<Number> * >(mass);
-  //PetscMatrix<Number> * temp_stiffness_ptr = cast_ptr<PetscMatrix<Number> * >(stiffness);
+  PetscMatrix<Number> * temp_stf_ptr = cast_ptr<PetscMatrix<Number> * >(stiffness);
   //PetscMatrix<Number> * temp_damping_ptr = cast_ptr<PetscMatrix<Number> * >(damping);
   //PetscVector<Number> * temp_force_ptr = cast_ptr<PetscVector<Number> * >(force);
   //PetscMatrix<Number> * temp_mass_tilde_ptr = cast_ptr<PetscMatrix<Number> * >(mass_tilde);
 
   carl::write_PETSC_matrix(*temp_mat_ptr, input_params.output_base + "_sys_mat.petscmat");
   carl::write_PETSC_vector(*temp_vec_ptr, input_params.output_base + "_sys_rhs_vec.petscvec");
-  //carl::write_PETSC_matrix(*temp_mass_ptr, input_params.output_base + "_mass.petscvec");
-  //carl::write_PETSC_matrix(*temp_stiffness_ptr, input_params.output_base + "_stiffness.petscvec");
+  //carl::write_PETSC_matrix(*temp_mass_ptr, input_params.output_base + "_sys_mat.petscvec");
+  carl::write_PETSC_matrix(*temp_stf_ptr, input_params.output_base + "_K_mat.petscvec");
   //carl::write_PETSC_matrix(*temp_damping_ptr, input_params.output_base + "_damping.petscvec");
-  //carl::write_PETSC_matrix(*temp_mass_tilde_ptr, input_params.output_base + "_mass_tilde.petscvec");
+  //carl::write_PETSC_matrix(*temp_mass_tilde_ptr, input_params.output_base + "_sys_mat.petscmat");
   //carl::write_PETSC_vector(*temp_force_ptr, input_params.output_base + "_force.petscvec");
 
   // If needed, print rigid body vectors

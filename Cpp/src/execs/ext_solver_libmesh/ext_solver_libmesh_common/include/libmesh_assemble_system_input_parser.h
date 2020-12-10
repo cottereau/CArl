@@ -27,12 +27,10 @@ struct libmesh_assemble_input_params {
 //struct dynamic_params 
 //{
   /*dynamic params*/
-  double deltatA; //step time of calculatiom
-  double betaA; 
-  double gammaA;
-  double deltatB; //step time of calculatiom
-  double betaB; 
-  double gammaB;
+  double deltat; //step time of calculatiom
+  double beta; 
+  double gamma;
+  std::string dis_vec_name, vel_vec_name, acc_vec_name;
   //unsigned int n_timesteps; // number of time step
   //unsigned int write_interval;
   //bool solver_quiet;
@@ -82,3 +80,10 @@ void get_file_params(GetPot command_line,
 
 
 #endif /* LIBMESH_ASSEMBLE_SYSTEM_INPUT_PARSER_H_ */
+/* Local Variables:                                                        */
+/* mode: c                                                                 */
+/* show-trailing-whitespace: t                                             */
+/* coding: utf-8                                                           */
+/* c-file-style: "stroustrup"                                              */
+/* End:                                                                    */
+/* vim: set sw=2 ts=2 et tw=80 smartindent :                               */

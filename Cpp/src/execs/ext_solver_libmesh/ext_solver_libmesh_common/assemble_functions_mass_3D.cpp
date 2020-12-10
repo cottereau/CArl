@@ -59,14 +59,14 @@ void assemble_dynamic_elasticity_with_weight(libMesh::EquationSystems& es,
   libMesh::Number localRho = physical_param_system.current_solution(physical_dof_indices_var[0]);
 
   // - Set up elasticity system ---------------------------------------------
-  libMesh::NewmarkSystem& system = es.get_system<libMesh::NewmarkSystem>("Dynamic Elasticity");
+  /* [NEWMARK] */ libMesh::NewmarkSystem& system = es.get_system<libMesh::NewmarkSystem>("Dynamic Elasticity");
+  ///* [IMPLICIT]*/ libMesh::LinearImplicitSystem& system = es.get_system<libMesh::LinearImplicitSystem>("Dynamic Elasticity");
 
   libMesh::SparseMatrix < libMesh::Number > & stiffness = system.get_matrix("stiffness");
   //libMesh::SparseMatrix < libMesh::Number > & damping   = system.get_matrix("damping");
   //libMesh::SparseMatrix < libMesh::Number > & mass      = system.get_matrix("mass");
   libMesh::NumericVector< libMesh::Number > & force     = system.get_vector("force");
-  libMesh::DenseMatrix< libMesh::Number > zero_matrix;
-
+  //libMesh::DenseMatrix< libMesh::Number > zero_matrix;
   //libMesh::SparseMatrix < libMesh::Number > & mass_tilde = system.add_matrix("mass_tilde");
 
   const unsigned int n_components = 3;
@@ -168,7 +168,7 @@ void assemble_dynamic_elasticity_with_weight(libMesh::EquationSystems& es,
     Ce.resize (n_dofs, n_dofs);
     Me.resize (n_dofs, n_dofs);
     Fe.resize (n_dofs);
-    zero_matrix.resize(n_dofs, n_dofs);
+    //zero_matrix.resize(n_dofs, n_dofs);
     // Set the positions of the sub-matrices
     Kuu.reposition (u_var*n_u_dofs, u_var*n_u_dofs, n_u_dofs, n_u_dofs);
     Kuv.reposition (u_var*n_u_dofs, v_var*n_u_dofs, n_u_dofs, n_v_dofs);
@@ -259,22 +259,14 @@ void assemble_dynamic_elasticity_with_weight(libMesh::EquationSystems& es,
     dof_map.constrain_element_matrix(Me, dof_indicesM);
     perf_log.pop("Constraints","Matrix element calculations");
 
-    stiffness.add_matrix(Ke,dof_indices);
-    //damping.add_matrix(Ce,dof_indices);
-    //mass.add_matrix(Me,dof_indices);
-    force.add_vector(Fe,dof_indices);
-    // // Ktilde
-    // Ke.add(betaDeltat2,Me);
-    // Ke.scale(1./betaDeltat2);
-    // Mtilde
-    Me.add(betaDeltat2,Ke);
- 
     perf_log.push("Adding elements");
-    //mass_tilde.add_matrix(Me, dof_indices);
+    stiffness.add_matrix(Ke,dof_indices);
+    force.add_vector(Fe,dof_indices);
+    Me.add(betaDeltat2,Ke);
     system.matrix->add_matrix(Me, dof_indices);
     system.rhs->add_vector(Fe, dof_indices);
     perf_log.pop("Adding elements");
-  }
+  } // end element loop
   system.matrix->close();
   system.rhs->close();
 }
@@ -326,14 +318,14 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
   libMesh::Number localRho = physical_param_system.current_solution(physical_dof_indices_var[0]);
 
   // - Set up elasticity system ---------------------------------------------
-  libMesh::NewmarkSystem& system = es.get_system<libMesh::NewmarkSystem>("Dynamic Elasticity");
+  /* [NEWMARK] */ libMesh::NewmarkSystem& system = es.get_system<libMesh::NewmarkSystem>("Dynamic Elasticity");
+  ///* [IMPLICIT] */ libMesh::LinearImplicitSystem& system = es.get_system<libMesh::LinearImplicitSystem>("Elasticity");
 
   libMesh::SparseMatrix < libMesh::Number > & stiffness = system.get_matrix("stiffness");
   //libMesh::SparseMatrix < libMesh::Number > & damping   = system.get_matrix("damping");
   //libMesh::SparseMatrix < libMesh::Number > & mass      = system.get_matrix("mass");
   libMesh::NumericVector< libMesh::Number > & force     = system.get_vector("force");
-  libMesh::DenseMatrix< libMesh::Number > zero_matrix;
-
+  //libMesh::DenseMatrix< libMesh::Number > zero_matrix;
   //libMesh::SparseMatrix < libMesh::Number > & mass_tilde = system.add_matrix("mass_tilde");
   
   const unsigned int n_components = 3;
@@ -451,7 +443,7 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
     Ce.resize (n_dofs, n_dofs);
     Me.resize (n_dofs, n_dofs);
     Fe.resize (n_dofs);
-    zero_matrix.resize(n_dofs, n_dofs);
+    //zero_matrix.resize(n_dofs, n_dofs);
 
     // Set the positions of the sub-matrices
     Kuu.reposition (u_var*n_u_dofs, u_var*n_u_dofs, n_u_dofs, n_u_dofs);
@@ -568,18 +560,10 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
     dof_map.constrain_element_matrix(Me, dof_indicesM);
     perf_log.pop("Constraints","Matrix element calculations");
 
-    stiffness.add_matrix(Ke,dof_indices);
-    //damping.add_matrix(Ce,dof_indices);
-    //mass.add_matrix(Me,dof_indices);
-    force.add_vector(Fe,dof_indices);
-    // // Ktilde
-    // Ke.add(betaDeltat2,Me);
-    // Ke.scale(1./betaDeltat2);
-    // Mtilde
-    Me.add(betaDeltat2,Ke);
- 
     perf_log.push("Adding elements");
-    //mass_tilde.add_matrix(Me, dof_indices);
+    stiffness.add_matrix(Ke,dof_indices);
+    force.add_vector(Fe,dof_indices);
+    Me.add(betaDeltat2,Ke);
     system.matrix->add_matrix(Me, dof_indices);
     system.rhs->add_vector(Fe, dof_indices);
     perf_log.pop("Adding elements");
@@ -588,23 +572,61 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
   system.rhs->close();
 }
 
+// Function Prototype.  This function will be used to apply the
+// initial conditions.
+void apply_initial(EquationSystems & es,
+                   const std::string & system_name,
+                   const bool & zeroed,
+                   const std::string& dis_vec_name,
+                   const std::string& vel_vec_name,
+                   const std::string& acc_vec_name,
+                   Parallel::Communicator& WorldComm)
+
+{
+  libmesh_assert_equal_to(system_name, "Dynamic Elasticity");
+
+  // Get a reference to our system, as before
+  NewmarkSystem & t_system = es.get_system<NewmarkSystem> (system_name);
+  
+  NumericVector<Number> & dis_vec  = t_system.get_vector("displacement");
+  NumericVector<Number> & vel_vec  = t_system.get_vector("velocity");
+  NumericVector<Number> & acc_vec  = t_system.get_vector("acceleration");
+  dis_vec.zero();
+  vel_vec.zero();
+  acc_vec.zero();
+  // Numeric vectors for the pressure, velocity and acceleration
+  // values.
+  if (!zeroed) {
+    Vec dis_vec_PETSC, vel_vec_PETSC, acc_vec_PETSC;
+    VecCreate(WorldComm.get(),&dis_vec_PETSC);
+    VecCreate(WorldComm.get(),&vel_vec_PETSC);
+    VecCreate(WorldComm.get(),&acc_vec_PETSC);
+    carl::read_PETSC_vector(dis_vec_PETSC,dis_vec_name,WorldComm.get());
+    carl::read_PETSC_vector(vel_vec_PETSC,vel_vec_name,WorldComm.get());
+    carl::read_PETSC_vector(acc_vec_PETSC,acc_vec_name,WorldComm.get());
+    PetscVector<Number> dis_vec(dis_vec_PETSC,WorldComm);
+    PetscVector<Number> vel_vec(vel_vec_PETSC,WorldComm);
+    PetscVector<Number> acc_vec(acc_vec_PETSC,WorldComm);
+  }
+}
 
 void update_dynamic_rhs(libMesh::EquationSystems& es,
                 const std::string& system_name, 
                 weight_parameter_function& weight_mask,
-                WeightFunctionSystemType system_type,
-                int traction_boundary_id, double amp_n,
-                std::vector<double> traction_density,
-                const std::string& stiffness_file,
-                const std::string& force_file,
-                const std::string& displacement_file,
-                const std::string& velocity_file,
-                const std::string& acceleration_file,
-                double deltat, double beta)
+                WeightFunctionSystemType system_type, 
+                double amp_n,
+                const std::string& stf_mat_file,
+                const std::string& fex_vec_name,
+                const std::string& dis_vec_name,
+                const std::string& vel_vec_name,
+                const std::string& acc_vec_name,
+                Parallel::Communicator& WorldComm,
+                double deltat,
+                double beta)
 {
   libmesh_assert_equal_to(system_name, "Dynamic Elasticity");
 
-  libMesh::PerfLog perf_log ("Mass/Stiffness Matrix Assembly ",MASTER_bPerfLog_assemble_fem);
+  PerfLog perf_log ("Mass/Stiffness Matrix Assembly ",MASTER_bPerfLog_assemble_fem);
 
   perf_log.push("Preamble");
   
@@ -618,29 +640,59 @@ void update_dynamic_rhs(libMesh::EquationSystems& es,
   const unsigned int dim = mesh.mesh_dimension();
   
   // - Set up elasticity system ---------------------------------------------
-  libMesh::NewmarkSystem& system = es.get_system<libMesh::NewmarkSystem>("Dynamic Elasticity");
-  
-  libMesh::SparseMatrix < libMesh::Number > & stiffness = system.get_matrix("stiffness");
-  libMesh::NumericVector< libMesh::Number > & displacement = system.get_vector("displacement");
-  libMesh::NumericVector< libMesh::Number > & velocity = system.get_vector("velocity");
-  libMesh::NumericVector< libMesh::Number > & acceleration = system.get_vector("acceleration");
-  libMesh::NumericVector< libMesh::Number > & force = system.get_vector("force");  
-  libMesh::NumericVector< libMesh::Number > & rhs_m = system.get_vector("rhs_m");
-  
+  NewmarkSystem& system = es.get_system<NewmarkSystem>("Dynamic Elasticity");
+
+  Vec dis_vec_PETSC;
+  Vec vel_vec_PETSC;
+  Vec acc_vec_PETSC;
+  Vec fex_vec_PETSC;
+  Mat stf_mat_PETSC;
+  VecCreate(WorldComm.get(),&dis_vec_PETSC);
+  VecCreate(WorldComm.get(),&vel_vec_PETSC);
+  VecCreate(WorldComm.get(),&acc_vec_PETSC);
+  VecCreate(WorldComm.get(),&fex_vec_PETSC);
+  MatCreate(WorldComm.get(),&stf_mat_PETSC);
+  carl::read_PETSC_vector(dis_vec_PETSC,dis_vec_name,WorldComm.get());
+  carl::read_PETSC_vector(vel_vec_PETSC,vel_vec_name,WorldComm.get());
+  carl::read_PETSC_vector(acc_vec_PETSC,acc_vec_name,WorldComm.get());
+  carl::read_PETSC_vector(fex_vec_PETSC,fex_vec_name,WorldComm.get());
+  carl::read_PETSC_matrix(stf_mat_PETSC,stf_mat_file,WorldComm.get());
+  PetscVector<Number> dis_vec(dis_vec_PETSC,WorldComm);
+  PetscVector<Number> vel_vec(vel_vec_PETSC,WorldComm);
+  PetscVector<Number> acc_vec(acc_vec_PETSC,WorldComm);
+  PetscVector<Number> fex_vec(fex_vec_PETSC,WorldComm);
+  PetscMatrix<Number> stf_mat(stf_mat_PETSC,WorldComm);
+
+  // Zeroes the rhs
   system.rhs->zero();
 
-  force.scale(amp_n);
+  // update external force amplitude
+  fex_vec.scale(amp_n);
 
   // compute auxiliary vectors rhs_m
   libMesh::Real a0 = deltat*deltat*(0.5-beta);
 
-  rhs_m.zero();
-  rhs_m.add(-1., displacement);
-  rhs_m.add(-deltat, velocity);
-  rhs_m.add(-a0, acceleration);
+  // Compute correction with displacement predictor
+  dis_vec.scale(-1.);
+  dis_vec.add(-deltat, vel_vec);
+  dis_vec.add(-a0, acc_vec);
 
-  system.rhs->add(force);
-  system.rhs->add_vector(rhs_m,stiffness);
+  system.rhs->add(fex_vec);
+  system.rhs->add_vector(dis_vec,stf_mat);
+
+  // --- Cleanup!
+  VecDestroy(&dis_vec_PETSC);
+  VecDestroy(&vel_vec_PETSC);
+  VecDestroy(&acc_vec_PETSC);
+  VecDestroy(&fex_vec_PETSC);
+  MatDestroy(&stf_mat_PETSC);
 
   return;
 }
+/* Local Variables:                                                        */
+/* mode: c                                                                 */
+/* show-trailing-whitespace: t                                             */
+/* coding: utf-8                                                           */
+/* c-file-style: "stroustrup"                                              */
+/* End:                                                                    */
+/* vim: set sw=2 ts=2 et tw=80 smartindent :                               */

@@ -92,6 +92,7 @@ libMesh::LinearImplicitSystem& add_elasticity(libMesh::EquationSystems& input_sy
 
 
 libMesh::NewmarkSystem& add_dynamic_elasticity(libMesh::EquationSystems& input_systems,
+//libMesh::LinearImplicitSystem& add_dynamic_elasticity(libMesh::EquationSystems& input_systems,
                                                const std::string& system_name,
                                                libMesh::Order order,
                                                libMesh::FEFamily family)
@@ -106,6 +107,7 @@ libMesh::NewmarkSystem& add_dynamic_elasticity(libMesh::EquationSystems& input_s
   physical_variables.add_variable("Index", libMesh::CONSTANT, libMesh::MONOMIAL);
   
   libMesh::NewmarkSystem& elasticity_system =
+  //libMesh::LinearImplicitSystem& elasticity_system =
     input_systems.add_system<libMesh::NewmarkSystem> (system_name);
   
   // Displacement
@@ -113,15 +115,15 @@ libMesh::NewmarkSystem& add_dynamic_elasticity(libMesh::EquationSystems& input_s
   elasticity_system.add_variable("v", order, family);
   elasticity_system.add_variable("w", order, family);
 
-  // Velocity
-  elasticity_system.add_variable("udot", order, family);
-  elasticity_system.add_variable("vdot", order, family);
-  elasticity_system.add_variable("wdot", order, family);
-
-  // Acceleration
-  elasticity_system.add_variable("uddot", order, family);
-  elasticity_system.add_variable("vddot", order, family);
-  elasticity_system.add_variable("wddot", order, family);
+//  // Velocity
+//  elasticity_system.add_variable("udot", order, family);
+//  elasticity_system.add_variable("vdot", order, family);
+//  elasticity_system.add_variable("wdot", order, family);
+//
+//  // Acceleration
+//  elasticity_system.add_variable("uddot", order, family);
+//  elasticity_system.add_variable("vddot", order, family);
+//  elasticity_system.add_variable("wddot", order, family);
 
   return elasticity_system;
 }

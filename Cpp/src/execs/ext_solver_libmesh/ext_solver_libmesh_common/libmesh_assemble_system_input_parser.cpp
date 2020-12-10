@@ -31,11 +31,15 @@ void get_input_params(GetPot& field_parser,libmesh_assemble_input_params& input_
   if ( field_parser.search(1, "SystemType") )
   {
     sys_type = field_parser.next(sys_type);
-    if(sys_type == "Macro" || sys_type == "MACRO" || sys_type == "macro")
+    if(sys_type == "Macro" || sys_type == "MACRO" || sys_type == "macro") 
+    {
       input_params.system_type = WeightFunctionSystemType::MACRO;
-    else if(sys_type == "Micro" || sys_type == "MICRO" || sys_type == "micro")
+    }
+    else if(sys_type == "Micro" || sys_type == "MICRO" || sys_type == "micro") 
+    {
       input_params.system_type = WeightFunctionSystemType::MICRO;
-    else if(sys_type == "NoWeight" || sys_type == "NOWEIGHT" || sys_type == "noweight")
+    }
+    else if(sys_type == "NoWeight" || sys_type == "NOWEIGHT" || sys_type == "noweight") 
     {
       input_params.system_type = WeightFunctionSystemType::NO_WEIGHT;
       std::cout << " >> [CArl Parameters]Warning: Will not use the weight parameters!" << std::endl;
@@ -74,7 +78,6 @@ void get_input_params(GetPot& field_parser,libmesh_assemble_input_params& input_
   } else {
     input_params.bCalculateRBVectors = false;
   }
-//}
 
   if (field_parser.search(1,"Dynamic")) {
     input_params.dynamic_analysis = true;
@@ -82,40 +85,22 @@ void get_input_params(GetPot& field_parser,libmesh_assemble_input_params& input_
     input_params.dynamic_analysis = false;
   }
 
-  if (field_parser.search(1, "deltatA")) {
-    input_params.deltatA = field_parser.next(input_params.deltatA);
+  if (field_parser.search(1, "deltat")) {
+    input_params.deltat = field_parser.next(input_params.deltat);
   } else {
-    input_params.deltatA = 0.25;
+    input_params.deltat = 0.25;
   }
 
-  if (field_parser.search(1, "betaA")) {
-    input_params.betaA = field_parser.next(input_params.betaA);
+  if (field_parser.search(1, "beta")) {
+    input_params.beta = field_parser.next(input_params.beta);
   } else {
-    input_params.betaA = 0.25;
+    input_params.beta = 0.25;
   }
 
-  if (field_parser.search(1, "gammaA")) {
-    input_params.gammaA = field_parser.next(input_params.gammaA);
+  if (field_parser.search(1, "gamma")) {
+    input_params.gamma = field_parser.next(input_params.gamma);
   } else {
-    input_params.gammaA = 0.5;
-  }
-
-  if (field_parser.search(1, "deltatB")) {
-    input_params.deltatB = field_parser.next(input_params.deltatB);
-  } else {
-    input_params.deltatB = 0.25;
-  }
-
-  if (field_parser.search(1, "betaB")) {
-    input_params.betaB = field_parser.next(input_params.betaB);
-  } else {
-    input_params.betaB = 0.25;
-  }
-
-  if (field_parser.search(1, "gammaB")) {
-    input_params.gammaB = field_parser.next(input_params.gammaB);
-  } else {
-    input_params.gammaB = 0.5;
+    input_params.gamma = 0.5;
   }
 //  if (field_parser.search(1, "transient")) {
 //    input_params.transient = true;

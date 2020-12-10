@@ -1,0 +1,9 @@
+.settings*
+.ptp-sync*
+.cproject
+.project
+legacy_code/*
+test/*
+coupled_traction_test/
+unitary_test
+coupled_dynamic/
