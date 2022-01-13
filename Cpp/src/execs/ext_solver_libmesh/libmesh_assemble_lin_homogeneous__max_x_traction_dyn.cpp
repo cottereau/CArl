@@ -12,12 +12,16 @@
  *    - `SystemType` : parameter used to tell the assembler which weight functions must be used. *Values*: `Micro` or `Macro`.
  *    - `MeshWeight` : path to the mesh defining the domains of the Arlequin weight parameters.
  *    - `WeightIndexes` : path to the indices of the domains of the Arlequin weight parameters.
+ *    - `deltat` : the step of time for the Newmark System
+ *    - `beta` : the coefficient beta for the Newmark System
+ *    - `gamma` : the coefficient gamma for the Newmark System
  *
  *  Optional parameter:
  *    - `OutputBase` or `--output` : base of the output files (including folders). *Default*: `test_system`.
  *
  *  Boolean flags:
  *    - `ExportRBVectors` : build and export the rigid body modes vectors.
+ *    - `Dynamic` : activate dynamic analysis
  */
 
 using namespace std;
@@ -136,22 +140,40 @@ int main(int argc, char** argv) {
     system_weight, input_params.system_type, boundary_id_cube::MAX_X, traction_density, 
     input_params.deltat, input_params.beta);
 
+  elasticity_system.compute_matrix();
+
+  //SparseMatrix < Number > * mass      = elasticity_system.request_matrix("mass");
   SparseMatrix < Number > * stiffness = elasticity_system.request_matrix("stiffness");
+  //SparseMatrix < Number > * damping   = elasticity_system.request_matrix("damping");
+  //SparseMatrix < Number > * mass_tilde= elasticity_system.request_matrix("mass_tilde");
+  //NumericVector< Number > * force     = elasticity_system.request_vector("force");
 // Print MatLab debugging output? Variable defined at "carl_headers.h"
 #ifdef PRINT_MATLAB_DEBUG
   elasticity_system.matrix->print_matlab(input_params.output_base + "_sys_mat.m");
   elasticity_system.rhs->print_matlab(input_params.output_base + "_sys_rhs_vec.m");
+  //mass->print_matlab(input_params.output_base + "_sys_mat.m");
   stiffness->print_matlab(input_params.output_base + "_K_mat.m");
+  //damping->print_matlab(input_params.output_base + "_damping.m");
+  //mass_tilde->print_matlab(input_params.output_base + "_sys_mat.m");
+  //force->print_matlab(input_params.output_base + "_force.m");
 #endif
 
   // Export matrix and vector
   PetscMatrix<Number> * temp_mat_ptr = cast_ptr<PetscMatrix<Number> * >(elasticity_system.matrix);
   PetscVector<Number> * temp_vec_ptr = cast_ptr<PetscVector<Number> * >(elasticity_system.rhs);
+  //PetscMatrix<Number> * temp_mass_ptr = cast_ptr<PetscMatrix<Number> * >(mass);
   PetscMatrix<Number> * temp_stf_ptr = cast_ptr<PetscMatrix<Number> * >(stiffness);
+  //PetscMatrix<Number> * temp_damping_ptr = cast_ptr<PetscMatrix<Number> * >(damping);
+  //PetscVector<Number> * temp_force_ptr = cast_ptr<PetscVector<Number> * >(force);
+  //PetscMatrix<Number> * temp_mass_tilde_ptr = cast_ptr<PetscMatrix<Number> * >(mass_tilde);
 
   carl::write_PETSC_matrix(*temp_mat_ptr, input_params.output_base + "_sys_mat.petscmat");
   carl::write_PETSC_vector(*temp_vec_ptr, input_params.output_base + "_sys_rhs_vec.petscvec");
-  carl::write_PETSC_matrix(*temp_stf_ptr, input_params.output_base + "_K_mat.petscmat");
+  //carl::write_PETSC_matrix(*temp_mass_ptr, input_params.output_base + "_sys_mat.petscvec");
+  carl::write_PETSC_matrix(*temp_stf_ptr, input_params.output_base + "_K_mat.petscvec");
+  //carl::write_PETSC_matrix(*temp_damping_ptr, input_params.output_base + "_damping.petscvec");
+  //carl::write_PETSC_matrix(*temp_mass_tilde_ptr, input_params.output_base + "_sys_mat.petscmat");
+  //carl::write_PETSC_vector(*temp_force_ptr, input_params.output_base + "_force.petscvec");
 
   // If needed, print rigid body vectors
   if(input_params.bCalculateRBVectors)

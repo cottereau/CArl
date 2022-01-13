@@ -101,29 +101,19 @@ libMesh::NewmarkSystem& add_dynamic_elasticity(libMesh::EquationSystems& input_s
     input_systems.add_system<libMesh::ExplicitSystem> ("PhysicalConstants");
 
   // Physical constants are set as constant, monomial
-  physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);
-  physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);
-  physical_variables.add_variable("rho", libMesh::CONSTANT, libMesh::MONOMIAL);
-  physical_variables.add_variable("Index", libMesh::CONSTANT, libMesh::MONOMIAL);
+  physical_variables.add_variable("E", libMesh::CONSTANT, libMesh::MONOMIAL);    // Young's modulus
+  physical_variables.add_variable("mu", libMesh::CONSTANT, libMesh::MONOMIAL);   // Shear modulus
+  physical_variables.add_variable("rho", libMesh::CONSTANT, libMesh::MONOMIAL);  // Density
+  physical_variables.add_variable("Index", libMesh::CONSTANT, libMesh::MONOMIAL);// Index
   
   libMesh::NewmarkSystem& elasticity_system =
   //libMesh::LinearImplicitSystem& elasticity_system =
     input_systems.add_system<libMesh::NewmarkSystem> (system_name);
   
-  // Displacement
-  elasticity_system.add_variable("u", order, family);
+  // Unknown variables
+  elasticity_system.add_variable("u", order, family); 
   elasticity_system.add_variable("v", order, family);
   elasticity_system.add_variable("w", order, family);
-
-//  // Velocity
-//  elasticity_system.add_variable("udot", order, family);
-//  elasticity_system.add_variable("vdot", order, family);
-//  elasticity_system.add_variable("wdot", order, family);
-//
-//  // Acceleration
-//  elasticity_system.add_variable("uddot", order, family);
-//  elasticity_system.add_variable("vddot", order, family);
-//  elasticity_system.add_variable("wddot", order, family);
 
   return elasticity_system;
 }

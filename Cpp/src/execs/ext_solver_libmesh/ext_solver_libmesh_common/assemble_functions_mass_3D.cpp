@@ -63,11 +63,11 @@ void assemble_dynamic_elasticity_with_weight(libMesh::EquationSystems& es,
   ///* [IMPLICIT]*/ libMesh::LinearImplicitSystem& system = es.get_system<libMesh::LinearImplicitSystem>("Dynamic Elasticity");
 
   libMesh::SparseMatrix < libMesh::Number > & stiffness = system.get_matrix("stiffness");
-  //libMesh::SparseMatrix < libMesh::Number > & damping   = system.get_matrix("damping");
-  //libMesh::SparseMatrix < libMesh::Number > & mass      = system.get_matrix("mass");
+  libMesh::SparseMatrix < libMesh::Number > & damping   = system.get_matrix("damping");
+  libMesh::SparseMatrix < libMesh::Number > & mass      = system.get_matrix("mass");
   libMesh::NumericVector< libMesh::Number > & force     = system.get_vector("force");
-  //libMesh::DenseMatrix< libMesh::Number > zero_matrix;
-  //libMesh::SparseMatrix < libMesh::Number > & mass_tilde = system.add_matrix("mass_tilde");
+  libMesh::DenseMatrix< libMesh::Number > zero_matrix;
+  libMesh::SparseMatrix < libMesh::Number > & mass_tilde = system.add_matrix("mass_tilde");
 
   const unsigned int n_components = 3;
   const unsigned int u_var = system.variable_number("u");
@@ -322,11 +322,11 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
   ///* [IMPLICIT] */ libMesh::LinearImplicitSystem& system = es.get_system<libMesh::LinearImplicitSystem>("Elasticity");
 
   libMesh::SparseMatrix < libMesh::Number > & stiffness = system.get_matrix("stiffness");
-  //libMesh::SparseMatrix < libMesh::Number > & damping   = system.get_matrix("damping");
-  //libMesh::SparseMatrix < libMesh::Number > & mass      = system.get_matrix("mass");
+  libMesh::SparseMatrix < libMesh::Number > & damping   = system.get_matrix("damping");
+  libMesh::SparseMatrix < libMesh::Number > & mass      = system.get_matrix("mass");
   libMesh::NumericVector< libMesh::Number > & force     = system.get_vector("force");
-  //libMesh::DenseMatrix< libMesh::Number > zero_matrix;
-  //libMesh::SparseMatrix < libMesh::Number > & mass_tilde = system.add_matrix("mass_tilde");
+  libMesh::DenseMatrix< libMesh::Number > zero_matrix;
+  libMesh::SparseMatrix < libMesh::Number > & mass_tilde = system.add_matrix("mass_tilde");
   
   const unsigned int n_components = 3;
   const unsigned int u_var = system.variable_number("u");
