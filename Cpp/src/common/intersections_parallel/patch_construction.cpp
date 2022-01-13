@@ -12,379 +12,379 @@ namespace carl
 // Getters
 libMesh::ReplicatedMesh & Patch_construction::parent_mesh()
 {
-	return m_Mesh_parent;
+  return m_Mesh_parent;
 }
 
 libMesh::ReplicatedMesh & Patch_construction::patch_mesh()
 {
-	return m_Mesh_patch;
+  return m_Mesh_patch;
 }
 
 std::unordered_set<unsigned int> & Patch_construction::elem_indexes()
 {
-	return m_Patch_Elem_indexes;
+  return m_Patch_Elem_indexes;
 };
 
 std::unordered_set<unsigned int> & Patch_construction::node_indexes()
 {
-	return m_Patch_Node_indexes;
+  return m_Patch_Node_indexes;
 };
 
 unsigned int Patch_construction::size()
 {
-	return m_Patch_Elem_indexes.size();
+  return m_Patch_Elem_indexes.size();
 }
 
 const libMesh::Elem * Patch_construction::elem(unsigned int idx)
 {
-	return m_Mesh_parent.elem(idx);
+  return m_Mesh_parent.elem_ptr(idx);
 }
 
 std::unordered_map<unsigned int,std::unordered_set<unsigned int> > & Patch_construction::patch_elem_neighbours()
 {
-	return m_Patch_Elem_Neighbours;
+  return m_Patch_Elem_Neighbours;
 }
 
-void Patch_construction::insert_patch_element(const libMesh::Elem		* Patch_elem)
+void Patch_construction::insert_patch_element(const libMesh::Elem   * Patch_elem)
 {
-	m_Patch_Elem_indexes.insert(Patch_elem->id());
-	for(unsigned int iii = 0; iii < Patch_elem->n_nodes(); ++iii)
-	{
-		m_Patch_Node_indexes.insert(Patch_elem->node_id(iii));
-	}
+  m_Patch_Elem_indexes.insert(Patch_elem->id());
+  for(unsigned int iii = 0; iii < Patch_elem->n_nodes(); ++iii)
+  {
+    m_Patch_Node_indexes.insert(Patch_elem->node_id(iii));
+  }
 }
 
-void Patch_construction::BuildPatch(const libMesh::Elem 	* Query_elem)
+void Patch_construction::BuildPatch(const libMesh::Elem   * Query_elem)
 {
-	bool bDoIntersect = false;
+  bool bDoIntersect = false;
 
-	std::set<unsigned int> Intersecting_elems;
-	m_Intersection_Test.FindAllIntersection(Query_elem,m_Parent_Point_Locator,Intersecting_elems);
+  std::set<unsigned int> Intersecting_elems;
+  m_Intersection_Test.FindAllIntersection(Query_elem,m_Parent_Point_Locator,Intersecting_elems);
 
-	m_Patch_Elem_indexes.clear();
-	m_Patch_Node_indexes.clear();
-	m_Patch_Elem_Neighbours.clear();
+  m_Patch_Elem_indexes.clear();
+  m_Patch_Node_indexes.clear();
+  m_Patch_Elem_Neighbours.clear();
 
-	// Deque containing the indices of the elements to test
-	std::deque<int> Patch_Test_Queue;
+  // Deque containing the indices of the elements to test
+  std::deque<int> Patch_Test_Queue;
 
-	// Unordered set, used to avoid double testing elements
-	std::unordered_set<int> Treated_From_Mesh(m_Mesh_parent.n_elem());
+  // Unordered set, used to avoid double testing elements
+  std::unordered_set<int> Treated_From_Mesh(m_Mesh_parent.n_elem());
 
-	// Index and pointer to element being tested right now
-	unsigned int	Tested_idx;
+  // Index and pointer to element being tested right now
+  unsigned int  Tested_idx;
 
-	// Candidate index
-	unsigned int 	Candidate_idx;
+  // Candidate index
+  unsigned int  Candidate_idx;
 
-	// First element is ok!
-	libMesh::Elem * 	First_Patch_elems = NULL;
-	const libMesh::Elem * 	elem_candidate = NULL;
-	std::set<unsigned int>::iterator it_set_start = Intersecting_elems.begin();
-	for( ; it_set_start != Intersecting_elems.end(); ++it_set_start)
-	{
-		Treated_From_Mesh.insert(*it_set_start);
-		First_Patch_elems = m_Mesh_parent.elem(*it_set_start);
-		insert_patch_element(First_Patch_elems);
+  // First element is ok!
+  libMesh::Elem *   First_Patch_elems = NULL;
+  const libMesh::Elem *   elem_candidate = NULL;
+  std::set<unsigned int>::iterator it_set_start = Intersecting_elems.begin();
+  for( ; it_set_start != Intersecting_elems.end(); ++it_set_start)
+  {
+    Treated_From_Mesh.insert(*it_set_start);
+    First_Patch_elems = m_Mesh_parent.elem_ptr(*it_set_start);
+    insert_patch_element(First_Patch_elems);
 
-		for(unsigned int iii = 0; iii < First_Patch_elems->n_neighbors(); ++iii)
-		{
-			elem_candidate = First_Patch_elems->neighbor_ptr(iii);
-			if(elem_candidate != NULL)
-			{
-				Patch_Test_Queue.push_back(elem_candidate->id());
-				Treated_From_Mesh.insert(elem_candidate->id());
-			}
-		}
-	}
+    for(unsigned int iii = 0; iii < First_Patch_elems->n_neighbors(); ++iii)
+    {
+      elem_candidate = First_Patch_elems->neighbor_ptr(iii);
+      if(elem_candidate != NULL)
+      {
+        Patch_Test_Queue.push_back(elem_candidate->id());
+        Treated_From_Mesh.insert(elem_candidate->id());
+      }
+    }
+  }
 
-	// Debug vars
-	int nbOfTests = 1;
-	int nbOfPositiveTests = 1;
+  // Debug vars
+  int nbOfTests = 1;
+  int nbOfPositiveTests = 1;
 
-	while(!Patch_Test_Queue.empty())
-	{
-		// Extract element from the list
-		Tested_idx = Patch_Test_Queue[0];
-		Patch_Test_Queue.pop_front();
-		const libMesh::Elem 	* Tested_elem = m_Mesh_parent.elem(Tested_idx);
+  while(!Patch_Test_Queue.empty())
+  {
+    // Extract element from the list
+    Tested_idx = Patch_Test_Queue[0];
+    Patch_Test_Queue.pop_front();
+    const libMesh::Elem   * Tested_elem = m_Mesh_parent.elem_ptr(Tested_idx);
 
-		// Test it
-		bDoIntersect = m_Intersection_Test.libMesh_exact_do_intersect(Query_elem,Tested_elem);
-		++nbOfTests;
+    // Test it
+    bDoIntersect = m_Intersection_Test.libMesh_exact_do_intersect(Query_elem,Tested_elem);
+    ++nbOfTests;
 
-		// If it does intersect ...
-		if(bDoIntersect)
-		{
-			++nbOfPositiveTests;
+    // If it does intersect ...
+    if(bDoIntersect)
+    {
+      ++nbOfPositiveTests;
 
-			// Add it to the output list ...
-			insert_patch_element(Tested_elem);
+      // Add it to the output list ...
+      insert_patch_element(Tested_elem);
 
-			// ... And add its neighbours (if they weren't tested yet)
-			for(unsigned int iii = 0; iii < Tested_elem->n_neighbors(); ++iii)
-			{
-				elem_candidate = Tested_elem->neighbor_ptr(iii);
-				if(elem_candidate != NULL)
-				{
-					Candidate_idx = elem_candidate->id();
-					if(Treated_From_Mesh.find(Candidate_idx)==Treated_From_Mesh.end())
-					{
-						Patch_Test_Queue.push_back(Candidate_idx);
-						Treated_From_Mesh.insert(Candidate_idx);
-					}
-				}
-			}
-		}
-	}
+      // ... And add its neighbours (if they weren't tested yet)
+      for(unsigned int iii = 0; iii < Tested_elem->n_neighbors(); ++iii)
+      {
+        elem_candidate = Tested_elem->neighbor_ptr(iii);
+        if(elem_candidate != NULL)
+        {
+          Candidate_idx = elem_candidate->id();
+          if(Treated_From_Mesh.find(Candidate_idx)==Treated_From_Mesh.end())
+          {
+            Patch_Test_Queue.push_back(Candidate_idx);
+            Treated_From_Mesh.insert(Candidate_idx);
+          }
+        }
+      }
+    }
+  }
 
-	// Now, let us build the patch's neighbour table
-	std::unordered_set<unsigned int> dummy_neighbour_set(12);
+  // Now, let us build the patch's neighbour table
+  std::unordered_set<unsigned int> dummy_neighbour_set(12);
 
-	std::unordered_set<unsigned int>::iterator it_set = m_Patch_Elem_indexes.begin();
-	std::unordered_set<unsigned int>::iterator it_set_end = m_Patch_Elem_indexes.end();
-	m_Patch_Elem_Neighbours.reserve(m_Patch_Elem_indexes.size());
+  std::unordered_set<unsigned int>::iterator it_set = m_Patch_Elem_indexes.begin();
+  std::unordered_set<unsigned int>::iterator it_set_end = m_Patch_Elem_indexes.end();
+  m_Patch_Elem_Neighbours.reserve(m_Patch_Elem_indexes.size());
 
-	const libMesh::Elem * elem_neighbour;
-	unsigned int elem_neighbour_id;
+  const libMesh::Elem * elem_neighbour;
+  unsigned int elem_neighbour_id;
 
-	for( ; it_set != it_set_end; ++it_set)
-	{
-		const libMesh::Elem 	* elem = m_Mesh_parent.elem(*it_set);
-		dummy_neighbour_set.clear();
+  for( ; it_set != it_set_end; ++it_set)
+  {
+    const libMesh::Elem   * elem = m_Mesh_parent.elem_ptr(*it_set);
+    dummy_neighbour_set.clear();
 
-		for(unsigned int iii = 0; iii < elem->n_neighbors(); ++iii)
-		{
-			elem_neighbour = elem->neighbor_ptr(iii);
+    for(unsigned int iii = 0; iii < elem->n_neighbors(); ++iii)
+    {
+      elem_neighbour = elem->neighbor_ptr(iii);
 
-			if(elem_neighbour != NULL)
-			{
-				// Then test if it is inside the patch
-				elem_neighbour_id = elem_neighbour->id();
-				if(m_Patch_Elem_indexes.find(elem_neighbour_id) != m_Patch_Elem_indexes.end())
-				{
-					// Then the neighbor is inside the patch, insert it
-					dummy_neighbour_set.insert(elem_neighbour->id());
-				}
-			}
-		}
-		m_Patch_Elem_Neighbours.insert(std::pair<unsigned int,std::unordered_set<unsigned int> >(*it_set,dummy_neighbour_set));
-	}
+      if(elem_neighbour != NULL)
+      {
+        // Then test if it is inside the patch
+        elem_neighbour_id = elem_neighbour->id();
+        if(m_Patch_Elem_indexes.find(elem_neighbour_id) != m_Patch_Elem_indexes.end())
+        {
+          // Then the neighbor is inside the patch, insert it
+          dummy_neighbour_set.insert(elem_neighbour->id());
+        }
+      }
+    }
+    m_Patch_Elem_Neighbours.insert(std::pair<unsigned int,std::unordered_set<unsigned int> >(*it_set,dummy_neighbour_set));
+  }
 
-	// Build the patch mesh
-	this->build_patch_mesh();
+  // Build the patch mesh
+  this->build_patch_mesh();
 
-	if(m_bPrintDebug)
-	{
-		std::cout << "    DEBUG: patch search results" << std::endl;
-		std::cout << " -> Nb. of intersections found : " << m_Patch_Elem_indexes.size() << std::endl << std::endl;
+  if(m_bPrintDebug)
+  {
+    std::cout << "    DEBUG: patch search results" << std::endl;
+    std::cout << " -> Nb. of intersections found : " << m_Patch_Elem_indexes.size() << std::endl << std::endl;
 
-		std::cout << " -> Nb. of mesh elements       : " << m_Mesh_parent.n_elem() << std::endl;
-		std::cout << " -> Nb. of patch elements      : " << m_Patch_Elem_indexes.size() << std::endl;
-		std::cout << " -> Patch elem %               : " << 100.*m_Patch_Elem_indexes.size()/m_Mesh_parent.n_elem() << " %" << std::endl << std::endl;
+    std::cout << " -> Nb. of mesh elements       : " << m_Mesh_parent.n_elem() << std::endl;
+    std::cout << " -> Nb. of patch elements      : " << m_Patch_Elem_indexes.size() << std::endl;
+    std::cout << " -> Patch elem %               : " << 100.*m_Patch_Elem_indexes.size()/m_Mesh_parent.n_elem() << " %" << std::endl << std::endl;
 
-		std::cout << " -> Nb. of mesh nodes          : " << m_Mesh_parent.n_nodes() << std::endl;
-		std::cout << " -> Nb. of patch nodes         : " << m_Patch_Node_indexes.size() << std::endl;
-		std::cout << " -> Patch node %               : " << 100.*m_Patch_Node_indexes.size()/m_Mesh_parent.n_nodes() << " %" << std::endl << std::endl;
+    std::cout << " -> Nb. of mesh nodes          : " << m_Mesh_parent.n_nodes() << std::endl;
+    std::cout << " -> Nb. of patch nodes         : " << m_Patch_Node_indexes.size() << std::endl;
+    std::cout << " -> Patch node %               : " << 100.*m_Patch_Node_indexes.size()/m_Mesh_parent.n_nodes() << " %" << std::endl << std::endl;
 
-		std::cout << " -> Nb. of tests               : " << nbOfTests << std::endl;
-		std::cout << " -> Nb. of positive tests      : " << nbOfPositiveTests << std::endl;
-		std::cout << " -> Positive %                 : " << 100.*nbOfPositiveTests/nbOfTests << " %" << std::endl << std::endl;
-	}
+    std::cout << " -> Nb. of tests               : " << nbOfTests << std::endl;
+    std::cout << " -> Nb. of positive tests      : " << nbOfPositiveTests << std::endl;
+    std::cout << " -> Positive %                 : " << 100.*nbOfPositiveTests/nbOfTests << " %" << std::endl << std::endl;
+  }
 }
 
 /*
  *
- * 		Methods and getters associated to the advancing front search method.
+ *    Methods and getters associated to the advancing front search method.
  *
  */
 
 /*
- * 		Getters, setters and extractors
+ *    Getters, setters and extractors
  */
 void Patch_construction::intersection_queue_push_back(unsigned int elem_id)
 {
-	m_element_intersection_queue.push_back(elem_id);
+  m_element_intersection_queue.push_back(elem_id);
 }
 
 void Patch_construction::set_elem_as_treated(unsigned int elem_id)
 {
-	m_element_already_treated[elem_id] = 1;
+  m_element_already_treated[elem_id] = 1;
 }
 
 void Patch_construction::set_elem_as_inside_queue(unsigned int elem_id)
 {
-	m_element_inside_intersection_queue[elem_id] = 1;
+  m_element_inside_intersection_queue[elem_id] = 1;
 }
 
 bool Patch_construction::intersection_queue_empty()
 {
-	return m_element_intersection_queue.empty();
+  return m_element_intersection_queue.empty();
 }
 
 bool Patch_construction::test_queue_empty()
 {
-	return m_element_test_queue.empty();
+  return m_element_test_queue.empty();
 }
 
 unsigned int Patch_construction::intersection_queue_extract_front_elem()
 {
-	m_working_element_id = m_element_intersection_queue[0];
-	m_element_intersection_queue.pop_front();
-	return m_working_element_id;
+  m_working_element_id = m_element_intersection_queue[0];
+  m_element_intersection_queue.pop_front();
+  return m_working_element_id;
 }
 
 unsigned int Patch_construction::test_queue_extract_front_elem()
 {
-	m_working_element_id = m_element_test_queue[0];
-	m_element_test_queue.pop_front();
-	return m_working_element_id;
+  m_working_element_id = m_element_test_queue[0];
+  m_element_test_queue.pop_front();
+  return m_working_element_id;
 };
 
 unsigned int Patch_construction::current_elem_id()
 {
-	return m_working_element_id;
+  return m_working_element_id;
 };
 
 unsigned int Patch_construction::convert_parent_to_patch_elem_id(unsigned int input)
 {
-	return m_elem_map_Parent_to_Patch[input];
+  return m_elem_map_Parent_to_Patch[input];
 }
 
 unsigned int Patch_construction::convert_patch_to_parent_elem_id(unsigned int input)
 {
-	return m_elem_map_Patch_to_Parent[input];
+  return m_elem_map_Patch_to_Parent[input];
 }
 
 const libMesh::Elem * Patch_construction::current_elem_pointer()
 {
-	return m_Mesh_parent.elem(m_working_element_id);
+  return m_Mesh_parent.elem_ptr(m_working_element_id);
 }
 
 std::unordered_set<unsigned int> & Patch_construction::neighbors_to_search_next_pair()
 {
-	return m_element_neighbours_to_search;
+  return m_element_neighbours_to_search;
 }
 
 // Determinate which neighbors need to be tested
 bool Patch_construction::set_neighbors_to_search_next_pairs()
 {
-	m_bTestNeighsForNewPairs = true;
+  m_bTestNeighsForNewPairs = true;
 
-	// Iterator over all the neighbors
-	std::unordered_set<unsigned int>::iterator it_neigh, it_neigh_end;
+  // Iterator over all the neighbors
+  std::unordered_set<unsigned int>::iterator it_neigh, it_neigh_end;
 
-	it_neigh 		= m_Patch_Elem_Neighbours[m_working_element_id].begin();
-	it_neigh_end	= m_Patch_Elem_Neighbours[m_working_element_id].end();
+  it_neigh    = m_Patch_Elem_Neighbours[m_working_element_id].begin();
+  it_neigh_end  = m_Patch_Elem_Neighbours[m_working_element_id].end();
 
-	// Clear the "to test" set
-	m_element_neighbours_to_search.clear();
+  // Clear the "to test" set
+  m_element_neighbours_to_search.clear();
 
-	// And fill it, if needed
-	for( ; it_neigh != it_neigh_end; ++ it_neigh)
-	{
-		if( m_element_inside_intersection_queue[*it_neigh] == 0 )
-		{
-			// This element does not have an initial intersection pair,
-			// add it to the list
-			m_element_neighbours_to_search.insert(*it_neigh);
-		}
-	}
+  // And fill it, if needed
+  for( ; it_neigh != it_neigh_end; ++ it_neigh)
+  {
+    if( m_element_inside_intersection_queue[*it_neigh] == 0 )
+    {
+      // This element does not have an initial intersection pair,
+      // add it to the list
+      m_element_neighbours_to_search.insert(*it_neigh);
+    }
+  }
 
-	if(m_element_neighbours_to_search.empty())
-	{
-		// Then do not do the intersection test!
-		m_bTestNeighsForNewPairs = false;
-	}
+  if(m_element_neighbours_to_search.empty())
+  {
+    // Then do not do the intersection test!
+    m_bTestNeighsForNewPairs = false;
+  }
 
-	return m_bTestNeighsForNewPairs;
+  return m_bTestNeighsForNewPairs;
 }
 
 void Patch_construction::add_neighbors_to_test_list()
 {
-	std::unordered_set<unsigned int>::iterator it_neigh, it_neigh_end;
+  std::unordered_set<unsigned int>::iterator it_neigh, it_neigh_end;
 
-	it_neigh 		= m_Patch_Elem_Neighbours[m_working_element_id].begin();
-	it_neigh_end	= m_Patch_Elem_Neighbours[m_working_element_id].end();
+  it_neigh    = m_Patch_Elem_Neighbours[m_working_element_id].begin();
+  it_neigh_end  = m_Patch_Elem_Neighbours[m_working_element_id].end();
 
-	for( ; it_neigh != it_neigh_end; ++ it_neigh)
-	{
-		if( m_element_already_treated[*it_neigh] == 0 )
-		{
-			// New element!
-			m_element_test_queue.push_back(*it_neigh);
-			m_element_already_treated[*it_neigh] = 1;
-		}
-	}
+  for( ; it_neigh != it_neigh_end; ++ it_neigh)
+  {
+    if( m_element_already_treated[*it_neigh] == 0 )
+    {
+      // New element!
+      m_element_test_queue.push_back(*it_neigh);
+      m_element_already_treated[*it_neigh] = 1;
+    }
+  }
 };
 
 /*
- * 	Initialize the deques, vectors and sets
+ *  Initialize the deques, vectors and sets
  */
 void Patch_construction::FrontSearch_initialize()
 {
-	homemade_assert_msg(!m_Patch_Elem_indexes.empty() || !m_Patch_Node_indexes.empty(),"Patch is empty!");
+  homemade_assert_msg(!m_Patch_Elem_indexes.empty() || !m_Patch_Node_indexes.empty(),"Patch is empty!");
 
-	m_element_intersection_queue.clear();
-	m_element_test_queue.clear();
+  m_element_intersection_queue.clear();
+  m_element_test_queue.clear();
 
-	m_element_already_treated.clear();
-	m_element_inside_intersection_queue.clear();
+  m_element_already_treated.clear();
+  m_element_inside_intersection_queue.clear();
 
-	m_element_already_treated.reserve(2*m_Patch_Elem_indexes.size());
-	m_element_inside_intersection_queue.reserve(2*m_Patch_Elem_indexes.size());
+  m_element_already_treated.reserve(2*m_Patch_Elem_indexes.size());
+  m_element_inside_intersection_queue.reserve(2*m_Patch_Elem_indexes.size());
 
-	m_element_neighbours_to_search.clear();
-	m_element_neighbours_to_search.reserve(12);
+  m_element_neighbours_to_search.clear();
+  m_element_neighbours_to_search.reserve(12);
 
-	std::unordered_set<unsigned int>::iterator it_idx, it_idx_end;
-	it_idx 		= m_Patch_Elem_indexes.begin();
-	it_idx_end	= m_Patch_Elem_indexes.end();
+  std::unordered_set<unsigned int>::iterator it_idx, it_idx_end;
+  it_idx    = m_Patch_Elem_indexes.begin();
+  it_idx_end  = m_Patch_Elem_indexes.end();
 
-	for( ; it_idx != it_idx_end; ++it_idx)
-	{
-		m_element_already_treated[*it_idx] = 0;
-		m_element_inside_intersection_queue[*it_idx] = 0;
-	}
+  for( ; it_idx != it_idx_end; ++it_idx)
+  {
+    m_element_already_treated[*it_idx] = 0;
+    m_element_inside_intersection_queue[*it_idx] = 0;
+  }
 
-	m_working_element_id = 0;
+  m_working_element_id = 0;
 }
 
 /*
- * 	Reset everything, with the exception of the intersection queue
+ *  Reset everything, with the exception of the intersection queue
  */
 void Patch_construction::FrontSearch_reset()
 {
-	homemade_assert_msg(!m_Patch_Elem_indexes.empty() || !m_Patch_Node_indexes.empty(),"Patch is empty!");
+  homemade_assert_msg(!m_Patch_Elem_indexes.empty() || !m_Patch_Node_indexes.empty(),"Patch is empty!");
 
-	m_element_test_queue.clear();
+  m_element_test_queue.clear();
 
-	std::unordered_set<unsigned int>::iterator it_idx, it_idx_end;
-	it_idx 		= m_Patch_Elem_indexes.begin();
-	it_idx_end	= m_Patch_Elem_indexes.end();
+  std::unordered_set<unsigned int>::iterator it_idx, it_idx_end;
+  it_idx    = m_Patch_Elem_indexes.begin();
+  it_idx_end  = m_Patch_Elem_indexes.end();
 
-	for( ; it_idx != it_idx_end; ++it_idx)
-	{
-		m_element_already_treated[*it_idx] = 0;
-		m_element_inside_intersection_queue[*it_idx] = 0;
-	}
+  for( ; it_idx != it_idx_end; ++it_idx)
+  {
+    m_element_already_treated[*it_idx] = 0;
+    m_element_inside_intersection_queue[*it_idx] = 0;
+  }
 
-	m_working_element_id = 0;
+  m_working_element_id = 0;
 }
 
 /*
- * 	Prepare the patch for a new round of tests
+ *  Prepare the patch for a new round of tests
  */
 unsigned int Patch_construction::FrontSearch_prepare_for_probed_test()
 {
-	// Extract the intersection queue's first element
-	intersection_queue_extract_front_elem();
+  // Extract the intersection queue's first element
+  intersection_queue_extract_front_elem();
 
-	// Add it to the test queue
-	m_element_test_queue.clear();
-	m_element_test_queue.push_back(m_working_element_id);
+  // Add it to the test queue
+  m_element_test_queue.clear();
+  m_element_test_queue.push_back(m_working_element_id);
 
-	return m_working_element_id;
+  return m_working_element_id;
 }
 
 /*
@@ -392,101 +392,101 @@ unsigned int Patch_construction::FrontSearch_prepare_for_probed_test()
  */
 void Patch_construction::build_patch_mesh()
 {
-	// Test if the patch is empty
-	homemade_assert_msg(!m_Patch_Elem_indexes.empty() || !m_Patch_Node_indexes.empty(),"Patch is empty!");
+  // Test if the patch is empty
+  homemade_assert_msg(!m_Patch_Elem_indexes.empty() || !m_Patch_Node_indexes.empty(),"Patch is empty!");
 
-	// Clear the input mesh
-	m_Mesh_patch.clear();
+  // Clear the input mesh
+  m_Mesh_patch.clear();
 
-	m_Mesh_patch.reserve_elem(m_Patch_Elem_indexes.size());
-	m_Mesh_patch.reserve_nodes(m_Patch_Node_indexes.size());
+  m_Mesh_patch.reserve_elem(m_Patch_Elem_indexes.size());
+  m_Mesh_patch.reserve_nodes(m_Patch_Node_indexes.size());
 
-	m_node_map_Parent_to_Patch.reserve(m_Patch_Node_indexes.size());
-	m_node_map_Patch_to_Parent.reserve(m_Patch_Node_indexes.size());
-	m_elem_map_Parent_to_Patch.reserve(m_Patch_Elem_indexes.size());
-	m_elem_map_Patch_to_Parent.reserve(m_Patch_Elem_indexes.size());
+  m_node_map_Parent_to_Patch.reserve(m_Patch_Node_indexes.size());
+  m_node_map_Patch_to_Parent.reserve(m_Patch_Node_indexes.size());
+  m_elem_map_Parent_to_Patch.reserve(m_Patch_Elem_indexes.size());
+  m_elem_map_Patch_to_Parent.reserve(m_Patch_Elem_indexes.size());
 
-	// Insert the nodes
-	std::unordered_set<unsigned int>::iterator it_set     = m_Patch_Node_indexes.begin();
-	std::unordered_set<unsigned int>::iterator it_set_end = m_Patch_Node_indexes.end();
-	libMesh::Node * dummyNode = NULL;
-	unsigned int counter = 0;
-	for( ; it_set != it_set_end ; ++it_set)
-	{
-		dummyNode = m_Mesh_parent.node_ptr(*it_set);
-		m_Mesh_patch.add_point(*dummyNode, counter, m_Mesh_parent.processor_id());
-		m_node_map_Parent_to_Patch[*it_set] = counter;
-		m_node_map_Patch_to_Parent[counter] = *it_set;
-		++counter;
-	}
+  // Insert the nodes
+  std::unordered_set<unsigned int>::iterator it_set     = m_Patch_Node_indexes.begin();
+  std::unordered_set<unsigned int>::iterator it_set_end = m_Patch_Node_indexes.end();
+  libMesh::Node * dummyNode = NULL;
+  unsigned int counter = 0;
+  for( ; it_set != it_set_end ; ++it_set)
+  {
+    dummyNode = m_Mesh_parent.node_ptr(*it_set);
+    m_Mesh_patch.add_point(*dummyNode, counter, m_Mesh_parent.processor_id());
+    m_node_map_Parent_to_Patch[*it_set] = counter;
+    m_node_map_Patch_to_Parent[counter] = *it_set;
+    ++counter;
+  }
 
-	// Insert the elements
-	it_set     = m_Patch_Elem_indexes.begin();
-	it_set_end = m_Patch_Elem_indexes.end();
-	libMesh::Elem * originalElem = NULL;
-	libMesh::Elem * dummyElem = NULL;
-	counter = 0;
+  // Insert the elements
+  it_set     = m_Patch_Elem_indexes.begin();
+  it_set_end = m_Patch_Elem_indexes.end();
+  libMesh::Elem * originalElem = NULL;
+  libMesh::Elem * dummyElem = NULL;
+  counter = 0;
 
-	unsigned int originalNode = 0;
-	unsigned int outputNode = 0;
-	for( ; it_set != it_set_end ; ++it_set)
-	{
-		originalElem = m_Mesh_parent.elem(*it_set);
+  unsigned int originalNode = 0;
+  unsigned int outputNode = 0;
+  for( ; it_set != it_set_end ; ++it_set)
+  {
+    originalElem = m_Mesh_parent.elem_ptr(*it_set);
 
-		if(originalElem->type() == libMesh::TET4)
-		{
-			dummyElem = m_Mesh_patch.add_elem(new libMesh::Tet4 );
-		}
-		else if(originalElem->type() == libMesh::HEX8)
-		{
-			dummyElem = m_Mesh_patch.add_elem(new libMesh::Hex8 );
-		}
-		else
-		{
-			homemade_error_msg("Invalid element type!\n");
-		}
+    if(originalElem->type() == libMesh::TET4)
+    {
+      dummyElem = m_Mesh_patch.add_elem(new libMesh::Tet4 );
+    }
+    else if(originalElem->type() == libMesh::HEX8)
+    {
+      dummyElem = m_Mesh_patch.add_elem(new libMesh::Hex8 );
+    }
+    else
+    {
+      homemade_error_msg("Invalid element type!\n");
+    }
 
-		for(unsigned int iii = 0; iii < originalElem->n_nodes(); ++iii)
-		{
-			originalNode = originalElem->node_id(iii);
-			outputNode = m_node_map_Parent_to_Patch[originalNode];
-			dummyElem->set_node(iii) = m_Mesh_patch.node_ptr(outputNode);
-		}
+    for(unsigned int iii = 0; iii < originalElem->n_nodes(); ++iii)
+    {
+      originalNode = originalElem->node_id(iii);
+      outputNode = m_node_map_Parent_to_Patch[originalNode];
+      dummyElem->set_node(iii) = m_Mesh_patch.node_ptr(outputNode);
+    }
 
-		m_elem_map_Parent_to_Patch[*it_set] = counter;
-		m_elem_map_Patch_to_Parent[counter] = *it_set;
-		++counter;
-	}
+    m_elem_map_Parent_to_Patch[*it_set] = counter;
+    m_elem_map_Patch_to_Parent[counter] = *it_set;
+    ++counter;
+  }
 
-	m_Mesh_patch.allow_renumbering(false);
-	m_Mesh_patch.prepare_for_use();
+  m_Mesh_patch.allow_renumbering(false);
+  m_Mesh_patch.prepare_for_use();
 }
 
 void Patch_construction::export_patch_mesh(std::string & filename_base)
 {
-	std::string filename_mesh = filename_base + ".msh";
-	m_Mesh_patch.write(filename_mesh);
+  std::string filename_mesh = filename_base + ".msh";
+  m_Mesh_patch.write(filename_mesh);
 
-	std::string filename_elements = filename_base + "_elements__global_to_patch.dat";
-	std::string filename_nodes = filename_base + "_nodes__global_to_patch.dat";
+  std::string filename_elements = filename_base + "_elements__global_to_patch.dat";
+  std::string filename_nodes = filename_base + "_nodes__global_to_patch.dat";
 
-	std::ofstream elems_out(filename_elements);
-	std::ofstream nodes_out(filename_nodes);
+  std::ofstream elems_out(filename_elements);
+  std::ofstream nodes_out(filename_nodes);
 
-	elems_out << m_elem_map_Patch_to_Parent.size() << std::endl;
-	for(unsigned int iii = 0; iii < m_elem_map_Patch_to_Parent.size(); ++iii)
-	{
-		elems_out << m_elem_map_Patch_to_Parent[iii] << " " << iii << std::endl;
-	}
+  elems_out << m_elem_map_Patch_to_Parent.size() << std::endl;
+  for(unsigned int iii = 0; iii < m_elem_map_Patch_to_Parent.size(); ++iii)
+  {
+    elems_out << m_elem_map_Patch_to_Parent[iii] << " " << iii << std::endl;
+  }
 
-	elems_out.close();
+  elems_out.close();
 
-	nodes_out << m_node_map_Patch_to_Parent.size() << std::endl;
-	for(unsigned int iii = 0; iii < m_node_map_Patch_to_Parent.size(); ++iii)
-	{
-		nodes_out << m_node_map_Patch_to_Parent[iii] << " " << iii << std::endl;
-	}
+  nodes_out << m_node_map_Patch_to_Parent.size() << std::endl;
+  for(unsigned int iii = 0; iii < m_node_map_Patch_to_Parent.size(); ++iii)
+  {
+    nodes_out << m_node_map_Patch_to_Parent[iii] << " " << iii << std::endl;
+  }
 
-	nodes_out.close();
+  nodes_out.close();
 }
 }

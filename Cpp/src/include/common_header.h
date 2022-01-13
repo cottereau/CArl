@@ -18,7 +18,11 @@
 // --- Boost/random
 #include <boost/random/uniform_real_distribution.hpp>
 #include <boost/random/lagged_fibonacci.hpp>
-
+#include <boost/bind/bind.hpp>
+//#include <boost/bind/placeholders.hpp>
+//using boost::placeholders::_1;
+//using boost::placeholders::_2;
+//using boost::placeholders::_3; 
 // --- Boost/variant and functional
 //#include <boost/variant/apply_visitor.hpp>
 //#include <functional>

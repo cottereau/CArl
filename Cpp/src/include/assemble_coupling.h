@@ -58,7 +58,8 @@ public:
   const unsigned int u_var;
   const unsigned int v_var;
   const unsigned int w_var;
-  const libMesh::DofMap& dof_map;
+  libMesh::DofMap& dof_map;
+  //const libMesh::DofMap& dof_map;
   libMesh::FEType fe_type;
   libMesh::UniquePtr<libMesh::FEBase> fe_unique_ptr;
   libMesh::QGauss qrule;
@@ -77,8 +78,8 @@ public:
 
   void set_DoFs(int idx = 0)
   {
-    const libMesh::Elem* elem_dummy = mesh.elem(idx);
-    elem = mesh.elem(idx);
+    const libMesh::Elem* elem_dummy = mesh.elem_ptr(idx);
+    elem = mesh.elem_ptr(idx);
     dof_map.dof_indices(elem_dummy, dof_indices);
     dof_map.dof_indices(elem_dummy, dof_indices_u, u_var);
     dof_map.dof_indices(elem_dummy, dof_indices_v, v_var);
@@ -336,13 +337,17 @@ public:
       m_micro_EquationSystemMap.insert(std::make_pair(name, EqSystemPtr));
       m_couplingMatrixMap_mediator_micro.insert(
           std::make_pair(name, Matrix_mediator_micro_Ptr));
+          
+    std::cout << name << std::endl;// Debug usage
+    std::cout << Matrix_mediator_BIG_Ptr << std::endl;// Debug usage
 
       m_couplingMatrixMap_mediator_BIG.insert(
           std::make_pair(name, Matrix_mediator_BIG_Ptr));
 
       m_couplingMatrixMap_mediator_mediator.insert(
           std::make_pair(name, Matrix_mediator_mediator_Ptr));
-
+      std::cout << m_couplingMatrixMap_mediator_mediator[name] << std::endl;// Debug usage
+       
       m_bHasAssembled_micro.insert(std::make_pair(name, false));
       m_bUseH1Coupling.insert(std::make_pair(name, false));
     }

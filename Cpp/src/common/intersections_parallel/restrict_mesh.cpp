@@ -11,181 +11,181 @@ namespace carl
 
 void Mesh_restriction::BuildRestrictionFromSet(const std::unordered_set<unsigned int> * restricted_mesh_set)
 {
-	// Intersection and distribution work done already by the stitch algorithm.
+  // Intersection and distribution work done already by the stitch algorithm.
 
-	// Only do the work over a single processor, to avoid communications.
-	if(m_rank == 0)
-	{
-		m_Patch_Elem_indexes.clear();
-		m_Patch_Node_indexes.clear();
-		m_Patch_Elem_Neighbours.clear();
+  // Only do the work over a single processor, to avoid communications.
+  if(m_rank == 0)
+  {
+    m_Patch_Elem_indexes.clear();
+    m_Patch_Node_indexes.clear();
+    m_Patch_Elem_Neighbours.clear();
 
-		std::unordered_set<unsigned int >::const_iterator elem_idx_it = restricted_mesh_set->begin();
-		std::unordered_set<unsigned int >::const_iterator elem_idx_it_end = restricted_mesh_set->end();
+    std::unordered_set<unsigned int >::const_iterator elem_idx_it = restricted_mesh_set->begin();
+    std::unordered_set<unsigned int >::const_iterator elem_idx_it_end = restricted_mesh_set->end();
 
-		for( ; elem_idx_it != elem_idx_it_end; ++ elem_idx_it)
-		{
-			const libMesh::Elem * elem_to_add = m_Mesh_parent.elem(*elem_idx_it);
-			insert_patch_element(elem_to_add);
-		}
+    for( ; elem_idx_it != elem_idx_it_end; ++ elem_idx_it)
+    {
+      const libMesh::Elem * elem_to_add = m_Mesh_parent.elem_ptr(*elem_idx_it);
+      insert_patch_element(elem_to_add);
+    }
 
-		this->build_patch_mesh();
-	}
+    this->build_patch_mesh();
+  }
 }
 
-void Mesh_restriction::BuildRestriction(const libMesh::ReplicatedMesh 	& Coupling_mesh)
+void Mesh_restriction::BuildRestriction(const libMesh::ReplicatedMesh   & Coupling_mesh)
 {
-	bool bDoIntersect = false;
+  bool bDoIntersect = false;
 
-	// Deque containing the indices of the elements to test
-	std::deque<int> Restriction_Test_Queue;
+  // Deque containing the indices of the elements to test
+  std::deque<int> Restriction_Test_Queue;
 
-	// Unordered set, used to avoid double testing elements
-	unsigned int treated_from_mesh_preallocation = m_Mesh_parent.n_elem();
-	std::unordered_set<int> Treated_From_Mesh;
+  // Unordered set, used to avoid double testing elements
+  unsigned int treated_from_mesh_preallocation = m_Mesh_parent.n_elem();
+  std::unordered_set<int> Treated_From_Mesh;
 
-	// Only do the work over a single processor, to avoid communications.
-	if(m_rank ==0)
-	{
-		Treated_From_Mesh.reserve(treated_from_mesh_preallocation);
+  // Only do the work over a single processor, to avoid communications.
+  if(m_rank ==0)
+  {
+    Treated_From_Mesh.reserve(treated_from_mesh_preallocation);
 
-		std::set<unsigned int> Intersecting_elems;
+    std::set<unsigned int> Intersecting_elems;
 
-		// Index and pointer to element being tested right now
-		unsigned int	Tested_idx;
+    // Index and pointer to element being tested right now
+    unsigned int  Tested_idx;
 
-		// Candidate index
-		unsigned int 	Candidate_idx;
+    // Candidate index
+    unsigned int  Candidate_idx;
 
-		m_Patch_Elem_indexes.clear();
-		m_Patch_Node_indexes.clear();
-		m_Patch_Elem_Neighbours.clear();
+    m_Patch_Elem_indexes.clear();
+    m_Patch_Node_indexes.clear();
+    m_Patch_Elem_Neighbours.clear();
 
-		std::set<unsigned int>::iterator it_set_start;
+    std::set<unsigned int>::iterator it_set_start;
 
-		libMesh::Mesh::const_element_iterator it_coupling = Coupling_mesh.elements_begin();
-		libMesh::Mesh::const_element_iterator it_coupling_end = Coupling_mesh.elements_end();
+    libMesh::Mesh::const_element_iterator it_coupling = Coupling_mesh.elements_begin();
+    libMesh::Mesh::const_element_iterator it_coupling_end = Coupling_mesh.elements_end();
 
-		// Debug vars
-		int nbOfTests = 1;
-		int nbOfPositiveTests = 1;
+    // Debug vars
+    int nbOfTests = 1;
+    int nbOfPositiveTests = 1;
 
-		for( ; it_coupling != it_coupling_end; ++it_coupling)
-		{
-			const libMesh::Elem * Query_elem = * it_coupling;
+    for( ; it_coupling != it_coupling_end; ++it_coupling)
+    {
+      const libMesh::Elem * Query_elem = * it_coupling;
 
-			Treated_From_Mesh.clear();
+      Treated_From_Mesh.clear();
 
-			// Find elements from the original mesh intersecting the coupling element
-			m_Intersection_Test.FindAllIntersection(Query_elem,m_Parent_Point_Locator,Intersecting_elems);
+      // Find elements from the original mesh intersecting the coupling element
+      m_Intersection_Test.FindAllIntersection(Query_elem,m_Parent_Point_Locator,Intersecting_elems);
 
-			libMesh::Elem * 	First_Restriction_elems = NULL;
-			const libMesh::Elem * 	elem_candidate = NULL;
-			it_set_start      = Intersecting_elems.begin();
+      libMesh::Elem *   First_Restriction_elems = NULL;
+      const libMesh::Elem *   elem_candidate = NULL;
+      it_set_start      = Intersecting_elems.begin();
 
-			for( ; it_set_start != Intersecting_elems.end(); ++it_set_start)
-			{
-				Treated_From_Mesh.insert(*it_set_start);
-				First_Restriction_elems = m_Mesh_parent.elem(*it_set_start);
-				insert_patch_element(First_Restriction_elems);
+      for( ; it_set_start != Intersecting_elems.end(); ++it_set_start)
+      {
+        Treated_From_Mesh.insert(*it_set_start);
+        First_Restriction_elems = m_Mesh_parent.elem_ptr(*it_set_start);
+        insert_patch_element(First_Restriction_elems);
 
-				for(unsigned int iii = 0; iii < First_Restriction_elems->n_neighbors(); ++iii)
-				{
-					elem_candidate = First_Restriction_elems->neighbor_ptr(iii);
-					if(elem_candidate != NULL && Treated_From_Mesh.find(elem_candidate->id())==Treated_From_Mesh.end())
-					{
-						Restriction_Test_Queue.push_back(elem_candidate->id());
-						Treated_From_Mesh.insert(elem_candidate->id());
-					}
-				}
-			}
+        for(unsigned int iii = 0; iii < First_Restriction_elems->n_neighbors(); ++iii)
+        {
+          elem_candidate = First_Restriction_elems->neighbor_ptr(iii);
+          if(elem_candidate != NULL && Treated_From_Mesh.find(elem_candidate->id())==Treated_From_Mesh.end())
+          {
+            Restriction_Test_Queue.push_back(elem_candidate->id());
+            Treated_From_Mesh.insert(elem_candidate->id());
+          }
+        }
+      }
 
-			while(!Restriction_Test_Queue.empty())
-			{
-				// Extract element from the list
-				Tested_idx = Restriction_Test_Queue[0];
-				Restriction_Test_Queue.pop_front();
-				const libMesh::Elem 	* Tested_elem = m_Mesh_parent.elem(Tested_idx);
+      while(!Restriction_Test_Queue.empty())
+      {
+        // Extract element from the list
+        Tested_idx = Restriction_Test_Queue[0];
+        Restriction_Test_Queue.pop_front();
+        const libMesh::Elem   * Tested_elem = m_Mesh_parent.elem_ptr(Tested_idx);
 
-				// Test it
-				bDoIntersect = m_Intersection_Test.libMesh_exact_do_intersect(Query_elem,Tested_elem);
-				++nbOfTests;
+        // Test it
+        bDoIntersect = m_Intersection_Test.libMesh_exact_do_intersect(Query_elem,Tested_elem);
+        ++nbOfTests;
 
-				// If it does intersect ...
-				if(bDoIntersect)
-				{
-					++nbOfPositiveTests;
+        // If it does intersect ...
+        if(bDoIntersect)
+        {
+          ++nbOfPositiveTests;
 
-					// Add it to the output list ...
-					insert_patch_element(Tested_elem);
+          // Add it to the output list ...
+          insert_patch_element(Tested_elem);
 
-					// ... And add its neighbours (if they weren't tested yet)
-					for(unsigned int iii = 0; iii < Tested_elem->n_neighbors(); ++iii)
-					{
-						elem_candidate = Tested_elem->neighbor_ptr(iii);
-						if(elem_candidate != NULL)
-						{
-							Candidate_idx = elem_candidate->id();
-							if(Treated_From_Mesh.find(Candidate_idx)==Treated_From_Mesh.end())
-							{
-								Restriction_Test_Queue.push_back(Candidate_idx);
-								Treated_From_Mesh.insert(Candidate_idx);
-							}
-						}
-					}
-				}
-			}
-		}
+          // ... And add its neighbours (if they weren't tested yet)
+          for(unsigned int iii = 0; iii < Tested_elem->n_neighbors(); ++iii)
+          {
+            elem_candidate = Tested_elem->neighbor_ptr(iii);
+            if(elem_candidate != NULL)
+            {
+              Candidate_idx = elem_candidate->id();
+              if(Treated_From_Mesh.find(Candidate_idx)==Treated_From_Mesh.end())
+              {
+                Restriction_Test_Queue.push_back(Candidate_idx);
+                Treated_From_Mesh.insert(Candidate_idx);
+              }
+            }
+          }
+        }
+      }
+    }
 
-		this->build_patch_mesh();
+    this->build_patch_mesh();
 
-		if(m_bPrintDebug)
-		{
-			std::cout << "    DEBUG: Restriction search results" << std::endl;
-			std::cout << " -> Nb. of intersections found  : " << m_Patch_Elem_indexes.size() << std::endl << std::endl;
+    if(m_bPrintDebug)
+    {
+      std::cout << "    DEBUG: Restriction search results" << std::endl;
+      std::cout << " -> Nb. of intersections found  : " << m_Patch_Elem_indexes.size() << std::endl << std::endl;
 
-			std::cout << " -> Nb. of mesh elements        : " << m_Mesh_parent.n_elem() << std::endl;
-			std::cout << " -> Nb. of Restriction elements : " << m_Patch_Elem_indexes.size() << std::endl;
-			std::cout << " -> Patch elem %                : " << 100.*m_Patch_Elem_indexes.size()/m_Mesh_parent.n_elem() << " %" << std::endl << std::endl;
+      std::cout << " -> Nb. of mesh elements        : " << m_Mesh_parent.n_elem() << std::endl;
+      std::cout << " -> Nb. of Restriction elements : " << m_Patch_Elem_indexes.size() << std::endl;
+      std::cout << " -> Patch elem %                : " << 100.*m_Patch_Elem_indexes.size()/m_Mesh_parent.n_elem() << " %" << std::endl << std::endl;
 
-			std::cout << " -> Nb. of mesh nodes           : " << m_Mesh_parent.n_nodes() << std::endl;
-			std::cout << " -> Nb. of patch nodes          : " << m_Patch_Node_indexes.size() << std::endl;
-			std::cout << " -> Patch node %                : " << 100.*m_Patch_Node_indexes.size()/m_Mesh_parent.n_nodes() << " %" << std::endl << std::endl;
+      std::cout << " -> Nb. of mesh nodes           : " << m_Mesh_parent.n_nodes() << std::endl;
+      std::cout << " -> Nb. of patch nodes          : " << m_Patch_Node_indexes.size() << std::endl;
+      std::cout << " -> Patch node %                : " << 100.*m_Patch_Node_indexes.size()/m_Mesh_parent.n_nodes() << " %" << std::endl << std::endl;
 
-			std::cout << " -> Nb. of tests                : " << nbOfTests << std::endl;
-			std::cout << " -> Nb. of positive tests       : " << nbOfPositiveTests << std::endl;
-			std::cout << " -> Positive %                  : " << 100.*nbOfPositiveTests/nbOfTests << " %" << std::endl << std::endl;
-		}
-	}
+      std::cout << " -> Nb. of tests                : " << nbOfTests << std::endl;
+      std::cout << " -> Nb. of positive tests       : " << nbOfPositiveTests << std::endl;
+      std::cout << " -> Positive %                  : " << 100.*nbOfPositiveTests/nbOfTests << " %" << std::endl << std::endl;
+    }
+  }
 }
 
 void Mesh_restriction::export_restriction_mesh(const std::string & filename_base)
 {
-	if(m_rank == 0)
-	{
-		std::string filename_mesh = filename_base + ".msh";
+  if(m_rank == 0)
+  {
+    std::string filename_mesh = filename_base + ".msh";
 
-		// Print mesh
-		libMesh::GmshIO output_mesh(m_Mesh_patch);
-		output_mesh.binary() = true;
-		output_mesh.write(filename_mesh);
+    // Print mesh
+    libMesh::GmshIO output_mesh(m_Mesh_patch);
+    output_mesh.binary() = true;
+    output_mesh.write(filename_mesh);
 
-		std::string filename_elements = filename_base + "_restrict.dat";
+    std::string filename_elements = filename_base + "_restrict.dat";
 
-		std::ofstream elems_out(filename_elements);
+    std::ofstream elems_out(filename_elements);
 
-		elems_out << m_elem_map_Patch_to_Parent.size() << std::endl;
-		for(unsigned int iii = 0; iii < m_elem_map_Patch_to_Parent.size(); ++iii)
-		{
-			elems_out << iii << " " << m_elem_map_Patch_to_Parent[iii] << std::endl;
-		}
+    elems_out << m_elem_map_Patch_to_Parent.size() << std::endl;
+    for(unsigned int iii = 0; iii < m_elem_map_Patch_to_Parent.size(); ++iii)
+    {
+      elems_out << iii << " " << m_elem_map_Patch_to_Parent[iii] << std::endl;
+    }
 
-		elems_out.close();
-	}
+    elems_out.close();
+  }
 }
 
 libMesh::ReplicatedMesh &  Mesh_restriction::restricted_mesh()
 {
-	return m_Mesh_patch;
+  return m_Mesh_patch;
 }
 }
