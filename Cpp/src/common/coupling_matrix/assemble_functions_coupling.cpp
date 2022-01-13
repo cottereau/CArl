@@ -165,7 +165,8 @@ namespace carl
 
   for(int iii = local_begin_row_DoF; iii < local_end_row_DoF; ++iii)
   {
-    local_n_nz[iii - local_begin_row_DoF] = 1.1*local_n_nz[iii - local_begin_row_DoF];
+    //local_n_nz[iii - local_begin_row_DoF] = 1.1*local_n_nz[iii - local_begin_row_DoF];
+    local_n_nz[iii - local_begin_row_DoF] = 2.0*local_n_nz[iii - local_begin_row_DoF];
     local_n_nz[iii - local_begin_row_DoF] = std::max(static_cast<unsigned int>(30),local_n_nz[iii - local_begin_row_DoF]);
     local_n_nz[iii - local_begin_row_DoF] = std::min(static_cast<unsigned int>(col_N_local),local_n_nz[iii - local_begin_row_DoF]);
 
@@ -202,8 +203,7 @@ namespace carl
       const std::string micro_type,
       bool bSameElemsType)
   {
-    // TODO : make it possible to invert the algorithm's systems!
-    // Addresses to the eq. systems
+
     libMesh::EquationSystems& mediator_eq_system =
         *m_mediator_EquationSystemMap[mediator_name];
     libMesh::EquationSystems& BIG_eq_system =
@@ -285,6 +285,7 @@ namespace carl
     unsigned int n_quadrature_pts = 0;
 
     // Addresses to the matrices
+    std::cout << m_couplingMatrixMap_mediator_mediator[micro_name] << std::endl;// Debug usage
     libMesh::PetscMatrix<libMesh::Number>& couplingMatrix_mediator_BIG =
         *m_couplingMatrixMap_mediator_BIG[micro_name];
     libMesh::PetscMatrix<libMesh::Number>& couplingMatrix_mediator_micro =
@@ -374,7 +375,16 @@ namespace carl
         inter_table_mediator_micro
         );
     
+
+    std::cout << couplingMatrix_mediator_mediator.processor_id()<< std::endl;// Debug usage
+    std::cout << mediator_addresses.dof_map.n_dofs_on_processor(couplingMatrix_mediator_mediator.processor_id())<< std::endl;// Debug usage
+    std::cout << mediator_addresses.dof_map.block_size()<< std::endl;// Debug usage
+    //std::cout << couplingMatrix_mediator_mediator.processor_id()<< std::endl;// Debug usage
+    std::cout << mediator_addresses.dof_map.n_dofs() << std::endl;// Debug usage
+    std::cout << mediator_addresses.dof_map.get_info() << std::endl;// Debug usage
+    mediator_addresses.dof_map.compute_sparsity(mesh_R_BIG);
     couplingMatrix_mediator_mediator.attach_dof_map(mediator_addresses.dof_map);
+    
     couplingMatrix_mediator_mediator.init();
 
     // Intersection indexes and iterators
@@ -421,11 +431,11 @@ namespace carl
       elem_mediator_idx = elem_restrict_BIG_idx;
 
       const libMesh::Elem* elem_mediator =
-          mediator_addresses.mesh.elem(elem_mediator_idx);
+          mediator_addresses.mesh.elem_ptr(elem_mediator_idx);
       const libMesh::Elem* elem_R_BIG =
-          R_BIG_addresses.mesh.elem(elem_restrict_BIG_idx);
+          R_BIG_addresses.mesh.elem_ptr(elem_restrict_BIG_idx);
       const libMesh::Elem* elem_R_micro =
-          R_micro_addresses.mesh.elem(elem_restrict_micro_idx);
+          R_micro_addresses.mesh.elem_ptr(elem_restrict_micro_idx);
 
       mediator_addresses.set_DoFs(elem_mediator_idx);
       R_BIG_addresses.set_DoFs(elem_restrict_BIG_idx);
@@ -822,11 +832,11 @@ namespace carl
       elem_mediator_idx = elem_restrict_BIG_idx;
 
       const libMesh::Elem* elem_mediator =
-          mediator_addresses.mesh.elem(elem_mediator_idx);
+          mediator_addresses.mesh.elem_ptr(elem_mediator_idx);
       const libMesh::Elem* elem_R_BIG =
-          R_BIG_addresses.mesh.elem(elem_restrict_BIG_idx);
+          R_BIG_addresses.mesh.elem_ptr(elem_restrict_BIG_idx);
       const libMesh::Elem* elem_R_micro =
-          R_micro_addresses.mesh.elem(elem_restrict_micro_idx);
+          R_micro_addresses.mesh.elem_ptr(elem_restrict_micro_idx);
 
       mediator_addresses.set_DoFs(elem_mediator_idx);
       R_BIG_addresses.set_DoFs(elem_restrict_BIG_idx);

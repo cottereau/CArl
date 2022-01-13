@@ -9,7 +9,11 @@
 
 #ifndef CGAL_DEFINES_H_
 #define CGAL_DEFINES_H_
-
+#include <boost/bind/bind.hpp>
+#include <boost/bind/placeholders.hpp>
+using boost::placeholders::_1;
+using boost::placeholders::_2;
+using boost::placeholders::_3; 
 //	--- CGAL kernel and common headers
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
