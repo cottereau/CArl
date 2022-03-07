@@ -40,8 +40,8 @@ int main(int argc, char** argv) {
   // Calculate the rhs vector for solving B_link_acceleration
   bool first_calculate = true; 
   feti_op.rhs_link(input_params.coupling_matrix_B,
-    input_params.scratch_folder_path+"/coupling_interpolation_vec.petscvec",
-    input_params.scratch_folder_path+"/rhs_vec_A_link.petscvec");
+    input_params.scratch_folder_path+"/coupling_interpolation_vec_sys_sol_vec.petscvec",
+    input_params.scratch_folder_path+"/rhs_vec_B_link.petscvec");
       
 
   //execute next file

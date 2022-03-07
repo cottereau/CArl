@@ -39,20 +39,20 @@ int main(int argc, char** argv) {
   
   // Calculate B_free_speed/displacement
   bool first_calculate = true; 
-  feti_op.Newmark_speed(input_params.gammaB,
+  feti_op.Newmark_speed_free(input_params.gammaB,
       input_params.deltatB,
-      input_params.scratch_folder_path+'/prev_acc_B.petscvec',
-      input_params.scratch_folder_path+'/this_acc_B_free.petscvec',
-      input_params.scratch_folder_path+'/prev_speed_B.petscvec',
-      input_params.scratch_folder_path+'/this_speed_B_free.petscvec');
+      input_params.scratch_folder_path+"/prev_acc_B.petscvec",
+      input_params.scratch_folder_path+"/this_acc_B_free_sys_sol_vec.petscvec",
+      input_params.scratch_folder_path+"/prev_speed_B.petscvec",
+      input_params.scratch_folder_path+"/this_speed_B_free.petscvec");
 
-  feti_op.Newmark_displacement(input_params.betaB,
+  feti_op.Newmark_displacement_free(input_params.betaB,
       input_params.deltatB,
-      input_params.scratch_folder_path+'/prev_acc_B.petscvec',
-      input_params.scratch_folder_path+'/this_acc_B_free.petscvec',
-      input_params.scratch_folder_path+'/prev_speed_B.petscvec',
-      input_params.scratch_folder_path+'/prev_disp_B.petscvec',
-      input_params.scratch_folder_path+'/this_disp_B_free.petscvec');
+      input_params.scratch_folder_path+"/prev_acc_B.petscvec",
+      input_params.scratch_folder_path+"/this_acc_B_free_sys_sol_vec.petscvec",
+      input_params.scratch_folder_path+"/prev_speed_B.petscvec",
+      input_params.scratch_folder_path+"/prev_disp_B.petscvec",
+      input_params.scratch_folder_path+"/this_disp_B_free.petscvec");
 
   //execute next file
 

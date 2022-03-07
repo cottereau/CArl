@@ -40,46 +40,46 @@ int main(int argc, char** argv) {
   // Calculate B_link_speed/displacement
   feti_op.Newmark_speed_link(input_params.gammaA,
       input_params.deltatA,
-      input_params.scratch_folder_path+'/this_acc_A_link.petscvec',
-      input_params.scratch_folder_path+'/this_speed_A_link.petscvec');
+      input_params.scratch_folder_path+"/this_acc_A_link_sys_sol_vec.petscvec",
+      input_params.scratch_folder_path+"/this_speed_A_link.petscvec");
 
   feti_op.Newmark_displacement_link(input_params.betaA,
       input_params.deltatA,
-      input_params.scratch_folder_path+'/this_acc_A_link.petscvec',
-      input_params.scratch_folder_path+'/this_disp_A_link.petscvec');
+      input_params.scratch_folder_path+"/this_acc_A_link_sys_sol_vec.petscvec",
+      input_params.scratch_folder_path+"/this_disp_A_link.petscvec");
 
   // Calculate B_speed/displacement
-  feti_op.add_free_link(input_params.scratch_folder_path+'/this_acc_A_free.petscvec',
-  		input_params.scratch_folder_path+'/this_acc_A_link.petscvec',
-      	input_params.scratch_folder_path+'/this_acc_A.petscvec')
-  feti_op.add_free_link(input_params.scratch_folder_path+'/this_speed_A_free.petscvec',
-  		input_params.scratch_folder_path+'/this_speed_A_link.petscvec',
-      	input_params.scratch_folder_path+'/this_speed_A.petscvec')
-  feti_op.add_free_link(input_params.scratch_folder_path+'/this_disp_A_free.petscvec',
-  		input_params.scratch_folder_path+'/this_disp_A_link.petscvec',
-      	input_params.scratch_folder_path+'/this_disp_A.petscvec')
+  feti_op.add_free_link(input_params.scratch_folder_path+"/this_acc_A_free_sys_sol_vec.petscvec",
+  		input_params.scratch_folder_path+"/this_acc_A_link_sys_sol_vec.petscvec",
+      	input_params.scratch_folder_path+"/this_acc_A.petscvec");
+  feti_op.add_free_link(input_params.scratch_folder_path+"/this_speed_A_free.petscvec",
+  		input_params.scratch_folder_path+"/this_speed_A_link.petscvec",
+      	input_params.scratch_folder_path+"/this_speed_A.petscvec");
+  feti_op.add_free_link(input_params.scratch_folder_path+"/this_disp_A_free.petscvec",
+  		input_params.scratch_folder_path+"/this_disp_A_link.petscvec",
+      	input_params.scratch_folder_path+"/this_disp_A.petscvec");
 
 // - Judge progression
   std::string progression_filename;
-  progression_filename = input_params.scratch_folder_path+"/iteration_progression.txt"
+  progression_filename = input_params.scratch_folder_path+"/iteration_progression.txt";
   field_parser.parse_input_file(progression_filename, "#", "\n", " \t\n");
-  carl::feti_loop_dyn_interation_progression_params progression_params;
+  carl::feti_loop_dyn_iteration_progression_params progression_params;
   get_input_params(field_parser, progression_params);
 
   //Output result file and change all "this" to "prev"
+  int index=progression_params.inner_loop_progression+progression_params.outer_loop_progression*input_params.inner_loop_times+1;
   feti_op.output_A_result(input_params.result_folder_path,progression_params.inner_loop_progression+progression_params.outer_loop_progression*input_params.inner_loop_times+1);
   feti_op.move_to_prev_A();
   feti_op.prepare_rhs_vector(input_params.betaA,
       input_params.deltatA,
-      input_params.force_folder_A,
-      progression_params.inner_loop_progression+progression_params.outer_loop_progression*input_params.inner_loop_times+1,
+      input_params.scratch_folder_path+"/force_A/force_"+std::to_string(index)+".petscvec",
       input_params.scratch_folder_path+"/this_acc_A.petscvec",
       input_params.scratch_folder_path+"/this_speed_A.petscvec",
       input_params.scratch_folder_path+"/this_disp_A.petscvec",
       input_params.stiffness_matrix_A,
-      input_params.scratch_folder_path+"/rhs_vec_A_free");
+      input_params.scratch_folder_path+"/rhs_vec_A_free.petscvec");
 
-  if (progression_params.outer_loop_progression < input_params.outer_loop_times){
+  if (progression_params.outer_loop_progression < (input_params.outer_loop_times-1)){
 
     //-countinue to go in outer loop!
 
@@ -102,7 +102,6 @@ int main(int argc, char** argv) {
         //Outer loop end!
        if(WorldComm.rank() == 0){
           std::cout << " The whole iteration ends!" << std::endl;
-          std::cout << init_script_command << std::endl ;
         }
     }
 

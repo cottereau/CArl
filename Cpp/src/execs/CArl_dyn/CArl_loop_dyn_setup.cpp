@@ -47,9 +47,17 @@ int main(int argc, char** argv) {
   FETI_files_setup.generate_libmesh_external_solver_script();
   FETI_files_setup.generate_inner_operation_script();
   FETI_files_setup.generate_combined_scripts();
+  FETI_files_setup.generate_progression_inputs();
 
   carl::FETI_Dyn_Operations feti_op(WorldComm,input_params.scratch_folder_path);
-  feti_op.init_prepare_vector();
+  feti_op.init_prepare_force_vector_by_modal_and_sinus(input_params.rhs_vector_A,
+      input_params.rhs_vector_B,
+      1,
+      5/input_params.simulation_duration,
+      0,
+      input_params.deltatB,
+      input_params.inner_loop_times,
+      input_params.outer_loop_times);
 
   // Calculate A_free_acc
 

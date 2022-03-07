@@ -11,8 +11,8 @@
 #include "carl_headers.h"
 #include "carl_loop_dyn_input_parser.h"
 #include "carl_loop_dyn_iteration_progression_parser.h"
-#include "solver_files_setup.h"
-#include "FETI_operations.h"
+#include "dyn_solver_files_setup.h"
+#include "FETI_dyn_operations.h"
 
 int total_iterations;
 int inner_iterations;

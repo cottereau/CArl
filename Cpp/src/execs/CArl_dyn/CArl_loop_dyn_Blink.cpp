@@ -40,46 +40,46 @@ int main(int argc, char** argv) {
   // - Calculate B_link_speed/displacement
   feti_op.Newmark_speed_link(input_params.gammaB,
       input_params.deltatB,
-      input_params.scratch_folder_path+'/this_acc_B_link.petscvec',
-      input_params.scratch_folder_path+'/this_speed_B_link.petscvec');
+      input_params.scratch_folder_path+"/this_acc_B_link_sys_sol_vec.petscvec",
+      input_params.scratch_folder_path+"/this_speed_B_link.petscvec");
 
   feti_op.Newmark_displacement_link(input_params.betaB,
       input_params.deltatB,
-      input_params.scratch_folder_path+'/this_acc_B_link.petscvec',
-      input_params.scratch_folder_path+'/this_disp_B_link.petscvec');
+      input_params.scratch_folder_path+"/this_acc_B_link_sys_sol_vec.petscvec",
+      input_params.scratch_folder_path+"/this_disp_B_link.petscvec");
 
   // - Calculate B_speed/displacement
-  feti_op.add_free_link(input_params.scratch_folder_path+'/this_acc_B_free.petscvec',
-  		input_params.scratch_folder_path+'/this_acc_B_link.petscvec',
-      	input_params.scratch_folder_path+'/this_acc_B.petscvec')
-  feti_op.add_free_link(input_params.scratch_folder_path+'/this_speed_B_free.petscvec',
-  		input_params.scratch_folder_path+'/this_speed_B_link.petscvec',
-      	input_params.scratch_folder_path+'/this_speed_B.petscvec')
-  feti_op.add_free_link(input_params.scratch_folder_path+'/this_disp_B_free.petscvec',
-  		input_params.scratch_folder_path+'/this_disp_B_link.petscvec',
-      	input_params.scratch_folder_path+'/this_disp_B.petscvec')
+  feti_op.add_free_link(input_params.scratch_folder_path+"/this_acc_B_free_sys_sol_vec.petscvec",
+  		input_params.scratch_folder_path+"/this_acc_B_link_sys_sol_vec.petscvec",
+      	input_params.scratch_folder_path+"/this_acc_B.petscvec");
+  feti_op.add_free_link(input_params.scratch_folder_path+"/this_speed_B_free.petscvec",
+  		input_params.scratch_folder_path+"/this_speed_B_link.petscvec",
+      	input_params.scratch_folder_path+"/this_speed_B.petscvec");
+  feti_op.add_free_link(input_params.scratch_folder_path+"/this_disp_B_free.petscvec",
+  		input_params.scratch_folder_path+"/this_disp_B_link.petscvec",
+      	input_params.scratch_folder_path+"/this_disp_B.petscvec");
 
   // - Judge progression
   std::string progression_filename;
-  progression_filename = input_params.scratch_folder_path+"/iteration_progression.txt"
+  progression_filename = input_params.scratch_folder_path+"/iteration_progression.txt";
   field_parser.parse_input_file(progression_filename, "#", "\n", " \t\n");
-  carl::feti_loop_dyn_interation_progression_params progression_params;
+  carl::feti_loop_dyn_iteration_progression_params progression_params;
   get_input_params(field_parser, progression_params);
 
   //Output result file and change all "this" to "prev"
-  feti_op.output_B_result(input_params.result_folder_path,progression_params.inner_loop_progression+progression_params.outer_loop_progression*input_params.inner_loop_times+1);
+  int index=progression_params.inner_loop_progression+progression_params.outer_loop_progression*input_params.inner_loop_times+1;
+  feti_op.output_B_result(input_params.result_folder_path,index);
   feti_op.move_to_prev_B();
   feti_op.prepare_rhs_vector(input_params.betaB,
       input_params.deltatB,
-      input_params.force_folder_B,
-      progression_params.inner_loop_progression+progression_params.outer_loop_progression*input_params.inner_loop_times+1,
+      input_params.scratch_folder_path+"/force_B/force_"+std::to_string(index)+".petscvec",
       input_params.scratch_folder_path+"/this_acc_B.petscvec",
       input_params.scratch_folder_path+"/this_speed_B.petscvec",
       input_params.scratch_folder_path+"/this_disp_B.petscvec",
       input_params.stiffness_matrix_B,
-      input_params.scratch_folder_path+"/rhs_vec_B_free");
+      input_params.scratch_folder_path+"/rhs_vec_B_free.petscvec");
 
-  if (progression_params.inner_loop_progression < input_params.inner_loop_times){
+  if (progression_params.inner_loop_progression < (input_params.inner_loop_times-1)){
 
     //-countinue to go in inner loop!
 

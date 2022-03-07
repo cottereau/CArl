@@ -39,9 +39,9 @@ int main(int argc, char** argv) {
 
   // get jjj and m
   std::string progression_filename;
-  progression_filename = input_params.scratch_folder_path+"/iteration_progression.txt"
+  progression_filename = input_params.scratch_folder_path+"/iteration_progression.txt";
   field_parser.parse_input_file(progression_filename, "#", "\n", " \t\n");
-  carl::feti_loop_dyn_interation_progression_params progression_params;
+  carl::feti_loop_dyn_iteration_progression_params progression_params;
   get_input_params(field_parser, progression_params);
   int jjj=progression_params.inner_loop_progression+1;
   int m=input_params.inner_loop_times;
