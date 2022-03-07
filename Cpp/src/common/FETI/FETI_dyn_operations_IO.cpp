@@ -7,7 +7,12 @@ namespace carl
 		Vec vector;
 		VecCreate(m_comm.get(),&vector);
 		carl::read_PETSC_vector(vector,copy_path,m_comm.get());
-		carl::write_PETSC_vector(vector,paste_path,0,m_comm.get(),1);
+		carl::write_PETSC_vector(vector,paste_path+".petscvec",0,m_comm.get(),1);
+		
+		#ifdef PRINT_MATLAB_DEBUG
+			libMesh::PetscVector<libMesh::Number> vector_lib(vector,m_comm);
+   			vector_lib.print_matlab(paste_path+".m");
+		#endif
 	}
 
 	void FETI_Dyn_Operations::output_B_result(std::string result_folder_path,

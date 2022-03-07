@@ -32,10 +32,26 @@ void Dyn_Solver_Files_Setup::set_scratch_folder()
   {
     std::string command_string;
 
+    command_string = "rm -rf " + m_input_params.result_folder_path;
+    carl::exec_command(command_string.c_str());
+
+    command_string = "mkdir -p " + m_input_params.result_folder_path;
+    carl::exec_command(command_string.c_str());
+    std::cout << command_string << std::endl;
+
     command_string = "rm -rf " + m_input_params.scratch_folder_path;
     carl::exec_command(command_string.c_str());
 
+
     command_string = "mkdir -p " + m_input_params.scratch_folder_path;
+    carl::exec_command(command_string.c_str());
+    std::cout << command_string << std::endl;
+
+    command_string = "mkdir -p " + m_input_params.scratch_folder_path + "/force_A";
+    carl::exec_command(command_string.c_str());
+    std::cout << command_string << std::endl;
+
+    command_string = "mkdir -p " + m_input_params.scratch_folder_path + "/force_B";
     carl::exec_command(command_string.c_str());
     std::cout << command_string << std::endl;
   }
@@ -50,7 +66,7 @@ void Dyn_Solver_Files_Setup::generate_libmesh_external_solver_inputs()
   m_ext_solver_Bfree_input_filename = m_input_params.scratch_folder_path + "/ext_solver_Bfree.txt"; // sev
   m_ext_solver_couplingIV_input_filename = m_input_params.scratch_folder_path + "/ext_solver_interpolation.txt"; //sev
   m_ext_solver_Blink_input_filename = m_input_params.scratch_folder_path + "/ext_solver_Blink.txt"; // sev
-  m_ext_solver_Alink_input_filename = m_input_params.scratch_folder_path + "/ext_solver_Blink.txt"; //sev
+  m_ext_solver_Alink_input_filename = m_input_params.scratch_folder_path + "/ext_solver_Alink.txt"; //sev
 
 
 // Get general input parameters
@@ -96,9 +112,9 @@ void Dyn_Solver_Files_Setup::generate_libmesh_external_solver_inputs()
   solver_Blink_input_params.sys_rhs_vec_file = m_input_params.scratch_folder_path + "/rhs_vec_B_link.petscvec"; //sev
   solver_Blink_input_params.output_base = m_input_params.scratch_folder_path + "/this_acc_B_link";                 //sev
 
-  solver_Blink_input_params.sys_matrix_file = m_input_params.tilde_matrix_A;                                      //sev
-  solver_Blink_input_params.sys_rhs_vec_file = m_input_params.scratch_folder_path + "/rhs_vec_A_link.petscvec"; //sev
-  solver_Blink_input_params.output_base = m_input_params.scratch_folder_path + "/this_acc_A_link";                 //sev
+  solver_Alink_input_params.sys_matrix_file = m_input_params.tilde_matrix_A;                                      //sev
+  solver_Alink_input_params.sys_rhs_vec_file = m_input_params.scratch_folder_path + "/rhs_vec_A_link.petscvec"; //sev
+  solver_Alink_input_params.output_base = m_input_params.scratch_folder_path + "/this_acc_A_link";                 //sev
 
 
   carl::print_input_params(m_ext_solver_Afree_input_filename,solver_Afree_input_params);
@@ -171,11 +187,11 @@ void Dyn_Solver_Files_Setup::generate_libmesh_external_solver_scripts_SLURM(){
               command_to_run);
 
     // Set the Bfree_acc scripts
-    slurm_output = m_input_params.scratch_folder_path + "/out_Bfree_acc.txt";                               //sev
+    slurm_output = m_input_params.scratch_folder_path + "/output_Bfree_acc.txt";                               //sev
     slurm_error = m_input_params.scratch_folder_path + "/error_Bfree_acc.txt";                                //sev
     command_to_run = m_input_params.ext_solver_launch_script + " " + m_ext_solver_Bfree_input_filename;     //sev
 
-    this->print_SLURM_script(m_ext_solver_Bfree_input_filename, "Bfree_acc", 
+    this->print_SLURM_script(m_ext_solver_Bfree_script_filename, "Bfree_acc", 
               slurm_output, slurm_error, common_script,
               command_to_run);                                                                                //sev
 
@@ -185,25 +201,25 @@ void Dyn_Solver_Files_Setup::generate_libmesh_external_solver_scripts_SLURM(){
     command_to_run = m_input_params.ext_solver_launch_script + " " + m_ext_solver_couplingIV_input_filename; //sev
 
 
-    this->print_SLURM_script(m_ext_solver_couplingIV_input_filename, "coupling",
+    this->print_SLURM_script(m_ext_solver_couplingIV_script_filename, "coupling",
              slurm_output, slurm_error, common_script,
              command_to_run);                                                                                //sev
 
     // Set the Blink scripts
-    slurm_output = m_input_params.scratch_folder_path + "/out_Blink_acc.txt";                               //sev
+    slurm_output = m_input_params.scratch_folder_path + "/output_Blink_acc.txt";                               //sev
     slurm_error = m_input_params.scratch_folder_path + "/error_Blink_acc.txt";                                //sev
     command_to_run = m_input_params.ext_solver_launch_script + " " + m_ext_solver_Blink_input_filename;     //sev
 
-    this->print_SLURM_script(m_ext_solver_Blink_input_filename, "Blink_acc", 
+    this->print_SLURM_script(m_ext_solver_Blink_script_filename, "Blink_acc", 
             slurm_output, slurm_error, common_script,
             command_to_run);                                                                                // sev
 
     // Set the Alink scripts
-    slurm_output = m_input_params.scratch_folder_path + "/out_Alink_acc.txt";                               //sev
+    slurm_output = m_input_params.scratch_folder_path + "/output_Alink_acc.txt";                               //sev
     slurm_error = m_input_params.scratch_folder_path + "/error_Alink_acc.txt";                                //sev
     command_to_run = m_input_params.ext_solver_launch_script + " " + m_ext_solver_Alink_input_filename;     //sev
 
-    this->print_SLURM_script(m_ext_solver_Alink_input_filename, "Alink_acc", 
+    this->print_SLURM_script(m_ext_solver_Alink_script_filename, "Alink_acc", 
             slurm_output, slurm_error, common_script,
             command_to_run);
 
@@ -223,7 +239,7 @@ void Dyn_Solver_Files_Setup::generate_inner_operation_script()
   m_inner_operation_setup_interpolation_script_filename = m_input_params.scratch_folder_path + "/setup_interpolation.sh"; //sev
   m_inner_operation_prepare_Blink_script_filename = m_input_params.scratch_folder_path + "/prepare_Blink.sh"; //sev
   m_inner_operation_Blink_script_filename = m_input_params.scratch_folder_path + "/inner_ope_Blink.sh";       //sev
-  m_inner_operation_prepare_Alink_script_filename = m_input_params.scratch_folder_path + "/prepare_Alink";    //sev
+  m_inner_operation_prepare_Alink_script_filename = m_input_params.scratch_folder_path + "/prepare_Alink.sh";    //sev
   m_inner_operation_Alink_script_filename = m_input_params.scratch_folder_path + "/inner_ope_Alink.sh";       //sev
 
 
@@ -285,7 +301,7 @@ void Dyn_Solver_Files_Setup::generate_inner_operation_scripts_SLURM(){
     slurm_error = m_input_params.scratch_folder_path + "/error_setup_interpolation.txt";                               //sev
     command_to_run = "srun -n 4 $CARLBUILD/CArl_loop_dyn_inter -i "+ m_input_params.general_entry_file_path;  //sev
 
-    this->print_SLURM_script(m_inner_operation_setup_interpolation_script_filename, "",
+    this->print_SLURM_script(m_inner_operation_setup_interpolation_script_filename, "set_inter",
               slurm_output, slurm_error, common_script,
               command_to_run);                                                                                    //sev
 
@@ -293,7 +309,7 @@ void Dyn_Solver_Files_Setup::generate_inner_operation_scripts_SLURM(){
     slurm_error = m_input_params.scratch_folder_path + "/error_pre_Blink.txt";                                    //sev
     command_to_run = "srun -n 4 $CARLBUILD/CArl_loop_dyn_pre_Blink -i "+ m_input_params.general_entry_file_path;  //sev
 
-    this->print_SLURM_script(m_inner_operation_prepare_Blink_script_filename, "",
+    this->print_SLURM_script(m_inner_operation_prepare_Blink_script_filename, "pre_Blink",
               slurm_output, slurm_error, common_script,
               command_to_run);                                                                                    //sev
 
@@ -310,7 +326,7 @@ void Dyn_Solver_Files_Setup::generate_inner_operation_scripts_SLURM(){
     slurm_error = m_input_params.scratch_folder_path + "/error_pre_Alink.txt";                                    //sev
     command_to_run = "srun -n 4 $CARLBUILD/CArl_loop_dyn_pre_Alink -i "+ m_input_params.general_entry_file_path;  //sev
 
-    this->print_SLURM_script(m_inner_operation_prepare_Alink_script_filename, "",
+    this->print_SLURM_script(m_inner_operation_prepare_Alink_script_filename, "pre_Alink",
               slurm_output, slurm_error, common_script,
               command_to_run);                                                                                    //sev
 
@@ -336,7 +352,7 @@ void Dyn_Solver_Files_Setup::generate_combined_scripts(){
   m_Afree_combined_filename = m_input_params.scratch_folder_path + "/Afree.sh";
   m_Bfree_combined_filename = m_input_params.scratch_folder_path + "/Bfree.sh";                     //sev
   m_coupling_combined_filename = m_input_params.scratch_folder_path + "/coupling.sh";
-  m_Blink_combined_filename = m_input_params.scratch_folder_path + "/coupling.sh";                  //sev
+  m_Blink_combined_filename = m_input_params.scratch_folder_path + "/Blink.sh";                  //sev
   m_Alink_combined_filename = m_input_params.scratch_folder_path + "/Alink.sh";                     //sev
 
   switch (m_input_params.scheduler)
@@ -369,42 +385,42 @@ void Dyn_Solver_Files_Setup::generate_combined_scripts_SLURM(){
     std::ofstream Afree_script(m_Afree_combined_filename);
     Afree_script << "#!/bin/bash" << std::endl;
     Afree_script << std::endl;
-    Afree_script << "job_acc=`sbatch " << m_ext_solver_Afree_script_filename << "`" << std::endl;
-    Afree_script << "job_reste=`sbatch --dependency=afterok:$job_acc"<< m_inner_operation_Afree_script_filename << "`" << std::endl;
+    Afree_script << "job_acc=$(sbatch " << m_ext_solver_Afree_script_filename << ")" << std::endl;
+    Afree_script << "job_reste=$(sbatch --dependency=afterok:$(squeue --noheader --format %i --name Afree_acc) "<< m_inner_operation_Afree_script_filename << ")" << std::endl;
     Afree_script.close();
 
     // Bfree_script
     std::ofstream Bfree_script(m_Bfree_combined_filename);
     Bfree_script << "#!/bin/bash" << std::endl;
     Bfree_script << std::endl;
-    Bfree_script << "job_acc=`sbatch " << m_ext_solver_Bfree_script_filename << "`" << std::endl;
-    Bfree_script << "job_reste=`sbatch --dependency=afterok:$job_acc"<< m_inner_operation_Bfree_script_filename << "`" << std::endl;
+    Bfree_script << "job_acc=$(sbatch " << m_ext_solver_Bfree_script_filename << ")" << std::endl;
+    Bfree_script << "job_reste=$(sbatch --dependency=afterok:$(squeue --noheader --format %i --name Bfree_acc) "<< m_inner_operation_Bfree_script_filename << ")" << std::endl;
     Bfree_script.close();
 
     //coupling_script
     std::ofstream coupling_script(m_coupling_combined_filename);
     coupling_script << "#!/bin/bash" << std::endl;
     coupling_script << std::endl;
-    coupling_script << "job_setup=`sbatch " << m_inner_operation_setup_interpolation_script_filename << "`" << std::endl;
-    coupling_script << "job_interpolation=`sbatch --dependency=afterok:$job_setup"<< m_ext_solver_couplingIV_script_filename << "`" << std::endl;
-    coupling_script << "job_prepare=`sbatch --dependency=afterok:$job_interpolation" << m_inner_operation_prepare_Blink_script_filename << "`" << std::endl;
+    coupling_script << "job_setup=$(sbatch " << m_inner_operation_setup_interpolation_script_filename << ")" << std::endl;
+    coupling_script << "job_interpolation=$(sbatch --dependency=afterok:$(squeue --noheader --format %i --name set_inter) "<< m_ext_solver_couplingIV_script_filename << ")" << std::endl;
+    coupling_script << "job_prepare=$(sbatch --dependency=afterok:$(squeue --noheader --format %i --name coupling) " << m_inner_operation_prepare_Blink_script_filename << ")" << std::endl;
     coupling_script.close();
 
     // Blink_script
     std::ofstream Blink_script(m_Blink_combined_filename);                               //Sev
     Blink_script << "#!/bin/bash" << std::endl;                                          //sev
     Blink_script << std::endl;                                                            //sev
-    Blink_script << "job_acc=`sbatch " << m_ext_solver_Blink_script_filename << "`" << std::endl; //Sev
-    Blink_script << "job_reste=`sbatch --dependency=afterok:$job_acc"<< m_inner_operation_Blink_script_filename << "`" << std::endl; //Sev
+    Blink_script << "job_acc=$(sbatch " << m_ext_solver_Blink_script_filename << ")" << std::endl; //Sev
+    Blink_script << "job_reste=$(sbatch --dependency=afterok:$(squeue --noheader --format %i --name Blink_acc) "<< m_inner_operation_Blink_script_filename << ")" << std::endl; //Sev
     Blink_script.close();                                                                  // sev
 
     // Alink_script
     std::ofstream Alink_script(m_Alink_combined_filename);                               // Sev
     Alink_script << "#!/bin/bash" << std::endl;                                          // sev
     Alink_script << std::endl;                                                               //sev
-    Alink_script << "job_prepare=`sbatch --dependency=afterok:$job_interpolation" << m_inner_operation_prepare_Alink_script_filename << "`" << std::endl;    //sev
-    Alink_script << "job_acc=`sbatch " << m_ext_solver_Alink_script_filename << "`" << std::endl;                                    //sev
-    Alink_script << "job_reste=`sbatch --dependency=afterok:$job_acc"<< m_inner_operation_Alink_script_filename << "`" << std::endl; //sev
+    Alink_script << "job_prepare=$(sbatch " << m_inner_operation_prepare_Alink_script_filename << ")" << std::endl;    //sev
+    Alink_script << "job_acc=$(sbatch --dependency=afterok:$(squeue --noheader --format %i --name pre_Alink) " << m_ext_solver_Alink_script_filename << ")" << std::endl;                                    //sev
+    Alink_script << "job_reste=$(sbatch --dependency=afterok:$(squeue --noheader --format %i --name Alink_acc) "<< m_inner_operation_Alink_script_filename << ")" << std::endl; //sev
     Alink_script.close();                                                                //sev
 
 

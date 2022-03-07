@@ -5,15 +5,12 @@ namespace carl
 
 	void FETI_Dyn_Operations::prepare_rhs_vector(double beta,
       double deltat,
-      std::string force_vector_folder, 
-      int index,
+      std::string this_force_path,
       std::string this_acc_path,
       std::string this_speed_path,
       std::string this_displace_path,
       std::string stiffness_matrix_path,
       std::string output_rhs_path){
-
-			
 
 			Vec force;
 			Vec displacement;
@@ -21,6 +18,9 @@ namespace carl
 			Vec this_acceleration;
 			Mat stiffness;
 			Vec rhs;
+			PetscInt M,N,Nvec;
+
+			//Initialize vec and mat
 			VecCreate(m_comm.get(),&force);
 			VecCreate(m_comm.get(),&displacement);
 			VecCreate(m_comm.get(),&this_speed);
@@ -28,27 +28,36 @@ namespace carl
 			MatCreate(m_comm.get(),&stiffness);
 			VecCreate(m_comm.get(),&rhs);
 
+			// Get vec and mat from file
+			carl::read_PETSC_vector(force,this_force_path,m_comm.get());
 			carl::read_PETSC_vector(displacement,this_displace_path,m_comm.get());
 			carl::read_PETSC_vector(this_speed,this_speed_path,m_comm.get());
 			carl::read_PETSC_vector(this_acceleration,this_acc_path,m_comm.get());
 			carl::read_PETSC_matrix(stiffness,stiffness_matrix_path,m_comm.get());
+
+			//Set the dimension for vec
+			MatGetSize(stiffness,&M,&N);
+  		VecGetSize(displacement,&Nvec);
+  		if(Nvec!=N){
+  			homemade_error_msg("Matrix dimension doesn't match!");
+  		}
+  		VecSetSizes(rhs,PETSC_DECIDE,M);
+  		VecSetFromOptions(rhs);
 
 			//predictor=displacement+deltat*this_speed+(1/2-beta)*deltat^2*this_acceleration
 			VecAXPY(displacement,deltat,this_speed);
 			VecAXPY(displacement,(1/2-beta)*deltat*deltat,this_acceleration);
 
 			MatMult(stiffness,displacement,rhs);
+			VecScale(rhs,-1);
 
-			std::string force_vector_path = force_vector_folder+std::to_string(index);
+			std::FILE *fh ;
+			fh = fopen(this_force_path.c_str (),"r");// To examine if there is a force input file
 
-		std::FILE *fh ;
-		fh = fopen(force_vector_path.c_str (),"r");// To examine if this is a force input file
-
-		if(fh!=NULL){
-			//There is a force input file
-			
-			carl::read_PETSC_vector(force,force_vector_path,m_comm.get());
-			VecAXPY(rhs,1,force);
+			if(fh!=NULL){
+				//There is a force input file
+				carl::read_PETSC_vector(force,this_force_path,m_comm.get());
+				VecAXPY(rhs,1,force);
 			}
 
 			carl::write_PETSC_vector(rhs,output_rhs_path,0,m_comm.get(),1);
@@ -93,6 +102,7 @@ namespace carl
 			VecAXPY(speed,gamma*deltat,this_acceleration);
 		}else{
 			//No prev_speed vector exists! We need create one.
+			VecDuplicate(this_acceleration,&speed);
 			VecCopy(this_acceleration,speed);
 			VecScale(speed,gamma*deltat);
 		}
@@ -141,6 +151,7 @@ namespace carl
 			VecAXPY(displacement,beta*deltat*deltat,this_acceleration);
 		}else{
 			//No prev_displacement vector exists! We need create one.
+			VecDuplicate(this_acceleration,&displacement);
 			VecCopy(this_acceleration,displacement);
 			VecScale(displacement,beta*deltat*deltat);
 		}
@@ -158,7 +169,7 @@ namespace carl
   	Vec prev_acceleration;
   	Vec this_acceleration;
   	std::string prev_acc_path=m_scratch_folder_path+"/prev_acc_A.petscvec";
-  	std::string this_acc_path=m_scratch_folder_path+"/this_acc_A_free.petscvec";
+  	std::string this_acc_path=m_scratch_folder_path+"/this_acc_A_free_sys_sol_vec.petscvec";
 
   	VecCreate(m_comm.get(),&prev_acceleration);
 		VecCreate(m_comm.get(),&this_acceleration);
@@ -177,7 +188,7 @@ namespace carl
 			VecScale(this_acceleration,jjj/m);
 		}
 
-		carl::write_PETSC_vector(this_acceleration,m_scratch_folder_path+"/inter_acc_A_free",0,m_comm.get(),1);
+		carl::write_PETSC_vector(this_acceleration,m_scratch_folder_path+"/inter_acc_A_free.petscvec",0,m_comm.get(),1);
 
 		VecDestroy(&prev_acceleration);
 		VecDestroy(&this_acceleration);
@@ -190,6 +201,7 @@ namespace carl
   		Vec acceleration_B;
   		Vec result1;
   		Vec result2;
+  		PetscInt M,N,Nvec;
 
   		MatCreate(m_comm.get(),&coupling_matrix_A);
   		MatCreate(m_comm.get(),&coupling_matrix_B);
@@ -199,19 +211,29 @@ namespace carl
   		VecCreate(m_comm.get(),&result2);
 
   		carl::read_PETSC_vector(acceleration_A,m_scratch_folder_path+"/inter_acc_A_free.petscvec");
-  		carl::read_PETSC_vector(acceleration_B,m_scratch_folder_path+"/this_acc_A_free.petscvec");
+  		carl::read_PETSC_vector(acceleration_B,m_scratch_folder_path+"/this_acc_B_free_sys_sol_vec.petscvec");
   		carl::read_PETSC_matrix(coupling_matrix_A,coupling_matrix_A_path);
   		carl::read_PETSC_matrix(coupling_matrix_B,coupling_matrix_B_path);
+
+  		MatGetSize(coupling_matrix_A,&M,&N);
+  		VecGetSize(acceleration_A,&Nvec);
+  		if(Nvec!=N){
+  			homemade_error_msg("Matrix dimension doesn't match!");
+  		}
+
+  		VecSetSizes(result1,PETSC_DECIDE,M);
+  		VecSetFromOptions(result1);
+  		VecDuplicate(result1,&result2);
 
   		MatMult(coupling_matrix_A,acceleration_A,result1);
   		MatMultAdd(coupling_matrix_B,acceleration_B,result1,result2);
   		VecScale(result2, -1);
 
 
-  		carl::write_PETSC_vector(result2,m_scratch_folder_path+"/rhs_interpolation_vec",0,m_comm.get(),1);
+  		carl::write_PETSC_vector(result2,m_scratch_folder_path+"/rhs_interpolation_vec.petscvec",0,m_comm.get(),1);
     
 
-			MatDestroy(&coupling_matrix_A);
+  		MatDestroy(&coupling_matrix_A);
   		MatDestroy(&coupling_matrix_B);
   		VecDestroy(&acceleration_A);
   		VecDestroy(&acceleration_B);
@@ -222,13 +244,24 @@ namespace carl
   		Mat coupling_matrix;
   		Vec interpolation_vector;
   		Vec result;
+  		PetscInt M,N,Nvec;
 
   		MatCreate(m_comm.get(),&coupling_matrix);
   		VecCreate(m_comm.get(),&interpolation_vector);
   		VecCreate(m_comm.get(),&result);
 
+
   		carl::read_PETSC_matrix(coupling_matrix,coupling_matrix_path);
   		carl::read_PETSC_vector(interpolation_vector,interpolation_vector_path);
+
+  		MatGetSize(coupling_matrix,&M,&N);
+  		VecGetSize(interpolation_vector,&Nvec);
+  		if(Nvec!=M){
+  			homemade_error_msg("Matrix dimension doesn't match!");
+  		}
+
+  		VecSetSizes(result,PETSC_DECIDE,N);
+  		VecSetFromOptions(result);
 
   		MatMultTranspose(coupling_matrix,interpolation_vector,result);
 
