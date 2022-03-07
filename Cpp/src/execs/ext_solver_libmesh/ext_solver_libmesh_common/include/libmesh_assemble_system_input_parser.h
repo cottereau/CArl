@@ -71,6 +71,7 @@ void get_input_params(GetPot& field_parser,
 //void get_input_params(GetPot& field_parser,
 //    dynamic_params& input_params);
 
+
 void get_input_params(GetPot& field_parser,
     material_params& input_params);
 

@@ -4,7 +4,6 @@
  *  Created on: Apr 16, 2017
  *      Author: Thiago Milanetto Schlittler
  */
-
 #include "libmesh_apply_solution_input_parser.h"
 
 namespace carl
