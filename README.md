@@ -4,13 +4,17 @@
 
 This project is focused on the development of a software based on the [Arlequin multi-model coupling method](https://www.sciencedirect.com/science/article/pii/S0045782508003630). The main interest of this software is to allow, by its specific structure, the easy interfacing of different third-party softwares (developed and maintained outside of this project), and adapted to each of the models appearing in the coupling. Currently, this project includes two implementations of the CArl sofware:
 
-1. a [MATLAB](http://www.mathworks.fr/products/matlab/) implementation.
-2. a parallel C++ / MPI implementation, based on [libMesh](https://libmesh.github.io) and [CGAL](http://www.cgal.org).
+1. a [MATLAB](http://www.mathworks.fr/products/matlab/) implementation. 
+2. a parallel C++ / MPI implementation, based on [libMesh](https://libmesh.github.io) and [CGAL](http://www.cgal.org). For this part, three solvers are developped: 
+- For a static case: a solver CArl-Static(\ref cpp_static) for the stationnary solution of coupled system
+- For a transit case(\ref cpp_dynamic): to get a time dependent solution, we can either use
+  + a solver CArl-Dyn-DI(\ref cpp_dynamic_DI) with direct inversion method mainly for small D.O.F.
+  + a solver CArl-Dyn-CG(\ref cpp_dynamic_CG) with conjugate gradient method mainly for big D.O.F. and the case mass matrix difficult to be inverted
 
-This software is mainly developed at laboratoire MSSMat (Ecole Centrale Paris - CNRS).
+This software is mainly developed at laboratoire LMPS (Laboratoire Mécanique de Paris-Saclay), of which ancien MSSMat (Ecole Centrale Paris - CNRS) is now a part.
 
 * contact : [Regis Cottereau](mailto:regis.cottereau@ecp.fr)
-* contributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec, D. Neron, T. M. Schlittler, F. Gatti, G. Jacquet
+* contributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec, D. Neron, T. M. Schlittler, F. Gatti, G. Jacquet, C. Luo, S. Méo
 
 more detail on installation procedures and examples can be found the [related help web page](https://cottereau.github.io/CArl/)
 ## MATLAB IMPLEMENTATION
@@ -55,9 +59,9 @@ The usage of this implementation will be added in the near future, together with
 This code implementation use the following third party libraries: (the numbers indicate the oldest version for which they were tested)
 
 1. [Boost](http://www.boost.org) (version 1.65.0)
-1. [CGAL](http://www.cgal.org) (version 4.7)
-1. [PETSc](http://www.mcs.anl.gov/petsc/) (version 3.13.1)
-1. [libMesh](https://libmesh.github.io) (version 1.5.1)
+2. [CGAL](http://www.cgal.org) (version 4.7)
+3. [PETSc](http://www.mcs.anl.gov/petsc/) (version 3.13.1)
+4. [libMesh](https://libmesh.github.io) (version 1.5.1)
 
 #### Tested compiler combinations:
 
