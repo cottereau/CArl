@@ -6,21 +6,32 @@
 #include "weight_parameter_function.h"
 #include "ext_solver_libmesh_enums.h"
 #include "libmesh_assemble_system_input_parser.h"
+#include "newmark_param_parser.h"
 
 void Update_SubM(libMesh::DenseSubMatrix<libMesh::Number>& SubM,
           unsigned int qp,
           const std::vector<std::vector<libMesh::Real>> & phi,
           const unsigned int n_components,
           const unsigned int n_u_dofs,
+          const unsigned int n_v_dofs,
           const std::vector<libMesh::Real>& JxW,
           double weight);
+
+
+void Update_SubC(libMesh::DenseSubMatrix<libMesh::Number>& SubC,
+  libMesh::DenseSubMatrix<libMesh::Number>& SubK,
+  libMesh::DenseSubMatrix<libMesh::Number>& SubM,
+  const unsigned int n_u_dofs,
+  const unsigned int n_v_dofs,
+  double CK,double CM);
 
 void assemble_dynamic_elasticity_with_weight(libMesh::EquationSystems& es, 
           const std::string& system_name,
           weight_parameter_function& weight_mask,
           WeightFunctionSystemType system_type,
-          double deltat, 
-          double beta);
+          carl::NewmarkParams* newmark,
+          double CM,
+          double CK);
 
 void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSystems& es,
           const std::string& system_name, 
@@ -28,8 +39,20 @@ void assemble_dynamic_elasticity_with_weight_and_traction(libMesh::EquationSyste
           WeightFunctionSystemType system_type,
           int traction_boundary_id,
           std::vector<double> traction_density,
-          double deltat, 
-          double beta);
+          carl::NewmarkParams* newmark,
+          double CM,
+          double CK);
+
+void assemble_dynamic_elasticity_with_weight_and_bending(libMesh::EquationSystems& es,
+          const std::string& system_name, 
+          weight_parameter_function& weight_mask,
+          WeightFunctionSystemType system_type,
+          int traction_boundary_id,
+          std::vector<double> traction_density,
+          carl::NewmarkParams* newmark,
+          double CM,
+          double CK);
+
 
 void apply_initial(libMesh::EquationSystems & es,
                    const std::string & system_name,

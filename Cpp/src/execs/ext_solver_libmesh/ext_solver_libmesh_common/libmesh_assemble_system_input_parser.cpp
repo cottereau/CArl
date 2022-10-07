@@ -85,23 +85,33 @@ void get_input_params(GetPot& field_parser,libmesh_assemble_input_params& input_
     input_params.dynamic_analysis = false;
   }
 
-  if (field_parser.search(1, "deltat")) {
-    input_params.deltat = field_parser.next(input_params.deltat);
-  } else {
-    input_params.deltat = 0.25;
-  }
+  if(input_params.dynamic_analysis == true){
 
-  if (field_parser.search(1, "beta")) {
-    input_params.beta = field_parser.next(input_params.beta);
-  } else {
-    input_params.beta = 0.25;
-  }
+      if (field_parser.search(1, "NewmarkParameters")){
+        std::string filename;
+        filename = field_parser.next(filename);
+        GetPot newmark_parser;
+        newmark_parser.parse_input_file(filename, "#", "\n", " \t\n");
+        carl::get_newmark_params(newmark_parser, input_params.Newmark);
+      } else{
+        homemade_error_msg("[CArl Parameters]Missing Newmark parameters file!");
+      }
 
-  if (field_parser.search(1, "gamma")) {
-    input_params.gamma = field_parser.next(input_params.gamma);
-  } else {
-    input_params.gamma = 0.5;
-  }
+      if (field_parser.search(1, "CM")) {
+        input_params.CM = field_parser.next(input_params.CM);
+      } else {
+        input_params.CM = 0;
+        std::cout << "[CArl Parameter]WARNING! CM isn't set for system,  default value is taken as 0." << std::endl;
+      }
+
+      if (field_parser.search(1, "CK")) {
+        input_params.CK = field_parser.next(input_params.CK);
+      } else {
+        input_params.CK = 0;
+        std::cout << "[CArl Parameter]WARNING! CK isn't set for system A,  default value is taken as 0."<< std::endl;
+      }
+    }
+    
 //  if (field_parser.search(1, "transient")) {
 //    input_params.transient = true;
 //  } else {
@@ -230,7 +240,7 @@ void get_input_params(GetPot& field_parser,libmesh_assemble_input_params& input_
 //  {
 //      printf("No dynamic file passed");
 //  }
-//
+
 //  //If there is a file in which material parameter are passed
 //  if (command_line.search(2, "-m"))
 //  {

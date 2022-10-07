@@ -191,8 +191,8 @@ typedef CGAL::cpp11::result_of<Kernel::Intersect_2(Triangle_3, Triangle_3)>::typ
 		Triangle_3_Intersection_Variant;
 
 // --- Geomview (for visualization, only works on Linux / MacOSX)
-#include <CGAL/IO/Geomview_stream.h>
-#include <CGAL/IO/Triangulation_geomview_ostream_2.h>
-#include <CGAL/IO/Triangulation_geomview_ostream_3.h>
+//#include <CGAL/IO/Geomview_stream.h>
+//#include <CGAL/IO/Triangulation_geomview_ostream_2.h>
+//#include <CGAL/IO/Triangulation_geomview_ostream_3.h>
 
 #endif /* CGAL_DEFINES_H_ */

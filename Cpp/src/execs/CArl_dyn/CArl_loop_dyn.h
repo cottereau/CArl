@@ -11,10 +11,12 @@
 #include "carl_headers.h"
 #include "carl_loop_dyn_input_parser.h"
 #include "carl_loop_dyn_iteration_progression_parser.h"
-#include "dyn_solver_files_setup.h"
+#include "dyn_CG_solver_files_setup.h"
+#include "dyn_DI_solver_files_setup.h"
 #include "FETI_dyn_operations.h"
+#include "FETI_operations.h"
 
-int total_iterations;
-int inner_iterations;
+
+
 
 #endif /* EXECS_CARL_LOOP_DYN_H_ */

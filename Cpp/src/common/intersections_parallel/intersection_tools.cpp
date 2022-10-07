@@ -3,6 +3,8 @@
  *
  *  Created on: Apr 17, 2016
  *      Author: Thiago Milanetto Schlittler
+ *
+ *  \brief **STAT/DYN-DI/DYN-CG** Intersection step
  */
 
 #include "intersection_tools.h"

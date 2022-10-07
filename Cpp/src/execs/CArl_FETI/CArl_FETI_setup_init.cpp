@@ -1,7 +1,7 @@
 #include "CArl_FETI_setup_init.h"
 
 /** \file CArl_FETI_setup_init.cpp
-\brief Program responsible to initialize the FETI setup and launch the iterations
+\brief **STAT** Program responsible to initialize the FETI setup and launch the iterations
 
 This program's input file description can be found at the documentation of the function carl::get_input_params(GetPot& field_parser, feti_setup_init_params& input_params). 
 

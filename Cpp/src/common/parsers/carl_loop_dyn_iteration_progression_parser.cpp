@@ -16,13 +16,13 @@ void get_input_params(GetPot& field_parser,
   if (field_parser.search(1, "InnerProgression")) {
     input_params.inner_loop_progression = field_parser.next(input_params.inner_loop_progression);
   } else {
-    homemade_error_msg("Unable to know inner loop progression!");
+    homemade_error_msg("[ITERATION COUNTER]Unable to know inner loop progression!");
   }
 
   if (field_parser.search(1, "OuterProgression")) {
     input_params.outer_loop_progression = field_parser.next(input_params.outer_loop_progression);
   } else {
-    homemade_error_msg("Unable to know outer loop progression!");
+    homemade_error_msg("[ITERATION COUNTER]Unable to know outer loop progression!");
   }
 }
 

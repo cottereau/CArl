@@ -1,3 +1,12 @@
+/*
+ * mesh_intersection_methods.cpp
+ *
+ *  Created on: Apr 11, 2016
+ *      Author: Thiago Milanetto Schlittler
+ *
+ *  \brief **STAT/DYN-DI/DYN-CG** Intersection step
+ */
+
 #include "mesh_intersection_methods.h"
 
 namespace carl

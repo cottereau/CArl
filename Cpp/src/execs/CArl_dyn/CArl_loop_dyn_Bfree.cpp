@@ -1,4 +1,27 @@
+/*
+ *
+ *  Created on: Nov 17，2021
+ *      Author: Chensheng Luo
+ */
 #include "CArl_loop_dyn.h"
+
+/** \file CArl_loop_dyn_Bfree.cpp
+
+\brief **DYN-DI/DYN-CG** Program responsible to calculate B free speed and displacement by Newmark method.
+
+This program's input file description can be found at the documentation of the function carl::get_input_params(GetPot& field_parser, feti_loop_dyn_params& input_params). 
+
+In this step, it will use the following files in scratch foler:
+     - `prev_acc_B.petscvec` : \f$ \ddot{U}^B(t-\Delta t) \f$
+     - `this_acc_B_free_sys_sol_vec.petscvec` : \f$ \ddot{U}^B_{free}(t) \f$
+     - `prev_speed_B.petscvec` : \f$ \dot{U}^B(t-\Delta t) \f$
+     - `prev_disp_B.petscvec` : \f$ U^B(t-\Delta t) \f$
+
+It will create:
+     - `this_speed_B_free.petscvec`: \f$ \dot{U}^B_{free}(t) \f$
+     - `this_disp_B_free.petscvec`: \f$ U^B_{free}(t) \f$
+
+ */
 
 int main(int argc, char** argv) {
 
@@ -35,24 +58,14 @@ int main(int argc, char** argv) {
   carl::feti_loop_dyn_params input_params;
   get_input_params(field_parser, input_params);
 
-  carl::FETI_Dyn_Operations feti_op(WorldComm,input_params.scratch_folder_path);
+  carl::FETI_Dyn_Operations Dyn_op(WorldComm,input_params.scratch_folder_path,input_params.result_folder_path);
   
   // Calculate B_free_speed/displacement
-  bool first_calculate = true; 
-  feti_op.Newmark_speed_free(input_params.gammaB,
-      input_params.deltatB,
-      input_params.scratch_folder_path+"/prev_acc_B.petscvec",
-      input_params.scratch_folder_path+"/this_acc_B_free_sys_sol_vec.petscvec",
-      input_params.scratch_folder_path+"/prev_speed_B.petscvec",
-      input_params.scratch_folder_path+"/this_speed_B_free.petscvec");
+  Dyn_op.Newmark_speed_free(&input_params.newmark_B,
+      &Dyn_op.vector_B);
 
-  feti_op.Newmark_displacement_free(input_params.betaB,
-      input_params.deltatB,
-      input_params.scratch_folder_path+"/prev_acc_B.petscvec",
-      input_params.scratch_folder_path+"/this_acc_B_free_sys_sol_vec.petscvec",
-      input_params.scratch_folder_path+"/prev_speed_B.petscvec",
-      input_params.scratch_folder_path+"/prev_disp_B.petscvec",
-      input_params.scratch_folder_path+"/this_disp_B_free.petscvec");
+  Dyn_op.Newmark_displacement_free(&input_params.newmark_B,
+      &Dyn_op.vector_B);
 
   //execute next file
 
@@ -61,7 +74,7 @@ int main(int argc, char** argv) {
      if(input_params.scheduler == carl::ClusterSchedulerType::LOCAL)
      {
         std::cout << " !!! LOCAL job 'scheduler: Run the following script manually: " << std::endl;
-        std::cout << init_script_command << std::endl ;
+        std::cout << init_script_command << std::endl;
      } else {
         carl::exec_command(init_script_command);
      }

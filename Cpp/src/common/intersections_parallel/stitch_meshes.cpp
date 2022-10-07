@@ -3,6 +3,8 @@
  *
  *  Created on: Jun 2, 2016
  *      Author: Thiago Milanetto Schlittler
+ *
+ *  \brief **STAT/DYN-DI/DYN-CG** Intersection step
  */
 
 #include "stitch_meshes.h"

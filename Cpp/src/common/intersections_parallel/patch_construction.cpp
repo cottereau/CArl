@@ -3,6 +3,8 @@
  *
  *  Created on: Apr 14, 2016
  *      Author: Thiago Milanetto Schlittler
+ *
+ *  \brief **STAT/DYN-DI/DYN-CG** Intersection step
  */
 
 #include "patch_construction.h"

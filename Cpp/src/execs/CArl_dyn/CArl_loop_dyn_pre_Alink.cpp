@@ -1,4 +1,24 @@
+/*
+ *
+ *  Created on: Nov 17，2021
+ *      Author: Chensheng Luo
+ */
 #include "CArl_loop_dyn.h"
+
+/** \file CArl_loop_dyn_pre_Alink.cpp
+
+\brief  **DYN-DI**  Program responsible to calculate \f$ C^{A} \Lambda \f$.
+
+
+This program's input file description can be found at the documentation of the function carl::get_input_params(GetPot& field_parser, feti_loop_dyn_params& input_params). 
+
+In this step, it will use the following files in scratch foler:
+     
+
+It will create:
+
+*/
+
 
 int main(int argc, char** argv) {
 
@@ -35,13 +55,10 @@ int main(int argc, char** argv) {
   carl::feti_loop_dyn_params input_params;
   get_input_params(field_parser, input_params);
 
-  carl::FETI_Dyn_Operations feti_op(WorldComm,input_params.scratch_folder_path);
+  carl::FETI_Dyn_Operations Dyn_op(WorldComm,input_params.scratch_folder_path,input_params.result_folder_path);
   
   // Calculate the rhs vector for solving A_link_acceleration
-  bool first_calculate = true; 
-  feti_op.rhs_link(input_params.coupling_matrix_A,
-    input_params.scratch_folder_path+"/coupling_interpolation_vec_sys_sol_vec.petscvec",
-    input_params.scratch_folder_path+"/rhs_vec_A_link.petscvec");  
+  Dyn_op.rhs_link(&Dyn_op.vector_A,Dyn_op.m_coupling_vector,&input_params.matrix_A);
   
   return 0;
 }

@@ -1,12 +1,15 @@
 /*
- * main.cpp
  *
  *  Created on: Apr 14, 2016
  *      Author: Thiago Milanetto Schlittler
  */
 
+#include "CArl_build_intersections.h"
+
  /** \file CArl_build_intersections.cpp
- \brief Implementation of the parallel intersection search
+  * \brief **STAT/DYN-DI/DYN-CG** Implementation of the parallel intersection search
+ 
+    
  
  Usage: `./CArl_build_intersections -i [input file]`
 
@@ -28,7 +31,7 @@ Boolean flags:
  - `VerboseOutput` or `--verbose` : print some extra information, such as the coupling mesh partitioning.
  */
 
-#include "CArl_build_intersections.h"
+
 
 int main(int argc, char *argv[])
 {

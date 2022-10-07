@@ -9,6 +9,7 @@
 #define CARL_ASSEMBLE_COUPLING_INPUT_PARSER_H_
 
 #include "carl_headers.h"
+#include "newmark_param_parser.h"
 
 namespace carl
 {
@@ -41,12 +42,8 @@ struct coupling_assemble_coupling_input_params {
   std::string output_folder;  ///< Path to output folder.
 
   bool dynamic_analysis; ///< dynamic analysis
-  double deltatA;       ///< time_step A
-  double betaA;         ///< beta Newmark coefficient for A   
-  double gammaA;        ///< gamma Newmark coefficient for A   
-  double deltatB;       ///< time_step A
-  double betaB;         ///< beta Newmark coefficient for A   
-  double gammaB;        ///< gamma Newmark coefficient for A   
+  carl::NewmarkParams newmark_A;
+  carl::NewmarkParams newmark_B;
 
 };
 
@@ -71,6 +68,8 @@ struct coupling_assemble_coupling_input_params {
  *    - `Mesh_B_RestrictionEquivalenceTable` or `--tableRB` : path to the equivalence table between the mesh B and its restriction. *Default*: `[InterBase]_B_restriction_restrict.dat`.
  *  + Mediator mesh:
  *    - `MediatorMesh` : choice of the mediator mesh. *Values*: `UseRestricted_A` or `UseRestricted_B`. *Default*: `UseRestricted_A`.
+ *  + Newmark Parameters
+ *    - `NewmarkParameters` *or* (`NewmarkParametersA` and `NewmarkParametersB`) : Path to the Newmark parameter of two model, see get_newmark_params(GetPot& field_parser,NewmarkParams& newmark) for its redaction format. 
  */
 void get_assemble_coupling_input_params(GetPot& field_parser,
     coupling_assemble_coupling_input_params& input_params);

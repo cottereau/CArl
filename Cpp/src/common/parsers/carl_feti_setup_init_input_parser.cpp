@@ -210,6 +210,7 @@ void get_input_params(GetPot& field_parser,
   if (field_parser.search(1,"OutputFolder")) {
     input_params.output_folder = field_parser.next(
         input_params.output_folder);
+    std::cout << input_params.output_folder << std::endl;
   } else {
     homemade_error_msg("Missing the output filename base!");
   }

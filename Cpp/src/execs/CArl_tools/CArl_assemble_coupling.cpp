@@ -1,5 +1,5 @@
  /** \file CArl_assemble_coupling.cpp
- \brief Implementation of the parallel coupling matrices assembly
+ \brief **STAT/DYN-DI/DYN-CG** Implementation of the parallel coupling matrices assembly
  
  Usage: `./CArl_assemble_coupling -i [input file]`
 
@@ -22,10 +22,10 @@ Required parameters:
  + Restriction meshes and tables:
   - `Mesh_A_Restriction`, `-mAR` or `--meshAR` : path to the restricted mesh A (formed by elements of the mesh A intersecting the coupling region). *Default*: `[InterBase]_A_restriction.msh`.
   - `Mesh_B_Restriction`, `-mBR` or `--meshBR` : path to the restricted mesh B (formed by elements of the mesh A intersecting the coupling region). *Default*: `[InterBase]_B_restriction.msh`.
-   - `Mesh_A_RestrictionEquivalenceTable` or `--tableRA` : path to the equivalence table between the mesh A and its restriction. *Default*: `[InterBase]_A_restriction_restrict.dat`.
-   - `Mesh_B_RestrictionEquivalenceTable` or `--tableRB` : path to the equivalence table between the mesh B and its restriction. *Default*: `[InterBase]_B_restriction_restrict.dat`.
+  - `Mesh_A_RestrictionEquivalenceTable` or `--tableRA` : path to the equivalence table between the mesh A and its restriction. *Default*: `[InterBase]_A_restriction_restrict.dat`.
+  - `Mesh_B_RestrictionEquivalenceTable` or `--tableRB` : path to the equivalence table between the mesh B and its restriction. *Default*: `[InterBase]_B_restriction_restrict.dat`.
  + Mediator mesh:
-   - `MediatorMesh` : choice of the mediator mesh. *Values*: `UseRestricted_A` or `UseRestricted_B`. *Default*: `UseRestricted_A`.
+  - `MediatorMesh` : choice of the mediator mesh. *Values*: `UseRestricted_A` or `UseRestricted_B`. *Default*: `UseRestricted_A`.
  */
 
 #include "CArl_assemble_coupling.h"

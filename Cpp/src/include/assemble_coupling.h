@@ -5,6 +5,7 @@
  *      Author: Thiago Milanetto Schlittler
  */
 
+
 #ifndef ASSEMBLE_COUPLING_H_
 #define ASSEMBLE_COUPLING_H_
 
@@ -61,7 +62,7 @@ public:
   libMesh::DofMap& dof_map;
   //const libMesh::DofMap& dof_map;
   libMesh::FEType fe_type;
-  libMesh::UniquePtr<libMesh::FEBase> fe_unique_ptr;
+  std::unique_ptr<libMesh::FEBase> fe_unique_ptr;
   libMesh::QGauss qrule;
   const libMesh::Elem* elem;
 

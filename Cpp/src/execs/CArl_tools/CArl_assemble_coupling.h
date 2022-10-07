@@ -1,5 +1,5 @@
 /*
- * CArl_FETI_setup_init.h
+ * CArl_assemble_coupling.h
  *
  *  Created on: Apr 11, 2017
  *      Author: Thiago Milanetto Schlittler

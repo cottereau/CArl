@@ -295,12 +295,12 @@ void assemble_elasticity_with_weight(libMesh::EquationSystems& es,
 
   // Set up pointers to FEBase's of dimension dim and FE type fe_type
   // -> 3D elements
-  libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
+  std::unique_ptr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
   libMesh::QGauss qrule (dim, fe_type.default_quadrature_order());
   fe->attach_quadrature_rule (&qrule);
 
   // -> Faces
-  libMesh::UniquePtr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
+  std::unique_ptr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
   libMesh::QGauss qface(dim-1, fe_type.default_quadrature_order());
   fe_face->attach_quadrature_rule (&qface);
 
@@ -472,12 +472,12 @@ void assemble_elasticity_with_weight_and_traction(libMesh::EquationSystems& es,
 
   // Set up pointers to FEBase's of dimension dim and FE type fe_type
   // -> 3D elements
-  libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
+  std::unique_ptr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
   libMesh::QGauss qrule (dim, fe_type.default_quadrature_order());
   fe->attach_quadrature_rule (&qrule);
 
   // -> Faces
-  libMesh::UniquePtr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
+  std::unique_ptr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
   libMesh::QGauss qface(dim-1, fe_type.default_quadrature_order());
   fe_face->attach_quadrature_rule (&qface);
 
@@ -681,12 +681,12 @@ void assemble_elasticity_heterogeneous_with_weight( libMesh::EquationSystems& es
 
   // Set up pointers to FEBase's of dimension dim and FE type fe_type
   // -> 3D elements
-  libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
+  std::unique_ptr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
   libMesh::QGauss qrule (dim, fe_type.default_quadrature_order());
   fe->attach_quadrature_rule (&qrule);
 
   // -> Faces
-  libMesh::UniquePtr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
+  std::unique_ptr<libMesh::FEBase> fe_face (libMesh::FEBase::build(dim, fe_type));
   libMesh::QGauss qface(dim-1, fe_type.default_quadrature_order());
   fe_face->attach_quadrature_rule (&qface);
 
@@ -862,7 +862,7 @@ void compute_stresses(libMesh::EquationSystems& es)
   libMesh::FEType fe_type = elasticity_dof_map.variable_type(u_var);
 
   // Build a FE to be used here and attach a default quadrature
-  libMesh::UniquePtr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
+  std::unique_ptr<libMesh::FEBase> fe (libMesh::FEBase::build(dim, fe_type));
   libMesh::QGauss qrule (dim, fe_type.default_quadrature_order());
   fe->attach_quadrature_rule (&qrule);
 

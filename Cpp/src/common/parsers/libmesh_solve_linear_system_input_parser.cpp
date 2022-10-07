@@ -40,13 +40,6 @@ void get_input_params(GetPot& field_parser,
     input_params.sys_eps = 1e-5;
   }
 
-  if (field_parser.search(1, "Dynamic")) {
-    input_params.sys_eps = field_parser.next(
-        input_params.sys_eps);
-  } else {
-    input_params.sys_eps = 1e-5;
-  }
-
   if (field_parser.search(1, "SysIterDiv")) {
     input_params.sys_iter_div = field_parser.next(
         input_params.sys_iter_div);

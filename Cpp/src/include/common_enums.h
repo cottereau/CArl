@@ -12,7 +12,7 @@ namespace carl
 {
 
 enum ClusterSchedulerType {
-	LOCAL = 0, // No scheduler present, will use carl::exec_command
+	LOCAL = 0, /*!< No scheduler present, will use carl::exec_command */
 	PBS = 1, // PBS / Torque
 	SLURM = 2 // SLURM, not implemented right now
 };
@@ -63,6 +63,18 @@ enum SearchMethod
 enum RBModesSystem {
 	MACRO = 0,
 	MICRO = 1
+};
+// [DYN]
+enum ForcePrepareMethod{
+  MODAL_SINUS = 0,
+  MODAL_CONSTANT = 1,
+  MODAL_LINEAR = 2,
+  MODAL_PRODUCT = 99,
+
+};
+enum DynamicSolver{
+	DI = 0,
+	CG = 1,
 };
 }
 

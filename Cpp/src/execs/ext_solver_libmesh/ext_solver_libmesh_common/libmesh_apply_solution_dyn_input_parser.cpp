@@ -1,8 +1,10 @@
 /*
- * libmesh_apply_solution_dyn_input_parser.h
+ * \file libmesh_apply_solution_dyn_input_parser.cpp
  *
  *  Created on: Feb 23, 2022
  *      Author: Chensheng Luo
+ *
+ * \brief **DYN-DI/DYN-CG** Parser function for mesh deformation (apply solution) programs
  */
 #include "libmesh_apply_solution_dyn_input_parser.h"
 
@@ -50,6 +52,17 @@ void get_input_params(GetPot& field_parser,
   	} else {
     	input_params.step_loop_times = 1;
   	}
+
+    if (field_parser.search(1,"NewmarkParameters")){
+        std::string filename;
+        filename = field_parser.next(filename);
+        GetPot newmark_parser;
+        newmark_parser.parse_input_file(filename, "#", "\n", " \t\n");
+        carl::get_newmark_params(newmark_parser, input_params.Newmark);
+      } else{
+        homemade_error_msg("[CArl Parameters]Missing Newmark parameters file!");
+      }
+
 };
 
 };

@@ -52,9 +52,9 @@ class border_displacement_function : public libMesh::FunctionBase<libMesh::Numbe
       output(_w_var) = _z_displ;
     }
 
-    virtual libMesh::UniquePtr<FunctionBase<libMesh::Number> > clone() const
+    virtual std::unique_ptr<FunctionBase<libMesh::Number> > clone() const
     {
-      return libMesh::UniquePtr<FunctionBase<libMesh::Number> >
+      return std::unique_ptr<FunctionBase<libMesh::Number> >
         (new border_displacement_function(  _u_var, _v_var, _w_var,
                       _x_displ, _y_displ, _z_displ));
     }

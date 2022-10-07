@@ -506,12 +506,20 @@ void carl::PETSC_invert_dense_matrix(Mat& matrix_in, Mat& matrix_out)
 	MatShift(Id_mat,1);
 
 	// Factor input matrix
-	MatGetOrdering(matrix_in,MATORDERINGNATURAL,  &rperm,  &cperm);
-	MatFactorInfoInitialize(&factor_info);
-	MatLUFactor(matrix_in,rperm,cperm,&factor_info);
+	MatGetOrdering(matrix_in,MATORDERINGND,  &rperm,  &cperm);
+	// MatFactorInfoInitialize(&factor_info);
+	// MatLUFactor(matrix_in,rperm,cperm,&factor_info);
+
+	Mat F;
+	MatGetFactor(matrix_in,MATSOLVERPETSC,MAT_FACTOR_LU,&F);
+  	MatFactorInfoInitialize(&factor_info);
+  	MatLUFactorSymbolic(F,matrix_in,rperm,cperm,&factor_info);
+ 	MatLUFactorNumeric(F,matrix_in,&factor_info);
+
+	MatMatSolve(F,Id_mat,matrix_out);
 
 	// Calculate inverse
-	MatMatSolve(matrix_in,Id_mat,matrix_out);
+	//MatMatSolve(matrix_in,Id_mat,matrix_out);
 
 	// Reset input's factoring
 	MatSetUnfactored(matrix_in);

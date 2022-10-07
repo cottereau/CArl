@@ -10,6 +10,7 @@
 
 #include "common_header_ext_solver_libmesh.h"
 #include "ext_solver_libmesh_enums.h"
+#include "newmark_param_parser.h"
 
 struct libmesh_assemble_input_params {
   std::string mesh_file;          ///< Path to the system mesh.
@@ -27,9 +28,14 @@ struct libmesh_assemble_input_params {
 //struct dynamic_params 
 //{
   /*dynamic params*/
-  double deltat; //step time of calculatiom
-  double beta; 
-  double gamma;
+  carl::NewmarkParams Newmark;
+  // double deltat; //step time of calculation
+  // double alpha;
+  // double beta; 
+  // double gamma;
+
+  double CM;            ///< Coefficient for proportional damping, *Defalut*: 0
+  double CK;            ///< Coefficient for proportional damping, *Defalut*: 0
   std::string dis_vec_name, vel_vec_name, acc_vec_name;
   //unsigned int n_timesteps; // number of time step
   //unsigned int write_interval;
@@ -46,8 +52,8 @@ struct material_params
 {
   /* material params */
   double rho = 10000;
-  double poisson_ratio = 1e6;
-  double young_modulus = 0.5;
+  double poisson_ratio = 0.5;
+  double young_modulus = 1e6;
 };
 
 /** \brief Parser function for the coupled solver test programs.
@@ -58,12 +64,17 @@ struct material_params
  *    - `SystemType` : parameter used to tell the assembler which weight functions must be used. *Values*: `Micro` or `Macro`.
  *    - `MeshWeight` : path to the mesh defining the domains of the Arlequin weight parameters.
  *    - `WeightIndexes` : path to the indices of the domains of the Arlequin weight parameters.
+ *    - `NewmarkParameters` : Newmark Parameter File
  *
  *  Optional parameter:
  *    - `OutputBase` or `--output` : base of the output files (including folders). *Default*: `test_system`.
  *
  *  Boolean flags:
  *    - `ExportRBVectors` : build and export the rigid body modes vectors.
+ * 
+ *  * Optional parameters*:
+ *    - `CM` : Coefficient for proportional damping, *Defalut*: 0
+ *    - `CK` : Coefficient for proportional damping, *Defalut*: 0
  */
 void get_input_params(GetPot& field_parser,
   libmesh_assemble_input_params& input_params);

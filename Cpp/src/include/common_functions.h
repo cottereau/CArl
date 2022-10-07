@@ -11,6 +11,7 @@
 #include "common_header_libmesh.h"
 #include "common_header.h"
 #include "common_enums.h"
+#include "common_struct.h"
 
 int kronecker_delta(unsigned int i,
            unsigned int j);

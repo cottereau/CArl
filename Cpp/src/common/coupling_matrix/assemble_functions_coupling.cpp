@@ -1,3 +1,13 @@
+
+ /*
+ * \file assemble_functions_coupling.cpp
+ *
+ *  Created on: Apr 13, 2017
+ *      Author: Thiago Milanetto Schlittler
+ * 
+ * \brief **STAT/DYN-DI/DYN-CG**   functions responsible for assembling coupling matrix
+ */
+
 #include "assemble_coupling.h"
 
 namespace carl

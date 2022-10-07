@@ -15,7 +15,7 @@
 namespace carl
 {
 
-/** \brief Class containing the operations needed for the FETI solver.
+/** \brief **STAT/DYN-STAT** Class containing the operations needed for the FETI solver.
  *
  *  This class is used by the several `CArl_FETI` programs to do operations of the FETI solver,
  *  including matrix and vector I/O and iteration operations. Due to the need to read vectors and 
@@ -366,10 +366,10 @@ public:
 
   //  --- Coupling matrix and preconditioner methods
   /// Read the mediator - micro system coupling matrix
-  void set_coupling_matrix_R_micro();
+  void set_coupling_matrix_R_micro(); 
 
   /// Read the mediator - macro system coupling matrix
-  void set_coupling_matrix_R_BIG();
+  void set_coupling_matrix_R_BIG(); 
 
   /// Read the mediator - mediator system coupling matrix
   void set_coupling_matrix_RR();
@@ -383,7 +383,7 @@ public:
   void set_preconditioner(BaseCGPrecondType CG_precond_type, bool bInitialSet = true);
 
   //  --- Null space / rigid body modes methods
-  /// Set up the 
+  /// Set up the rigid body boolean
   void using_rb_modes(bool bUseRigidBodyModes);
 
   /// Set and print the null space vectors and matrices
@@ -397,6 +397,8 @@ public:
 
   /// Calculate the inital solution, \f$\phi_0\f$
   void calculate_null_space_phi_0(const std::string& force_path);
+
+  void calculate_no_null_space_phi_0();
 
   //  --- Read methods
   /// Read the decoupled solutions, \f$ u_0,i\f$
@@ -447,21 +449,24 @@ public:
 
   /// Calculate the current `phi(kkk+1)` solution vector
   void calculate_phi();
-  
+
   /// Calculate the rigid body modes corrections
   void calculate_rb_correction();
 
   /// Calculate the scalar quantities
   void calculate_scalar_data();
 
-  /// Calculate the final coupled solution
+  /// [STAT]Calculate the final coupled solution
   void calculate_coupled_solution();
+
+  /// [DYN-CG]Calculate the dynamic coupled solution
+  void calculate_dynamic_coupling_solution(PetscScalar alphaA,PetscScalar alphaB);
 
   /// Check the convergence
   IterationStatus check_convergence(double rel_residual_conv, double abs_residual_conv, int max_iter_div, double rel_residual_div, double rb_modes_conv = -1);
 
   /// Increase the iteration counter
-  void increase_iter_counter();
+  ///NOT IMPLEMENTED void increase_iter_counter();
 
   //  --- Write methods
   /// Calculate and export the external solver RHS's for the next iteration
@@ -500,8 +505,10 @@ public:
   // Export the iteration vectors
   void export_iter_vecs();
 
-  // Export the final coupled solution
+  // [STAT]Export the final coupled solution
   void export_coupled_solution(std::string output_base);
+  // [DYN-CG]Export the final coupled solution
+  void export_dynamic_coupled_solution(std::string output_base);
 
   // Print on `std::cout` the current values of the convergence parameters - and if we converged
   void print_previous_iters_conv(int nb_of_iters = 5);

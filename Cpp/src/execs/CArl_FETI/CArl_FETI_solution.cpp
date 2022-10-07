@@ -1,7 +1,7 @@
 #include "CArl_FETI_solution.h"
 
 /** \file CArl_FETI_solution.cpp
-\brief Program responsible to calculate the coupled system solution of the FETI algorithm
+\brief **STAT** Program responsible to calculate the coupled system solution of the FETI algorithm
 
 This program's input file description can be found at the documentation of the function carl::get_input_params(GetPot& field_parser, feti_set_sol_params& input_params).
   

@@ -1,6 +1,22 @@
+/*
+ *
+ *  Created on: Nov 17，2021
+ *      Author: Chensheng Luo
+ */
 #include "CArl_loop_dyn.h"
+#include <unistd.h>
+/** \file CArl_loop_dyn_setup.cpp
 
-int main(int argc, char** argv) {
+\brief  **DYN-DI/DYN-CG** Program responsible to set up all environments, which will create all necesarry input files.
+
+This program's input file description can be found at the documentation of the function carl::get_input_params(GetPot& field_parser, feti_loop_dyn_params& input_params). 
+
+In this step, it will generate all setup files, as well as prepare all forces for futur calculation.
+Initial conditions will equally be considered to generate the initial RHS vectors.
+*/
+
+
+int main(int argc, char* argv[]) {
 
   // --- Initialize libMesh
   libMesh::LibMeshInit init(argc, argv);
@@ -32,32 +48,66 @@ int main(int argc, char** argv) {
        field_parser = command_line;
   }
 
+  
+
   carl::feti_loop_dyn_params input_params;
   get_input_params(field_parser, input_params);
 
-  //total_iterations = (int)(input_params.simulation_duration/input_params.deltatA);
-  //inner_iterations = (int)(input_params.deltatA/input_params.deltatB);
+
+
+  std::cout << " !!! Finish parser " << std::endl;
+
+  // --- Crete the files / folders needed
+  if(input_params.dyn_solver == carl::DynamicSolver::DI){
+        carl::Dyn_DI_Solver_Files_Setup DI_files_setup(WorldComm,input_params);
+        DI_files_setup.set_scratch_folder();
+        DI_files_setup.generate_libmesh_external_solver_inputs();
+        DI_files_setup.generate_libmesh_external_solver_script();
+        DI_files_setup.generate_inner_operation_script();
+        DI_files_setup.generate_combined_scripts();
+        DI_files_setup.generate_progression_inputs();
+        std::cout << " !!! Script Files Generated " << std::endl;
+    }else if(input_params.dyn_solver == carl::DynamicSolver::CG ){
+        carl::Dyn_CG_Solver_Files_Setup CG_files_setup(WorldComm,input_params);
+        //Prepare work for FETI_files_setup
+        CG_files_setup.set_scratch_folder();
+        CG_files_setup.generate_libmesh_external_solver_inputs();
+        CG_files_setup.generate_libmesh_external_solver_script();
+        CG_files_setup.generate_inner_operation_script();
+        CG_files_setup.generate_combined_scripts();
+        CG_files_setup.generate_progression_inputs();
+        std::cout << " !!! Script Files Generated " << std::endl;
+    }else{
+        homemade_error_msg("Invalid dynamic solver, please configure to DI or CG!");
+    }
 
   //Generate script file
-  carl::Dyn_Solver_Files_Setup FETI_files_setup(WorldComm,input_params);
-  //Prepare work for FETI_files_setup
-  FETI_files_setup.set_scratch_folder();
+  carl::FETI_Dyn_Operations Dyn_op(WorldComm,input_params.scratch_folder_path,input_params.result_folder_path);
+  
+  #ifdef TEST_COUPLING_RESULT
+    Dyn_op.init_test_coupling();
+  #endif
+  
+  #ifdef PRINT_CALCULATION_TIME
+    Dyn_op.export_calculation_time(0,"Begin");
+  #endif
 
-  FETI_files_setup.generate_libmesh_external_solver_inputs();
-  FETI_files_setup.generate_libmesh_external_solver_script();
-  FETI_files_setup.generate_inner_operation_script();
-  FETI_files_setup.generate_combined_scripts();
-  FETI_files_setup.generate_progression_inputs();
+  Dyn_op.init_prepare_force(input_params.force_prepare_method,
+    input_params.force_prepare_params,
+    input_params.inner_loop_times,
+    input_params.newmark_B.deltat,
+    &Dyn_op.vector_A,
+    &Dyn_op.vector_B);
 
-  carl::FETI_Dyn_Operations feti_op(WorldComm,input_params.scratch_folder_path);
-  feti_op.init_prepare_force_vector_by_modal_and_sinus(input_params.rhs_vector_A,
-      input_params.rhs_vector_B,
-      1,
-      5/input_params.simulation_duration,
-      0,
-      input_params.deltatB,
-      input_params.inner_loop_times,
-      input_params.outer_loop_times);
+  Dyn_op.set_initial_condition(&input_params.initial_A,
+    &input_params.initial_B,
+    &input_params.matrix_A,
+    &input_params.matrix_B,
+    &input_params.newmark_A,
+    &input_params.newmark_B,
+    &Dyn_op.vector_A,
+    &Dyn_op.vector_B,
+    input_params.result_folder_path);
 
   // Calculate A_free_acc
 

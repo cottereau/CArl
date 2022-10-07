@@ -114,40 +114,28 @@ void get_assemble_coupling_input_params(GetPot& field_parser,
     input_params.dynamic_analysis = false;
   }
 
-  if (field_parser.search(1, "deltatA")) {
-    input_params.deltatA = field_parser.next(input_params.deltatA);
-  } else {
-    input_params.deltatA = 0.25;
-  }
+  if (input_params.dynamic_analysis==true){
 
-  if (field_parser.search(1, "betaA")) {
-    input_params.betaA = field_parser.next(input_params.betaA);
-  } else {
-    input_params.betaA = 0.25;
-  }
+    if (field_parser.search(2, "NewmarkParametersA","NewmarkParameters")){
+        std::string filename;
+        filename = field_parser.next(filename);
+        GetPot newmark_parser;
+        newmark_parser.parse_input_file(filename, "#", "\n", " \t\n");
+        carl::get_newmark_params(newmark_parser, input_params.newmark_A);
+      } else{
+        homemade_error_msg("[CArl Parameters]Missing A Newmark parameters file!");
+      }
 
-  if (field_parser.search(1, "gammaA")) {
-    input_params.gammaA = field_parser.next(input_params.gammaA);
-  } else {
-    input_params.gammaA = 0.5;
-  }
+    if (field_parser.search(2, "NewmarkParametersB","NewmarkParameters")){
+        std::string filename;
+        filename = field_parser.next(filename);
+        GetPot newmark_parser;
+        newmark_parser.parse_input_file(filename, "#", "\n", " \t\n");
+        carl::get_newmark_params(newmark_parser, input_params.newmark_B);
+      } else{
+        homemade_error_msg("[CArl Parameters]Missing B Newmark parameters file!");
+      }
 
-  if (field_parser.search(1, "deltatB")) {
-    input_params.deltatB = field_parser.next(input_params.deltatB);
-  } else {
-    input_params.deltatB = 0.25;
-  }
-
-  if (field_parser.search(1, "betaB")) {
-    input_params.betaB = field_parser.next(input_params.betaB);
-  } else {
-    input_params.betaB = 0.25;
-  }
-
-  if (field_parser.search(1, "gammaB")) {
-    input_params.gammaB = field_parser.next(input_params.gammaB);
-  } else {
-    input_params.gammaB = 0.5;
   }
 
 };

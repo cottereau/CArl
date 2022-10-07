@@ -57,13 +57,17 @@ protected:
   void print_feti_iterate_params(const std::string& output_filename);
   void print_feti_solution_params(const std::string& output_filename);
   void print_PBS_script(const std::string& output_filename, const std::string& job_name, const std::string& output_name, const std::string& error_name, const std::string& common_script, const std::string& command_to_run);
+  void print_SLURM_script(const std::string& output_filename, const std::string& job_name, const std::string& output_name, const std::string& error_name, const std::string& common_script, const std::string& command_to_run);
   
   void generate_FETI_launch_scripts_LOCAL();
   void generate_FETI_launch_scripts_PBS();
+  void generate_FETI_launch_scripts_SLURM();
   void generate_FETI_scripts_LOCAL();
   void generate_FETI_scripts_PBS();
+  void generate_FETI_scripts_SLURM();
   void generate_libmesh_external_solver_scripts_LOCAL();
   void generate_libmesh_external_solver_scripts_PBS();
+  void generate_libmesh_external_solver_scripts_SLURM();
 
   Solver_Files_Setup();
 public:

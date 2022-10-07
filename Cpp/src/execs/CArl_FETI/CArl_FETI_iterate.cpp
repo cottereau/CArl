@@ -1,6 +1,6 @@
 #include "CArl_FETI_iterate.h"
 /** \file CArl_FETI_iterate.cpp
- *  \brief Program responsible to running the FETI iterations
+ *  \brief **STAT** Program responsible to running the FETI iterations
  *
  *  This program's input file description can be found at the documentation of the function 
 carl::get_input_params(GetPot& field_parser, feti_iterate_params& input_params).

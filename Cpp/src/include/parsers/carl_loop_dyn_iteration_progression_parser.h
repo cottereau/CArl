@@ -19,6 +19,17 @@ struct feti_loop_dyn_iteration_progression_params {
     int outer_loop_progression;
 };
 
+/** \brief **DYN-DI/DYN-CG** Parser function for dynamic solvers input.
+ *  
+Required parameters:
+    - `InnerProgression` : the number of inner progression already passed
+    - `OuterProgression` : the number of outer progression already passed
+
+The input of this parser is iteration_progression.txt in scratch folder. This input file 
+is automatically generated at the file CArl_loop_dyn_setup.cpp and read/written at the end of each step.
+    *
+    * */
+
 void get_input_params(GetPot& field_parser,
         feti_loop_dyn_iteration_progression_params& input_params);
 
