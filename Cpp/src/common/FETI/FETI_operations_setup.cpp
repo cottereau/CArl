@@ -1,4 +1,13 @@
-#include "FETI_operations.h"
+/*
+ * \file FETI_operations_setup.cpp
+ *
+ *  Created on: Apr 23, 2017
+ *      Author: Thiago Milanetto Schlittler
+ * 
+ * \brief **STAT/DYN-CG**   setup and internal calculations (including all `protected` methods)  for the FETI solver.
+ */
+
+ #include "FETI_operations.h"
 
 namespace carl
 {
@@ -355,10 +364,15 @@ void FETI_Operations::set_null_space(const std::string& input_filename_base, int
   MatAssemblyEnd(m_RITRI_mat,MAT_FINAL_ASSEMBLY);
 
   PETSC_invert_dense_matrix(m_RITRI_mat,m_inv_RITRI_mat);
+  
 
   if(m_comm.rank() == 0)
   {
     write_PETSC_matrix(m_inv_RITRI_mat,m_scratch_folder_path + "/rb_inv_RITRI.petscmat",0,PETSC_COMM_SELF);
+    #ifdef PRINT_MATLAB_DEBUG
+      carl::write_PETSC_matrix_MATLAB(m_inv_RITRI_mat,m_scratch_folder_path + "/rb_inv_RITRI.m",PETSC_COMM_SELF);
+      carl::write_PETSC_matrix_MATLAB(m_RITRI_mat,m_scratch_folder_path + "/rb_RITRI.m",PETSC_COMM_SELF);
+    #endif
   }
 
   // Set up flag

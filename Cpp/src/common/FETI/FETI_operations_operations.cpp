@@ -1,3 +1,13 @@
+/*
+ * \file FETI_operations_operations.cpp
+ *
+ *  Created on: Apr 23, 2017
+ *      Author: Thiago Milanetto Schlittler
+ * 
+ * \brief **STAT/DYN-CG**    FETI operations called by the `CArl_FETI` programs  for the FETI solver.
+ */
+
+
 #include "FETI_operations.h"
 
 namespace carl
@@ -50,7 +60,7 @@ void FETI_Operations::calculate_null_space_phi_0(const std::string& force_path)
          *    we have to do it this way to avoid a "Value must the same in all processors" error
          *    when calling VecMAXPY below.
          */
-        PETSC_MatMultScale_Bcast(m_inv_RITRI_mat,aux_null_vec_input,aux_null_vec_output,1);
+  PETSC_MatMultScale_Bcast(m_inv_RITRI_mat,aux_null_vec_input,aux_null_vec_output,1);
 
   m_comm.barrier();
   
@@ -72,7 +82,19 @@ void FETI_Operations::calculate_null_space_phi_0(const std::string& force_path)
   // Set flags
   m_bSet_current_phi = true;
 }
+void FETI_Operations::calculate_no_null_space_phi_0(){
+  homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
+  homemade_assert_msg(m_bC_R_micro_MatrixSet,"Micro coupling matrix not set yet!");
+  homemade_assert_msg(m_bC_R_BIG_MatrixSet,"Macro coupling matrix not set yet!");
 
+  VecCreate(m_comm.get(),&m_current_phi);
+  VecSetSizes(m_current_phi,m_C_RR_M_local,m_C_RR_M);
+  VecSetFromOptions(m_current_phi);
+  VecZeroEntries(m_current_phi);
+
+  m_bSet_current_phi = true;
+
+}
 //  --- FETI steps methods
 void FETI_Operations::calculate_initial_p()
 {
@@ -132,6 +154,7 @@ void FETI_Operations::calculate_initial_r()
   // Set flag
   m_bSet_current_residual = true;
 }
+
 
 void FETI_Operations::calculate_p()
 {
@@ -359,6 +382,7 @@ void FETI_Operations::calculate_scalar_data()
   m_bCalculatedScalar = true;
 }
 
+//[STAT]Calculate the final coupled solution
 void FETI_Operations::calculate_coupled_solution()
 {
   homemade_assert_msg(m_bSet_ext_solver_sol,"Ext. solver solutions not set yet!");
@@ -378,6 +402,44 @@ void FETI_Operations::calculate_coupled_solution()
   // Add rigid body modes correction, if needed
   if(m_bUsingNullVecs)
   {
+    switch (m_RB_modes_system)
+    {
+      case RBModesSystem::MACRO :
+              VecAXPY(m_coupled_sol_BIG,1,m_current_rb_correction);
+              break;
+
+      case RBModesSystem::MICRO :
+              VecAXPY(m_coupled_sol_micro,1,m_current_rb_correction);
+              break;
+    }
+  }
+
+  m_bCoupled_sols_set = true;
+}
+
+//[Dyn-CG]Calculate the dynamic coupled solution
+void FETI_Operations::calculate_dynamic_coupling_solution(PetscScalar alphaA,PetscScalar alphaB)
+  //This part is for dynamic code.
+{
+  homemade_assert_msg(m_bSet_ext_solver_sol,"Ext. solver solutions not set yet!");
+  homemade_assert_msg(m_bSet_u_0,"Decoupled solution not set yet!");
+
+  // Set the solution vectors
+  VecDuplicate(m_ext_solver_sol_micro,&m_coupled_sol_micro);
+  VecDuplicate(m_ext_solver_sol_BIG,&m_coupled_sol_BIG);
+
+  // u_1_link = - x_1(FINAL)
+  VecCopy(m_ext_solver_sol_BIG,m_coupled_sol_BIG);
+  VecScale(m_coupled_sol_BIG,-alphaA);
+
+  // u_2_link =  + x_2(FINAL)
+  VecCopy(m_ext_solver_sol_micro,m_coupled_sol_micro);
+  VecScale(m_coupled_sol_micro,alphaB);
+
+  // Add rigid body modes correction, if needed
+  if(m_bUsingNullVecs)
+  {
+    homemade_assert_msg(m_bSet_current_RB_correction,"RB modes correction not set yet!");
     switch (m_RB_modes_system)
     {
       case RBModesSystem::MACRO :

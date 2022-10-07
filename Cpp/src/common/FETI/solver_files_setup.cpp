@@ -1,3 +1,12 @@
+/*
+ * \file solver_files_setup.cpp
+ *
+ *  Created on: Apr 23, 2017
+ *      Author: Thiago Milanetto Schlittler
+ * 
+ * \brief **STAT**   functions responsible for generating all scripts of Solving step of static solver
+ */
+
 #include "solver_files_setup.h"
 
 namespace carl
@@ -70,6 +79,19 @@ void Solver_Files_Setup::print_PBS_script(const std::string& output_filename, co
   output_script << "#PBS -N " << job_name << std::endl;
   output_script << "#PBS -o " << output_name << std::endl;
   output_script << "#PBS -e " << error_name << std::endl;
+  output_script << common_script << std::endl;
+  output_script << command_to_run << std::endl;
+  output_script.close();
+};
+
+void Solver_Files_Setup::print_SLURM_script(const std::string& output_filename, const std::string& job_name, const std::string& output_name, const std::string& error_name, const std::string& common_script, const std::string& command_to_run)
+{
+  std::ofstream output_script(output_filename);
+  output_script << "#!/bin/bash" << std::endl;
+  output_script << std::endl;
+  output_script << "#SBATCH --job-name=" << job_name << std::endl;
+  output_script << "#SBATCH --output=" << output_name << std::endl;
+  output_script << "#SBATCH --error=" << error_name << std::endl;
   output_script << common_script << std::endl;
   output_script << command_to_run << std::endl;
   output_script.close();
@@ -162,7 +184,7 @@ void Solver_Files_Setup::generate_libmesh_external_solver_scripts()
     case ClusterSchedulerType::PBS :    this->generate_libmesh_external_solver_scripts_PBS();
             break;
 
-    case ClusterSchedulerType::SLURM :  homemade_error_msg("Scheduler not implemented yet!");
+    case ClusterSchedulerType::SLURM :  this->generate_libmesh_external_solver_scripts_SLURM();
             break;
     default : homemade_error_msg("Invalid scheduler name!");
   }
@@ -258,6 +280,60 @@ void Solver_Files_Setup::generate_libmesh_external_solver_scripts_PBS()
   }
 }
 
+void Solver_Files_Setup::generate_libmesh_external_solver_scripts_SLURM()
+{
+  homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
+  homemade_assert_msg(m_bScratchFolderExists,"Scratch folder not set yet!");
+  homemade_assert_msg(m_bSetExternalSolversInputFiles,"External solver input files not set yet!");
+
+  if(m_comm.rank() == 0)
+  {
+    // Get the full common script file into a string
+    std::ifstream base_script(m_input_params.script_filename);
+    std::string common_script((std::istreambuf_iterator<char>(base_script)),
+                  std::istreambuf_iterator<char>());
+    base_script.close();
+
+    std::string slurm_output;
+    std::string slurm_error;
+    std::string command_to_run;
+
+    // Set the u0_i scripts
+    slurm_output = m_input_params.scratch_folder_path + "/output_ext_u0_A.txt";
+    slurm_error  = m_input_params.scratch_folder_path + "/error_ext_u0_A.txt";
+    command_to_run = m_input_params.ext_solver_BIG + " " + m_ext_solver_u0_A_input_filename;
+
+    this->print_SLURM_script( m_ext_solver_u0_A_script_filename, "ext_u0_A",
+              slurm_output, slurm_error, common_script,
+              command_to_run);
+
+    slurm_output = m_input_params.scratch_folder_path + "/output_ext_u0_B.txt";
+    slurm_error  = m_input_params.scratch_folder_path + "/error_ext_u0_B.txt";
+    command_to_run = m_input_params.ext_solver_micro + " " + m_ext_solver_u0_B_input_filename;
+
+    this->print_SLURM_script( m_ext_solver_u0_B_script_filename, "ext_u0_B",
+              slurm_output, slurm_error,common_script,
+              command_to_run);
+
+    // Set the yk_i scripts
+    slurm_output = m_input_params.scratch_folder_path + "/output_ext_A.txt";
+    slurm_error  = m_input_params.scratch_folder_path + "/error_ext_A.txt";
+    command_to_run = m_input_params.ext_solver_BIG + " " + m_ext_solver_A_input_filename;
+
+    this->print_SLURM_script( m_ext_solver_A_script_filename, "ext_A",
+              slurm_output, slurm_error,common_script,
+              command_to_run);
+
+    slurm_output = m_input_params.scratch_folder_path + "/output_ext_B.txt";
+    slurm_error  = m_input_params.scratch_folder_path + "/error_ext_B.txt";
+    command_to_run = m_input_params.ext_solver_micro + " " + m_ext_solver_B_input_filename;
+
+    this->print_SLURM_script( m_ext_solver_B_script_filename, "ext_B",
+              slurm_output, slurm_error,common_script,
+              command_to_run);
+  }
+}
+
 void Solver_Files_Setup::generate_FETI_inputs()
 {
   homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
@@ -301,7 +377,7 @@ void Solver_Files_Setup::generate_FETI_scripts()
     case ClusterSchedulerType::PBS :    this->generate_FETI_scripts_PBS();
             break;
 
-    case ClusterSchedulerType::SLURM :  homemade_error_msg("Scheduler not implemented yet!");
+    case ClusterSchedulerType::SLURM :  this->generate_FETI_scripts_SLURM();
             break;
     default : homemade_error_msg("Invalid scheduler name!");
   }
@@ -378,6 +454,50 @@ void Solver_Files_Setup::generate_FETI_scripts_PBS()
   }
 }
 
+void Solver_Files_Setup::generate_FETI_scripts_SLURM()
+{
+  if(m_comm.rank() == 0)
+  {
+    // Get the full common script file into a string
+    std::ifstream base_script(m_input_params.script_filename);
+    std::string common_script((std::istreambuf_iterator<char>(base_script)),
+                  std::istreambuf_iterator<char>());
+    base_script.close();
+
+    std::string pbs_output;
+    std::string pbs_error;
+    std::string command_to_run;
+
+    // Set the u0_i scripts
+    pbs_output = m_input_params.scratch_folder_path + "/output_CArl_FETI_setup_finish.txt";
+    pbs_error  = m_input_params.scratch_folder_path + "/error_CArl_FETI_setup_finish.txt";
+    command_to_run = "srun -n " + std::to_string(m_comm.size()) + " $CARLBUILD/CArl_FETI_setup_finish -i " +
+              m_CArl_FETI_setup_finish_input_filename;
+
+    this->print_PBS_script( m_CArl_FETI_setup_finish_script_filename, "CArl_setup_f",
+              pbs_output, pbs_error, common_script,
+              command_to_run);
+    
+    pbs_output = m_input_params.scratch_folder_path + "/output_CArl_FETI_iterate.txt";
+    pbs_error  = m_input_params.scratch_folder_path + "/error_CArl_FETI_iterate.txt";
+    command_to_run = "srun -n " + std::to_string(m_comm.size()) + " $CARLBUILD/CArl_FETI_iterate -i " +
+              m_CArl_FETI_iterate_input_filename;
+
+    this->print_PBS_script( m_CArl_FETI_iterate_script_filename, "CArl_iter",
+              pbs_output, pbs_error, common_script,
+              command_to_run);
+
+    pbs_output = m_input_params.scratch_folder_path + "/output_CArl_FETI_solution.txt";
+    pbs_error  = m_input_params.scratch_folder_path + "/error_CArl_FETI_solution.txt";
+    command_to_run = "srun -n " + std::to_string(m_comm.size()) + " $CARLBUILD/CArl_FETI_solution -i " +
+              m_CArl_FETI_solution_input_filename;
+
+    this->print_PBS_script( m_CArl_FETI_solution_script_filename, "CArl_sol",
+              pbs_output, pbs_error, common_script,
+              command_to_run);
+  }
+}
+
 void Solver_Files_Setup::generate_FETI_launch_scripts()
 {
 
@@ -398,7 +518,7 @@ void Solver_Files_Setup::generate_FETI_launch_scripts()
     case ClusterSchedulerType::PBS :    this->generate_FETI_launch_scripts_PBS();
             break;
 
-    case ClusterSchedulerType::SLURM :  homemade_error_msg("Scheduler not implemented yet!");
+    case ClusterSchedulerType::SLURM :  this->generate_FETI_launch_scripts_SLURM();
             break;
     default : homemade_error_msg("Invalid scheduler name!");
   }
@@ -494,6 +614,55 @@ void Solver_Files_Setup::generate_FETI_launch_scripts_PBS()
     FETI_set_sol_script << "job6_B=`qsub " << m_ext_solver_B_script_filename << "`" << std::endl;
     FETI_set_sol_script << "job7=`qsub -W depend=afterok:$job6_A:$job6_B "
               << m_CArl_FETI_solution_script_filename << "`" << std::endl;
+    FETI_set_sol_script.close();
+  }
+};
+
+void Solver_Files_Setup::generate_FETI_launch_scripts_SLURM()
+
+{
+  homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
+  homemade_assert_msg(m_bScratchFolderExists,"Scratch folder not set yet!");
+  homemade_assert_msg(m_bSetExternalSolversFiles,"External solver scripts not set yet!");
+  homemade_assert_msg(m_bSetCArlFETIScripts,"CArl_FETI scripts not set yet!");
+
+  // ONLY WORK ON PROCESSOR 0 !!!
+  if(m_comm.rank() == 0)
+  {
+    std::ofstream FETI_init_script(m_FETI_init_launch_script_filename);
+    FETI_init_script << "#!/bin/bash" << std::endl;
+    FETI_init_script << std::endl;
+    FETI_init_script << "job1_A=$(sbatch " << m_ext_solver_u0_A_script_filename << ")" << std::endl;
+    FETI_init_script << "job1_B=$(sbatch " << m_ext_solver_u0_B_script_filename << ")" << std::endl;
+    // --- We will only need job2_i if the rigid body modes are needed
+    if(m_input_params.bUseRigidBodyModes)
+    {
+      FETI_init_script << "job2_A=$(sbatch " << m_ext_solver_A_script_filename << ")" << std::endl;
+      FETI_init_script << "job2_B=$(sbatch " << m_ext_solver_B_script_filename << ")" << std::endl;
+      FETI_init_script << "job3=$(sbatch --dependency=afterok:$(squeue --noheader --format %i --name ext_u0_A):$(squeue --noheader --format %i --name ext_u0_B):$(squeue --noheader --format %i --name ext_A):$(squeue --noheader --format %i --name ext_B) "
+              << m_CArl_FETI_setup_finish_script_filename << ")" << std::endl;
+    } else {
+      FETI_init_script << "job3=$(sbatch --dependency=afterok:$(squeue --noheader --format %i --name ext_u0_A):$(squeue --noheader --format %i --name ext_u0_B) "
+              << m_CArl_FETI_setup_finish_script_filename << ")" << std::endl;
+    }
+    FETI_init_script.close();
+
+    std::ofstream FETI_iter_script(m_FETI_iter_launch_script_filename);
+    FETI_iter_script << "#!/bin/bash" << std::endl;
+    FETI_iter_script << std::endl;
+    FETI_iter_script << "job4_A=$(sbatch " << m_ext_solver_A_script_filename << ")" << std::endl;
+    FETI_iter_script << "job4_B=$(sbatch " << m_ext_solver_B_script_filename << ")" << std::endl;
+    FETI_iter_script << "job5=$(sbatch --dependency=afterok:$(squeue --noheader --format %i --name ext_A):$(squeue --noheader --format %i --name ext_B) "
+              << m_CArl_FETI_iterate_script_filename << ")" << std::endl;
+    FETI_iter_script.close();
+
+    std::ofstream FETI_set_sol_script(m_FETI_sol_launch_script_filename);
+    FETI_set_sol_script << "#!/bin/bash" << std::endl;
+    FETI_set_sol_script << std::endl;
+    FETI_set_sol_script << "job6_A=$(sbatch " << m_ext_solver_A_script_filename << ")" << std::endl;
+    FETI_set_sol_script << "job6_B=$(sbatch " << m_ext_solver_B_script_filename << ")" << std::endl;
+    FETI_set_sol_script << "job7=$(sbatch --dependency=afterok:$(squeue --noheader --format %i --name ext_A):$(squeue --noheader --format %i --name ext_B) "
+              << m_CArl_FETI_solution_script_filename << ")" << std::endl;
     FETI_set_sol_script.close();
   }
 };

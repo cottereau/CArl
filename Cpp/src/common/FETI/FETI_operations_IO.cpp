@@ -1,3 +1,13 @@
+/*
+ * \file FETI_operations_IO.cpp
+ *
+ *  Created on: Apr 23, 2017
+ *      Author: Thiago Milanetto Schlittler
+ * 
+ * \brief **STAT/DYN-CG**  read/write methods for the FETI solver.
+ */
+
+
 #include "FETI_operations.h"
 
 namespace carl
@@ -171,6 +181,7 @@ void FETI_Operations::read_null_space_vecs(const std::string& RB_vectors_base, i
   // Set up flag
   m_bNullVecsSet = true;
 }
+
 
 void FETI_Operations::read_null_space_inv_RITRI_mat()
 {
@@ -763,6 +774,7 @@ void FETI_Operations::export_iter_vecs()
   this->export_q();
 }
 
+//[STAT]Export the final coupled solution
 void FETI_Operations::export_coupled_solution(std::string output_base)
 {
   homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
@@ -775,6 +787,22 @@ void FETI_Operations::export_coupled_solution(std::string output_base)
 #ifdef PRINT_MATLAB_DEBUG
   write_PETSC_vector_MATLAB(m_coupled_sol_BIG,output_base + "/coupled_sol_A.m",m_comm.get());
   write_PETSC_vector_MATLAB(m_coupled_sol_micro,output_base + "/coupled_sol_B.m",m_comm.get());
+#endif
+}
+
+//[DYN-CG]Export the final coupled solution
+void FETI_Operations::export_dynamic_coupled_solution(std::string output_base)
+{
+  homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
+  homemade_assert_msg(m_bCoupled_sols_set,"Coupled solutions not calculated yet!");
+
+  write_PETSC_vector(m_coupled_sol_BIG,output_base + "/this_acc_A_link_sys_sol_vec.petscvec",m_comm.rank(),m_comm.get());
+  write_PETSC_vector(m_coupled_sol_micro,output_base + "/this_acc_B_link_sys_sol_vec.petscvec",m_comm.rank(),m_comm.get());
+
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
+#ifdef PRINT_MATLAB_DEBUG
+  write_PETSC_vector_MATLAB(m_coupled_sol_BIG,output_base + "/this_acc_A_link_sys_sol_vec.m",m_comm.get());
+  write_PETSC_vector_MATLAB(m_coupled_sol_micro,output_base + "/this_acc_B_link_sys_sol_vec.m",m_comm.get());
 #endif
 }
 
