@@ -1,0 +1,60 @@
+/** \file cpp_static_example_traction.dox
+
+\page traction_example_coupl_assemble Coupling matrices assembly
+
+Now that we have the mesh intersections, we can use them to build the coupling matrices. Three matrices will be constructed:
+
+ - Two \f$ n_{\mbox{Med}} \times n_l\f$ coupling matrices, noted as \f$C_l\f$ (\f$m = 1,2\f$).
+ - One \f$ n_{\mbox{Med}} \times n_{\mbox{Med}}\f$ matrix, noted as \f$C_{\mbox{Med}}\f$.
+
+\f$ n_{\mbox{Med}} \f$ and \f$ n_l \f$ are the number of degrees of freedom of the mediator and the model \f$ m \f$ meshes, respectively. The \f$C_l\f$ matrices are the coupling matrices between the models and the mediator space used by the Arlequin method. The \f$C_{\mbox{Med}}\f$ is completely defined inside the mediator space, and it is used by the conjugate gradient solver preconditioners. By default, the restricted mesh of the `Macro` / `A` model is used as the mediator.
+
+Submiting `scripts/PBS_FETI_test_assemble_coupling_matrices_traction_test_1k.pbs` or executing `scripts/LOCAL_FETI_test_assemble_coupling_matrices_traction_test_1k.sh` will run the command
+
+    mpirun -n 4 ./CArl_assemble_coupling -i examples/coupled_traction_test/FETI_solver/brick_traction_1k/assemble_coupling_1k.txt
+
+* **Note**: the `CArl_assemble_coupling` _MUST_ be executed with the same number of processors as the intersection construction case. This is because each processor does most of the coupling matrices calculations independently, reading only one of the `[nb. of processors]` intersection meshes.
+
+\section traction_example_coupl_assemble_input Input
+
+File: examples/coupled_traction_test/FETI_solver/brick_traction_1k/assemble_coupling_1k.txt
+
+	### Coupling matrices assembly parameters
+	# - Model meshes
+	MeshA examples/coupled_traction_test/meshes/test_brick_A_1k.msh
+	MeshB examples/coupled_traction_test/meshes/test_brick_B_1k.msh
+
+	# - Intersection meshes and table files
+	InterBase examples/coupled_traction_test/intersection/output/inter_1k/inter
+
+	### Coupling parameters
+	# - Coupling region width (same unit as the meshes)
+	CouplingWidth 0.5
+
+	# - Coupling rigidity (in MPa, if mm was used for the meshes)
+	CouplingRigidity 2e5
+
+	# - Output folder path
+	OutputFolder examples/coupled_traction_test/FETI_solver/brick_traction_1k/coupling_matrices
+
+Input file parameters:
+
+ - `MeshA`, `MeshB`: as before, paths to the two model meshes.
+ - `InterBase`: common filename for the intersection and restriction meshes.
+ - `CouplingWidth`: width  of the coupling region (same unit as the meshes, \f$e\f$ in the \f$L_2\f$ coupling term).
+ - `CouplingRigidity`: rigidity used for the coupling matrix (in MPa, if mm was used for the meshes, \f$\kappa\f$ in both the \f$L_2\f$ and \f$H_1\f$ terms).
+ - `OutputFolder`: folder where the coupling matrices will be saved.
+
+Other optional parameters (not used here) include the paths to the restricted meshes and their mappings with the model meshes, and the choice of the mediator mesh. Those options are described at \ref CArl_assemble_coupling.cpp.
+
+\section traction_example_coupl_assemble_output Output
+
+After running the coupling assembly program, the three matrices will be created inside the `OutputFolder`:
+
+    coupling_matrix_micro.petscmat
+    coupling_matrix_macro.petscmat
+    coupling_matrix_mediator.petscmat
+
+These matrices are saved using PETSc's binary format. The extension `.petscmat` is arbitrary. Three other files, named `***.info`, contain some information on how PETSc should read these files (mainly, the matric block size).
+
+ */

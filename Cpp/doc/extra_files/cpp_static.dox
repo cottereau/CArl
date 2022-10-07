@@ -1,0 +1,17 @@
+/** \file cpp_static.dox
+
+	\page cpp_static CArl-Static Solver
+
+This part allows to get a stationnary solution of coupled system, i.e. the system with equation 
+\f{eqnarray}{
+
+K_1 U_1 + C_1^T \Phi &=& F_1\\
+K_2 U_2 + C_2^T \Phi &=& F_2\\
+C_1 U_1 - C_2 U_2 &=& 0
+    
+    \f}
+
+  	- \subpage cpp_static_usage
+    - \subpage cpp_static_examples
+
+ */

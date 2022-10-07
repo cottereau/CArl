@@ -2,13 +2,27 @@ var dir_b0856f6b0d80ccb263b2f415c91f9e17 =
 [
     [ "parsers", "dir_c16acd9b24e166ac201b5188ad4772dc.html", "dir_c16acd9b24e166ac201b5188ad4772dc" ],
     [ "assemble_coupling.h", "assemble__coupling_8h.html", "assemble__coupling_8h" ],
-    [ "carl_headers.h", "carl__headers_8h.html", null ],
+    [ "carl_headers.h", "carl__headers_8h.html", "carl__headers_8h" ],
     [ "CGAL_typedefs.h", "_c_g_a_l__typedefs_8h.html", "_c_g_a_l__typedefs_8h" ],
     [ "common_enums.h", "common__enums_8h.html", "common__enums_8h" ],
     [ "common_functions.h", "common__functions_8h.html", "common__functions_8h" ],
     [ "common_header.h", "common__header_8h.html", "common__header_8h" ],
     [ "common_header_libmesh.h", "common__header__libmesh_8h.html", null ],
+    [ "common_struct.h", "common__struct_8h.html", [
+      [ "DynInitialVectorPath", "structcarl_1_1_dyn_initial_vector_path.html", "structcarl_1_1_dyn_initial_vector_path" ],
+      [ "DynSystemMatrixPath", "structcarl_1_1_dyn_system_matrix_path.html", "structcarl_1_1_dyn_system_matrix_path" ],
+      [ "DynSystemVectorPath", "structcarl_1_1_dyn_system_vector_path.html", "structcarl_1_1_dyn_system_vector_path" ]
+    ] ],
+    [ "dyn_CG_solver_files_setup.h", "dyn___c_g__solver__files__setup_8h.html", [
+      [ "Dyn_CG_Solver_Files_Setup", "classcarl_1_1_dyn___c_g___solver___files___setup.html", "classcarl_1_1_dyn___c_g___solver___files___setup" ]
+    ] ],
+    [ "dyn_DI_solver_files_setup.h", "dyn___d_i__solver__files__setup_8h.html", [
+      [ "Dyn_DI_Solver_Files_Setup", "classcarl_1_1_dyn___d_i___solver___files___setup.html", "classcarl_1_1_dyn___d_i___solver___files___setup" ]
+    ] ],
     [ "ext_solver_libmesh_enums.h", "ext__solver__libmesh__enums_8h.html", "ext__solver__libmesh__enums_8h" ],
+    [ "FETI_dyn_operations.h", "_f_e_t_i__dyn__operations_8h.html", [
+      [ "FETI_Dyn_Operations", "classcarl_1_1_f_e_t_i___dyn___operations.html", "classcarl_1_1_f_e_t_i___dyn___operations" ]
+    ] ],
     [ "FETI_operations.h", "_f_e_t_i__operations_8h.html", [
       [ "FETI_Operations", "classcarl_1_1_f_e_t_i___operations.html", "classcarl_1_1_f_e_t_i___operations" ]
     ] ],

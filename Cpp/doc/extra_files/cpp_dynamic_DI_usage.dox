@@ -1,0 +1,152 @@
+/**
+\file cpp_dynamic_DI_usage.dox
+   
+\page cpp_dynamic_DI_usage CArl-Dyn-DI Solver 
+
+\section sec_dyn_di_cpp_dynamic_usage Usage
+
+\subsection subsec_dyn_di_cpp_dynamic_workflow Workflow
+
+The C++ implementation of the Arlequin method follows the algorithms presented in ref. **TO_INSERT**. The same as the static code, and it is roughly divided into five parts:
+
+1. the mesh intersection search
+2. the coupling matrices assembly
+3. (after preparation of external solvers and coupling matrices), calculation of the interpolation matrix,\a i.e. \f$H\f$, calculation.
+4. the time-dependent direct inversion coupled system solver.
+
+The first and third steps use the same code as in the static solver, and are implemented in the \ref CArl_build_intersections.cpp "CArl_build_intersections" and \ref CArl_assemble_coupling.cpp "CArl_assemble_coupling", respectivelly. Their corresponding pages contain the documentation of the input parameters.
+
+Before the fourth step, the preparation of external solver must be done, as the mass matrix,\a i.e. \f$M\f$, is needed in the calculation of interpolation matrix. The calculation of interpolation matrix is implemented in the \ref CArl_build_interpolation.cpp "CArl_build_interpolation". The corresponding page give the documentation of input parameters. In this solver, in spite of the huge complexity of the inversion of mass matrix, we still do the direct inverison  sequentially as this matrix will be widely used in the forth step. As a result, this step requires a bigger memory allocation and may take a longer time.
+
+The detail of CArl-Dyn-DI solver is presented in ref **TO_INSERT**. To allow the usage of external solvers in a non-intrusive way, the implementation is broken down into several `CArl_loop_dyn_***` binaries. 
+Before calling the time-dependent coupled system solver, the user still has to do some preliminary operations involving the external solvers, including configuring the input file (with the documentation given in \ref CArl_loop_dyn_setup.cpp "CArl_loop_dyn_setup")and preparing their input parameter files. After that, if the user is using a scheduler program such as SLURM, he only has to launch the \ref CArl_loop_dyn_setup.cpp "CArl_loop_dyn_setup" binary. The output of the coupled system solver is several vector in the PETSc binary format, which is detailledly explained in \ref subsec_dyn_cpp_output
+
+
+Up to now, we don't accept the usage of other scheduler program except SLURM. 
+
+As the dynamic code will do a finite difference method in time domain, the time steps for the coupled objects are different. In order to simpify the notation, we require that
+
+1. the domain with the longer time step \f$ \Delta T \f$ is named as object A.
+2. the domain with the smaller time step \f$ \Delta t \f$ is named as object B.
+3. \f$ \Delta T \f$ is the integer multiple of \f$ \Delta t \f$, \c i.e. \f$ \Delta T= n \Delta t, n \in \mathbb{N} \f$.  
+
+
+The figure below presents a workflow for using the C++ version of CArl. The page \ref cpp_dynamic examples shows, in detailed steps, how to run a simple test case using external solvers based on the libMesh library. Finally, a more detailed description of the role of each `CArl_loop_dyn_***` binaries is presented in the section \ref sec_dyn_cpp_implementation.
+
+\image html CArl_dyn_structure_di.png "Workflow of CArl-Dyn-DI" width=100px
+
+
+\subsection subsec_dyn_di_cpp_input Input file syntax
+
+
+All the `CArl_FETI_***`binaries take as an input a configuration file though the command line argument `-i`:
+
+    ./CArl_FETI_*** -i [input file]
+
+These input files contain parameters such as file paths, output folders, configuration parameters and Boolean flags. They are case-sensitive, and the symbol `#` is used to comment a single line.
+
+Most of the parameters follow a `ParameterName [value]` format:
+
+    # Cluster scheduler type
+    ClusterSchedulerType LOCAL
+
+    # Path to the base script file
+    ScriptFile scripts/common_script.sh
+
+Since a space separates the `ParameterName` and the `[value]`, values containing spaces must be enclosed in `' '`:
+
+    # Command used for the external solver for the system A
+    ExtSolverA 'mpirun -n 4 ./libmesh_solve_linear_system -i '
+
+
+ A description of each file and its parameters can be found at the documentation pages of the corresponding `CArl_loop_dyn_***` binaries. 
+
+ \subsection subsec_dyn_cpp_output Output file
+
+In the work folder of this code, a result folder, a scrath folder and a `coupled_solution` folder will be created:
++ In the scratch folder will store some values gotten during the calculation and will be updated progressively. 
++ In the result folder, we can get the vector solved with FEM (means before multiplying with base function). The result will be stored in `.petscvec` format and in `.m` format. The nomination is like `quantity_object_NoOfTime`:
+    
+    - quantity: `disp` for displacement vector, `acc` for acceleration vector and `speed` for speed vector.
+
+    - object: `A` for the bigger time step object, `B` for the smaller time step object.
+
+    - NoOfTime: specifies the number of time step, *i.e.* \f$ \frac{t}{\Delta t} \f$
+
+    For example, if we have `disp_B_3`, it means the displacement of B at the moment \f$ 3\Delta t\f$.
+
++ In the `coupled_solution` folder, we can get the final coupled solution applied on the geometry (means after multiplication with base function). This is done according to the external solver configuration. And you will get the result in `sol_object_NoOfTime.e` format. This is able to be visualised in mesh generator such as ParaView.
+
+
+
+
+ \section sec_dyn_di_cpp_implementation Implementation of the CArl-Dyn-DI solver
+
+This section enters in some details of the implementation of the dynamic solver, and as such reading the refs. TO_INSERT beforehand is highly recommended.
+
+As said above, our implementation of the dynamic algortihm is broken down into several `CArl_loop_dyn_***` binaries. The "break points" correspont to the operations of the dynamic algorithm where the solutions of the external solvers are needed. Before closing, each one of these binaries executes a script which first submits the jobs for the external solver, and then calls the appropriate `CArl_loop_dyn_***` binary to continue the algortihm. This approach allows a non-intrusive usaage of the external solvers: the user only has to worry to save the data to be sent from the `CArl_loop_dyn_***` binaries and the external solvers in the appropriate format. It also avoids wasting cluster resources with idling jobs.
+
+
+The figure below shows the structure of the FETI solver. It proceeds in the following manner:
+
+\image html CArl_dyn_structure_dyn_solver.png "Structure of the CArl Dynamic solver" width=100px
+
+1. **Setup**:
+   1. \ref CArl_loop_dyn_setup.cpp "CArl_loop_dyn_setup" first create the result and scrtach folder, then generates the input parameter files for the other binaries and several execution scripts. More precisely, these execution scripts contain:
+        - External solver execution script, such as `ext_solver_Afree_acc.sh` and so on (shown in the figure with blue background, 5 in total).
+        - Dynamic code execution script, such as `inner_ope_Afree.sh` and so on (shown in the figure with yellow background, 7 in total)
+        - general execution script to chain other execution script, such as `Afree.sh` and so on (shown in the figure with white background, 5 in total)  
+   
+   Next, it initializes the file `iteration_progression.txt` to save the progression of time loop. Finally, it generates all the force vector in the folder `scratch/force_A` for `scratch/force_B` and prepares the initial right hand side vector \f$ rhs_i (0)= F_i (0), i= A,B \f$, as the initial displacement is 0 *(up to now, no pre-defined non-null displacement is supported)*.  
+
+   At the end of this step, it will launch `Afree.sh` to begin the first outer loop.
+
+2. **Outer loop**:
+
+   Outer loop calculate the accelration, speed and displacement of A, *i.e.* the object with bigger time step \f$ \Delta T \f$.
+
+   1. The `Afree.sh` script launch two exection scripts:
+        1. The `ext_solver_Afree_acc.sh` script which runs the external solver to get the A free acceleration \f$ \ddot{U}^A_{free} \f$
+        2. The `inner_ope_Afree.sh` script which launches \ref CArl_loop_dyn_Afree.cpp "CArl_loop_dyn_Afree" to get the free speed and displacement by Newmark method, as well as to launch `Bfree.sh` to go into the inner loop discribed below.
+   
+   2. After the inner loop, the `Alink.sh` script is launched:
+
+        1. The `prepare_Alink.sh` launches \ref CArl_loop_dyn_pre_Alink.cpp "CArl_loop_dyn_pre_Alink" to do the multiplication \f$ C^A \Lambda (T) \f$ and saved as \f$ rhs^A_{link} \f$
+
+        2. The `ext_solver_Alink.sh` runs the external solver to get A link acceleration \f$ \ddot{U}^A_{free} \f$
+
+        3. The `inner_ope_Alink.sh` script launches \ref CArl_loop_dyn_Alink.cpp "CArl_loop_dyn_Alink" to get the link speed and displacement by Newmark method, and to add free and link terme to get final displacement (or speed/acceleration). At the end of \ref CArl_loop_dyn_Alink.cpp "CArl_loop_dyn_Alink", it will read `iteration_progression.txt` to see the progression of outer loop:
+            - if it's smaller than the total outer loop (*i.e.* time smaller than total time), it will modify the `iteration_progression.txt` (`outer_prog+=1`) and launch 'Afree.sh' to begin a new outer loop.
+            - if it's equal to total outer loop, it will stop the code and we can get the result.
+
+
+3. **Inner loop**:
+
+   Inner loop calculate the accelration, speed and displacement of B, *i.e.* the object with smaller time step \f$ \Delta t \f$. The first loop is automatically launched by \ref CArl_loop_dyn_Afree.cpp "CArl_loop_dyn_Afree".
+
+   1. The `Bfree.sh` script launch two exection scripts:
+        1. The `ext_solver_Bfree_acc.sh` script which runs the external solver to get the B free acceleration \f$ \ddot{U}^B_{free} \f$
+        2. The `inner_ope_Bfree.sh` script which launches \ref CArl_loop_dyn_Bfree.cpp "CArl_loop_dyn_Bfree" to get the free speed and displacement by Newmark method, as well as to launch `coupling.sh`. 
+
+   2. The `coupling.sh` aims at calculating the interpolation vector \f$ \Lambda \f$. It's processed by 3 steps:
+
+        1. The `setup_interpolation.sh` launches \ref CArl_loop_dyn_inter.cpp "CArl_loop_dyn_inter" to calculate \f$ rhs_{inter} = - ( C^A\ddot{U}^A_{free} (t)+C^B \ddot{U}^B_{free} (t)) \f$ with \f$  \ddot{U}^A_{free} (t) \f$ gotten by interpolation at the time step \f$ \Delta T \f$.
+
+        2. The `ext_solver_coupling.sh` launches external solver to solve \f$ H\Lambda (t)=rhs_{inter} \f$.
+
+        3. The `prepare_Blink.sh` launches \ref CArl_loop_dyn_pre_Blink.cpp "CArl_loop_dyn_pre_Blink" to do the multiplication \f$ C^B \Lambda (t) \f$ and saved as \f$ rhs^B_{link} \f$. At the end of this code, it launches `Blink.sh`.
+  
+   3. Then, the `Blink.sh` script is launched:
+
+        1. The `ext_solver_Blink.sh` runs the external solver to get B link acceleration \f$ \ddot{U}^B_{free} \f$
+
+        2. The `inner_ope_Blink.sh` script launches \ref CArl_loop_dyn_Blink.cpp "CArl_loop_dyn_Blink" to get the link speed and displacement by Newmark method, and to add free and link terme to get final displacement (or speed/acceleration). At the end of \ref CArl_loop_dyn_Blink.cpp "CArl_loop_dyn_Blink", it will read `iteration_progression.txt` to see the progression of inner loop:
+            - if it's smaller than the total inner loop (*i.e.* interval time smaller than bigger time step), it will modify the `iteration_progression.txt` (`inner_prog+=1`) and launch 'Bfree.sh' to begin a new inner loop.
+            - if it's equal to total inner loop, it will go to outer loop and launch `Alink.sh`.
+   
+As said above, this process is completely automated if the scheduling software SLURM, is used: the user only has to configure and execute the \ref CArl_loop_dyn_setup.cpp "CArl_loop_dyn_setup" binary. Details about the input parameters of each binary can be found at its documentation page (linked above).
+
+After all of these code, please run \ref libmesh_assemble_lin_homogeneous__max_x_traction_dyn.cpp "libmesh_assemble_lin_homogeneous__max_x_traction_dyn" and \ref libmesh_assemble_lin_homogeneous__min_x_clamped_dyn.cpp "libmesh_assemble_lin_homogeneous__min_x_clamped_dyn" manually to convert these FEM result in `.e` format.
+
+
+*/

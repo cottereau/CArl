@@ -1,0 +1,20 @@
+/** \file cpp_dynamic.dox
+
+	\page cpp_dynamic CArl dynamic
+
+\image html CArl-Dyn.png "Structure of dynamic solvers" width=30px
+
+This part allows to get a time dependent solution of coupled system, *i.e.* the system with equation
+ 
+\f{eqnarray}{
+M^A \ddot{U}^A + D^A \dot{U}^A + K^A U^A - (C^A)^T \Lambda &=& F^A\\
+M^B \ddot{U}^B + D^B \dot{U}^B + K^B U^B + (C^B)^T \Lambda &=& F^B\\
+C^A U^A - C^B U^B &=& 0
+
+\f}
+
+  	- \subpage cpp_dynamic_DI_usage
+    - \subpage cpp_dynamic_CG_usage
+    - \subpage cpp_dynamic_examples
+
+ */

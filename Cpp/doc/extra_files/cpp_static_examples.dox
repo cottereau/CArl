@@ -1,0 +1,9 @@
+/** \file cpp_static_examples.dox
+
+	\page cpp_static_examples Static Examples
+
+	This page contains detailed examples of the usage of the C++ CArl static implementation:
+
+	- \subpage cpp_static_example_traction
+	
+ */

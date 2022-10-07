@@ -10,9 +10,21 @@ var common__enums_8h =
       [ "PBS", "common__enums_8h.html#a67066fdf35a0c326f5147098c0cf45d1adc92b93f87f72ed91ac097d8c15da06e", null ],
       [ "SLURM", "common__enums_8h.html#a67066fdf35a0c326f5147098c0cf45d1a07a7582870a2087891d8eeaddf964ba0", null ]
     ] ],
+    [ "DynamicSolver", "common__enums_8h.html#a3c85be937b43c579b079abdea370791f", [
+      [ "DI", "common__enums_8h.html#a3c85be937b43c579b079abdea370791fa7c1e41cc664b05c1d5642bcbfb3590fc", null ],
+      [ "CG", "common__enums_8h.html#a3c85be937b43c579b079abdea370791fa3f148ccf54b31c1ade3fab688357c330", null ]
+    ] ],
     [ "ExtSolverType", "common__enums_8h.html#a384c8e69965cba9e6e52667c8cefff08", [
       [ "LIBMESH_LINEAR", "common__enums_8h.html#a384c8e69965cba9e6e52667c8cefff08a47a0d1839c47dee4ea3610e710d7abaa", null ],
-      [ "DUMMY", "common__enums_8h.html#a384c8e69965cba9e6e52667c8cefff08ad129ac6d9556cbd33f5ed9828309b941", null ]
+      [ "DUMMY", "common__enums_8h.html#a384c8e69965cba9e6e52667c8cefff08ad129ac6d9556cbd33f5ed9828309b941", null ],
+      [ "LIBMESH_DYNAMIC", "common__enums_8h.html#a384c8e69965cba9e6e52667c8cefff08aadbc1d169f0482c670318a22f995592c", null ],
+      [ "LIBMESH_NONLINGEOM", "common__enums_8h.html#a384c8e69965cba9e6e52667c8cefff08ada7346cd8f7b0abba072c258c1dea681", null ]
+    ] ],
+    [ "ForcePrepareMethod", "common__enums_8h.html#a3fb554820ad2b15a980bb47f65c9a5d4", [
+      [ "MODAL_SINUS", "common__enums_8h.html#a3fb554820ad2b15a980bb47f65c9a5d4a30af7d6cfcb570adae2868e8f9802bd0", null ],
+      [ "MODAL_CONSTANT", "common__enums_8h.html#a3fb554820ad2b15a980bb47f65c9a5d4a66356361a6e28337cce8228be309ab61", null ],
+      [ "MODAL_LINEAR", "common__enums_8h.html#a3fb554820ad2b15a980bb47f65c9a5d4a7242fab3e220ae5412aff154052bfebe", null ],
+      [ "MODAL_PRODUCT", "common__enums_8h.html#a3fb554820ad2b15a980bb47f65c9a5d4aae7907e48a00ce1bae68b910684d1c88", null ]
     ] ],
     [ "IntersectionMeshingMethod", "common__enums_8h.html#a4f72fd25137b97ac1ca1276ec549e5cf", [
       [ "LIBMESH_TETGEN", "common__enums_8h.html#a4f72fd25137b97ac1ca1276ec549e5cfa0a91b3dbac7fab7e5efa6f804aab8f58", null ],
