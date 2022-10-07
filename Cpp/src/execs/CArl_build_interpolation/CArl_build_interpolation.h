@@ -8,8 +8,9 @@
 #ifndef EXECS_BUILD_INTERPOLATION_MATRIX_H_
 #define EXECS_BUILD_INTERPOLATION_MATRIX_H_
 
+#include "carl_headers.h"
 #include "ext_solver_libmesh_headers.h"
-#include "carl_build_interpolation_matrix_input_parser.h"
+#include "carl_build_interpolation_input_parser.h"
 #include "PETSC_matrix_operations.h"
 #include "rigid_body_nullspace_functions_3D.h"
 #include "libmesh/auto_ptr.h"
