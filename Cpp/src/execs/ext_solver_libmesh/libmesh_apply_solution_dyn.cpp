@@ -1,9 +1,20 @@
+/*
+ * \file libmesh_apply_solution_dyn.cpp
+ *
+ *  Created on: Feb 23, 2022
+ *      Author: Chensheng Luo
+ *
+ * \brief  **DYN** Program responsible to transfert all petscvec result (in sense of D.O.F.) to EXODUS II mesh vector(.e)
+ * 
+ *  This program's input file description can be found at the documentation of the function carl::get_input_params(GetPot& field_parser, libmesh_apply_solution_dyn_input_params& input_params). 
+ */
+
 #include "libmesh_apply_solution_dyn.h"
+
 
 int main(int argc, char** argv) {
 
   // --- Initialize libMesh
-  //OUI
   libMesh::LibMeshInit init(argc, argv);
 
   // Do performance log?
@@ -31,6 +42,19 @@ int main(int argc, char** argv) {
 
   carl::libmesh_apply_solution_dyn_input_params input_params;
   carl::get_input_params(field_parser, input_params);
+
+  if(WorldComm.rank() == 0)
+  {
+    std::string command_string;
+
+    command_string = "rm -rf " + input_params.output_mesh_folder;
+    carl::exec_command(command_string.c_str());
+
+    command_string = "mkdir -p " + input_params.output_mesh_folder;
+    carl::exec_command(command_string.c_str());
+    std::cout << command_string << std::endl;
+  }
+
 
   // Check libMesh installation dimension
   const unsigned int dim = 3;
@@ -69,12 +93,37 @@ int main(int argc, char** argv) {
     compute_stresses(equation_systems);
 
     // Export solution
+    // #ifdef LIBMESH_HAVE_EXODUS_API
+    //   libMesh::VTKIO vtkio_interface(system_mesh);
+
+    //   std::set<std::string> system_names;
+    //   system_names.insert("Elasticity");
+    //   vtkio_interface.write_equation_systems(input_params.output_mesh_folder+"."+std::to_string(i)+".vtk",equation_systems,&system_names);
+    //   //vtkio_interface.write_element_data(equation_systems);
+    // #endif
+
     #ifdef LIBMESH_HAVE_EXODUS_API
       libMesh::ExodusII_IO exo_io_interface(system_mesh, /*single_precision=*/true);
 
       std::set<std::string> system_names;
       system_names.insert("Elasticity");
-      exo_io_interface.write_equation_systems(input_params.output_mesh_folder+std::to_string(i)+".e",equation_systems,&system_names);
+      
+      // std::string str = std::to_string(i);
+
+      // int n=0;
+
+      // int total=input_params.step_loop_times;
+      // while(total != 0)
+      // {
+      //   total /= 10;
+      //   ++n;
+      // }
+ 
+      // int precision = n - str.length();
+      // std::string s = std::string(precision, '0').append(str);
+      std::string filename=input_params.output_mesh_folder+"sol.e-s."+std::to_string(i);
+      exo_io_interface.write_equation_systems(filename,equation_systems,&system_names);
+      exo_io_interface.write_timestep(filename,equation_systems,i,input_params.Newmark.deltat*i,&system_names);
       exo_io_interface.write_element_data(equation_systems);
     #endif
   }

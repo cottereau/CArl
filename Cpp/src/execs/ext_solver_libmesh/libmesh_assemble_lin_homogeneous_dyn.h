@@ -17,5 +17,4 @@
 #include "libmesh/petsc_linear_solver.h"
 #include "assemble_functions_mass_3D.h"
 
-
 #endif /* EXECS_LIBMESH_ASSEMBLE_LIN_HOMOGENEOUS_H_ */

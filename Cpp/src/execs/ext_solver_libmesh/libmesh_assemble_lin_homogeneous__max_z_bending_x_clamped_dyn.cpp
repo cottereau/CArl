@@ -4,9 +4,10 @@
  *      Author: Chensheng Luo
  */
 #include "libmesh_assemble_lin_homogeneous.h"
-/** \brief Program used to assemble the rigidity matrix and the vectors of a linear, homogeneous elasticity model with a clamped \f$x_{\mbox{Min}}\f$ face.
+
+/** \brief Program used to assemble the rigidity matrix and the vectors of a linear, homogeneous elasticity model with a traction applied to \f$x_{\mbox{Max}}\f$ face.
  * 
- *  Usage: `./libmesh_assemble_lin_homogeneous__min_x_clamped_dyn -i [input file]`
+ *  Usage: `./libmesh_assemble_lin_homogeneous__max_x_traction -i [input file]`
  *  
  * The input file is parsed by the get_input_params(GetPot& field_parser, libmesh_assemble_input_params& input_params) function, and it contains the following parameters. 
  *
@@ -31,23 +32,23 @@
 using namespace std;
 using namespace libMesh;
 
-int main (int argc, char ** argv)
-{
+int main(int argc, char** argv) {
+
+  // [USER] Bending force density
+  std::vector<double> traction_density(3,0);
+  //traction_density[2] = 0;
+
   // [USER] Fixed boudary
-  boundary_id_cube fixed_bound_id = boundary_id_cube::MIN_X;
-
-  //const boundary_id_type bound_clamped_id = boundary_id_min_x;
-  //const boundary_id_type bound_force_id   = boundary_id_max_z;
-
-  //Real force = 10000.; 
-
-  // Initialize libMesh.
-  LibMeshInit init (argc, argv);
+  boundary_id_cube fixed_bound_id1 = boundary_id_cube::MIN_Z;
+  //boundary_id_cube fixed_bound_id2 = boundary_id_cube::MAX_X;
+  
+  // --- Initialize libMesh
+  LibMeshInit init(argc, argv);
 
   // Do performance log?
   const bool MASTER_bPerfLog_carl_libmesh = true;
   PerfLog perf_log("Main program", MASTER_bPerfLog_carl_libmesh);
-  
+
   // libMesh's C++ / MPI communicator wrapper
   Parallel::Communicator& WorldComm = init.comm();
 
@@ -57,7 +58,7 @@ int main (int argc, char ** argv)
 
   // --- Set up inputs
 
-   // Command line parser
+  // Command line parser
   GetPot command_line(argc, argv);
 
   // File parser
@@ -73,11 +74,11 @@ int main (int argc, char ** argv)
   }
 
   // Declaration of a struct variable to catch all inputs from the input file
-  libmesh_assemble_input_params input_params; // struct type 
+  libmesh_assemble_input_params input_params;
 
   // Getting parsing argument from all file
   get_input_params(field_parser, input_params);
-  std::cout << " -> DEBUG 1 = " << std::endl;
+
   // Check libMesh installation dimension
   const unsigned int dim = 3;
 
@@ -85,7 +86,7 @@ int main (int argc, char ** argv)
   libmesh_example_requires(dim == LIBMESH_DIM, "3D support");
 
   // --- Declare the three meshes to be intersected
-  std::cout << " -> DEBUG 2 = " << std::endl;
+
   // - Parallelized meshes: A, B, mediator and weight
   perf_log.push("Meshes - Parallel","Read files:");
   Mesh system_mesh(WorldComm, dim);
@@ -96,22 +97,23 @@ int main (int argc, char ** argv)
   mesh_weight.allow_renumbering(false);
   mesh_weight.read(input_params.mesh_weight_file);
   mesh_weight.prepare_for_use();
-  std::cout << " -> DEBUG 3 = " << std::endl;
+
   perf_log.pop("Meshes - Parallel","Read files:");
 
   // --- Generate the equation systems
-  perf_log.push("System setup:"); //add to stack of per_log 
+  perf_log.push("System setup:");
 
-  // Create an equation systems object
-  EquationSystems equation_systems (system_mesh);
+  // Set the equation systems object
+  EquationSystems equation_systems(system_mesh);
 
+  // Add linear elasticity and physical parameters systems
   // Create NewmarkSystem "Elasticity"
   NewmarkSystem& elasticity_system = add_dynamic_elasticity(equation_systems,
     "Dynamic Elasticity");
   //LinearImplicitSystem elasticity_system = add_dynamic_elasticity(equation_systems,
   
-  // Set clamped border
-  set_clamped_border(elasticity_system, fixed_bound_id);
+  set_clamped_border(elasticity_system, fixed_bound_id1);
+  //set_clamped_border(elasticity_system, fixed_bound_id2);
 
   // Set Newmark's parameters
   elasticity_system.set_newmark_parameters(input_params.Newmark.deltat,
@@ -127,7 +129,7 @@ int main (int argc, char ** argv)
 
   perf_log.pop("System setup:");
 
-  // Initialize equation system
+  // Initialize the equation systems
   equation_systems.init();
   
   // Set material parameter
@@ -140,11 +142,11 @@ int main (int argc, char ** argv)
                 input_params.vel_vec_name,
                 input_params.acc_vec_name,
                 WorldComm);
-
+  
   // Assemble!
-  //equation_systems.attach_assemble_function
-  assemble_dynamic_elasticity_with_weight(equation_systems,"Dynamic Elasticity",system_weight,
-    input_params.system_type, &input_params.Newmark,input_params.CM,input_params.CK);
+  assemble_dynamic_elasticity_with_weight_and_bending(equation_systems,"Dynamic Elasticity",
+    system_weight, input_params.system_type, boundary_id_cube::MIN_X, traction_density, 
+    &input_params.Newmark,input_params.CM,input_params.CK);
 
   elasticity_system.compute_matrix();
 
@@ -153,7 +155,7 @@ int main (int argc, char ** argv)
   SparseMatrix < Number > * damping   = elasticity_system.request_matrix("damping");
   //SparseMatrix < Number > * mass_tilde= elasticity_system.request_matrix("mass_tilde");
   NumericVector< Number > * force     = elasticity_system.request_vector("force");
-
+// Print MatLab debugging output? Variable defined at "carl_headers.h"
 #ifdef PRINT_MATLAB_DEBUG
   //elasticity_system.matrix->print_matlab(input_params.output_base + "_sys_mat.m");
   //elasticity_system.rhs->print_matlab(input_params.output_base + "_sys_rhs_vec.m");
@@ -163,7 +165,7 @@ int main (int argc, char ** argv)
   //mass_tilde->print_matlab(input_params.output_base + "_sys_mat.m");
   force->print_matlab(input_params.output_base + "_sys_rhs_vec.m");
 #endif
-  
+
   // Export matrix and vector
   //PetscMatrix<Number> * temp_mat_ptr = cast_ptr<PetscMatrix<Number> * >(elasticity_system.matrix);
   //PetscVector<Number> * temp_vec_ptr = cast_ptr<PetscVector<Number> * >(elasticity_system.rhs);
@@ -173,14 +175,6 @@ int main (int argc, char ** argv)
   PetscVector<Number> * temp_force_ptr = cast_ptr<PetscVector<Number> * >(force);
   //PetscMatrix<Number> * temp_mass_tilde_ptr = cast_ptr<PetscMatrix<Number> * >(mass_tilde);
 
-  // Mtilde a = b
-  // b = F_{n+1}-K...
-  // Mtilde == elasticity_system.matrix
-  // b == elasticity_system.rhs
-
-  // Print MatLab debugging output? Variable defined at "carl_headers.h"
-
-
   //carl::write_PETSC_matrix(*temp_mat_ptr, input_params.output_base + "_sys_mat.petscmat");
   //carl::write_PETSC_vector(*temp_vec_ptr, input_params.output_base + "_sys_rhs_vec.petscvec");
   carl::write_PETSC_matrix(*temp_mass_ptr, input_params.output_base + "_sys_mat.petscmat");
@@ -189,7 +183,7 @@ int main (int argc, char ** argv)
   //carl::write_PETSC_matrix(*temp_mass_tilde_ptr, input_params.output_base + "_sys_mat.petscmat");
   carl::write_PETSC_vector(*temp_force_ptr, input_params.output_base + "_sys_rhs_vec.petscvec");
 
-  // // If needed, print rigid body vectors
+  // If needed, print rigid body vectors
   if(input_params.bCalculateRBVectors)
   {
     MatNullSpace nullsp_sys;
@@ -197,7 +191,7 @@ int main (int argc, char ** argv)
     write_rigid_body_vectors(nullsp_sys,input_params.output_base,WorldComm.rank());
     MatNullSpaceDestroy(&nullsp_sys);
   }
-
+  
   return 0;
 }
 /* Local Variables:                                                        */
