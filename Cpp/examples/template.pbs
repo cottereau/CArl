@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#PBS -S /bin/bash
+#PBS -l walltime=3:59:00
+#PBS -l select=${select}:ncpus=${ncpus}:mpiprocs=${mpiprocs}
+#PBS -P omaha
+#PBS -q defaultq
+
+
+module purge
+module load git/2.22.0
+module load openmpi/4.0.0
+module load hdf5/1.8.20
+module load cmake/3.16.0
+module load blas/3.8.0 
+module load lapack/3.8.0
+module load libgmp/6.1.2
+module load libmpfr/3.1.5
+
+export locinst=/home/jacquetg/LOCAL
+
+export BOOST_ROOT=$locinst/boost
+export CGAL_DIR=$locinst/cgal
+export LIBMESH_DIR=$locinst/libmesh
+export PETSC_DIR=$locinst/petsc
+export PETSC_ARCH="linux-openmpi-gcc"
+export CARLBUILD=$locinst/CArl/Cpp/bin
