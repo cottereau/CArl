@@ -17,5 +17,6 @@
 #include "libmesh/newmark_system.h"
 #include "libmesh/petsc_linear_solver.h"
 #include "assemble_functions_mass_3D.h"
+#include "libmesh_solve_linear_system_input_parser.h"
 
 #endif /* EXECS_BUILD_INTERPOLATION_MATRIX_H_ */

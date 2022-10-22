@@ -95,9 +95,11 @@ file ( GLOB PETSC_MATRIX_OPERATIONS_SOURCES "${PETSC_MATRIX_OPERATIONS_DIR}/*.cp
 file ( GLOB MISC_SOURCES                    "${MISC_DIR}/*.cpp" )
 
 # Source files - CArl execs.
-set  ( CARL_INTER_EXEC        ${EXEC_SRC_DIR}/CArl_build_intersections/CArl_build_intersections.cpp )
+set ( CARL_INTER_EXEC        ${EXEC_SRC_DIR}/CArl_build_intersections/CArl_build_intersections.cpp )
+file ( GLOB CARL_INTERPO_EXECS  "${EXEC_SRC_DIR}/CArl_build_interpolation/*.cpp" )
 file ( GLOB CARL_TOOLS_EXECS  "${EXEC_SRC_DIR}/CArl_tools/*.cpp" )
 file ( GLOB CARL_FETI_EXECS   "${EXEC_SRC_DIR}/CArl_FETI/*.cpp" )
+file ( GLOB CARL_DYN_EXECS    "${EXEC_SRC_DIR}/CArl_dyn/*.cpp")
 
 # Source files - external solvers (libMesh)
 file ( GLOB LIBMESH_EXT_EXECS "${EXT_LIBMESH_SOLVER_DIR}/*.cpp" )
@@ -122,6 +124,29 @@ add_executable( CArl_build_intersections  ${CARL_INTER_EXEC}
 
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS CArl_build_intersections )
 target_link_libraries(CArl_build_intersections ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+
+foreach( CArl_interpo_source_file ${CARL_INTERPO_EXECS} )
+    string ( REPLACE ".cpp" "" full_CArl_interpo_exec_name ${CArl_interpo_source_file} )
+    string ( REPLACE "${CMAKE_CURRENT_LIST_DIR}/${EXEC_SRC_DIR}/CArl_build_interpolation/" "" CArl_interpo_exec_name ${full_CArl_interpo_exec_name} )
+    add_executable( ${CArl_interpo_exec_name} ${CArl_interpo_source_file}
+                $<TARGET_OBJECTS:CARL_PARSERS_OBJS> $<TARGET_OBJECTS:COMMON_OBJS>
+                $<TARGET_OBJECTS:PETSC_MATRIX_OPERATIONS_OBJS> $<TARGET_OBJECTS:MISC_OBJS> 
+                $<TARGET_OBJECTS:COMMON_EXT_LIBMESH_SOLVER_OBJS>)
+    add_to_cached_list( CGAL_EXECUTABLE_TARGETS ${CArl_interpo_exec_name} )
+    target_link_libraries(${CArl_interpo_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+endforeach( CArl_interpo_source_file ${CARL_INTERPO_EXECS} )
+
+
+foreach( CArl_dyn_source_file ${CARL_DYN_EXECS} )
+    string ( REPLACE ".cpp" "" full_CArl_dyn_exec_name ${CArl_dyn_source_file} )
+    string ( REPLACE "${CMAKE_CURRENT_LIST_DIR}/${EXEC_SRC_DIR}/CArl_dyn/" "" CArl_dyn_exec_name ${full_CArl_dyn_exec_name} )
+    add_executable (    ${CArl_dyn_exec_name} ${CArl_dyn_source_file} 
+                        $<TARGET_OBJECTS:CARL_PARSERS_OBJS> $<TARGET_OBJECTS:COMMON_OBJS>
+                        $<TARGET_OBJECTS:FETI_OBJS> $<TARGET_OBJECTS:MISC_OBJS> 
+                        $<TARGET_OBJECTS:COUPLING_MATRIX_OBJS> $<TARGET_OBJECTS:PETSC_MATRIX_OPERATIONS_OBJS> )
+    add_to_cached_list( CGAL_EXECUTABLE_TARGETS ${CArl_dyn_exec_name} )
+    target_link_libraries( ${CArl_dyn_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+endforeach( CArl_dyn_source_file ${CARL_DYN_EXECS} )
 
 foreach( CArl_FETI_source_file ${CARL_FETI_EXECS} )
     string ( REPLACE ".cpp" "" full_CArl_FETI_exec_name ${CArl_FETI_source_file} )

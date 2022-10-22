@@ -6,14 +6,14 @@ This project is focused on the development of a software based on the [Arlequin 
 
 1. a [MATLAB](http://www.mathworks.fr/products/matlab/) implementation. 
 2. a parallel C++ / MPI implementation, based on [libMesh](https://libmesh.github.io) and [CGAL](http://www.cgal.org). For this part, three solvers are developped: 
-- For a static case: a solver CArl-Static(\ref cpp_static) for the stationnary solution of coupled system
-- For a transit case(\ref cpp_dynamic): to get a time dependent solution, we can either use
-  + a solver CArl-Dyn-DI(\ref cpp_dynamic_DI) with direct inversion method mainly for small D.O.F.
-  + a solver CArl-Dyn-CG(\ref cpp_dynamic_CG) with conjugate gradient method mainly for big D.O.F. and the case mass matrix difficult to be inverted
+- For a static case: a solver CArl-Static for the stationnary solution of coupled system
+- For a transit case: to get a time dependent solution, we can either use
+  + a solver CArl-Dyn-DI with direct inversion method mainly for small D.O.F.
+  + a solver CArl-Dyn-CG with conjugate gradient method mainly for big D.O.F. and the case mass matrix difficult to be inverted
 
-This software is mainly developed at laboratoire LMPS (Laboratoire Mécanique de Paris-Saclay), of which ancien MSSMat (Ecole Centrale Paris - CNRS) is now a part.
+This software is mainly developed at the laboratory [LMPS (Laboratoire Mécanique de Paris-Saclay)](https://lmps.ens-paris-saclay.fr/en), of which ancien MSSMat (Ecole Centrale Paris - CNRS) is now a part.
 
-* contact : [Regis Cottereau](mailto:regis.cottereau@ecp.fr)
+* contact : [Regis Cottereau](mailto:cottereau@lma.cnrs-mrs.fr)
 * contributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec, D. Neron, T. M. Schlittler, F. Gatti, G. Jacquet, C. Luo, S. Méo
 
 more detail on installation procedures and examples can be found the [related help web page](https://cottereau.github.io/CArl/)
@@ -52,8 +52,6 @@ Some examples (in 1D and 2D) can be launched through use of the routine `Test.m`
 
 The C++ / MPI implementation of the CArl software can be found in the directory `Cpp`. Currently, it is capable of interfacing with external solvers based on the [PETSc](http://www.mcs.anl.gov/petsc/) toolkit (including the libMesh solvers, when compiled with PETSc support).
 
-The usage of this implementation will be added in the near future, together with a general documentation and examples.
-
 ### REQUIREMENTS
 
 This code implementation use the following third party libraries: (the numbers indicate the oldest version for which they were tested)
@@ -69,7 +67,7 @@ This code implementation use the following third party libraries: (the numbers i
 2. Linux : Intel C++ compilers (version 16.0.3) and Intel MPI (version 5.1.2)
 3. [Linux](#compile-on-linux-with-MPICH-and-opnempi) : MPICH (version 3.4a2) and OpenMPI (version 4.0.0)
 
-Guidelines for installation 3 is found in [this file](./Cpp/requirements_fusion_mpich_openmpi.md). It corresponds to a clena setup for [FUSION](https://mesocentre.pages.centralesupelec.fr/user_doc/fusion/01_hardware_configuration/) cluster @[Mésocentre Moulon](https://mesocentre.pages.centralesupelec.fr/user_doc/) 
+Guidelines for installation 3 is found in [this file](./Cpp/requirements_fusion_mpich_openmpi.md). It corresponds to a clena setup for [RUCHE](https://mesocentre.pages.centralesupelec.fr/user_doc/ruche/01_cluster_overview/#general-informations) cluster @[Mésocentre Moulon](https://mesocentre.pages.centralesupelec.fr/user_doc/) 
 
 This code was not tested or compiled with other operational systems. 
 
