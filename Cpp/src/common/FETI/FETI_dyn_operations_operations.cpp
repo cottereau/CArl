@@ -373,7 +373,7 @@ namespace carl
   			std::ofstream result_file;
 				result_file.open(m_scratch_folder_path + "/result_test_inversion.txt",std::ofstream::app);
 				result_file.precision(15);
-				result_file << "Round" << "   " << "Test norm "<< "   " << "Product norm"<< "   " << "Quotien" << std::endl;
+				result_file << "Round" << "   " << "Test norm "<< "   " << "Product norm"<< "   " << "Quotient" << std::endl;
 				result_file.close();
 			}
     }

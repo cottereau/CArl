@@ -211,7 +211,7 @@ void Dyn_DI_Solver_Files_Setup::generate_libmesh_external_solver_scripts_SLURM()
     // Set the Blink scripts
     slurm_output = m_input_params.scratch_folder_path + "/output_Blink_acc.txt";                               
     slurm_error = m_input_params.scratch_folder_path + "/error_Blink_acc.txt";                                
-    command_to_run = m_input_params.ext_solver_launch_script_A + " " + m_ext_solver_Blink_input_filename;     
+    command_to_run = m_input_params.ext_solver_launch_script_B + " " + m_ext_solver_Blink_input_filename;     
 
     this->print_SLURM_script(m_ext_solver_Blink_script_filename, "Blink_acc", 
             slurm_output, slurm_error, common_script,
@@ -220,7 +220,7 @@ void Dyn_DI_Solver_Files_Setup::generate_libmesh_external_solver_scripts_SLURM()
     // Set the Alink scripts
     slurm_output = m_input_params.scratch_folder_path + "/output_Alink_acc.txt";                               
     slurm_error = m_input_params.scratch_folder_path + "/error_Alink_acc.txt";                                
-    command_to_run = m_input_params.ext_solver_launch_script_B + " " + m_ext_solver_Alink_input_filename;     
+    command_to_run = m_input_params.ext_solver_launch_script_A + " " + m_ext_solver_Alink_input_filename;     
 
     this->print_SLURM_script(m_ext_solver_Alink_script_filename, "Alink_acc", 
             slurm_output, slurm_error, common_script,

@@ -225,7 +225,7 @@ void get_input_params(GetPot& field_parser,
     homemade_error_msg("Missing force prepare params input command line!");
   }
 
-  if (field_parser.search(1, "ExtSolverInputA")) {
+  if (field_parser.search(2, "ExtSolverInputA", "ExtSolverInput")) {
     input_params.ext_solver_A_input = field_parser.next(
         input_params.ext_solver_A_input);
     std::cout << input_params.ext_solver_A_input << std::endl;
@@ -233,7 +233,7 @@ void get_input_params(GetPot& field_parser,
     homemade_error_msg("Missing ext solver A input command line!");
   }
 
-  if (field_parser.search(1, "ExtSolverInputB")) {
+  if (field_parser.search(2, "ExtSolverInputB", "ExtSolverInput")) {
     input_params.ext_solver_B_input = field_parser.next(
         input_params.ext_solver_B_input);
     std::cout << input_params.ext_solver_B_input << std::endl;
@@ -241,7 +241,7 @@ void get_input_params(GetPot& field_parser,
     homemade_error_msg("Missing ext solver B input command line!");
   }
 
-  if (field_parser.search(1, "ExtSolverInputInterpolation")) {
+  if (field_parser.search(2, "ExtSolverInputInterpolation", "ExtSolverInput")) {
     input_params.ext_solver_general_input = field_parser.next(
         input_params.ext_solver_general_input);
     std::cout << input_params.ext_solver_general_input << std::endl;
@@ -252,19 +252,19 @@ void get_input_params(GetPot& field_parser,
   if (field_parser.search(2, "ExtSolverLaunchScriptA", "ExtSolverLaunchScript")) {
     input_params.ext_solver_launch_script_A = field_parser.next(
         input_params.ext_solver_launch_script_A);
+    std::cout << input_params.ext_solver_launch_script_A << std::endl;
   } else {
     homemade_error_msg("Missing ext solver launch script command line for A!");
   }
-  std::cout << input_params.ext_solver_launch_script_A << std::endl;
+  
 
   if (field_parser.search(2, "ExtSolverLaunchScriptB", "ExtSolverLaunchScript")) {
     input_params.ext_solver_launch_script_B = field_parser.next(
         input_params.ext_solver_launch_script_B);
+    std::cout << input_params.ext_solver_launch_script_B << std::endl;
   } else {
     homemade_error_msg("Missing ext solver launch script command line for B!");
   }
-  std::cout << input_params.ext_solver_launch_script_B << std::endl;
-
   
   if (input_params.dyn_solver==carl::DynamicSolver::DI){
     if (field_parser.search(2, "ExtSolverLaunchScriptInterpolation", "ExtSolverLaunchScript")) {

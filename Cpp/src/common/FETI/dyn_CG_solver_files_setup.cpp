@@ -169,10 +169,10 @@ void Dyn_CG_Solver_Files_Setup::generate_libmesh_external_solver_script()
   homemade_assert_msg(m_bScratchFolderExists,"Scratch folder not set yet!");
   homemade_assert_msg(m_bSetExternalSolversInputFiles,"External solver input files not set yet!");
 
-  m_ext_solver_Afree_script_filename = m_input_params.scratch_folder_path + "/ext_solver_Afree_acc.sh";
-  m_ext_solver_Bfree_script_filename = m_input_params.scratch_folder_path + "/ext_solver_Bfree_acc.sh"; 
-  m_ext_solver_CG_A_script_filename = m_input_params.scratch_folder_path + "/CG_solver/ext_solver_CG_A.sh"; 
-  m_ext_solver_CG_B_script_filename = m_input_params.scratch_folder_path + "/CG_solver/ext_solver_CG_B.sh"; 
+  m_ext_solver_Afree_script_filename = m_input_params.scratch_folder_path + "/ext_solver_Afree_acc.slurm";
+  m_ext_solver_Bfree_script_filename = m_input_params.scratch_folder_path + "/ext_solver_Bfree_acc.slurm"; 
+  m_ext_solver_CG_A_script_filename = m_input_params.scratch_folder_path + "/CG_solver/ext_solver_CG_A.slurm"; 
+  m_ext_solver_CG_B_script_filename = m_input_params.scratch_folder_path + "/CG_solver/ext_solver_CG_B.slurm"; 
 
 
   switch (m_input_params.scheduler)
