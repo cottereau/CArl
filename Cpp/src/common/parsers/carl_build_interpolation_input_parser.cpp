@@ -47,6 +47,14 @@ void get_input_params(GetPot& field_parser,carl_build_interpolation_params& inpu
     homemade_error_msg("[CArl Parameters]Missing output base!");
   }
 
+    //Set output folder
+  if (field_parser.search(1, "InterInputFile")) {
+    input_params.interpolation_input_file = field_parser.next(input_params.interpolation_input_file);
+  } else {
+    homemade_error_msg("[CArl Parameters]Missing interpolation input file!");
+  }
+
+
   if (field_parser.search(2, "NewmarkParametersA","NewmarkParameters")){
       std::string filename;
       filename = field_parser.next(filename);

@@ -181,6 +181,28 @@ int main(int argc, char *argv[])
   carl::write_PETSC_matrix(*sys_mat_PETSC_H_save, input_params.output_base + "interpolation_mat.petscmat",0,WorldComm.get(),1);
   perf_log.pop("Output matrix");
 
+  // - Clean intermediate vectors
+
+  std::string command_string;
+  if(WorldComm.rank() == 0)
+  {
+    command_string = "rm -rf " + input_params.output_base + "coupling_transpose_A/";
+    std::cout << command_string << std::endl;
+    carl::exec_command(command_string.c_str());
+
+    command_string = "rm -rf " + input_params.output_base + "coupling_transpose_B/";
+    carl::exec_command(command_string.c_str());
+    std::cout << command_string << std::endl;
+
+    command_string = "rm -rf " + input_params.output_base + "mass_inverted_coupling_A/";
+    carl::exec_command(command_string.c_str());
+    std::cout << command_string << std::endl;
+
+    command_string = "rm -rf " + input_params.output_base + "mass_inverted_coupling_B/";
+    carl::exec_command(command_string.c_str());
+    std::cout << command_string << std::endl;
+  }
+
   // - Clean up
 
   perf_log.push("Clean up");

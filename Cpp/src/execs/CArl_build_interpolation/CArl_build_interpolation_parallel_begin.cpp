@@ -23,6 +23,8 @@ The input file is parsed by the get_input_params(GetPot& field_parser, carl_buil
 void generate_external_solver_inputs(std::string matrix_name,
           std::string vector_name,
           std::string solution_output_name,
+          int number_begin,
+          int number_end,
           std::string template_name,
           std::string file_name);
 
@@ -143,16 +145,7 @@ int main(int argc, char *argv[])
 
   if(WorldComm.rank() == 0)
   {
-
-    command_string = "rm -rf " + input_params.output_base + "coupling_transpose_A/";
-    std::cout << command_string << std::endl;
-    carl::exec_command(command_string.c_str());
-
     command_string = "mkdir -p " + input_params.output_base + "coupling_transpose_A/";
-    carl::exec_command(command_string.c_str());
-    std::cout << command_string << std::endl;
-
-    command_string = "rm -rf " + input_params.output_base + "coupling_transpose_B/";
     carl::exec_command(command_string.c_str());
     std::cout << command_string << std::endl;
 
@@ -168,15 +161,7 @@ int main(int argc, char *argv[])
     carl::exec_command(command_string.c_str());
     std::cout << command_string << std::endl;
 
-    command_string = "rm -rf " + input_params.output_base + "mass_inverted_coupling_A/";
-    carl::exec_command(command_string.c_str());
-    std::cout << command_string << std::endl;
-
     command_string = "mkdir -p " + input_params.output_base + "mass_inverted_coupling_A/";
-    carl::exec_command(command_string.c_str());
-    std::cout << command_string << std::endl;
-
-    command_string = "rm -rf " + input_params.output_base + "mass_inverted_coupling_B/";
     carl::exec_command(command_string.c_str());
     std::cout << command_string << std::endl;
 
@@ -233,43 +218,53 @@ int main(int argc, char *argv[])
     combined_script.close();
   }
 
-  for (i = 0; i < CnA; i++){
-    generate_external_solver_inputs(input_params.path_tilde_matrix_A,
-          input_params.output_base + "coupling_transpose_A/CTA_"+std::to_string(i)+".petscvec",
-          input_params.output_base + "mass_inverted_coupling_A/MCTA_"+std::to_string(i)+".petscvec",
+  generate_external_solver_inputs(input_params.path_tilde_matrix_A,
+          input_params.output_base + "coupling_transpose_A/CTA_*.petscvec",
+          input_params.output_base + "mass_inverted_coupling_A/MCTA_*.petscvec",
+          0,CnA-1,
           input_params.ext_solver_A_input,
-          input_params.output_base + "inverse_lancer/mass_inverse_input_A_"+std::to_string(i)+".txt");
+          input_params.output_base + "inverse_lancer/mass_inverse_input_A.txt");
     
-    generate_external_solver_script(WorldComm,
+  generate_external_solver_script(WorldComm,
           input_params.scheduler,
-          input_params.output_base + "inverse_lancer/inverse_mass_A_"+std::to_string(i)+".slurm",
+          input_params.output_base + "inverse_lancer/inverse_mass_A.slurm",
           input_params.script_filename,
-          input_params.output_base + "outputs/output_A_"+std::to_string(i)+".out",
-          input_params.output_base + "outputs/error_A_"+std::to_string(i)+".out",
-          input_params.output_base + "inverse_lancer/mass_inverse_input_A_"+std::to_string(i)+".txt",
-          "invA"+std::to_string(i),
+          input_params.output_base + "outputs/output_A.out",
+          input_params.output_base + "outputs/error_A.out",
+          input_params.output_base + "inverse_lancer/mass_inverse_input_A.txt",
+          "invA",
           input_params.output_base + "inverse_lancer/mass_inverse_all.sh",
           input_params.ext_solver_launch_script_A);
-  }
 
-  for (i = 0; i < CnB; i++){
-    generate_external_solver_inputs(input_params.path_tilde_matrix_B,
-          input_params.output_base + "coupling_transpose_B/CTB_"+std::to_string(i)+".petscvec",
-          input_params.output_base + "mass_inverted_coupling_B/MCTB_"+std::to_string(i)+".petscvec",
+  
+  generate_external_solver_inputs(input_params.path_tilde_matrix_B,
+          input_params.output_base + "coupling_transpose_B/CTB_*.petscvec",
+          input_params.output_base + "mass_inverted_coupling_B/MCTB_*.petscvec",
+          0,CnB-1,
           input_params.ext_solver_B_input,
-          input_params.output_base + "inverse_lancer/mass_inverse_input_B_"+std::to_string(i)+".txt");
+          input_params.output_base + "inverse_lancer/mass_inverse_input_B.txt");
     
-    generate_external_solver_script(WorldComm,
+  generate_external_solver_script(WorldComm,
           input_params.scheduler,
-          input_params.output_base + "inverse_lancer/inverse_mass_B_"+std::to_string(i)+".slurm",
+          input_params.output_base + "inverse_lancer/inverse_mass_B.slurm",
           input_params.script_filename,
-          input_params.output_base + "outputs/output_B_"+std::to_string(i)+".out",
-          input_params.output_base + "outputs/error_B_"+std::to_string(i)+".out",
-          input_params.output_base + "inverse_lancer/mass_inverse_input_B_"+std::to_string(i)+".txt",
-          "invB"+std::to_string(i),
+          input_params.output_base + "outputs/output_B.out",
+          input_params.output_base + "outputs/error_B.out",
+          input_params.output_base + "inverse_lancer/mass_inverse_input_B.txt",
+          "invB",
           input_params.output_base + "inverse_lancer/mass_inverse_all.sh",
           input_params.ext_solver_launch_script_B);
-  }
+
+  generate_external_solver_script(WorldComm,
+        input_params.scheduler,
+        input_params.output_base + "inverse_lancer/interpolation_end.slurm",
+        input_params.script_filename,
+        input_params.output_base + "outputs/output_end.out",
+        input_params.output_base + "outputs/error_end.out",
+        input_params.interpolation_input_file,
+        "InterEND",
+        input_params.output_base + "inverse_lancer/mass_inverse_all.sh",
+        "srun -n 4 $CARLBUILD/CArl_build_interpolation_parallel_end -i ");
 
   // TODO: add final parallel end!
   //if(WorldComm.rank() == 0)
@@ -313,6 +308,8 @@ int main(int argc, char *argv[])
 void generate_external_solver_inputs(std::string matrix_name,
           std::string vector_name,
           std::string solution_output_name,
+          int number_begin,
+          int number_end,
           std::string template_name,
           std::string file_name)
 { 
@@ -321,16 +318,19 @@ void generate_external_solver_inputs(std::string matrix_name,
   field_parser.parse_input_file(template_name, "#", "\n", " \t\n");
 
   // Get general input parameters
-  carl::libmesh_solve_linear_system_input_params solver_input_params;
+  carl::libmesh_solve_multiple_linear_system_input_params solver_input_params;
   carl::get_input_params(field_parser, solver_input_params);
 
   // Set input parameters
   solver_input_params.sys_matrix_file = matrix_name;
   solver_input_params.sys_rhs_vec_file = vector_name;
   solver_input_params.output_base = solution_output_name;
+  solver_input_params.number_begin = number_begin;
+  solver_input_params.number_end = number_end;
 
   carl::print_input_params(file_name,solver_input_params);  
 }
+
 
 void generate_external_solver_script(libMesh::Parallel::Communicator& m_comm,
           carl::ClusterSchedulerType scheduler,

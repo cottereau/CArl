@@ -39,6 +39,7 @@ struct carl_build_interpolation_params{
 
   carl::ClusterSchedulerType scheduler;     ///< Cluster scheduler software type. *Values*: PBS, SLURM (code not implemented for the later yet).
   std::string script_filename;        ///< Cluster script file name
+  std::string interpolation_input_file;     ///< Path of this file
 };
 
 /** \brief **DYN-DI**Structure containing the parameters for the interpolation matrix calculation
@@ -70,7 +71,6 @@ Parameters:
      * *or (if different external solver is needed!)*:   
      - `ExtSolverInputA` : Path to a general external solver input of object A
      - `ExtSolverInputB` : Path to a general external solver input of object B
-     - (**For [CArl-Dyn-DI]**)`ExtSolverInputInterpolation` : Path to an external solver input of interpolation matrix/vector   
 
      * *And either*:   
      - `ExtSolverLaunchScript` : Script to launch external solver for all cases,    
@@ -78,7 +78,6 @@ Parameters:
      * *or (if different external solver is needed!)*:   
      - `ExtSolverLaunchScriptA` : Script to launch external solver for object A
      - `ExtSolverLaunchScriptB` : Script to launch external solver for object B
-     - (**For [CArl-Dyn-DI]**) `ExtSolverLaunchScriptInterpolation` : Script to launch external solver for interpolation matrix   
 
     * **Example**:One example of this ExtSolver can be : `'srun -n 4 $CARLBUILD/libmesh_solve_linear_system -i '`
   
