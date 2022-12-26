@@ -7,7 +7,7 @@
 
 /** \file CArl_loop_dyn_Blink.cpp
 
-\brief **DYN-DI/DYN-CG** Program responsible to calculate B link speed and displacement by Newmark method, and add up to get final speed/displacement.
+\brief **DYN** Program responsible to calculate B link speed and displacement by Newmark method, and add up to get final speed/displacement.
 
 This program's input file description can be found at the documentation of the function carl::get_input_params(GetPot& field_parser, feti_loop_dyn_params& input_params). 
 
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
   #ifdef PRINT_CALCULATION_TIME
     Dyn_op.export_calculation_time(index,"Blink");
   #endif
-  Dyn_op.delete_B_this_vector(input_params.dyn_solver);
+  Dyn_op.delete_B_this_vector();
   Dyn_op.prepare_B_next_force(&Dyn_op.vector_B,
     index,
     input_params.force_prepare_method,
@@ -116,7 +116,7 @@ int main(int argc, char** argv) {
          if(input_params.scheduler == carl::ClusterSchedulerType::LOCAL)
          {
             std::cout << " !!! LOCAL job 'scheduler: Run the following script manually: " << std::endl;
-            std::cout << init_script_command << std::endl ;
+            std::cout << init_script_command << std::endl;
          } else {
             carl::exec_command(init_script_command);
          }
@@ -126,21 +126,17 @@ int main(int argc, char** argv) {
 
         //Inner loop end!
        if(WorldComm.rank() == 0){
-            std::string init_script_command;
-        if(input_params.dyn_solver==carl::DynamicSolver::CG){
-            init_script_command = "sbatch " + input_params.scratch_folder_path + "/inner_ope_Alink.slurm";
-        }else{
-            init_script_command = ". " + input_params.scratch_folder_path + "/Alink.sh";
-        }
+            std::string init_script_command= ". " + input_params.scratch_folder_path + "/Alink.sh";
+        
          if(input_params.scheduler == carl::ClusterSchedulerType::LOCAL)
          {
             std::cout << " !!! LOCAL job 'scheduler: Run the following script manually: " << std::endl;
             std::cout << init_script_command << std::endl ;
          } else {
             carl::exec_command(init_script_command);
+         }
 
-         }
-         }
+        }
 
     }
   

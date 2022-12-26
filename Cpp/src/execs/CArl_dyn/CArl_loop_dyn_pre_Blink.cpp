@@ -6,7 +6,7 @@
 
 /** \file CArl_loop_dyn_pre_Blink.cpp
 
-\brief  **DYN-DI** Program responsible to calculate \f$ C^{B} \Lambda \f$.
+\brief  **DYN** Program responsible to calculate \f$ C^{B} \Lambda \f$.
  
 This program's input file description can be found at the documentation of the function carl::get_input_params(GetPot& field_parser, feti_loop_dyn_params& input_params). 
 

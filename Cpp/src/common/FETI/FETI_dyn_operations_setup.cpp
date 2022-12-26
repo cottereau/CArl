@@ -4,7 +4,7 @@
  *  Created on: Nov 23,2021
  *      Author: Chensheng Luo
  * 
- * \brief **DYN-DI/DYN-CG**   functions responsible for for setup calculations in Solving steps
+ * \brief **DYN**   functions responsible for for setup calculations in Solving steps
  */
 
 #include "FETI_dyn_operations.h"
@@ -56,12 +56,16 @@ namespace carl
 				this->prepare_force_vector_by_modal_and_slope(input_params.modal_A,
 					vectorsA,
 					input_params.slope_A,
+					input_params.saturation_A,
+					input_params.offset_A,
 					small_deltat,
 					0,
 					innerTimes);
 				this->prepare_force_vector_by_modal_and_slope(input_params.modal_B,
 					vectorsB,
 					input_params.slope_B,
+					input_params.saturation_B,
+					input_params.offset_B,
 					small_deltat,
 					0,1);
 			}
@@ -141,6 +145,8 @@ namespace carl
 	void FETI_Dyn_Operations::prepare_force_vector_by_modal_and_slope(std::string force_path,
     	carl::DynSystemVectorPath* vectors,
     	double slope,
+    	double saturation,
+    	double offset,
     	double small_deltat,
     	int index,
     	int timestep){
@@ -155,11 +161,11 @@ namespace carl
 
 
 		VecCopy(modal,forceThis);
-		VecScale(forceThis,slope*small_deltat*index);
+		VecScale(forceThis,std::min(slope*small_deltat*index+offset, saturation));
 		carl::write_PETSC_vector(forceThis,vectors->this_force,0,m_comm.get(),1);
 
 		VecCopy(modal,forceNext);
-		VecScale(forceNext,slope*small_deltat*(index+timestep));
+		VecScale(forceNext,std::min(slope*small_deltat*(index+timestep)+offset,saturation));
 		carl::write_PETSC_vector(forceNext,vectors->next_force,0,m_comm.get(),1);
 
 

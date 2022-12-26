@@ -4,7 +4,7 @@
  *  Created on: Nov 23,2021
  *      Author: Chensheng Luo
  * 
- * \brief **DYN-DI/DYN-CG**   functions responsible for result output, copy/paste and others in Solving steps
+ * \brief **DYN**   functions responsible for result output, copy/paste and others in Solving steps
  */
 
 #include "FETI_dyn_operations.h"
@@ -92,10 +92,9 @@ namespace carl
       	m_bAMovedToPrev = true;
 	}
 
-	void FETI_Dyn_Operations::delete_A_this_vector(int dynamic_solver){
+	void FETI_Dyn_Operations::delete_A_this_vector(){
 		this->set_NAN_vector(vector_A.rhs_free);
-		if(dynamic_solver == carl::DynamicSolver::DI){
-			this->set_NAN_vector(vector_A.rhs_link);}
+		this->set_NAN_vector(vector_A.rhs_link);
 
 		this->set_NAN_vector(vector_A.this_acc);
 		this->set_NAN_vector(vector_A.this_acc_free);
@@ -150,10 +149,9 @@ namespace carl
       	m_bBMovedToPrev = true;
 	}
 
-	void FETI_Dyn_Operations::delete_B_this_vector(int dynamic_solver){
+	void FETI_Dyn_Operations::delete_B_this_vector(){
 		this->set_NAN_vector(vector_B.rhs_free);
-		if(dynamic_solver == carl::DynamicSolver::DI){
-			this->set_NAN_vector(vector_B.rhs_link);}
+		this->set_NAN_vector(vector_B.rhs_link);
 
 		this->set_NAN_vector(vector_B.this_acc);
 		this->set_NAN_vector(vector_B.this_acc_free);
@@ -168,39 +166,37 @@ namespace carl
 		this->set_NAN_vector(vector_B.this_speed_link);
 	}
 
-	void FETI_Dyn_Operations::delete_coupling_vector(int dynamic_solver){
-		if(dynamic_solver == carl::DynamicSolver::DI){
-			this->set_NAN_vector(m_coupling_vector);
-			this->set_NAN_vector(m_rhs_interpolation);
-		}
+	void FETI_Dyn_Operations::delete_coupling_vector(){
+		this->set_NAN_vector(m_coupling_vector);
+		this->set_NAN_vector(m_rhs_interpolation);
 	}
 
-	// [DYN-CG]
-	void FETI_Dyn_Operations::prepare_CG_free_result(std::string& depature_path,
-		std::string destination_path){
-		this->copy_PETSC_vector(vector_A.inter_disp_free,destination_path+"/ext_solver_u0_A_sys_sol_vec.petscvec");
-		this->copy_PETSC_vector(vector_B.this_disp_free,destination_path+"/ext_solver_u0_B_sys_sol_vec.petscvec");
+	// // [DYN-CG]
+	// void FETI_Dyn_Operations::prepare_CG_free_result(std::string& depature_path,
+	// 	std::string destination_path){
+	// 	this->copy_PETSC_vector(vector_A.inter_disp_free,destination_path+"/ext_solver_u0_A_sys_sol_vec.petscvec");
+	// 	this->copy_PETSC_vector(vector_B.this_disp_free,destination_path+"/ext_solver_u0_B_sys_sol_vec.petscvec");
 
-	}
+	// }
 
-	// [DYN-CG]
-	void FETI_Dyn_Operations::prepare_CG_scaled_matrix(std::string& M_path_A,std::string& M_path_B,
-    	std::string destination_path,carl::NewmarkParams* newmark_A,carl::NewmarkParams* newmark_B){
-		this->scale_copy_PETSC_matrix(M_path_A,destination_path+"/Mtilde_A.petscmat", 1.0/(newmark_A->beta*newmark_A->deltat*newmark_A->deltat));
-		this->scale_copy_PETSC_matrix(M_path_B,destination_path+"/Mtilde_B.petscmat", 1.0/(newmark_B->beta*newmark_B->deltat*newmark_B->deltat));
-	}
+	// // [DYN-CG]
+	// void FETI_Dyn_Operations::prepare_CG_scaled_matrix(std::string& M_path_A,std::string& M_path_B,
+    // 	std::string destination_path,carl::NewmarkParams* newmark_A,carl::NewmarkParams* newmark_B){
+	// 	this->scale_copy_PETSC_matrix(M_path_A,destination_path+"/Mtilde_A.petscmat", 1.0/(newmark_A->beta*newmark_A->deltat*newmark_A->deltat));
+	// 	this->scale_copy_PETSC_matrix(M_path_B,destination_path+"/Mtilde_B.petscmat", 1.0/(newmark_B->beta*newmark_B->deltat*newmark_B->deltat));
+	// }
 
-	// [DYN-CG]
-	void FETI_Dyn_Operations::prepare_CG_scaled_vector(std::string& rb_path,int nb_rb,std::string force_path,
-    	std::string destination_path,carl::NewmarkParams* newmark){
-		this->scale_copy_PETSC_vector(force_path,destination_path+"/current_force.petscvec",-1);
+	// // [DYN-CG]
+	// void FETI_Dyn_Operations::prepare_CG_scaled_vector(std::string& rb_path,int nb_rb,std::string force_path,
+    // 	std::string destination_path,carl::NewmarkParams* newmark){
+	// 	this->scale_copy_PETSC_vector(force_path,destination_path+"/current_force.petscvec",-1);
 
-		for(int iii = 0; iii < nb_rb; ++iii){
-			std::string input_filename = rb_path + "_" + std::to_string(iii) + "_n_" + std::to_string(nb_rb) + ".petscvec";
-			std::string output_filename = destination_path + "/prepared_rb_vector_" + std::to_string(iii) + "_n_" + std::to_string(nb_rb) + ".petscvec";
-			this->scale_copy_PETSC_vector(input_filename,output_filename,-(newmark->beta*newmark->deltat*newmark->deltat));
-		}
-	}
+	// 	for(int iii = 0; iii < nb_rb; ++iii){
+	// 		std::string input_filename = rb_path + "_" + std::to_string(iii) + "_n_" + std::to_string(nb_rb) + ".petscvec";
+	// 		std::string output_filename = destination_path + "/prepared_rb_vector_" + std::to_string(iii) + "_n_" + std::to_string(nb_rb) + ".petscvec";
+	// 		this->scale_copy_PETSC_vector(input_filename,output_filename,-(newmark->beta*newmark->deltat*newmark->deltat));
+	// 	}
+	// }
 
 	void FETI_Dyn_Operations::export_calculation_time(int index,std::string stage)
 	{
@@ -215,23 +211,23 @@ namespace carl
     		// Export the scalar data
     		time_data.open(m_scratch_folder_path + "/Time_data.dat",std::ofstream::app);
     		time_data.precision(5);
-    		time_data << index << " " << stage << " " << dt;
+    		time_data << std::left << std::setw(7) << index << std::setw(7) << stage << std::setw(25) << dt << std::endl;
     		
-    		std::FILE *fh ;
-    		std::string filename=m_scratch_folder_path+"/CG_solver/FETI_convergence.dat";
-			fh = fopen(filename.c_str (),"r");// To examine if there is a cv file
+    		// std::FILE *fh ;
+    		// std::string filename=m_scratch_folder_path+"/CG_solver/FETI_convergence.dat";
+			// fh = fopen(filename.c_str (),"r");// To examine if there is a cv file
 
-			if(fh!=NULL){
-				int count;
-				char line[256]={0};
-				while(std::fgets(line,255,fh)){
-					count++;
-				}
-				//There is a cv file
-				time_data << " "<< count;
-			}
-    		time_data << std::endl;
-    		time_data.close();
+			// if(fh!=NULL){
+			// 	int count;
+			// 	char line[256]={0};
+			// 	while(std::fgets(line,255,fh)){
+			// 		count++;
+			// 	}
+			// 	//There is a cv file
+			// 	time_data << " "<< count;
+			// }
+    		// time_data << std::endl;
+    		// time_data.close();
 
     	}
     	std::cout << index << " "<< stage << " Time stored!"<< std::endl;

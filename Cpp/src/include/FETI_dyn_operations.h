@@ -18,7 +18,7 @@
 namespace carl
 {
 
-/** \brief **DYN-DI/DYN-CG** Class containing the operations needed for the Dynamic solver.
+/** \brief **DYN** Class containing the operations needed for the Dynamic solver.
  *
  *  This class is used by the several `CArl_dyn` programs to do operations of the Dynamic solver,
  *  including matrix and vector I/O and iteration operations. Due to the need to read vectors and 
@@ -82,6 +82,8 @@ protected:
   void prepare_force_vector_by_modal_and_slope(std::string force_path,
     carl::DynSystemVectorPath* vectors,
     double slope,
+    double saturation,
+    double offset,
     double small_deltat,
     int index,
     int timestep);     ///< Calculate  \f$ \text{modal} \times \text{Slope} \times t \f$ for all moment, put the result in a folder
@@ -239,24 +241,24 @@ public:
 
     void move_to_prev_A();   ///< Move all `this_A_*.petscvec` file to `prev_A_* file.petscvec`
 
-    void delete_A_this_vector(int dynamic_solver);  ///< Put all "this_A_*.petscvec" vectors to NAN
+    void delete_A_this_vector();  ///< Put all "this_A_*.petscvec" vectors to NAN
 
     void output_B_result(int index);            ///< Copy the acceleration/speed/displacement of `this_B_*.petscvec` to result folder
 
     void move_to_prev_B();    ///< Move all  `this_B_*.petscvec` file to `prev_B_*.petscvec` file
     
-    void delete_B_this_vector(int dynamic_solver);  ///< Put all "this_B_*.petscvec" vectors to NAN
+    void delete_B_this_vector();  ///< Put all "this_B_*.petscvec" vectors to NAN
 
-    void delete_coupling_vector(int dynamic_solver); ///< Put all coupling vectors to NAN
+    void delete_coupling_vector(); ///< Put all coupling vectors to NAN
 
-    void prepare_CG_free_result(std::string& depature_path,
-      std::string destination_path);   ///< [DYN-CG]Move all free solution of this step to prepare CG solver
+    // void prepare_CG_free_result(std::string& depature_path,
+    //   std::string destination_path);   ///< [DYN-CG]Move all free solution of this step to prepare CG solver
 
-    void prepare_CG_scaled_matrix(std::string& M_path_A,std::string& M_path_B,
-      std::string dest_path,carl::NewmarkParams* newmark_A,carl::NewmarkParams* newmark_B);      ///< [DYN-CG]Scale mass matrix to adapt static CG solver, with \f$K^k \RightArrow \frac{1}{\beta^k(\Delta t^k)^2} \tilde{M}^k\f$
+    // void prepare_CG_scaled_matrix(std::string& M_path_A,std::string& M_path_B,
+    //   std::string dest_path,carl::NewmarkParams* newmark_A,carl::NewmarkParams* newmark_B);      ///< [DYN-CG]Scale mass matrix to adapt static CG solver, with \f$K^k \RightArrow \frac{1}{\beta^k(\Delta t^k)^2} \tilde{M}^k\f$
 
-    void prepare_CG_scaled_vector(std::string& rb_path,int nb_rb,std::string forth_path,
-      std::string destination_path,carl::NewmarkParams* newmark); ///< [DYN-CG]Scale force and rigid body vector\f$R^B \RightArrow \beta^B(\Delta t^B)^2 R^B \f$
+    // void prepare_CG_scaled_vector(std::string& rb_path,int nb_rb,std::string forth_path,
+    //   std::string destination_path,carl::NewmarkParams* newmark); ///< [DYN-CG]Scale force and rigid body vector\f$R^B \RightArrow \beta^B(\Delta t^B)^2 R^B \f$
 
     void export_calculation_time(int index,std::string stage);   ///< Output current moment at the file Time_data.dat
   

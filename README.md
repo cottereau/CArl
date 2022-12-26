@@ -5,11 +5,9 @@
 This project is focused on the development of a software based on the [Arlequin multi-model coupling method](https://www.sciencedirect.com/science/article/pii/S0045782508003630). The main interest of this software is to allow, by its specific structure, the easy interfacing of different third-party softwares (developed and maintained outside of this project), and adapted to each of the models appearing in the coupling. Currently, this project includes two implementations of the CArl sofware:
 
 1. a [MATLAB](http://www.mathworks.fr/products/matlab/) implementation. 
-2. a parallel C++ / MPI implementation, based on [libMesh](https://libmesh.github.io) and [CGAL](http://www.cgal.org). For this part, three solvers are developped: 
-- For a static case: a solver CArl-Static for the stationnary solution of coupled system
-- For a transit case: to get a time dependent solution, we can either use
-  + a solver CArl-Dyn-DI with direct inversion method mainly for small D.O.F.
-  + a solver CArl-Dyn-CG with conjugate gradient method mainly for big D.O.F. and the case mass matrix difficult to be inverted
+2. a parallel C++ / MPI implementation, based on [libMesh](https://libmesh.github.io) and [CGAL](http://www.cgal.org). For this part, three solvers are developed: 
+- For a static case: a solver CArl-Static for the stationary solution of coupled system
+- For a transit case:  a  solver CArl-Dynamic for a series of time dependent solution
 
 This software is mainly developed at the laboratory [LMPS (Laboratoire Mécanique de Paris-Saclay)](https://lmps.ens-paris-saclay.fr/en), of which ancien MSSMat (Ecole Centrale Paris - CNRS) is now a part.
 
@@ -17,6 +15,7 @@ This software is mainly developed at the laboratory [LMPS (Laboratoire Mécaniqu
 * contributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec, D. Neron, T. M. Schlittler, F. Gatti, G. Jacquet, C. Luo, S. Méo
 
 more detail on installation procedures and examples can be found the [related help web page](https://cottereau.github.io/CArl/)
+
 ## MATLAB IMPLEMENTATION
 
 The MATLAB implementation of the CArl software can be found at the directory `MATLAB`. Currently, the software to which it is interfaced includes :

@@ -5,8 +5,8 @@
  *      Author: Chensheng Luo, Severin Meo
  */
 
-#ifndef DYN_DI_SOLVER_FILES_SETUP_H_
-#define DYN_DI_SOLVER_FILES_SETUP_H_
+#ifndef DYN_SOLVER_FILES_SETUP_H_
+#define DYN_SOLVER_FILES_SETUP_H_
 
 #include "carl_headers.h"
 #include "carl_loop_dyn_input_parser.h"
@@ -15,7 +15,7 @@
 
 namespace carl
 {
-/** \brief **DYN-DI** Class generating all necessary `.sh` script and input for CArl dynamic time loop.
+/** \brief **DYN** Class generating all necessary `.sh` script and input for CArl dynamic time loop.
  * 
  *  This class is used in CArl_loop_dyn_setup.cpp to generate all the external solver lancing script and 
  *  input files, thay is to say:
@@ -28,7 +28,7 @@ namespace carl
  *
  *
  */
-class Dyn_DI_Solver_Files_Setup
+class Dyn_Solver_Files_Setup
 {
 protected:
     libMesh::Parallel::Communicator& m_comm;
@@ -83,7 +83,7 @@ protected:
     void set_FETI_input_parameters(feti_loop_dyn_params& input_params);
   
 public:
-    Dyn_DI_Solver_Files_Setup(libMesh::Parallel::Communicator& comm) :
+    Dyn_Solver_Files_Setup(libMesh::Parallel::Communicator& comm) :
     m_comm { comm },
     m_bInputParamsSet { false },
     m_bScratchFolderExists { false },
@@ -95,7 +95,7 @@ public:
   {
   };
 
-    Dyn_DI_Solver_Files_Setup(libMesh::Parallel::Communicator& comm, feti_loop_dyn_params& input_params) :
+    Dyn_Solver_Files_Setup(libMesh::Parallel::Communicator& comm, feti_loop_dyn_params& input_params) :
     m_comm { comm },
     m_bInputParamsSet { false },
     m_bScratchFolderExists { false },
@@ -119,4 +119,4 @@ public:
 };
 }
 
-#endif /* DYN_DI_SOLVER_FILES_SETUP_H_ */
+#endif /* DYN_SOLVER_FILES_SETUP_H_ */

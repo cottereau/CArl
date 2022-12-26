@@ -73,10 +73,6 @@ enum ForcePrepareMethod{
   MODAL_PRODUCT = 99,
 
 };
-enum DynamicSolver{
-	DI = 0,
-	CG = 1,
-};
 }
 
 

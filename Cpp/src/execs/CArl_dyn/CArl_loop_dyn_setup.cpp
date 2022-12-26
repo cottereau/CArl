@@ -7,7 +7,7 @@
 #include <unistd.h>
 /** \file CArl_loop_dyn_setup.cpp
 
-\brief  **DYN-DI/DYN-CG** Program responsible to set up all environments, which will create all necesarry input files.
+\brief  **DYN** Program responsible to set up all environments, which will create all necesarry input files.
 
 This program's input file description can be found at the documentation of the function carl::get_input_params(GetPot& field_parser, feti_loop_dyn_params& input_params). 
 
@@ -58,28 +58,14 @@ int main(int argc, char* argv[]) {
   std::cout << " !!! Finish parser " << std::endl;
 
   // --- Crete the files / folders needed
-  if(input_params.dyn_solver == carl::DynamicSolver::DI){
-        carl::Dyn_DI_Solver_Files_Setup DI_files_setup(WorldComm,input_params);
-        DI_files_setup.set_scratch_folder();
-        DI_files_setup.generate_libmesh_external_solver_inputs();
-        DI_files_setup.generate_libmesh_external_solver_script();
-        DI_files_setup.generate_inner_operation_script();
-        DI_files_setup.generate_combined_scripts();
-        DI_files_setup.generate_progression_inputs();
-        std::cout << " !!! Script Files Generated " << std::endl;
-    }else if(input_params.dyn_solver == carl::DynamicSolver::CG ){
-        carl::Dyn_CG_Solver_Files_Setup CG_files_setup(WorldComm,input_params);
-        //Prepare work for FETI_files_setup
-        CG_files_setup.set_scratch_folder();
-        CG_files_setup.generate_libmesh_external_solver_inputs();
-        CG_files_setup.generate_libmesh_external_solver_script();
-        CG_files_setup.generate_inner_operation_script();
-        CG_files_setup.generate_combined_scripts();
-        CG_files_setup.generate_progression_inputs();
-        std::cout << " !!! Script Files Generated " << std::endl;
-    }else{
-        homemade_error_msg("Invalid dynamic solver, please configure to DI or CG!");
-    }
+    carl::Dyn_Solver_Files_Setup DI_files_setup(WorldComm,input_params);
+    DI_files_setup.set_scratch_folder();
+    DI_files_setup.generate_libmesh_external_solver_inputs();
+    DI_files_setup.generate_libmesh_external_solver_script();
+    DI_files_setup.generate_inner_operation_script();
+    DI_files_setup.generate_combined_scripts();
+    DI_files_setup.generate_progression_inputs();
+    std::cout << " !!! Script Files Generated " << std::endl;
 
   //Generate script file
   carl::FETI_Dyn_Operations Dyn_op(WorldComm,input_params.scratch_folder_path,input_params.result_folder_path);

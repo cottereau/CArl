@@ -7,7 +7,7 @@
 #include "CArl_build_intersections.h"
 
  /** \file CArl_build_intersections.cpp
-  * \brief **STAT/DYN-DI/DYN-CG** Implementation of the parallel intersection search
+  * \brief **STAT/DYN** Implementation of the parallel intersection search
  
     
  

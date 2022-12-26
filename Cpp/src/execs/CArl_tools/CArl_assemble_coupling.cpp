@@ -1,5 +1,5 @@
  /** \file CArl_assemble_coupling.cpp
- \brief **STAT/DYN-DI/DYN-CG** Implementation of the parallel coupling matrices assembly
+ \brief **STAT/DYN** Implementation of the parallel coupling matrices assembly
  
  Usage: `./CArl_assemble_coupling -i [input file]`
 

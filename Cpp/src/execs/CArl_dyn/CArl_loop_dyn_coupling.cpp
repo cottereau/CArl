@@ -7,7 +7,7 @@
 
 /** \file CArl_loop_dyn_coupling.cpp
 
-\brief **DYN-DI** Program responsible to calculate \f$ rhs_{inter} = - ( C^A\dot{U}^A_{free} (t)+C^B \dot{U}^B_{free} (t)) \f$.
+\brief **DYN** Program responsible to calculate \f$ rhs_{inter} = - ( C^A\dot{U}^A_{free} (t)+C^B \dot{U}^B_{free} (t)) \f$.
 
 This program's input file description can be found at the documentation of the function carl::get_input_params(GetPot& field_parser, feti_loop_dyn_params& input_params). 
 

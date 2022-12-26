@@ -60,22 +60,22 @@ struct feti_loop_dyn_params {
    int result_times_A;                            ///< Nb of time to print A result
    int result_times_B;                            ///< Nb of time to print B result
 
-    // Rigid body mode options for the micro system
-   bool bUseRigidBodyModes;            ///< [RB] Use the rigid body modes for the micro system?
-   std::string RB_vectors_base;        ///< [RB] Common path base for the micro system's rigid body mode vectors.
-   int nb_of_rb_vectors;               ///< [RB] Number of RB mode vectors.
+   //  // Rigid body mode options for the micro system
+   // bool bUseRigidBodyModes;            ///< [RB] Use the rigid body modes for the micro system?
+   // std::string RB_vectors_base;        ///< [RB] Common path base for the micro system's rigid body mode vectors.
+   // int nb_of_rb_vectors;               ///< [RB] Number of RB mode vectors.
 
-   int dyn_solver;
-    // CG parameters
-   double CG_coupled_conv_abs;     ///< [CG] Absolute residual convergence.
-   double CG_coupled_conv_rel;     ///< [CG] Relative residual convergence.
-   double CG_coupled_div;          ///< [CG] Residual divergence.
-   double CG_coupled_conv_corr;    ///< [CG] Relative rigid body mode convergence.
-   int CG_coupled_conv_max;        ///< [CG] Maximum number of iterations. 
-   carl::BaseCGPrecondType CG_precond_type;    ///< [CG] Type of preconditionner.
+   // int dyn_solver;
+   //  // CG parameters
+   // double CG_coupled_conv_abs;     ///< [CG] Absolute residual convergence.
+   // double CG_coupled_conv_rel;     ///< [CG] Relative residual convergence.
+   // double CG_coupled_div;          ///< [CG] Residual divergence.
+   // double CG_coupled_conv_corr;    ///< [CG] Relative rigid body mode convergence.
+   // int CG_coupled_conv_max;        ///< [CG] Maximum number of iterations. 
+   // carl::BaseCGPrecondType CG_precond_type;    ///< [CG] Type of preconditionner.
 };
 
-/** \brief **DYN-DI/DYN-CG** Parser function for dynamic solvers input.
+/** \brief **DYN** Parser function for dynamic solvers input.
  *  
 Parameters:
 
@@ -121,7 +121,7 @@ Parameters:
      * *or (if different external solver is needed!)*:   
      - `ExtSolverInputA` : Path to a general external solver input of object A
      - `ExtSolverInputB` : Path to a general external solver input of object B
-     - (**For [CArl-Dyn-DI]**)`ExtSolverInputInterpolation` : Path to an external solver input of interpolation matrix/vector   
+     - `ExtSolverInputInterpolation` : Path to an external solver input of interpolation matrix/vector   
 
      * *And either*:   
      - `ExtSolverLaunchScript` : Script to launch external solver for all cases,    
@@ -129,7 +129,7 @@ Parameters:
      * *or (if different external solver is needed!)*:   
      - `ExtSolverLaunchScriptA` : Script to launch external solver for object A
      - `ExtSolverLaunchScriptB` : Script to launch external solver for object B
-     - (**For [CArl-Dyn-DI]**) `ExtSolverLaunchScriptInterpolation` : Script to launch external solver for interpolation matrix   
+     - `ExtSolverLaunchScriptInterpolation` : Script to launch external solver for interpolation matrix   
 
    * **Example**:One example of this ExtSolver can be : `'srun -n 4 $CARLBUILD/libmesh_solve_linear_system -i '`
   
@@ -151,19 +151,6 @@ Parameters:
 
      - `ResultTimeA` : the time interval to output A's result, *Default*: identical to `deltatA`
      - `ResultTimeB` : the time interval to output B's result, *Default*: identical to `deltatB`
-
-  + (**For [CArl-Dyn-CG]**) **Rigid Body Mode**:
-     - Boolean flags `UseRigidBodyModesB` : use the rigid body modes for system B.
-     - `ExtForceSystemB` : path to the vector containing the external forces for the system B.
-     - `RBVectorBase` : filename base of the rigid body modes vectors.
-
-  + (**For [CArl-Dyn-CG]**, *OPTIONAL WITH DEFAULT*) **CG Solver Parameters**:
-     - `CGPreconditionerType` : CG preconditioner type. Values: "NONE", "Coupling_operator" or "Coupling_operator_jacobi". *Default*: "Coupling_operator".
-     - `CoupledConvAbs` : CG absolute convergence on the residual. *Default*: 1e-20.
-     - `CoupledConvRel` : CG relative convergence on the residual. *Default*: 1e-5.
-     - `CoupledCorrConvRel` : CG relative convergence on the rigid body corrections. *Default*: 1e-6.
-     - `CoupledDiv` : CG residual divergence parameter. *Default*: 100000.
-     - `CoupledIterMax` : CG maximum number of iterations. *Default*: 1000.
  *
  */
 

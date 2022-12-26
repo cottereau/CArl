@@ -4,7 +4,7 @@
  *  Created on: Apr 23, 2017
  *      Author: Thiago Milanetto Schlittler
  * 
- * \brief **STAT/DYN-CG**    FETI operations called by the `CArl_FETI` programs  for the FETI solver.
+ * \brief **STAT/DYN**    FETI operations called by the `CArl_FETI` programs  for the FETI solver.
  */
 
 

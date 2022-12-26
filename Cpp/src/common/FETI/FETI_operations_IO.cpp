@@ -4,7 +4,7 @@
  *  Created on: Apr 23, 2017
  *      Author: Thiago Milanetto Schlittler
  * 
- * \brief **STAT/DYN-CG**  read/write methods for the FETI solver.
+ * \brief **STAT/DYN**  read/write methods for the FETI solver.
  */
 
 

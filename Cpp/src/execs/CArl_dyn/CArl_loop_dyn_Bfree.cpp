@@ -7,7 +7,7 @@
 
 /** \file CArl_loop_dyn_Bfree.cpp
 
-\brief **DYN-DI/DYN-CG** Program responsible to calculate B free speed and displacement by Newmark method.
+\brief **DYN** Program responsible to calculate B free speed and displacement by Newmark method.
 
 This program's input file description can be found at the documentation of the function carl::get_input_params(GetPot& field_parser, feti_loop_dyn_params& input_params). 
 

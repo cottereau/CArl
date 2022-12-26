@@ -7,7 +7,7 @@
 
 /** \file CArl_loop_dyn_Alink.cpp
 
-\brief **DYN-DI/DYN-CG** Program responsible to calculate A link speed and displacement by Newmark method, and add up to get final speed/displacement.
+\brief **DYN** Program responsible to calculate A link speed and displacement by Newmark method, and add up to get final speed/displacement.
 
 This program's input file description can be found at the documentation of the function carl::get_input_params(GetPot& field_parser, feti_loop_dyn_params& input_params). 
 
@@ -107,8 +107,8 @@ int main(int argc, char** argv) {
   #endif
   
   //delete all value of this moment
-  Dyn_op.delete_A_this_vector(input_params.dyn_solver);
-  Dyn_op.delete_coupling_vector(input_params.dyn_solver);
+  Dyn_op.delete_A_this_vector();
+  Dyn_op.delete_coupling_vector();
 //Prepare next rhs vector
   Dyn_op.prepare_A_next_force(&Dyn_op.vector_A,
     index,

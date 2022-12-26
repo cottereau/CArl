@@ -4,7 +4,7 @@
  *  Created on: Apr 23, 2017
  *      Author: Thiago Milanetto Schlittler
  * 
- * \brief **STAT/DYN-CG**   setup and internal calculations (including all `protected` methods)  for the FETI solver.
+ * \brief **STAT/DYN**   setup and internal calculations (including all `protected` methods)  for the FETI solver.
  */
 
  #include "FETI_operations.h"

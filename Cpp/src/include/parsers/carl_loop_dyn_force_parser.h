@@ -29,6 +29,11 @@ struct dyn_force_params{
     double slope_A;
     double slope_B;
 
+    double offset_A;
+    double offset_B;
+    double saturation_A;
+    double saturation_B;
+
 
 };
 
@@ -44,21 +49,23 @@ Following paramters are based on cases, according to `ForcePrepareMethod` in dyn
 If no object is specified, it will be applied to all parameters!
 
 + `ForcePrepareMethod` = `ModalSinus`
-    - `Amplitude` OR (`AmplitudeA` and `AmplitudeB`)
-    - `Frequency` OR (`FrequencyA` and `FrequencyB`)
-    - `IniitalPhase` OR (`IniitalPhaseA` and `IniitalPhaseB`)  
+    - `Amplitude` OR (`AmplitudeA` and `AmplitudeB`), *Default*: 1
+    - `Frequency` OR (`FrequencyA` and `FrequencyB`), *Default*: 1
+    - `IniitalPhase` OR (`IniitalPhaseA` and `IniitalPhaseB`), *Default*: 0
 
     It will create: \f$ \text{modal} \times \text{Amplitude}\sin(2\pi\times\text{Frequency}\times t+\text{IniitalPhase}) \f$
 
 + `ForcePrepareMethod` = `ModalConstant`
-    - `Amplitude` OR (`AmplitudeA` and `AmplitudeB`)  
+    - `Amplitude` OR (`AmplitudeA` and `AmplitudeB`), *Default*: 1
 
     It will create: \f$ \text{modal} \times \text{Amplitude} \f$
 
 + `ForcePrepareMethod` = `ModalLinear`
-    - `Slope` OR (`SlopeA` and `SlopeB`)  
+    - `Slope` OR (`SlopeA` and `SlopeB`), *Default*: 1
+    - `Saturation` OR (`SaturationA` and `SaturationB`), *Default*: INFINITY
+    - `Offset` OR (`OffsetA` and `OffsetB`), *Default*: 0
     
-    It will create: \f$ \text{modal} \times \text{Slope} \times t \f$
+    It will create: \f$ \text{modal} \times min(\text{Slope} \times t + Offset, Saturation) \f$
 
 + `ForcePrepareMethod` = `ModalProduct`
     - NOT IMPLEMENTED

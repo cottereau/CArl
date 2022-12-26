@@ -13,41 +13,43 @@ namespace carl
 void get_newmark_params(GetPot& field_parser,
     NewmarkParams& newmark) {
 
+  std::cout << "-- Begin reading Newmark parameters......" << std::endl;
+
   if (field_parser.search(3, "deltat","Deltat","DELTAT")) {
     newmark.deltat = field_parser.next(newmark.deltat);
-  }
-  else{
+    std::cout << "-- Delta t: "<< newmark.deltat << std::endl;
+  }else{
     newmark.deltat = 0.001;
-    std::cout << "[Newmark Parameter]WARNING! Deltat isn't set,  default value is taken as:"<< newmark.deltat << std::endl;
+    std::cout << "-- Delta t: "<< newmark.deltat << "[No entry, default value is taken]" << std::endl;
   }
   
 
   if (field_parser.search(3, "alpha","Alpha","ALPHA")) {
     newmark.alpha = field_parser.next(newmark.alpha);
-  }
-  else{
+    std::cout << "-- Alpha: "<< newmark.alpha << std::endl;
+  }else{
     newmark.alpha = 0;
-    std::cout << "[Newmark Parameter]WARNING! Alpha isn't set,  default value is taken as:"<< newmark.alpha << std::endl;
+    std::cout << "-- Alpha: "<< newmark.alpha << "[No entry, default value is taken]"<< std::endl;
   }
   
 
   if (field_parser.search(3, "beta","Beta","BETA")) {
     newmark.beta = field_parser.next(newmark.beta);
-  }
-  else{
+    std::cout << "-- Beta: "<< newmark.beta << std::endl;
+  }else{
     newmark.beta = 0.25;
-    std::cout << "[Newmark Parameter]WARNING! Beta isn't set,  default value is taken as:"<< newmark.beta << std::endl;
+    std::cout << "-- Beta: "<< newmark.beta << "[No entry, default value is taken]"<< std::endl;
   }
   
   if (field_parser.search(3, "gamma","Gamma","GAMMA")) {
     newmark.gamma = field_parser.next(newmark.gamma);
-  }
-  else{
+    std::cout << "-- Gamma: "<< newmark.gamma << std::endl;
+  }else{
     newmark.gamma = 0.5;
-    std::cout << "[Newmark Parameter]WARNING! Gamma isn't set,  default value is taken as:"<< newmark.gamma << std::endl;
+    std::cout << "-- Gamma: "<< newmark.gamma << "[No entry, default value is taken]"<< std::endl;
   }
 
-
+  std::cout << "...... Reading Newmark parameters FINISH!" << std::endl;
   
 };
 }

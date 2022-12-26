@@ -4,7 +4,7 @@
  *  Created on: Nov 23,2021
  *      Author: Chensheng Luo
  * 
- * \brief **DYN-DI/DYN-CG**   functions responsible for for setup calculations in Solving steps
+ * \brief **DYN**   functions responsible for for setup calculations in Solving steps
  */
 
 #include "FETI_dyn_operations.h"
@@ -371,9 +371,9 @@ namespace carl
     	if(m_comm.rank() == 0)
   		{
   			std::ofstream result_file;
-				result_file.open(m_scratch_folder_path + "/result_test_inversion.txt",std::ofstream::app);
-				result_file.precision(15);
-				result_file << "Round" << "   " << "Test norm "<< "   " << "Product norm"<< "   " << "Quotient" << std::endl;
+				result_file.open(m_scratch_folder_path + "/result_test_inversion.dat",std::ofstream::app);
+				result_file.precision(10);
+				result_file << std::left << std::setw(8) << "Round" << std::setw(15) << "Test norm "<< std::setw(15) << "Product norm"<< std::setw(15) << "Quotient" << std::endl;
 				result_file.close();
 			}
     }
@@ -426,9 +426,9 @@ namespace carl
   		if(m_comm.rank() == 0)
   		{
   		std::ofstream result_file;
-			result_file.open(m_scratch_folder_path + "/result_test_inversion.txt",std::ofstream::app);
-			result_file.precision(15);
-			result_file << "  " << index << "   " << norm1 << "    "<< norm2<< "   "<< norm1/norm2<< std::endl;
+			result_file.open(m_scratch_folder_path + "/result_test_inversion.dat",std::ofstream::app);
+			result_file.precision(10);
+			result_file << std::left << std::setw(8) << index << std::setw(15) << norm1 << std::setw(15) << norm2<< std::setw(15) << norm1/norm2 << std::endl;
 			result_file.close();
 
   		VecDestroy(&UA);
@@ -438,17 +438,17 @@ namespace carl
     	MatDestroy(&CA);
     	MatDestroy(&CB);
 
-    	std::FILE *fh ;
-    	std::string filename=m_scratch_folder_path+"/CG_solver/FETI_convergence.dat";
-			fh = fopen(filename.c_str (),"r");// To examine if there is a cv file
+    	// std::FILE *fh ;
+    	// std::string filename=m_scratch_folder_path+"/CG_solver/FETI_convergence.dat";
+			// fh = fopen(filename.c_str (),"r");// To examine if there is a cv file
 
-			if(fh!=NULL){
+			// if(fh!=NULL){
     
-    			std::string command_string;
-    			command_string = "cp " + filename + " "+ m_scratch_folder_path+"/FETI_convergence_"+std::to_string(index)+".dat";
-    			carl::exec_command(command_string.c_str());
+    	// 		std::string command_string;
+    	// 		command_string = "cp " + filename + " "+ m_scratch_folder_path+"/FETI_convergence_"+std::to_string(index)+".dat";
+    	// 		carl::exec_command(command_string.c_str());
 
-  		}
+  		// }
 
     }
 
@@ -488,6 +488,8 @@ namespace carl
 				this->prepare_force_vector_by_modal_and_slope(input_params.modal_A,
 					vectors,
 					input_params.slope_A,
+					input_params.saturation_A,
+					input_params.offset_A,
 					small_deltat,
 					index,
 					step);
@@ -540,6 +542,8 @@ namespace carl
 				this->prepare_force_vector_by_modal_and_slope(input_params.modal_B,
 					vectors,
 					input_params.slope_B,
+					input_params.saturation_B,
+					input_params.offset_B,
 					small_deltat,
 					index,
 					1);

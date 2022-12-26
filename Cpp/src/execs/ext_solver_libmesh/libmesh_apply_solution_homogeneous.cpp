@@ -3,7 +3,7 @@
 int main(int argc, char** argv) {
 
   // --- Initialize libMesh
-  //OUI
+
   libMesh::LibMeshInit init(argc, argv);
 
   // Do performance log?

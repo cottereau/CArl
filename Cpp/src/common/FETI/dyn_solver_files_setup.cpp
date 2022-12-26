@@ -4,16 +4,16 @@
  *  Created on: Dec 2, 2021
  *      Author: Chensheng Luo, Severin Meo
  * 
- * \brief **DYN-DI**   functions responsible for generating all scripts of Solving step of CG solver
+ * \brief **DYN**   functions responsible for generating all scripts of Solving step of CG solver
  */
-#include "dyn_DI_solver_files_setup.h"
+#include "dyn_solver_files_setup.h"
 
 
 
 namespace carl
 {
 
-void Dyn_DI_Solver_Files_Setup::print_SLURM_script(const std::string& output_filename, const std::string& job_name, const std::string& output_name, const std::string& error_name, const std::string& common_script, const std::string& command_to_run)
+void Dyn_Solver_Files_Setup::print_SLURM_script(const std::string& output_filename, const std::string& job_name, const std::string& output_name, const std::string& error_name, const std::string& common_script, const std::string& command_to_run)
 {
   std::ofstream output_script(output_filename);
   output_script << "#!/bin/bash" << std::endl;
@@ -26,13 +26,13 @@ void Dyn_DI_Solver_Files_Setup::print_SLURM_script(const std::string& output_fil
   output_script.close();
 };
 
-void Dyn_DI_Solver_Files_Setup::set_FETI_input_parameters(feti_loop_dyn_params& input_params)
+void Dyn_Solver_Files_Setup::set_FETI_input_parameters(feti_loop_dyn_params& input_params)
 {
   m_bInputParamsSet = true;
   m_input_params = input_params;
 };
 
-void Dyn_DI_Solver_Files_Setup::set_scratch_folder()
+void Dyn_Solver_Files_Setup::set_scratch_folder()
 {
   homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
 
@@ -61,7 +61,7 @@ void Dyn_DI_Solver_Files_Setup::set_scratch_folder()
   }
 };
 
-void Dyn_DI_Solver_Files_Setup::generate_libmesh_external_solver_inputs()
+void Dyn_Solver_Files_Setup::generate_libmesh_external_solver_inputs()
 {
   homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
   homemade_assert_msg(m_bScratchFolderExists,"Scratch folder not set yet!");
@@ -135,7 +135,7 @@ void Dyn_DI_Solver_Files_Setup::generate_libmesh_external_solver_inputs()
   
 }
 
-void Dyn_DI_Solver_Files_Setup::generate_libmesh_external_solver_script()
+void Dyn_Solver_Files_Setup::generate_libmesh_external_solver_script()
 {
   homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
   homemade_assert_msg(m_bScratchFolderExists,"Scratch folder not set yet!");
@@ -163,7 +163,7 @@ void Dyn_DI_Solver_Files_Setup::generate_libmesh_external_solver_script()
   m_bSetExternalSolversScripts = true;
 }
 
-void Dyn_DI_Solver_Files_Setup::generate_libmesh_external_solver_scripts_SLURM(){
+void Dyn_Solver_Files_Setup::generate_libmesh_external_solver_scripts_SLURM(){
   homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
   homemade_assert_msg(m_bScratchFolderExists,"Scratch folder not set yet!");
   homemade_assert_msg(m_bSetExternalSolversInputFiles,"External solver input files not set yet!");
@@ -228,7 +228,7 @@ void Dyn_DI_Solver_Files_Setup::generate_libmesh_external_solver_scripts_SLURM()
   }
 }
 
-void Dyn_DI_Solver_Files_Setup::generate_inner_operation_script()
+void Dyn_Solver_Files_Setup::generate_inner_operation_script()
 {
   homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
   homemade_assert_msg(m_bScratchFolderExists,"Scratch folder not set yet!");
@@ -262,7 +262,7 @@ void Dyn_DI_Solver_Files_Setup::generate_inner_operation_script()
   m_bSetInnerOperationScripts = true;
 }
 
-void Dyn_DI_Solver_Files_Setup::generate_inner_operation_scripts_SLURM(){
+void Dyn_Solver_Files_Setup::generate_inner_operation_scripts_SLURM(){
   homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
   homemade_assert_msg(m_bScratchFolderExists,"Scratch folder not set yet!");
   homemade_assert_msg(m_bSetExternalSolversInputFiles,"External solver input files not set yet!");
@@ -347,7 +347,7 @@ void Dyn_DI_Solver_Files_Setup::generate_inner_operation_scripts_SLURM(){
   }
 }
 
-void Dyn_DI_Solver_Files_Setup::generate_combined_scripts(){
+void Dyn_Solver_Files_Setup::generate_combined_scripts(){
   homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
   homemade_assert_msg(m_bScratchFolderExists,"Scratch folder not set yet!");
   homemade_assert_msg(m_bSetExternalSolversInputFiles,"External solver input files not set yet!");
@@ -377,7 +377,7 @@ void Dyn_DI_Solver_Files_Setup::generate_combined_scripts(){
 
 }
 
-void Dyn_DI_Solver_Files_Setup::generate_combined_scripts_SLURM(){
+void Dyn_Solver_Files_Setup::generate_combined_scripts_SLURM(){
   homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
   homemade_assert_msg(m_bScratchFolderExists,"Scratch folder not set yet!");
   homemade_assert_msg(m_bSetExternalSolversInputFiles,"External solver input files not set yet!");
@@ -434,7 +434,7 @@ void Dyn_DI_Solver_Files_Setup::generate_combined_scripts_SLURM(){
 }
 
 
-void Dyn_DI_Solver_Files_Setup::generate_progression_inputs(){
+void Dyn_Solver_Files_Setup::generate_progression_inputs(){
   homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
   homemade_assert_msg(m_bScratchFolderExists,"Scratch folder not set yet!");
   homemade_assert_msg(m_bSetExternalSolversInputFiles,"External solver input files not set yet!");
