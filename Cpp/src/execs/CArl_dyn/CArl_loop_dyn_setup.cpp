@@ -58,14 +58,14 @@ int main(int argc, char* argv[]) {
   std::cout << " !!! Finish parser " << std::endl;
 
   // --- Crete the files / folders needed
-    carl::Dyn_Solver_Files_Setup DI_files_setup(WorldComm,input_params);
-    DI_files_setup.set_scratch_folder();
-    DI_files_setup.generate_libmesh_external_solver_inputs();
-    DI_files_setup.generate_libmesh_external_solver_script();
-    DI_files_setup.generate_inner_operation_script();
-    DI_files_setup.generate_combined_scripts();
-    DI_files_setup.generate_progression_inputs();
-    std::cout << " !!! Script Files Generated " << std::endl;
+  carl::Dyn_Solver_Files_Setup files_setup(WorldComm,input_params);
+  files_setup.set_scratch_folder();
+  files_setup.generate_libmesh_external_solver_inputs();
+  files_setup.generate_libmesh_external_solver_script();
+  files_setup.generate_inner_operation_script();
+  files_setup.generate_combined_scripts();
+  files_setup.generate_progression_inputs();
+  std::cout << " !!! Script Files Generated " << std::endl;
 
   //Generate script file
   carl::FETI_Dyn_Operations Dyn_op(WorldComm,input_params.scratch_folder_path,input_params.result_folder_path);

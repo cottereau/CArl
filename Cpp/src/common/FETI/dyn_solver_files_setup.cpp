@@ -283,7 +283,7 @@ void Dyn_Solver_Files_Setup::generate_inner_operation_scripts_SLURM(){
     // Set the Afree scripts
     slurm_output = m_input_params.scratch_folder_path + "/output_Afree_speed.txt";
     slurm_error  = m_input_params.scratch_folder_path + "/error_Afree_speed.txt";
-    command_to_run = "srun -n 4 $CARLBUILD/CArl_loop_dyn_Afree -i "+ m_input_params.general_entry_file_path;
+    command_to_run = m_input_params.inner_solver_launch_head + " $CARLBUILD/CArl_loop_dyn_Afree -i "+ m_input_params.general_entry_file_path;
 
     this->print_SLURM_script(m_inner_operation_Afree_script_filename, "Afree_speed",
               slurm_output, slurm_error, common_script,
@@ -292,7 +292,7 @@ void Dyn_Solver_Files_Setup::generate_inner_operation_scripts_SLURM(){
     // Set the Bfree scripts
     slurm_output = m_input_params.scratch_folder_path + "/output_Bfree_speed.txt";                            
     slurm_error  = m_input_params.scratch_folder_path + "/error_Bfree_speed.txt";                             
-    command_to_run = "srun -n 4 $CARLBUILD/CArl_loop_dyn_Bfree -i "+ m_input_params.general_entry_file_path;  
+    command_to_run = m_input_params.inner_solver_launch_head + " $CARLBUILD/CArl_loop_dyn_Bfree -i "+ m_input_params.general_entry_file_path;  
 
     this->print_SLURM_script(m_inner_operation_Bfree_script_filename, "Bfree_speed",
               slurm_output, slurm_error, common_script,
@@ -301,7 +301,7 @@ void Dyn_Solver_Files_Setup::generate_inner_operation_scripts_SLURM(){
     // Set the coupling init scripts
     slurm_output = m_input_params.scratch_folder_path + "/output_coupling.txt";                             
     slurm_error = m_input_params.scratch_folder_path + "/error_coupling.txt";                               
-    command_to_run = "srun -n 4 $CARLBUILD/CArl_loop_dyn_coupling -i "+ m_input_params.general_entry_file_path;  
+    command_to_run = m_input_params.inner_solver_launch_head + " $CARLBUILD/CArl_loop_dyn_coupling -i "+ m_input_params.general_entry_file_path;  
 
     this->print_SLURM_script(m_inner_operation_coupling_script_filename, "set_coupling",
               slurm_output, slurm_error, common_script,
@@ -310,7 +310,7 @@ void Dyn_Solver_Files_Setup::generate_inner_operation_scripts_SLURM(){
     // Set the coupling finish scripts
     slurm_output = m_input_params.scratch_folder_path + "/output_preBlink.txt";                             
     slurm_error = m_input_params.scratch_folder_path + "/error_preBlink.txt";                               
-    command_to_run = "srun -n 4 $CARLBUILD/CArl_loop_dyn_pre_Blink -i "+ m_input_params.general_entry_file_path;  
+    command_to_run = m_input_params.inner_solver_launch_head + " $CARLBUILD/CArl_loop_dyn_pre_Blink -i "+ m_input_params.general_entry_file_path;  
 
     this->print_SLURM_script(m_inner_operation_pre_Blink_script_filename, "pre_Blink",
               slurm_output, slurm_error, common_script,
@@ -319,7 +319,7 @@ void Dyn_Solver_Files_Setup::generate_inner_operation_scripts_SLURM(){
     // Set the coupling iterate scripts
     slurm_output = m_input_params.scratch_folder_path + "/output_preAlink.txt";                             
     slurm_error = m_input_params.scratch_folder_path + "/error_preAlink.txt";                               
-    command_to_run = "srun -n 4 $CARLBUILD/CArl_loop_dyn_pre_Alink -i "+ m_input_params.general_entry_file_path;  
+    command_to_run = m_input_params.inner_solver_launch_head + " $CARLBUILD/CArl_loop_dyn_pre_Alink -i "+ m_input_params.general_entry_file_path;  
 
     this->print_SLURM_script(m_inner_operation_pre_Alink_script_filename, "pre_Alink",
               slurm_output, slurm_error, common_script,
@@ -328,7 +328,7 @@ void Dyn_Solver_Files_Setup::generate_inner_operation_scripts_SLURM(){
     // Set the Blink scripts
     slurm_output = m_input_params.scratch_folder_path + "/output_Blink_speed.txt";                            
     slurm_error  = m_input_params.scratch_folder_path + "/error_Blink_speed.txt";                             
-    command_to_run = "srun -n 4 $CARLBUILD/CArl_loop_dyn_Blink -i "+ m_input_params.general_entry_file_path;  
+    command_to_run = m_input_params.inner_solver_launch_head + " $CARLBUILD/CArl_loop_dyn_Blink -i "+ m_input_params.general_entry_file_path;  
 
     this->print_SLURM_script(m_inner_operation_Blink_script_filename, "Blink_speed",
               slurm_output, slurm_error, common_script,
@@ -338,7 +338,7 @@ void Dyn_Solver_Files_Setup::generate_inner_operation_scripts_SLURM(){
     // Set the Alink scripts
     slurm_output = m_input_params.scratch_folder_path + "/output_Alink_speed.txt";                            
     slurm_error  = m_input_params.scratch_folder_path + "/error_Alink_speed.txt";                             
-    command_to_run = "srun -n 4 $CARLBUILD/CArl_loop_dyn_Alink -i "+ m_input_params.general_entry_file_path;  
+    command_to_run = m_input_params.inner_solver_launch_head + " $CARLBUILD/CArl_loop_dyn_Alink -i "+ m_input_params.general_entry_file_path;  
 
     this->print_SLURM_script(m_inner_operation_Alink_script_filename, "Alink_speed",
               slurm_output, slurm_error, common_script,

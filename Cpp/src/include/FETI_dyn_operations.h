@@ -13,8 +13,6 @@
 #include "carl_loop_dyn_force_parser.h"
 #include "newmark_param_parser.h"
 
-#include <ctime>
-
 namespace carl
 {
 
@@ -86,7 +84,15 @@ protected:
     double offset,
     double small_deltat,
     int index,
-    int timestep);     ///< Calculate  \f$ \text{modal} \times \text{Slope} \times t \f$ for all moment, put the result in a folder
+    int timestep);     ///< Calculate  \f$ \text{modal} \times min(\text{Slope} \times t+ \text{Offset}, \text{Saturation})\f$ for all moment, put the result in a folder
+
+  void prepare_force_vector_by_modal_and_product(std::string force_path,
+      carl::DynSystemVectorPath* vectors,
+      std::string time_series_file,
+      int intepolation_method,
+      double small_deltat,
+      int index,
+      int timestep);     ///< Calculate  \f$ \text{modal} \times \text{TimeSeries}(t) \times t \f$ for all moment, put the result in a folder
 
 public:
 

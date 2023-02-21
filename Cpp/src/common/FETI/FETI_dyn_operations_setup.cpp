@@ -70,9 +70,22 @@ namespace carl
 					0,1);
 			}
 		else if(prepare_mode == ForcePrepareMethod::MODAL_PRODUCT){
-				homemade_error_msg("Not Implemented!");
+				this->prepare_force_vector_by_modal_and_product(input_params.modal_A,
+					vectorsA,
+					input_params.time_series_A,
+					input_params.interpolation_method_A,
+					small_deltat,
+					0,
+					innerTimes);
+				this->prepare_force_vector_by_modal_and_product(input_params.modal_B,
+					vectorsB,
+					input_params.time_series_B,
+					input_params.interpolation_method_B,
+					small_deltat,
+					0,
+					1);
 		}else{
-				homemade_error_msg("Please choose a correct force preparation mode!");
+			homemade_error_msg("Please choose a correct force preparation mode!");
 		}
 
 		std::cout << "Force init preparation finish!" <<std::endl;
@@ -166,6 +179,162 @@ namespace carl
 
 		VecCopy(modal,forceNext);
 		VecScale(forceNext,std::min(slope*small_deltat*(index+timestep)+offset,saturation));
+		carl::write_PETSC_vector(forceNext,vectors->next_force,0,m_comm.get(),1);
+
+
+		#ifdef PRINT_MATLAB_DEBUG
+			libMesh::PetscVector<libMesh::Number> vector_force_this(forceThis,m_comm);
+   			vector_force_this.print_matlab(vectors->this_force+".m");
+			libMesh::PetscVector<libMesh::Number> vector_force_next(forceNext,m_comm);
+   			vector_force_next.print_matlab(vectors->next_force+".m");
+		#endif
+
+		VecDestroy(&modal);
+		VecDestroy(&forceThis);
+		VecDestroy(&forceNext);
+
+	}
+
+	void FETI_Dyn_Operations::prepare_force_vector_by_modal_and_product(std::string force_path,
+    	carl::DynSystemVectorPath* vectors,
+    	std::string time_series_file,
+    	int intepolation_method,
+    	double small_deltat,
+    	int index,
+    	int timestep){
+
+		Vec modal;
+		Vec forceThis,forceNext;
+
+		VecCreate(m_comm.get(),&modal);
+		carl::read_PETSC_vector(modal,force_path,m_comm.get());
+		VecDuplicate(modal,&forceThis);
+		VecDuplicate(modal,&forceNext);
+
+		// Read time series file
+		std::ifstream inFile(time_series_file);
+		std::vector<double> times,values;
+		std::string line;
+		double time, value;
+
+		if(inFile){
+			while(getline(inFile, line, '\n')){
+				std::istringstream ss(line);
+
+				ss >> time >> value;
+				times.push_back(time);
+            	values.push_back(value);
+            }
+		}else{
+			homemade_error_msg("[CArl Error] Time series file can't read!");
+		}
+
+		double this_scaling_factor, next_scaling_factor;
+		
+
+		if(intepolation_method == carl::ForceInterpolationMethod::OFF){
+			double epsilon = 1e-3 * small_deltat;// Tolerance level
+			std::vector<double>::iterator it_this, it_next;
+
+			std::cout << "Force preparation: Get scaling factor at "<< small_deltat*index << "without interpolation ... ";
+
+			it_this = std::find_if(times.begin(),times.end(),[small_deltat,index,epsilon](double b) { return abs( small_deltat*index - b) < epsilon; });
+			if (it_this != times.end()){
+				this_scaling_factor = values.at(std::distance(times.begin(), it_this));
+				std::cout << "done!" <<std::endl;
+			}else{
+				homemade_error_msg("[CArl Error] Time"+std::to_string(small_deltat*index)+"can't be find in the time series file.");
+			}
+
+			std::cout << "Force preparation: Get scaling factor at "<< small_deltat*(index+timestep) << "without interpolation ...";
+			it_next = std::find_if(times.begin(),times.end(),[small_deltat,index,epsilon,timestep](double b) { return abs( small_deltat*(index+timestep) - b) < epsilon; });
+			if (it_next != times.end()){
+				next_scaling_factor = values.at(std::distance(times.begin(), it_next));
+				std::cout << "done!" <<std::endl;
+			}else{
+				homemade_error_msg("[CArl Error] Time"+std::to_string(small_deltat*(index+timestep))+"can't be find in the time series file.");
+			}
+		}else if(intepolation_method == carl::ForceInterpolationMethod::NEAREST){
+
+			std::cout << "Force preparation: Get scaling factor at "<< small_deltat*index << "with nearest interpolation ... ";
+
+			for(auto& element : times){
+    			element = abs(element - small_deltat*index);
+			}
+			std::cout << "done!" <<std::endl;
+			
+			this_scaling_factor = values.at(std::distance(std::begin(times), std::min_element(std::begin(times), std::end(times))));
+			
+			std::cout << "Force preparation: Get scaling factor at "<< small_deltat*(index+timestep) << "with nearest interpolation ... ";
+
+			for(auto& element : times){
+    			element = abs(element - std::copysign(small_deltat*timestep,element));
+			}
+			
+			next_scaling_factor = values.at(std::distance(std::begin(times), std::min_element(std::begin(times), std::end(times))));
+			std::cout << "done!" <<std::endl;
+
+		}else if(intepolation_method == carl::ForceInterpolationMethod::LINEAR){
+			double before_time, back_time;
+			double before_value, back_value;
+
+			int gotten_index, total_index;
+
+			std::cout << "Force preparation: Get scaling factor at "<< small_deltat*index << "with linear interpolation ... ";
+
+			for(auto& element : times){
+    			element = abs(element - small_deltat*index);
+			}
+			
+			gotten_index = std::distance(std::begin(times), std::min_element(std::begin(times), std::end(times)));
+			total_index = std::distance(std::begin(times), std::end(times));
+			
+			before_value = values.at(gotten_index);
+			if((before_value <= 0 && gotten_index < total_index) || gotten_index == 0){
+				before_time = times.at(gotten_index);
+				back_time = times.at(gotten_index + 1 );
+				back_value = values.at(gotten_index +1 );
+			}else{
+				back_value = before_value;
+				back_time = times.at(gotten_index);
+				before_value = values.at(gotten_index - 1);
+				before_time = times.at(gotten_index - 1);
+			}
+
+			this_scaling_factor = (back_value-before_value)/(back_time-before_time)*(time-before_time)+before_value;
+			std::cout << "done!" <<std::endl;
+
+			std::cout << "Force preparation: Get scaling factor at "<< small_deltat*(index+timestep) << "with linear interpolation ... ";
+			for(auto& element : times){
+    			element = abs(element - std::copysign(small_deltat*timestep,element));
+			}
+
+			gotten_index = std::distance(std::begin(times), std::min_element(std::begin(times), std::end(times)));
+			
+			before_value = values.at(gotten_index);
+			if((before_value <= 0 && gotten_index < total_index) || gotten_index == 0){
+				before_time = times.at(gotten_index);
+				back_time = times.at(gotten_index + 1 );
+				back_value = values.at(gotten_index +1 );
+			}else{
+				back_value = before_value;
+				back_time = times.at(gotten_index);
+				before_value = values.at(gotten_index - 1);
+				before_time = times.at(gotten_index - 1);
+			}
+
+			next_scaling_factor = (back_value-before_value)/(back_time-before_time)*(time-before_time)+before_value;
+			std::cout << "done!" <<std::endl;
+		}
+
+		// This force at small_deltat*index
+		VecCopy(modal,forceThis);
+		VecScale(forceThis,this_scaling_factor);
+		carl::write_PETSC_vector(forceThis,vectors->this_force,0,m_comm.get(),1);
+
+		// Next force at small_deltat*(index+timestep)
+		VecCopy(modal,forceNext);
+		VecScale(forceNext,next_scaling_factor);
 		carl::write_PETSC_vector(forceNext,vectors->next_force,0,m_comm.get(),1);
 
 

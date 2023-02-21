@@ -49,6 +49,7 @@ struct feti_loop_dyn_params {
    std::string ext_solver_launch_script_A;       ///< Input parameters of the external solve for system A.
    std::string ext_solver_launch_script_B;       ///< Input parameters of the external solve for system A.
    std::string ext_solver_launch_script_general;   ///< Input parameters of the external solve for system A.
+   std::string inner_solver_launch_head;          ///< Input parameters of the external solve for system A.
    std::string general_entry_file_path;            ///< Path of entry file
     
     // Newmark Parameter
@@ -84,9 +85,9 @@ Parameters:
 
    *Only applicable for `SLURM` or `PBS`* :   
      - `ScriptFile` : Path to the script file
+     - `InnerSolverLaunchHead` : Head to launch inner solver for all cases *Example*: `'srun -N 1 -n 4 '`
 
  + **Solver Parameters**:
-     - `DynSolver` : Dynamic solver type,*chosen from* `DI` or `CG`
      - `ScratchFolderPath` : Path to the scratch folder
      - `ResultFolderPath` : Path to the result folder
 
@@ -100,7 +101,7 @@ Parameters:
 
      - `CouplingMatricesFolder` : Folder to the coupling matrices, generated at the 3rd step(coupling)
 
-     - (**For [CArl-Dyn-DI]**) `InterpolationMatrix` : Path to the interpolation matrix, generated at the 4th step(interpolation) *i.e.* \f$ H \f$
+     - `InterpolationMatrix` : Path to the interpolation matrix, generated at the 4th step(interpolation) *i.e.* \f$ H \f$
   
   + **Initial Condition Parameters**:
      - (*OPTIONAL*)`InitialDispA` : Path to the initial displacement of A
@@ -108,11 +109,11 @@ Parameters:
      - (*OPTIONAL*)`InitialSpeedA` : Path to the initial speed of A
      - (*OPTIONAL*)`InitialSpeedB` : Path to the initial speed of A     
 
-   * **ATTENTION**: if initial condition is set, do set an equilibrum initial condition!
+   * **ATTENTION**: if initial condition is set, do set an equilibrium initial condition!
 
   + **External Force Parameters**:
-     - `ForcePrepareMethod` : Force preparetion method, *chosen from* `ModalSinus`, `ModalConstant`, `ModalLinear`, `ModalProduct`
-     - `ForcePrepareParams` : Path to the input file of force preparetion parameters, see get_input_params(GetPot& field_parser,int force_prepare_mode,dyn_force_params& input_params) for its redaction format!
+     - `ForcePrepareMethod` : Force preparation method, *chosen from* `ModalSinus`, `ModalConstant`, `ModalLinear`, `ModalProduct`
+     - `ForcePrepareParams` : Path to the input file of force preparation parameters, see get_input_params(GetPot& field_parser,int force_prepare_mode,dyn_force_params& input_params) for its redaction format!
   
   + **External solver parameters**
      * *Either*
@@ -131,16 +132,16 @@ Parameters:
      - `ExtSolverLaunchScriptB` : Script to launch external solver for object B
      - `ExtSolverLaunchScriptInterpolation` : Script to launch external solver for interpolation matrix   
 
-   * **Example**:One example of this ExtSolver can be : `'srun -n 4 $CARLBUILD/libmesh_solve_linear_system -i '`
-  
+   * *Example*: `'srun -n 4 $CARLBUILD/libmesh_solve_linear_system -i '`
   + **Path of this file**:
-     - `GeneralEntryFilePath` : Path of this file, which will be served as general extry
+     - `GeneralEntryFilePath` : Path of this file, which will be served as general entry
 
   + **Newmark parameters**:      
      - `SimulationDuration` : total duration of simulation, *Default*: 1   
      - `NewmarkParameters` *or* (`NewmarkParametersA` and `NewmarkParametersB`) : Path to the Newmark parameter of two model, see get_newmark_params(GetPot& field_parser,NewmarkParams& newmark) for its redaction format.
 
-   * **Attention**: `SimulationDuration` should be a integer multiple of `deltatA`, whicn should also be a integer multiple of `deltatB`, otherwise error may occur!.
+   * **Attention**: `SimulationDuration` should be a integer multiple of `deltatA`, which should also be a integer multiple of `deltatB`, otherwise error may occur!.
+   * 
   + (*OPTIONAL WITH DEFAULT*) **Output parameters**:
       In case of very small time step, it's not necessary to show all time step result, so we have following these parameters:
 

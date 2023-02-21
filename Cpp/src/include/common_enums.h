@@ -70,8 +70,14 @@ enum ForcePrepareMethod{
   MODAL_SINUS = 0,
   MODAL_CONSTANT = 1,
   MODAL_LINEAR = 2,
-  MODAL_PRODUCT = 99,
+  MODAL_PRODUCT = 3,
 
+};
+// [DYN]
+enum ForceInterpolationMethod{
+	OFF = 0,
+	LINEAR = 1,
+	NEAREST = 2,
 };
 }
 

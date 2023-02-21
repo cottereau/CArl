@@ -173,7 +173,60 @@ void get_input_params(GetPot& field_parser,
 
 
     }else if (force_prepare_mode == ForcePrepareMethod::MODAL_PRODUCT){
-        homemade_error_msg("[CArl]Error! Not Implemented");
+          std::cout << " -- Method: Product " << std::endl;
+          std::cout << " #### F(t) = TimeSeries(t) * Modal #####" << std::endl;
+
+          if (field_parser.search(2, "TimeSeriesA", "TimeSeries")) {
+            input_params.time_series_A = field_parser.next(
+                input_params.time_series_A);
+            std::cout << " -- TimeSeries A: "<< input_params.time_series_A << std::endl;
+          } else{
+           homemade_error_msg("[CArl Parameters]ERROR! Missing time series file for A (needed for the PRODUCT force preparation method)!");
+          }
+
+          if (field_parser.search(2, "TimeSeriesB", "TimeSeries")) {
+            input_params.time_series_B = field_parser.next(
+                input_params.time_series_B);
+            std::cout << " -- TimeSeries B: "<< input_params.time_series_B << std::endl;
+          } else{
+           homemade_error_msg("[CArl Parameters]ERROR! Missing time series file for B (needed for the PRODUCT force preparation method)!");
+          }
+
+          if (field_parser.search(2, "InterpolationA", "Interpolation")) {
+            std::string interpolation_method;
+            interpolation_method = field_parser.next(interpolation_method);
+            std::transform(interpolation_method.begin(),interpolation_method.end(),interpolation_method.begin(),[](unsigned char c){ return std::tolower(c); });
+            if(interpolation_method == "linear"){
+              input_params.interpolation_method_A = carl::ForceInterpolationMethod::LINEAR;
+              std::cout << "- InterpolationMethodA: Linear"<< std::endl;
+            }else if(interpolation_method == "nearest"){
+              input_params.interpolation_method_A = carl::ForceInterpolationMethod::NEAREST;
+              std::cout << "- InterpolationMethodA: Nearest"<< std::endl;
+            }else{
+             homemade_error_msg("[CArl Parameters]ERROR! Invalid interpolation method for A!");
+            }
+          } else{
+            input_params.interpolation_method_A = carl::ForceInterpolationMethod::OFF;
+            std::cout << " -- InterpolationMethodA: Off[No entry, default value is taken]"<< std::endl;
+          }
+
+          if (field_parser.search(2, "InterpolationB", "Interpolation")) {
+            std::string interpolation_method;
+            interpolation_method = field_parser.next(interpolation_method);
+            std::transform(interpolation_method.begin(),interpolation_method.end(),interpolation_method.begin(),[](unsigned char c){ return std::tolower(c); });
+            if(interpolation_method == "linear"){
+              input_params.interpolation_method_B = carl::ForceInterpolationMethod::LINEAR;
+              std::cout << "- InterpolationMethodA: Linear"<< std::endl;
+            }else if(interpolation_method == "nearest"){
+              input_params.interpolation_method_B = carl::ForceInterpolationMethod::NEAREST;
+              std::cout << "- InterpolationMethodA: Nearest"<< std::endl;
+            }else{
+              homemade_error_msg("[CArl Parameters]ERROR! Invalid interpolation method for A!");
+            }
+          } else{
+            input_params.interpolation_method_B = carl::ForceInterpolationMethod::OFF;
+            std::cout << " -- InterpolationMethodB: Off[No entry, default value is taken]"<< std::endl;
+          }
     }
 
     std::cout << " ...... Reading force files: FINISH!  " << std::endl;

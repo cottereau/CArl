@@ -211,7 +211,7 @@ namespace carl
     		// Export the scalar data
     		time_data.open(m_scratch_folder_path + "/Time_data.dat",std::ofstream::app);
     		time_data.precision(5);
-    		time_data << std::left << std::setw(7) << index << std::setw(7) << stage << std::setw(25) << dt << std::endl;
+    		time_data << std::left << std::setw(7) << index << std::setw(20) << stage << std::setw(25) << dt << std::endl;
     		
     		// std::FILE *fh ;
     		// std::string filename=m_scratch_folder_path+"/CG_solver/FETI_convergence.dat";

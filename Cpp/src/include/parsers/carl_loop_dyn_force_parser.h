@@ -13,31 +13,34 @@
 namespace carl
 {
 
-struct dyn_force_params{
+    struct dyn_force_params{
 
-    // Common parameters
-    std::string modal_A;
-    std::string modal_B;
+        // Common parameters
+        std::string modal_A;
+        std::string modal_B;
 
-    // Optional parameters
-    double amplitude_A;
-    double amplitude_B;
-    double frequency_A;
-    double frequency_B;
-    double initialPhase_A;
-    double initialPhase_B;
-    double slope_A;
-    double slope_B;
+        // Optional parameters
+        double amplitude_A;
+        double amplitude_B;
+        double frequency_A;
+        double frequency_B;
+        double initialPhase_A;
+        double initialPhase_B;
+        double slope_A;
+        double slope_B;
 
-    double offset_A;
-    double offset_B;
-    double saturation_A;
-    double saturation_B;
+        double offset_A;
+        double offset_B;
+        double saturation_A;
+        double saturation_B;
 
+        std::string time_series_A;
+        std::string time_series_B;
+        int interpolation_method_A;
+        int interpolation_method_B;
+    };
 
-};
-
-/** \brief **DYN-DI/DYN-CG** Parser function for force preparation input.
+/** \brief **DYN** Parser function for force preparation input.
  *  
 Required parameters:
 
@@ -68,7 +71,8 @@ If no object is specified, it will be applied to all parameters!
     It will create: \f$ \text{modal} \times min(\text{Slope} \times t + Offset, Saturation) \f$
 
 + `ForcePrepareMethod` = `ModalProduct`
-    - NOT IMPLEMENTED
+    - `TimeSeries` OR (`TimeSeriesA` and `TimeSeriesB`), **ATTENTION** In the time series file, time and acceleration but be given, and it should be in chronological order
+    - `Interpolation` OR (`InterpolationA` and `InterpolationB`), *Default*: Off, *chosen from* `Linear`, `nearest`
 
 */
 void get_input_params(GetPot& field_parser,int force_prepare_mode,dyn_force_params& input_params);

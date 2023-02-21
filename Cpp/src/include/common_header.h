@@ -14,6 +14,7 @@
 
 // --- Timing
 #include <chrono>
+#include <ctime>
 
 // --- Boost/random
 #include <boost/random/uniform_real_distribution.hpp>
@@ -73,6 +74,8 @@ extern boost::random::lagged_fibonacci607 m_rng;
 		std::exit(EXIT_FAILURE); \
 	} \
 } while(false)
+
+// Another
 
 #define homemade_error_msg(msg) do \
 { \

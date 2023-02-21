@@ -193,16 +193,17 @@ void get_input_params(GetPot& field_parser,
   if (field_parser.search(1, "ForcePrepareMethod")) {
     std::string prepare_method;
     prepare_method = field_parser.next(prepare_method);
-    if(prepare_method == "ModalSinus"){
+    std::transform(prepare_method.begin(),prepare_method.end(),prepare_method.begin(),[](unsigned char c){ return std::tolower(c); });
+    if(prepare_method == "modalsinus"){
       input_params.force_prepare_method = carl::ForcePrepareMethod::MODAL_SINUS;
       std::cout << "- ForcePrepareMethod: ModalSinus"<< std::endl;
-    }else if(prepare_method == "ModalConstant"){
+    }else if(prepare_method == "modalconstant"){
       input_params.force_prepare_method = carl::ForcePrepareMethod::MODAL_CONSTANT;
       std::cout << "- ForcePrepareMethod: ModalConstant"<< std::endl;
-    }else if(prepare_method == "ModalLinear"){
+    }else if(prepare_method == "modallinear"){
       input_params.force_prepare_method = carl::ForcePrepareMethod::MODAL_LINEAR;
       std::cout << "- ForcePrepareMethod: ModalLinear"<< std::endl;
-    }else if(prepare_method == "ModalProduct"){
+    }else if(prepare_method == "modalproduct"){
       input_params.force_prepare_method = carl::ForcePrepareMethod::MODAL_PRODUCT;
       std::cout << "- ForcePrepareMethod: ModalProduct"<< std::endl;
     }else{
@@ -270,6 +271,14 @@ void get_input_params(GetPot& field_parser,
       homemade_error_msg("[CArl Parameters]ERROR! Missing ext solver launch script command line!");
     }
   //}
+
+  if (field_parser.search(1, "InnerSolverLaunchHead")) {
+    input_params.inner_solver_launch_head = field_parser.next(
+        input_params.inner_solver_launch_head);
+    std::cout << "- InnerSolverLaunchHead: "<< input_params.inner_solver_launch_head << std::endl;
+  } else{
+    homemade_error_msg("[CArl Parameters]ERROR! Missing inner solver launch head command line!");
+  }
 
 
 

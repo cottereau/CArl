@@ -371,9 +371,9 @@ namespace carl
     	if(m_comm.rank() == 0)
   		{
   			std::ofstream result_file;
-				result_file.open(m_scratch_folder_path + "/result_test_inversion.dat",std::ofstream::app);
+				result_file.open(m_scratch_folder_path + "/result_test_coupling.dat",std::ofstream::app);
 				result_file.precision(10);
-				result_file << std::left << std::setw(8) << "Round" << std::setw(15) << "Test norm "<< std::setw(15) << "Product norm"<< std::setw(15) << "Quotient" << std::endl;
+				result_file << std::left << std::setw(8) << "Round" << std::setw(17) << "Test norm "<< std::setw(17) << "Product norm"<< std::setw(17) << "Quotient" << std::endl;
 				result_file.close();
 			}
     }
@@ -426,9 +426,9 @@ namespace carl
   		if(m_comm.rank() == 0)
   		{
   		std::ofstream result_file;
-			result_file.open(m_scratch_folder_path + "/result_test_inversion.dat",std::ofstream::app);
+			result_file.open(m_scratch_folder_path + "/result_test_coupling.dat",std::ofstream::app);
 			result_file.precision(10);
-			result_file << std::left << std::setw(8) << index << std::setw(15) << norm1 << std::setw(15) << norm2<< std::setw(15) << norm1/norm2 << std::endl;
+			result_file << std::left << std::setw(8) << index << std::setw(17) << norm1 << std::setw(17) << norm2<< std::setw(17) << norm1/norm2 << std::endl;
 			result_file.close();
 
   		VecDestroy(&UA);
@@ -495,9 +495,15 @@ namespace carl
 					step);
 			}
 		else if(prepare_mode == ForcePrepareMethod::MODAL_PRODUCT){
-				homemade_error_msg("Not Implemented!");
+				this->prepare_force_vector_by_modal_and_product(input_params.modal_A,
+					vectors,
+					input_params.time_series_A,
+					input_params.interpolation_method_A,
+					small_deltat,
+					index,
+					step);
 		}else{
-				homemade_error_msg("Please choose a correct force preparation mode!");
+				homemade_error_msg("[CArl Error]Please choose a correct force preparation mode!");
 		}
 
 		std::cout << "Force A preparation finish!" <<std::endl;
@@ -549,9 +555,15 @@ namespace carl
 					1);
 			}
 		else if(prepare_mode == ForcePrepareMethod::MODAL_PRODUCT){
-				homemade_error_msg("Not Implemented!");
+				this->prepare_force_vector_by_modal_and_product(input_params.modal_B,
+					vectors,
+					input_params.time_series_B,
+					input_params.interpolation_method_B,
+					small_deltat,
+					index,
+					1);
 		}else{
-				homemade_error_msg("Please choose a correct force preparation mode!");
+				homemade_error_msg("[CArl Error]Please choose a correct force preparation mode!");
 		}
 
 		std::cout << "Force B preparation finish!" <<std::endl;
