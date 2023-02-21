@@ -67,8 +67,9 @@ int main(int argc, char *argv[])
   Mat mass_invert_couplingt_A,mass_invert_couplingt_B;
   Mat H_1;
   Mat H_2;
-  Vec CT_column_vec_A;
-  Vec CT_column_vec_B;
+  Vec CT_column_vec_A,CT_column_vec_B;
+  Vec sol_vec_A,sol_vec_B;
+  //Vec columnsA, columnsB;
   PetscInt CmA,CnA,CmB,CnB;
   PetscInt i,j;
   // - Load matrix
@@ -83,8 +84,13 @@ int main(int argc, char *argv[])
   MatCreate(WorldComm.get(),&mass_B);
   VecCreate(WorldComm.get(),&CT_column_vec_A);
   VecCreate(WorldComm.get(),&CT_column_vec_B);
+  VecCreate(WorldComm.get(),&sol_vec_A);
+  VecCreate(WorldComm.get(),&sol_vec_B);
+  //VecCreate(WorldComm.get(),&columnsA);
+  //VecCreate(WorldComm.get(),&columnsB);
   VecSetType(CT_column_vec_A, VECMPI);
   VecSetType(CT_column_vec_B, VECMPI);
+
 
   carl::read_PETSC_matrix(coupling_matrix_A, 
                 input_params.path_macro_coupling_matrix, WorldComm.get());
@@ -110,95 +116,125 @@ int main(int argc, char *argv[])
   MatSetSizes(transpose_coupling_matrix_B, PETSC_DECIDE, PETSC_DECIDE, CmB, CnB);
   VecSetSizes(CT_column_vec_A, PETSC_DECIDE, CmA);
   VecSetSizes(CT_column_vec_B, PETSC_DECIDE, CmB);
+  VecSetSizes(sol_vec_A, PETSC_DECIDE, CmA);
+  VecSetSizes(sol_vec_B, PETSC_DECIDE, CmB);
+  //VecSetSizes(columnsA, PETSC_DECIDE, CnA);
+  //VecSetSizes(columnsB, PETSC_DECIDE, CnB);
   MatTranspose(coupling_matrix_A, MAT_INITIAL_MATRIX, &transpose_coupling_matrix_A);
   MatTranspose(coupling_matrix_B, MAT_INITIAL_MATRIX, &transpose_coupling_matrix_B);
+
+  VecSetFromOptions(sol_vec_A);
+  VecSetFromOptions(sol_vec_B);
   
   perf_log.pop("Transpose matrix");
 
   // --- Calculate M-1C A
-  PetscInt    local_N,local_column;
-  libMesh::PetscVector<libMesh::Number> sys_sol_vec(WorldComm);
-
   perf_log.push("Inverse A");
-  libMesh::PetscMatrix<libMesh::Number> sys_mat_A(mass_A,WorldComm);
+  
+  //libMesh::PetscVector<libMesh::Number> sys_sol_vec(WorldComm);
+  //libMesh::PetscMatrix<libMesh::Number> sys_mat_A(mass_A,WorldComm);
   
   PetscScalar *rowA;
   PetscInt low,high;
+  PetscInt local_column;//local_N
+  KSP kspA;
+
+
   MatCreateAIJ(WorldComm.get(), PETSC_DECIDE, PETSC_DECIDE, CmA, CnA, CmA, NULL, CnA, NULL, &mass_invert_couplingt_A);
 
+  KSPCreate(WorldComm.get(),&kspA);
+  KSPSetFromOptions(kspA);
+  KSPSetOperators(kspA,mass_A,mass_A);
+  KSPSetUp(kspA);
+
   for (i = 0; i < CnA; i++){
+
+    //VecSetValues(Vec x, PetscInt ni, const PetscInt ix[], const PetscScalar y[], InsertMode iora)
     MatGetColumnVector(transpose_coupling_matrix_A, CT_column_vec_A, i);
 
-    libMesh::PetscVector<libMesh::Number> sys_rhs_vec_A(CT_column_vec_A,WorldComm);
+    // libMesh::PetscVector<libMesh::Number> sys_rhs_vec_A(CT_column_vec_A,WorldComm);
 
-    sys_sol_vec.init(sys_rhs_vec_A);
+    // sys_sol_vec.init(sys_rhs_vec_A);
     
-    MatGetLocalSize(mass_A,NULL,&local_N);
+    // MatGetLocalSize(mass_A,NULL,&local_N);
 
-    // --- Linear solver
-    libMesh::PetscLinearSolver<libMesh::Number> KSP_solver(WorldComm);
-    KSP_solver.init("sys");
+    // // --- Linear solver
+    // libMesh::PetscLinearSolver<libMesh::Number> KSP_solver(WorldComm);
+    // KSP_solver.init("sys");
 
-    // Solve!
-    KSP_solver.solve(sys_mat_A,sys_sol_vec,sys_rhs_vec_A,1e-9,1000);
+    // // Solve!
+    // KSP_solver.solve(sys_mat_A,sys_sol_vec,sys_rhs_vec_A,1e-9,1000);
 
-    VecGetLocalSize(sys_sol_vec.vec(), &local_column);
+    KSPSolve(kspA,CT_column_vec_A,sol_vec_A);
 
-    VecGetOwnershipRange(sys_sol_vec.vec(), &low, &high);
+    VecGetLocalSize(sol_vec_A, &local_column);
 
-    VecGetArray(sys_sol_vec.vec(), &rowA);
+    VecGetOwnershipRange(sol_vec_A, &low, &high);
+
+    VecGetArray(sol_vec_A, &rowA);
 
     if(local_column != 0 && high == low+local_column ){
       for(j = 0; j<local_column; j++){
         MatSetValue(mass_invert_couplingt_A,j+low,i,rowA[j],INSERT_VALUES);
       }
     }
-    sys_rhs_vec_A.clear();
-    KSP_solver.clear();
+    // sys_rhs_vec_A.clear();
+    // KSP_solver.clear();
 
   }
   MatAssemblyBegin(mass_invert_couplingt_A, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(mass_invert_couplingt_A, MAT_FINAL_ASSEMBLY);
+  
   perf_log.pop("Inverse A");
 
   
 
   perf_log.push("Inverse B");
-  libMesh::PetscMatrix<libMesh::Number> sys_mat_B(mass_B,WorldComm);
+  //libMesh::PetscMatrix<libMesh::Number> sys_mat_B(mass_B,WorldComm);
   PetscScalar *rowB;
+  KSP kspB;
   MatCreateAIJ(WorldComm.get(), PETSC_DECIDE, PETSC_DECIDE, CmB, CnB, CmB, NULL, CnB, NULL, &mass_invert_couplingt_B);
+
+  KSPCreate(WorldComm.get(),&kspB);
+  KSPSetFromOptions(kspB);
+  KSPSetOperators(kspB,mass_B,mass_B);
+  KSPSetUp(kspB);
+
   for (i = 0; i < CnB; i++){
     MatGetColumnVector(transpose_coupling_matrix_B, CT_column_vec_B, i);
 
-    libMesh::PetscVector<libMesh::Number> sys_rhs_vec_B(CT_column_vec_B,WorldComm);
+    // libMesh::PetscVector<libMesh::Number> sys_rhs_vec_B(CT_column_vec_B,WorldComm);
     
-    sys_sol_vec.init(sys_rhs_vec_B);
+    // sys_sol_vec.init(sys_rhs_vec_B);
     
-    MatGetLocalSize(mass_B,NULL,&local_N);
+    // MatGetLocalSize(mass_B,NULL,&local_N);
 
-    // --- Linear solver
-    libMesh::PetscLinearSolver<libMesh::Number> KSP_solver(WorldComm);
-    KSP_solver.init("sys");
+    // // --- Linear solver
+    // libMesh::PetscLinearSolver<libMesh::Number> KSP_solver(WorldComm);
+    // KSP_solver.init("sys");
 
-    // Solve!
-    KSP_solver.solve(sys_mat_B,sys_sol_vec,sys_rhs_vec_B,1e-9,1000);
+    // // Solve!
+    // KSP_solver.solve(sys_mat_B,sys_sol_vec,sys_rhs_vec_B,1e-9,1000);
+    
+    KSPSolve(kspB,CT_column_vec_B,sol_vec_B);
 
-    VecGetLocalSize(sys_sol_vec.vec(), &local_column);
+    VecGetLocalSize(sol_vec_B, &local_column);
 
-    VecGetOwnershipRange(sys_sol_vec.vec(), &low, &high);
+    VecGetOwnershipRange(sol_vec_B, &low, &high);
 
-    VecGetArray(sys_sol_vec.vec(), &rowB);
+    VecGetArray(sol_vec_B, &rowB);
 
     if(local_column != 0 && high == low+local_column ){
       for(j = 0; j<local_column; j++){
         MatSetValue(mass_invert_couplingt_B,j+low,i,rowB[j],INSERT_VALUES);
       }
     }
-    sys_rhs_vec_B.clear();
-    KSP_solver.clear();
+    // sys_rhs_vec_B.clear();
+    // KSP_solver.clear();
   }
   MatAssemblyBegin(mass_invert_couplingt_B, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(mass_invert_couplingt_B, MAT_FINAL_ASSEMBLY);
+  
 
   perf_log.pop("Inverse B");
 
@@ -263,6 +299,10 @@ int main(int argc, char *argv[])
   MatDestroy(&H_2);
   VecDestroy(&CT_column_vec_A);
   VecDestroy(&CT_column_vec_B);
+  VecDestroy(&sol_vec_A);
+  VecDestroy(&sol_vec_B);
+  KSPDestroy(&kspA);
+  KSPDestroy(&kspB);
 
   perf_log.pop("Clean up");
   
