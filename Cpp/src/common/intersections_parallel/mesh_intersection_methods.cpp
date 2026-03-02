@@ -8,7 +8,7 @@
  */
 
 #include "mesh_intersection_methods.h"
-
+#include "libmesh/tetgen_mesh_interface.h"
 namespace carl
 {
 
