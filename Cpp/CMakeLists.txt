@@ -61,6 +61,8 @@ execute_process(COMMAND ${LIBMESH_CONFIG} --version OUTPUT_VARIABLE LIBMESH_VERS
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LIBMESH_CPPFLAGS} ${LIBMESH_CXXFLAGS} ${LIBMESH_INCLUDE}" )
 set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LIBMESH_LIBS} -L${LIBMESH_DIR}/lib -ltimpi_opt" ) 
 link_directories( ${LIBMESH_DIR}/lib )
+link_directories( ${PETSC_DIR}/${PETSC_ARCH}/lib )
+
 message(STATUS "libMesh version : ${LIBMESH_VERSION}")
 message(STATUS "libMesh dir     : ${LIBMESH_DIR}")
 
@@ -123,7 +125,7 @@ add_executable( CArl_build_intersections  ${CARL_INTER_EXEC}
                 $<TARGET_OBJECTS:INTERSECTION_PARALLEL_OBJS>)
 
 add_to_cached_list( CGAL_EXECUTABLE_TARGETS CArl_build_intersections )
-target_link_libraries(CArl_build_intersections ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} mesh_opt timpi_opt )
+target_link_libraries(CArl_build_intersections ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} mesh_opt timpi_opt petsc )
 
 foreach( CArl_interpo_source_file ${CARL_INTERPO_EXECS} )
     string ( REPLACE ".cpp" "" full_CArl_interpo_exec_name ${CArl_interpo_source_file} )
@@ -133,7 +135,7 @@ foreach( CArl_interpo_source_file ${CARL_INTERPO_EXECS} )
                 $<TARGET_OBJECTS:PETSC_MATRIX_OPERATIONS_OBJS> $<TARGET_OBJECTS:MISC_OBJS> 
                 $<TARGET_OBJECTS:COMMON_EXT_LIBMESH_SOLVER_OBJS>)
     add_to_cached_list( CGAL_EXECUTABLE_TARGETS ${CArl_interpo_exec_name} )
-    target_link_libraries(${CArl_interpo_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} mesh_opt timpi_opt)
+    target_link_libraries(${CArl_interpo_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} mesh_opt timpi_opt petsc)
 endforeach( CArl_interpo_source_file ${CARL_INTERPO_EXECS} )
 
 
@@ -145,7 +147,7 @@ foreach( CArl_dyn_source_file ${CARL_DYN_EXECS} )
                         $<TARGET_OBJECTS:FETI_OBJS> $<TARGET_OBJECTS:MISC_OBJS> 
                         $<TARGET_OBJECTS:COUPLING_MATRIX_OBJS> $<TARGET_OBJECTS:PETSC_MATRIX_OPERATIONS_OBJS> )
     add_to_cached_list( CGAL_EXECUTABLE_TARGETS ${CArl_dyn_exec_name} )
-    target_link_libraries( ${CArl_dyn_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} mesh_opt timpi_opt)
+    target_link_libraries( ${CArl_dyn_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} mesh_opt timpi_opt petsc)
 endforeach( CArl_dyn_source_file ${CARL_DYN_EXECS} )
 
 foreach( CArl_FETI_source_file ${CARL_FETI_EXECS} )
@@ -156,7 +158,7 @@ foreach( CArl_FETI_source_file ${CARL_FETI_EXECS} )
                         $<TARGET_OBJECTS:FETI_OBJS> $<TARGET_OBJECTS:MISC_OBJS> 
                         $<TARGET_OBJECTS:COUPLING_MATRIX_OBJS> $<TARGET_OBJECTS:PETSC_MATRIX_OPERATIONS_OBJS> )
     add_to_cached_list( CGAL_EXECUTABLE_TARGETS ${CArl_FETI_exec_name} )
-    target_link_libraries( ${CArl_FETI_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} mesh_opt timpi_opt)
+    target_link_libraries( ${CArl_FETI_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} mesh_opt timpi_opt petsc)
 endforeach( CArl_FETI_source_file ${CARL_FETI_EXECS} )
 
 foreach( CArl_tools_source_file ${CARL_TOOLS_EXECS} )
@@ -167,7 +169,7 @@ foreach( CArl_tools_source_file ${CARL_TOOLS_EXECS} )
                      $<TARGET_OBJECTS:MISC_OBJS> $<TARGET_OBJECTS:COUPLING_MATRIX_OBJS>
                      $<TARGET_OBJECTS:PETSC_MATRIX_OPERATIONS_OBJS>)
     add_to_cached_list( CGAL_EXECUTABLE_TARGETS ${CArl_tools_exec_name} )
-    target_link_libraries( ${CArl_tools_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} mesh_opt timpi_opt)
+    target_link_libraries( ${CArl_tools_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} mesh_opt timpi_opt petsc)
 endforeach( CArl_tools_source_file ${CARL_TOOLS_EXECS} )
 
 foreach( libmesh_ext_source_file ${LIBMESH_EXT_EXECS} )
@@ -177,5 +179,5 @@ foreach( libmesh_ext_source_file ${LIBMESH_EXT_EXECS} )
                      $<TARGET_OBJECTS:MISC_OBJS> $<TARGET_OBJECTS:COMMON_EXT_LIBMESH_SOLVER_OBJS>
                      $<TARGET_OBJECTS:PETSC_MATRIX_OPERATIONS_OBJS> $<TARGET_OBJECTS:COMMON_OBJS> $<TARGET_OBJECTS:CARL_PARSERS_OBJS> )
     add_to_cached_list( CGAL_EXECUTABLE_TARGETS ${libmesh_ext_exec_name} )
-    target_link_libraries( ${libmesh_ext_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} mesh_opt timpi_opt)
+    target_link_libraries( ${libmesh_ext_exec_name} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} mesh_opt timpi_opt petsc)
 endforeach( libmesh_ext_source_file ${LIBMESH_EXT_EXECS} )
