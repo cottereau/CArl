@@ -77,10 +77,32 @@ void reduced_system_init(Sys& system_input)
   libMesh::DofMap& system_dof_map = system_input.get_dof_map();
   libMesh::MeshBase& system_mesh = system_input.get_mesh();
   
-  unsigned int nb_of_variable_groups = system_input.n_variable_groups();
-  for (unsigned int vg=0; vg<nb_of_variable_groups; vg++)
+  // unsigned int nb_of_variable_groups = system_input.n_variable_groups();
+  // for (unsigned int vg=0; vg<nb_of_variable_groups; vg++)
+  // {
+  //   system_dof_map.add_variable_array(system_input.variable_group(vg));
+  // }
+
+  // for (unsigned int vg = 0; vg < system_input.n_variable_groups(); vg++)
+  for (unsigned int vg = 0; vg < system_dof_map.n_variable_groups(); vg++)
   {
-    system_dof_map.add_variable_group(system_input.variable_group(vg));
+    // const libMesh::VariableGroup &var_group = system_input.variable_group(vg);
+    const libMesh::VariableGroup &var_group = system_dof_map.variable_group(vg);
+    // Extract the variable names from the group
+    std::vector<std::string> names;
+    for (unsigned int v = 0; v < var_group.n_variables(); v++)
+      names.push_back(var_group.name(v));
+
+    // Extract FEType (all variables in a group share the same type)
+    const libMesh::FEType &fe_type = var_group.type();
+
+    // Extract active subdomains
+    const std::set<libMesh::subdomain_id_type> &active_subs =
+        var_group.active_subdomains();
+
+    // Use System::add_variables — the correct modern replacement
+    system_input.add_variables(names, fe_type,
+                               active_subs.empty() ? nullptr : &active_subs);
   }
 
   system_dof_map.distribute_dofs(system_mesh);

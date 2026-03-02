@@ -55,7 +55,7 @@
 #include "libmesh/fem_system.h"
 #include "libmesh/enum_solver_package.h"
 #include "libmesh/enum_solver_type.h"
-#include "libmesh/auto_ptr.h" // libmesh_make_unique
+#include "libmesh/utility.h" // libmesh_make_unique
 
 #include "libmesh/boundary_info.h"
 #include "libmesh/diff_solver.h"

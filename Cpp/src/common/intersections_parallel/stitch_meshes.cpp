@@ -72,8 +72,8 @@ void Stitch_Meshes::preallocate_grid(int map_preallocation)
 
 void Stitch_Meshes::set_grid_constraints(const libMesh::Mesh & mesh_A, const libMesh::Mesh & mesh_B, double vol_tol )
 {
-  libMesh::BoundingBox bbox_A = libMesh::MeshTools::create_bounding_box(mesh_A);
-  libMesh::BoundingBox bbox_B = libMesh::MeshTools::create_bounding_box(mesh_B);
+  libMesh::BoundingBox bbox_A = libMesh::MeshTools::bounding_box(mesh_A);
+  libMesh::BoundingBox bbox_B = libMesh::MeshTools::bounding_box(mesh_B);
 
   // Just to be sure, test if the bboxes intersect!
   homemade_assert_msg(bbox_A.intersects(bbox_B),"Meshes' bounding boxes do not intersect!\n");
