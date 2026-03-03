@@ -1,103 +1,186 @@
 # CArl
 
+![Status](https://img.shields.io/badge/status-under%20development-orange)
+![Platform](https://img.shields.io/badge/platform-Linux-blue)
+![Docker](https://img.shields.io/badge/docker-supported-2496ED?logo=docker&logoColor=white)
+![License](https://img.shields.io/badge/license-open%20source-green)
+![C++](https://img.shields.io/badge/language-C%2B%2B17-blue?logo=cplusplus&logoColor=white)
+![MPI](https://img.shields.io/badge/parallel-MPI-blueviolet)
+
+> ⚠️ **This branch (`dyncoup`) is under active development and has not been fully tested. Use with caution.**
+
 ## PRESENTATION
 
-This project is focused on the development of a software based on the [Arlequin multi-model coupling method](https://www.sciencedirect.com/science/article/pii/S0045782508003630). The main interest of this software is to allow, by its specific structure, the easy interfacing of different third-party softwares (developed and maintained outside of this project), and adapted to each of the models appearing in the coupling. Currently, this project includes two implementations of the CArl sofware:
+This project is focused on the development of a software based on the [Arlequin multi-model coupling method](https://www.sciencedirect.com/science/article/pii/S0045782508003630). The main interest of this software is to allow, by its specific structure, the easy interfacing of different third-party softwares (developed and maintained outside of this project), and adapted to each of the models appearing in the coupling.
 
-1. a [MATLAB](http://www.mathworks.fr/products/matlab/) implementation. 
-2. a parallel C++ / MPI implementation, based on [libMesh](https://libmesh.github.io) and [CGAL](http://www.cgal.org). For this part, three solvers are developed: 
-- For a static case: a solver CArl-Static for the stationary solution of coupled system
-- For a transit case:  a  solver CArl-Dynamic for a series of time dependent solution
+This software is mainly developed at the laboratory [LMPS (Laboratoire Mécanique de Paris-Saclay)](https://lmps.ens-paris-saclay.fr/en), of which MSSMat laboratory (École Centrale Paris - CNRS), that originally developed the [CArl](https://github.com/cottereau/CArl) software is now part of.
 
-This software is mainly developed at the laboratory [LMPS (Laboratoire Mécanique de Paris-Saclay)](https://lmps.ens-paris-saclay.fr/en), of which ancien MSSMat (Ecole Centrale Paris - CNRS) is now a part.
+* 📧 contact : [Regis Cottereau](mailto:cottereau@lma.cnrs-mrs.fr)
+* 👥 contributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec, D. Neron, T. M. Schlittler, F. Gatti, C. Luo, R. Ruyssen
 
-* contact : [Regis Cottereau](mailto:cottereau@lma.cnrs-mrs.fr)
-* contributors (by order of first commit): R. Cottereau, C. Zaccardi, Y. Le Guennec, D. Neron, T. M. Schlittler, F. Gatti, G. Jacquet, C. Luo, S. Méo
+More detail on usage and examples can be found on the [related help web page](https://cottereau.github.io/CArl/).
 
-more detail on installation procedures and examples can be found the [related help web page](https://cottereau.github.io/CArl/)
+---
 
-## MATLAB IMPLEMENTATION
+## ⚙️ C++ / MPI IMPLEMENTATION
 
-The MATLAB implementation of the CArl software can be found at the directory `MATLAB`. Currently, the software to which it is interfaced includes :
+The C++ / MPI implementation of the CArl software can be found in the directory `Cpp`. It is capable of interfacing with external solvers based on the [PETSc](http://www.mcs.anl.gov/petsc/) toolkit (including the libMesh solvers, when compiled with PETSc support). Two solvers are available:
 
-1. a 1D/2D FEM acoustic code,
-1. a Timoschenko beam code, 
-1. an elastic code, and 
-1. Comsol (http://www.comsol.com).
+| Solver           | Description                                 | Status                                                              |
+| ---------------- | ------------------------------------------- | ------------------------------------------------------------------- |
+| **CArl-Static**  | Stationary solution of a coupled system     | ![status](https://img.shields.io/badge/-not%20tested-red)           |
+| **CArl-Dynamic** | Time-dependent solution of a coupled system | ![status](https://img.shields.io/badge/-under%20development-orange) |
 
-### INSTALLATION
+---
 
-Before using the software, you should make sure that you update the matlab path with the appropriate directories. In matlab, run
-`>> addpath( genpath('install_dir_CArl/'));`
-where you replace `install_dir_CArl` by the full path to the directory `CArl/`
+## 📦 REQUIREMENTS
 
-Additionally, you might want to write this line in the startup file (located by defaut for instance in MacOS in `~/Documents/MATLAB/startup.m`)
+The following third-party libraries are required. All are installed automatically by the provided Dockerfile.
 
-This code has not been extensively tested, but should run on Matlab versions R2013a and newer (mainly because the objects triangulation and delaunayTriangulation are required)
+| Library                                                                   | Version              | Status                                                      |
+| ------------------------------------------------------------------------- | -------------------- | ----------------------------------------------------------- |
+| [CMake](https://cmake.org)                                                | system               | ![status](https://img.shields.io/badge/-tested-brightgreen) |
+| [Boost](http://www.boost.org)                                             | system (≥ 1.66)      | ![status](https://img.shields.io/badge/-tested-brightgreen) |
+| [CGAL](http://www.cgal.org) (Core component)                              | system (≥ 5.0)       | ![status](https://img.shields.io/badge/-tested-brightgreen) |
+| [OpenMPI](https://www.open-mpi.org)                                       | system               | ![status](https://img.shields.io/badge/-tested-brightgreen) |
+| [HDF5](https://www.hdfgroup.org/solutions/hdf5/) — parallel/MPI           | system               | ![status](https://img.shields.io/badge/-tested-brightgreen) |
+| [PETSc](http://www.mcs.anl.gov/petsc/) — latest release, with MPI + HDF5  | compiled from source | ![status](https://img.shields.io/badge/-tested-brightgreen) |
+| [libMesh](https://libmesh.github.io) — master, with PETSc + HDF5 + TetGen | compiled from source | ![status](https://img.shields.io/badge/-tested-brightgreen) |
 
-To use the option __FE2D__ (optional), one should install and make available in the path the functions downloadable at http://www.mathworks.in/matlabcentral/fileexchange/27826-fast-assembly-of-stiffness-and-matrices-in-finite-element-method (by Talal Rahman and Jan Valdman)
+> All libraries must be built with the **same MPI implementation**.
 
-To use the option __beam__ (optional), one should install and make available in the path the functions downloadable at https://github.com/wme7/aero-matlab/tree/master/FEM/Timoshenko_beam (by Manuel Diaz and A Ferreira)
+---
 
-To use the option __Comsol__ (optional), one should install and make available in the path COMSOL Multiphysics (see http://www.comsol.com/)
+## 🐳 DOCKER-BASED INSTALLATION (recommended)
 
-### USE
+![Docker](https://img.shields.io/badge/docker-recommended-2496ED?logo=docker&logoColor=white)
+![Status](https://img.shields.io/badge/status-under%20development-orange)
 
-The main calling routine is `CArl.m`
+The recommended way to build and run CArl is via the provided Dockerfile `carl_dyncoup.dockerfile`, included in the repository. The image is based on **Ubuntu 24.04** and builds the full dependency chain automatically.
 
-Some examples (in 1D and 2D) can be launched through use of the routine `Test.m` (see the corresponding help). The tests should run without any problem on computers with around 2Go.
- 
-## C++ / MPI IMPLEMENTATION
+### Quick start
 
-The C++ / MPI implementation of the CArl software can be found in the directory `Cpp`. Currently, it is capable of interfacing with external solvers based on the [PETSc](http://www.mcs.anl.gov/petsc/) toolkit (including the libMesh solvers, when compiled with PETSc support).
+Clone the repository and run the install script:
 
-### REQUIREMENTS
+```bash
+git clone --branch dyncoup https://github.com/cottereau/CArl.git
+cd CArl
+bash install_carl.sh
+```
 
-This code implementation use the following third party libraries: (the numbers indicate the oldest version for which they were tested)
+The install script wraps the following Docker commands:
 
-1. [Boost](http://www.boost.org) (version 1.65.0)
-2. [CGAL](http://www.cgal.org) (version 4.7)
-3. [PETSc](http://www.mcs.anl.gov/petsc/) (version 3.13.1)
-4. [libMesh](https://libmesh.github.io) (version 1.5.1)
+```bash
+# Build the image
+docker buildx build . -t carl -f carl_dyncoup.dockerfile
 
-#### Tested compiler combinations:
+# Run the container
+docker run --name carl -p 8880:8000 carl
+```
 
-1. OS X / macOS : Clang (version 7.0.0) and OpenMPI (version 1.10.0)
-2. Linux : Intel C++ compilers (version 16.0.3) and Intel MPI (version 5.1.2)
-3. [Linux](#compile-on-linux-with-MPICH-and-opnempi) : MPICH (version 3.4a2) and OpenMPI (version 4.0.0)
+### Connect to the running container
 
-Guidelines for installation 3 is found in [this file](./Cpp/requirements_fusion_mpich_openmpi.md). It corresponds to a clena setup for [RUCHE](https://mesocentre.pages.centralesupelec.fr/user_doc/ruche/01_cluster_overview/#general-informations) cluster @[Mésocentre Moulon](https://mesocentre.pages.centralesupelec.fr/user_doc/) 
+```bash
+docker exec -it carl /bin/bash
+```
 
-This code was not tested or compiled with other operational systems. 
+CArl executables are available on the `PATH` inside the container under `/opt/CArl/build/bin/`.
 
-### INSTALLATION
+### Rebuild without cache
 
-The installation is done using [CMake](https://cmake.org) (version 3.4.2), and the following commands:
+To force a full rebuild from scratch:
 
-`cd [CArl root directory]/Cpp/bin`
+```bash
+docker buildx build --no-cache . -t carl -f carl_dyncoup.dockerfile
+```
 
-`cmake ..`
+To rebuild only the CArl step while keeping cached PETSc and libMesh layers, increment the `CACHE_BUST` argument:
 
-`make`
+```bash
+docker buildx build --build-arg CACHE_BUST=2 . -t carl -f carl_dyncoup.dockerfile
+```
 
-This will compile the CArl software using the default system compilers and with the `Release` optimization flags (`-O3 -DNDEBUG`). If you want to change these, use the appropriate flags or an interface such as `ccmake` or `cmake-gui`.
+---
 
-The CMake script will search for the Boost and CGAL libraries at the default include paths. For the libMesh installation, it will search for a `LIBMESH_DIR` environement variable. If the environement variable is not found, it will set it as `/usr/local`. In both cases, the script will search the `libmesh-config` binary at the `$LIBMESH_DIR/bin` directory. 
+## 🔧 WHAT THE DOCKERFILE DOES
 
-#### Compile on Linux with MPICH and OpenMPI
-If you installed requirements according to [Linux setup 3](#tested-compiler-combinations), `CArl` can be compiler by modifying `[CArl root directory]/Cpp/common/compile_fusion.sh` with custom paths and then running:
+![Status](https://img.shields.io/badge/status-under%20development-orange)
 
-`cp [CArl root directory]/Cpp/scripts/compile_fusion.sh [CArl root directory]/Cpp/bin/`
+The Dockerfile proceeds in four stages:
 
-`cd [CArl root directory]/Cpp/bin`
+### 1. System packages (Ubuntu 24.04)
 
-`. compile_fusion.sh`
+Installs: `build-essential`, `cmake`, `git`, `gfortran`, `libopenmpi-dev`, `openmpi-bin`, `libgmp-dev`, `libmpfr-dev`, `libcgal-dev`, `libboost-all-dev`, `autoconf`, `autoconf-archive`, `automake`, `libtool`, `m4`, `pkg-config`, `libhdf5-openmpi-dev`, `hdf5-tools`.
 
-## REFERENCES
+Key environment paths set at this stage:
 
-Original references for the theory are (among others)
+| Variable           | Value                                    |
+| ------------------ | ---------------------------------------- |
+| `MPI_DIR`          | `/usr/lib/x86_64-linux-gnu/openmpi`      |
+| `HDF5_DIR`         | `/usr/lib/x86_64-linux-gnu/hdf5/openmpi` |
+| `HDF5_INCLUDE_DIR` | `/usr/include/hdf5/openmpi`              |
+| `BOOST_ROOT`       | `/usr`                                   |
+
+### 2. PETSc — latest release branch
+
+Cloned from `https://gitlab.com/petsc/petsc.git` into `/opt/petsc`, configured with:
+- MPI wrappers (`mpicc`, `mpicxx`, `mpif90`)
+- Downloaded BLAS/LAPACK, Metis, ParMetis
+- System parallel HDF5
+- Optimised build (`-O3`, no debugging)
+
+### 3. libMesh — master branch
+
+Cloned from `https://github.com/libMesh/libmesh.git` into `/opt/libmesh-src`, installed to `/opt/libmesh`, configured with:
+- PETSc support (pointing to step 2)
+- System HDF5 and Boost
+- TetGen enabled (via bundled submodule)
+- Optimised build (`opt` method only)
+
+> Note: source and install directories are kept separate to avoid a known `make install` conflict.
+
+### 4. CArl — `dyncoup` branch
+
+Cloned from `https://github.com/cottereau/CArl.git` into `/opt/CArl`, built with CMake pointing to all of the above. Runtime paths set:
+
+| Variable          | Value                                                                                     |
+| ----------------- | ----------------------------------------------------------------------------------------- |
+| `PATH`            | `/opt/CArl/build/bin` prepended                                                           |
+| `LD_LIBRARY_PATH` | `/opt/libmesh/lib:/opt/petsc/arch-linux-c-opt/lib:/usr/lib/x86_64-linux-gnu/hdf5/openmpi` |
+
+---
+
+## 🩹 SOURCE CODE PATCHES
+
+The `dyncoup` branch requires the following patches to compile against current versions of libMesh and PETSc. These are already applied in the repository:
+
+| File                                          | Patch                                                                                                           | Reason                                                   |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `Cpp/src/include/common_functions.h`          | `reduced_system_init()` rewritten to use `System::add_variables()`                                              | `DofMap::add_variable_group()` removed in modern libMesh |
+| `Cpp/CMakeLists.txt`                          | Added `link_directories` for libMesh/PETSc; explicit linking of `mesh_opt`, `timpi_opt`, `petsc` to all targets | Modern linker requires explicit DSO listing              |
+| `Cpp/src/include/mesh_intersection_methods.h` | Added `#include "libmesh/tetgen_mesh_interface.h"`                                                              | TetGen interface header not transitively included        |
+
+---
+
+## ✅ TESTED CONFIGURATION
+
+| Component | Version                   |
+| --------- | ------------------------- |
+| OS        | Ubuntu 24.04              |
+| Compiler  | GCC 13 + OpenMPI          |
+| PETSc     | latest release branch     |
+| libMesh   | master branch             |
+| CGAL      | 5.6 (system)              |
+| Boost     | 1.83.0 (system)           |
+| HDF5      | parallel/openmpi (system) |
+
+---
+
+## 📚 REFERENCES
+
+Original references for the Arlequin method:
 
 1. H. Ben Dhia. Multiscale mechanical problems: the Arlequin method, _Comptes Rendus de l'Academie des Sciences - Series IIB 326_ (1998), pp. 899-904.
-1. H. Ben Dhia, G. Rateau. The Arlequin method as a flexible engineering design tool, _Int. J. Numer. Meths. Engr._ 62 (2005), pp. 1442-1462.
+2. H. Ben Dhia, G. Rateau. The Arlequin method as a flexible engineering design tool, _Int. J. Numer. Meths. Engr._ 62 (2005), pp. 1442-1462.
 
-Many other papers make use of the method or describe specific aspects and implementation details. Some of the scientific papers that made use of the CArl software are included in [references.rtf](references.rtf)
+A list of scientific papers that make use of the CArl software can be found in [references.rtf](references.rtf).
