@@ -1,0 +1,120 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 1. System tools and dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    ca-certificates \
+    gfortran \
+    libopenmpi-dev \
+    openmpi-bin \
+    libgmp-dev \
+    libmpfr-dev \
+    libcgal-dev \
+    libboost-all-dev \
+    autoconf \
+    autoconf-archive \
+    automake \
+    libtool \
+    m4 \
+    pkg-config \
+    libhdf5-openmpi-dev \
+    hdf5-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Key paths
+ENV MPI_DIR=/usr/lib/x86_64-linux-gnu/openmpi
+ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/openmpi
+ENV HDF5_ROOT=/usr/lib/x86_64-linux-gnu/hdf5/openmpi
+ENV HDF5_INCLUDE_DIR=/usr/include/hdf5/openmpi
+ENV BOOST_ROOT=/usr
+ENV PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/hdf5/openmpi/pkgconfig
+
+# 2. PETSc — latest release
+ENV PETSC_DIR=/opt/petsc
+ENV PETSC_ARCH=arch-linux-c-opt
+
+WORKDIR /opt
+RUN git clone -b release https://gitlab.com/petsc/petsc.git petsc && \
+    cd petsc && \
+    ./configure \
+      --with-debugging=0 \
+      --with-shared-libraries=1 \
+      --with-cc=mpicc \
+      --with-cxx=mpicxx \
+      --with-fc=mpif90 \
+      --download-fblaslapack=1 \
+      --download-metis=1 \
+      --download-parmetis=1 \
+      --with-hdf5=1 \
+      --with-hdf5-dir=${HDF5_DIR} \
+      --COPTFLAGS="-O3" \
+      --CXXOPTFLAGS="-O3" \
+      --FOPTFLAGS="-O3" && \
+    make -j"$(nproc)" all
+
+# 3. libMesh — master (tracks latest PETSc API)
+# Clone into /opt/libmesh-src, install into /opt/libmesh
+ENV LIBMESH_DIR=/opt/libmesh
+
+WORKDIR /opt
+RUN git clone https://github.com/libMesh/libmesh.git libmesh-src && \
+    cd libmesh-src && \
+    git submodule update --init --recursive && \
+    git submodule update --init contrib/tetgen && \
+    ls contrib/tetgen/tetgen.h && \
+    ./bootstrap && \
+    ./configure \
+      --prefix=${LIBMESH_DIR} \
+      --with-methods="opt" \
+      --enable-shared \
+      --with-mpi=/usr \
+      --with-boost=${BOOST_ROOT} \
+      --with-hdf5=${HDF5_DIR} \
+      --enable-hdf5 \
+      --enable-tetgen \
+      PETSC_DIR=${PETSC_DIR} \
+      PETSC_ARCH=${PETSC_ARCH} \
+      CC=mpicc \
+      CXX=mpicxx \
+      FC=mpif90 \
+      F77=mpif77 && \
+    make -j"$(nproc)" && \
+    make install
+
+
+ARG CACHE_BUST=1
+
+#WORKDIR /home
+#CMD ["tail", "-f", "/dev/null"]
+
+# 4. CArl (dyncoup branch) — with patches for modern libMesh API
+WORKDIR /opt
+RUN git clone --branch dyncoup https://github.com/cottereau/CArl.git && \
+    cd CArl && \
+    mkdir build && cd build && \
+    cmake ../Cpp \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_C_COMPILER=mpicc \
+      -DCMAKE_CXX_COMPILER=mpicxx \
+      -DPETSC_DIR=${PETSC_DIR} \
+      -DPETSC_ARCH=${PETSC_ARCH} \
+      -DLIBMESH_DIR=${LIBMESH_DIR} \
+      -DBOOST_ROOT=${BOOST_ROOT} \
+      -DCGAL_DIR=/usr/lib/x86_64-linux-gnu/cmake/CGAL \
+      -DHDF5_ROOT=${HDF5_DIR} \
+      -DHDF5_INCLUDE_DIRS=${HDF5_INCLUDE_DIR} \
+      -DHDF5_PREFER_PARALLEL=ON \
+      -DMPI_HOME=/usr \
+      -DCMAKE_EXE_LINKER_FLAGS="-L${LIBMESH_DIR}/lib -ltimpi_opt" \
+      -DCMAKE_SHARED_LINKER_FLAGS="-L${LIBMESH_DIR}/lib -ltimpi_opt" && \
+    make -j"$(nproc)" 2>&1 | tee /tmp/carl_build.log | tail -50
+
+ENV PATH=/opt/CArl/build/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV LD_LIBRARY_PATH=/opt/libmesh/lib:/opt/petsc/arch-linux-c-opt/lib:/usr/lib/x86_64-linux-gnu/hdf5/openmpi
+
+WORKDIR /home
+CMD ["tail", "-f", "/dev/null"]
