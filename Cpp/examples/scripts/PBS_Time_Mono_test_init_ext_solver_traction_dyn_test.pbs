@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#PBS -S /bin/bash
+#PBS -N test_ae_dyn
+#PBS -l walltime=3:59:00
+#PBS -l select=1:ncpus=1:mpiprocs=1
+
+# "fusion" PBS options
+# #PBS -P [PROJECT NAME]
+
+# Charge the modules here
+# "fusion" cluster modules
+# module purge
+# module load intel-compilers/17.0.4
+# module load intel-mpi/2017.0.3
+# module load intel-mkl/2017.0.3
+# module load libgmp/6.1.2
+# module load libmpfr/3.1.5
+
+# On se place dans le repertoire depuis lequel le job a ete soumis
+cd $PBS_O_WORKDIR
+
+echo " --- Creating directories ..." 
+mkdir -p ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_matrices
+mkdir -p ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_initial_conditions
+
+echo " --- Initializing external solver for clamped coupled model ..." 
+mpirun -n 1 ./libmesh_init_dyn_lin_homogeneous__min_x_clamped -i ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/init_barre_traction_A.txt
+
+echo " --- Initializing external solver for traction coupled model ..."
+mpirun -n 1 ./libmesh_init_dyn_lin_homogeneous__max_x_traction -i ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/init_barre_traction_B.txt
