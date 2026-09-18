@@ -1,0 +1,17 @@
+### Coupling matrices assembly parameters
+# - Model meshes
+MeshA ../examples/coupled_traction_dyn_test/meshes/Barre_A.msh
+MeshB ../examples/coupled_traction_dyn_test/meshes/Barre_B.msh
+
+# - Intersection meshes and table files
+InterBase ../examples/coupled_traction_dyn_test/intersection/output/inter_Barre/inter
+
+### Coupling parameters
+# - Coupling region width (same unit as the meshes)
+CouplingWidth 0.2e-3
+
+# - Coupling rigidity (in MPa, if mm was used for the meshes)
+CouplingRigidity 30.0e9
+
+# - Output folder path
+OutputFolder ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/coupling_matrices

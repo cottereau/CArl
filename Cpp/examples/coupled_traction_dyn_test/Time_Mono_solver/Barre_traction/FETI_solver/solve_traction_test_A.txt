@@ -1,0 +1,13 @@
+### System A external solver parameters
+# - System matrix
+SysMatrix ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_matrices/traction_model_A_sys_mat.petscmat
+
+# - System RHS vector
+SysRHSVector ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/scratch_folder_time_mono/domain_A_state/traction_model_A_sys_rhs_vec.petscvec
+
+# - Output filename base
+OutputBase ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/FETI_solver/traction_model_A_sol
+
+# - Convergence parameters
+SysEps 1e-9
+SysIterDiv 1000

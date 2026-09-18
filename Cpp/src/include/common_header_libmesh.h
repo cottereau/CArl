@@ -57,6 +57,7 @@
 #include "libmesh/diff_solver.h"
 #include "libmesh/dof_map.h"
 #include "libmesh/equation_systems.h"
+#include "libmesh/newmark_system.h"
 #include "libmesh/fe_base.h"
 #include "libmesh/fem_context.h"
 #include "libmesh/getpot.h"

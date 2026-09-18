@@ -1,0 +1,54 @@
+### Scheduler parameters
+ClusterSchedulerType LOCAL
+
+# - Path to the scratch folder
+ScratchFolderPath ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/scratch_folder_time_mono
+
+# - External solver rhs assemble commands - must set the commands between ' ' !!!
+ExtSolverRhsAssemblyA 'mpirun -n 1 ./libmesh_assemble_rhs_dyn__min_x_clamped -i ' 
+ExtSolverRhsAssemblyB 'mpirun -n 1 ./libmesh_assemble_rhs_dyn__max_x_dirichlet -i '
+
+# - External solver initial conditions updating commands - must set the commands between ' ' !!!
+ExtSolverInitCondUpdateA 'mpirun -n 1 ./libmesh_update_init_cond -i ' 
+ExtSolverInitCondUpdateB 'mpirun -n 1 ./libmesh_update_init_cond -i '
+
+# - Time mesh file
+TimeMeshFile ../examples/coupled_traction_dyn_test/meshes/Time_discretization.dat
+
+# - Newmark parameters file
+NewmarkParameters_Macro ../examples/coupled_traction_dyn_test/meshes/test_brick_Newmark_A.dat
+NewmarkParameters_Micro ../examples/coupled_traction_dyn_test/meshes/test_brick_Newmark_B.dat
+
+# - Space mesh files
+Mesh_Macro ../examples/coupled_traction_dyn_test/meshes/Barre_A.msh
+Mesh_Micro ../examples/coupled_traction_dyn_test/meshes/Barre_B.msh
+
+# - System matrices 
+SysMatrix_Macro ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_matrices/traction_model_A_sys_mat.petscmat
+SysMatrix_Macro_M ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_matrices/traction_model_A_M_sys_mat.petscmat
+SysMatrix_Macro_K ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_matrices/traction_model_A_K_sys_mat.petscmat
+SysMatrix_Macro_C ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_matrices/traction_model_A_C_sys_mat.petscmat
+SysMatrix_Micro ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_matrices/traction_model_B_sys_mat.petscmat
+SysMatrix_Micro_M ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_matrices/traction_model_B_M_sys_mat.petscmat
+SysMatrix_Micro_K ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_matrices/traction_model_B_K_sys_mat.petscmat
+SysMatrix_Micro_C ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_matrices/traction_model_B_C_sys_mat.petscmat
+
+# - Initial conditions
+InitCond_Macro_disp ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_initial_conditions/init_cond_A_disp.petscvec
+InitCond_Macro_vel ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_initial_conditions/init_cond_A_vel.petscvec
+InitCond_Macro_acc ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_initial_conditions/init_cond_A_acc.petscvec
+InitCond_Micro_disp ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_initial_conditions/init_cond_B_disp.petscvec
+InitCond_Micro_vel ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_initial_conditions/init_cond_B_vel.petscvec
+InitCond_Micro_acc ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_initial_conditions/init_cond_B_acc.petscvec
+
+# - Path to the FETI setup parameters file
+FETISetupParametersFile ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/FETI_solver/LOCAL_setup_FETI_solver.txt
+
+# - Path to the FETI solution folder
+SolutionsFolderPath ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/FETI_solver/coupled_solution
+
+# - Path to the results folder
+ResultsFolderPath ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/Results
+
+# - Result files names
+ResultsFileName coupled_solution_

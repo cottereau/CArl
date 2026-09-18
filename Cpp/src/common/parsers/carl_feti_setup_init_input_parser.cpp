@@ -128,6 +128,14 @@ void get_input_params(GetPot& field_parser,
 		homemade_error_msg("Missing the external scratch folder path!");
 	}
 
+	if (field_parser.search(1, "ScratchFolderPathTimeMono")) {
+		input_params.scratch_folder_path_time_mono = field_parser.next(
+				input_params.scratch_folder_path_time_mono);
+		std::cout << input_params.scratch_folder_path_time_mono << std::endl;
+	} else {
+		homemade_error_msg("Missing the external scratch folder path of Time Mono!");
+	}
+
 	if (field_parser.search(1, "CouplingMatricesFolder")) {
 		input_params.coupling_folder_path = field_parser.next(
 				input_params.coupling_folder_path);

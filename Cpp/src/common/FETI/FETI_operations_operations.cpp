@@ -74,6 +74,29 @@ void FETI_Operations::calculate_null_space_phi_0(const std::string& force_path)
 	m_bSet_current_phi = true;
 }
 
+// Mon ajout pour initialiser le vecteur phi(0) à 0
+void FETI_Operations::initialize_phi_0()
+{
+	// 	phi0 = 0
+	homemade_assert_msg(m_bScratchFolderSet,"Scratch folder not set yet!");
+
+	std::cout << "m_C_RR_M_local = " << m_C_RR_M_local << std::endl;
+	std::cout << "m_C_RR_M = " << m_C_RR_M << std::endl;
+	
+	// --- Declare / create the vectors
+	// phi(0)
+	VecCreate(m_comm.get(),&m_current_phi);
+	VecSetSizes(m_current_phi,m_C_RR_M_local,m_C_RR_M);
+	VecSetFromOptions(m_current_phi);
+
+	
+	// -> This should have no communications at all!
+	VecZeroEntries(m_current_phi);
+
+	// Set flags
+	m_bSet_current_phi = true;
+}
+
 //  --- FETI steps methods
 void FETI_Operations::calculate_initial_p()
 {
@@ -98,8 +121,12 @@ void FETI_Operations::calculate_initial_r()
 	homemade_assert_msg(m_bC_R_BIG_MatrixSet,"Macro system dimensions not set yet!");
 	homemade_assert_msg(m_bSet_u_0,"Decoupled solution not set yet!");
 
+	// Modification que j'ai faite, j'ai ajouté plus bas dans la condition if le homemade_assert_msg
 	// Assert for only m_bUsingNullVecs == true
-	homemade_assert_msg(m_bSet_ext_solver_sol && m_bUsingNullVecs,"Ext. solver solutions not set yet!");
+	if(m_bUsingNullVecs)
+	{
+		homemade_assert_msg(m_bSet_ext_solver_sol && m_bUsingNullVecs,"Ext. solver solutions not set yet!");
+	}
 
 	// Create the vector
 	VecCreate(m_comm.get(),&m_current_residual);
@@ -336,7 +363,9 @@ void FETI_Operations::calculate_scalar_data()
 	homemade_assert_msg(m_bSet_current_residual,"Current residual not calculated yet!");
 	homemade_assert_msg(m_bSet_current_z,"Current 'z' not calculated yet!");
 	if(m_bUsingNullVecs)
-	homemade_assert_msg(m_bSet_current_RB_correction && m_bUsingNullVecs,"Current RB modes correction not calculated yet!");
+	{
+		homemade_assert_msg(m_bSet_current_RB_correction && m_bUsingNullVecs,"Current RB modes correction not calculated yet!");
+	}
 
 	// --- Calculate the values
 	// rho(kkk+1)
@@ -364,8 +393,11 @@ void FETI_Operations::calculate_coupled_solution()
 {
 	homemade_assert_msg(m_bSet_ext_solver_sol,"Ext. solver solutions not set yet!");
 	homemade_assert_msg(m_bSet_u_0,"Decoupled solution not set yet!");
-	homemade_assert_msg(m_bSet_current_RB_correction && m_bUsingNullVecs,"RB modes correction not set yet!");
-
+	if(m_bUsingNullVecs)
+	{
+		homemade_assert_msg(m_bSet_current_RB_correction && m_bUsingNullVecs,"RB modes correction not set yet!");
+	}
+	
 	// Set the solution vectors
 	VecDuplicate(m_u_0_micro,&m_coupled_sol_micro);
 	VecDuplicate(m_u_0_BIG,&m_coupled_sol_BIG);

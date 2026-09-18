@@ -89,5 +89,19 @@ int main(int argc, char** argv) {
 	// Export it (finallly!)
 	feti_op.export_coupled_solution(input_params.output_folder);
 
+	// Modification apportée au code de Thiago pour le script suivant
+	// --- Launch the "Time_Mono_iterate_finish.sh" script --- ONLY ON THE FIRST PROC!
+	if(WorldComm.rank() == 0)
+	{
+		std::string iter_script_command = ". " + input_params.scratch_folder_path_time_mono + "/Time_Mono_iterate_finish.sh";
+		if(input_params.scheduler == carl::ClusterSchedulerType::LOCAL)
+		{
+			std::cout << " !!! LOCAL job 'scheduler: Run the following script manually: " << std::endl;
+			std::cout << iter_script_command << std::endl << std::endl;
+		} else {
+			carl::exec_command(iter_script_command);
+		}
+	}
+
 	return 0;
 }

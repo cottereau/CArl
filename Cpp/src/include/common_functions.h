@@ -35,7 +35,7 @@ void jump_lines(T& filestream, unsigned int numberOfLines = 1)
 	std::string dummy;
 	for(unsigned int iii = 0; iii < numberOfLines; ++iii)
 		std::getline(filestream,dummy);
-};
+}
 
 int voigt_index_converter(int aaa, int bbb);
 
@@ -86,7 +86,7 @@ void reduced_system_init(Sys& system_input)
 	system_input.reinit_constraints();
 	system_dof_map.prepare_send_list();
 	system_dof_map.compute_sparsity(system_mesh);
-};
+}
 }
 
 #endif /* COMMON_COMMON_FUNCTIONS_H_ */

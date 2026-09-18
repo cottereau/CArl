@@ -1,0 +1,24 @@
+### Required parameters
+# - Mesh files
+MeshA ../examples/coupled_traction_dyn_test/meshes/Barre_A.msh
+MeshB ../examples/coupled_traction_dyn_test/meshes/Barre_B.msh
+MeshC ../examples/coupled_traction_dyn_test/meshes/Barre_C.msh
+
+### Optional parameters
+# - Output filename base
+OutputBase ../examples/coupled_traction_dyn_test/intersection/output/inter_Barre/inter
+
+# - Meshing algorithm choice
+MeshingMethod CGAL
+
+# - Boolean flags, uncomment to activate
+
+# > Stitch together the intersection meshes? 
+#   (done in a single processor, can be numerically expensive)
+#StitchInterMeshes
+
+# > Verbose output?
+#   (prints coupling mesh partitioning before and after rebalancing)
+#VerboseOutput
+
+

@@ -81,5 +81,10 @@ libMesh::ExplicitSystem& add_stress(libMesh::EquationSystems& input_systems);
 libMesh::LinearImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
 												libMesh::Order order = libMesh::FIRST,
 												libMesh::FEFamily family = libMesh::LAGRANGE);
+
+/// Add a dynamic libMesh::NewmarkSystem to the input libMesh::EquationSystems.
+libMesh::NewmarkSystem& add_dynamic(  libMesh::EquationSystems& input_systems,
+									  libMesh::Order order = libMesh::FIRST,
+									  libMesh::FEFamily family = libMesh::LAGRANGE);
 		
 #endif /* COMMON_FUNCTIONS_ELASTICITY_3D_H_ */

@@ -31,7 +31,8 @@ struct feti_setup_init_params {
 
 	// Path to "scratch" folder
 	std::string scratch_folder_path;	///< Path to the folder which will be used to save the temporary files during the solve operation
-	std::string script_filename; ///< Path to the file used to generate the scripts.
+	std::string scratch_folder_path_time_mono; ///< Path to the scratch folder of Time_Mono.
+	std::string script_filename;        ///< Path to the file used to generate the scripts.
 
 	// Path to the "final" output folder
 	std::string output_folder;			///< Path to the coupled solution folder.

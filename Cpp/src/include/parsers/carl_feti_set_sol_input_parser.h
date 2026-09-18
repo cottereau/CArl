@@ -16,8 +16,12 @@ namespace carl
 struct feti_set_sol_params {
 	// --- Parameters used directly by the CArl_FETI_set_sol program (some are also used by the other CArl_FETI programs)
 
+	// Cluster 
+	ClusterSchedulerType scheduler; ///< Cluster scheduler software type. *Values*: PBS, SLURM (code not implemented for the later yet).
+
 	// Path to "scratch" folder
 	std::string scratch_folder_path;	///< Path to the folder which will be used to save the temporary files during the solve operation
+	std::string scratch_folder_path_time_mono; ///< Path to the scratch folder of Time_Mono. 
 
 	// Rigid body mode options for the micro system
 	bool bUseRigidBodyModes;			///< [RB] Use the rigid body modes for the micro system?

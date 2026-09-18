@@ -395,6 +395,9 @@ public:
 	/// Read the \f$ inv({R^I}^t \cdot R^I)\f$ matrix
 	void read_null_space_inv_RITRI_mat();
 
+	/// Intialize the solution if rigid body modes are unused, \f$\phi_0 = 0\f$
+	void initialize_phi_0();
+	
 	/// Calculate the inital solution, \f$\phi_0\f$
 	void calculate_null_space_phi_0(const std::string& force_path);
 

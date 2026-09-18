@@ -149,7 +149,21 @@ int main(int argc, char** argv) {
        // Export the vectors
        feti_op.export_phi();
        feti_op.export_ext_solver_rhs_Ct_phi();
-	}
+	} else 
+      { // Create the initial solution vector phi(0) = 0
+       carl::FETI_Operations feti_op(WorldComm,input_params.scratch_folder_path,input_params.coupling_folder_path);
+      
+       // --- Define if the rb modes will be used or not
+       feti_op.using_rb_modes(input_params.bUseRigidBodyModes);
+
+       // Read the matrices
+       feti_op.set_coupling_matrix_R_micro();
+       feti_op.set_coupling_matrix_R_BIG();
+
+       feti_op.initialize_phi_0();
+       feti_op.export_phi();
+      }
+
 
 	// --- Launch the "init_script.sh" script --- ONLY ON THE FIRST PROC!
 	if(WorldComm.rank() == 0)

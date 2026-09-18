@@ -6,7 +6,8 @@ int main(int argc, char** argv) {
   libMesh::LibMeshInit init(argc, argv);
 
   // Do performance log?
-  libMesh::PerfLog perf_log("Main program");
+  const bool MASTER_bPerfLog_libmesh_solve_linear_system = true;
+  libMesh::PerfLog perf_log("Main program",MASTER_bPerfLog_libmesh_solve_linear_system);
 
   // libMesh's C++ / MPI communicator wrapper
   libMesh::Parallel::Communicator& WorldComm = init.comm();
@@ -16,7 +17,7 @@ int main(int argc, char** argv) {
   int nodes = WorldComm.size();
 
   // --- Set up inputs
-
+  perf_log.push("Input parsing");
   // Command line parser
   GetPot command_line(argc, argv);
 
@@ -34,14 +35,15 @@ int main(int argc, char** argv) {
 
   carl::libmesh_solve_linear_system_input_params input_params;
   carl::get_input_params(field_parser, input_params);
-
+  perf_log.pop("Input parsing");
+  
   // Check libMesh installation dimension
   const unsigned int dim = 3;
 
   libmesh_example_requires(dim == LIBMESH_DIM, "3D support");
 
   // --- Set the matrix and vectors
-
+  perf_log.push("Set the matrix and vectors");
   // Set up the PETSC versions
   Mat sys_mat_PETSC;
   Vec sys_rhs_vec_PETSC;
@@ -61,8 +63,10 @@ int main(int argc, char** argv) {
 
   PetscInt local_N;
   MatGetLocalSize(sys_mat_PETSC,NULL,&local_N);
+  perf_log.pop("Set the matrix and vectors");
 
   // --- Linear solver
+  perf_log.push("Solving the linear system");
   libMesh::PetscLinearSolver<libMesh::Number> KSP_solver(WorldComm);
   KSP_solver.init("sys");
 
@@ -76,7 +80,7 @@ int main(int argc, char** argv) {
 
   // Solve!
   KSP_solver.solve(sys_mat,sys_sol_vec,sys_rhs_vec,input_params.sys_eps,input_params.sys_iter_div);
-
+  perf_log.pop("Solving the linear system");
   KSP_solver.print_converged_reason();
 
 // Print MatLab debugging output? Variable defined at "carl_headers.h"
@@ -85,11 +89,15 @@ int main(int argc, char** argv) {
 #endif
 
   // Export the solution vector
+  perf_log.push("Export the solution vector");
   carl::write_PETSC_vector(sys_sol_vec, input_params.output_base + "_sys_sol_vec.petscvec");
-
+  perf_log.pop("Export the solution vector");
+  
   // --- Cleanup!
+  perf_log.push("Cleanup Matrix and Vectors");
   MatDestroy(&sys_mat_PETSC);
   VecDestroy(&sys_rhs_vec_PETSC);
+  perf_log.pop("Cleanup Matrix and Vectors");
 
   return 0;
 }

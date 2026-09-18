@@ -239,8 +239,11 @@ int main(int argc, char** argv) {
 				feti_op.export_ext_solver_rhs_Ct_phi();
 
 				// Export the rigid body modes correction vector
-				feti_op.export_rb_correction_vector();
-				
+				if(input_params.bUseRigidBodyModes) // AJOUT de cette condition.
+				{			
+					feti_op.export_rb_correction_vector();
+				}
+
 				// --- Launch the "sol_script.sh" script --- ONLY ON THE FIRST PROC!
 				if(WorldComm.rank() == 0)
 				{

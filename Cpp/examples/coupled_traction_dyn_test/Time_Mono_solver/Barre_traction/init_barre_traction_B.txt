@@ -1,0 +1,25 @@
+### 'Micro' system assembly parameters
+# - Path to the model mesh
+Mesh ../examples/coupled_traction_dyn_test/meshes/Barre_B.msh
+
+# - Path to the physical parameter file
+PhysicalParameters ../examples/coupled_traction_dyn_test/meshes/Barre_physical.dat
+
+# - Path to the Newmark scheme parameters file
+TimeDiscretization ../examples/coupled_traction_dyn_test/meshes/Time_discretization.dat
+
+# - Path to the Newmark scheme parameters file
+NewmarkParameters ../examples/coupled_traction_dyn_test/meshes/Barre_Newmark_B.dat
+
+# - Path to the weight function mesh
+MeshWeight ../examples/coupled_traction_dyn_test/meshes/Barre_mask.msh
+
+# - Path to the weight function parameters
+WeightIndexes ../examples/coupled_traction_dyn_test/meshes/Barre_mask_idx.dat
+
+# - System type (will determinate  which weights will be used)
+SystemType	Micro
+
+# - Output files base name
+OutputBaseMatrix ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_matrices/traction_model_B
+OutputBaseInitCond ../examples/coupled_traction_dyn_test/Time_Mono_solver/Barre_traction/system_initial_conditions/init_cond_B

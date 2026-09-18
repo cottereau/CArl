@@ -51,7 +51,9 @@ void Solver_Files_Setup::print_feti_solution_params(const std::string& output_fi
 	homemade_assert_msg(m_bInputParamsSet,"Input parameters not set yet!");
 
 	std::ofstream output_file(output_filename);
+	output_file << "ClusterSchedulerType " << carl::ClusterSchedulerType_to_string(m_input_params.scheduler) << std::endl;
 	output_file << "ScratchFolderPath " << m_input_params.scratch_folder_path << std::endl;
+	output_file << "ScratchFolderPathTimeMono " << m_input_params.scratch_folder_path_time_mono << std::endl;
 	output_file << "OutputFolder " << m_input_params.output_folder << std::endl;
 
 	if(m_input_params.bUseRigidBodyModes)

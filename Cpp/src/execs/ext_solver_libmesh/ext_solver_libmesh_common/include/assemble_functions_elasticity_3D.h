@@ -54,6 +54,12 @@ void assemble_elasticity_with_weight(	libMesh::EquationSystems& es,
 							weight_parameter_function& weight_mask,
 							WeightFunctionSystemType system_type);
 
+/// Assemble homogeneous dynamic with domain weights
+void assemble_matrices_dynamic_with_weight(	libMesh::EquationSystems& es,
+									        const std::string& system_name,
+									        weight_parameter_function& weight_mask,
+									        WeightFunctionSystemType system_type);
+
 /// Assemble homogeneous elasticity with domain weights and traction
 void assemble_elasticity_with_weight_and_traction(libMesh::EquationSystems& es,
 							const std::string& system_name, 

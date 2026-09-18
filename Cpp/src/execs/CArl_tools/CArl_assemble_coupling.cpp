@@ -30,9 +30,9 @@ Required parameters:
 
 #include "CArl_assemble_coupling.h"
 
-libMesh::ExplicitSystem& add_explicit_elasticity(	libMesh::EquationSystems& input_systems,
-												libMesh::Order order = libMesh::FIRST,
-												libMesh::FEFamily family = libMesh::LAGRANGE)
+libMesh::ExplicitSystem& add_explicit_elasticity( libMesh::EquationSystems& input_systems,
+												  libMesh::Order order = libMesh::FIRST,
+												  libMesh::FEFamily family = libMesh::LAGRANGE)
 {
 	libMesh::ExplicitSystem& elasticity_system =
 			input_systems.add_system<libMesh::ExplicitSystem> ("Elasticity");
@@ -44,9 +44,9 @@ libMesh::ExplicitSystem& add_explicit_elasticity(	libMesh::EquationSystems& inpu
 	return elasticity_system;
 }
 
-libMesh::ImplicitSystem& add_elasticity(	libMesh::EquationSystems& input_systems,
-												libMesh::Order order = libMesh::FIRST,
-												libMesh::FEFamily family = libMesh::LAGRANGE)
+libMesh::ImplicitSystem& add_elasticity( libMesh::EquationSystems& input_systems,
+										 libMesh::Order order = libMesh::FIRST,
+										 libMesh::FEFamily family = libMesh::LAGRANGE)
 {
 	libMesh::ImplicitSystem& elasticity_system =
 			input_systems.add_system<libMesh::ImplicitSystem> ("Elasticity");
